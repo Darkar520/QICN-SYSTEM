@@ -1,0 +1,30 @@
+{
+  "mode": "sandbox_unrestricted",
+  "sigma_policy": {
+    "allowSigma1Auto": true,
+    "allowSigma2Auto": true,
+    "allowSigma2Manual": true,
+    "allowSigma3": true
+  },
+  "limits": {
+    "maxProposals24h": 1000,
+    "maxInflight": 1000,
+    "cooldownMinutes": 0,
+    "tokenBudgetDay": 999999999
+  },
+  "labels": {
+    "selfpatch": "selfpatch",
+    "riskLow": "risk:low",
+    "riskMedium": "risk:medium",
+    "riskHigh": "risk:high"
+  },
+  "lowAutoScopes": [
+    ""
+  ],
+  "mediumManualScopes": [],
+  "protectedPaths": [],
+  "requiredChecks": [
+    "ci/build-test",
+    "ci/selfpatch-policy-check"
+  ]
+}

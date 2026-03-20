@@ -1,0 +1,56 @@
+name: qicn-ci
+
+on:
+  push:
+    branches: ["main", "selfpatch/**", "feature/**"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: ci/build-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: npm
+          cache-dependency-path: "package-lock.json"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify source of truth
+        run: npm run verify:source-of-truth
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+  selfpatch-policy-check:
+    name: ci/selfpatch-policy-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      QICN_KILLSWITCH: ${{ vars.QICN_KILLSWITCH }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Validate selfpatch policy and killswitch
+        run: node tests/selfpatch-policy-check.v415.test.js

@@ -1,0 +1,72 @@
+# Secrets and deploy-local state
+.env
+.env.*
+!.env.example
+.netlify/
+.netlify-local-config/
+
+# Dependencies and caches
+node_modules/
+coverage/
+*.tsbuildinfo
+
+# Generated outputs and audit artifacts
+dist/
+artifacts/
+archive/
+backups/
+/bundle.js
+/tailwind.css
+/network_canvas_worker.js
+/audit-log.json
+
+# Logs and runtime noise
+*.log
+*.pid
+/error_log.txt
+
+# OS and editor state
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Root-level local exports, analysis dumps, and non-runtime reference files
+/gemini-conversation*.json
+/ANALISIS_COMPLETO_QICN.md
+/Analisis_Singularidad_QICN.md
+/CODEX_ULTRATHINK_ANALYSIS.md
+/PROMPT_TRADING_OPTIMIZATION.md
+/QICN_Ontological_Revelations_Documentation.md
+/RESUMEN_EJECUTIVO_PDFS_QICN.md
+/TECHNICAL_BRIEF.md
+/test_avanzado_QICN.md
+/zap_locations.txt
+/fix_*.py
+/scan_all_encoding.py
+/test_config_updated.js
+/test_multi_provider_commonjs.js
+/test_multi_provider_integration.js
+/test_qicn_fixes.html
+/*.pdf
+/*.txt
+
+# Non-runtime corpus and legacy duplicate trees
+/assets/
+/theory/
+/simulation/
+
+# Documentation and reports not selected for the engineering repo baseline
+/docs/alignment_report.md
+/docs/ANALISIS_COMPLETO_QICN.md
+/docs/Analisis_Singularidad_QICN.md
+/docs/Analisis_y_Prompt_para_Integracion_API.md
+/docs/phase4_scoreboard.latest.json
+/docs/QICN_CORRECCIONES_IMPLEMENTADAS.md
+/docs/QICN_Ontological_Revelations_Documentation.md
+/docs/REPORTE_FINAL_ANALISIS_QICN.md
+/docs/RESUMEN_EJECUTIVO_PDFS_QICN.md
+/docs/SANDBOX_LIBERADO_OVERVIEW.md
+/docs/SANDBOX_RETROINDUCTION_QUANTUM_UPGRADE_v1.md
+/docs/SISTEMA_MULTI_PROVEEDOR_IMPLEMENTADO.md
+/docs/ULTRATHINK_IMPLEMENTATION_AUDIT_v56.md

@@ -1,0 +1,15 @@
+* @qicn-maintainers
+
+# Critical simulation and integrity paths always require code owner review.
+/src/simulation/OntologicalSingularityCore.js @qicn-maintainers
+/src/simulation/PhenomenologyCore.js @qicn-maintainers
+/src/simulation/MetaSovereigntyCheck.js @qicn-maintainers
+/src/simulation/HolographicMemoryNexus.js @qicn-maintainers
+/src/utils/integrity.js @qicn-maintainers
+
+# Selfpatch control plane.
+/netlify/functions/selfpatch-*.js @qicn-maintainers
+/netlify/functions/lib/selfpatch-policy.json @qicn-maintainers
+/netlify/functions/lib/risk-classifier.js @qicn-maintainers
+/netlify/functions/lib/github-client.js @qicn-maintainers
+/netlify/functions/lib/load-selfpatch-policy.js @qicn-maintainers

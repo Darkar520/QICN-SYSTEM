@@ -1,0 +1,40 @@
+{
+  "name": "versiones-de-interfaz",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/run-all-tests.cjs",
+    "test:sandbox": "node tests/projection.test.js && node tests/liveness.test.js && node tests/determinism.test.js && node tests/integrity.test.js && node tests/verifiable-report-shape.test.js && node tests/runtime-hygiene.test.js && node tests/speech-fsm.test.js && node tests/encoding-hygiene.test.js && node tests/netlify-proxy-contract.v46.test.js && node tests/auth-gate.v46.test.js && node tests/responsive-layout.v46.test.js && node tests/canvas-adaptive-input.v46.test.js && node tests/sensor-capabilities.v46.test.js && node tests/quantum-ui-hybrid.v49.test.js && node tests/quantum-fallback-behavior.v49.test.js && node tests/netlify-quantum-entropy-contract.v50.test.js && node tests/network-render-resilience.v49.test.js && node tests/navigation-top5-more.v49.test.js && node tests/guide-clarity.v49.test.js && node tests/selfpatch-policy-check.v415.test.js && node tests/selfpatch-generate-engine.v416.test.js",
+    "build:css": "tailwindcss -c tailwind.config.cjs -i ./src/styles/tailwind.input.css -o ./dist/tailwind.css --minify",
+    "verify:source-of-truth": "node scripts/verify-source-of-truth.cjs",
+    "evaluate:canon-runtime": "node scripts/evaluate-canon-runtime.cjs",
+    "build:js": "node build.cjs",
+    "build:js:dev": "node build.cjs --dev",
+    "build:sync": "node scripts/sync-netlify-assets.cjs",
+    "build": "npm run build:js && npm run build:css && npm run build:sync && node scripts/post-build-encoding-check.cjs",
+    "dev": "npm run build:js:dev && npm run build:css && npm run build:sync",
+    "scoreboard": "node scripts/scoreboard.cjs",
+    "scoreboard:run": "node scripts/scoreboard.cjs --run --runtime-probe --json-file=docs/phase4_scoreboard.latest.json",
+    "phase4:verify": "npm run scoreboard:run",
+    "cognition:prereg": "node scripts/cognitive-emergence-prereg.cjs",
+    "cognition:verify": "node tests/cognitive-emergence-spec.v53.test.js && node tests/cognitive-emergence-evaluation.v53.test.js",
+    "sandbox:relaunch": "powershell -ExecutionPolicy Bypass -File ./scripts/sandbox-kill-build-start-health.ps1",
+    "start": "node node_modules/serve/build/main.js -p 3000 --no-port-switching .",
+    "start:local": "node scripts/local-sandbox-server.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "esbuild": "^0.25.11",
+    "serve": "^14.2.5",
+    "tailwindcss": "^3.4.19"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
+}

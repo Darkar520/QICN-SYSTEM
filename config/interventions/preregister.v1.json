@@ -1,0 +1,76 @@
+{
+  "version": "preregister.v1",
+  "overlap_policy": "forbidden",
+  "priority_order": [
+    "KILL_SWITCH",
+    "WORLD_MODEL_OFF",
+    "PLANNER_OFF",
+    "LEARNING_FREEZE",
+    "ENTROPY_CLAMP",
+    "SENSOR_MUTE",
+    "SENSORY_DEGRADE"
+  ],
+  "scheduleHash": "runtime_computed",
+  "events": [
+    {
+      "tag": "WORLD_MODEL_OFF",
+      "start_tick": 3600,
+      "duration_ticks": 2400,
+      "params": { "wm_enabled": false },
+      "prediction": {
+        "targets": [{ "metric": "SMPC", "expected_delta": "<0", "min_effect": 0.1, "window_ticks": 600 }],
+        "negative_controls": ["GAI should remain within baseline band ±0.05"]
+      }
+    },
+    {
+      "tag": "PLANNER_OFF",
+      "start_tick": 7200,
+      "duration_ticks": 2400,
+      "params": { "planner_enabled": false },
+      "prediction": {
+        "targets": [{ "metric": "COG", "expected_delta": "<0", "min_effect": 0.1, "window_ticks": 600 }],
+        "negative_controls": ["Entropy mode distribution unchanged"]
+      }
+    },
+    {
+      "tag": "SENSOR_MUTE",
+      "start_tick": 10800,
+      "duration_ticks": 1200,
+      "params": { "sensors_mode": "off" },
+      "prediction": {
+        "targets": [{ "metric": "GAI", "expected_delta": "<0", "min_effect": 0.08, "window_ticks": 400 }],
+        "negative_controls": ["versionHash/configHash must remain constant"]
+      }
+    },
+    {
+      "tag": "ENTROPY_CLAMP",
+      "start_tick": 13200,
+      "duration_ticks": 1200,
+      "params": { "epsilon_mode": "clamped_zero" },
+      "prediction": {
+        "targets": [{ "metric": "PCI*", "expected_delta": ">0", "min_effect": 0.1, "window_ticks": 600 }],
+        "negative_controls": ["schema validity unchanged"]
+      }
+    },
+    {
+      "tag": "LEARNING_FREEZE",
+      "start_tick": 15600,
+      "duration_ticks": 2400,
+      "params": { "learning_rate_multiplier": 0 },
+      "prediction": {
+        "targets": [{ "metric": "CCG", "expected_delta": "<0", "min_effect": 0.08, "window_ticks": 800 }],
+        "negative_controls": ["C2 integrity event count unchanged"]
+      }
+    },
+    {
+      "tag": "SENSORY_DEGRADE",
+      "start_tick": 19200,
+      "duration_ticks": 1200,
+      "params": { "sensory_fidelity_scale": 0.35, "mode": "mock" },
+      "prediction": {
+        "targets": [{ "metric": "GAI", "expected_delta": "<0", "min_effect": 0.06, "window_ticks": 400 }],
+        "negative_controls": ["ticks monotonicity unchanged"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="QICN">
+    <title>QICN: Singularidad Ontológica - Simulación de Conciencia</title>
+    <link rel="manifest" href="/manifest.webmanifest?v=20260225-v49">
+    <link rel="stylesheet" href="/tailwind.css?v=20260225-v49">
+    <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/dist/face-api.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/vosk-browser@0.0.8/dist/vosk.js"></script>
+    <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2family=Space+Grotesk:wght@400;500;700&display=swap');
+
+        .font-sans {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        input[type='range']::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: #06b6d4;
+            box-shadow: 0 0 5px rgba(6, 182, 212, 0.8);
+        }
+
+        input[type='range']::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: #06b6d4;
+            box-shadow: 0 0 5px rgba(6, 182, 212, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-gray-900">
+    <div id="root"></div>
+    <script>
+      (function () {
+        try {
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations()
+              .then(function (registrations) {
+                return Promise.all(registrations.map(function (registration) {
+                  return registration.unregister();
+                }));
+              })
+              .catch(function () {});
+          }
+          if ('caches' in window) {
+            caches.keys()
+              .then(function (keys) {
+                return Promise.all(keys.map(function (key) {
+                  return caches.delete(key);
+                }));
+              })
+              .catch(function () {});
+          }
+        } catch (_) {}
+      })();
+    </script>
+    <script type="module" src="/bundle.js?v=20260225-v49"></script>
+</body>
+</html>
+
+
+
+

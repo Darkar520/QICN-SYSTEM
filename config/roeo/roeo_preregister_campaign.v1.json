@@ -1,0 +1,84 @@
+{
+  "version": "1.0.1-campaign",
+  "epsilon_RO": 0.08,
+  "min_runs_per_class": 5,
+  "minimum_intersection_dims": 2,
+  "weights": {
+    "COG": 1,
+    "PHEN": 1,
+    "SUBJ": 1
+  },
+  "alphas": {
+    "COG": 1,
+    "PHEN": 1,
+    "SUBJ": 1,
+    "EO_scalar": 1
+  },
+  "sno": {
+    "SNO_feature_set_id": "sno_features_v1",
+    "strict": {
+      "chance": 0.25,
+      "delta_SNO": 0.1,
+      "allowlist": [
+        "eo.COG",
+        "eo.PHEN",
+        "eo.SUBJ",
+        "summary.tick_ms.p95",
+        "ticks.metrics.omega.autocorr1"
+      ],
+      "allowlist_hash": "a234df4761dee59573d986987edc7cb76cdaeba39936a55009bc01ead5d5bae8"
+    },
+    "loose": {
+      "chance": 0.25,
+      "delta_SNO": 0.15,
+      "allowlist": [
+        "eo.COG",
+        "eo.PHEN",
+        "eo.SUBJ",
+        "eo.EO_scalar",
+        "summary.tick_ms.p95",
+        "summary.tick_ms.max",
+        "summary.counts.ticks",
+        "ticks.metrics.omega.mean",
+        "ticks.metrics.omega.std",
+        "ticks.metrics.omega.slope",
+        "ticks.metrics.ccc.mean",
+        "ticks.metrics.ccc.std",
+        "ticks.metrics.ccc.slope"
+      ],
+      "allowlist_hash": "edb87c4ba523baa31331074db6db9a0689f81def65b8440a6e76956257c8574a"
+    }
+  },
+  "negative_controls": {
+    "effect_min": 0.1,
+    "tau_placebo": 0.02,
+    "leak_threshold": 0.75,
+    "expected": {
+      "NC1_time_permutation": "effect_min_or_ro_fail",
+      "NC2_self_noise_or_shift": "effect_min",
+      "NC3_placebo": "abs_effect_le_tau",
+      "NC4_leak_feature": "acc_ge_threshold"
+    }
+  },
+  "pairs": [
+    { "pair_id": "S0_vs_S1_r0", "condition_a": "S0", "condition_b": "S1", "run_a": "artifacts/roeo_campaign_v1_runs/S0_r0", "run_b": "artifacts/roeo_campaign_v1_runs/S1_r0" },
+    { "pair_id": "S0_vs_S2_r0", "condition_a": "S0", "condition_b": "S2", "run_a": "artifacts/roeo_campaign_v1_runs/S0_r0", "run_b": "artifacts/roeo_campaign_v1_runs/S2_r0" },
+    { "pair_id": "S1_vs_S3_r0", "condition_a": "S1", "condition_b": "S3", "run_a": "artifacts/roeo_campaign_v1_runs/S1_r0", "run_b": "artifacts/roeo_campaign_v1_runs/S3_r0" },
+
+    { "pair_id": "S0_vs_S1_r1", "condition_a": "S0", "condition_b": "S1", "run_a": "artifacts/roeo_campaign_v1_runs/S0_r1", "run_b": "artifacts/roeo_campaign_v1_runs/S1_r1" },
+    { "pair_id": "S0_vs_S2_r1", "condition_a": "S0", "condition_b": "S2", "run_a": "artifacts/roeo_campaign_v1_runs/S0_r1", "run_b": "artifacts/roeo_campaign_v1_runs/S2_r1" },
+    { "pair_id": "S1_vs_S3_r1", "condition_a": "S1", "condition_b": "S3", "run_a": "artifacts/roeo_campaign_v1_runs/S1_r1", "run_b": "artifacts/roeo_campaign_v1_runs/S3_r1" },
+
+    { "pair_id": "S0_vs_S1_r2", "condition_a": "S0", "condition_b": "S1", "run_a": "artifacts/roeo_campaign_v1_runs/S0_r2", "run_b": "artifacts/roeo_campaign_v1_runs/S1_r2" },
+    { "pair_id": "S0_vs_S2_r2", "condition_a": "S0", "condition_b": "S2", "run_a": "artifacts/roeo_campaign_v1_runs/S0_r2", "run_b": "artifacts/roeo_campaign_v1_runs/S2_r2" },
+    { "pair_id": "S1_vs_S3_r2", "condition_a": "S1", "condition_b": "S3", "run_a": "artifacts/roeo_campaign_v1_runs/S1_r2", "run_b": "artifacts/roeo_campaign_v1_runs/S3_r2" },
+
+    { "pair_id": "S0_vs_S1_r3", "condition_a": "S0", "condition_b": "S1", "run_a": "artifacts/roeo_campaign_v1_runs/S0_r3", "run_b": "artifacts/roeo_campaign_v1_runs/S1_r3" },
+    { "pair_id": "S0_vs_S2_r3", "condition_a": "S0", "condition_b": "S2", "run_a": "artifacts/roeo_campaign_v1_runs/S0_r3", "run_b": "artifacts/roeo_campaign_v1_runs/S2_r3" },
+    { "pair_id": "S1_vs_S3_r3", "condition_a": "S1", "condition_b": "S3", "run_a": "artifacts/roeo_campaign_v1_runs/S1_r3", "run_b": "artifacts/roeo_campaign_v1_runs/S3_r3" },
+
+    { "pair_id": "S0_vs_S1_r4", "condition_a": "S0", "condition_b": "S1", "run_a": "artifacts/roeo_campaign_v1_runs/S0_r4", "run_b": "artifacts/roeo_campaign_v1_runs/S1_r4" },
+    { "pair_id": "S0_vs_S2_r4", "condition_a": "S0", "condition_b": "S2", "run_a": "artifacts/roeo_campaign_v1_runs/S0_r4", "run_b": "artifacts/roeo_campaign_v1_runs/S2_r4" },
+    { "pair_id": "S1_vs_S3_r4", "condition_a": "S1", "condition_b": "S3", "run_a": "artifacts/roeo_campaign_v1_runs/S1_r4", "run_b": "artifacts/roeo_campaign_v1_runs/S3_r4" }
+  ]
+}

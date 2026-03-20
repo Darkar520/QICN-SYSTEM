@@ -1,0 +1,342 @@
+{
+  "generatedAt": "2026-02-27T14:06:35.774Z",
+  "specVersion": "v1.1.0",
+  "preregistrationId": "CEOP-2026-02-27-v1.1",
+  "frozenActuatorSetVersion": "A-2026-02-27-v1.1",
+  "specHash": "fnv1a32_2293871c",
+  "actuatorSetHash": "fnv1a32_c4286813",
+  "specLock": {
+    "specVersion": "v1.1.0",
+    "preregistrationId": "CEOP-2026-02-27-v1.1",
+    "actuatorSetVersion": "A-2026-02-27-v1.1",
+    "actuatorSetHash": "fnv1a32_c4286813",
+    "specHash": "fnv1a32_2293871c"
+  },
+  "actuatorSet": [
+    {
+      "id": "thermal_shift_gain",
+      "domain": "thermal",
+      "min": 0,
+      "max": 1.2,
+      "default": 0.3
+    },
+    {
+      "id": "stasis_delta_gain",
+      "domain": "stasis",
+      "min": 0,
+      "max": 0.35,
+      "default": 0.15
+    },
+    {
+      "id": "tension_delta_gain",
+      "domain": "tension",
+      "min": 0,
+      "max": 0.35,
+      "default": 0.15
+    },
+    {
+      "id": "retro_horizon_ticks",
+      "domain": "planner",
+      "min": 6,
+      "max": 24,
+      "default": 10
+    },
+    {
+      "id": "prospective_scenarios",
+      "domain": "planner",
+      "min": 18,
+      "max": 72,
+      "default": 24
+    },
+    {
+      "id": "retro_weight",
+      "domain": "planner",
+      "min": 0.1,
+      "max": 0.9,
+      "default": 0.7
+    },
+    {
+      "id": "historical_weight",
+      "domain": "planner",
+      "min": 0.1,
+      "max": 0.9,
+      "default": 0.3
+    },
+    {
+      "id": "entropy_excitation_gain",
+      "domain": "entropy",
+      "min": 0,
+      "max": 1,
+      "default": 0.42
+    },
+    {
+      "id": "observer_impact_gain",
+      "domain": "observer",
+      "min": 0,
+      "max": 1,
+      "default": 0.2
+    },
+    {
+      "id": "anti_stasis_pulse_gain",
+      "domain": "anti_stasis",
+      "min": 0,
+      "max": 1,
+      "default": 0.15
+    },
+    {
+      "id": "transform_intensity",
+      "domain": "transform",
+      "min": 0,
+      "max": 1,
+      "default": 0.5
+    },
+    {
+      "id": "transform_window_ticks",
+      "domain": "transform",
+      "min": 0,
+      "max": 360,
+      "default": 120
+    }
+  ],
+  "primaryMetrics": [
+    {
+      "id": "counterfactual_error_delta",
+      "description": "World-model counterfactual error improvement vs baseline heuristic.",
+      "direction": "lower",
+      "threshold": -0.1,
+      "minEffectSize": 0.1
+    },
+    {
+      "id": "planning_reward_gain",
+      "description": "Reward gain with planner enabled vs planner-off ablation.",
+      "direction": "higher",
+      "threshold": 0.15,
+      "minEffectSize": 0.15
+    },
+    {
+      "id": "ablation_drop_planner_off",
+      "description": "Required drop when planner is disabled.",
+      "direction": "higher",
+      "threshold": 0.12,
+      "minEffectSize": 0.12
+    },
+    {
+      "id": "identity_stability_score",
+      "description": "Composite identity stability score under perturbation windows.",
+      "direction": "higher",
+      "threshold": 0.82,
+      "minEffectSize": 0.08
+    },
+    {
+      "id": "actuator_causal_impact_te",
+      "description": "Transfer entropy lower bound from actuator channel to future state.",
+      "direction": "higher",
+      "threshold": 0.1,
+      "minEffectSize": 0.05
+    },
+    {
+      "id": "entropy_primary_ratio",
+      "description": "Share of quantum_primary mode during active operation.",
+      "direction": "higher",
+      "threshold": 0.85,
+      "minEffectSize": 0.05
+    }
+  ],
+  "secondaryMetrics": [
+    {
+      "id": "planner_latency_p95_ms",
+      "description": "Planner latency p95 budget for real-time loop.",
+      "direction": "lower",
+      "threshold": 18
+    },
+    {
+      "id": "tick_latency_p95_ms",
+      "description": "Full simulation tick p95 budget.",
+      "direction": "lower",
+      "threshold": 45
+    },
+    {
+      "id": "retro_projection_variance",
+      "description": "Future drift variance with quantum epsilon enabled.",
+      "direction": "higher",
+      "threshold": 0.0001
+    },
+    {
+      "id": "guardrail_violations_per_hour",
+      "description": "Safety budget violations per hour.",
+      "direction": "lower",
+      "threshold": 2
+    }
+  ],
+  "primaryMetricOrder": [
+    "counterfactual_error_delta",
+    "planning_reward_gain",
+    "ablation_drop_planner_off",
+    "identity_stability_score",
+    "actuator_causal_impact_te",
+    "entropy_primary_ratio"
+  ],
+  "testCriteria": {
+    "D1": {
+      "metricId": "counterfactual_error_delta",
+      "threshold": -0.1,
+      "minEffectSize": 0.1
+    },
+    "D2": {
+      "metricId": "planning_reward_gain",
+      "threshold": 0.15,
+      "minEffectSize": 0.15
+    },
+    "D3": {
+      "metricId": "ablation_drop_planner_off",
+      "threshold": 0.12,
+      "minEffectSize": 0.12
+    },
+    "D4": {
+      "metricId": "identity_stability_score",
+      "threshold": 0.82,
+      "minEffectSize": 0.08
+    },
+    "D5": {
+      "metricId": "actuator_causal_impact_te",
+      "threshold": 0.1,
+      "minEffectSize": 0.05
+    },
+    "D6": {
+      "metricId": "entropy_primary_ratio",
+      "threshold": 0.85,
+      "minEffectSize": 0.05
+    }
+  },
+  "computeBudgetMs": {
+    "totalTickBudgetMs": 45,
+    "plannerBudgetMs": 18,
+    "worldModelBudgetMs": 12,
+    "safetyBudgetMs": 5,
+    "renderAndTelemetryBudgetMs": 10
+  },
+  "computeBudgetPolicy": {
+    "maxOverflowRate": 0.02,
+    "componentLimitsMs": {
+      "plannerMs": {
+        "p50": 12,
+        "p95": 18,
+        "p99": 23,
+        "hard": 26
+      },
+      "worldModelMs": {
+        "p50": 10,
+        "p95": 12,
+        "p99": 15,
+        "hard": 18
+      },
+      "safetyMs": {
+        "p50": 4,
+        "p95": 5,
+        "p99": 6,
+        "hard": 8
+      },
+      "renderAndTelemetryMs": {
+        "p50": 8,
+        "p95": 10,
+        "p99": 12,
+        "hard": 14
+      }
+    },
+    "totalTickLimitsMs": {
+      "p50": 36,
+      "p95": 45,
+      "p99": 50,
+      "hard": 55
+    }
+  },
+  "identityScoreModel": {
+    "windowTicks": 180,
+    "perturbationWindowTicks": 45,
+    "smoothingInflationGuardMax": 1.03,
+    "tolerance": {
+      "cccDriftMax": 0.12,
+      "omegaDriftMax": 0.2,
+      "spectralGapDriftMax": 0.2,
+      "narrativePenaltyMax": 0.4,
+      "perturbationResponseMax": 0.22
+    },
+    "weights": {
+      "ccc": 0.28,
+      "omega": 0.22,
+      "spectralGap": 0.18,
+      "narrativeIntegrity": 0.17,
+      "perturbationRobustness": 0.15
+    }
+  },
+  "languageLeakagePolicy": {
+    "forbiddenWorldModelFields": [
+      "llm_raw_text",
+      "assistant_response",
+      "prompt_transcript",
+      "freeform_generation"
+    ],
+    "forbiddenLexicalPatterns": [
+      "sk-proj-",
+      "api_key",
+      "authorization",
+      "system_prompt",
+      "developer_prompt"
+    ],
+    "lexicalOverlapMax": 0.18,
+    "ngramSize": 3,
+    "ngramOverlapMax": 0.1
+  },
+  "preregProtocol": {
+    "evaluationSeed": 20260227,
+    "analysisWindowTicks": {
+      "warmup": 120,
+      "active": 960,
+      "cooldown": 120
+    },
+    "analysisPipelineOrder": [
+      "primary_metrics",
+      "secondary_metrics",
+      "effect_size_validation",
+      "claim_boundary_check"
+    ],
+    "primaryMetricsFailHard": true,
+    "fixedAnalysisMethod": "pre_registered_thresholds_with_effect_size",
+    "minimumBenchmarkEpisodes": 24,
+    "effectSizeMethod": "cohens_d"
+  },
+  "analysisProtocolLocked": true,
+  "claimBoundary": {
+    "allowed": [
+      "operational_cognition",
+      "non_biological_agency",
+      "counterfactual_planning"
+    ],
+    "disallowed": [
+      "biological_qualia_proven",
+      "subjective_experience_proven",
+      "human_equivalent_consciousness_claim"
+    ]
+  },
+  "validation": {
+    "valid": true,
+    "errors": [],
+    "summary": {
+      "actuatorCount": 12,
+      "weightSum": 1,
+      "totalBudget": 45,
+      "actuatorSetHash": "fnv1a32_c4286813",
+      "specHash": "fnv1a32_2293871c"
+    }
+  },
+  "compatibility": {
+    "valid": true,
+    "errors": []
+  },
+  "preregisteredCommandEvidence": [
+    "npm test",
+    "npm run build",
+    "npm run scoreboard:run"
+  ],
+  "preregChecksum": "712b99c412a10ef79bee7cc59f68a61e87c827a0d2aed3e8f647acaaa37060b4"
+}

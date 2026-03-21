@@ -29,7 +29,10 @@ export class QuantumEntropyBridge {
     this._pollTimer = null;
     this._pollInFlight = false;
     this._pollFetchImpl = null;
+    this._scheduledRefillTimer = null;
+    this._lastReactiveRefillAtMs = 0;
     this.pendingProviderJobId = '';
+    this.runtimeRefillContext = null;
     this.eventLog = [];
     this.maxEventLogEntries = 96;
     this.lastSample = null;
@@ -137,6 +140,7 @@ export class QuantumEntropyBridge {
 
     if (!this.config.enabled) {
       this.stopPolling();
+      this.clearRuntimeRefillContext();
       this.bufferManager.clear('quantum_disabled', Date.now());
       this.pendingProviderJobId = '';
       this.healthMonitor.setEnabled(false, Date.now());
@@ -159,6 +163,7 @@ export class QuantumEntropyBridge {
     }
 
     if (!previousEnabled || providerSurfaceChanged) {
+      this._clearScheduledReactiveRefill();
       this.bufferManager.clear(providerSurfaceChanged ? 'provider_surface_changed' : 'bridge_reenabled', Date.now());
       this.pendingProviderJobId = '';
       if (this.config.provider !== 'anu_qrng') {
@@ -241,6 +246,64 @@ export class QuantumEntropyBridge {
     return ANU_QRNG_DEFAULT_ENDPOINT;
   }
 
+  _getReactiveRefillDelayMs() {
+    return Math.max(50, Math.min(250, Math.floor(this.config.pollMs / 4) || 0));
+  }
+
+  _clearScheduledReactiveRefill() {
+    if (this._scheduledRefillTimer) {
+      clearTimeout(this._scheduledRefillTimer);
+      this._scheduledRefillTimer = null;
+    }
+  }
+
+  setRuntimeRefillContext(context = {}) {
+    this.runtimeRefillContext = {
+      fetchImpl: typeof context.fetchImpl === 'function' ? context.fetchImpl : null,
+      endpoint: context.endpoint ?? this.config.endpoint,
+      apiKeyRef: context.apiKeyRef ?? this.config.apiKeyRef,
+      timeoutMs: context.timeoutMs ?? this.config.requestTimeoutMs,
+      buildRequestUrl: typeof context.buildRequestUrl === 'function' ? context.buildRequestUrl : undefined
+    };
+    return this.runtimeRefillContext;
+  }
+
+  clearRuntimeRefillContext() {
+    this.runtimeRefillContext = null;
+    this._clearScheduledReactiveRefill();
+  }
+
+  _scheduleReactiveRefill(reason = 'low_watermark', nowMs = Date.now()) {
+    if (!this.config.enabled || this._pollInFlight || this._scheduledRefillTimer) return false;
+    const context = this.runtimeRefillContext;
+    if (!context?.fetchImpl) return false;
+    const minimumGapMs = this._getReactiveRefillDelayMs();
+    if (nowMs - this._lastReactiveRefillAtMs < minimumGapMs) return false;
+
+    const plan = this.bufferManager.getRefillPlan(nowMs);
+    if (!plan.needed) return false;
+
+    this._scheduledRefillTimer = setTimeout(async () => {
+      this._scheduledRefillTimer = null;
+      this._lastReactiveRefillAtMs = Date.now();
+      try {
+        await this.refillFromProvider({
+          ...context
+        });
+      } catch (error) {
+        this.reportBridgeFailure(error?.message || 'reactive_refill_failed', Date.now());
+      }
+    }, minimumGapMs);
+
+    this._emitEvent('reactive_refill_scheduled', {
+      reason,
+      requestedChunks: plan.requestedChunks,
+      occupancyChunks: plan.bufferSnapshot.occupancyChunks,
+      delayMs: minimumGapMs
+    }, 'info', nowMs);
+    return true;
+  }
+
   async fetchAnuSample(options = {}) {
     const result = await this.providerClient.fetchChunk({
       provider: 'anu_qrng',
@@ -262,6 +325,11 @@ export class QuantumEntropyBridge {
     }
     this.stopPolling();
     this._pollFetchImpl = typeof options.fetchImpl === 'function' ? options.fetchImpl : this._pollFetchImpl;
+    this.setRuntimeRefillContext({
+      fetchImpl: this._pollFetchImpl,
+      endpoint: this._resolveAnuEndpoint(options.endpoint || this.config.endpoint),
+      timeoutMs: options.timeoutMs ?? this.config.requestTimeoutMs
+    });
     const pollMs = Math.max(1000, toFinite(options.pollMs, this.config.pollMs));
     const poll = async () => {
       if (this._pollInFlight) return;
@@ -280,6 +348,7 @@ export class QuantumEntropyBridge {
       clearInterval(this._pollTimer);
       this._pollTimer = null;
     }
+    this._clearScheduledReactiveRefill();
     this._pollInFlight = false;
   }
 
@@ -574,6 +643,7 @@ export class QuantumEntropyBridge {
           occupancyChunks: consumed.bufferSnapshot.occupancyChunks,
           lowWatermarkChunks: this.config.lowWatermarkChunks
         }, 'info', timestampMs);
+        this._scheduleReactiveRefill('low_watermark', timestampMs);
       }
       return this.lastDecision;
     }
@@ -618,11 +688,77 @@ export class QuantumEntropyBridge {
       timestampMs,
       jobId: ''
     };
+    this._scheduleReactiveRefill('buffer_empty', timestampMs);
     this._emitEvent('fallback_selected', {
       reason: this.lastDecision.reason,
       occupancyChunks: consumed.bufferSnapshot?.occupancyChunks || 0
     }, 'warn', timestampMs);
     return this.lastDecision;
+  }
+
+  _deriveEffectiveDelivery(nowMs = Date.now()) {
+    if (!this.config.enabled) {
+      return {
+        connectionState: 'disabled',
+        mode: 'deterministic_fallback',
+        reason: 'quantum_disabled'
+      };
+    }
+    const snapshot = this.bufferManager.snapshot(nowMs);
+    if (this.lastDecision.mode === 'quantum_stale' || this.channelHealth.status === 'stale') {
+      return {
+        connectionState: 'stale',
+        mode: 'quantum_stale',
+        reason: this.lastDecision.reason || 'expired_sample'
+      };
+    }
+    if (snapshot.occupancyChunks > 0 && this.channelHealth.status === 'healthy') {
+      return {
+        connectionState: 'ok',
+        mode: 'quantum_primary',
+        reason: this.lastDecision.mode === 'quantum_primary' ? this.lastDecision.reason : 'buffer_ready'
+      };
+    }
+    if (this.pendingProviderJobId) {
+      return {
+        connectionState: snapshot.occupancyChunks > 0 ? 'ok' : 'pending',
+        mode: snapshot.occupancyChunks > 0 ? 'quantum_primary' : this.lastDecision.mode,
+        reason: snapshot.occupancyChunks > 0 ? 'buffer_ready' : (this.lastConnectionTest.lastReason || 'upstream_pending')
+      };
+    }
+    if (this.lastDecision.mode === 'deterministic_fallback') {
+      return {
+        connectionState: 'degraded',
+        mode: 'deterministic_fallback',
+        reason: this.lastDecision.reason || 'bridge_unavailable'
+      };
+    }
+    if (this.lastConnectionTest.connectionState === 'testing') {
+      return {
+        connectionState: 'testing',
+        mode: this.lastDecision.mode,
+        reason: this.lastConnectionTest.lastReason || 'testing'
+      };
+    }
+    if (this.lastConnectionTest.connectionState === 'pending') {
+      return {
+        connectionState: 'pending',
+        mode: this.lastDecision.mode,
+        reason: this.lastConnectionTest.lastReason || 'upstream_pending'
+      };
+    }
+    if (snapshot.occupancyChunks > 0) {
+      return {
+        connectionState: 'ok',
+        mode: 'quantum_primary',
+        reason: 'buffer_ready'
+      };
+    }
+    return {
+      connectionState: this.channelHealth.consecutiveFailures > 0 ? 'degraded' : 'idle',
+      mode: this.lastDecision.mode,
+      reason: this.lastDecision.reason || 'buffer_empty'
+    };
   }
 
   getTelemetry(nowMs = Date.now()) {
@@ -672,6 +808,7 @@ export class QuantumEntropyBridge {
       ? Math.max(0, timestampMs - Math.max(0, toFinite(this.lastSample.receivedAtMs, timestampMs)))
       : null;
     const bufferState = this.bufferManager.snapshot(timestampMs);
+    const effectiveDelivery = this._deriveEffectiveDelivery(timestampMs);
     return {
       channelHealth: {
         ...this.channelHealth
@@ -686,11 +823,18 @@ export class QuantumEntropyBridge {
         source: this.lastDecision.source,
         entropyValue: clamp01(this.lastDecision.entropyValue)
       },
-      connectionState: this.lastConnectionTest.connectionState,
+      connectionState: effectiveDelivery.connectionState,
+      effectiveConnectionState: effectiveDelivery.connectionState,
+      effectiveMode: effectiveDelivery.mode,
+      effectiveReason: effectiveDelivery.reason,
       lastSampleAtMs: this.lastConnectionTest.lastSampleAtMs,
-      lastMode: this.lastConnectionTest.lastMode,
-      lastReason: this.lastConnectionTest.lastReason,
-      lastJobId: this.lastConnectionTest.lastJobId,
+      lastMode: this.lastDecision.mode,
+      lastReason: this.lastDecision.reason,
+      lastJobId: this.lastDecision.jobId || this.lastConnectionTest.lastJobId,
+      lastConnectionState: this.lastConnectionTest.connectionState,
+      lastConnectionMode: this.lastConnectionTest.lastMode,
+      lastConnectionReason: this.lastConnectionTest.lastReason,
+      lastConnectionJobId: this.lastConnectionTest.lastJobId,
       lastPendingJobId: this.pendingProviderJobId || '',
       eventLog: this.eventLog.slice(-12)
     };

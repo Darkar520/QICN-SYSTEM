@@ -6764,11 +6764,15 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
     if (!quantumUiConfig.enabled || quantumUiConfig.provider !== 'ibm') {
       quantumPendingJobIdRef.current = '';
     }
+    if (!quantumUiConfig.enabled) {
+      bridge.clearRuntimeRefillContext?.();
+    }
   }, [quantumUiConfig]);
 
   useEffect(() => {
     const bridge = quantumEntropyBridgeRef.current;
     if (!quantumUiConfig.enabled || !isRunning) {
+      bridge.clearRuntimeRefillContext?.();
       bridge.stopPolling?.();
       return undefined;
     }
@@ -6797,6 +6801,15 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
     let disposed = false;
     const pollEndpoint = quantumUiConfig.endpoint;
     const pollIntervalMs = Math.max(1000, Number(quantumUiConfig.pollMs) || QUANTUM_RUNTIME_DEFAULTS.pollIntervalMs);
+    bridge.setRuntimeRefillContext?.({
+      fetchImpl: fetch,
+      endpoint: pollEndpoint,
+      apiKeyRef: quantumUiConfig.apiKeyRef,
+      timeoutMs: QUANTUM_RUNTIME_DEFAULTS.providerTimeoutMs,
+      buildRequestUrl: (pendingJobId) => buildQuantumPollUrl(pollEndpoint, {
+        ibmJobId: pendingJobId || quantumPendingJobIdRef.current || ''
+      })
+    });
 
     const pollQuantumSample = async () => {
       try {
@@ -6818,10 +6831,10 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
         const diagnostics = bridge.getConnectionDiagnostics(Date.now());
         setQuantumUiStatus((prev) => ({
           ...prev,
-          connectionState: diagnostics.connectionState || prev.connectionState || 'idle',
+          connectionState: diagnostics.effectiveConnectionState || diagnostics.connectionState || prev.connectionState || 'idle',
           lastSampleAtMs: diagnostics.lastSampleAtMs || prev.lastSampleAtMs || 0,
-          lastMode: diagnostics.lastMode || prev.lastMode || 'deterministic_fallback',
-          lastReason: diagnostics.lastReason || refillResult.lastReason || prev.lastReason || 'bridge_unavailable',
+          lastMode: diagnostics.effectiveMode || diagnostics.lastMode || prev.lastMode || 'deterministic_fallback',
+          lastReason: diagnostics.effectiveReason || diagnostics.lastReason || refillResult.lastReason || prev.lastReason || 'bridge_unavailable',
           lastJobId: diagnostics.lastJobId || diagnostics.lastPendingJobId || prev.lastJobId || ''
         }));
       } catch (error) {
@@ -6843,6 +6856,7 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
     return () => {
       disposed = true;
       if (intervalId) clearInterval(intervalId);
+      bridge.clearRuntimeRefillContext?.();
       bridge.stopPolling?.();
     };
   }, [buildQuantumPollUrl, isRunning, quantumUiConfig]);

@@ -116,8 +116,9 @@ try {
     const refill = await bridge.refillFromProvider({ fetchImpl: failingFetch, endpoint: 'http://localhost/mock' });
     assert.equal(refill.ok, false, 'CASE 3 FAIL: refill should report failure.');
     const diagnostics = bridge.getConnectionDiagnostics(Date.now());
-    assert.equal(diagnostics.connectionState, 'error', 'CASE 3 FAIL: diagnostics should expose provider error.');
-    assert.equal(diagnostics.lastReason, 'network_down', 'CASE 3 FAIL: diagnostics should keep provider error reason.');
+    assert.equal(diagnostics.connectionState, 'degraded', 'CASE 3 FAIL: diagnostics should expose degraded runtime state.');
+    assert.equal(diagnostics.lastConnectionState, 'error', 'CASE 3 FAIL: diagnostics should retain last connection test state.');
+    assert.equal(diagnostics.lastConnectionReason, 'network_down', 'CASE 3 FAIL: diagnostics should keep provider error reason.');
   }
 
   // CASE 3B: invalid provider payload must be rejected legibly

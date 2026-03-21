@@ -1,22 +1,39 @@
 # Implementation Status
 
-This inventory describes repository status only. It does not convert internal support into external validation.
+This inventory tracks `implementation_status` only. It does not encode `run_verdict`, `paper_admissibility_status`, or external validation.
 
-| Area | Status | Evidence in repo | Notes |
-| --- | --- | --- | --- |
-| Runtime UI and simulation entrypoint | implemented | `src/index.jsx`, `src/simulation/` | Primary runtime surface |
-| Canonical invariant package | implemented | `src/canon/invariants/CanonicalInvariantPackage.js` | Feeds runtime-native invariant composites |
-| Runtime claim projection | implemented_internal_support | `src/canon/claimMapping/runtimeClaimMapping.js` | Claim projection exists; claim closure still broader than repo-local evidence |
-| Episode harness and admissibility gate | implemented | `src/experiments/ExperimentalEpisodeHarness.js`, `src/experiments/AdmissibilityEngine.js` | Produces verifiable artifacts and verdicts |
-| ROEO and SNO batch evaluation | implemented | `src/experiments/roeo_signature.js`, `src/experiments/sno_discriminator.js` | Internal batch evaluation path exists |
-| Negative controls | implemented | `src/experiments/negative_controls_runner.js` | NC1-NC4 covered by tests |
-| Quantum entropy bridge | implemented_partial | `src/simulation/QuantumEntropyBridge.js`, `netlify/functions/quantum-entropy.js` | Works with custom and IBM paths; deployment auth posture still needs manual review |
-| LLM proxy with C2 integrity envelope | implemented | `netlify/functions/llm-proxy.js` | Protected by auth default after repository hardening |
-| Selfpatch control plane | implemented_high_risk | `netlify/functions/selfpatch-*.js` | Present, default-disabled posture required, sensitive by design |
-| Auth gate | implemented | `src/auth/`, `netlify/functions/auth-introspection.js` | Runtime and endpoint auth paths exist |
-| Legacy `js/api` compatibility layer | retained_for_compatibility | `js/api/`, `services/` | Still required by `services/`; not source of truth |
-| Top-level legacy `simulation/` tree | excluded_from_clean_repo_baseline | top-level `simulation/` | Duplicate legacy tree, not source of truth |
-| Canonical repo pinning | not_recorded | `docs/CANON_SOURCE_OF_TRUTH.md` | Manual pin still required |
-| External claim-ledger promotion | external_dependency | runtime provenance references | Not closed by this repo alone |
-| External corpus / theory assets | intentionally_excluded | top-level `theory/`, `assets/` | Keep separate from runtime repo |
-| Third-party speech model assets | not_vendored | `src/simulation/SensoryPerceptionEngine.js` references `assets/models/...` | Must be provisioned separately if needed |
+Use it together with:
+
+- [DESCRIPTOR_REGISTRY.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/DESCRIPTOR_REGISTRY.md) for formal minimum classification of descriptors, claim projections, gate results, and artifact-only rows.
+- [ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md) for the semantics of run-level admissibility, batch enforcement, and negative controls.
+- [TRACEABILITY_MATRIX.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/TRACEABILITY_MATRIX.md) for claim-facing linkage between signals, modules, artifacts, and tests.
+
+Normalized status values used below:
+
+- `implemented_tested`
+- `implemented_internal_support`
+- `partial_runtime_path`
+- `compatibility_only`
+- `high_risk_control_surface`
+- `external_dependency`
+- `not_recorded`
+
+| Area | Layer | Status | Primary modules | Primary artifacts | Primary tests | Evidence scope | External dependency | Claim boundary | Notes / gaps |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Source-of-truth enforcement | `runtime layer` | `implemented_tested` | `src/canon/sourceOfTruth.js`, `scripts/verify-source-of-truth.cjs`, `build.cjs` | verification output only | `tests/runtime-hygiene.test.js`, `npm run verify:source-of-truth` | `runtime_primary` | `none` | Path enforcement is not scientific evidence. | Repo treats `src/` as runtime source of truth. |
+| Runtime invariants | `runtime layer` | `implemented_internal_support` | `src/canon/invariants/CanonicalInvariantPackage.js` | `invariant_package.json`, `full_native_invariant_status.json` | `tests/run-episode-admissibility.v58.test.js`, `tests/verifiable-report-shape.test.js` | `runtime_derived` | `none` | Invariant support is not external claim closure. | `I_per` to `I_leg` exist and are emitted by admissibility flow. |
+| Claim projection layer | `runtime layer` | `implemented_internal_support` | `src/canon/claimMapping/runtimeClaimMapping.js`, `src/canon/boundary/BoundaryProbeScaffold.js`, `src/canon/substrate/SubstrateEquivalenceScaffold.js`, `src/canon/thresholds/P503ThresholdRuntime.js` | `claim_mapping_snapshot.json`, `runtime_claim_projection.json`, `claim_closure_runtime_diagnostics.json`, `p5_03_threshold_runtime.json` | `tests/admissibility-exporter.v1.test.js`, `tests/run-episode-admissibility.v58.test.js` | `runtime_derived` | `mixed` | Claim projections remain internal runtime mappings, not frozen-claim closure. | External canon and campaign evidence are still separate. |
+| Episode harness | `runtime layer` | `implemented_tested` | `src/experiments/ExperimentalEpisodeHarness.js` | `run_header.json`, `ticks.ndjson`, `run_summary.json`, `admissibility.json` | `tests/episode-harness.v1.test.js` | `runtime_primary` | `none` | Harness outputs are records, not conclusions. | Contains direct metric series and derived proxy computation. |
+| Admissibility engine | `runtime layer` | `implemented_tested` | `src/experiments/AdmissibilityEngine.js` | `run_verdict.json` | `tests/admissibility-exporter.v1.test.js`, `tests/run-episode-admissibility.v58.test.js` | `runtime_derived` | `none` | `ADMISSIBLE` is not `PAPER_ADMISSIBLE`. | This row is implementation state only; see `ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md` for gate semantics and note that `admissibility.json` is not the authoritative verdict. |
+| Negative controls | `batch layer` | `implemented_tested` | `src/experiments/negative_controls_runner.js` | `negative_controls_report.json` | `tests/negative-controls.v1.test.js` | `batch_primary` | `prereg_config` | Passing NC1-NC4 is not external falsification of alternatives. | Real controls are NC1 to NC4 only; do not rename them in docs. See `ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md` for control-level semantics. |
+| SNO / discriminator layer | `batch layer` | `implemented_tested` | `src/experiments/sno_discriminator.js` | `sno_report.json` | `tests/sno.v1.test.js` | `batch_primary` | `prereg_config` | Non-identifiability is not substrate equivalence. | Strict and loose allowlists are prereg-dependent. |
+| ROEO / prereg-related controls | `batch layer` | `implemented_tested` | `src/experiments/roeo_signature.js`, `src/experiments/latex_asset_generator_roeo.js` | `eo_report.json`, `operational_equivalence.json` | `tests/roeo.v1.test.js`, `tests/exporter_roeo.v1.test.js` | `mixed` | `prereg_config` | ROEO batch outputs are not final claim-ledger promotion. | `eo_report.json` is derived from admissible runs; `operational_equivalence.json` is the batch artifact. |
+| Paper admissibility enforcement | `batch layer` | `implemented_tested` | `src/experiments/negative_controls_runner.js` | `roeo_enforcement_report.json` | `tests/roeo_enforcement.v1.test.js` | `batch_derived` | `prereg_config` | `PAPER_ADMISSIBLE` is an internal batch gate only. | Separate this state from run admissibility and implementation status; see `DESCRIPTOR_REGISTRY.md` for gate-result classification. |
+| Runtime parameter registry | `runtime layer` | `implemented_tested` | `src/utils/runtimeParameterRegistry.js` | none | `tests/runtime-parameter-registry.v400.test.js`, `tests/runtime-parameter-functional.v400.test.js` | `runtime_primary` | `none` | Parameter registration is not a descriptor registry and not a claim layer. | This is the main compatibility anchor for the documentary registry, but it is not itself a complete registry of descriptors, claims, or gates. |
+| Selfpatch surface | `operational control surface` | `high_risk_control_surface` | `netlify/functions/selfpatch-apply.js`, `netlify/functions/selfpatch-generate.js`, `netlify/functions/selfpatch-plan.js`, `netlify/functions/selfpatch-rollback.js`, `netlify/functions/selfpatch-status.js` | endpoint responses only | `tests/selfpatch-policy-check.v415.test.js`, `tests/selfpatch-generate-engine.v416.test.js` | `mixed` | `external_service` | Selfpatch behavior is not claim evidence. | High-risk by design even when default-disabled and tested. |
+| LLM proxy surface | `operational control surface` | `high_risk_control_surface` | `netlify/functions/llm-proxy.js`, `netlify/functions/lib/integrity-c2.js` | endpoint responses only | `tests/netlify-proxy-contract.v46.test.js`, `tests/integrity-c2-proxy.v56.test.js` | `mixed` | `external_service` | Proxy integrity is not scientific evidence. | Treat as control-plane surface, not as support for runtime claims. |
+| Quantum entropy bridge | `operational control surface` | `partial_runtime_path` | `src/simulation/QuantumEntropyBridge.js`, `netlify/functions/quantum-entropy.js` | endpoint responses, runtime polling state | `tests/netlify-quantum-entropy-contract.v50.test.js`, `tests/quantum-entropy-bridge-polling.v51.test.js` | `mixed` | `external_service` | Entropy plumbing is not evidence of claim support. | External service posture and deployment review remain open. |
+| Runtime health / killswitch | `operational control surface` | `high_risk_control_surface` | `netlify/functions/runtime-health.js`, `netlify/functions/killswitch-state.js` | endpoint responses only | `tests/selfpatch-killswitch-quorum.v415.test.js`, `tests/auth-gate.v46.test.js` | `mixed` | `external_service` | Health and kill-state endpoints are operational, not epistemic evidence. | Keep review priority high because they influence control posture. |
+| Legacy `js/api` compatibility | `legacy compatibility layer` | `compatibility_only` | `js/api/`, `services/` | none | `tests/test_multi_provider_commonjs.js`, `tests/test_multi_provider_integration.js` | `mixed` | `legacy_input` | Compatibility code is not source-of-truth and not claim evidence. | Retained because `services/` still depends on it. |
+| Canon pinning gap | `external dependency / traceability gap` | `not_recorded` | `docs/CANON_SOURCE_OF_TRUTH.md` | none | none | `external_frozen` | `frozen_canon` | Without a fixed canon pin, no document should imply frozen canon closure. | Manual pinning remains pending. |
+| External assets dependency | `external dependency / traceability gap` | `external_dependency` | `src/simulation/SensoryPerceptionEngine.js` | external model assets outside repo | `tests/speech-fsm.test.js`, `tests/sensory-sovereignty.v381.test.js` | `mixed` | `external_service` | Asset availability is runtime provisioning, not repo-local evidence. | Voice or model assets are not vendored in the clean baseline. |

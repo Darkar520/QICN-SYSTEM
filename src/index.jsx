@@ -809,7 +809,15 @@ const QUANTUM_RUNTIME_DEFAULTS = {
   endpoint: runtimeEnv.QUANTUM_ENTROPY_ENDPOINT || '/.netlify/functions/quantum-entropy',
   ttlMs: Math.max(1000, Number(runtimeEnv.QUANTUM_ENTROPY_TTL_MS) || 60000),
   pollIntervalMs: Math.max(1000, Number(runtimeEnv.QUANTUM_POLL_INTERVAL_MS) || 10000),
-  requiredQualityMin: clamp01(runtimeEnv.QUANTUM_REQUIRED_QUALITY_MIN ?? 0.2)
+  requiredQualityMin: clamp01(runtimeEnv.QUANTUM_REQUIRED_QUALITY_MIN ?? 0.2),
+  bufferCapacityChunks: Math.max(1, Number(runtimeEnv.QUANTUM_BUFFER_CAPACITY_CHUNKS) || 8),
+  lowWatermarkChunks: Math.max(0, Number(runtimeEnv.QUANTUM_BUFFER_LOW_WATERMARK_CHUNKS) || 2),
+  refillTargetChunks: Math.max(1, Number(runtimeEnv.QUANTUM_BUFFER_REFILL_TARGET_CHUNKS) || 6),
+  providerTimeoutMs: Math.max(500, Number(runtimeEnv.QUANTUM_PROVIDER_TIMEOUT_MS) || 4500),
+  providerRetryCount: Math.max(0, Number(runtimeEnv.QUANTUM_PROVIDER_RETRY_COUNT) || 1),
+  providerRetryBackoffMs: Math.max(0, Number(runtimeEnv.QUANTUM_PROVIDER_RETRY_BACKOFF_MS) || 300),
+  allowProviderFallback: Boolean(runtimeEnv.QUANTUM_PROVIDER_FALLBACK_ENABLED),
+  logLevel: typeof runtimeEnv.QUANTUM_LOG_LEVEL === 'string' ? runtimeEnv.QUANTUM_LOG_LEVEL : 'warn'
 };
 const QUANTUM_PROVIDER_OPTIONS = ['custom', 'ibm', 'braket', 'anu_qrng'];
 
@@ -1322,6 +1330,14 @@ const QICNConsciousnessSystem = () => {
     enabled: QUANTUM_RUNTIME_DEFAULTS.enabled,
     defaultTtlMs: QUANTUM_RUNTIME_DEFAULTS.ttlMs,
     requiredQualityMin: QUANTUM_RUNTIME_DEFAULTS.requiredQualityMin,
+    bufferCapacityChunks: QUANTUM_RUNTIME_DEFAULTS.bufferCapacityChunks,
+    lowWatermarkChunks: QUANTUM_RUNTIME_DEFAULTS.lowWatermarkChunks,
+    refillTargetChunks: QUANTUM_RUNTIME_DEFAULTS.refillTargetChunks,
+    requestTimeoutMs: QUANTUM_RUNTIME_DEFAULTS.providerTimeoutMs,
+    retryCount: QUANTUM_RUNTIME_DEFAULTS.providerRetryCount,
+    retryBackoffMs: QUANTUM_RUNTIME_DEFAULTS.providerRetryBackoffMs,
+    allowProviderFallback: QUANTUM_RUNTIME_DEFAULTS.allowProviderFallback,
+    logLevel: QUANTUM_RUNTIME_DEFAULTS.logLevel,
     provider: QUANTUM_PROVIDER_OPTIONS.includes(runtimeEnv.QUANTUM_PROVIDER_DEFAULT)
       ? runtimeEnv.QUANTUM_PROVIDER_DEFAULT
       : 'custom'
@@ -4587,7 +4603,15 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
       pollMs: quantumUiConfig.pollMs,
       provider: quantumUiConfig.provider,
       mode: quantumUiConfig.mode,
-      apiKeyRef: quantumUiConfig.apiKeyRef
+      apiKeyRef: quantumUiConfig.apiKeyRef,
+      bufferCapacityChunks: QUANTUM_RUNTIME_DEFAULTS.bufferCapacityChunks,
+      lowWatermarkChunks: QUANTUM_RUNTIME_DEFAULTS.lowWatermarkChunks,
+      refillTargetChunks: QUANTUM_RUNTIME_DEFAULTS.refillTargetChunks,
+      requestTimeoutMs: QUANTUM_RUNTIME_DEFAULTS.providerTimeoutMs,
+      retryCount: QUANTUM_RUNTIME_DEFAULTS.providerRetryCount,
+      retryBackoffMs: QUANTUM_RUNTIME_DEFAULTS.providerRetryBackoffMs,
+      allowProviderFallback: QUANTUM_RUNTIME_DEFAULTS.allowProviderFallback,
+      logLevel: QUANTUM_RUNTIME_DEFAULTS.logLevel
     });
     ontologicalCore.current?.setQuantumBridgeRef?.(quantumEntropyBridgeRef.current);
     entropyModeRef.current = {
@@ -6775,63 +6799,30 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
     const pollIntervalMs = Math.max(1000, Number(quantumUiConfig.pollMs) || QUANTUM_RUNTIME_DEFAULTS.pollIntervalMs);
 
     const pollQuantumSample = async () => {
-      const startedAt = Date.now();
-      const abortController = new AbortController();
-      const timeoutId = setTimeout(() => abortController.abort(), 4500);
       try {
-        const headers = { Accept: 'application/json' };
-        if (quantumUiConfig.apiKeyRef) headers['x-api-key'] = quantumUiConfig.apiKeyRef;
-        const pollUrl = buildQuantumPollUrl(pollEndpoint, {
-          ibmJobId: quantumPendingJobIdRef.current || ''
+        const refillResult = await bridge.refillFromProvider({
+          fetchImpl: fetch,
+          endpoint: pollEndpoint,
+          apiKeyRef: quantumUiConfig.apiKeyRef,
+          timeoutMs: QUANTUM_RUNTIME_DEFAULTS.providerTimeoutMs,
+          buildRequestUrl: (pendingJobId) => buildQuantumPollUrl(pollEndpoint, {
+            ibmJobId: pendingJobId || quantumPendingJobIdRef.current || ''
+          })
         });
-        const response = await fetch(pollUrl, {
-          method: 'GET',
-          headers,
-          signal: abortController.signal
-        });
-        if (!response.ok) {
-          bridge.reportBridgeFailure(`http_${response.status}`, startedAt);
-          return;
-        }
-        const payload = await response.json();
         if (disposed) return;
-        const payloadMode = String(payload?.mode || '');
-        const pendingJobId = String(payload?.pendingJobId || '');
-
-        if (payloadMode === 'upstream_pending') {
-          if (pendingJobId) quantumPendingJobIdRef.current = pendingJobId;
-          if (payload?.sample && typeof payload.sample === 'object') {
-            bridge.ingestSample(payload.sample, Date.now());
-          }
-          setQuantumUiStatus((prev) => ({
-            ...prev,
-            connectionState: 'pending',
-            lastReason: payload?.reason || 'upstream_pending',
-            lastJobId: pendingJobId || prev.lastJobId || ''
-          }));
-          return;
-        }
-
-        if (payloadMode === 'upstream_quantum') {
+        if (refillResult.pendingJobId) {
+          quantumPendingJobIdRef.current = refillResult.pendingJobId;
+        } else if (!refillResult.pending) {
           quantumPendingJobIdRef.current = '';
         }
-        const sample = (payload && typeof payload === 'object' && payload.sample)
-          ? payload.sample
-          : payload;
-        if (!sample || typeof sample !== 'object') {
-          bridge.reportBridgeFailure('missing_sample', startedAt);
-          return;
-        }
-        const ingestResult = bridge.ingestSample(sample, Date.now());
-        if (!ingestResult.accepted) return;
         const diagnostics = bridge.getConnectionDiagnostics(Date.now());
         setQuantumUiStatus((prev) => ({
           ...prev,
-          connectionState: diagnostics.connectionState || 'ok',
-          lastSampleAtMs: Date.now(),
-          lastMode: diagnostics.lastMode || 'quantum_primary',
-          lastReason: diagnostics.lastReason || 'sample_ingested',
-          lastJobId: diagnostics.lastJobId || ''
+          connectionState: diagnostics.connectionState || prev.connectionState || 'idle',
+          lastSampleAtMs: diagnostics.lastSampleAtMs || prev.lastSampleAtMs || 0,
+          lastMode: diagnostics.lastMode || prev.lastMode || 'deterministic_fallback',
+          lastReason: diagnostics.lastReason || refillResult.lastReason || prev.lastReason || 'bridge_unavailable',
+          lastJobId: diagnostics.lastJobId || diagnostics.lastPendingJobId || prev.lastJobId || ''
         }));
       } catch (error) {
         if (!disposed) {
@@ -6843,8 +6834,6 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
             lastReason: reason
           }));
         }
-      } finally {
-        clearTimeout(timeoutId);
       }
     };
 
@@ -6971,7 +6960,15 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
       pollMs: quantumUiConfig.pollMs,
       provider: quantumUiConfig.provider,
       mode: quantumUiConfig.mode,
-      apiKeyRef: quantumUiConfig.apiKeyRef
+      apiKeyRef: quantumUiConfig.apiKeyRef,
+      bufferCapacityChunks: QUANTUM_RUNTIME_DEFAULTS.bufferCapacityChunks,
+      lowWatermarkChunks: QUANTUM_RUNTIME_DEFAULTS.lowWatermarkChunks,
+      refillTargetChunks: QUANTUM_RUNTIME_DEFAULTS.refillTargetChunks,
+      requestTimeoutMs: QUANTUM_RUNTIME_DEFAULTS.providerTimeoutMs,
+      retryCount: QUANTUM_RUNTIME_DEFAULTS.providerRetryCount,
+      retryBackoffMs: QUANTUM_RUNTIME_DEFAULTS.providerRetryBackoffMs,
+      allowProviderFallback: QUANTUM_RUNTIME_DEFAULTS.allowProviderFallback,
+      logLevel: QUANTUM_RUNTIME_DEFAULTS.logLevel
     });
     ontologicalCore.current?.setQuantumBridgeRef?.(quantumEntropyBridgeRef.current);
     entropyModeRef.current = {

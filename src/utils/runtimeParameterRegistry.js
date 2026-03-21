@@ -348,6 +348,102 @@ export const runtimeParameterRegistry = [
     verificationTestId: 'RPF_029',
     mutable: false,
     status: 'active'
+  },
+  {
+    key: 'QUANTUM_BUFFER_CAPACITY_CHUNKS',
+    tier: 'quantum-runtime',
+    defaultValue: 8,
+    range: { min: 1, max: 256 },
+    ownerFile: 'src/simulation/QuantumEntropyBridge.js',
+    ownerFunction: 'refillFromProvider',
+    usagePaths: ['src/config/runtimeEnv.js', 'src/index.jsx'],
+    verificationTestId: 'RPF_030',
+    mutable: false,
+    status: 'active'
+  },
+  {
+    key: 'QUANTUM_BUFFER_LOW_WATERMARK_CHUNKS',
+    tier: 'quantum-runtime',
+    defaultValue: 2,
+    range: { min: 0, max: 255 },
+    ownerFile: 'src/simulation/QuantumEntropyBridge.js',
+    ownerFunction: 'refillFromProvider',
+    usagePaths: ['src/config/runtimeEnv.js', 'src/index.jsx'],
+    verificationTestId: 'RPF_031',
+    mutable: false,
+    status: 'active'
+  },
+  {
+    key: 'QUANTUM_BUFFER_REFILL_TARGET_CHUNKS',
+    tier: 'quantum-runtime',
+    defaultValue: 6,
+    range: { min: 1, max: 256 },
+    ownerFile: 'src/simulation/QuantumEntropyBridge.js',
+    ownerFunction: 'refillFromProvider',
+    usagePaths: ['src/config/runtimeEnv.js', 'src/index.jsx'],
+    verificationTestId: 'RPF_032',
+    mutable: false,
+    status: 'active'
+  },
+  {
+    key: 'QUANTUM_PROVIDER_TIMEOUT_MS',
+    tier: 'quantum-runtime',
+    defaultValue: 4500,
+    range: { min: 500, max: 30000 },
+    ownerFile: 'src/simulation/EntropyProviderClient.js',
+    ownerFunction: 'fetchChunk',
+    usagePaths: ['src/config/runtimeEnv.js', 'src/simulation/QuantumEntropyBridge.js'],
+    verificationTestId: 'RPF_033',
+    mutable: false,
+    status: 'active'
+  },
+  {
+    key: 'QUANTUM_PROVIDER_RETRY_COUNT',
+    tier: 'quantum-runtime',
+    defaultValue: 1,
+    range: { min: 0, max: 8 },
+    ownerFile: 'src/simulation/EntropyProviderClient.js',
+    ownerFunction: 'fetchChunk',
+    usagePaths: ['src/config/runtimeEnv.js', 'src/simulation/QuantumEntropyBridge.js'],
+    verificationTestId: 'RPF_034',
+    mutable: false,
+    status: 'active'
+  },
+  {
+    key: 'QUANTUM_PROVIDER_RETRY_BACKOFF_MS',
+    tier: 'quantum-runtime',
+    defaultValue: 300,
+    range: { min: 0, max: 10000 },
+    ownerFile: 'src/simulation/EntropyProviderClient.js',
+    ownerFunction: 'fetchChunk',
+    usagePaths: ['src/config/runtimeEnv.js', 'src/simulation/QuantumEntropyBridge.js'],
+    verificationTestId: 'RPF_035',
+    mutable: false,
+    status: 'active'
+  },
+  {
+    key: 'QUANTUM_PROVIDER_FALLBACK_ENABLED',
+    tier: 'quantum-runtime',
+    defaultValue: true,
+    range: { min: 0, max: 1 },
+    ownerFile: 'src/simulation/QuantumEntropyBridge.js',
+    ownerFunction: 'ingestSample',
+    usagePaths: ['src/config/runtimeEnv.js', 'src/index.jsx'],
+    verificationTestId: 'RPF_036',
+    mutable: false,
+    status: 'active'
+  },
+  {
+    key: 'QUANTUM_LOG_LEVEL',
+    tier: 'quantum-runtime',
+    defaultValue: 'warn',
+    range: { min: 0, max: 4 },
+    ownerFile: 'src/simulation/QuantumEntropyBridge.js',
+    ownerFunction: '_emitEvent',
+    usagePaths: ['src/config/runtimeEnv.js', 'src/index.jsx'],
+    verificationTestId: 'RPF_037',
+    mutable: false,
+    status: 'active'
   }
 ];
 

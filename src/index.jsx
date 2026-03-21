@@ -6600,6 +6600,7 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
           versionHash: String(versionHash),
           configHash: tickConfigHash,
           metrics,
+          entropy: quantumEntropyBridgeRef.current?.getForensicSnapshot?.(Date.now()) || null,
           render_trace_hash: typeof metrics?.render_trace_hash === 'string' ? metrics.render_trace_hash : null,
           integrity: { event_present: false, C2_ok: null, echo_sig: null, nonce: null, requestId: null },
           intervention: {

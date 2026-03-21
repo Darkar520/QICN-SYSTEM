@@ -4,6 +4,11 @@ import { once } from 'events';
 import { createHash } from 'crypto';
 import { sha256Hex, stableStringify } from '../utils/integrity.js';
 import { buildCanonicalLineage } from '../canon/provenance/CanonicalProvenance.js';
+import {
+  buildEntropyPreVerdictArtifact,
+  createEntropyForensicsAccumulator,
+  recordEntropyForensicsSnapshot
+} from './EntropyForensics.js';
 
 const pct = (arr, p) => {
   if (!arr.length) return 0;
@@ -28,6 +33,7 @@ export class ExperimentalEpisodeHarness {
       plannerCosts: [],
       selfStateStubs: [],
       directMetricSeries: new Map(),
+      entropyForensics: createEntropyForensicsAccumulator(),
       schemaViolations: 0,
       ioPartial: false,
       linesExpected: 0,
@@ -120,6 +126,7 @@ export class ExperimentalEpisodeHarness {
     if (Number.isFinite(Number(record?.observability?.wm_pred_error))) this.state.wmPredErrors.push(Number(record.observability.wm_pred_error));
     if (Number.isFinite(Number(record?.observability?.planner_cost))) this.state.plannerCosts.push(Number(record.observability.planner_cost));
     this.recordDirectMetricSeries(record.metrics);
+    recordEntropyForensicsSnapshot(this.state.entropyForensics, snapshot?.entropy);
     this.state.linesExpected += 1;
     const line = `${JSON.stringify(record)}\n`;
     this.hash.update(line, 'utf8');
@@ -413,6 +420,18 @@ export class ExperimentalEpisodeHarness {
       schemaHash: this.schemaHash,
       ticks_hash: ticksHash
     }, null, 2)}\n`, 'utf8');
+    const entropyPreVerdict = buildEntropyPreVerdictArtifact({
+      runId: this.header.runId,
+      totalTicks: this.state.tickMs.length,
+      state: this.state.entropyForensics
+    });
+    if (entropyPreVerdict) {
+      await fs.promises.writeFile(
+        path.join(this.artifactDir, 'entropy_preverdict.json'),
+        `${JSON.stringify(entropyPreVerdict, null, 2)}\n`,
+        'utf8'
+      );
+    }
     return { artifactDir: this.artifactDir, ticksHash, summary };
   }
 }

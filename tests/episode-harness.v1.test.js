@@ -50,6 +50,7 @@ const runHarness = async ({ baseDir, runId, seed = 17057, configHash = 'cfg_ok',
   });
   const summary1 = JSON.parse(fs.readFileSync(path.join(r1.artifactDir, 'run_summary.json'), 'utf8'));
   assert(summary1.counts.schema_violations === 0, 'CASE 3 FAIL: schema violations must be zero');
+  assert(!fs.existsSync(path.join(r1.artifactDir, 'entropy_preverdict.json')), 'CASE 3B FAIL: no entropy artifact should be emitted when no entropy snapshots are provided.');
   assert(r1.ticksHash === r2.ticksHash, 'CASE 4 FAIL: deterministic ticks_hash mismatch');
   const r3 = await runHarness({ baseDir: d1, runId: 'drift_run', driftAtTick: 77 });
   const summary3 = JSON.parse(fs.readFileSync(path.join(r3.artifactDir, 'run_summary.json'), 'utf8'));

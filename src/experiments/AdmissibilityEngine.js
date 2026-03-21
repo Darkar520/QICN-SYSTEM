@@ -4,6 +4,7 @@ import { spawnSync } from 'child_process';
 import { sha256Hex, stableStringify } from '../utils/integrity.js';
 import { buildCanonicalClaimMappingSnapshot } from '../canon/claimMapping/runtimeClaimMapping.js';
 import { buildCanonicalInvariantPackage } from '../canon/invariants/CanonicalInvariantPackage.js';
+import { evaluateEntropyPreVerdictArtifact } from './EntropyForensics.js';
 
 const pct = (arr, p) => {
   if (!Array.isArray(arr) || arr.length === 0) return 0;
@@ -80,6 +81,15 @@ const readNdjson = (filePath) => {
   return { rows, lineCount: lines.length, parseError };
 };
 
+const readOptionalJson = (filePath) => {
+  if (!fs.existsSync(filePath)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch {
+    return { __parse_error__: true };
+  }
+};
+
 const runFlakeGate = ({ command, cwd, runs = 2 }) => {
   const parts = String(command || '').trim().split(/\s+/).filter(Boolean);
   const binRaw = parts[0];
@@ -108,6 +118,7 @@ export class AdmissibilityEngine {
     const headerPath = path.join(artifactDir, 'run_header.json');
     const ticksPath = path.join(artifactDir, 'ticks.ndjson');
     const summaryPath = path.join(artifactDir, 'run_summary.json');
+    const entropyPreVerdictPath = path.join(artifactDir, 'entropy_preverdict.json');
     const schemaPath = path.join(artifactDir, 'schema', 'run_record.v1.json');
     const header = JSON.parse(fs.readFileSync(headerPath, 'utf8'));
     const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
@@ -184,6 +195,14 @@ export class AdmissibilityEngine {
       discardedReasons.push('DSC_FLAKY_TESTS');
     }
 
+    const entropyPreVerdict = readOptionalJson(entropyPreVerdictPath);
+    const entropyDiagnostics = entropyPreVerdict
+      ? evaluateEntropyPreVerdictArtifact(entropyPreVerdict)
+      : null;
+    if (entropyDiagnostics?.invalidatesRun) {
+      discardedReasons.push(...entropyDiagnostics.invalidatingReasons);
+    }
+
     const tampered = [...new Set(tamperedReasons)];
     const discarded = [...new Set(discardedReasons)];
     const status = tampered.length > 0 ? 'TAMPERED' : (discarded.length > 0 ? 'DISCARDED' : 'ADMISSIBLE');
@@ -197,16 +216,43 @@ export class AdmissibilityEngine {
         command: flakeCommand || null,
         statuses: Array.isArray(flake) ? flake : null
       },
+      entropy: entropyDiagnostics
+        ? {
+          status: entropyDiagnostics.runLevelStatus,
+          invalidates_run: entropyDiagnostics.invalidatesRun,
+          invalidating_reasons: entropyDiagnostics.invalidatingReasons,
+          warnings: entropyDiagnostics.warnings,
+          source_artifact: 'entropy_preverdict.json',
+          authoritative_artifact: 'entropy_run_diagnostics.json'
+        }
+        : null,
       extras_detected: mode === 'permissive' ? [...new Set(extrasDetected)] : [],
       metrics: { tick_count: rows.length, tick_ms_p95: p95, tick_ms_max: maxTick },
       hashes: {
         ticks_hash: fileHash(ticksPath),
         header_hash: fileHash(headerPath),
-        summary_hash: fileHash(summaryPath)
+        summary_hash: fileHash(summaryPath),
+        entropy_preverdict_hash: entropyPreVerdict ? fileHash(entropyPreVerdictPath) : null
       }
     };
     const verdictPath = path.join(artifactDir, 'run_verdict.json');
     fs.writeFileSync(verdictPath, `${JSON.stringify(verdict, null, 2)}\n`, 'utf8');
+    if (entropyDiagnostics) {
+      fs.writeFileSync(path.join(artifactDir, 'entropy_run_diagnostics.json'), `${JSON.stringify({
+        runId: String(header.runId || path.basename(artifactDir)),
+        artifact_role: 'authoritative_run_level_entropy_diagnostics',
+        source_artifact: 'entropy_preverdict.json',
+        source_artifact_hash: entropyPreVerdict ? fileHash(entropyPreVerdictPath) : null,
+        overall_run_verdict_artifact: 'run_verdict.json',
+        run_level_status: entropyDiagnostics.runLevelStatus,
+        invalidates_run: entropyDiagnostics.invalidatesRun,
+        invalidating_reasons: entropyDiagnostics.invalidatingReasons,
+        warnings: entropyDiagnostics.warnings,
+        policy: entropyDiagnostics.policy,
+        source_summary: entropyPreVerdict?.summary || null,
+        overall_run_verdict_status: status
+      }, null, 2)}\n`, 'utf8');
+    }
     const invariantPackage = buildCanonicalInvariantPackage({ header, summary, verdict, ticks: rows });
     fs.writeFileSync(path.join(artifactDir, 'invariant_package.json'), `${JSON.stringify(invariantPackage, null, 2)}\n`, 'utf8');
     const claimMapping = buildCanonicalClaimMappingSnapshot({ header, summary, verdict, ticks: rows });

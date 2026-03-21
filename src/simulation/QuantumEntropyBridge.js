@@ -35,7 +35,19 @@ export class QuantumEntropyBridge {
     this.runtimeRefillContext = null;
     this.eventLog = [];
     this.maxEventLogEntries = 96;
+    this.forensicsCounters = {
+      providerErrors: 0,
+      refillsStarted: 0,
+      refillsCompleted: 0,
+      pendingResponses: 0,
+      reactiveRefillsScheduled: 0,
+      fallbackSelections: 0,
+      staleSelections: 0,
+      consumedChunks: 0,
+      rejectedSamples: 0
+    };
     this.lastSample = null;
+    this.lastConsumedChunk = null;
     this.lastDecision = {
       mode: 'deterministic_fallback',
       sampleAgeMs: null,
@@ -44,7 +56,8 @@ export class QuantumEntropyBridge {
       reason: 'quantum_disabled',
       entropyValue: 0.5,
       timestampMs: 0,
-      jobId: ''
+      jobId: '',
+      chunkId: ''
     };
     this.lastConnectionTest = {
       connectionState: 'idle',
@@ -150,7 +163,8 @@ export class QuantumEntropyBridge {
         mode: 'deterministic_fallback',
         reason: 'quantum_disabled',
         source: 'deterministic_local',
-        sampleValid: false
+        sampleValid: false,
+        chunkId: ''
       };
       this.lastConnectionTest = {
         ...this.lastConnectionTest,
@@ -211,6 +225,34 @@ export class QuantumEntropyBridge {
   }
 
   _emitEvent(type, payload = {}, level = 'info', nowMs = Date.now()) {
+    switch (type) {
+      case 'provider_error':
+        this.forensicsCounters.providerErrors += 1;
+        break;
+      case 'refill_started':
+        this.forensicsCounters.refillsStarted += 1;
+        break;
+      case 'refill_completed':
+        this.forensicsCounters.refillsCompleted += 1;
+        break;
+      case 'provider_pending':
+        this.forensicsCounters.pendingResponses += 1;
+        break;
+      case 'reactive_refill_scheduled':
+        this.forensicsCounters.reactiveRefillsScheduled += 1;
+        break;
+      case 'fallback_selected':
+        this.forensicsCounters.fallbackSelections += 1;
+        break;
+      case 'stale_selected':
+        this.forensicsCounters.staleSelections += 1;
+        break;
+      case 'provider_sample_rejected':
+        this.forensicsCounters.rejectedSamples += 1;
+        break;
+      default:
+        break;
+    }
     const entry = {
       ts: nowMs,
       type,
@@ -271,6 +313,37 @@ export class QuantumEntropyBridge {
   clearRuntimeRefillContext() {
     this.runtimeRefillContext = null;
     this._clearScheduledReactiveRefill();
+  }
+
+  _buildConsumedChunkForensics(chunk, consumedAtMs) {
+    if (!chunk || typeof chunk !== 'object') return null;
+    const safeConsumedAtMs = Math.max(0, toFinite(consumedAtMs, Date.now()));
+    return {
+      chunkId: String(chunk.chunkId || ''),
+      provider: String(chunk.provider || ''),
+      requestId: String(chunk.requestId || ''),
+      requestUrl: String(chunk.requestUrl || ''),
+      responseMode: String(chunk.responseMode || ''),
+      fetchStartMs: Number.isFinite(Number(chunk.fetchStartMs)) ? Number(chunk.fetchStartMs) : null,
+      fetchEndMs: Number.isFinite(Number(chunk.fetchEndMs)) ? Number(chunk.fetchEndMs) : null,
+      latencyMs: Number.isFinite(Number(chunk.latencyMs)) ? Number(chunk.latencyMs) : null,
+      insertTsMs: Number.isFinite(Number(chunk.insertTsMs)) ? Number(chunk.insertTsMs) : null,
+      receivedAtMs: Number.isFinite(Number(chunk.receivedAtMs)) ? Number(chunk.receivedAtMs) : null,
+      expiresAtMs: Number.isFinite(Number(chunk.expiresAtMs)) ? Number(chunk.expiresAtMs) : null,
+      byteCount: Number.isFinite(Number(chunk.byteCount)) ? Number(chunk.byteCount) : null,
+      fingerprint: String(chunk.fingerprint || ''),
+      fallbackUsed: Boolean(chunk.fallbackUsed),
+      consumedAtMs: safeConsumedAtMs,
+      ageAtConsumeMs: Number.isFinite(Number(chunk.receivedAtMs))
+        ? Math.max(0, safeConsumedAtMs - Number(chunk.receivedAtMs))
+        : null,
+      freshnessRemainingMs: Number.isFinite(Number(chunk.expiresAtMs))
+        ? Number(chunk.expiresAtMs) - safeConsumedAtMs
+        : null,
+      staleAtConsume: Number.isFinite(Number(chunk.expiresAtMs))
+        ? Number(chunk.expiresAtMs) < safeConsumedAtMs
+        : false
+    };
   }
 
   _scheduleReactiveRefill(reason = 'low_watermark', nowMs = Date.now()) {
@@ -618,7 +691,8 @@ export class QuantumEntropyBridge {
         reason: 'quantum_disabled',
         entropyValue: fallbackEntropy,
         timestampMs,
-        jobId: ''
+        jobId: '',
+        chunkId: ''
       };
       return this.lastDecision;
     }
@@ -628,6 +702,8 @@ export class QuantumEntropyBridge {
       this.lastSample = consumed.chunk.sample;
       this.healthMonitor.markConsume(consumed.bufferSnapshot, timestampMs, { chunkId: consumed.chunk.chunkId });
       this._syncChannelHealth();
+      this.forensicsCounters.consumedChunks += 1;
+      this.lastConsumedChunk = this._buildConsumedChunkForensics(consumed.chunk, timestampMs);
       this.lastDecision = {
         mode: 'quantum_primary',
         sampleAgeMs: consumed.ageMs,
@@ -636,7 +712,8 @@ export class QuantumEntropyBridge {
         reason: 'fresh_sample',
         entropyValue: clamp01(consumed.chunk.sample.entropyFloat01),
         timestampMs,
-        jobId: String(consumed.chunk.sample.jobId || '')
+        jobId: String(consumed.chunk.sample.jobId || ''),
+        chunkId: String(consumed.chunk.chunkId || '')
       };
       if (consumed.bufferSnapshot.occupancyChunks <= this.config.lowWatermarkChunks) {
         this._emitEvent('buffer_low', {
@@ -666,8 +743,13 @@ export class QuantumEntropyBridge {
         reason: 'expired_sample',
         entropyValue: fallbackEntropy,
         timestampMs,
-        jobId: String(this.lastSample.jobId || '')
+        jobId: String(this.lastSample.jobId || ''),
+        chunkId: ''
       };
+      this._emitEvent('stale_selected', {
+        reason: 'expired_sample',
+        sampleAgeMs: lastSampleAgeMs
+      }, 'warn', timestampMs);
       return this.lastDecision;
     }
 
@@ -686,7 +768,8 @@ export class QuantumEntropyBridge {
       reason: this.channelHealth.lastError ? 'bridge_unavailable' : (consumed.reason || 'buffer_empty'),
       entropyValue: fallbackEntropy,
       timestampMs,
-      jobId: ''
+      jobId: '',
+      chunkId: ''
     };
     this._scheduleReactiveRefill('buffer_empty', timestampMs);
     this._emitEvent('fallback_selected', {
@@ -837,6 +920,58 @@ export class QuantumEntropyBridge {
       lastConnectionJobId: this.lastConnectionTest.lastJobId,
       lastPendingJobId: this.pendingProviderJobId || '',
       eventLog: this.eventLog.slice(-12)
+    };
+  }
+
+  getForensicSnapshot(nowMs = Date.now()) {
+    const timestampMs = Math.max(0, toFinite(nowMs, Date.now()));
+    const effectiveDelivery = this._deriveEffectiveDelivery(timestampMs);
+    const decisionProvenance = this.lastDecision.mode === 'quantum_primary'
+      && this.lastConsumedChunk
+      && this.lastConsumedChunk.chunkId === this.lastDecision.chunkId
+      ? {
+        ...this.lastConsumedChunk,
+        ageAtReportMs: Number.isFinite(this.lastConsumedChunk.receivedAtMs)
+          ? Math.max(0, timestampMs - this.lastConsumedChunk.receivedAtMs)
+          : null,
+        freshnessRemainingAtReportMs: Number.isFinite(this.lastConsumedChunk.expiresAtMs)
+          ? this.lastConsumedChunk.expiresAtMs - timestampMs
+          : null
+      }
+      : null;
+    return {
+      enabled: this.config.enabled,
+      provider: this.config.provider,
+      config: {
+        defaultTtlMs: this.config.defaultTtlMs,
+        bufferCapacityChunks: this.config.bufferCapacityChunks,
+        lowWatermarkChunks: this.config.lowWatermarkChunks,
+        refillTargetChunks: this.config.refillTargetChunks,
+        allowProviderFallback: this.config.allowProviderFallback
+      },
+      effectiveConnectionState: effectiveDelivery.connectionState,
+      effectiveMode: effectiveDelivery.mode,
+      effectiveReason: effectiveDelivery.reason,
+      lastConnectionState: this.lastConnectionTest.connectionState,
+      lastConnectionReason: this.lastConnectionTest.lastReason,
+      lastError: this.channelHealth.lastError || '',
+      bufferState: this.bufferManager.snapshot(timestampMs),
+      channelHealth: {
+        ...this.channelHealth
+      },
+      counters: {
+        ...this.forensicsCounters
+      },
+      decisionProvenance,
+      lastDecision: {
+        mode: this.lastDecision.mode,
+        reason: this.lastDecision.reason,
+        source: this.lastDecision.source,
+        timestampMs: this.lastDecision.timestampMs,
+        jobId: this.lastDecision.jobId,
+        chunkId: this.lastDecision.chunkId || '',
+        entropyValue: clamp01(this.lastDecision.entropyValue)
+      }
     };
   }
 

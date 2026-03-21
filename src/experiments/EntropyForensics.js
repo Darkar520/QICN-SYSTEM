@@ -50,6 +50,8 @@ export const createEntropyForensicsAccumulator = () => ({
   counters: makeCounterState(),
   effectiveModesSeen: new Set(),
   connectionStatesSeen: new Set(),
+  experimentModesSeen: new Set(),
+  lastExperimentState: null,
   lastEffectiveState: null
 });
 
@@ -96,9 +98,11 @@ export const recordEntropyForensicsSnapshot = (state, snapshot) => {
     ''
   );
   const effectiveReason = asString(snapshot.effectiveReason || snapshot.lastDecision?.reason, '');
+  const experiment = isObj(snapshot.experiment) ? snapshot.experiment : null;
 
   if (effectiveMode) state.effectiveModesSeen.add(effectiveMode);
   if (effectiveConnectionState) state.connectionStatesSeen.add(effectiveConnectionState);
+  if (experiment?.mode) state.experimentModesSeen.add(asString(experiment.mode, 'baseline'));
 
   if (effectiveMode === 'quantum_primary') state.quantumPrimaryTicks += 1;
   if (effectiveMode === 'quantum_stale') state.staleTicks += 1;
@@ -175,6 +179,18 @@ export const recordEntropyForensicsSnapshot = (state, snapshot) => {
     lastConnectionReason: asString(snapshot.lastConnectionReason, '') || null,
     lastError: asString(snapshot.lastError || channelHealth.lastError, '') || null
   };
+  state.lastExperimentState = experiment
+    ? {
+      active: Boolean(experiment.active),
+      mode: asString(experiment.mode, 'baseline'),
+      seed: toFinite(experiment.seed, null),
+      delay_ms: toFinite(experiment.delayMs, null),
+      dropout_rate: toFinite(experiment.dropoutRate, null),
+      replay_length: Math.max(0, Math.floor(toFinite(experiment.replayLength, 0) || 0)),
+      replay_source_id: asString(experiment.replaySourceId, '') || null,
+      intervention_surface: asString(experiment.interventionSurface, '') || null
+    }
+    : null;
 };
 
 export const buildEntropyPreVerdictArtifact = ({ runId, totalTicks, state }) => {
@@ -224,6 +240,10 @@ export const buildEntropyPreVerdictArtifact = ({ runId, totalTicks, state }) => 
       malformed_snapshot_ticks: state.malformedSnapshotTicks,
       timestamp_inconsistency_ticks: state.timestampInconsistencyTicks,
       negative_age_ticks: state.negativeAgeTicks
+    },
+    experiment: {
+      modes_seen: [...state.experimentModesSeen].sort(),
+      last_condition: state.lastExperimentState
     },
     effective_modes_seen: [...state.effectiveModesSeen].sort(),
     connection_states_seen: [...state.connectionStatesSeen].sort(),

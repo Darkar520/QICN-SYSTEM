@@ -222,6 +222,7 @@ export class AdmissibilityEngine {
           invalidates_run: entropyDiagnostics.invalidatesRun,
           invalidating_reasons: entropyDiagnostics.invalidatingReasons,
           warnings: entropyDiagnostics.warnings,
+          experiment: entropyPreVerdict?.experiment || null,
           source_artifact: 'entropy_preverdict.json',
           authoritative_artifact: 'entropy_run_diagnostics.json'
         }
@@ -249,6 +250,7 @@ export class AdmissibilityEngine {
         invalidating_reasons: entropyDiagnostics.invalidatingReasons,
         warnings: entropyDiagnostics.warnings,
         policy: entropyDiagnostics.policy,
+        experiment: entropyPreVerdict?.experiment || null,
         source_summary: entropyPreVerdict?.summary || null,
         overall_run_verdict_status: status
       }, null, 2)}\n`, 'utf8');

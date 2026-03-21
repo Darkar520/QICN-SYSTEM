@@ -1,6 +1,7 @@
 import { EntropyProviderClient } from './EntropyProviderClient.js';
 import { EntropyBufferManager } from './EntropyBufferManager.js';
 import { EntropyHealthMonitor } from './EntropyHealthMonitor.js';
+import { EntropyExperimentController } from './EntropyExperimentController.js';
 
 const clamp01 = (value) => Math.max(0, Math.min(1, Number(value) || 0));
 const toFinite = (value, fallback = 0) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
@@ -82,6 +83,7 @@ export class QuantumEntropyBridge {
       requestTimeoutMs: 4500,
       retryCount: 1,
       retryBackoffMs: 300,
+      experimentalCondition: { mode: 'baseline' },
       allowProviderFallback: true,
       logLevel: 'warn'
     });
@@ -92,6 +94,7 @@ export class QuantumEntropyBridge {
       retryCount: this.config.retryCount,
       retryBackoffMs: this.config.retryBackoffMs
     });
+    this.experimentController = new EntropyExperimentController(this.config.experimentalCondition || { mode: 'baseline' });
     this.bufferManager = new EntropyBufferManager({
       capacityChunks: this.config.bufferCapacityChunks,
       lowWatermarkChunks: this.config.lowWatermarkChunks,
@@ -113,6 +116,7 @@ export class QuantumEntropyBridge {
     const timeoutCandidate = nextConfig.requestTimeoutMs ?? baseConfig.requestTimeoutMs;
     const retryCountCandidate = nextConfig.retryCount ?? baseConfig.retryCount;
     const retryBackoffCandidate = nextConfig.retryBackoffMs ?? baseConfig.retryBackoffMs;
+    const experimentalCondition = nextConfig.experimentalCondition ?? baseConfig.experimentalCondition ?? { mode: 'baseline' };
     const logLevelCandidate = asString(nextConfig.logLevel ?? baseConfig.logLevel, 'warn').toLowerCase();
     return {
       ...baseConfig,
@@ -132,6 +136,9 @@ export class QuantumEntropyBridge {
       requestTimeoutMs: Math.max(500, Math.floor(toFinite(timeoutCandidate, baseConfig.requestTimeoutMs))),
       retryCount: Math.max(0, Math.floor(toFinite(retryCountCandidate, baseConfig.retryCount))),
       retryBackoffMs: Math.max(0, Math.floor(toFinite(retryBackoffCandidate, baseConfig.retryBackoffMs))),
+      experimentalCondition: experimentalCondition && typeof experimentalCondition === 'object'
+        ? { ...experimentalCondition }
+        : { mode: 'baseline' },
       allowProviderFallback: Boolean(nextConfig.allowProviderFallback ?? baseConfig.allowProviderFallback),
       logLevel: LOG_LEVELS.includes(logLevelCandidate) ? logLevelCandidate : baseConfig.logLevel
     };
@@ -142,14 +149,17 @@ export class QuantumEntropyBridge {
     const previousEndpoint = this.config.endpoint;
     const previousMode = this.config.mode;
     const previousEnabled = this.config.enabled;
+    const previousExperimentSignature = this.experimentController?.getConfigSignature?.() || JSON.stringify(this.config.experimentalCondition || { mode: 'baseline' });
 
     this.config = this.buildConfig(nextConfig, this.config);
+    this.experimentController.configure(this.config.experimentalCondition || { mode: 'baseline' });
     this._applyRuntimeConfig(Date.now(), 'configure');
 
     const providerSurfaceChanged =
       previousProvider !== this.config.provider ||
       previousEndpoint !== this.config.endpoint ||
       previousMode !== this.config.mode;
+    const experimentSurfaceChanged = previousExperimentSignature !== (this.experimentController?.getConfigSignature?.() || '');
 
     if (!this.config.enabled) {
       this.stopPolling();
@@ -176,17 +186,25 @@ export class QuantumEntropyBridge {
       return;
     }
 
-    if (!previousEnabled || providerSurfaceChanged) {
+    if (!previousEnabled || providerSurfaceChanged || experimentSurfaceChanged) {
       this._clearScheduledReactiveRefill();
-      this.bufferManager.clear(providerSurfaceChanged ? 'provider_surface_changed' : 'bridge_reenabled', Date.now());
+      this.bufferManager.clear(
+        providerSurfaceChanged
+          ? 'provider_surface_changed'
+          : (experimentSurfaceChanged ? 'experimental_condition_changed' : 'bridge_reenabled'),
+        Date.now()
+      );
       this.pendingProviderJobId = '';
+      this.lastSample = null;
+      this.lastConsumedChunk = null;
       if (this.config.provider !== 'anu_qrng') {
         this.stopPolling();
       }
       this._emitEvent('config_applied', {
         provider: this.config.provider,
         endpoint: this.config.endpoint,
-        enabled: this.config.enabled
+        enabled: this.config.enabled,
+        experimentalMode: this.experimentController.snapshot().mode
       });
     }
   }
@@ -586,22 +604,63 @@ export class QuantumEntropyBridge {
     let pending = false;
     let lastReason = 'refill_completed';
     let lastPendingJobId = this.pendingProviderJobId;
+    const experimentSnapshot = this.experimentController.snapshot();
 
     try {
       for (let index = 0; index < plan.requestedChunks; index += 1) {
-        const result = await this.providerClient.fetchChunk({
-          provider: this.config.provider,
-          endpoint: this.config.provider === 'anu_qrng'
-            ? this._resolveAnuEndpoint(options.endpoint || this.config.endpoint)
-            : asString(options.endpoint ?? this.config.endpoint, ''),
-          mode: this.config.mode,
-          ttlMs: this.config.defaultTtlMs,
-          apiKeyRef: options.apiKeyRef ?? this.config.apiKeyRef,
-          fetchImpl: options.fetchImpl,
-          timeoutMs: options.timeoutMs ?? this.config.requestTimeoutMs,
-          pendingJobId: this.pendingProviderJobId,
-          buildRequestUrl: options.buildRequestUrl
-        });
+        let result = null;
+        if (this.experimentController.usesSyntheticSource()) {
+          result = this.experimentController.materializeSyntheticChunk({
+            ttlMs: this.config.defaultTtlMs,
+            nowMs: Date.now()
+          });
+          if (result.ok) {
+            this._emitEvent('experimental_source_selected', {
+              mode: experimentSnapshot.mode,
+              interventionSurface: this.experimentController.getInterventionSurface(),
+              sequenceCursor: this.experimentController.snapshot().cursor
+            }, 'info', Date.now());
+          }
+        } else {
+          result = await this.providerClient.fetchChunk({
+            provider: this.config.provider,
+            endpoint: this.config.provider === 'anu_qrng'
+              ? this._resolveAnuEndpoint(options.endpoint || this.config.endpoint)
+              : asString(options.endpoint ?? this.config.endpoint, ''),
+            mode: this.config.mode,
+            ttlMs: this.config.defaultTtlMs,
+            apiKeyRef: options.apiKeyRef ?? this.config.apiKeyRef,
+            fetchImpl: options.fetchImpl,
+            timeoutMs: options.timeoutMs ?? this.config.requestTimeoutMs,
+            pendingJobId: this.pendingProviderJobId,
+            buildRequestUrl: options.buildRequestUrl
+          });
+          result = await this.experimentController.applyPostFetchControls(result, Date.now());
+          if (result?.experimentalControl?.mode === 'delayed_entropy') {
+            this._emitEvent('experimental_delay_applied', {
+              mode: 'delayed_entropy',
+              delayAppliedMs: Number(result.experimentalControl.delayAppliedMs || 0)
+            }, 'info', Date.now());
+          }
+          if (result?.status === 'dropped' && result?.reason === 'experimental_dropout') {
+            this.healthMonitor.markDropped('experimental_dropout', this.bufferManager.snapshot(Date.now()), Date.now());
+            this._syncChannelHealth();
+            this.lastConnectionTest = {
+              ...this.lastConnectionTest,
+              connectionState: 'error',
+              lastMode: 'experimental_dropout',
+              lastReason: 'experimental_dropout',
+              lastJobId: ''
+            };
+            lastReason = 'experimental_dropout';
+            this._emitEvent('experimental_dropout_applied', {
+              mode: 'dropout',
+              dropoutRate: Number(result?.experimentalControl?.dropoutRate || 0),
+              draw: Number(result?.experimentalControl?.draw || 0)
+            }, 'warn', Date.now());
+            continue;
+          }
+        }
 
         if (result.status === 'pending') {
           pending = true;
@@ -637,7 +696,22 @@ export class QuantumEntropyBridge {
         }
 
         this.pendingProviderJobId = '';
-        const ingestResult = this.ingestSample(result.sample, Date.now(), {
+        const sampleForIngest = result?.sample && typeof result.sample === 'object'
+          ? {
+            ...result.sample,
+            meta: {
+              ...(result.sample.meta && typeof result.sample.meta === 'object' ? result.sample.meta : {}),
+              experimentMode: experimentSnapshot.mode,
+              experimentInterventionSurface: this.experimentController.getInterventionSurface(),
+              experimentActive: Boolean(experimentSnapshot.active),
+              replaySourceId: experimentSnapshot.replaySourceId || null,
+              delayMs: Number(experimentSnapshot.delayMs || 0),
+              dropoutRate: Number(experimentSnapshot.dropoutRate || 0),
+              seed: Number(experimentSnapshot.seed || 0)
+            }
+          }
+          : result.sample;
+        const ingestResult = this.ingestSample(sampleForIngest, Date.now(), {
           ...(result.requestMeta || {}),
           responseMode: result.responseMode || 'upstream_quantum'
         });
@@ -856,6 +930,10 @@ export class QuantumEntropyBridge {
       enabled: this.config.enabled,
       mode: this.lastDecision.mode,
       reason: this.lastDecision.reason,
+      experiment: {
+        ...this.experimentController.snapshot(),
+        interventionSurface: this.experimentController.getInterventionSurface()
+      },
       entropyValue: clamp01(this.lastDecision.entropyValue),
       entropySource: this.lastDecision.source,
       source: this.lastDecision.source,
@@ -895,6 +973,10 @@ export class QuantumEntropyBridge {
     return {
       channelHealth: {
         ...this.channelHealth
+      },
+      experiment: {
+        ...this.experimentController.snapshot(),
+        interventionSurface: this.experimentController.getInterventionSurface()
       },
       bufferState,
       configWarnings: [...this.configWarnings],
@@ -948,6 +1030,10 @@ export class QuantumEntropyBridge {
         lowWatermarkChunks: this.config.lowWatermarkChunks,
         refillTargetChunks: this.config.refillTargetChunks,
         allowProviderFallback: this.config.allowProviderFallback
+      },
+      experiment: {
+        ...this.experimentController.snapshot(),
+        interventionSurface: this.experimentController.getInterventionSurface()
       },
       effectiveConnectionState: effectiveDelivery.connectionState,
       effectiveMode: effectiveDelivery.mode,

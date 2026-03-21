@@ -819,6 +819,29 @@ const QUANTUM_RUNTIME_DEFAULTS = {
   allowProviderFallback: Boolean(runtimeEnv.QUANTUM_PROVIDER_FALLBACK_ENABLED),
   logLevel: typeof runtimeEnv.QUANTUM_LOG_LEVEL === 'string' ? runtimeEnv.QUANTUM_LOG_LEVEL : 'warn'
 };
+
+const parseQuantumReplaySequence = (rawValue) => {
+  if (typeof rawValue !== 'string' || rawValue.trim().length === 0) return [];
+  try {
+    const parsed = JSON.parse(rawValue);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const QUANTUM_EXPERIMENT_DEFAULTS = {
+  mode: typeof runtimeEnv.QUANTUM_EXPERIMENT_CONDITION === 'string'
+    ? runtimeEnv.QUANTUM_EXPERIMENT_CONDITION
+    : 'baseline',
+  seed: Math.max(1, Number(runtimeEnv.QUANTUM_EXPERIMENT_SEED) || 17057),
+  delayMs: Math.max(0, Number(runtimeEnv.QUANTUM_EXPERIMENT_DELAY_MS) || 0),
+  dropoutRate: clamp01(runtimeEnv.QUANTUM_EXPERIMENT_DROPOUT_RATE ?? 0),
+  replaySourceId: typeof runtimeEnv.QUANTUM_EXPERIMENT_REPLAY_SOURCE_ID === 'string'
+    ? runtimeEnv.QUANTUM_EXPERIMENT_REPLAY_SOURCE_ID
+    : '',
+  replaySequence: parseQuantumReplaySequence(runtimeEnv.QUANTUM_EXPERIMENT_REPLAY_SEQUENCE)
+};
 const QUANTUM_PROVIDER_OPTIONS = ['custom', 'ibm', 'braket', 'anu_qrng'];
 
 const PMIA_NEGATIVE_DRIVE_DEFAULTS = {
@@ -1338,6 +1361,7 @@ const QICNConsciousnessSystem = () => {
     retryBackoffMs: QUANTUM_RUNTIME_DEFAULTS.providerRetryBackoffMs,
     allowProviderFallback: QUANTUM_RUNTIME_DEFAULTS.allowProviderFallback,
     logLevel: QUANTUM_RUNTIME_DEFAULTS.logLevel,
+    experimentalCondition: QUANTUM_EXPERIMENT_DEFAULTS,
     provider: QUANTUM_PROVIDER_OPTIONS.includes(runtimeEnv.QUANTUM_PROVIDER_DEFAULT)
       ? runtimeEnv.QUANTUM_PROVIDER_DEFAULT
       : 'custom'
@@ -4611,7 +4635,8 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
       retryCount: QUANTUM_RUNTIME_DEFAULTS.providerRetryCount,
       retryBackoffMs: QUANTUM_RUNTIME_DEFAULTS.providerRetryBackoffMs,
       allowProviderFallback: QUANTUM_RUNTIME_DEFAULTS.allowProviderFallback,
-      logLevel: QUANTUM_RUNTIME_DEFAULTS.logLevel
+      logLevel: QUANTUM_RUNTIME_DEFAULTS.logLevel,
+      experimentalCondition: QUANTUM_EXPERIMENT_DEFAULTS
     });
     ontologicalCore.current?.setQuantumBridgeRef?.(quantumEntropyBridgeRef.current);
     entropyModeRef.current = {
@@ -6983,7 +7008,8 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
       retryCount: QUANTUM_RUNTIME_DEFAULTS.providerRetryCount,
       retryBackoffMs: QUANTUM_RUNTIME_DEFAULTS.providerRetryBackoffMs,
       allowProviderFallback: QUANTUM_RUNTIME_DEFAULTS.allowProviderFallback,
-      logLevel: QUANTUM_RUNTIME_DEFAULTS.logLevel
+      logLevel: QUANTUM_RUNTIME_DEFAULTS.logLevel,
+      experimentalCondition: QUANTUM_EXPERIMENT_DEFAULTS
     });
     ontologicalCore.current?.setQuantumBridgeRef?.(quantumEntropyBridgeRef.current);
     entropyModeRef.current = {

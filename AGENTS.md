@@ -19,6 +19,7 @@ This repository is a private engineering baseline for the operational QICN runti
 ```powershell
 npm ci
 npm run verify:source-of-truth
+npm run verify:descriptor-registry
 npm test
 npm run build
 npm run scoreboard:run
@@ -60,6 +61,11 @@ Use the documentation set as a partitioned system, not as a single interchangeab
 - [DESCRIPTOR_REGISTRY.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/DESCRIPTOR_REGISTRY.md) is the formal minimum registry for observational, derived, claim-facing, and gate-facing pieces.
 - [ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md) defines run-level admissibility, batch enforcement, and negative-control architecture.
 - [CANON_SOURCE_OF_TRUTH.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/CANON_SOURCE_OF_TRUTH.md) records the external formal boundary and canon pinning gap.
+
+Machine-readable registry surfaces:
+
+- [descriptor_registry.v1.json](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/descriptor_registry.v1.json)
+- [validate-descriptor-registry.cjs](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/validate-descriptor-registry.cjs)
 
 Do not use one document to silently redefine the role of another.
 
@@ -128,7 +134,9 @@ then review and update as needed:
 - `docs/TRACEABILITY_MATRIX.md`
 - `docs/IMPLEMENTATION_STATUS.md`
 - `docs/DESCRIPTOR_REGISTRY.md`
+- `docs/descriptor_registry.v1.json`
 - `docs/ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md`
+- `scripts/validate-descriptor-registry.cjs`
 - relevant test anchors in `tests/`
 - artifact documentation in the affected change set
 

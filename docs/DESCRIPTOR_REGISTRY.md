@@ -4,6 +4,11 @@
 
 This document is the formal minimum descriptor registry for the current repository. It is documentary only. It does not add a new executable subsystem, change runtime behavior, or redefine the meaning of claims.
 
+The machine-readable companion for the minimum executable phase is:
+
+- [descriptor_registry.v1.json](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/descriptor_registry.v1.json)
+- [validate-descriptor-registry.cjs](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/validate-descriptor-registry.cjs)
+
 Its role is narrower and more disciplined than a generic inventory. It records, in one place, which runtime, derived, batch, and decision-layer pieces actually exist, where they come from, which artifacts expose them, which tests anchor them, and what must not be inferred from them.
 
 Use this file to answer:
@@ -27,7 +32,7 @@ This registry does not:
 - convert [runtimeParameterRegistry.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/utils/runtimeParameterRegistry.js) into a complete registry of claims
 - collapse `descriptor`, `claim_projection`, and `gate_result` into a single class
 
-This is a formal minimum documentary layer. It is designed to reduce semantic drift and support later integration work.
+This remains the human-readable companion. The JSON file is the machine-readable minimum source for structural validation. Neither file implies external validation or canonical closure.
 
 ## C. Source Terms And Minimal Taxonomy
 
@@ -108,6 +113,12 @@ A dependency on `config/interventions/*.json` or `config/roeo/*.json`.
 A dependency on the external canonical repository boundary recorded in [CANON_SOURCE_OF_TRUTH.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/CANON_SOURCE_OF_TRUTH.md).
 
 ## D. Formal Minimum Schema
+
+For the executable minimum phase:
+
+- the machine-readable source of truth is [descriptor_registry.v1.json](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/descriptor_registry.v1.json)
+- structural validation is performed by [validate-descriptor-registry.cjs](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/validate-descriptor-registry.cjs)
+- this Markdown remains the narrative and interpretive companion
 
 Each row in the registry uses the following fields:
 

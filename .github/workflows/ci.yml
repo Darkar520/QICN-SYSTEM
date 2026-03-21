@@ -31,6 +31,9 @@ jobs:
       - name: Verify source of truth
         run: npm run verify:source-of-truth
 
+      - name: Verify descriptor registry
+        run: npm run verify:descriptor-registry
+
       - name: Build
         run: npm run build
 

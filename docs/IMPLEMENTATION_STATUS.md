@@ -5,6 +5,7 @@ This inventory tracks `implementation_status` only. It does not encode `run_verd
 Use it together with:
 
 - [DESCRIPTOR_REGISTRY.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/DESCRIPTOR_REGISTRY.md) for formal minimum classification of descriptors, claim projections, gate results, and artifact-only rows.
+- [descriptor_registry.v1.json](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/descriptor_registry.v1.json) and [validate-descriptor-registry.cjs](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/validate-descriptor-registry.cjs) for the machine-validable minimum registry layer.
 - [ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md) for the semantics of run-level admissibility, batch enforcement, and negative controls.
 - [TRACEABILITY_MATRIX.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/TRACEABILITY_MATRIX.md) for claim-facing linkage between signals, modules, artifacts, and tests.
 

@@ -1,6 +1,6 @@
 # Implementation Status
 
-This inventory tracks `implementation_status` only. It does not encode `run_verdict`, `paper_admissibility_status`, or external validation.
+This inventory tracks `implementation_status` only. It does not encode `run_verdict`, `paper_level_equivalent_status` expressed today as `roeo_enforcement_report.json.batch_status`, or external validation.
 
 Use it together with:
 

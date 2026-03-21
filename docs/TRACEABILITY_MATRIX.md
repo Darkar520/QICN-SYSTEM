@@ -44,6 +44,7 @@ In this block:
 - `run_verdict.json` is the authoritative run-level gate output.
 - `admissibility.json` from the harness is a pre-verdict derived artifact and is not the authoritative run verdict.
 - `roeo_enforcement_report.json.batch_status` is the highest explicit paper-level equivalent status implemented today, but it remains internal batch enforcement.
+- Use `paper_level_equivalent_status` as the documentary name for that layer; do not treat it as a separate external-validation object.
 
 | ID | Layer | Evidence class | Direct signals | Derived proxies | Primary artifact | Config / prereg dependency | Primary module | Primary test anchor | Evidence scope | External dependency | Non-claim boundary | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

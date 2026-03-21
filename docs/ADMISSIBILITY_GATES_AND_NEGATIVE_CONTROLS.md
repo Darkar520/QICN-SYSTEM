@@ -155,6 +155,8 @@ Closed status values:
 
 The repo does not expose a separate higher-level verdict object beyond `roeo_enforcement_report.json.batch_status`. In practice, `PAPER_ADMISSIBLE` is the highest explicit admissibility state currently implemented.
 
+For documentary stability, refer to this layer as `paper_level_equivalent_status`. Keep `roeo_enforcement_report.json.batch_status` as the emitted field name and `PAPER_ADMISSIBLE` / `NOT_PAPER_ADMISSIBLE` as the real values.
+
 This state is consumed by repository tooling such as:
 
 - [build_paper_pdf_lib.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/build_paper_pdf_lib.js)

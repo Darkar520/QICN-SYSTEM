@@ -46,11 +46,24 @@ The repository uses at least three distinct status layers. Do not collapse them.
 | --- | --- | --- | --- |
 | `implementation_status` | Repository inventory state of a module, layer, or control surface. | `implemented_tested`, `implemented_internal_support`, `partial_runtime_path`, `high_risk_control_surface` | run verdict, paper admissibility, or external validation |
 | `run_verdict` | Result of run-level admissibility evaluation over recorded artifacts. | `ADMISSIBLE`, `DISCARDED`, `TAMPERED` in `run_verdict.json` | implementation completeness or publication readiness |
-| `paper_admissibility_status` | Batch-level enforcement result over SNO, ROEO, and negative controls. | `PAPER_ADMISSIBLE`, `NOT_PAPER_ADMISSIBLE` in `roeo_enforcement_report.json` | external validation, final claim closure, or scientific truth |
+| `paper_level_equivalent_status` | Batch-level internal enforcement result over SNO, ROEO, and negative controls. The emitted field is `roeo_enforcement_report.json.batch_status`. | `PAPER_ADMISSIBLE`, `NOT_PAPER_ADMISSIBLE` | external validation, final claim closure, or scientific truth |
 
 - `implementation_status` does not imply `run_verdict`.
-- `run_verdict` does not imply `paper_admissibility_status`.
-- `paper_admissibility_status` does not imply external validation.
+- `run_verdict` does not imply `paper_level_equivalent_status`.
+- `paper_level_equivalent_status` does not imply external validation.
+
+## Canonical Term Usage
+
+Use the following terms canonically unless a code path exposes a stricter real name:
+
+- `descriptor`: only for registry-classified observational or derived pieces. Do not use it for `claim_projection`, `gate_result`, or plain artifacts by convenience.
+- `claim_projection`: only for P5-facing support mappings produced by claim-mapping logic and related outputs.
+- `gate_result`: only for closed decision outputs such as `run_verdict.json.status` or `roeo_enforcement_report.json.batch_status`.
+- `artifact_only`: only for audit-relevant artifacts intentionally kept out of stronger descriptor or gate classes.
+- `implementation_status`: only for area/layer inventory in [IMPLEMENTATION_STATUS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/IMPLEMENTATION_STATUS.md).
+- `admissibility`: if unqualified, means run-level admissibility. Use `batch_enforcement` when referring to post-run SNO/ROEO/negative-controls filtering.
+- `paper_level_equivalent_status`: canonical documentary term for the highest internal paper-facing batch state. The current machine-readable row id `GR_paper_admissibility_status` is retained for compatibility, but the emitted field remains `roeo_enforcement_report.json.batch_status`.
+- `external_validation`: reserve for validation outside this repository. Do not use it for run gates, batch enforcement, release-package freezes, or claim projections.
 
 ## Document Roles
 

@@ -92,6 +92,8 @@ Real examples:
 - `run_verdict.json.status`
 - `roeo_enforcement_report.json.batch_status`
 
+For documentary stability, use `paper_level_equivalent_status` as the layer term for the second example above. The current row id `GR_paper_admissibility_status` is retained for machine-readable compatibility.
+
 ### `primary_artifact`
 
 An artifact treated as authoritative for its execution layer.

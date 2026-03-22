@@ -6,6 +6,7 @@ import { buildCanonicalClaimMappingSnapshot } from '../canon/claimMapping/runtim
 import { buildCanonicalInvariantPackage } from '../canon/invariants/CanonicalInvariantPackage.js';
 import { evaluateEntropyPreVerdictArtifact } from './EntropyForensics.js';
 import { buildRunMetricsArtifact } from './EntropyConditionMetrics.js';
+import { buildRunSupportLabelsArtifact } from './OutputSupportLabels.js';
 
 const pct = (arr, p) => {
   if (!Array.isArray(arr) || arr.length === 0) return 0;
@@ -225,9 +226,11 @@ export class AdmissibilityEngine {
           warnings: entropyDiagnostics.warnings,
           experiment: entropyPreVerdict?.experiment || null,
           source_artifact: 'entropy_preverdict.json',
-          authoritative_artifact: 'entropy_run_diagnostics.json'
+          authoritative_artifact: 'entropy_run_diagnostics.json',
+          interpretation_boundary: 'Run-level entropy diagnostics only; not claim closure, not support label, not external validation.'
         }
         : null,
+      interpretation_boundary: 'Run-level admissibility only; not support label, not claim closure, not external validation.',
       extras_detected: mode === 'permissive' ? [...new Set(extrasDetected)] : [],
       metrics: { tick_count: rows.length, tick_ms_p95: p95, tick_ms_max: maxTick },
       hashes: {
@@ -253,7 +256,8 @@ export class AdmissibilityEngine {
         policy: entropyDiagnostics.policy,
         experiment: entropyPreVerdict?.experiment || null,
         source_summary: entropyPreVerdict?.summary || null,
-        overall_run_verdict_status: status
+        overall_run_verdict_status: status,
+        interpretation_boundary: 'Authoritative entropy run-level diagnostics only; not claim closure, not support label, not external validation.'
       }, null, 2)}\n`, 'utf8');
     }
     const invariantPackage = buildCanonicalInvariantPackage({ header, summary, verdict, ticks: rows });
@@ -272,6 +276,7 @@ export class AdmissibilityEngine {
     fs.writeFileSync(path.join(artifactDir, 'release_materialization_map.json'), `${JSON.stringify(claimMapping.releaseMaterializationMap || {}, null, 2)}\n`, 'utf8');
     fs.writeFileSync(path.join(artifactDir, 'p5_03_threshold_runtime.json'), `${JSON.stringify(claimMapping.p503ThresholdRuntime || {}, null, 2)}\n`, 'utf8');
     buildRunMetricsArtifact({ artifactDir });
+    buildRunSupportLabelsArtifact({ artifactDir });
     return { verdictPath, verdict };
   }
 }

@@ -210,6 +210,7 @@ export const buildEntropyPreVerdictArtifact = ({ runId, totalTicks, state }) => 
     artifact_role: 'pre_verdict',
     authoritative_run_artifact: 'run_verdict.json',
     authoritative_entropy_artifact: 'entropy_run_diagnostics.json',
+    interpretation_boundary: 'Pre-verdict entropy summary only; not authoritative run status, not support label, not external validation.',
     summary: {
       observed_ticks: state.observedTicks,
       total_ticks: Math.max(0, Math.floor(toFinite(totalTicks, 0) || 0)),

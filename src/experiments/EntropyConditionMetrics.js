@@ -174,6 +174,7 @@ export const buildRunMetricsArtifact = ({ artifactDir }) => {
       entropy_invalidates_run: Boolean(entropyRunDiagnostics?.invalidates_run),
       entropy_warnings: Array.isArray(entropyRunDiagnostics?.warnings) ? entropyRunDiagnostics.warnings : []
     },
+    support_boundary_ref: 'support_labels.json',
     stability: {
       tick_budget_p95_ms: toFinite(summary?.tick_ms?.p95, null),
       tick_budget_max_ms: toFinite(summary?.tick_ms?.max, null),
@@ -247,6 +248,7 @@ export const buildConditionMetricsArtifacts = ({ artifactsRoot, outputDir = arti
   const conditionSummary = {
     artifact_role: 'small_batch_condition_summary',
     source_artifact: 'run_metrics.json',
+    support_boundary_ref: 'condition_support_labels.json',
     condition_count: grouped.size,
     conditions: {}
   };
@@ -284,6 +286,7 @@ export const buildConditionMetricsArtifacts = ({ artifactsRoot, outputDir = arti
   const comparison = {
     artifact_role: 'small_batch_condition_comparison',
     baseline_condition: baselineSummary ? 'baseline' : null,
+    support_boundary_ref: 'condition_support_labels.json',
     compared_metrics: RUN_METRIC_PATHS,
     comparisons: []
   };

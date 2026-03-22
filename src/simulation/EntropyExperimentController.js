@@ -246,6 +246,15 @@ export class EntropyExperimentController {
       await sleep(this.config.delayMs);
       return {
         ...result,
+        requestMeta: {
+          ...(result.requestMeta || {}),
+          fetchEndMs: Number.isFinite(Number(result?.requestMeta?.fetchEndMs))
+            ? Number(result.requestMeta.fetchEndMs) + this.config.delayMs
+            : nowMs + this.config.delayMs,
+          latencyMs: Number.isFinite(Number(result?.requestMeta?.latencyMs))
+            ? Number(result.requestMeta.latencyMs) + this.config.delayMs
+            : this.config.delayMs
+        },
         experimentalControl: {
           mode,
           delayAppliedMs: this.config.delayMs

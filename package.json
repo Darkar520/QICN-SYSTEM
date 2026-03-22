@@ -10,6 +10,7 @@
     "verify:source-of-truth": "node scripts/verify-source-of-truth.cjs",
     "verify:descriptor-registry": "node scripts/validate-descriptor-registry.cjs",
     "evaluate:canon-runtime": "node scripts/evaluate-canon-runtime.cjs",
+    "metrics:entropy-conditions": "node scripts/build-entropy-condition-metrics.cjs",
     "build:js": "node build.cjs",
     "build:js:dev": "node build.cjs --dev",
     "build:sync": "node scripts/sync-netlify-assets.cjs",

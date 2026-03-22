@@ -5,6 +5,7 @@ import { sha256Hex, stableStringify } from '../utils/integrity.js';
 import { buildCanonicalClaimMappingSnapshot } from '../canon/claimMapping/runtimeClaimMapping.js';
 import { buildCanonicalInvariantPackage } from '../canon/invariants/CanonicalInvariantPackage.js';
 import { evaluateEntropyPreVerdictArtifact } from './EntropyForensics.js';
+import { buildRunMetricsArtifact } from './EntropyConditionMetrics.js';
 
 const pct = (arr, p) => {
   if (!Array.isArray(arr) || arr.length === 0) return 0;
@@ -270,6 +271,7 @@ export class AdmissibilityEngine {
     fs.writeFileSync(path.join(artifactDir, 'runtime_claim_projection.json'), `${JSON.stringify(claimMapping.runtimeClaimProjection || {}, null, 2)}\n`, 'utf8');
     fs.writeFileSync(path.join(artifactDir, 'release_materialization_map.json'), `${JSON.stringify(claimMapping.releaseMaterializationMap || {}, null, 2)}\n`, 'utf8');
     fs.writeFileSync(path.join(artifactDir, 'p5_03_threshold_runtime.json'), `${JSON.stringify(claimMapping.p503ThresholdRuntime || {}, null, 2)}\n`, 'utf8');
+    buildRunMetricsArtifact({ artifactDir });
     return { verdictPath, verdict };
   }
 }

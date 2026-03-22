@@ -41,6 +41,9 @@ export const createEntropyForensicsAccumulator = () => ({
   timestampInconsistencyTicks: 0,
   negativeAgeTicks: 0,
   staleAtConsumeTicks: 0,
+  latencyObservedCount: 0,
+  latencyObservedTotalMs: 0,
+  latencyObservedMaxMs: null,
   maxConsumedAgeMs: null,
   minFreshnessRemainingMs: null,
   ttlObservedMinMs: null,
@@ -140,6 +143,7 @@ export const recordEntropyForensicsSnapshot = (state, snapshot) => {
 
       const ageAtConsumeMs = toFinite(decisionProvenance.ageAtConsumeMs, null);
       const freshnessRemainingMs = toFinite(decisionProvenance.freshnessRemainingMs, null);
+      const latencyMs = toFinite(decisionProvenance.latencyMs, null);
       const fetchStartMs = toFinite(decisionProvenance.fetchStartMs, null);
       const fetchEndMs = toFinite(decisionProvenance.fetchEndMs, null);
       const insertTsMs = toFinite(decisionProvenance.insertTsMs, null);
@@ -153,6 +157,11 @@ export const recordEntropyForensicsSnapshot = (state, snapshot) => {
       updateTtlRange(state, ttlMs);
       state.maxConsumedAgeMs = updateMax(state.maxConsumedAgeMs, ageAtConsumeMs);
       state.minFreshnessRemainingMs = updateMin(state.minFreshnessRemainingMs, freshnessRemainingMs);
+      if (Number.isFinite(latencyMs)) {
+        state.latencyObservedCount += 1;
+        state.latencyObservedTotalMs += latencyMs;
+        state.latencyObservedMaxMs = updateMax(state.latencyObservedMaxMs, latencyMs);
+      }
 
       if (Number.isFinite(ageAtConsumeMs) && ageAtConsumeMs < 0) {
         state.negativeAgeTicks += 1;
@@ -234,7 +243,9 @@ export const buildEntropyPreVerdictArtifact = ({ runId, totalTicks, state }) => 
       ttl_observed_max_ms: state.ttlObservedMaxMs,
       max_consumed_age_ms: state.maxConsumedAgeMs,
       min_freshness_remaining_ms: state.minFreshnessRemainingMs,
-      stale_at_consume_ticks: state.staleAtConsumeTicks
+      stale_at_consume_ticks: state.staleAtConsumeTicks,
+      latency_observed_mean_ms: state.latencyObservedCount > 0 ? state.latencyObservedTotalMs / state.latencyObservedCount : null,
+      latency_observed_max_ms: state.latencyObservedMaxMs
     },
     integrity: {
       malformed_snapshot_ticks: state.malformedSnapshotTicks,

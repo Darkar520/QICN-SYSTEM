@@ -37,7 +37,8 @@ const computeVersionHash = () => {
   const lock = readFileSafe('package-lock.json');
   const buildFile = readFileSafe('build.cjs');
   const mix = `${pkg}\n${lock}\n${buildFile}`;
-  return toHash(mix).slice(0, 16);
+  const full = toHash(mix);
+  return { short: full.slice(0, 16), full };
 };
 
 const computeConfigHash = (mode) => {
@@ -50,7 +51,36 @@ const computeConfigHash = (mode) => {
     deterministicFlag: toSafeString(process.env.RENDER_DETERMINISTIC || ''),
     seed: pickSeed()
   };
-  return toHash(JSON.stringify(configSnapshot)).slice(0, 24);
+  const full = toHash(JSON.stringify(configSnapshot));
+  return { short: full.slice(0, 24), full };
+};
+
+const computeConfigFilesHash = () => {
+  try {
+    const configDir = path.join(PROJECT_ROOT, 'config');
+    const collectJsonFiles = (dir) => {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      const files = [];
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          files.push(...collectJsonFiles(fullPath));
+        } else if (entry.isFile() && entry.name.endsWith('.json')) {
+          files.push(fullPath);
+        }
+      }
+      return files.sort();
+    };
+    const jsonFiles = collectJsonFiles(configDir);
+    if (!jsonFiles.length) return 'config_files_empty';
+    const combined = jsonFiles.map((f) => {
+      const relativePath = path.relative(PROJECT_ROOT, f);
+      return `${relativePath}:${toHash(readFileSafe(relativePath))}`;
+    }).join('\n');
+    return toHash(combined);
+  } catch (_) {
+    return 'config_files_unavailable';
+  }
 };
 
 const computeFreezeRef = () => {
@@ -65,6 +95,7 @@ const computeFreezeRef = () => {
       'release_freeze_unavailable'
     );
   } catch (_) {
+    console.warn('[emit-run-metadata] WARNING: release freeze ref unavailable — final_release_freeze.json not found or unreadable. Freeze audit chain may be incomplete.');
     return 'release_freeze_unavailable';
   }
 };
@@ -75,20 +106,41 @@ const createRunId = () => {
   return `${ts}-${rnd}`;
 };
 
-const buildRunMetadata = (mode) => ({
-  runId: createRunId(),
-  versionHash: computeVersionHash(),
-  seed: pickSeed(),
-  configHash: computeConfigHash(mode),
-  mode: toSafeString(mode || 'unknown'),
-  freezeRef: computeFreezeRef(),
-  thresholdAuthorityRef: 'artifacts/release_audit/final_claim_status_ledger.csv',
-  sourceOfTruth: 'src'
-});
+const buildRunMetadata = (mode) => {
+  const versionHashes = computeVersionHash();
+  const configHashes = computeConfigHash(mode);
+  return {
+    runId: createRunId(),
+    versionHash: versionHashes.short,
+    versionHashFull: versionHashes.full,
+    seed: pickSeed(),
+    configHash: configHashes.short,
+    configHashFull: configHashes.full,
+    configFilesHash: computeConfigFilesHash(),
+    mode: toSafeString(mode || 'unknown'),
+    freezeRef: computeFreezeRef(),
+    thresholdAuthorityRef: 'artifacts/release_audit/final_claim_status_ledger.csv',
+    sourceOfTruth: 'src'
+  };
+};
+
+const persistRunMetadata = (payload) => {
+  try {
+    const metaDir = path.join(PROJECT_ROOT, 'artifacts', 'run-metadata');
+    if (!fs.existsSync(metaDir)) {
+      fs.mkdirSync(metaDir, { recursive: true });
+    }
+    const filename = `run-metadata-${payload.runId}.json`;
+    fs.writeFileSync(path.join(metaDir, filename), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  } catch (err) {
+    console.warn(`[emit-run-metadata] WARNING: could not persist run metadata to artifacts/run-metadata/: ${err.message}`);
+  }
+};
 
 const emitRunMetadata = (mode) => {
   const payload = buildRunMetadata(mode);
   process.stdout.write(`${JSON.stringify(payload)}\n`);
+  persistRunMetadata(payload);
   return payload;
 };
 
@@ -100,5 +152,6 @@ if (require.main === module) {
 module.exports = {
   DEFAULT_SEED,
   buildRunMetadata,
-  emitRunMetadata
+  emitRunMetadata,
+  persistRunMetadata
 };

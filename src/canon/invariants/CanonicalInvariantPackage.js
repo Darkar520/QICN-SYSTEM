@@ -22,7 +22,7 @@ const series = (ticks = [], pathGetter) => {
 };
 
 const continuityRatio = (ticks = []) => {
-  if (!Array.isArray(ticks) || ticks.length <= 1) return 1;
+  if (!Array.isArray(ticks) || ticks.length < 2) return null;
   let ok = 0;
   for (let idx = 1; idx < ticks.length; idx += 1) {
     const prev = toFinite(ticks[idx - 1]?.tick, idx - 1);
@@ -80,6 +80,7 @@ export const CANON_INVARIANT_PACKAGE_VERSION = 'canon-invariant-package.v6';
 export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verdict = {}, ticks = [] } = {}) => {
   const metrics = summary?.metrics || {};
   const flags = summary?.flags || {};
+  const tickContinuityRatio = continuityRatio(ticks);
 
   const stasisSeries = series(ticks, (tick) => tick?.metrics?.stasis_index);
   const predictiveSeries = series(ticks, (tick) => tick?.metrics?.predictive_consistency);
@@ -124,7 +125,7 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
   const guardrailOkFrac = toFinite(metrics?.pmia_guardrail_ok_frac, null);
 
   const persistenceScore = (
-    (continuityRatio(ticks) * 0.45)
+    ((tickContinuityRatio ?? 0) * 0.45)
     + (normalizeLower(directStasis, 0, 1) * 0.25)
     + (flags?.io_partial ? 0 : 0.2)
     + (flags?.monotonic_violation ? 0 : 0.1)
@@ -177,7 +178,7 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
   );
 
   const perDirectSignals = {
-    continuityRatio: Number(continuityRatio(ticks).toFixed(6)),
+    continuityRatio: tickContinuityRatio !== null ? Number(tickContinuityRatio.toFixed(6)) : null,
     stasisIndex: directStasis,
     ioPartial: Boolean(flags?.io_partial),
     monotonicViolation: Boolean(flags?.monotonic_violation)

@@ -3,6 +3,8 @@ import path from 'path';
 
 const isObj = (value) => value && typeof value === 'object' && !Array.isArray(value);
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
+const getCount = (counts, key) => Number((isObj(counts) ? counts[key] : 0) || 0);
+const MIN_CONDITION_RUN_COUNT = 2;
 
 const RUN_BOUNDARIES = [
   'No implica validacion externa.',
@@ -84,20 +86,87 @@ export const buildConditionSupportLabelsArtifact = ({ outputDir, conditionSummar
   const summary = isObj(conditionSummary) ? conditionSummary : null;
   const baselinePresent = Boolean(summary?.conditions?.baseline);
   const comparisons = Array.isArray(comparison?.comparisons) ? comparison.comparisons : [];
+  const comparisonByCondition = new Map(comparisons.map((entry) => [String(entry?.condition || ''), entry]));
+  const baselineSummary = summary?.conditions?.baseline || null;
+
+  const evaluateQualityMinimum = ({ condition, value, requireComparison }) => {
+    const runCount = Number(value?.run_count || 0);
+    const statusCounts = isObj(value?.status_counts) ? value.status_counts : {};
+    const entropyStatusCounts = isObj(value?.entropy_status_counts) ? value.entropy_status_counts : {};
+    const reasons = ['descriptive_small_batch_only'];
+
+    if (!baselinePresent) reasons.push('baseline_missing_for_comparison');
+
+    const sufficientRunCount = runCount >= MIN_CONDITION_RUN_COUNT;
+    const discardedCount = getCount(statusCounts, 'DISCARDED');
+    const tamperedCount = getCount(statusCounts, 'TAMPERED');
+    const admissibleCount = getCount(statusCounts, 'ADMISSIBLE');
+    const invalidEntropyCount = getCount(entropyStatusCounts, 'invalid');
+    const notRecordedEntropyCount = getCount(entropyStatusCounts, 'not_recorded');
+
+    if (!sufficientRunCount) reasons.push('insufficient_condition_run_count');
+    if (discardedCount > 0) reasons.push('discarded_runs_present');
+    if (tamperedCount > 0) reasons.push('tampered_runs_present');
+    if (admissibleCount !== runCount) reasons.push('non_admissible_runs_present');
+    if (invalidEntropyCount > 0) reasons.push('invalid_entropy_status_present');
+    if (notRecordedEntropyCount > 0) reasons.push('entropy_status_not_recorded_present');
+
+    if (requireComparison) {
+      if (!comparisonByCondition.has(condition)) reasons.push('comparison_missing');
+      if (!baselineSummary) {
+        reasons.push('baseline_quality_minimum_not_met');
+      } else {
+        const baselineRunCount = Number(baselineSummary?.run_count || 0);
+        const baselineStatusCounts = isObj(baselineSummary?.status_counts) ? baselineSummary.status_counts : {};
+        const baselineEntropyStatusCounts = isObj(baselineSummary?.entropy_status_counts) ? baselineSummary.entropy_status_counts : {};
+        const baselineSufficientRunCount = baselineRunCount >= MIN_CONDITION_RUN_COUNT;
+        const baselineDiscarded = getCount(baselineStatusCounts, 'DISCARDED');
+        const baselineTampered = getCount(baselineStatusCounts, 'TAMPERED');
+        const baselineAdmissible = getCount(baselineStatusCounts, 'ADMISSIBLE');
+        const baselineInvalidEntropy = getCount(baselineEntropyStatusCounts, 'invalid');
+        const baselineNotRecordedEntropy = getCount(baselineEntropyStatusCounts, 'not_recorded');
+        const baselineQualityOk = baselineSufficientRunCount
+          && baselineDiscarded === 0
+          && baselineTampered === 0
+          && baselineAdmissible === baselineRunCount
+          && baselineInvalidEntropy === 0
+          && baselineNotRecordedEntropy === 0;
+
+        if (!baselineQualityOk) reasons.push('baseline_quality_minimum_not_met');
+      }
+    }
+
+    const qualityOk = sufficientRunCount
+      && discardedCount === 0
+      && tamperedCount === 0
+      && admissibleCount === runCount
+      && invalidEntropyCount === 0
+      && notRecordedEntropyCount === 0
+      && (!requireComparison || comparisonByCondition.has(condition));
+
+    if (qualityOk) {
+      reasons.push(requireComparison ? 'comparison_available' : 'baseline_reference_condition');
+      reasons.push('condition_quality_minimum_met');
+    }
+
+    return { qualityOk, reasons, runCount, statusCounts, entropyStatusCounts };
+  };
 
   const conditions = {};
   for (const [condition, value] of Object.entries(summary?.conditions || {})) {
-    const runCount = Number(value?.run_count || 0);
+    const evaluation = evaluateQualityMinimum({
+      condition,
+      value,
+      requireComparison: condition !== 'baseline'
+    });
     conditions[condition] = {
-      support_label: baselinePresent && runCount > 0 ? 'internal_support_only' : 'under_evaluation',
+      support_label: evaluation.qualityOk ? 'internal_support_only' : 'under_evaluation',
       closure_state: 'not_closed',
       validation_state: 'externally_unvalidated',
-      label_reasons: baselinePresent
-        ? ['descriptive_small_batch_only']
-        : ['baseline_missing_for_comparison'],
-      run_count: runCount,
-      status_counts: value?.status_counts || {},
-      entropy_status_counts: value?.entropy_status_counts || {}
+      label_reasons: evaluation.reasons,
+      run_count: evaluation.runCount,
+      status_counts: evaluation.statusCounts,
+      entropy_status_counts: evaluation.entropyStatusCounts
     };
   }
 

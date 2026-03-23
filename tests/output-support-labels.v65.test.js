@@ -148,22 +148,127 @@ const finalize = ({ artifactDir }) => {
       assert(!support.label_reasons.includes('internal_runtime_evidence_only'), 'CASE 2 FAIL: under_evaluation run must not emit internal support reason.');
     }
 
-    // CASE 3: condition-level support labels should stay internal_support_only + not_closed + externally_unvalidated.
+    // CASE 3: condition-level support labels must stay conservative under weak or mixed evidence.
     {
-      const artifactsRoot = path.join(scratch, 'artifacts');
-      const metricsArtifacts = buildConditionMetricsArtifacts({ artifactsRoot, outputDir: artifactsRoot });
-      const conditionSupport = buildConditionSupportLabelsArtifact({
-        outputDir: artifactsRoot,
-        conditionSummary: metricsArtifacts.conditionSummary,
-        comparison: metricsArtifacts.comparison
+      const outputDir = path.join(scratch, 'condition-cases');
+      fs.mkdirSync(outputDir, { recursive: true });
+
+      const weakSummary = {
+        conditions: {
+          baseline: {
+            run_count: 1,
+            status_counts: { ADMISSIBLE: 1 },
+            entropy_status_counts: { clean: 1 }
+          },
+          replay: {
+            run_count: 1,
+            status_counts: { ADMISSIBLE: 1 },
+            entropy_status_counts: { clean: 1 }
+          }
+        }
+      };
+      const weakComparison = {
+        comparisons: [
+          { condition: 'replay' }
+        ]
+      };
+      const weakConditionSupport = buildConditionSupportLabelsArtifact({
+        outputDir,
+        conditionSummary: weakSummary,
+        comparison: weakComparison
       }).artifact;
-      assert(conditionSupport.conditions.baseline.support_label === 'internal_support_only', 'CASE 3 FAIL: baseline condition support label mismatch.');
-      assert(conditionSupport.conditions.baseline.closure_state === 'not_closed', 'CASE 3 FAIL: baseline condition must remain not_closed.');
-      assert(conditionSupport.conditions.baseline.validation_state === 'externally_unvalidated', 'CASE 3 FAIL: baseline condition must remain externally_unvalidated.');
-      assert(conditionSupport.non_claim_boundaries.includes('No implica validacion externa.'), 'CASE 3 FAIL: condition-level non-claim boundary missing.');
+      assert(weakConditionSupport.conditions.baseline.support_label === 'under_evaluation', 'CASE 3 FAIL: single-run baseline must stay under_evaluation.');
+      assert(weakConditionSupport.conditions.replay.support_label === 'under_evaluation', 'CASE 3 FAIL: single-run replay must stay under_evaluation.');
+      assert(weakConditionSupport.conditions.replay.label_reasons.includes('insufficient_condition_run_count'), 'CASE 3 FAIL: weak replay must record insufficient run count.');
+      assert(weakConditionSupport.conditions.replay.label_reasons.includes('baseline_quality_minimum_not_met'), 'CASE 3 FAIL: weak replay must record weak baseline quality.');
+
+      const mixedSummary = {
+        conditions: {
+          baseline: {
+            run_count: 2,
+            status_counts: { ADMISSIBLE: 2 },
+            entropy_status_counts: { clean: 2 }
+          },
+          dropout: {
+            run_count: 2,
+            status_counts: { ADMISSIBLE: 1, DISCARDED: 1 },
+            entropy_status_counts: { degraded: 1, invalid: 1 }
+          }
+        }
+      };
+      const mixedComparison = {
+        comparisons: [
+          { condition: 'dropout' }
+        ]
+      };
+      const mixedConditionSupport = buildConditionSupportLabelsArtifact({
+        outputDir,
+        conditionSummary: mixedSummary,
+        comparison: mixedComparison
+      }).artifact;
+      assert(mixedConditionSupport.conditions.baseline.support_label === 'internal_support_only', 'CASE 3 FAIL: strong baseline should allow conservative internal_support_only.');
+      assert(mixedConditionSupport.conditions.dropout.support_label === 'under_evaluation', 'CASE 3 FAIL: discarded/invalid-heavy condition must stay under_evaluation.');
+      assert(mixedConditionSupport.conditions.dropout.label_reasons.includes('discarded_runs_present'), 'CASE 3 FAIL: mixed condition must record discarded_runs_present.');
+      assert(mixedConditionSupport.conditions.dropout.label_reasons.includes('invalid_entropy_status_present'), 'CASE 3 FAIL: mixed condition must record invalid entropy status.');
+
+      const sufficientSummary = {
+        conditions: {
+          baseline: {
+            run_count: 2,
+            status_counts: { ADMISSIBLE: 2 },
+            entropy_status_counts: { clean: 1, degraded: 1 }
+          },
+          shuffled: {
+            run_count: 2,
+            status_counts: { ADMISSIBLE: 2 },
+            entropy_status_counts: { clean: 2 }
+          }
+        }
+      };
+      const sufficientComparison = {
+        comparisons: [
+          { condition: 'shuffled' }
+        ]
+      };
+      const sufficientConditionSupport = buildConditionSupportLabelsArtifact({
+        outputDir,
+        conditionSummary: sufficientSummary,
+        comparison: sufficientComparison
+      }).artifact;
+      assert(sufficientConditionSupport.conditions.shuffled.support_label === 'internal_support_only', 'CASE 3 FAIL: sufficient small-batch condition should allow internal_support_only.');
+      assert(sufficientConditionSupport.conditions.shuffled.label_reasons.includes('comparison_available'), 'CASE 3 FAIL: sufficient condition must record comparison availability.');
+      assert(sufficientConditionSupport.conditions.shuffled.closure_state === 'not_closed', 'CASE 3 FAIL: condition labels must remain not_closed.');
+      assert(sufficientConditionSupport.conditions.shuffled.validation_state === 'externally_unvalidated', 'CASE 3 FAIL: condition labels must remain externally_unvalidated.');
+      assert(sufficientConditionSupport.non_claim_boundaries.includes('No implica validacion externa.'), 'CASE 3 FAIL: condition-level non-claim boundary missing.');
     }
 
-    // CASE 4: outputs must keep verdict and support label separate.
+    // CASE 4: missing comparison must keep non-baseline conditions under evaluation even with clean runs.
+    {
+      const outputDir = path.join(scratch, 'condition-cases-missing-comparison');
+      fs.mkdirSync(outputDir, { recursive: true });
+      const noComparisonSupport = buildConditionSupportLabelsArtifact({
+        outputDir,
+        conditionSummary: {
+          conditions: {
+            baseline: {
+              run_count: 2,
+              status_counts: { ADMISSIBLE: 2 },
+              entropy_status_counts: { clean: 2 }
+            },
+            prng_only: {
+              run_count: 2,
+              status_counts: { ADMISSIBLE: 2 },
+              entropy_status_counts: { clean: 2 }
+            }
+          }
+        },
+        comparison: { comparisons: [] }
+      }).artifact;
+      assert(noComparisonSupport.conditions.prng_only.support_label === 'under_evaluation', 'CASE 4 FAIL: condition without comparison must stay under_evaluation.');
+      assert(noComparisonSupport.conditions.prng_only.label_reasons.includes('comparison_missing'), 'CASE 4 FAIL: missing comparison reason must be recorded.');
+    }
+
+    // CASE 5: outputs must keep verdict and support label separate.
     {
       const supportPath = path.join(scratch, 'artifacts', 'support_clean', 'support_labels.json');
       const verdictPath = path.join(scratch, 'artifacts', 'support_clean', 'run_verdict.json');

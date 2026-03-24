@@ -7,6 +7,7 @@ import { buildCanonicalInvariantPackage } from '../canon/invariants/CanonicalInv
 import { evaluateEntropyPreVerdictArtifact } from './EntropyForensics.js';
 import { buildRunMetricsArtifact } from './EntropyConditionMetrics.js';
 import { buildRunSupportLabelsArtifact } from './OutputSupportLabels.js';
+import { buildRunOutputConsumptionPolicyArtifact } from './OutputConsumptionPolicy.js';
 
 const pct = (arr, p) => {
   if (!Array.isArray(arr) || arr.length === 0) return 0;
@@ -246,6 +247,7 @@ export class AdmissibilityEngine {
       fs.writeFileSync(path.join(artifactDir, 'entropy_run_diagnostics.json'), `${JSON.stringify({
         runId: String(header.runId || path.basename(artifactDir)),
         artifact_role: 'authoritative_run_level_entropy_diagnostics',
+        consumption_policy_ref: 'output_consumption_policy.json',
         source_artifact: 'entropy_preverdict.json',
         source_artifact_hash: entropyPreVerdict ? fileHash(entropyPreVerdictPath) : null,
         overall_run_verdict_artifact: 'run_verdict.json',
@@ -277,6 +279,7 @@ export class AdmissibilityEngine {
     fs.writeFileSync(path.join(artifactDir, 'p5_03_threshold_runtime.json'), `${JSON.stringify(claimMapping.p503ThresholdRuntime || {}, null, 2)}\n`, 'utf8');
     buildRunMetricsArtifact({ artifactDir });
     buildRunSupportLabelsArtifact({ artifactDir });
+    buildRunOutputConsumptionPolicyArtifact({ artifactDir });
     return { verdictPath, verdict };
   }
 }

@@ -51,6 +51,7 @@ export const buildRunSupportLabelsArtifact = ({ artifactDir }) => {
   const artifact = {
     runId: String(verdict.runId || path.basename(artifactDir)),
     artifact_role: 'support_label_output',
+    consumption_policy_ref: 'output_consumption_policy.json',
     source_artifacts: {
       run_verdict: 'run_verdict.json',
       run_metrics: 'run_metrics.json',
@@ -172,6 +173,7 @@ export const buildConditionSupportLabelsArtifact = ({ outputDir, conditionSummar
 
   const artifact = {
     artifact_role: 'condition_support_label_output',
+    consumption_policy_ref: 'condition_output_consumption_policy.json',
     source_artifacts: {
       condition_metrics_summary: 'condition_metrics_summary.json',
       condition_comparison: 'condition_comparison.json'

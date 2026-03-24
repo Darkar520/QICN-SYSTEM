@@ -152,6 +152,7 @@ export const buildRunMetricsArtifact = ({ artifactDir }) => {
   const artifact = {
     runId: String(summary.runId || verdict.runId || path.basename(artifactDir)),
     artifact_role: 'run_level_metrics_auxiliary',
+    consumption_policy_ref: 'output_consumption_policy.json',
     source_artifacts: {
       run_summary: 'run_summary.json',
       entropy_preverdict: entropyPreVerdict ? 'entropy_preverdict.json' : null,
@@ -249,6 +250,8 @@ export const buildConditionMetricsArtifacts = ({ artifactsRoot, outputDir = arti
     artifact_role: 'small_batch_condition_summary',
     source_artifact: 'run_metrics.json',
     support_boundary_ref: 'condition_support_labels.json',
+    consumption_policy_ref: 'condition_output_consumption_policy.json',
+    interpretation_boundary: 'Small-batch descriptive summary only; not claim-safe and not externally validated.',
     condition_count: grouped.size,
     conditions: {}
   };
@@ -287,6 +290,8 @@ export const buildConditionMetricsArtifacts = ({ artifactsRoot, outputDir = arti
     artifact_role: 'small_batch_condition_comparison',
     baseline_condition: baselineSummary ? 'baseline' : null,
     support_boundary_ref: 'condition_support_labels.json',
+    consumption_policy_ref: 'condition_output_consumption_policy.json',
+    interpretation_boundary: 'Small-batch descriptive comparison only; not causal confirmation, not claim closure, not external validation.',
     compared_metrics: RUN_METRIC_PATHS,
     comparisons: []
   };

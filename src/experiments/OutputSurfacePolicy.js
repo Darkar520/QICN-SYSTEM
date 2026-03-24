@@ -30,6 +30,11 @@ export const SURFACE_CLASSES = {
     requires_boundary: true,
     blocked_by_external_validation_absence: false
   },
+  local_report_surface: {
+    definition: 'Local report surface for bounded descriptive summaries assembled inside the repo.',
+    requires_boundary: true,
+    blocked_by_external_validation_absence: false
+  },
   descriptive_export_surface: {
     definition: 'Local descriptive export surface; never claim-facing and always boundary-bound.',
     requires_boundary: true,
@@ -81,6 +86,7 @@ const ALL_SURFACES = Object.keys(SURFACE_CLASSES);
 const EXTERNAL_FACING_SURFACES = ['external_claim_facing_surface'];
 const HUMAN_FACING_SURFACES = [
   'developer_inspection_surface',
+  'local_report_surface',
   'descriptive_export_surface',
   'controlled_statement_surface'
 ];
@@ -193,17 +199,18 @@ const resolveRunStatementGate = ({ artifactName, entry, boundaryReady, refsReady
 const resolveRunAllowedSurfaces = ({ artifactName, statementGateStatus }) => {
   switch (artifactName) {
     case 'run_verdict.json':
-      return ['local_artifact_surface', 'developer_inspection_surface'];
+      return ['local_artifact_surface', 'developer_inspection_surface', 'local_report_surface'];
     case 'entropy_run_diagnostics.json':
-      return ['local_artifact_surface', 'developer_inspection_surface'];
+      return ['local_artifact_surface', 'developer_inspection_surface', 'local_report_surface'];
     case 'entropy_preverdict.json':
       return ['internal_runtime_surface', 'local_artifact_surface'];
     case 'run_metrics.json':
-      return ['local_artifact_surface', 'developer_inspection_surface', 'descriptive_export_surface'];
+      return ['local_artifact_surface', 'developer_inspection_surface', 'local_report_surface', 'descriptive_export_surface'];
     case 'support_labels.json':
       return unique([
         'local_artifact_surface',
         'developer_inspection_surface',
+        'local_report_surface',
         ...(statementGateStatus === 'local_descriptive_statement_only' ? ['controlled_statement_surface'] : [])
       ]);
     default:
@@ -380,13 +387,14 @@ const resolveConditionOutputStatementGate = ({ artifactName, entry, boundaryRead
 const resolveConditionOutputAllowedSurfaces = ({ artifactName, statementGateStatus }) => {
   switch (artifactName) {
     case 'condition_metrics_summary.json':
-      return ['local_artifact_surface', 'developer_inspection_surface', 'descriptive_export_surface', 'small_batch_summary_surface'];
+      return ['local_artifact_surface', 'developer_inspection_surface', 'local_report_surface', 'descriptive_export_surface', 'small_batch_summary_surface'];
     case 'condition_comparison.json':
       return ['local_artifact_surface', 'small_batch_summary_surface'];
     case 'condition_support_labels.json':
       return unique([
         'local_artifact_surface',
         'developer_inspection_surface',
+        'local_report_surface',
         'small_batch_summary_surface',
         ...(statementGateStatus === 'local_descriptive_statement_only' ? ['controlled_statement_surface'] : [])
       ]);

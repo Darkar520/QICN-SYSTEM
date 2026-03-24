@@ -182,6 +182,7 @@ const portabilityMatches = (files) => {
 
 const buildGapRegister = (model) => {
   const gaps = [];
+  const provenanceNotes = [];
   if (!model.system.state.clean) {
     gaps.push({
       id: 'system.repo_not_clean',
@@ -249,6 +250,15 @@ const buildGapRegister = (model) => {
       closure_requirement: 'Retain as provenance warning; no corrective action required for the current baseline.'
     });
   }
+  if (Array.isArray(model.release.integrity_check.provenance_notes)
+    && model.release.integrity_check.provenance_notes.includes('working_tree_not_clean_at_hardening_start')) {
+    provenanceNotes.push({
+      id: 'release.historical_dirty_start',
+      class: 'provenance_note',
+      impact: 'Historical repo state at hardening start only; not an active operational warning.',
+      evidence: 'canonical_integrity_check.json provenance_notes includes working_tree_not_clean_at_hardening_start'
+    });
+  }
   const portability = portabilityMatches(model.portability_targets);
   if (portability.length > 0) {
     gaps.push({
@@ -267,7 +277,9 @@ const buildGapRegister = (model) => {
     generated_at: new Date().toISOString(),
     overall_blocking_gap_count: gaps.filter((gap) => gap.classification === 'blocking_gap').length,
     overall_warning_count: gaps.filter((gap) => gap.classification !== 'blocking_gap').length,
-    gaps
+    provenance_note_count: provenanceNotes.length,
+    gaps,
+    provenance_notes: provenanceNotes
   };
 };
 
@@ -401,7 +413,8 @@ const evaluateEcosystem = () => {
       },
       interpretation_boundary: 'Cross-repo verification matrix only; internal ecosystem readiness evidence, not external validation, not theory confirmation.',
       warnings: gapRegister.gaps.filter((gap) => gap.classification !== 'blocking_gap').map((gap) => gap.id),
-      failures: gapRegister.gaps.filter((gap) => gap.classification === 'blocking_gap').map((gap) => gap.id)
+      failures: gapRegister.gaps.filter((gap) => gap.classification === 'blocking_gap').map((gap) => gap.id),
+      provenance_notes: gapRegister.provenance_notes.map((note) => note.id)
     }
   };
 };

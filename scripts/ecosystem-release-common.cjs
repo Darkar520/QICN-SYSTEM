@@ -1,0 +1,418 @@
+const fs = require('fs');
+const path = require('path');
+const cp = require('child_process');
+
+const SYSTEM_ROOT = path.resolve(__dirname, '..');
+const WORKSPACE_ROOT = path.resolve(SYSTEM_ROOT, '..');
+const RELEASE_ROOT = path.join(WORKSPACE_ROOT, 'release_repo_qicn_2026-03-01');
+const ECOSYSTEM_ARTIFACT_ROOT = path.join(SYSTEM_ROOT, 'artifacts', 'ecosystem_release_candidate');
+const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio/i;
+
+const normalize = (value) => String(value || '').replace(/\\/g, '/');
+const exists = (file) => fs.existsSync(file);
+const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
+const readText = (file) => fs.readFileSync(file, 'utf8');
+
+const ensureDir = (dir) => {
+  fs.mkdirSync(dir, { recursive: true });
+  return dir;
+};
+
+const writeJson = (file, data) => {
+  ensureDir(path.dirname(file));
+  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
+};
+
+const copyFile = (from, to) => {
+  ensureDir(path.dirname(to));
+  fs.copyFileSync(from, to);
+};
+
+const listDirsByPrefix = (dir, prefix) => {
+  if (!exists(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && entry.name.startsWith(prefix))
+    .map((entry) => path.join(dir, entry.name))
+    .sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
+};
+
+const latestDirByPrefix = (dir, prefix) => {
+  const matches = listDirsByPrefix(dir, prefix);
+  return matches.length > 0 ? matches[0] : null;
+};
+
+const POWERSHELL = 'C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
+const psQuote = (value) => `'${String(value).replace(/'/g, "''")}'`;
+const git = (cwd, args) => cp.execFileSync(
+  POWERSHELL,
+  ['-Command', `git ${args.map(psQuote).join(' ')}`],
+  { cwd, encoding: 'utf8' }
+).trim();
+const tryGit = (cwd, args) => {
+  try {
+    return git(cwd, args);
+  } catch (error) {
+    return null;
+  }
+};
+
+const getRepoStateFromEnv = (prefix) => {
+  const branch = process.env[`${prefix}_BRANCH`];
+  const head = process.env[`${prefix}_HEAD`];
+  if (!branch || !head) return null;
+  return {
+    branch,
+    head,
+    upstream: process.env[`${prefix}_UPSTREAM`] || null,
+    upstream_head: process.env[`${prefix}_UPSTREAM_HEAD`] || null,
+    remote: process.env[`${prefix}_REMOTE`] || 'origin',
+    remote_url: process.env[`${prefix}_REMOTE_URL`] || null,
+    clean: String(process.env[`${prefix}_CLEAN`] || '').toLowerCase() === 'true',
+    pushed: String(process.env[`${prefix}_PUSHED`] || '').toLowerCase() === 'true'
+  };
+};
+
+const getRepoState = (repoRoot, envPrefix) => {
+  const fromEnv = getRepoStateFromEnv(envPrefix);
+  if (fromEnv) return fromEnv;
+  const branch = git(repoRoot, ['rev-parse', '--abbrev-ref', 'HEAD']);
+  const head = git(repoRoot, ['rev-parse', 'HEAD']);
+  const statusPorcelain = git(repoRoot, ['status', '--porcelain']);
+  const upstream = tryGit(repoRoot, ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']);
+  const upstreamHead = upstream ? tryGit(repoRoot, ['rev-parse', '@{u}']) : null;
+  const remote = upstream ? upstream.split('/')[0] : 'origin';
+  const remoteUrl = tryGit(repoRoot, ['config', '--get', `remote.${remote}.url`]);
+  return {
+    branch,
+    head,
+    upstream,
+    upstream_head: upstreamHead,
+    remote,
+    remote_url: remoteUrl,
+    clean: statusPorcelain === '',
+    pushed: Boolean(upstreamHead && upstreamHead === head)
+  };
+};
+
+const getSystemBundleManifestPath = () => {
+  const latest = latestDirByPrefix(path.join(SYSTEM_ROOT, 'artifacts', 'internal_release'), 'internal_release_');
+  if (!latest) return null;
+  const manifest = path.join(latest, 'release_bundle_manifest.json');
+  return exists(manifest) ? manifest : null;
+};
+
+const getReleaseBundleManifestPath = () => {
+  const checkPath = path.join(RELEASE_ROOT, '_build', 'canonical_hardening', 'canonical_release_check.json');
+  if (exists(checkPath)) {
+    const check = readJson(checkPath);
+    if (check.bundle && check.bundle.manifestPath) {
+      const manifest = path.join(RELEASE_ROOT, check.bundle.manifestPath);
+      if (exists(manifest)) return manifest;
+    }
+  }
+  const latest = latestDirByPrefix(path.join(RELEASE_ROOT, '_build'), 'canonical_release_bundle_');
+  if (!latest) return null;
+  const manifest = path.join(latest, 'canonical_release_manifest.json');
+  return exists(manifest) ? manifest : null;
+};
+
+const loadSystemBaseline = () => {
+  const readinessPath = path.join(SYSTEM_ROOT, 'artifacts', 'operational_readiness_manifest.json');
+  const artifactPath = path.join(SYSTEM_ROOT, 'artifacts', 'artifact_manifest.json');
+  const smokePath = path.join(SYSTEM_ROOT, 'artifacts', 'operational_smoke_manifest.json');
+  const bundlePath = getSystemBundleManifestPath();
+  return {
+    repo_root: SYSTEM_ROOT,
+    state: getRepoState(SYSTEM_ROOT, 'ECO_SYSTEM'),
+    readiness_path: readinessPath,
+    artifact_manifest_path: artifactPath,
+    smoke_manifest_path: smokePath,
+    bundle_manifest_path: bundlePath,
+    readiness: readJson(readinessPath),
+    artifact_manifest: readJson(artifactPath),
+    smoke_manifest: readJson(smokePath),
+    bundle_manifest: bundlePath ? readJson(bundlePath) : null
+  };
+};
+
+const loadReleaseBaseline = () => {
+  const freezePath = path.join(RELEASE_ROOT, 'release', 'release_freeze_manifest.json');
+  const claimRegistryPath = path.join(RELEASE_ROOT, 'release', 'claim_registry.v1.json');
+  const integrityPath = path.join(RELEASE_ROOT, '_build', 'canonical_hardening', 'canonical_integrity_check.json');
+  const releaseCheckPath = path.join(RELEASE_ROOT, '_build', 'canonical_hardening', 'canonical_release_check.json');
+  const bundlePath = getReleaseBundleManifestPath();
+  return {
+    repo_root: RELEASE_ROOT,
+    state: getRepoState(RELEASE_ROOT, 'ECO_RELEASE'),
+    freeze_path: freezePath,
+    claim_registry_path: claimRegistryPath,
+    integrity_check_path: integrityPath,
+    release_check_path: releaseCheckPath,
+    bundle_manifest_path: bundlePath,
+    freeze_manifest: readJson(freezePath),
+    claim_registry: readJson(claimRegistryPath),
+    integrity_check: readJson(integrityPath),
+    release_check: readJson(releaseCheckPath),
+    bundle_manifest: bundlePath ? readJson(bundlePath) : null
+  };
+};
+
+const loadInterfaceContract = () => {
+  const docPath = path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_INTERFACE_CONTRACT.md');
+  const jsonPath = path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json');
+  return {
+    doc_path: docPath,
+    json_path: jsonPath,
+    doc_present: exists(docPath),
+    json_present: exists(jsonPath),
+    json: readJson(jsonPath)
+  };
+};
+
+const portabilityMatches = (files) => {
+  const matches = [];
+  for (const file of files) {
+    if (!exists(file)) continue;
+    if (LOCAL_PATH_PATTERN.test(readText(file))) {
+      matches.push(normalize(path.relative(SYSTEM_ROOT, file)));
+    }
+  }
+  return matches;
+};
+
+const buildGapRegister = (model) => {
+  const gaps = [];
+  if (!model.system.state.clean) {
+    gaps.push({
+      id: 'system.repo_not_clean',
+      classification: 'blocking_gap',
+      impact: 'Blocks internal ecosystem release candidate because QICN-SYSTEM is not clean.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: true,
+      evidence: `QICN-SYSTEM branch ${model.system.state.branch} is not clean.`,
+      closure_requirement: 'Clean the operational repo before re-baselining.'
+    });
+  }
+  if (!model.system.state.pushed) {
+    gaps.push({
+      id: 'system.repo_not_pushed',
+      classification: 'blocking_gap',
+      impact: 'Blocks internal ecosystem release candidate because QICN-SYSTEM is not synchronized with upstream.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: true,
+      evidence: `QICN-SYSTEM HEAD ${model.system.state.head} differs from upstream ${model.system.state.upstream_head || 'UNVERIFIED'}.`,
+      closure_requirement: 'Push the operational baseline or mark it as intentionally local-only.'
+    });
+  }
+  if (!model.release.state.clean) {
+    gaps.push({
+      id: 'release.repo_not_clean',
+      classification: 'blocking_gap',
+      impact: 'Blocks internal ecosystem release candidate because QICN-RELEASE is not clean.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: true,
+      evidence: `QICN-RELEASE branch ${model.release.state.branch} is not clean.`,
+      closure_requirement: 'Clean the canonical repo before re-baselining.'
+    });
+  }
+  if (!model.release.state.pushed) {
+    gaps.push({
+      id: 'release.repo_not_pushed',
+      classification: 'blocking_gap',
+      impact: 'Blocks internal ecosystem release candidate because QICN-RELEASE is not synchronized with upstream.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: true,
+      evidence: `QICN-RELEASE HEAD ${model.release.state.head} differs from upstream ${model.release.state.upstream_head || 'UNVERIFIED'}.`,
+      closure_requirement: 'Push the canonical baseline or mark it as intentionally local-only.'
+    });
+  }
+  if (model.release.freeze_manifest.pin_status.upstream_pin_status !== 'resolved') {
+    gaps.push({
+      id: 'release.upstream_pin_partially_resolved',
+      classification: 'unresolved_upstream_reference',
+      impact: 'Does not block an internal release candidate, but prevents calling the canonical pin fully resolved upstream.',
+      affects_internal_release_candidate: false,
+      affects_future_claim_facing_phase: true,
+      evidence: model.release.freeze_manifest.pin_status.remaining_gap,
+      closure_requirement: model.release.freeze_manifest.pin_status.full_resolution_requirement
+    });
+  }
+  if (Array.isArray(model.release.integrity_check.warnings)
+    && model.release.integrity_check.warnings.includes('working_tree_not_clean_at_hardening_start')) {
+    gaps.push({
+      id: 'release.historical_dirty_start',
+      classification: 'documented_warning',
+      impact: 'Historical provenance warning only. The repo is currently clean.',
+      affects_internal_release_candidate: false,
+      affects_future_claim_facing_phase: false,
+      evidence: 'canonical_integrity_check.json warning: working_tree_not_clean_at_hardening_start',
+      closure_requirement: 'Retain as provenance warning; no corrective action required for the current baseline.'
+    });
+  }
+  const portability = portabilityMatches(model.portability_targets);
+  if (portability.length > 0) {
+    gaps.push({
+      id: 'ecosystem.portability_local_paths_present',
+      classification: 'blocking_gap',
+      impact: 'Critical ecosystem docs or manifests contain local absolute paths.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: true,
+      evidence: portability.join(', '),
+      closure_requirement: 'Replace local paths with repo-relative or neutral references.'
+    });
+  }
+  return {
+    artifact_role: 'ecosystem_gap_register',
+    schema_version: '1.0.0',
+    generated_at: new Date().toISOString(),
+    overall_blocking_gap_count: gaps.filter((gap) => gap.classification === 'blocking_gap').length,
+    overall_warning_count: gaps.filter((gap) => gap.classification !== 'blocking_gap').length,
+    gaps
+  };
+};
+
+const evaluateEcosystem = () => {
+  const system = loadSystemBaseline();
+  const release = loadReleaseBaseline();
+  const interfaceContract = loadInterfaceContract();
+  const portabilityTargets = [
+    path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_BASELINE.md'),
+    path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_INTERFACE_CONTRACT.md'),
+    path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json'),
+    path.join(SYSTEM_ROOT, 'docs', 'OPERATIONAL_READINESS.md'),
+    path.join(RELEASE_ROOT, 'docs', 'CANON_SOURCE_OF_TRUTH.md'),
+    path.join(RELEASE_ROOT, 'docs', 'THEORY_SYSTEM_INTERFACE.md'),
+    path.join(RELEASE_ROOT, 'release', 'release_freeze_manifest.json')
+  ];
+  const model = {
+    checked_at: new Date().toISOString(),
+    system,
+    release,
+    interfaceContract,
+    portability_targets: portabilityTargets
+  };
+
+  const checks = [];
+  const addCheck = (id, status, details) => checks.push({ id, status, details });
+
+  addCheck('system_repo_state', system.state.clean && system.state.pushed ? 'PASS' : 'FAIL', {
+    branch: system.state.branch,
+    head: system.state.head,
+    clean: system.state.clean,
+    pushed: system.state.pushed,
+    upstream: system.state.upstream
+  });
+  addCheck('system_operational_readiness', system.readiness.missing_canonical_scripts.length === 0
+    && system.readiness.docs_missing.length === 0
+    && system.readiness.scripts_missing.length === 0
+    && system.readiness.entrypoints_missing.length === 0 ? 'PASS' : 'FAIL', {
+    manifest: normalize(path.relative(SYSTEM_ROOT, system.readiness_path)),
+    missing_canonical_scripts: system.readiness.missing_canonical_scripts,
+    docs_missing: system.readiness.docs_missing,
+    scripts_missing: system.readiness.scripts_missing,
+    entrypoints_missing: system.readiness.entrypoints_missing
+  });
+  addCheck('system_artifact_governance', system.artifact_manifest.missing_required_files.length === 0 ? 'PASS' : 'FAIL', {
+    manifest: normalize(path.relative(SYSTEM_ROOT, system.artifact_manifest_path)),
+    blocked_local_report_artifact: system.artifact_manifest.output_checks['condition_comparison.json'].local_report_decision.reason_code
+  });
+  addCheck('system_operational_smoke', Array.isArray(system.smoke_manifest.steps)
+    && system.smoke_manifest.steps.every((step) => step.ok) ? 'PASS' : 'FAIL', {
+    manifest: normalize(path.relative(SYSTEM_ROOT, system.smoke_manifest_path)),
+    step_count: system.smoke_manifest.step_count
+  });
+  addCheck('system_internal_bundle', Boolean(system.bundle_manifest)
+    && Array.isArray(system.bundle_manifest.excluded_outputs)
+    && system.bundle_manifest.excluded_outputs.some((item) => item.artifact === 'condition_comparison.json')
+    ? 'PASS' : 'FAIL', {
+    manifest: system.bundle_manifest_path ? normalize(path.relative(SYSTEM_ROOT, system.bundle_manifest_path)) : null,
+    git_commit: system.bundle_manifest ? system.bundle_manifest.git.commit : null
+  });
+
+  addCheck('release_repo_state', release.state.clean && release.state.pushed ? 'PASS' : 'FAIL', {
+    branch: release.state.branch,
+    head: release.state.head,
+    clean: release.state.clean,
+    pushed: release.state.pushed,
+    upstream: release.state.upstream
+  });
+  addCheck('release_canonical_integrity', ['PASS', 'PASS_WITH_WARNINGS'].includes(release.integrity_check.status)
+    && release.integrity_check.checks.non_canonical_material_physically_separated
+    ? (release.integrity_check.status === 'PASS_WITH_WARNINGS' ? 'PASS_WITH_WARNINGS' : 'PASS')
+    : 'FAIL', {
+    manifest: normalize(path.relative(RELEASE_ROOT, release.integrity_check_path)),
+    status: release.integrity_check.status,
+    warnings: release.integrity_check.warnings
+  });
+  addCheck('release_claim_registry', release.claim_registry.entries.length > 0 ? 'PASS' : 'FAIL', {
+    registry: normalize(path.relative(RELEASE_ROOT, release.claim_registry_path)),
+    entries: release.claim_registry.entries.length,
+    family_level_subsets_retained: release.claim_registry.registry_scope.family_level_subsets_retained
+  });
+  addCheck('release_canonical_bundle', release.release_check.status === 'PASS'
+    && Boolean(release.bundle_manifest)
+    && Boolean(release.bundle_manifest.bundle_categories)
+    ? 'PASS' : 'FAIL', {
+    check: normalize(path.relative(RELEASE_ROOT, release.release_check_path)),
+    manifest: release.bundle_manifest_path ? normalize(path.relative(RELEASE_ROOT, release.bundle_manifest_path)) : null
+  });
+  addCheck('ecosystem_interface_contract', interfaceContract.doc_present
+    && interfaceContract.json_present
+    && Array.isArray(interfaceContract.json.prohibited_inferences)
+    && interfaceContract.json.prohibited_inferences.length >= 5 ? 'PASS' : 'FAIL', {
+    doc_path: normalize(path.relative(SYSTEM_ROOT, interfaceContract.doc_path)),
+    json_path: normalize(path.relative(SYSTEM_ROOT, interfaceContract.json_path))
+  });
+
+  const portability = portabilityMatches(portabilityTargets);
+  addCheck('ecosystem_portability_targets', portability.length === 0 ? 'PASS' : 'FAIL', {
+    scanned_files: portabilityTargets.map((file) => normalize(path.relative(SYSTEM_ROOT, file))),
+    matches: portability
+  });
+
+  const gapRegister = buildGapRegister(model);
+  const hasFailure = checks.some((check) => check.status === 'FAIL') || gapRegister.overall_blocking_gap_count > 0;
+  const hasWarnings = checks.some((check) => check.status === 'PASS_WITH_WARNINGS') || gapRegister.overall_warning_count > 0;
+  const status = hasFailure ? 'FAIL' : hasWarnings ? 'PASS_WITH_WARNINGS' : 'PASS';
+
+  return {
+    model,
+    gapRegister,
+    verificationMatrix: {
+      artifact_role: 'ecosystem_verification_matrix',
+      schema_version: '1.0.0',
+      checked_at: model.checked_at,
+      status,
+      checks,
+      system_baseline: {
+        branch: system.state.branch,
+        head: system.state.head,
+        upstream: system.state.upstream,
+        release_bundle_manifest: system.bundle_manifest_path ? normalize(path.relative(SYSTEM_ROOT, system.bundle_manifest_path)) : null
+      },
+      release_baseline: {
+        branch: release.state.branch,
+        head: release.state.head,
+        upstream: release.state.upstream,
+        freeze_tag: release.freeze_manifest.freeze_reference.local_tag,
+        freeze_commit: release.freeze_manifest.freeze_reference.local_tag_commit,
+        upstream_pin_status: release.freeze_manifest.pin_status.upstream_pin_status,
+        canonical_bundle_manifest: release.bundle_manifest_path ? normalize(path.relative(RELEASE_ROOT, release.bundle_manifest_path)) : null
+      },
+      interpretation_boundary: 'Cross-repo verification matrix only; internal ecosystem readiness evidence, not external validation, not theory confirmation.',
+      warnings: gapRegister.gaps.filter((gap) => gap.classification !== 'blocking_gap').map((gap) => gap.id),
+      failures: gapRegister.gaps.filter((gap) => gap.classification === 'blocking_gap').map((gap) => gap.id)
+    }
+  };
+};
+
+module.exports = {
+  SYSTEM_ROOT,
+  RELEASE_ROOT,
+  ECOSYSTEM_ARTIFACT_ROOT,
+  normalize,
+  ensureDir,
+  writeJson,
+  copyFile,
+  evaluateEcosystem
+};

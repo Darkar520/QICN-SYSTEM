@@ -4,10 +4,10 @@ This matrix is repository-local. It separates runtime invariants, claim projecti
 
 Use it together with:
 
-- [DESCRIPTOR_REGISTRY.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/DESCRIPTOR_REGISTRY.md) for formal minimum classification of descriptors, claim projections, gate results, and artifact-only rows.
-- [descriptor_registry.v1.json](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/descriptor_registry.v1.json) and [validate-descriptor-registry.cjs](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/validate-descriptor-registry.cjs) for the machine-validable minimum registry layer.
-- [ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md) for the authoritative documentary semantics of run-level admissibility, batch enforcement, and negative controls.
-- [IMPLEMENTATION_STATUS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/IMPLEMENTATION_STATUS.md) for layer-level implementation inventory rather than evidence semantics.
+- [DESCRIPTOR_REGISTRY.md](DESCRIPTOR_REGISTRY.md) for formal minimum classification of descriptors, claim projections, gate results, and artifact-only rows.
+- [descriptor_registry.v1.json](descriptor_registry.v1.json) and [validate-descriptor-registry.cjs](../scripts/validate-descriptor-registry.cjs) for the machine-validable minimum registry layer.
+- [ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md](ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md) for the authoritative documentary semantics of run-level admissibility, batch enforcement, and negative controls.
+- [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for layer-level implementation inventory rather than evidence semantics.
 
 Normalization used below:
 

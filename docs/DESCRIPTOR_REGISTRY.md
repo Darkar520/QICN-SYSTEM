@@ -6,8 +6,8 @@ This document is the formal minimum descriptor registry for the current reposito
 
 The machine-readable companion for the minimum executable phase is:
 
-- [descriptor_registry.v1.json](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/descriptor_registry.v1.json)
-- [validate-descriptor-registry.cjs](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/validate-descriptor-registry.cjs)
+- [descriptor_registry.v1.json](descriptor_registry.v1.json)
+- [validate-descriptor-registry.cjs](../scripts/validate-descriptor-registry.cjs)
 
 Its role is narrower and more disciplined than a generic inventory. It records, in one place, which runtime, derived, batch, and decision-layer pieces actually exist, where they come from, which artifacts expose them, which tests anchor them, and what must not be inferred from them.
 
@@ -26,10 +26,10 @@ This registry does not:
 - provide external validation
 - close canonical claim status
 - act as a truth engine
-- replace [TRACEABILITY_MATRIX.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/TRACEABILITY_MATRIX.md)
-- replace [IMPLEMENTATION_STATUS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/IMPLEMENTATION_STATUS.md)
-- replace [ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md)
-- convert [runtimeParameterRegistry.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/utils/runtimeParameterRegistry.js) into a complete registry of claims
+- replace [TRACEABILITY_MATRIX.md](TRACEABILITY_MATRIX.md)
+- replace [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md)
+- replace [ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md](ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md)
+- convert [runtimeParameterRegistry.js](../src/utils/runtimeParameterRegistry.js) into a complete registry of claims
 - collapse `descriptor`, `claim_projection`, and `gate_result` into a single class
 
 This remains the human-readable companion. The JSON file is the machine-readable minimum source for structural validation. Neither file implies external validation or canonical closure.
@@ -40,11 +40,11 @@ The source terms below are taken from the repository as it exists today. If code
 
 ### `runtime_parameter`
 
-A registered runtime configuration surface exposed in [runtimeParameterRegistry.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/utils/runtimeParameterRegistry.js).
+A registered runtime configuration surface exposed in [runtimeParameterRegistry.js](../src/utils/runtimeParameterRegistry.js).
 
 ### `direct_metric`
 
-A runtime-primary recorded signal or trace emitted by [ExperimentalEpisodeHarness.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/ExperimentalEpisodeHarness.js), typically in `ticks.ndjson` and summarized in `run_summary.json`.
+A runtime-primary recorded signal or trace emitted by [ExperimentalEpisodeHarness.js](../src/experiments/ExperimentalEpisodeHarness.js), typically in `ticks.ndjson` and summarized in `run_summary.json`.
 
 ### `proxy_metric`
 
@@ -59,7 +59,7 @@ Real examples:
 
 ### `invariant`
 
-A runtime-derived invariant record emitted by [CanonicalInvariantPackage.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/canon/invariants/CanonicalInvariantPackage.js).
+A runtime-derived invariant record emitted by [CanonicalInvariantPackage.js](../src/canon/invariants/CanonicalInvariantPackage.js).
 
 Real examples:
 
@@ -72,7 +72,7 @@ Real examples:
 
 ### `claim_projection`
 
-A claim-facing mapping layer emitted by [runtimeClaimMapping.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/canon/claimMapping/runtimeClaimMapping.js). It is not a descriptor and it is not a gate result.
+A claim-facing mapping layer emitted by [runtimeClaimMapping.js](../src/canon/claimMapping/runtimeClaimMapping.js). It is not a descriptor and it is not a gate result.
 
 Real examples:
 
@@ -112,14 +112,14 @@ A dependency on `config/interventions/*.json` or `config/roeo/*.json`.
 
 ### `frozen_canon_dependency`
 
-A dependency on the external canonical repository boundary recorded in [CANON_SOURCE_OF_TRUTH.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/CANON_SOURCE_OF_TRUTH.md).
+A dependency on the external canonical repository boundary recorded in [CANON_SOURCE_OF_TRUTH.md](CANON_SOURCE_OF_TRUTH.md).
 
 ## D. Formal Minimum Schema
 
 For the executable minimum phase:
 
-- the machine-readable source of truth is [descriptor_registry.v1.json](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/descriptor_registry.v1.json)
-- structural validation is performed by [validate-descriptor-registry.cjs](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/validate-descriptor-registry.cjs)
+- the machine-readable source of truth is [descriptor_registry.v1.json](descriptor_registry.v1.json)
+- structural validation is performed by [validate-descriptor-registry.cjs](../scripts/validate-descriptor-registry.cjs)
 - this Markdown remains the narrative and interpretive companion
 
 Each row in the registry uses the following fields:
@@ -194,17 +194,17 @@ Gate and claim-projection dependency columns are documentary links only. They in
 
 Use this section together with:
 
-- [TRACEABILITY_MATRIX.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/TRACEABILITY_MATRIX.md) for claim-facing linkage
-- [ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md) for gate family semantics and negative-control architecture
-- [IMPLEMENTATION_STATUS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/IMPLEMENTATION_STATUS.md) for area-level implementation state
+- [TRACEABILITY_MATRIX.md](TRACEABILITY_MATRIX.md) for claim-facing linkage
+- [ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md](ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md) for gate family semantics and negative-control architecture
+- [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for area-level implementation state
 
 ## G. Relation To Existing Documents
 
-- [AGENTS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/AGENTS.md) defines operating vocabulary, non-claims discipline, and mandatory update behavior.
-- [TRACEABILITY_MATRIX.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/TRACEABILITY_MATRIX.md) maps claims, signals, modules, artifacts, and tests.
-- [IMPLEMENTATION_STATUS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/IMPLEMENTATION_STATUS.md) records implementation state by area and layer.
-- [ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md) defines run gates, batch enforcement, and internal falsation surfaces.
-- [CANON_SOURCE_OF_TRUTH.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/CANON_SOURCE_OF_TRUTH.md) records the external formal boundary and unresolved canon pin.
+- [AGENTS.md](../AGENTS.md) defines operating vocabulary, non-claims discipline, and mandatory update behavior.
+- [TRACEABILITY_MATRIX.md](TRACEABILITY_MATRIX.md) maps claims, signals, modules, artifacts, and tests.
+- [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) records implementation state by area and layer.
+- [ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md](ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md) defines run gates, batch enforcement, and internal falsation surfaces.
+- [CANON_SOURCE_OF_TRUTH.md](CANON_SOURCE_OF_TRUTH.md) records the external formal boundary and unresolved canon pin.
 
 ## H. What Must Not Be Inferred Yet
 
@@ -220,7 +220,7 @@ Use this section together with:
 
 ## I. Open Gaps
 
-- The external canon pin remains unresolved in [CANON_SOURCE_OF_TRUTH.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/CANON_SOURCE_OF_TRUTH.md).
+- The external canon pin remains unresolved in [CANON_SOURCE_OF_TRUTH.md](CANON_SOURCE_OF_TRUTH.md).
 - Several batch-control artifacts remain intentionally conservative as `artifact_only` rather than being forced into stronger descriptor classes.
 - The registry is documentary only; no executable registry layer exists yet.
 - Some rows remain mixed because the underlying code combines direct and derived inputs by design.

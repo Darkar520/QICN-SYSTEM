@@ -19,9 +19,9 @@ This document does not:
 - provide external validation
 - close canonical claim status
 - replace tests
-- replace [DESCRIPTOR_REGISTRY.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/DESCRIPTOR_REGISTRY.md)
-- replace [TRACEABILITY_MATRIX.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/TRACEABILITY_MATRIX.md)
-- replace [IMPLEMENTATION_STATUS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/IMPLEMENTATION_STATUS.md)
+- replace [DESCRIPTOR_REGISTRY.md](DESCRIPTOR_REGISTRY.md)
+- replace [TRACEABILITY_MATRIX.md](TRACEABILITY_MATRIX.md)
+- replace [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md)
 - change runtime behavior, endpoint contracts, or batch logic
 
 The document records repository-local enforcement only.
@@ -30,7 +30,7 @@ The document records repository-local enforcement only.
 
 ### `run_gate`
 
-A run-level check applied by [AdmissibilityEngine.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/AdmissibilityEngine.js) to a single artifact directory before a run is accepted into later layers.
+A run-level check applied by [AdmissibilityEngine.js](../src/experiments/AdmissibilityEngine.js) to a single artifact directory before a run is accepted into later layers.
 
 ### `batch_gate`
 
@@ -47,7 +47,7 @@ Real examples:
 
 ### `negative_control`
 
-A falsifier-oriented batch control defined in [negative_controls_runner.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/negative_controls_runner.js) and evaluated against batch artifacts and preregistered expectations.
+A falsifier-oriented batch control defined in [negative_controls_runner.js](../src/experiments/negative_controls_runner.js) and evaluated against batch artifacts and preregistered expectations.
 
 ### `primary_artifact`
 
@@ -89,7 +89,7 @@ A dependency on `config/` prereg-style inputs, especially `config/roeo/*.json` a
 
 ### `frozen_canon_dependency`
 
-A dependency on the external canonical repository or claim-ledger boundary documented in [CANON_SOURCE_OF_TRUTH.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/CANON_SOURCE_OF_TRUTH.md).
+A dependency on the external canonical repository or claim-ledger boundary documented in [CANON_SOURCE_OF_TRUTH.md](CANON_SOURCE_OF_TRUTH.md).
 
 Normalization used below:
 
@@ -102,7 +102,7 @@ The repository contains at least three distinct layers:
 
 ### A. Run-Level Admissibility
 
-Implemented in [AdmissibilityEngine.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/AdmissibilityEngine.js).
+Implemented in [AdmissibilityEngine.js](../src/experiments/AdmissibilityEngine.js).
 
 Inputs:
 
@@ -133,7 +133,7 @@ Closed status values:
 
 ### B. Batch-Level Enforcement
 
-Implemented in [negative_controls_runner.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/negative_controls_runner.js), with dependencies on [sno_discriminator.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/sno_discriminator.js) and [roeo_signature.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/roeo_signature.js).
+Implemented in [negative_controls_runner.js](../src/experiments/negative_controls_runner.js), with dependencies on [sno_discriminator.js](../src/experiments/sno_discriminator.js) and [roeo_signature.js](../src/experiments/roeo_signature.js).
 
 Inputs:
 
@@ -159,8 +159,8 @@ For documentary stability, refer to this layer as `paper_level_equivalent_status
 
 This state is consumed by repository tooling such as:
 
-- [build_paper_pdf_lib.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/build_paper_pdf_lib.js)
-- [latex_asset_generator_roeo.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/latex_asset_generator_roeo.js)
+- [build_paper_pdf_lib.js](../scripts/build_paper_pdf_lib.js)
+- [latex_asset_generator_roeo.js](../src/experiments/latex_asset_generator_roeo.js)
 
 This is still internal batch enforcement. It is not external validation and not canonical closure.
 
@@ -182,7 +182,7 @@ This is still internal batch enforcement. It is not external validation and not 
 
 ## 6. Architecture Of Negative Controls
 
-Negative controls are implemented in [negative_controls_runner.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/negative_controls_runner.js). They operate over batch artifacts and preregistered expectations, not over raw runtime alone.
+Negative controls are implemented in [negative_controls_runner.js](../src/experiments/negative_controls_runner.js). They operate over batch artifacts and preregistered expectations, not over raw runtime alone.
 
 Primary batch inputs:
 
@@ -248,12 +248,12 @@ Rule:
 
 ## 9. Relation To Existing Documents
 
-- [AGENTS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/AGENTS.md) is the operating guide and vocabulary contract for the repo.
-- [TRACEABILITY_MATRIX.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/TRACEABILITY_MATRIX.md) maps claims, invariants, batch controls, modules, tests, and artifacts.
-- [IMPLEMENTATION_STATUS.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/IMPLEMENTATION_STATUS.md) records area-level and layer-level implementation state.
-- [DESCRIPTOR_REGISTRY.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/DESCRIPTOR_REGISTRY.md) inventories observational, derived, claim-facing, and gate-facing pieces.
-- [descriptor_registry.v1.json](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/descriptor_registry.v1.json) and [validate-descriptor-registry.cjs](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/validate-descriptor-registry.cjs) provide the machine-validable minimum registry layer.
-- [CANON_SOURCE_OF_TRUTH.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/CANON_SOURCE_OF_TRUTH.md) records the external formal boundary and unresolved canon pin.
+- [AGENTS.md](../AGENTS.md) is the operating guide and vocabulary contract for the repo.
+- [TRACEABILITY_MATRIX.md](TRACEABILITY_MATRIX.md) maps claims, invariants, batch controls, modules, tests, and artifacts.
+- [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) records area-level and layer-level implementation state.
+- [DESCRIPTOR_REGISTRY.md](DESCRIPTOR_REGISTRY.md) inventories observational, derived, claim-facing, and gate-facing pieces.
+- [descriptor_registry.v1.json](descriptor_registry.v1.json) and [validate-descriptor-registry.cjs](../scripts/validate-descriptor-registry.cjs) provide the machine-validable minimum registry layer.
+- [CANON_SOURCE_OF_TRUTH.md](CANON_SOURCE_OF_TRUTH.md) records the external formal boundary and unresolved canon pin.
 
 Role separation:
 
@@ -277,8 +277,8 @@ Role separation:
 ## 11. Open Gaps
 
 - There is no separate paper-level object beyond `roeo_enforcement_report.json.batch_status`; the current repo uses that as the highest explicit admissibility state.
-- `admissibility.json` exists as a harness-side pre-verdict output with `PENDING_PR6C`, but it is not the authoritative run verdict and should not be confused with [AdmissibilityEngine.js](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/AdmissibilityEngine.js) output.
-- Canon pinning remains unresolved in [CANON_SOURCE_OF_TRUTH.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/CANON_SOURCE_OF_TRUTH.md).
+- `admissibility.json` exists as a harness-side pre-verdict output with `PENDING_PR6C`, but it is not the authoritative run verdict and should not be confused with [AdmissibilityEngine.js](../src/experiments/AdmissibilityEngine.js) output.
+- Canon pinning remains unresolved in [CANON_SOURCE_OF_TRUTH.md](CANON_SOURCE_OF_TRUTH.md).
 - Some later consumers, such as paper-export scripts, remain dependent on batch outputs and prereg inputs rather than on a stronger formal registry layer.
 - External-service and asset dependencies remain open.
 
@@ -288,7 +288,7 @@ This document prepares, but does not implement:
 
 - stronger formalization of run gates
 - stronger formalization of batch enforcement
-- tighter integration with [DESCRIPTOR_REGISTRY.md](c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/docs/DESCRIPTOR_REGISTRY.md)
+- tighter integration with [DESCRIPTOR_REGISTRY.md](DESCRIPTOR_REGISTRY.md)
 - tighter linkage between gates and claim projections
 - cleaner direct-evidence versus proxy-evidence separation
 - better canonical pinning

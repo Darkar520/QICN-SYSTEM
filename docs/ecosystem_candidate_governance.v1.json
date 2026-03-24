@@ -1,0 +1,45 @@
+{
+  "artifact_role": "ecosystem_candidate_governance",
+  "schema_version": "1.0.0",
+  "candidate_designation": "internal_ecosystem_release_candidate",
+  "scope": [
+    "internal reproducibility",
+    "canonical traceability",
+    "cross_repo_governance"
+  ],
+  "non_scope": [
+    "external_validation",
+    "theory_confirmation",
+    "claim_closure",
+    "public_release_authorization"
+  ],
+  "candidate_invalidated_by": [
+    "repo_not_clean",
+    "repo_not_pushed",
+    "system_canonical_command_change",
+    "system_governance_script_change",
+    "system_internal_bundle_policy_change",
+    "release_freeze_manifest_change",
+    "release_claim_registry_change",
+    "release_canonical_boundary_change",
+    "release_bundle_category_change",
+    "ecosystem_interface_contract_change",
+    "new_blocking_gap_in_ecosystem_gap_register"
+  ],
+  "rerun_required_for": [
+    "manifest_change_copied_into_ecosystem_bundle",
+    "bundle_builder_change",
+    "verifier_change",
+    "baseline_doc_change",
+    "git_state_change"
+  ],
+  "explicit_review_required_for": [
+    "canonical_freeze_reference_change",
+    "upstream_pin_evidence_change",
+    "claim_registry_granularity_or_classification_change",
+    "cross_repo_interface_boundary_change",
+    "attempted_runtime_to_corpus_validation_inference",
+    "attempted_corpus_to_runtime_confirmation_inference"
+  ],
+  "interpretation_boundary": "Candidate governance only; not external validation, not theory confirmation, not claim closure, not public release authorization."
+}

@@ -60,6 +60,10 @@ const bundleManifest = {
     documentation: 'ecosystem/docs/ECOSYSTEM_INTERFACE_CONTRACT.md',
     machine_readable: 'ecosystem/manifests/ecosystem_interface_contract.v1.json'
   },
+  candidate_governance: {
+    documentation: 'ecosystem/docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md',
+    machine_readable: 'ecosystem/manifests/ecosystem_candidate_governance.v1.json'
+  },
   gap_register: 'ecosystem/manifests/ecosystem_gap_register.v1.json',
   verification_matrix: 'ecosystem/manifests/ecosystem_verification_matrix.json',
   open_gaps: gapRegister.gaps.map((gap) => ({
@@ -104,6 +108,7 @@ const releaseNotes = `# ECOSYSTEM RELEASE NOTES
 - QICN-RELEASE freeze, claim registry, layer/interface manifests, and canonical bundle manifest
 - ecosystem baseline docs
 - ecosystem interface contract
+- ecosystem candidate governance
 - ecosystem verification matrix
 - ecosystem gap register
 
@@ -126,7 +131,9 @@ This ecosystem bundle is an internal release candidate only. It does not imply e
 [
   [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_BASELINE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_BASELINE.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_INTERFACE_CONTRACT.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_INTERFACE_CONTRACT.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_CANDIDATE_GOVERNANCE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_CANDIDATE_GOVERNANCE.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'ecosystem_interface_contract.v1.json')],
+  [path.join(SYSTEM_ROOT, 'docs', 'ecosystem_candidate_governance.v1.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'ecosystem_candidate_governance.v1.json')],
   [path.join(SYSTEM_ROOT, 'artifacts', 'operational_readiness_manifest.json'), path.join(bundleRoot, 'system', 'manifests', 'operational_readiness_manifest.json')],
   [path.join(SYSTEM_ROOT, 'artifacts', 'artifact_manifest.json'), path.join(bundleRoot, 'system', 'manifests', 'artifact_manifest.json')],
   [path.join(SYSTEM_ROOT, 'artifacts', 'operational_smoke_manifest.json'), path.join(bundleRoot, 'system', 'manifests', 'operational_smoke_manifest.json')],

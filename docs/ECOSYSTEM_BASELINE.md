@@ -69,3 +69,10 @@ Run inside `QICN-SYSTEM`:
   phases.
 - An internal release candidate can exist with warnings, but never by hiding
   them.
+
+## Candidate governance
+
+- Candidate maintenance policy is defined in
+  `docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md`.
+- Machine-readable governance is defined in
+  `docs/ecosystem_candidate_governance.v1.json`.

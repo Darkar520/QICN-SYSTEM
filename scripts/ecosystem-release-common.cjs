@@ -169,6 +169,18 @@ const loadInterfaceContract = () => {
   };
 };
 
+const loadCandidateGovernance = () => {
+  const docPath = path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_CANDIDATE_GOVERNANCE.md');
+  const jsonPath = path.join(SYSTEM_ROOT, 'docs', 'ecosystem_candidate_governance.v1.json');
+  return {
+    doc_path: docPath,
+    json_path: jsonPath,
+    doc_present: exists(docPath),
+    json_present: exists(jsonPath),
+    json: exists(jsonPath) ? readJson(jsonPath) : null
+  };
+};
+
 const portabilityMatches = (files) => {
   const matches = [];
   for (const file of files) {
@@ -287,10 +299,13 @@ const evaluateEcosystem = () => {
   const system = loadSystemBaseline();
   const release = loadReleaseBaseline();
   const interfaceContract = loadInterfaceContract();
+  const candidateGovernance = loadCandidateGovernance();
   const portabilityTargets = [
     path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_BASELINE.md'),
     path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_INTERFACE_CONTRACT.md'),
+    path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_CANDIDATE_GOVERNANCE.md'),
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json'),
+    path.join(SYSTEM_ROOT, 'docs', 'ecosystem_candidate_governance.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'OPERATIONAL_READINESS.md'),
     path.join(RELEASE_ROOT, 'docs', 'CANON_SOURCE_OF_TRUTH.md'),
     path.join(RELEASE_ROOT, 'docs', 'THEORY_SYSTEM_INTERFACE.md'),
@@ -301,6 +316,7 @@ const evaluateEcosystem = () => {
     system,
     release,
     interfaceContract,
+    candidateGovernance,
     portability_targets: portabilityTargets
   };
 
@@ -374,6 +390,13 @@ const evaluateEcosystem = () => {
     && interfaceContract.json.prohibited_inferences.length >= 5 ? 'PASS' : 'FAIL', {
     doc_path: normalize(path.relative(SYSTEM_ROOT, interfaceContract.doc_path)),
     json_path: normalize(path.relative(SYSTEM_ROOT, interfaceContract.json_path))
+  });
+  addCheck('ecosystem_candidate_governance', candidateGovernance.doc_present
+    && candidateGovernance.json_present
+    && Array.isArray(candidateGovernance.json.candidate_invalidated_by)
+    && candidateGovernance.json.candidate_invalidated_by.length >= 5 ? 'PASS' : 'FAIL', {
+    doc_path: normalize(path.relative(SYSTEM_ROOT, candidateGovernance.doc_path)),
+    json_path: normalize(path.relative(SYSTEM_ROOT, candidateGovernance.json_path))
   });
 
   const portability = portabilityMatches(portabilityTargets);

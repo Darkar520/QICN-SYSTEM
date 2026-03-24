@@ -181,6 +181,12 @@ const loadCandidateGovernance = () => {
   };
 };
 
+const loadFreezeDocs = () => ({
+  baseline_doc_path: path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_FREEZE_BASELINE.md'),
+  release_notes_doc_path: path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_RELEASE_NOTES.md'),
+  maintenance_checklist_path: path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_MAINTENANCE_CHECKLIST.md')
+});
+
 const portabilityMatches = (files) => {
   const matches = [];
   for (const file of files) {
@@ -300,10 +306,14 @@ const evaluateEcosystem = () => {
   const release = loadReleaseBaseline();
   const interfaceContract = loadInterfaceContract();
   const candidateGovernance = loadCandidateGovernance();
+  const freezeDocs = loadFreezeDocs();
   const portabilityTargets = [
     path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_BASELINE.md'),
     path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_INTERFACE_CONTRACT.md'),
     path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_CANDIDATE_GOVERNANCE.md'),
+    freezeDocs.baseline_doc_path,
+    freezeDocs.release_notes_doc_path,
+    freezeDocs.maintenance_checklist_path,
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_candidate_governance.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'OPERATIONAL_READINESS.md'),
@@ -317,6 +327,7 @@ const evaluateEcosystem = () => {
     release,
     interfaceContract,
     candidateGovernance,
+    freezeDocs,
     portability_targets: portabilityTargets
   };
 
@@ -393,10 +404,22 @@ const evaluateEcosystem = () => {
   });
   addCheck('ecosystem_candidate_governance', candidateGovernance.doc_present
     && candidateGovernance.json_present
-    && Array.isArray(candidateGovernance.json.candidate_invalidated_by)
-    && candidateGovernance.json.candidate_invalidated_by.length >= 5 ? 'PASS' : 'FAIL', {
+    && Array.isArray(candidateGovernance.json.invalidates_candidate)
+    && Array.isArray(candidateGovernance.json.requires_verifier_rerun)
+    && Array.isArray(candidateGovernance.json.requires_explicit_human_review)
+    && Array.isArray(candidateGovernance.json.allowed_non_material_change)
+    && candidateGovernance.json.invalidates_candidate.length >= 5 ? 'PASS' : 'FAIL', {
     doc_path: normalize(path.relative(SYSTEM_ROOT, candidateGovernance.doc_path)),
     json_path: normalize(path.relative(SYSTEM_ROOT, candidateGovernance.json_path))
+  });
+  addCheck('ecosystem_freeze_docs', [
+    freezeDocs.baseline_doc_path,
+    freezeDocs.release_notes_doc_path,
+    freezeDocs.maintenance_checklist_path
+  ].every((file) => exists(file)) ? 'PASS' : 'FAIL', {
+    baseline_doc_path: normalize(path.relative(SYSTEM_ROOT, freezeDocs.baseline_doc_path)),
+    release_notes_doc_path: normalize(path.relative(SYSTEM_ROOT, freezeDocs.release_notes_doc_path)),
+    maintenance_checklist_path: normalize(path.relative(SYSTEM_ROOT, freezeDocs.maintenance_checklist_path))
   });
 
   const portability = portabilityMatches(portabilityTargets);

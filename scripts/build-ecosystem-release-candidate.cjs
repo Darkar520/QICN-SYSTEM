@@ -64,8 +64,18 @@ const bundleManifest = {
     documentation: 'ecosystem/docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md',
     machine_readable: 'ecosystem/manifests/ecosystem_candidate_governance.v1.json'
   },
+  freeze_baseline: {
+    documentation: 'ecosystem/docs/ECOSYSTEM_FREEZE_BASELINE.md',
+    release_notes: 'ecosystem/docs/ECOSYSTEM_RELEASE_NOTES.md',
+    maintenance_checklist: 'ecosystem/docs/ECOSYSTEM_MAINTENANCE_CHECKLIST.md'
+  },
   gap_register: 'ecosystem/manifests/ecosystem_gap_register.v1.json',
   verification_matrix: 'ecosystem/manifests/ecosystem_verification_matrix.json',
+  candidate_freeze_condition: {
+    required_status: 'PASS',
+    required_open_gap_count: 0,
+    required_repo_state: 'clean_and_pushed_for_both_repositories'
+  },
   open_gaps: gapRegister.gaps.map((gap) => ({
     id: gap.id,
     classification: gap.classification,
@@ -109,6 +119,7 @@ const releaseNotes = `# ECOSYSTEM RELEASE NOTES
 - ecosystem baseline docs
 - ecosystem interface contract
 - ecosystem candidate governance
+- ecosystem freeze baseline and maintenance checklist
 - ecosystem verification matrix
 - ecosystem gap register
 
@@ -123,6 +134,12 @@ const releaseNotes = `# ECOSYSTEM RELEASE NOTES
 
 ${gapRegister.gaps.length === 0 ? '- none' : gapRegister.gaps.map((gap) => `- \`${gap.id}\` [${gap.classification}]: ${gap.impact}`).join('\n')}
 
+## Maintenance
+
+- baseline doc: \`docs/ECOSYSTEM_FREEZE_BASELINE.md\`
+- governance doc: \`docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md\`
+- maintenance checklist: \`docs/ECOSYSTEM_MAINTENANCE_CHECKLIST.md\`
+
 ## Non-claim boundary
 
 This ecosystem bundle is an internal release candidate only. It does not imply external validation, theory confirmation, claim closure, or public release readiness.
@@ -132,6 +149,9 @@ This ecosystem bundle is an internal release candidate only. It does not imply e
   [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_BASELINE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_BASELINE.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_INTERFACE_CONTRACT.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_INTERFACE_CONTRACT.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_CANDIDATE_GOVERNANCE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_CANDIDATE_GOVERNANCE.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_FREEZE_BASELINE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_FREEZE_BASELINE.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_RELEASE_NOTES.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_RELEASE_NOTES.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_MAINTENANCE_CHECKLIST.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_MAINTENANCE_CHECKLIST.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'ecosystem_interface_contract.v1.json')],
   [path.join(SYSTEM_ROOT, 'docs', 'ecosystem_candidate_governance.v1.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'ecosystem_candidate_governance.v1.json')],
   [path.join(SYSTEM_ROOT, 'artifacts', 'operational_readiness_manifest.json'), path.join(bundleRoot, 'system', 'manifests', 'operational_readiness_manifest.json')],

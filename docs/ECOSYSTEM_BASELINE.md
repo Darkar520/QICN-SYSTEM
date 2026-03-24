@@ -76,3 +76,6 @@ Run inside `QICN-SYSTEM`:
   `docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md`.
 - Machine-readable governance is defined in
   `docs/ecosystem_candidate_governance.v1.json`.
+- Frozen baseline summary is defined in `docs/ECOSYSTEM_FREEZE_BASELINE.md`.
+- Maintenance checklist is defined in
+  `docs/ECOSYSTEM_MAINTENANCE_CHECKLIST.md`.

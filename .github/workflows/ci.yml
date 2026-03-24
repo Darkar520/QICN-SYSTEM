@@ -2,7 +2,7 @@ name: qicn-ci
 
 on:
   push:
-    branches: ["main", "selfpatch/**", "feature/**"]
+    branches: ["main", "codex/**", "selfpatch/**", "feature/**"]
   pull_request:
     branches: ["main"]
 
@@ -34,8 +34,14 @@ jobs:
       - name: Verify descriptor registry
         run: npm run verify:descriptor-registry
 
+      - name: Verify operational readiness contract
+        run: npm run verify:operational-readiness
+
       - name: Build
         run: npm run build
+
+      - name: Smoke operational readiness
+        run: npm run smoke:operational
 
       - name: Test
         run: npm test

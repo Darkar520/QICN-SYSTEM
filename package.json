@@ -3,12 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "test": "node tests/run-all-tests.cjs",
     "test:sandbox": "node tests/projection.test.js && node tests/liveness.test.js && node tests/determinism.test.js && node tests/integrity.test.js && node tests/verifiable-report-shape.test.js && node tests/runtime-hygiene.test.js && node tests/speech-fsm.test.js && node tests/encoding-hygiene.test.js && node tests/netlify-proxy-contract.v46.test.js && node tests/auth-gate.v46.test.js && node tests/responsive-layout.v46.test.js && node tests/canvas-adaptive-input.v46.test.js && node tests/sensor-capabilities.v46.test.js && node tests/quantum-ui-hybrid.v49.test.js && node tests/quantum-fallback-behavior.v49.test.js && node tests/netlify-quantum-entropy-contract.v50.test.js && node tests/network-render-resilience.v49.test.js && node tests/navigation-top5-more.v49.test.js && node tests/guide-clarity.v49.test.js && node tests/selfpatch-policy-check.v415.test.js && node tests/selfpatch-generate-engine.v416.test.js",
     "build:css": "tailwindcss -c tailwind.config.cjs -i ./src/styles/tailwind.input.css -o ./dist/tailwind.css --minify",
+    "verify:env-contract": "node scripts/verify-env-contract.cjs",
     "verify:source-of-truth": "node scripts/verify-source-of-truth.cjs",
     "verify:descriptor-registry": "node scripts/validate-descriptor-registry.cjs",
+    "verify:artifacts": "node scripts/verify-artifacts.cjs artifacts --scope=small_batch",
+    "verify:policies": "node tests/output-support-labels.v65.test.js && node tests/output-consumption-policy.v66.test.js && node tests/output-surface-policy.v67.test.js && node tests/output-surface-enforcer.v68.test.js",
+    "verify:operational-readiness": "node scripts/verify-operational-readiness.cjs",
     "evaluate:canon-runtime": "node scripts/evaluate-canon-runtime.cjs",
     "metrics:entropy-conditions": "node scripts/build-entropy-condition-metrics.cjs",
     "build:js": "node build.cjs",
@@ -21,6 +28,9 @@
     "phase4:verify": "npm run scoreboard:run",
     "cognition:prereg": "node scripts/cognitive-emergence-prereg.cjs",
     "cognition:verify": "node tests/cognitive-emergence-spec.v53.test.js && node tests/cognitive-emergence-evaluation.v53.test.js",
+    "regression:minimal": "node tests/run-episode-admissibility.v58.test.js && node tests/entropy-condition-metrics.v64.test.js && npm run verify:policies",
+    "smoke:operational": "node scripts/run-operational-smoke-suite.cjs",
+    "release:bundle": "node scripts/build-internal-release-bundle.cjs",
     "sandbox:relaunch": "powershell -ExecutionPolicy Bypass -File ./scripts/sandbox-kill-build-start-health.ps1",
     "start": "node node_modules/serve/build/main.js -p 3000 --no-port-switching .",
     "start:local": "node scripts/local-sandbox-server.mjs"

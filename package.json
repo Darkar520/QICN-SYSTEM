@@ -18,6 +18,7 @@
     "verify:operational-readiness": "node scripts/verify-operational-readiness.cjs",
     "evaluate:canon-runtime": "node scripts/evaluate-canon-runtime.cjs",
     "metrics:entropy-conditions": "node scripts/build-entropy-condition-metrics.cjs",
+    "aggregate:small-batch": "node scripts/build-entropy-condition-metrics.cjs artifacts artifacts",
     "build:js": "node build.cjs",
     "build:js:dev": "node build.cjs --dev",
     "build:sync": "node scripts/sync-netlify-assets.cjs",

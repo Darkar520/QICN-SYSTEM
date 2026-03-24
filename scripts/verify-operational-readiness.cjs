@@ -20,7 +20,7 @@ const REQUIRED_CANONICAL_SCRIPTS = [
   'smoke:operational',
   'regression:minimal',
   'release:bundle',
-  'metrics:entropy-conditions'
+  'aggregate:small-batch'
 ];
 
 const REQUIRED_DOCS = [
@@ -70,7 +70,7 @@ function verifyOperationalReadiness({
 
   const manifest = {
     artifact_role: 'operational_readiness_manifest',
-    project_root: projectRoot,
+    project_root: '.',
     canonical_scripts: REQUIRED_CANONICAL_SCRIPTS,
     missing_canonical_scripts: missingScripts,
     docs_required: REQUIRED_DOCS,

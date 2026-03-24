@@ -8,7 +8,7 @@ This is an internal release process for repository-local operational use. It is 
 2. `npm run build:js`
 3. `npm run smoke:operational`
 4. `npm run regression:minimal`
-5. `node scripts/build-entropy-condition-metrics.cjs artifacts artifacts`
+5. `npm run aggregate:small-batch`
 6. `npm run verify:artifacts`
 7. `npm run verify:operational-readiness`
 

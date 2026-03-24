@@ -72,10 +72,11 @@ function verifyEnvironmentContract({
   const placeholderValuesPresent = Object.entries(envFile)
     .filter(([, value]) => isPlaceholderValue(value))
     .map(([key]) => key);
+  const toRepoRelative = (targetPath) => path.relative(projectRoot, targetPath).replace(/\\/g, '/') || '.';
 
   const manifest = {
     artifact_role: 'environment_contract_manifest',
-    project_root: projectRoot,
+    project_root: '.',
     expected_node_major: EXPECTED_NODE_MAJOR,
     actual_node_version: nodeVersion,
     actual_node_major: nodeMajor,
@@ -83,7 +84,8 @@ function verifyEnvironmentContract({
     compatibility_pass: nodeMajor >= EXPECTED_NODE_MAJOR,
     nvmrc_present: nvmrcPresent,
     nvmrc_value: nvmrcValue,
-    env_example_path: envExamplePath,
+    env_example_path: toRepoRelative(envExamplePath),
+    env_file_path: envFilePresent ? toRepoRelative(envPath) : null,
     env_file_present: envFilePresent,
     required_keys_documented: REQUIRED_ENV_KEYS,
     required_keys_missing_in_example: missingRequiredKeys,

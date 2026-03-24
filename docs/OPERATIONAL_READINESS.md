@@ -4,7 +4,8 @@ This document is an operational runbook. It does not upgrade runtime outputs int
 
 ## What is considered ready
 
-- Node `20.x` is used
+- Node `20.x` is the canonical runtime target
+- later compatible Node versions may execute successfully, but remain non-canonical unless explicitly adopted
 - `.env.example` documents the minimum runtime contract
 - canonical commands exist and are stable
 - build passes
@@ -21,18 +22,18 @@ This document is an operational runbook. It does not upgrade runtime outputs int
 - Smoke: `npm run smoke:operational`
 - Minimal regression: `npm run regression:minimal`
 - Policy-focused verification: `npm run verify:policies`
-- Small-batch aggregation: `node scripts/build-entropy-condition-metrics.cjs artifacts artifacts`
+- Small-batch aggregation: `npm run aggregate:small-batch`
 - Artifact verification: `npm run verify:artifacts`
 - Readiness verification: `npm run verify:operational-readiness`
 - Internal bundle: `npm run release:bundle`
 
 ## Operational surfaces
 
-- Build surface: [`build.cjs`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/build.cjs)
-- Run/admissibility surface: [`scripts/run-episode.cjs`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/run-episode.cjs), [`scripts/evaluate-admissibility.cjs`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/evaluate-admissibility.cjs)
-- Policy/enforcement surface: [`src/experiments/OutputConsumptionPolicy.js`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/OutputConsumptionPolicy.js), [`src/experiments/OutputSurfacePolicy.js`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/OutputSurfacePolicy.js), [`src/experiments/OutputSurfaceEnforcer.js`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/src/experiments/OutputSurfaceEnforcer.js)
-- Artifact/report surface: [`scripts/verify-artifacts.cjs`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/verify-artifacts.cjs), [`scripts/build-local-governed-report.cjs`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/build-local-governed-report.cjs)
-- Release surface: [`scripts/build-internal-release-bundle.cjs`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/scripts/build-internal-release-bundle.cjs)
+- Build surface: `build.cjs`
+- Run/admissibility surface: `scripts/run-episode.cjs`, `scripts/evaluate-admissibility.cjs`
+- Policy/enforcement surface: `src/experiments/OutputConsumptionPolicy.js`, `src/experiments/OutputSurfacePolicy.js`, `src/experiments/OutputSurfaceEnforcer.js`
+- Artifact/report surface: `scripts/verify-artifacts.cjs`, `scripts/build-local-governed-report.cjs`
+- Release surface: `scripts/build-internal-release-bundle.cjs`
 
 ## Troubleshooting
 

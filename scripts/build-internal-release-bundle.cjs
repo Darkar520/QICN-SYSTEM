@@ -64,6 +64,8 @@ async function buildInternalReleaseBundle({
 
   fs.mkdirSync(exportsDir, { recursive: true });
   fs.mkdirSync(docsDir, { recursive: true });
+  const toBundleRelative = (targetPath) => path.relative(bundleRoot, targetPath).replace(/\\/g, '/') || '.';
+  const toRepoRelative = (targetPath) => path.relative(repoRoot, targetPath).replace(/\\/g, '/') || '.';
 
   const readiness = verifyOperationalReadiness({
     projectRoot: repoRoot,
@@ -135,20 +137,20 @@ async function buildInternalReleaseBundle({
   const manifest = {
     artifact_role: 'release_bundle_manifest',
     bundle_id: bundleId,
-    bundle_root: bundleRoot,
-    source_artifacts_root: sourceArtifactsRoot,
+    bundle_root: '.',
+    source_artifacts_root: toRepoRelative(sourceArtifactsRoot),
     git: getGitMetadata(repoRoot),
     included_outputs: [
-      summaryExport.ok ? { artifact: 'condition_metrics_summary.json', path: summaryExport.outputPath, mode: 'descriptive_export_surface' } : null,
-      supportExport.ok ? { artifact: 'condition_support_labels.json', path: supportExport.outputPath, mode: 'local_report_surface' } : null,
-      { artifact: 'condition_local_report.json', path: localReport.outputPath, mode: 'local_report_surface' },
-      ...governanceFiles.map((fileName) => ({ artifact: fileName, path: path.join(bundleRoot, fileName), mode: 'governance_metadata' }))
+      summaryExport.ok ? { artifact: 'condition_metrics_summary.json', path: toBundleRelative(summaryExport.outputPath), mode: 'descriptive_export_surface' } : null,
+      supportExport.ok ? { artifact: 'condition_support_labels.json', path: toBundleRelative(supportExport.outputPath), mode: 'local_report_surface' } : null,
+      { artifact: 'condition_local_report.json', path: toBundleRelative(localReport.outputPath), mode: 'local_report_surface' },
+      ...governanceFiles.map((fileName) => ({ artifact: fileName, path: toBundleRelative(path.join(bundleRoot, fileName)), mode: 'governance_metadata' }))
     ].filter(Boolean),
     excluded_outputs: [
       comparisonExport.ok ? null : {
         artifact: 'condition_comparison.json',
         reason_code: comparisonExport.decision.reason_code,
-        decision_path: comparisonExport.decisionPath
+        decision_path: toBundleRelative(comparisonExport.decisionPath)
       }
     ].filter(Boolean),
     copied_docs: docsToCopy.map((relPath) => path.join('docs', path.basename(relPath))),

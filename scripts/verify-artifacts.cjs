@@ -52,6 +52,7 @@ async function verifyArtifacts({
 } = {}) {
   const rootDir = path.resolve(artifactsRoot);
   const resolvedScope = detectScope(rootDir, scope);
+  const toRepoRelative = (targetPath) => path.relative(PROJECT_ROOT, targetPath).replace(/\\/g, '/') || '.';
   const requiredFiles = resolvedScope === 'run_level' ? RUN_REQUIRED : CONDITION_REQUIRED;
   const optionalFiles = resolvedScope === 'run_level' ? RUN_OPTIONAL : [];
   const surfacePolicyName = resolvedScope === 'run_level' ? 'output_surface_policy.json' : 'condition_output_surface_policy.json';
@@ -101,7 +102,7 @@ async function verifyArtifacts({
   const manifest = {
     artifact_role: 'artifact_manifest',
     scope: resolvedScope,
-    artifacts_root: rootDir,
+    artifacts_root: toRepoRelative(rootDir),
     required_files: requiredFiles,
     optional_files: optionalFiles,
     missing_required_files: missingRequiredFiles,

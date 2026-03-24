@@ -9,6 +9,7 @@ const CONDITION_CONTROLLED_STATEMENTS_FILE = 'condition_controlled_statements.js
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
 const unique = (values) => [...new Set((Array.isArray(values) ? values : []).filter(Boolean))];
 const sanitizeFileStem = (value) => String(value || 'artifact').replace(/[^a-zA-Z0-9._-]+/g, '_');
+const toPortablePath = (rootDir, targetPath) => path.relative(rootDir, targetPath).replace(/\\/g, '/') || '.';
 const hasText = (value) => typeof value === 'string' && value.trim().length > 0;
 const hasArray = (value) => Array.isArray(value) && value.length > 0;
 const getByPath = (value, pathExpression) => String(pathExpression || '')
@@ -160,6 +161,7 @@ const selectBlockedCode = ({
 };
 
 const buildDecision = ({
+  rootDir,
   artifactName,
   artifactPath,
   entry,
@@ -182,7 +184,7 @@ const buildDecision = ({
   artifact_role: 'output_surface_enforcement_decision',
   scope,
   artifact: artifactName,
-  artifact_path: artifactPath,
+  artifact_path: toPortablePath(rootDir, artifactPath),
   requested_surface: requestedSurface,
   canonical_surface: canonicalSurface,
   allowed,
@@ -209,7 +211,7 @@ const buildDecision = ({
   interpretation_not_allowed: Array.isArray(entry?.interpretation_not_allowed)
     ? entry.interpretation_not_allowed
     : [],
-  emitted_to: emittedTo
+  emitted_to: emittedTo ? toPortablePath(rootDir, emittedTo) : null
 });
 
 export const assessOutputForSurface = ({ rootDir, artifactName, surface, scope = 'auto' }) => {
@@ -225,6 +227,7 @@ export const assessOutputForSurface = ({ rootDir, artifactName, surface, scope =
       ok: false,
       context,
       decision: buildDecision({
+        rootDir,
         artifactName,
         artifactPath,
         entry,
@@ -242,6 +245,7 @@ export const assessOutputForSurface = ({ rootDir, artifactName, surface, scope =
       ok: false,
       context,
       decision: buildDecision({
+        rootDir,
         artifactName,
         artifactPath,
         entry,
@@ -275,6 +279,7 @@ export const assessOutputForSurface = ({ rootDir, artifactName, surface, scope =
       ok: false,
       context,
       decision: buildDecision({
+        rootDir,
         artifactName,
         artifactPath,
         entry,
@@ -300,6 +305,7 @@ export const assessOutputForSurface = ({ rootDir, artifactName, surface, scope =
       ok: false,
       context,
       decision: buildDecision({
+        rootDir,
         artifactName,
         artifactPath,
         entry,
@@ -335,6 +341,7 @@ export const assessOutputForSurface = ({ rootDir, artifactName, surface, scope =
       ok: false,
       context,
       decision: buildDecision({
+        rootDir,
         artifactName,
         artifactPath,
         entry,
@@ -360,6 +367,7 @@ export const assessOutputForSurface = ({ rootDir, artifactName, surface, scope =
     context,
     artifact,
     decision: buildDecision({
+      rootDir,
       artifactName,
       artifactPath,
       entry,

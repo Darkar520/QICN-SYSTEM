@@ -5,13 +5,13 @@ This repository has an operational reproducibility contract, not an external val
 ## Runtime and toolchain
 
 - Expected Node runtime: `20.x`
-- Repository marker: [`.nvmrc`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/.nvmrc)
-- Package engines: [`package.json`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/package.json)
+- Repository marker: `.nvmrc`
+- Package engines: `package.json`
 
 ## Canonical install
 
 1. `npm ci`
-2. Copy [`.env.example`](/c:/Users/irisp/OneDrive/Escritorio/TRADING%203.0/Sistema%20Canon%20Sandbox/.env.example) to `.env`
+2. Copy `.env.example` to `.env`
 3. Keep deterministic seeds explicitly set unless intentionally changing the experiment/runtime posture
 
 ## Minimum local deterministic posture
@@ -38,7 +38,7 @@ External-service keys such as `GEMINI_API_KEY`, `OPENAI_API_KEY`, `IBM_QUANTUM_A
 2. `npm run build:js`
 3. `npm run smoke:operational`
 4. `npm run regression:minimal`
-5. `npm run metrics:entropy-conditions artifacts artifacts`
+5. `npm run aggregate:small-batch`
 6. `npm run verify:artifacts`
 7. `npm run verify:operational-readiness`
 8. `npm run release:bundle`
@@ -75,7 +75,7 @@ Operational manifests:
 
 A run or bundle is reproducible in this repository when:
 
-- the canonical commands above execute successfully on Node `20.x`
+- the canonical commands above execute successfully on the canonical Node `20.x` surface or on a documented compatibility surface
 - the expected artifact family exists
 - required refs and boundaries are present
 - operational smoke passes

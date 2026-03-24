@@ -156,7 +156,7 @@ async function runOperationalSmokeSuite({
       const ended = await harness.endRun();
       runDirs.push(ended.artifactDir);
       engine.evaluateRun({ artifactDir: ended.artifactDir });
-      steps.push(stepResult(`run_${index + 1}_materialized`, true, { artifactDir: ended.artifactDir }));
+      steps.push(stepResult(`run_${index + 1}_materialized`, true, { run_id: runId }));
     }
 
     const aggregateDir = path.join(scratch, 'aggregated');
@@ -187,11 +187,11 @@ async function runOperationalSmokeSuite({
       conditionSurfacePolicy: conditionSurface.artifact
     });
     steps.push(stepResult('small_batch_materialized', true, {
-      summaryPath: metricsResult.summaryPath,
-      comparisonPath: metricsResult.comparisonPath,
-      supportLabelsPath: conditionSupport.outputPath,
-      surfacePolicyPath: conditionSurface.outputPath,
-      controlledStatementsPath: conditionStatements.outputPath
+      summary_artifact: path.basename(metricsResult.summaryPath),
+      comparison_artifact: path.basename(metricsResult.comparisonPath),
+      support_labels_artifact: path.basename(conditionSupport.outputPath),
+      surface_policy_artifact: path.basename(conditionSurface.outputPath),
+      controlled_statements_artifact: path.basename(conditionStatements.outputPath)
     }));
 
     const artifactVerification = await verifyArtifacts({
@@ -199,7 +199,7 @@ async function runOperationalSmokeSuite({
       scope: 'small_batch',
       outputPath: path.join(aggregateDir, 'artifact_manifest.json')
     });
-    steps.push(stepResult('artifact_verification', artifactVerification.ok, { outputPath: artifactVerification.outputPath }));
+    steps.push(stepResult('artifact_verification', artifactVerification.ok, { manifest_artifact: path.basename(artifactVerification.outputPath) }));
     if (!artifactVerification.ok) {
       throw new Error('Small-batch artifact verification failed inside operational smoke suite.');
     }
@@ -209,7 +209,7 @@ async function runOperationalSmokeSuite({
       scope: 'small_batch',
       outputPath: path.join(aggregateDir, 'condition_local_report.json')
     });
-    steps.push(stepResult('local_report', true, { outputPath: report.outputPath }));
+    steps.push(stepResult('local_report', true, { report_artifact: path.basename(report.outputPath) }));
 
     const summaryExport = exportOutputForSurface({
       rootDir: aggregateDir,
@@ -218,7 +218,7 @@ async function runOperationalSmokeSuite({
       scope: 'small_batch',
       outputDir: path.join(aggregateDir, 'exports')
     });
-    steps.push(stepResult('summary_export', summaryExport.ok, { decisionPath: summaryExport.decisionPath }));
+    steps.push(stepResult('summary_export', summaryExport.ok, { decision_artifact: path.basename(summaryExport.decisionPath) }));
     if (!summaryExport.ok) {
       throw new Error('condition_metrics_summary export failed inside operational smoke suite.');
     }
@@ -229,17 +229,26 @@ async function runOperationalSmokeSuite({
       scope: 'run_level',
       outputDir: path.join(runDirs[0], 'smoke_statement')
     });
-    steps.push(stepResult('controlled_statement', statement.ok, { decisionPath: statement.decisionPath }));
+    steps.push(stepResult('controlled_statement', statement.ok, { decision_artifact: path.basename(statement.decisionPath) }));
     if (!statement.ok) {
       throw new Error('Controlled statement emission failed inside operational smoke suite.');
     }
 
     const manifest = {
       artifact_role: 'operational_smoke_manifest',
-      project_root: repoRoot,
-      scratch_root: scratch,
-      run_artifact_dirs: runDirs,
-      aggregate_dir: aggregateDir,
+      project_root: '.',
+      scratch_materialization: 'temporary_os_dir_not_persisted_in_manifest',
+      run_ids: runIds,
+      aggregate_artifacts: [
+        'condition_metrics_summary.json',
+        'condition_comparison.json',
+        'condition_support_labels.json',
+        'condition_output_consumption_policy.json',
+        'condition_output_surface_policy.json',
+        'condition_controlled_statements.json',
+        'artifact_manifest.json',
+        'condition_local_report.json'
+      ],
       step_count: steps.length,
       steps,
       interpretation_boundary: 'Operational smoke suite only; verifies governed runtime/artifact flow, not external validation, not theory closure, not claim promotion.',
@@ -256,8 +265,8 @@ async function runOperationalSmokeSuite({
   } catch (error) {
     const manifest = {
       artifact_role: 'operational_smoke_manifest',
-      project_root: path.resolve(projectRoot),
-      scratch_root: scratch,
+      project_root: '.',
+      scratch_materialization: 'temporary_os_dir_not_persisted_in_manifest',
       step_count: steps.length,
       steps,
       ok: false,

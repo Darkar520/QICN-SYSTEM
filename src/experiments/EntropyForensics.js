@@ -209,6 +209,7 @@ export const buildEntropyPreVerdictArtifact = ({ runId, totalTicks, state }) => 
     status: 'PENDING_ENTROPY_RUN_LEVEL',
     artifact_role: 'pre_verdict',
     consumption_policy_ref: 'output_consumption_policy.json',
+    surface_policy_ref: 'output_surface_policy.json',
     authoritative_run_artifact: 'run_verdict.json',
     authoritative_entropy_artifact: 'entropy_run_diagnostics.json',
     interpretation_boundary: 'Pre-verdict entropy summary only; not authoritative run status, not support label, not external validation.',

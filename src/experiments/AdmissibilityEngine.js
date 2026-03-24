@@ -8,6 +8,8 @@ import { evaluateEntropyPreVerdictArtifact } from './EntropyForensics.js';
 import { buildRunMetricsArtifact } from './EntropyConditionMetrics.js';
 import { buildRunSupportLabelsArtifact } from './OutputSupportLabels.js';
 import { buildRunOutputConsumptionPolicyArtifact } from './OutputConsumptionPolicy.js';
+import { buildRunOutputSurfacePolicyArtifact } from './OutputSurfacePolicy.js';
+import { buildRunControlledStatementsArtifact } from './ControlledStatements.js';
 
 const pct = (arr, p) => {
   if (!Array.isArray(arr) || arr.length === 0) return 0;
@@ -248,6 +250,7 @@ export class AdmissibilityEngine {
         runId: String(header.runId || path.basename(artifactDir)),
         artifact_role: 'authoritative_run_level_entropy_diagnostics',
         consumption_policy_ref: 'output_consumption_policy.json',
+        surface_policy_ref: 'output_surface_policy.json',
         source_artifact: 'entropy_preverdict.json',
         source_artifact_hash: entropyPreVerdict ? fileHash(entropyPreVerdictPath) : null,
         overall_run_verdict_artifact: 'run_verdict.json',
@@ -280,6 +283,8 @@ export class AdmissibilityEngine {
     buildRunMetricsArtifact({ artifactDir });
     buildRunSupportLabelsArtifact({ artifactDir });
     buildRunOutputConsumptionPolicyArtifact({ artifactDir });
+    buildRunOutputSurfacePolicyArtifact({ artifactDir });
+    buildRunControlledStatementsArtifact({ artifactDir });
     return { verdictPath, verdict };
   }
 }

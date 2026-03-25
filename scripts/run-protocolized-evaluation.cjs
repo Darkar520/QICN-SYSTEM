@@ -123,7 +123,11 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
   ])
 );
 
-(async () => {
+async function runProtocolizedEvaluation({
+  batchId: explicitBatchId = null,
+  outputRoot: explicitOutputRoot = null,
+  seedSchedule: explicitSeedSchedule = null
+} = {}) {
   const { protocol, comparisonMatrix, metricsRegistry, statisticalPolicy } = loadDefinitions();
   const frozenCandidateManifestPath = path.join(PROJECT_ROOT, 'artifacts', 'ecosystem_release_candidate', 'ecosystem_release_candidate_manifest.json');
   const frozenVerificationMatrixPath = path.join(PROJECT_ROOT, 'artifacts', 'ecosystem_release_candidate', 'ecosystem_verification_matrix.json');
@@ -137,11 +141,13 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
   }
 
   const generatedAt = new Date().toISOString();
-  const batchId = parseArg('batch-id', `protocolized_evaluation_${generatedAt.replace(/[:.]/g, '-')}`);
-  const batchRoot = path.resolve(parseArg('output-root', path.join(EVALUATION_ROOT, 'batches', batchId)));
+  const batchId = explicitBatchId || parseArg('batch-id', `protocolized_evaluation_${generatedAt.replace(/[:.]/g, '-')}`);
+  const batchRoot = path.resolve(explicitOutputRoot || parseArg('output-root', path.join(EVALUATION_ROOT, 'batches', batchId)));
   const runsRoot = path.join(batchRoot, 'artifacts');
   const aggregateRoot = path.join(batchRoot, 'aggregate');
-  const seedSchedule = parseListArg('seed-schedule', protocol.canonical_seed_schedule);
+  const seedSchedule = Array.isArray(explicitSeedSchedule) && explicitSeedSchedule.length > 0
+    ? explicitSeedSchedule
+    : parseListArg('seed-schedule', protocol.canonical_seed_schedule);
   const effectiveRunsPerCondition = seedSchedule.length;
   if (effectiveRunsPerCondition < protocol.minimum_runs_per_condition) {
     throw new Error(`Seed schedule too small for protocol minimum. received=${effectiveRunsPerCondition}, minimum=${protocol.minimum_runs_per_condition}`);
@@ -569,8 +575,20 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
     protocol_manifest: toProjectRelative(protocolManifestPath),
     batch_report: toProjectRelative(batchReportPath)
   };
-  process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
-})().catch((error) => {
-  console.error(`FAIL run-protocolized-evaluation: ${error.message}`);
-  process.exit(1);
-});
+  return output;
+}
+
+if (require.main === module) {
+  runProtocolizedEvaluation()
+    .then((output) => {
+      process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
+    })
+    .catch((error) => {
+      console.error(`FAIL run-protocolized-evaluation: ${error.message}`);
+      process.exit(1);
+    });
+}
+
+module.exports = {
+  runProtocolizedEvaluation
+};

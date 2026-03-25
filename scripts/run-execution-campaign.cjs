@@ -1,7 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const cp = require('child_process');
-
 const {
   SYSTEM_ROOT,
   normalize,
@@ -13,6 +11,9 @@ const {
   loadDefinitions,
   readJson
 } = require('./evaluation-phase-common.cjs');
+const {
+  runProtocolizedEvaluation
+} = require('./run-protocolized-evaluation.cjs');
 
 const CAMPAIGN_ROOT = path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign');
 const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio/i;
@@ -171,20 +172,10 @@ const portabilityMatches = (files) => files
   writeJson(rootPlanPath, plan);
   writeJson(campaignPlanPath, plan);
 
-  const runnerStdout = cp.execFileSync(
-    process.execPath,
-    [
-      path.join(__dirname, 'run-protocolized-evaluation.cjs'),
-      `--batch-id=${batchId}`,
-      `--seed-schedule=${seedSchedule.join(',')}`
-    ],
-    {
-      cwd: SYSTEM_ROOT,
-      encoding: 'utf8'
-    }
-  );
-
-  const runnerOutput = JSON.parse(runnerStdout);
+  const runnerOutput = await runProtocolizedEvaluation({
+    batchId,
+    seedSchedule
+  });
   const protocolManifestPath = path.join(SYSTEM_ROOT, runnerOutput.protocol_manifest);
   const batchReportPath = path.join(SYSTEM_ROOT, runnerOutput.batch_report);
   const aggregateRoot = path.join(SYSTEM_ROOT, runnerOutput.aggregate_root);

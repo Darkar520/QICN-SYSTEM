@@ -18,6 +18,7 @@
   - `npm run verify:ecosystem-integrity`
 - protocolized evaluation:
   - `npm run verify:evaluation-protocol`
+  - `npm run audit:campaign`
   - `npm run evaluate:protocolized`
   - `npm run evaluate:campaign`
   - `npm run verify:evaluation-phase`
@@ -47,6 +48,9 @@
 - `artifacts/protocolized_evaluation/condition_comparison_report.json`
 - `artifacts/execution_campaign/campaign_execution_plan.json`
 - `artifacts/execution_campaign/execution_campaign_readout.json`
+- `artifacts/execution_campaign/execution_campaign_audit_readout.json`
+- `docs/EXECUTION_CAMPAIGN_FREEZE_BASELINE.md`
+- `docs/SUCCESSIVE_CAMPAIGN_DISCIPLINE.md`
 - `release/release_freeze_manifest.json`
 - `docs/ECOSYSTEM_INTERFACE_CONTRACT.md`
 

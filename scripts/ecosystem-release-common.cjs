@@ -194,12 +194,16 @@ const loadEvaluationPhase = () => {
     stats_doc_path: path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_STATISTICAL_POLICY.md'),
     boundary_doc_path: path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_INTERPRETATION_BOUNDARY.md'),
     freeze_doc_path: path.join(SYSTEM_ROOT, 'docs', 'PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md'),
+    execution_campaign_freeze_doc_path: path.join(SYSTEM_ROOT, 'docs', 'EXECUTION_CAMPAIGN_FREEZE_BASELINE.md'),
+    successive_campaign_discipline_doc_path: path.join(SYSTEM_ROOT, 'docs', 'SUCCESSIVE_CAMPAIGN_DISCIPLINE.md'),
     protocol_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_protocol.v1.json'),
     comparison_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_comparison_matrix.v1.json'),
     metrics_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_metrics_registry.v1.json'),
     controls_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_controls_registry.v1.json'),
     stats_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_statistical_policy.v1.json'),
-    freeze_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_architecture_freeze.v1.json')
+    freeze_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_architecture_freeze.v1.json'),
+    execution_campaign_freeze_json_path: path.join(SYSTEM_ROOT, 'docs', 'execution_campaign_freeze.v1.json'),
+    successive_campaign_discipline_json_path: path.join(SYSTEM_ROOT, 'docs', 'successive_campaign_discipline.v1.json')
   };
   const artifacts = {
     protocol_manifest_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_protocol_manifest.json'),
@@ -211,7 +215,8 @@ const loadEvaluationPhase = () => {
     comparisons_check_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_comparisons_check.json'),
     campaign_plan_path: path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign', 'campaign_execution_plan.json'),
     campaign_readout_path: path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign', 'execution_campaign_readout.json'),
-    campaign_pointer_path: path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign', 'latest_campaign_pointer.json')
+    campaign_pointer_path: path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign', 'latest_campaign_pointer.json'),
+    campaign_audit_path: path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign', 'execution_campaign_audit_readout.json')
   };
   const coreArtifacts = {
     protocol_manifest_path: artifacts.protocol_manifest_path,
@@ -225,7 +230,8 @@ const loadEvaluationPhase = () => {
   const campaignArtifacts = {
     campaign_plan_path: artifacts.campaign_plan_path,
     campaign_readout_path: artifacts.campaign_readout_path,
-    campaign_pointer_path: artifacts.campaign_pointer_path
+    campaign_pointer_path: artifacts.campaign_pointer_path,
+    campaign_audit_path: artifacts.campaign_audit_path
   };
   return {
     docs,
@@ -240,7 +246,8 @@ const loadEvaluationPhase = () => {
     comparisons_check: exists(artifacts.comparisons_check_path) ? readJson(artifacts.comparisons_check_path) : null,
     campaign_plan: exists(artifacts.campaign_plan_path) ? readJson(artifacts.campaign_plan_path) : null,
     campaign_readout: exists(artifacts.campaign_readout_path) ? readJson(artifacts.campaign_readout_path) : null,
-    campaign_pointer: exists(artifacts.campaign_pointer_path) ? readJson(artifacts.campaign_pointer_path) : null
+    campaign_pointer: exists(artifacts.campaign_pointer_path) ? readJson(artifacts.campaign_pointer_path) : null,
+    campaign_audit: exists(campaignArtifacts.campaign_audit_path) ? readJson(campaignArtifacts.campaign_audit_path) : null
   };
 };
 
@@ -429,12 +436,16 @@ const evaluateEcosystem = () => {
     evaluation.docs.stats_doc_path,
     evaluation.docs.boundary_doc_path,
     evaluation.docs.freeze_doc_path,
+    evaluation.docs.execution_campaign_freeze_doc_path,
+    evaluation.docs.successive_campaign_discipline_doc_path,
     evaluation.docs.protocol_json_path,
     evaluation.docs.comparison_json_path,
     evaluation.docs.metrics_json_path,
     evaluation.docs.controls_json_path,
     evaluation.docs.stats_json_path,
     evaluation.docs.freeze_json_path,
+    evaluation.docs.execution_campaign_freeze_json_path,
+    evaluation.docs.successive_campaign_discipline_json_path,
     evaluation.artifacts.protocol_manifest_path,
     evaluation.artifacts.batch_report_path,
     evaluation.artifacts.condition_summary_path,
@@ -445,6 +456,7 @@ const evaluateEcosystem = () => {
     evaluation.artifacts.campaign_plan_path,
     evaluation.artifacts.campaign_readout_path,
     evaluation.artifacts.campaign_pointer_path,
+    evaluation.artifacts.campaign_audit_path,
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_candidate_governance.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'OPERATIONAL_READINESS.md'),

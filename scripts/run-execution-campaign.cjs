@@ -169,6 +169,7 @@ const portabilityMatches = (files) => files
 
   const rootPlanPath = path.join(CAMPAIGN_ROOT, 'campaign_execution_plan.json');
   const campaignPlanPath = path.join(campaignDir, 'campaign_execution_plan.json');
+  const campaignPlanRef = toProjectRelative(campaignPlanPath);
   writeJson(rootPlanPath, plan);
   writeJson(campaignPlanPath, plan);
 
@@ -207,6 +208,12 @@ const portabilityMatches = (files) => files
     unsupported: (comparisonReport.unsupported_comparisons || []).map((entry) => entry.id)
   };
 
+  const rootReadoutPath = path.join(CAMPAIGN_ROOT, 'execution_campaign_readout.json');
+  const campaignReadoutPath = path.join(campaignDir, 'execution_campaign_readout.json');
+  const campaignReadoutRef = toProjectRelative(campaignReadoutPath);
+  const campaignPointerPath = path.join(campaignDir, 'latest_campaign_pointer.json');
+  const campaignPointerRef = toProjectRelative(campaignPointerPath);
+
   const readout = {
     artifact_role: 'execution_campaign_readout',
     schema_version: '1.0.0',
@@ -215,7 +222,7 @@ const portabilityMatches = (files) => files
     batch_id: batchId,
     status: batchReport.status,
     architecture_freeze_ref: 'docs/evaluation_architecture_freeze.v1.json',
-    campaign_plan_ref: 'artifacts/execution_campaign/campaign_execution_plan.json',
+    campaign_plan_ref: campaignPlanRef,
     batch_artifacts: {
       evaluation_protocol_manifest: toProjectRelative(protocolManifestPath),
       evaluation_batch_report: toProjectRelative(batchReportPath),
@@ -316,8 +323,6 @@ const portabilityMatches = (files) => files
     interpretation_boundary: 'Execution campaign readout only; internal descriptive and minimal-contrast summary, not claim-facing, not confirmatory.'
   };
 
-  const rootReadoutPath = path.join(CAMPAIGN_ROOT, 'execution_campaign_readout.json');
-  const campaignReadoutPath = path.join(campaignDir, 'execution_campaign_readout.json');
   const pointer = {
     artifact_role: 'execution_campaign_pointer',
     generated_at: new Date().toISOString(),
@@ -325,8 +330,8 @@ const portabilityMatches = (files) => files
     batch_id: batchId,
     campaign_root: toProjectRelative(campaignDir),
     batch_root: runnerOutput.batch_root,
-    readout_path: 'artifacts/execution_campaign/execution_campaign_readout.json',
-    plan_path: 'artifacts/execution_campaign/campaign_execution_plan.json',
+    readout_path: campaignReadoutRef,
+    plan_path: campaignPlanRef,
     claim_facing_status: 'blocked'
   };
 
@@ -340,9 +345,9 @@ const portabilityMatches = (files) => files
     campaign_id: campaignId,
     batch_id: batchId,
     status: batchReport.status,
-    plan_path: 'artifacts/execution_campaign/campaign_execution_plan.json',
-    readout_path: 'artifacts/execution_campaign/execution_campaign_readout.json',
-    pointer_path: 'artifacts/execution_campaign/latest_campaign_pointer.json',
+    plan_path: campaignPlanRef,
+    readout_path: campaignReadoutRef,
+    pointer_path: campaignPointerRef,
     batch_report: runnerOutput.batch_report,
     protocol_manifest: runnerOutput.protocol_manifest,
     run_count: batchReport.run_count

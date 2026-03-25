@@ -44,6 +44,9 @@ const ctx = (() => {
     batchRoot,
     aggregateRoot,
     campaignRoot: path.join(SYSTEM_ROOT, pointer.campaign_root),
+    immutablePlanPath: path.join(SYSTEM_ROOT, pointer.campaign_root, 'campaign_execution_plan.json'),
+    immutableReadoutPath: path.join(SYSTEM_ROOT, pointer.campaign_root, 'execution_campaign_readout.json'),
+    immutablePointerPath: path.join(SYSTEM_ROOT, pointer.campaign_root, 'latest_campaign_pointer.json'),
     protocolManifestPath: path.join(aggregateRoot, 'evaluation_protocol_manifest.json'),
     batchReportPath: path.join(aggregateRoot, 'evaluation_batch_report.json'),
     conditionSummaryPath: path.join(aggregateRoot, 'condition_evaluation_summary.json'),
@@ -92,6 +95,7 @@ const buildArtifactAudits = () => {
     const notes = [];
     if (ctx.plan.campaign_id !== ctx.pointer.campaign_id) failures.push('campaign_id_mismatch_with_pointer');
     if (ctx.plan.batch_id !== ctx.pointer.batch_id) failures.push('batch_id_mismatch_with_pointer');
+    if (rel(ctx.planPath) !== rel(ctx.immutablePlanPath)) failures.push('latest_pointer_plan_path_not_campaign_immutable');
     if (!sameSet(ctx.plan.conditions, defs.protocol.condition_order)) failures.push('condition_order_mismatch_with_protocol');
     if (arr(ctx.plan.seed_schedule).length !== Number(ctx.plan.n_per_condition || 0)) failures.push('n_per_condition_seed_schedule_mismatch');
     if (!text(ctx.plan.architecture_freeze_ref) || !text(ctx.plan.interpretation_boundary)) failures.push('missing_freeze_or_boundary_ref');
@@ -244,6 +248,7 @@ const buildArtifactAudits = () => {
     const notes = [];
     if (ctx.readout.campaign_id !== ctx.pointer.campaign_id) failures.push('campaign_id_mismatch_with_pointer');
     if (ctx.readout.batch_id !== ctx.pointer.batch_id) failures.push('batch_id_mismatch_with_pointer');
+    if (rel(ctx.readoutPath) !== rel(ctx.immutableReadoutPath)) failures.push('latest_pointer_readout_path_not_campaign_immutable');
     if (ctx.readout.status !== batchReport.status) failures.push('status_mismatch_with_batch_report');
     if (ctx.readout.run_counts?.total_materialized_runs !== batchReport.run_count) failures.push('total_runs_mismatch_with_batch_report');
     if ((ctx.readout.qa_qc?.structural_issues || []).length > 0) failures.push('qa_qc_structural_issues_present');
@@ -271,6 +276,8 @@ const buildArtifactAudits = () => {
     const notes = ['pointer_is_routing_metadata_and_relies_on_referenced_artifacts_for_non_claim_boundary'];
     if (ctx.pointer.campaign_id !== ctx.plan.campaign_id) failures.push('campaign_id_mismatch_with_plan');
     if (ctx.pointer.batch_id !== ctx.plan.batch_id) failures.push('batch_id_mismatch_with_plan');
+    if (rel(path.join(SYSTEM_ROOT, ctx.pointer.plan_path)) !== rel(ctx.immutablePlanPath)) failures.push('pointer_plan_path_not_campaign_immutable');
+    if (rel(path.join(SYSTEM_ROOT, ctx.pointer.readout_path)) !== rel(ctx.immutableReadoutPath)) failures.push('pointer_readout_path_not_campaign_immutable');
     if (!exists(path.join(SYSTEM_ROOT, ctx.pointer.campaign_root))) failures.push('campaign_root_missing');
     if (!exists(path.join(SYSTEM_ROOT, ctx.pointer.batch_root))) failures.push('batch_root_missing');
     if (ctx.pointer.claim_facing_status !== 'blocked') failures.push('claim_facing_status_not_blocked');
@@ -403,7 +410,7 @@ const buildGating = async () => {
         condition_evaluation_summary: rel(ctx.conditionSummaryPath),
         condition_comparison_report: rel(ctx.comparisonReportPath),
         execution_campaign_readout: rel(ctx.readoutPath),
-        latest_campaign_pointer: rel(ctx.pointerPath),
+        latest_campaign_pointer: rel(ctx.immutablePointerPath),
         ecosystem_release_candidate_manifest: rel(ctx.candidateManifestPath)
       },
       authoritative_baseline_linkage: {

@@ -6,6 +6,7 @@
     "repos_clean_and_pushed",
     "frozen_evaluation_architecture_unchanged",
     "post_freeze_repo_head_change_limited_to_governance_audit_or_bundle_layers",
+    "ecosystem_candidate_bundle_regenerated_if_baseline_linkage_changed",
     "runner_executed_campaign_plan_present",
     "canonical_condition_set_preserved",
     "claim_facing_block_preserved",
@@ -16,7 +17,8 @@
     "verify_evaluation_metrics",
     "verify_evaluation_comparisons",
     "verify_evaluation_phase",
-    "verify_ecosystem_integrity"
+    "verify_ecosystem_integrity",
+    "release_ecosystem_candidate_if_candidate_manifest_baseline_linkage_is_stale"
   ],
   "successive_campaign_breaks_baseline": [
     "protocol_drift",

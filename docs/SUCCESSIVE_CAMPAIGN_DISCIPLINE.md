@@ -10,6 +10,8 @@ freeze.
 - the frozen evaluation architecture is unchanged
 - any post-freeze repo-head change is limited to governance, audit, or bundle
   coordination layers and does not change runtime semantics
+- if the baseline linkage changed since the previous campaign, regenerate the
+  ecosystem candidate bundle before running the next comparable campaign
 - the campaign is runner-executed under an explicit plan
 - the six canonical conditions remain explicit
 - claim-facing block remains active
@@ -23,6 +25,9 @@ freeze.
   - `npm run verify:evaluation-comparisons`
   - `npm run verify:evaluation-phase`
   - `npm run verify:ecosystem-integrity`
+- rerun `npm run release:ecosystem-candidate` if the repo head changed after the
+  last authoritative comparable campaign or if the candidate manifest baseline
+  linkage would otherwise be stale
 - rerun full base checks if repo state, bundle builders, or candidate manifests
   changed
 

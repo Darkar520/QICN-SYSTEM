@@ -22,14 +22,18 @@ It is not:
 
 ## Authoritative artifact set
 
-- `artifacts/execution_campaign/campaign_execution_plan.json`
-- `artifacts/execution_campaign/execution_campaign_readout.json`
-- `artifacts/execution_campaign/execution_campaign_audit_readout.json`
-- `artifacts/execution_campaign/latest_campaign_pointer.json`
+- `artifacts/execution_campaign/campaigns/execution_campaign_primary_2026-03-25T02-15-00-000Z/campaign_execution_plan.json`
+- `artifacts/execution_campaign/campaigns/execution_campaign_primary_2026-03-25T02-15-00-000Z/execution_campaign_readout.json`
+- `artifacts/execution_campaign/campaigns/execution_campaign_primary_2026-03-25T02-15-00-000Z/execution_campaign_audit_readout.json`
+- `artifacts/execution_campaign/campaigns/execution_campaign_primary_2026-03-25T02-15-00-000Z/latest_campaign_pointer.json`
 - `artifacts/protocolized_evaluation/batches/execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch/aggregate/evaluation_protocol_manifest.json`
 - `artifacts/protocolized_evaluation/batches/execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch/aggregate/evaluation_batch_report.json`
 - `artifacts/protocolized_evaluation/batches/execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch/aggregate/condition_evaluation_summary.json`
 - `artifacts/protocolized_evaluation/batches/execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch/aggregate/condition_comparison_report.json`
+
+Root-level `artifacts/execution_campaign/*.json` files remain mutable latest-artifact
+surfaces and are not the frozen source-of-truth for this baseline once successive
+campaigns begin to run.
 
 ## Reuse constraints
 

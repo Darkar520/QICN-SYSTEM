@@ -8,9 +8,12 @@ freeze.
 - ecosystem candidate is still `PASS`
 - both repos are clean and pushed
 - the frozen evaluation architecture is unchanged
+- any post-freeze repo-head change is limited to governance, audit, or bundle
+  coordination layers and does not change runtime semantics
 - the campaign is runner-executed under an explicit plan
 - the six canonical conditions remain explicit
 - claim-facing block remains active
+- the new campaign records its own baseline linkage explicitly
 
 ## successive_campaign_requires_fresh_verification
 
@@ -27,8 +30,8 @@ freeze.
 
 - protocol, matrix, metrics registry, controls registry, or statistical policy
   changed
-- repo baselines drifted
 - runtime semantics changed in a way that changes condition meaning
+- frozen evaluation architecture or its frozen operational components changed
 - unsupported comparisons are emitted
 - claim-facing gating no longer blocks the evaluation/campaign artifacts
 

@@ -29,7 +29,8 @@
     "ecosystem_candidate_status_pass"
   ],
   "invalidates_freeze": [
-    "repo_baseline_drift",
+    "runtime_semantic_drift",
+    "frozen_evaluation_architecture_drift",
     "evaluation_protocol_drift",
     "comparison_matrix_drift",
     "metrics_registry_drift",
@@ -42,6 +43,7 @@
   ],
   "requires_rerun_only": [
     "comparable_successive_campaign",
+    "non_material_post_campaign_governance_or_audit_commit_with_explicit_new_baseline_linkage",
     "candidate_bundle_regeneration_from_same_pushed_baselines",
     "audit_readout_regeneration_for_same_authoritative_campaign"
   ],

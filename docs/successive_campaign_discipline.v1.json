@@ -5,9 +5,11 @@
     "ecosystem_candidate_status_pass",
     "repos_clean_and_pushed",
     "frozen_evaluation_architecture_unchanged",
+    "post_freeze_repo_head_change_limited_to_governance_audit_or_bundle_layers",
     "runner_executed_campaign_plan_present",
     "canonical_condition_set_preserved",
-    "claim_facing_block_preserved"
+    "claim_facing_block_preserved",
+    "explicit_new_baseline_linkage_recorded"
   ],
   "successive_campaign_requires_fresh_verification": [
     "verify_evaluation_protocol",
@@ -22,8 +24,8 @@
     "metrics_registry_drift",
     "controls_registry_drift",
     "statistical_policy_drift",
-    "repo_baseline_drift",
     "runtime_semantic_drift",
+    "frozen_evaluation_architecture_drift",
     "unsupported_comparisons_emitted",
     "claim_facing_block_not_enforced"
   ],

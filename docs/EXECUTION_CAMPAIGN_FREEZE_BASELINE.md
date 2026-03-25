@@ -43,7 +43,9 @@ It is not:
 
 ## What invalidates this freeze
 
-- repo baseline drift in either repository
+- runtime-semantic drift in either repository
+- drift in the frozen evaluation architecture or its frozen operational
+  components
 - protocol, matrix, metrics registry, controls registry, or statistical policy
   drift
 - execution runner, comparison verifier, metrics verifier, or campaign auditor
@@ -51,6 +53,10 @@ It is not:
 - unsupported comparisons emitted
 - campaign artifacts promoted to claim-facing surfaces
 - ecosystem candidate falling below `PASS`
+
+Non-material governance, audit, or bundle-layer commits after the frozen
+campaign do not invalidate comparability by themselves. They require explicit
+baseline linkage and fresh verification before any successive campaign.
 
 ## What only requires rerun
 

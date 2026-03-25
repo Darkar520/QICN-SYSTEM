@@ -57,6 +57,10 @@ const bundleManifest = {
     }
   },
   protocolized_evaluation: {
+    architecture_freeze: {
+      documentation: 'ecosystem/docs/PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md',
+      machine_readable: 'ecosystem/manifests/evaluation_architecture_freeze.v1.json'
+    },
     documentation: {
       protocol: 'ecosystem/docs/PROTOCOLIZED_EVALUATION_PROTOCOL.md',
       comparison_matrix: 'ecosystem/docs/EVALUATION_COMPARISON_MATRIX.md',
@@ -77,7 +81,10 @@ const bundleManifest = {
       comparison_report: 'ecosystem/manifests/condition_comparison_report.json',
       protocol_check: 'ecosystem/manifests/evaluation_protocol_check.json',
       metrics_check: 'ecosystem/manifests/evaluation_metrics_check.json',
-      comparisons_check: 'ecosystem/manifests/evaluation_comparisons_check.json'
+      comparisons_check: 'ecosystem/manifests/evaluation_comparisons_check.json',
+      campaign_execution_plan: 'ecosystem/manifests/campaign_execution_plan.json',
+      execution_campaign_readout: 'ecosystem/manifests/execution_campaign_readout.json',
+      latest_campaign_pointer: 'ecosystem/manifests/latest_campaign_pointer.json'
     },
     interpretation_boundary: 'Protocolized evaluation only; internal descriptive/minimal-contrast layer, not external validation, not theory confirmation.'
   },
@@ -142,6 +149,7 @@ const releaseNotes = `# ECOSYSTEM RELEASE NOTES
 - QICN-SYSTEM operational manifests and internal bundle manifest
 - QICN-RELEASE freeze, claim registry, layer/interface manifests, and canonical bundle manifest
 - protocolized evaluation protocol, comparison matrix, metrics registry, controls registry, statistical policy, and latest batch manifests
+- protocolized evaluation freeze baseline and latest execution campaign plan/readout
 - ecosystem baseline docs
 - ecosystem interface contract
 - ecosystem candidate governance
@@ -179,11 +187,13 @@ This ecosystem bundle is an internal release candidate only. It does not imply e
   [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_RELEASE_NOTES.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_RELEASE_NOTES.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_MAINTENANCE_CHECKLIST.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_MAINTENANCE_CHECKLIST.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'PROTOCOLIZED_EVALUATION_PROTOCOL.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'PROTOCOLIZED_EVALUATION_PROTOCOL.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_COMPARISON_MATRIX.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'EVALUATION_COMPARISON_MATRIX.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_METRICS_BASELINE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'EVALUATION_METRICS_BASELINE.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_CONTROLS_AND_INTERVENTIONS.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'EVALUATION_CONTROLS_AND_INTERVENTIONS.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_STATISTICAL_POLICY.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'EVALUATION_STATISTICAL_POLICY.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_INTERPRETATION_BOUNDARY.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'EVALUATION_INTERPRETATION_BOUNDARY.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'evaluation_architecture_freeze.v1.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'evaluation_architecture_freeze.v1.json')],
   [path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'ecosystem_interface_contract.v1.json')],
   [path.join(SYSTEM_ROOT, 'docs', 'ecosystem_candidate_governance.v1.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'ecosystem_candidate_governance.v1.json')],
   [path.join(SYSTEM_ROOT, 'docs', 'evaluation_protocol.v1.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'evaluation_protocol.v1.json')],
@@ -198,6 +208,9 @@ This ecosystem bundle is an internal release candidate only. It does not imply e
   [path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_protocol_check.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'evaluation_protocol_check.json')],
   [path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_metrics_check.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'evaluation_metrics_check.json')],
   [path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_comparisons_check.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'evaluation_comparisons_check.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign', 'campaign_execution_plan.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'campaign_execution_plan.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign', 'execution_campaign_readout.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'execution_campaign_readout.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign', 'latest_campaign_pointer.json'), path.join(bundleRoot, 'ecosystem', 'manifests', 'latest_campaign_pointer.json')],
   [path.join(SYSTEM_ROOT, 'artifacts', 'operational_readiness_manifest.json'), path.join(bundleRoot, 'system', 'manifests', 'operational_readiness_manifest.json')],
   [path.join(SYSTEM_ROOT, 'artifacts', 'artifact_manifest.json'), path.join(bundleRoot, 'system', 'manifests', 'artifact_manifest.json')],
   [path.join(SYSTEM_ROOT, 'artifacts', 'operational_smoke_manifest.json'), path.join(bundleRoot, 'system', 'manifests', 'operational_smoke_manifest.json')],

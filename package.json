@@ -22,6 +22,7 @@
     "verify:operational-readiness": "node scripts/verify-operational-readiness.cjs",
     "verify:ecosystem-integrity": "powershell -ExecutionPolicy Bypass -File ./scripts/run-ecosystem-node.ps1 verify-ecosystem-integrity.cjs",
     "evaluate:protocolized": "powershell -ExecutionPolicy Bypass -File ./scripts/run-ecosystem-node.ps1 run-protocolized-evaluation.cjs",
+    "evaluate:campaign": "powershell -ExecutionPolicy Bypass -File ./scripts/run-ecosystem-node.ps1 run-execution-campaign.cjs",
     "evaluate:canon-runtime": "node scripts/evaluate-canon-runtime.cjs",
     "metrics:entropy-conditions": "node scripts/build-entropy-condition-metrics.cjs",
     "aggregate:small-batch": "node scripts/build-entropy-condition-metrics.cjs artifacts artifacts",

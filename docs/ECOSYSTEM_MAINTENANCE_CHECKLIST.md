@@ -19,6 +19,7 @@
 - protocolized evaluation:
   - `npm run verify:evaluation-protocol`
   - `npm run evaluate:protocolized`
+  - `npm run evaluate:campaign`
   - `npm run verify:evaluation-phase`
 
 ## Full freeze validation
@@ -29,6 +30,7 @@
 - `npm run release:bundle`
 - `npm run verify:evaluation-protocol`
 - `npm run evaluate:protocolized`
+- `npm run evaluate:campaign`
 - `npm run verify:evaluation-phase`
 - `node scripts/verify-canonical-integrity.cjs`
 - `node scripts/verify-claim-registry.cjs`
@@ -43,6 +45,8 @@
 - `artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json`
 - `artifacts/protocolized_evaluation/evaluation_batch_report.json`
 - `artifacts/protocolized_evaluation/condition_comparison_report.json`
+- `artifacts/execution_campaign/campaign_execution_plan.json`
+- `artifacts/execution_campaign/execution_campaign_readout.json`
 - `release/release_freeze_manifest.json`
 - `docs/ECOSYSTEM_INTERFACE_CONTRACT.md`
 

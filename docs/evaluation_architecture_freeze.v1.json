@@ -1,0 +1,46 @@
+{
+  "artifact_role": "evaluation_architecture_freeze",
+  "schema_version": "1.0.0",
+  "freeze_id": "protocolized_evaluation_architecture_freeze.v1",
+  "protocol_ref": "docs/evaluation_protocol.v1.json",
+  "comparison_matrix_ref": "docs/evaluation_comparison_matrix.v1.json",
+  "metrics_registry_ref": "docs/evaluation_metrics_registry.v1.json",
+  "controls_registry_ref": "docs/evaluation_controls_registry.v1.json",
+  "statistical_policy_ref": "docs/evaluation_statistical_policy.v1.json",
+  "interpretation_boundary_ref": "docs/EVALUATION_INTERPRETATION_BOUNDARY.md",
+  "required_ecosystem_candidate_status": "PASS",
+  "required_repo_state": "clean_and_pushed_for_both_repositories",
+  "frozen_components": {
+    "runner": "scripts/run-protocolized-evaluation.cjs",
+    "campaign_runner": "scripts/run-execution-campaign.cjs",
+    "protocol_verifier": "scripts/verify-evaluation-protocol.cjs",
+    "metrics_verifier": "scripts/verify-evaluation-metrics.cjs",
+    "comparisons_verifier": "scripts/verify-evaluation-comparisons.cjs",
+    "consolidation_test": "tests/protocolized-evaluation-consolidation.v1.test.cjs"
+  },
+  "frozen_rules": {
+    "condition_order": [
+      "baseline",
+      "replay",
+      "shuffled",
+      "prng_only",
+      "delayed_entropy",
+      "dropout"
+    ],
+    "minimum_runs_per_condition": 2,
+    "minimum_runs_per_condition_for_minimal_contrast": 3,
+    "authoritative_exclusions_only": [
+      "non_admissible_run",
+      "entropy_invalidated_run",
+      "missing_required_artifact"
+    ]
+  },
+  "blocked_inferences": [
+    "description_only_implies_confirmatory_contrast",
+    "minimal_contrast_implies_causal_confirmation",
+    "evaluation_artifact_implies_claim_facing_safe_output",
+    "runtime_output_implies_corpus_validation",
+    "corpus_freeze_implies_runtime_confirmation"
+  ],
+  "interpretation_boundary": "Frozen evaluation architecture only; not external validation, not theory confirmation, not claim closure."
+}

@@ -34,6 +34,9 @@ This note governs the internal ecosystem release candidate formed by
 - any change to baseline docs cited by the ecosystem manifest
 - any change to evaluation runners, evaluation verifiers, or latest evaluation
   artifacts under `artifacts/protocolized_evaluation/`
+- any change to `docs/PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md`,
+  `docs/evaluation_architecture_freeze.v1.json`, or
+  artifacts under `artifacts/execution_campaign/`
 - any change to repo state that affects branch, commit, upstream, or push state
 
 ## requires_explicit_human_review
@@ -69,6 +72,10 @@ This note governs the internal ecosystem release candidate formed by
 - `docs/EVALUATION_CONTROLS_AND_INTERVENTIONS.md`
 - `docs/EVALUATION_STATISTICAL_POLICY.md`
 - `docs/EVALUATION_INTERPRETATION_BOUNDARY.md`
+- `docs/PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md`
+- `docs/evaluation_architecture_freeze.v1.json`
+- `artifacts/execution_campaign/campaign_execution_plan.json`
+- `artifacts/execution_campaign/execution_campaign_readout.json`
 
 ## Interpretation boundary
 

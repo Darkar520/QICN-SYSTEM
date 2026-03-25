@@ -6,12 +6,16 @@
   - `run_evaluation_metrics.json`
   - `condition_evaluation_summary.json`
   - `evaluation_batch_report.json`
+  - `execution_campaign_readout.json`
 - minimal-contrast outputs
   - `condition_comparison_report.json`
   - only for matrix-permitted comparisons with sufficient `n`
 - internal support outputs
   - `support_labels.json`
   - `condition_support_labels.json`
+- internal coordination outputs
+  - `campaign_execution_plan.json`
+  - `latest_campaign_pointer.json`
 
 ## Hard boundaries
 
@@ -28,6 +32,9 @@
 - `condition_evaluation_summary.json`: blocked for claim-facing
 - `condition_comparison_report.json`: blocked for claim-facing
 - `evaluation_batch_report.json`: blocked for claim-facing
+- `campaign_execution_plan.json`: blocked for claim-facing
+- `execution_campaign_readout.json`: blocked for claim-facing
+- `latest_campaign_pointer.json`: blocked for claim-facing
 - support labels remain internal support layer only
 
 ## Interpretation boundary

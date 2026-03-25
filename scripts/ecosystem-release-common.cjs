@@ -193,11 +193,13 @@ const loadEvaluationPhase = () => {
     controls_doc_path: path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_CONTROLS_AND_INTERVENTIONS.md'),
     stats_doc_path: path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_STATISTICAL_POLICY.md'),
     boundary_doc_path: path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_INTERPRETATION_BOUNDARY.md'),
+    freeze_doc_path: path.join(SYSTEM_ROOT, 'docs', 'PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md'),
     protocol_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_protocol.v1.json'),
     comparison_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_comparison_matrix.v1.json'),
     metrics_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_metrics_registry.v1.json'),
     controls_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_controls_registry.v1.json'),
-    stats_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_statistical_policy.v1.json')
+    stats_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_statistical_policy.v1.json'),
+    freeze_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_architecture_freeze.v1.json')
   };
   const artifacts = {
     protocol_manifest_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_protocol_manifest.json'),
@@ -206,18 +208,39 @@ const loadEvaluationPhase = () => {
     comparison_report_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'condition_comparison_report.json'),
     protocol_check_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_protocol_check.json'),
     metrics_check_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_metrics_check.json'),
-    comparisons_check_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_comparisons_check.json')
+    comparisons_check_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_comparisons_check.json'),
+    campaign_plan_path: path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign', 'campaign_execution_plan.json'),
+    campaign_readout_path: path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign', 'execution_campaign_readout.json'),
+    campaign_pointer_path: path.join(SYSTEM_ROOT, 'artifacts', 'execution_campaign', 'latest_campaign_pointer.json')
+  };
+  const coreArtifacts = {
+    protocol_manifest_path: artifacts.protocol_manifest_path,
+    batch_report_path: artifacts.batch_report_path,
+    condition_summary_path: artifacts.condition_summary_path,
+    comparison_report_path: artifacts.comparison_report_path,
+    protocol_check_path: artifacts.protocol_check_path,
+    metrics_check_path: artifacts.metrics_check_path,
+    comparisons_check_path: artifacts.comparisons_check_path
+  };
+  const campaignArtifacts = {
+    campaign_plan_path: artifacts.campaign_plan_path,
+    campaign_readout_path: artifacts.campaign_readout_path,
+    campaign_pointer_path: artifacts.campaign_pointer_path
   };
   return {
     docs,
     artifacts,
     docs_present: Object.values(docs).every((file) => exists(file)),
-    artifacts_present: Object.values(artifacts).every((file) => exists(file)),
+    artifacts_present: Object.values(coreArtifacts).every((file) => exists(file)),
+    campaign_artifacts_present: Object.values(campaignArtifacts).every((file) => exists(file)),
     protocol_manifest: exists(artifacts.protocol_manifest_path) ? readJson(artifacts.protocol_manifest_path) : null,
     batch_report: exists(artifacts.batch_report_path) ? readJson(artifacts.batch_report_path) : null,
     protocol_check: exists(artifacts.protocol_check_path) ? readJson(artifacts.protocol_check_path) : null,
     metrics_check: exists(artifacts.metrics_check_path) ? readJson(artifacts.metrics_check_path) : null,
-    comparisons_check: exists(artifacts.comparisons_check_path) ? readJson(artifacts.comparisons_check_path) : null
+    comparisons_check: exists(artifacts.comparisons_check_path) ? readJson(artifacts.comparisons_check_path) : null,
+    campaign_plan: exists(artifacts.campaign_plan_path) ? readJson(artifacts.campaign_plan_path) : null,
+    campaign_readout: exists(artifacts.campaign_readout_path) ? readJson(artifacts.campaign_readout_path) : null,
+    campaign_pointer: exists(artifacts.campaign_pointer_path) ? readJson(artifacts.campaign_pointer_path) : null
   };
 };
 
@@ -405,11 +428,13 @@ const evaluateEcosystem = () => {
     evaluation.docs.controls_doc_path,
     evaluation.docs.stats_doc_path,
     evaluation.docs.boundary_doc_path,
+    evaluation.docs.freeze_doc_path,
     evaluation.docs.protocol_json_path,
     evaluation.docs.comparison_json_path,
     evaluation.docs.metrics_json_path,
     evaluation.docs.controls_json_path,
     evaluation.docs.stats_json_path,
+    evaluation.docs.freeze_json_path,
     evaluation.artifacts.protocol_manifest_path,
     evaluation.artifacts.batch_report_path,
     evaluation.artifacts.condition_summary_path,
@@ -417,6 +442,9 @@ const evaluateEcosystem = () => {
     evaluation.artifacts.protocol_check_path,
     evaluation.artifacts.metrics_check_path,
     evaluation.artifacts.comparisons_check_path,
+    evaluation.artifacts.campaign_plan_path,
+    evaluation.artifacts.campaign_readout_path,
+    evaluation.artifacts.campaign_pointer_path,
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_candidate_governance.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'OPERATIONAL_READINESS.md'),
@@ -540,6 +568,7 @@ const evaluateEcosystem = () => {
     : (evaluationWarned ? 'PASS_WITH_WARNINGS' : 'PASS'), {
     docs_present: evaluation.docs_present,
     artifacts_present: evaluation.artifacts_present,
+    campaign_artifacts_present: evaluation.campaign_artifacts_present,
     protocol_manifest: exists(evaluation.artifacts.protocol_manifest_path)
       ? normalize(path.relative(SYSTEM_ROOT, evaluation.artifacts.protocol_manifest_path))
       : null,

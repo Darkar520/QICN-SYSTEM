@@ -25,7 +25,8 @@ const REQUIRED_CANONICAL_SCRIPTS = [
   'regression:minimal',
   'release:bundle',
   'aggregate:small-batch',
-  'evaluate:protocolized'
+  'evaluate:protocolized',
+  'evaluate:campaign'
 ];
 
 const REQUIRED_DOCS = [
@@ -33,6 +34,7 @@ const REQUIRED_DOCS = [
   'docs/OPERATIONAL_READINESS.md',
   'docs/RELEASE_PROCESS.md',
   'docs/PROTOCOLIZED_EVALUATION_PROTOCOL.md',
+  'docs/PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md',
   'docs/EVALUATION_COMPARISON_MATRIX.md',
   'docs/EVALUATION_METRICS_BASELINE.md',
   'docs/EVALUATION_CONTROLS_AND_INTERVENTIONS.md',
@@ -51,6 +53,7 @@ const REQUIRED_SCRIPTS = [
   'scripts/build-internal-release-bundle.cjs',
   'scripts/build-entropy-condition-metrics.cjs',
   'scripts/run-protocolized-evaluation.cjs',
+  'scripts/run-execution-campaign.cjs',
   'scripts/evaluation-phase-common.cjs',
   'scripts/export-governed-output.cjs',
   'scripts/emit-controlled-statement.cjs',

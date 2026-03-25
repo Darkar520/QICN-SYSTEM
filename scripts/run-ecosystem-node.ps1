@@ -1,6 +1,9 @@
 param(
   [Parameter(Mandatory = $true)]
-  [string]$NodeScript
+  [string]$NodeScript,
+
+  [Parameter(ValueFromRemainingArguments = $true)]
+  [string[]]$ScriptArgs
 )
 
 $ErrorActionPreference = 'Stop'
@@ -59,5 +62,5 @@ function Set-RepoEnv {
 Set-RepoEnv -RepoPath $systemRoot -Prefix 'ECO_SYSTEM'
 Set-RepoEnv -RepoPath $releaseRoot -Prefix 'ECO_RELEASE'
 
-& node $targetScript
+& node $targetScript @ScriptArgs
 exit $LASTEXITCODE

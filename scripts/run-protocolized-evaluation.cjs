@@ -22,6 +22,16 @@ const parseArg = (name, fallback = null) => {
   return hit ? hit.slice(name.length + 3) : fallback;
 };
 
+const parseListArg = (name, fallback = []) => {
+  const raw = parseArg(name, null);
+  if (!raw) return fallback;
+  const values = String(raw)
+    .split(',')
+    .map((value) => Number(value.trim()))
+    .filter((value) => Number.isFinite(value));
+  return values.length > 0 ? values : fallback;
+};
+
 const makeSample = ({ jobId, entropyFloat01, nowMs, ttlMs = 60000, source = 'custom_entropy_api' }) => ({
   source,
   jobId,
@@ -131,6 +141,11 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
   const batchRoot = path.resolve(parseArg('output-root', path.join(EVALUATION_ROOT, 'batches', batchId)));
   const runsRoot = path.join(batchRoot, 'artifacts');
   const aggregateRoot = path.join(batchRoot, 'aggregate');
+  const seedSchedule = parseListArg('seed-schedule', protocol.canonical_seed_schedule);
+  const effectiveRunsPerCondition = seedSchedule.length;
+  if (effectiveRunsPerCondition < protocol.minimum_runs_per_condition) {
+    throw new Error(`Seed schedule too small for protocol minimum. received=${effectiveRunsPerCondition}, minimum=${protocol.minimum_runs_per_condition}`);
+  }
   ensureDir(runsRoot);
   ensureDir(aggregateRoot);
 
@@ -310,8 +325,8 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
   let runCounter = 0;
   for (let conditionIndex = 0; conditionIndex < protocol.condition_order.length; conditionIndex += 1) {
     const conditionId = protocol.condition_order[conditionIndex];
-    for (let replicateIndex = 0; replicateIndex < protocol.canonical_seed_schedule.length; replicateIndex += 1) {
-      const seed = protocol.canonical_seed_schedule[replicateIndex];
+    for (let replicateIndex = 0; replicateIndex < seedSchedule.length; replicateIndex += 1) {
+      const seed = seedSchedule[replicateIndex];
       const runStartMs = baseNow + (runCounter * 1000);
       runCounter += 1;
       runRecords.push(await runConditionReplicate({
@@ -392,7 +407,7 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
       .filter(([, value]) => value.observed_count > 0 && value.pass_rate !== 1)
       .map(([key]) => key);
     const conditionStatus = {
-      requested_run_count: protocol.canonical_runs_per_condition,
+      requested_run_count: effectiveRunsPerCondition,
       materialized_run_count: condition.materialized_run_count,
       included_run_count: condition.included_run_count,
       excluded_run_count: condition.excluded_run_count,
@@ -469,9 +484,10 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
       runs_root: toProjectRelative(runsRoot),
       aggregate_root: toProjectRelative(aggregateRoot)
     },
-    seed_schedule: protocol.canonical_seed_schedule,
+    seed_schedule: seedSchedule,
     condition_order: protocol.condition_order,
     canonical_runs_per_condition: protocol.canonical_runs_per_condition,
+    effective_runs_per_condition: effectiveRunsPerCondition,
     required_run_artifacts: protocol.required_run_artifacts,
     required_batch_artifacts: protocol.required_batch_artifacts,
     blocked_claim_facing_outputs: blockedClaimFacingOutputs,
@@ -489,7 +505,7 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
     failures,
     run_count: runRecords.length,
     condition_count: Object.keys(conditionStatuses).length,
-    seed_schedule: protocol.canonical_seed_schedule,
+    seed_schedule: seedSchedule,
     condition_statuses: conditionStatuses,
     comparison_statuses: comparisonStatuses,
     invalidates_batch_if: [

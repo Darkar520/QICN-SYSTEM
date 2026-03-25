@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 const {
   SYSTEM_ROOT,
   normalize,
@@ -63,6 +64,23 @@ const portabilityMatches = (files) => files
   .filter((file) => fs.existsSync(file))
   .filter((file) => LOCAL_PATH_PATTERN.test(fs.readFileSync(file, 'utf8')))
   .map((file) => toProjectRelative(file));
+
+const runCampaignAudit = () => {
+  const auditScript = path.join(__dirname, 'audit-execution-campaign.cjs');
+  const result = spawnSync(process.execPath, [auditScript], {
+    cwd: SYSTEM_ROOT,
+    encoding: 'utf8'
+  });
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.stderr) process.stderr.write(result.stderr);
+  if (result.status !== 0) {
+    throw new Error(`campaign audit failed with exit=${result.status}`);
+  }
+  return {
+    audit_readout_path: 'artifacts/execution_campaign/execution_campaign_audit_readout.json',
+    immutable_audit_readout_path: null
+  };
+};
 
 (async () => {
   const generatedAt = new Date().toISOString();
@@ -339,6 +357,8 @@ const portabilityMatches = (files) => files
   writeJson(campaignReadoutPath, readout);
   writeJson(path.join(CAMPAIGN_ROOT, 'latest_campaign_pointer.json'), pointer);
   writeJson(path.join(campaignDir, 'latest_campaign_pointer.json'), pointer);
+  const auditResult = runCampaignAudit();
+  auditResult.immutable_audit_readout_path = toProjectRelative(path.join(campaignDir, 'execution_campaign_audit_readout.json'));
 
   process.stdout.write(`${JSON.stringify({
     artifact_role: 'execution_campaign_result',
@@ -348,6 +368,8 @@ const portabilityMatches = (files) => files
     plan_path: campaignPlanRef,
     readout_path: campaignReadoutRef,
     pointer_path: campaignPointerRef,
+    audit_readout_path: auditResult.audit_readout_path,
+    immutable_audit_readout_path: auditResult.immutable_audit_readout_path,
     batch_report: runnerOutput.batch_report,
     protocol_manifest: runnerOutput.protocol_manifest,
     run_count: batchReport.run_count

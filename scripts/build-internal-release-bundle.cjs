@@ -153,7 +153,7 @@ async function buildInternalReleaseBundle({
         decision_path: toBundleRelative(comparisonExport.decisionPath)
       }
     ].filter(Boolean),
-    copied_docs: docsToCopy.map((relPath) => path.join('docs', path.basename(relPath))),
+    copied_docs: docsToCopy.map((relPath) => `docs/${path.basename(relPath)}`),
     readiness_manifest: 'operational_readiness_manifest.json',
     artifact_manifest: 'artifact_manifest.json',
     interpretation_boundary: 'Internal release bundle only; bounded local descriptive package, not public claim-safe release, not external validation, not scientific closure.',

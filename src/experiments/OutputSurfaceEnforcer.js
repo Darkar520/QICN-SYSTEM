@@ -415,7 +415,7 @@ export const exportOutputForSurface = ({
   const decision = {
     ...assessment.decision,
     reason_code: 'allowed_export',
-    emitted_to: exportPath
+    emitted_to: toPortablePath(rootDir, exportPath)
   };
   fs.writeFileSync(decisionPath, `${JSON.stringify(decision, null, 2)}\n`, 'utf8');
   return {

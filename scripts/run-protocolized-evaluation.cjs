@@ -135,6 +135,19 @@ async function runProtocolizedEvaluation({
     throw new Error('Frozen ecosystem candidate manifests are missing. Run ecosystem candidate generation before protocolized evaluation.');
   }
   const frozenCandidate = readJson(frozenCandidateManifestPath);
+  const immutableFrozenCandidateManifestPath = typeof frozenCandidate.bundle_id === 'string' && frozenCandidate.bundle_id.trim().length > 0
+    ? path.join(
+      PROJECT_ROOT,
+      'artifacts',
+      'ecosystem_release_candidate',
+      'bundles',
+      frozenCandidate.bundle_id,
+      'ecosystem_release_candidate_manifest.json'
+    )
+    : frozenCandidateManifestPath;
+  const frozenCandidateManifestRef = toProjectRelative(
+    fs.existsSync(immutableFrozenCandidateManifestPath) ? immutableFrozenCandidateManifestPath : frozenCandidateManifestPath
+  );
   const frozenVerificationMatrix = readJson(frozenVerificationMatrixPath);
   if (frozenCandidate.candidate_status !== 'PASS' || frozenVerificationMatrix.status !== 'PASS') {
     throw new Error(`Frozen ecosystem baseline required before evaluation. current candidate status=${frozenCandidate.candidate_status}, verification status=${frozenVerificationMatrix.status}.`);
@@ -468,7 +481,7 @@ async function runProtocolizedEvaluation({
     controls_registry_ref: 'docs/evaluation_controls_registry.v1.json',
     statistical_policy_ref: 'docs/evaluation_statistical_policy.v1.json',
     interpretation_boundary_ref: 'docs/EVALUATION_INTERPRETATION_BOUNDARY.md',
-    ecosystem_candidate_manifest_ref: 'artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json',
+    ecosystem_candidate_manifest_ref: frozenCandidateManifestRef,
     ecosystem_candidate_status: frozenCandidate.candidate_status,
     baselines: {
       qicn_system: {

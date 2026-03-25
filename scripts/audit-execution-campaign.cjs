@@ -27,9 +27,25 @@ const statusFrom = ({ failures = [], notes = [], overreach = [] }) => {
   return 'coherent';
 };
 
+const resolveCandidateManifestPath = () => {
+  const rootCandidate = readJson(CANDIDATE_MANIFEST);
+  const immutableCandidatePath = text(rootCandidate.bundle_id)
+    ? path.join(
+      SYSTEM_ROOT,
+      'artifacts',
+      'ecosystem_release_candidate',
+      'bundles',
+      rootCandidate.bundle_id,
+      'ecosystem_release_candidate_manifest.json'
+    )
+    : CANDIDATE_MANIFEST;
+  return exists(immutableCandidatePath) ? immutableCandidatePath : CANDIDATE_MANIFEST;
+};
+
 const ctx = (() => {
   const pointerPath = path.join(EXECUTION_ROOT, 'latest_campaign_pointer.json');
   const pointer = readJson(pointerPath);
+  const candidateManifestPath = resolveCandidateManifestPath();
   const planPath = path.join(SYSTEM_ROOT, pointer.plan_path);
   const readoutPath = path.join(SYSTEM_ROOT, pointer.readout_path);
   const batchRoot = path.join(SYSTEM_ROOT, pointer.batch_root);
@@ -51,7 +67,7 @@ const ctx = (() => {
     batchReportPath: path.join(aggregateRoot, 'evaluation_batch_report.json'),
     conditionSummaryPath: path.join(aggregateRoot, 'condition_evaluation_summary.json'),
     comparisonReportPath: path.join(aggregateRoot, 'condition_comparison_report.json'),
-    candidateManifestPath: CANDIDATE_MANIFEST
+    candidateManifestPath
   };
 })();
 
@@ -107,7 +123,7 @@ const buildArtifactAudits = () => {
       artifact: ctx.plan,
       artifactPath: ctx.planPath,
       requiredFields: ['artifact_role', 'campaign_id', 'batch_id', 'architecture_freeze_ref', 'baseline.qicn_system_head', 'baseline.qicn_release_head', 'conditions', 'n_per_condition', 'seed_schedule', 'blocked_claim_facing_outputs', 'interpretation_boundary'],
-      sourceInputs: ['docs/evaluation_architecture_freeze.v1.json', 'docs/evaluation_protocol.v1.json', 'docs/evaluation_comparison_matrix.v1.json', 'docs/evaluation_metrics_registry.v1.json', 'docs/evaluation_statistical_policy.v1.json', 'artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json'],
+      sourceInputs: ['docs/evaluation_architecture_freeze.v1.json', 'docs/evaluation_protocol.v1.json', 'docs/evaluation_comparison_matrix.v1.json', 'docs/evaluation_metrics_registry.v1.json', 'docs/evaluation_statistical_policy.v1.json', rel(ctx.candidateManifestPath)],
       allowedSurfaces: ['local_artifact_surface', 'ecosystem_internal_manifest_surface'],
       blockedSurfaces: ['claim_facing_surface', 'controlled_statement_surface'],
       nonClaimBoundary: ctx.plan.interpretation_boundary,
@@ -133,7 +149,7 @@ const buildArtifactAudits = () => {
       artifact: protocolManifest,
       artifactPath: ctx.protocolManifestPath,
       requiredFields: ['artifact_role', 'batch_id', 'protocol_ref', 'comparison_matrix_ref', 'metrics_registry_ref', 'controls_registry_ref', 'statistical_policy_ref', 'ecosystem_candidate_manifest_ref', 'ecosystem_candidate_status', 'seed_schedule', 'condition_order', 'required_run_artifacts', 'required_batch_artifacts', 'blocked_claim_facing_outputs', 'claim_facing_status', 'interpretation_boundary'],
-      sourceInputs: ['docs/evaluation_protocol.v1.json', 'docs/evaluation_comparison_matrix.v1.json', 'docs/evaluation_metrics_registry.v1.json', 'docs/evaluation_controls_registry.v1.json', 'docs/evaluation_statistical_policy.v1.json', 'artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json'],
+      sourceInputs: ['docs/evaluation_protocol.v1.json', 'docs/evaluation_comparison_matrix.v1.json', 'docs/evaluation_metrics_registry.v1.json', 'docs/evaluation_controls_registry.v1.json', 'docs/evaluation_statistical_policy.v1.json', rel(ctx.candidateManifestPath)],
       allowedSurfaces: ['local_artifact_surface', 'ecosystem_internal_manifest_surface'],
       blockedSurfaces: ['claim_facing_surface', 'controlled_statement_surface'],
       nonClaimBoundary: protocolManifest.interpretation_boundary,

@@ -15,7 +15,6 @@ const {
   buildConditionEvaluationSummaryArtifact,
   buildConditionComparisonReportArtifact
 } = require('./evaluation-phase-common.cjs');
-const { evaluateEcosystem } = require('./ecosystem-release-common.cjs');
 const { verifyArtifacts } = require('./verify-artifacts.cjs');
 
 const parseArg = (name, fallback = null) => {
@@ -116,9 +115,15 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
 
 (async () => {
   const { protocol, comparisonMatrix, metricsRegistry, statisticalPolicy } = loadDefinitions();
-  const ecosystem = evaluateEcosystem();
-  if (ecosystem.verificationMatrix.status !== 'PASS') {
-    throw new Error(`Frozen ecosystem baseline required before evaluation. verify:ecosystem-integrity returned ${ecosystem.verificationMatrix.status}.`);
+  const frozenCandidateManifestPath = path.join(PROJECT_ROOT, 'artifacts', 'ecosystem_release_candidate', 'ecosystem_release_candidate_manifest.json');
+  const frozenVerificationMatrixPath = path.join(PROJECT_ROOT, 'artifacts', 'ecosystem_release_candidate', 'ecosystem_verification_matrix.json');
+  if (!fs.existsSync(frozenCandidateManifestPath) || !fs.existsSync(frozenVerificationMatrixPath)) {
+    throw new Error('Frozen ecosystem candidate manifests are missing. Run ecosystem candidate generation before protocolized evaluation.');
+  }
+  const frozenCandidate = readJson(frozenCandidateManifestPath);
+  const frozenVerificationMatrix = readJson(frozenVerificationMatrixPath);
+  if (frozenCandidate.candidate_status !== 'PASS' || frozenVerificationMatrix.status !== 'PASS') {
+    throw new Error(`Frozen ecosystem baseline required before evaluation. current candidate status=${frozenCandidate.candidate_status}, verification status=${frozenVerificationMatrix.status}.`);
   }
 
   const generatedAt = new Date().toISOString();
@@ -219,15 +224,16 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
     runStartMs
   }) => {
     const runId = buildRunId({ conditionId, seed, replicateIndex });
+    const sampleBaseMs = Date.now();
     const replaySequence = buildSeededSequence({
       seed,
       prefix: conditionId === 'shuffled' ? 'protocol_shuffled' : 'protocol_replay',
-      startMs: runStartMs
+      startMs: sampleBaseMs
     });
     const upstreamSequence = buildSeededSequence({
       seed: seed + 1000,
       prefix: 'protocol_upstream',
-      startMs: runStartMs + 100
+      startMs: sampleBaseMs
     });
     const conditionConfig = buildConditionConfig({ conditionId, seed, replaySequence });
     const bridge = new QuantumEntropyBridge({
@@ -259,13 +265,15 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
     }
 
     const fallbackRandom = createSeededRandom(seed + (replicateIndex * 31) + (conditionIndex * 17));
+    const selectionBaseMs = Date.now() + 5;
     for (let tick = 0; tick < protocol.tick_count_per_run; tick += 1) {
-      const decision = bridge.selectEntropy(runStartMs + (tick * 20), 0.3 + (fallbackRandom() * 0.4));
+      const tickNowMs = selectionBaseMs + (tick * 20);
+      const decision = bridge.selectEntropy(tickNowMs, 0.3 + (fallbackRandom() * 0.4));
       await emitTick({
         harness,
         tick,
         entropyMode: decision.mode,
-        entropySnapshot: bridge.getForensicSnapshot(runStartMs + (tick * 20)),
+        entropySnapshot: bridge.getForensicSnapshot(tickNowMs),
         seed,
         conditionIndex,
         replicateIndex
@@ -440,20 +448,20 @@ const summarizeConditionAssertions = (runEvaluationArtifact) => Object.fromEntri
     statistical_policy_ref: 'docs/evaluation_statistical_policy.v1.json',
     interpretation_boundary_ref: 'docs/EVALUATION_INTERPRETATION_BOUNDARY.md',
     ecosystem_candidate_manifest_ref: 'artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json',
-    ecosystem_candidate_status: ecosystem.verificationMatrix.status,
+    ecosystem_candidate_status: frozenCandidate.candidate_status,
     baselines: {
       qicn_system: {
-        branch: ecosystem.model.system.state.branch,
-        head: ecosystem.model.system.state.head,
-        upstream: ecosystem.model.system.state.upstream
+        branch: frozenCandidate.baselines.qicn_system.branch,
+        head: frozenCandidate.baselines.qicn_system.head,
+        upstream: frozenCandidate.baselines.qicn_system.upstream
       },
       qicn_release: {
-        branch: ecosystem.model.release.state.branch,
-        head: ecosystem.model.release.state.head,
-        upstream: ecosystem.model.release.state.upstream,
-        freeze_tag: ecosystem.model.release.freeze_manifest.freeze_reference.local_tag,
-        freeze_commit: ecosystem.model.release.freeze_manifest.freeze_reference.local_tag_commit,
-        upstream_pin_status: ecosystem.model.release.freeze_manifest.pin_status.upstream_pin_status
+        branch: frozenCandidate.baselines.qicn_release.branch,
+        head: frozenCandidate.baselines.qicn_release.head,
+        upstream: frozenCandidate.baselines.qicn_release.upstream,
+        freeze_tag: frozenCandidate.baselines.qicn_release.canonical_freeze_tag,
+        freeze_commit: frozenCandidate.baselines.qicn_release.canonical_freeze_commit,
+        upstream_pin_status: frozenCandidate.baselines.qicn_release.upstream_pin_status
       }
     },
     batch_paths: {

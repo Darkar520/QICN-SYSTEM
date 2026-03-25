@@ -41,11 +41,9 @@ const latestDirByPrefix = (dir, prefix) => {
   return matches.length > 0 ? matches[0] : null;
 };
 
-const POWERSHELL = 'C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
-const psQuote = (value) => `'${String(value).replace(/'/g, "''")}'`;
 const git = (cwd, args) => cp.execFileSync(
-  POWERSHELL,
-  ['-Command', `git ${args.map(psQuote).join(' ')}`],
+  'git',
+  args,
   { cwd, encoding: 'utf8' }
 ).trim();
 const tryGit = (cwd, args) => {

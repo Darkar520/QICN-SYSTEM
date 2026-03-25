@@ -21,7 +21,7 @@
     "verify:evaluation-phase": "npm run verify:evaluation-protocol && npm run verify:evaluation-metrics && npm run verify:evaluation-comparisons",
     "verify:operational-readiness": "node scripts/verify-operational-readiness.cjs",
     "verify:ecosystem-integrity": "powershell -ExecutionPolicy Bypass -File ./scripts/run-ecosystem-node.ps1 verify-ecosystem-integrity.cjs",
-    "evaluate:protocolized": "node scripts/run-protocolized-evaluation.cjs",
+    "evaluate:protocolized": "powershell -ExecutionPolicy Bypass -File ./scripts/run-ecosystem-node.ps1 run-protocolized-evaluation.cjs",
     "evaluate:canon-runtime": "node scripts/evaluate-canon-runtime.cjs",
     "metrics:entropy-conditions": "node scripts/build-entropy-condition-metrics.cjs",
     "aggregate:small-batch": "node scripts/build-entropy-condition-metrics.cjs artifacts artifacts",

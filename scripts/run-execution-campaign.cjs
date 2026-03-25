@@ -69,10 +69,8 @@ const runCampaignAudit = () => {
   const auditScript = path.join(__dirname, 'audit-execution-campaign.cjs');
   const result = spawnSync(process.execPath, [auditScript], {
     cwd: SYSTEM_ROOT,
-    encoding: 'utf8'
+    stdio: 'inherit'
   });
-  if (result.stdout) process.stdout.write(result.stdout);
-  if (result.stderr) process.stderr.write(result.stderr);
   if (result.status !== 0) {
     throw new Error(`campaign audit failed with exit=${result.status}`);
   }

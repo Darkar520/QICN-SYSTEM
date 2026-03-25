@@ -59,6 +59,18 @@ release candidate composed by `QICN-SYSTEM` and `QICN-RELEASE`.
   - `docs/ecosystem_candidate_governance.v1.json`
 - maintenance source-of-truth:
   - `docs/ECOSYSTEM_MAINTENANCE_CHECKLIST.md`
+- protocolized evaluation source-of-truth:
+  - `docs/PROTOCOLIZED_EVALUATION_PROTOCOL.md`
+  - `docs/evaluation_protocol.v1.json`
+  - `docs/EVALUATION_COMPARISON_MATRIX.md`
+  - `docs/evaluation_comparison_matrix.v1.json`
+  - `docs/EVALUATION_METRICS_BASELINE.md`
+  - `docs/evaluation_metrics_registry.v1.json`
+  - `docs/EVALUATION_CONTROLS_AND_INTERVENTIONS.md`
+  - `docs/evaluation_controls_registry.v1.json`
+  - `docs/EVALUATION_STATISTICAL_POLICY.md`
+  - `docs/evaluation_statistical_policy.v1.json`
+  - latest batch artifacts under `artifacts/protocolized_evaluation/`
 
 ## Freeze interpretation boundary
 

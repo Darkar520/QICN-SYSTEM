@@ -187,6 +187,42 @@ const loadFreezeDocs = () => ({
   maintenance_checklist_path: path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_MAINTENANCE_CHECKLIST.md')
 });
 
+const loadEvaluationPhase = () => {
+  const docs = {
+    protocol_doc_path: path.join(SYSTEM_ROOT, 'docs', 'PROTOCOLIZED_EVALUATION_PROTOCOL.md'),
+    comparison_doc_path: path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_COMPARISON_MATRIX.md'),
+    metrics_doc_path: path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_METRICS_BASELINE.md'),
+    controls_doc_path: path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_CONTROLS_AND_INTERVENTIONS.md'),
+    stats_doc_path: path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_STATISTICAL_POLICY.md'),
+    boundary_doc_path: path.join(SYSTEM_ROOT, 'docs', 'EVALUATION_INTERPRETATION_BOUNDARY.md'),
+    protocol_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_protocol.v1.json'),
+    comparison_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_comparison_matrix.v1.json'),
+    metrics_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_metrics_registry.v1.json'),
+    controls_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_controls_registry.v1.json'),
+    stats_json_path: path.join(SYSTEM_ROOT, 'docs', 'evaluation_statistical_policy.v1.json')
+  };
+  const artifacts = {
+    protocol_manifest_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_protocol_manifest.json'),
+    batch_report_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_batch_report.json'),
+    condition_summary_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'condition_evaluation_summary.json'),
+    comparison_report_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'condition_comparison_report.json'),
+    protocol_check_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_protocol_check.json'),
+    metrics_check_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_metrics_check.json'),
+    comparisons_check_path: path.join(SYSTEM_ROOT, 'artifacts', 'protocolized_evaluation', 'evaluation_comparisons_check.json')
+  };
+  return {
+    docs,
+    artifacts,
+    docs_present: Object.values(docs).every((file) => exists(file)),
+    artifacts_present: Object.values(artifacts).every((file) => exists(file)),
+    protocol_manifest: exists(artifacts.protocol_manifest_path) ? readJson(artifacts.protocol_manifest_path) : null,
+    batch_report: exists(artifacts.batch_report_path) ? readJson(artifacts.batch_report_path) : null,
+    protocol_check: exists(artifacts.protocol_check_path) ? readJson(artifacts.protocol_check_path) : null,
+    metrics_check: exists(artifacts.metrics_check_path) ? readJson(artifacts.metrics_check_path) : null,
+    comparisons_check: exists(artifacts.comparisons_check_path) ? readJson(artifacts.comparisons_check_path) : null
+  };
+};
+
 const portabilityMatches = (files) => {
   const matches = [];
   for (const file of files) {
@@ -289,6 +325,56 @@ const buildGapRegister = (model) => {
       closure_requirement: 'Replace local paths with repo-relative or neutral references.'
     });
   }
+  if (!model.evaluation.docs_present) {
+    gaps.push({
+      id: 'system.evaluation_phase_docs_missing',
+      classification: 'blocking_gap',
+      impact: 'Protocolized evaluation docs/manifests are missing from QICN-SYSTEM.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: true,
+      evidence: 'One or more evaluation-phase source-of-truth docs/json files are missing.',
+      closure_requirement: 'Restore protocol, comparison, metrics, controls, statistical policy, and interpretation-boundary docs.'
+    });
+  }
+  if (!model.evaluation.artifacts_present) {
+    gaps.push({
+      id: 'system.evaluation_phase_artifacts_missing',
+      classification: 'blocking_gap',
+      impact: 'Protocolized evaluation baseline artifacts/checks are missing from QICN-SYSTEM.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: false,
+      evidence: 'One or more latest evaluation manifests/check artifacts are missing under artifacts/protocolized_evaluation/.',
+      closure_requirement: 'Run the protocolized evaluation batch and its verifiers.'
+    });
+  }
+  const evaluationStatuses = [
+    model.evaluation.protocol_check?.status,
+    model.evaluation.metrics_check?.status,
+    model.evaluation.comparisons_check?.status,
+    model.evaluation.batch_report?.status
+  ].filter(Boolean);
+  if (evaluationStatuses.some((status) => status === 'FAIL')) {
+    gaps.push({
+      id: 'system.evaluation_phase_failed',
+      classification: 'blocking_gap',
+      impact: 'Protocolized evaluation is part of the frozen internal ecosystem and currently fails.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: true,
+      evidence: evaluationStatuses.join(', '),
+      closure_requirement: 'Repair the evaluation phase until protocol, metrics, comparisons, and batch status are non-failing.'
+    });
+  }
+  if (evaluationStatuses.some((status) => status === 'PASS_WITH_WARNINGS')) {
+    gaps.push({
+      id: 'system.evaluation_phase_has_warnings',
+      classification: 'documented_warning',
+      impact: 'Protocolized evaluation remains usable but not cleanly PASS.',
+      affects_internal_release_candidate: false,
+      affects_future_claim_facing_phase: true,
+      evidence: evaluationStatuses.join(', '),
+      closure_requirement: 'Resolve evaluation-phase warnings or keep them explicit.'
+    });
+  }
   return {
     artifact_role: 'ecosystem_gap_register',
     schema_version: '1.0.0',
@@ -307,6 +393,7 @@ const evaluateEcosystem = () => {
   const interfaceContract = loadInterfaceContract();
   const candidateGovernance = loadCandidateGovernance();
   const freezeDocs = loadFreezeDocs();
+  const evaluation = loadEvaluationPhase();
   const portabilityTargets = [
     path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_BASELINE.md'),
     path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_INTERFACE_CONTRACT.md'),
@@ -314,6 +401,24 @@ const evaluateEcosystem = () => {
     freezeDocs.baseline_doc_path,
     freezeDocs.release_notes_doc_path,
     freezeDocs.maintenance_checklist_path,
+    evaluation.docs.protocol_doc_path,
+    evaluation.docs.comparison_doc_path,
+    evaluation.docs.metrics_doc_path,
+    evaluation.docs.controls_doc_path,
+    evaluation.docs.stats_doc_path,
+    evaluation.docs.boundary_doc_path,
+    evaluation.docs.protocol_json_path,
+    evaluation.docs.comparison_json_path,
+    evaluation.docs.metrics_json_path,
+    evaluation.docs.controls_json_path,
+    evaluation.docs.stats_json_path,
+    evaluation.artifacts.protocol_manifest_path,
+    evaluation.artifacts.batch_report_path,
+    evaluation.artifacts.condition_summary_path,
+    evaluation.artifacts.comparison_report_path,
+    evaluation.artifacts.protocol_check_path,
+    evaluation.artifacts.metrics_check_path,
+    evaluation.artifacts.comparisons_check_path,
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_candidate_governance.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'OPERATIONAL_READINESS.md'),
@@ -328,6 +433,7 @@ const evaluateEcosystem = () => {
     interfaceContract,
     candidateGovernance,
     freezeDocs,
+    evaluation,
     portability_targets: portabilityTargets
   };
 
@@ -421,6 +527,29 @@ const evaluateEcosystem = () => {
     release_notes_doc_path: normalize(path.relative(SYSTEM_ROOT, freezeDocs.release_notes_doc_path)),
     maintenance_checklist_path: normalize(path.relative(SYSTEM_ROOT, freezeDocs.maintenance_checklist_path))
   });
+  const evaluationCheckStatuses = [
+    evaluation.protocol_check?.status,
+    evaluation.metrics_check?.status,
+    evaluation.comparisons_check?.status,
+    evaluation.batch_report?.status
+  ].filter(Boolean);
+  const evaluationFailed = !evaluation.docs_present
+    || !evaluation.artifacts_present
+    || evaluationCheckStatuses.some((status) => status === 'FAIL');
+  const evaluationWarned = evaluationCheckStatuses.some((status) => status === 'PASS_WITH_WARNINGS');
+  addCheck('system_protocolized_evaluation_phase', evaluationFailed
+    ? 'FAIL'
+    : (evaluationWarned ? 'PASS_WITH_WARNINGS' : 'PASS'), {
+    docs_present: evaluation.docs_present,
+    artifacts_present: evaluation.artifacts_present,
+    protocol_manifest: exists(evaluation.artifacts.protocol_manifest_path)
+      ? normalize(path.relative(SYSTEM_ROOT, evaluation.artifacts.protocol_manifest_path))
+      : null,
+    batch_report: exists(evaluation.artifacts.batch_report_path)
+      ? normalize(path.relative(SYSTEM_ROOT, evaluation.artifacts.batch_report_path))
+      : null,
+    check_statuses: evaluationCheckStatuses
+  });
 
   const portability = portabilityMatches(portabilityTargets);
   addCheck('ecosystem_portability_targets', portability.length === 0 ? 'PASS' : 'FAIL', {
@@ -446,7 +575,13 @@ const evaluateEcosystem = () => {
         branch: system.state.branch,
         head: system.state.head,
         upstream: system.state.upstream,
-        release_bundle_manifest: system.bundle_manifest_path ? normalize(path.relative(SYSTEM_ROOT, system.bundle_manifest_path)) : null
+        release_bundle_manifest: system.bundle_manifest_path ? normalize(path.relative(SYSTEM_ROOT, system.bundle_manifest_path)) : null,
+        evaluation_protocol_manifest: exists(evaluation.artifacts.protocol_manifest_path)
+          ? normalize(path.relative(SYSTEM_ROOT, evaluation.artifacts.protocol_manifest_path))
+          : null,
+        evaluation_batch_report: exists(evaluation.artifacts.batch_report_path)
+          ? normalize(path.relative(SYSTEM_ROOT, evaluation.artifacts.batch_report_path))
+          : null
       },
       release_baseline: {
         branch: release.state.branch,

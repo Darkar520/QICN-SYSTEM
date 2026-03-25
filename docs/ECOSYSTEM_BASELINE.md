@@ -43,8 +43,24 @@ Run inside `QICN-SYSTEM`:
 2. `npm run verify:artifacts`
 3. `npm run smoke:operational`
 4. `npm run release:bundle`
-5. `npm run verify:ecosystem-integrity`
-6. `npm run release:ecosystem-candidate`
+5. `npm run verify:evaluation-protocol`
+6. `npm run evaluate:protocolized`
+7. `npm run verify:evaluation-phase`
+8. `npm run verify:ecosystem-integrity`
+9. `npm run release:ecosystem-candidate`
+
+## Protocolized evaluation overlay
+
+- The ecosystem includes a bounded protocolized evaluation layer under:
+  - `docs/PROTOCOLIZED_EVALUATION_PROTOCOL.md`
+  - `docs/EVALUATION_COMPARISON_MATRIX.md`
+  - `docs/EVALUATION_METRICS_BASELINE.md`
+  - `docs/EVALUATION_CONTROLS_AND_INTERVENTIONS.md`
+  - `docs/EVALUATION_STATISTICAL_POLICY.md`
+  - `docs/EVALUATION_INTERPRETATION_BOUNDARY.md`
+- Latest evaluation artifacts live under `artifacts/protocolized_evaluation/`.
+- This layer is internal, descriptive or minimally contrastive only. It does
+  not convert runtime outputs into corpus validation.
 
 ## What the ecosystem baseline does
 

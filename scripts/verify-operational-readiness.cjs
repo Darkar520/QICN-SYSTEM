@@ -16,26 +16,42 @@ const REQUIRED_CANONICAL_SCRIPTS = [
   'verify:env-contract',
   'verify:artifacts',
   'verify:policies',
+  'verify:evaluation-protocol',
+  'verify:evaluation-metrics',
+  'verify:evaluation-comparisons',
+  'verify:evaluation-phase',
   'verify:operational-readiness',
   'smoke:operational',
   'regression:minimal',
   'release:bundle',
-  'aggregate:small-batch'
+  'aggregate:small-batch',
+  'evaluate:protocolized'
 ];
 
 const REQUIRED_DOCS = [
   'docs/REPRODUCIBILITY_CONTRACT.md',
   'docs/OPERATIONAL_READINESS.md',
-  'docs/RELEASE_PROCESS.md'
+  'docs/RELEASE_PROCESS.md',
+  'docs/PROTOCOLIZED_EVALUATION_PROTOCOL.md',
+  'docs/EVALUATION_COMPARISON_MATRIX.md',
+  'docs/EVALUATION_METRICS_BASELINE.md',
+  'docs/EVALUATION_CONTROLS_AND_INTERVENTIONS.md',
+  'docs/EVALUATION_STATISTICAL_POLICY.md',
+  'docs/EVALUATION_INTERPRETATION_BOUNDARY.md'
 ];
 
 const REQUIRED_SCRIPTS = [
   'scripts/verify-env-contract.cjs',
   'scripts/verify-artifacts.cjs',
+  'scripts/verify-evaluation-protocol.cjs',
+  'scripts/verify-evaluation-metrics.cjs',
+  'scripts/verify-evaluation-comparisons.cjs',
   'scripts/verify-operational-readiness.cjs',
   'scripts/run-operational-smoke-suite.cjs',
   'scripts/build-internal-release-bundle.cjs',
   'scripts/build-entropy-condition-metrics.cjs',
+  'scripts/run-protocolized-evaluation.cjs',
+  'scripts/evaluation-phase-common.cjs',
   'scripts/export-governed-output.cjs',
   'scripts/emit-controlled-statement.cjs',
   'scripts/build-local-governed-report.cjs'

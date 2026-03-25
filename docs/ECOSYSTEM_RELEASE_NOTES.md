@@ -12,6 +12,8 @@
 - `QICN-SYSTEM` operational baseline and internal release bundle baseline
 - `QICN-RELEASE` canonical freeze baseline, claim registry baseline, and
   canonical bundle baseline
+- protocolized evaluation protocol, metric registry, comparison matrix,
+  controls registry, statistical policy, and latest evaluation batch artifacts
 - the explicit interface contract between both repos
 - ecosystem governance, verification matrix, and gap register
 
@@ -23,6 +25,8 @@
 - no public release
 - no automatic inference from runtime outputs to corpus validity
 - no automatic inference from corpus freeze to runtime confirmation
+- no automatic inference from protocolized evaluation deltas to corpus
+  validation or theory confirmation
 
 ## Residual-gap posture
 

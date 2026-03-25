@@ -18,6 +18,7 @@
     "repo_not_pushed",
     "system_canonical_command_change",
     "system_governance_script_change",
+    "evaluation_protocol_or_registry_change_without_rerun",
     "system_internal_bundle_policy_change",
     "release_freeze_manifest_change",
     "release_claim_registry_change",
@@ -31,6 +32,8 @@
     "bundle_builder_change",
     "verifier_change",
     "baseline_doc_change",
+    "evaluation_runner_or_verifier_change",
+    "evaluation_artifact_change",
     "git_state_change"
   ],
   "requires_explicit_human_review": [
@@ -38,6 +41,7 @@
     "upstream_pin_evidence_change",
     "claim_registry_granularity_or_classification_change",
     "cross_repo_interface_boundary_change",
+    "attempted_protocolized_evaluation_to_corpus_validation_inference",
     "attempted_runtime_to_corpus_validation_inference",
     "attempted_corpus_to_runtime_confirmation_inference"
   ],
@@ -54,7 +58,13 @@
     "docs/ECOSYSTEM_FREEZE_BASELINE.md",
     "docs/ECOSYSTEM_INTERFACE_CONTRACT.md",
     "docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md",
-    "docs/ECOSYSTEM_MAINTENANCE_CHECKLIST.md"
+    "docs/ECOSYSTEM_MAINTENANCE_CHECKLIST.md",
+    "docs/PROTOCOLIZED_EVALUATION_PROTOCOL.md",
+    "docs/EVALUATION_COMPARISON_MATRIX.md",
+    "docs/EVALUATION_METRICS_BASELINE.md",
+    "docs/EVALUATION_CONTROLS_AND_INTERVENTIONS.md",
+    "docs/EVALUATION_STATISTICAL_POLICY.md",
+    "docs/EVALUATION_INTERPRETATION_BOUNDARY.md"
   ],
   "interpretation_boundary": "Candidate governance only; not external validation, not theory confirmation, not claim closure, not public release authorization."
 }

@@ -16,6 +16,10 @@
   - `node scripts/verify-claim-registry.cjs`
 - ecosystem:
   - `npm run verify:ecosystem-integrity`
+- protocolized evaluation:
+  - `npm run verify:evaluation-protocol`
+  - `npm run evaluate:protocolized`
+  - `npm run verify:evaluation-phase`
 
 ## Full freeze validation
 
@@ -23,6 +27,9 @@
 - `npm run verify:artifacts`
 - `npm run smoke:operational`
 - `npm run release:bundle`
+- `npm run verify:evaluation-protocol`
+- `npm run evaluate:protocolized`
+- `npm run verify:evaluation-phase`
 - `node scripts/verify-canonical-integrity.cjs`
 - `node scripts/verify-claim-registry.cjs`
 - `node scripts/verify-canonical-release.cjs`
@@ -34,6 +41,8 @@
 - `artifacts/ecosystem_release_candidate/ecosystem_verification_matrix.json`
 - `artifacts/ecosystem_release_candidate/ecosystem_gap_register.v1.json`
 - `artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json`
+- `artifacts/protocolized_evaluation/evaluation_batch_report.json`
+- `artifacts/protocolized_evaluation/condition_comparison_report.json`
 - `release/release_freeze_manifest.json`
 - `docs/ECOSYSTEM_INTERFACE_CONTRACT.md`
 
@@ -41,5 +50,7 @@
 
 - rerun system only if only operational code/docs/manifests changed
 - rerun release only if only canonical docs/manifests/bundle logic changed
+- rerun protocolized evaluation if entropy experimental controls, metrics logic,
+  comparison matrix, statistical policy, or evaluation runner/verifiers change
 - rerun full ecosystem if interface, governance, baselines, bundle builders, or
   either repo state changed

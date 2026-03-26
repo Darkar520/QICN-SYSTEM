@@ -28,6 +28,17 @@ const normalize = (value) => String(value || '').replace(/\\/g, '/');
 const exists = (file) => fs.existsSync(file);
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const readText = (file) => fs.readFileSync(file, 'utf8');
+const toPortableLocator = (file) => {
+  const absolute = path.resolve(file);
+  if (absolute === SYSTEM_ROOT || absolute.startsWith(`${SYSTEM_ROOT}${path.sep}`)) {
+    return normalize(path.relative(SYSTEM_ROOT, absolute)) || '.';
+  }
+  if (absolute === RELEASE_ROOT || absolute.startsWith(`${RELEASE_ROOT}${path.sep}`)) {
+    const rel = normalize(path.relative(RELEASE_ROOT, absolute)) || '.';
+    return rel === '.' ? 'QICN-RELEASE' : `QICN-RELEASE/${rel}`;
+  }
+  return normalize(path.relative(WORKSPACE_ROOT, absolute)) || '.';
+};
 
 const ensureDir = (dir) => {
   fs.mkdirSync(dir, { recursive: true });
@@ -618,7 +629,7 @@ const evaluateEcosystem = () => {
 
   const portability = portabilityMatches(portabilityTargets);
   addCheck('ecosystem_portability_targets', portability.length === 0 ? 'PASS' : 'FAIL', {
-    scanned_files: portabilityTargets.map((file) => normalize(path.relative(SYSTEM_ROOT, file))),
+    scanned_files: portabilityTargets.map((file) => toPortableLocator(file)),
     matches: portability
   });
 

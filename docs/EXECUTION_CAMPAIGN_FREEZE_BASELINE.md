@@ -16,7 +16,7 @@ It is not:
 - campaign id: `execution_campaign_primary_2026-03-25T02-15-00-000Z`
 - batch id: `execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch`
 - system baseline: `main@a90cf500464cbfd235c73681a2d2a81e08129ab7`
-- release repo baseline: `main@43fe77faa4bb0cd4421ed9f589633cda8e01f56c`
+- release repo baseline: `main@16651c94c4f9c44295bb6872f9fcf94481ff8b0a`
 - canonical freeze commit: `2d7504be95ca33af5941e30abf7059dc2774edca`
 - ecosystem candidate status required: `PASS`
 

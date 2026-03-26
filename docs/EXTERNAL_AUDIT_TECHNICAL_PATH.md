@@ -6,6 +6,9 @@ This path is for a technically competent reviewer who needs exact baselines,
 authoritative artifacts, and invalidation triggers without relying on private
 context.
 
+Start with `docs/EXTERNAL_AUDIT_SETUP.md` for clone layout, dependency setup,
+and cross-platform command expectations.
+
 ## Authoritative baselines
 
 Read the exact refs from `external_audit_package_manifest.json`.

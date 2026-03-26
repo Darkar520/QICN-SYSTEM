@@ -4,9 +4,25 @@ const cp = require('child_process');
 
 const SYSTEM_ROOT = path.resolve(__dirname, '..');
 const WORKSPACE_ROOT = path.resolve(SYSTEM_ROOT, '..');
-const RELEASE_ROOT = path.join(WORKSPACE_ROOT, 'release_repo_qicn_2026-03-01');
+const resolveReleaseRoot = () => {
+  const envOverride = process.env.ECO_RELEASE_ROOT;
+  if (envOverride) return path.resolve(envOverride);
+  const candidates = [
+    'QICN-RELEASE',
+    'QUICN-RELEASE',
+    'release_repo_qicn_2026-03-01'
+  ];
+  for (const candidate of candidates) {
+    const target = path.join(WORKSPACE_ROOT, candidate);
+    const looksLikeRepo = fs.existsSync(path.join(target, '.git'))
+      || fs.existsSync(path.join(target, 'release', 'release_freeze_manifest.json'));
+    if (looksLikeRepo) return target;
+  }
+  return path.join(WORKSPACE_ROOT, 'release_repo_qicn_2026-03-01');
+};
+const RELEASE_ROOT = resolveReleaseRoot();
 const ECOSYSTEM_ARTIFACT_ROOT = path.join(SYSTEM_ROOT, 'artifacts', 'ecosystem_release_candidate');
-const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio/i;
+const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
 
 const normalize = (value) => String(value || '').replace(/\\/g, '/');
 const exists = (file) => fs.existsSync(file);
@@ -423,9 +439,14 @@ const evaluateEcosystem = () => {
   const freezeDocs = loadFreezeDocs();
   const evaluation = loadEvaluationPhase();
   const portabilityTargets = [
+    path.join(SYSTEM_ROOT, 'docs', 'CANON_SOURCE_OF_TRUTH.md'),
     path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_BASELINE.md'),
     path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_INTERFACE_CONTRACT.md'),
     path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_CANDIDATE_GOVERNANCE.md'),
+    path.join(SYSTEM_ROOT, 'docs', 'EXTERNAL_AUDIT_SETUP.md'),
+    path.join(SYSTEM_ROOT, 'docs', 'EXTERNAL_AUDIT_QUICKSTART.md'),
+    path.join(SYSTEM_ROOT, 'docs', 'EXTERNAL_AUDIT_TECHNICAL_PATH.md'),
+    path.join(SYSTEM_ROOT, 'docs', 'EXTERNAL_AUDIT_HANDOFF_CHECKLIST.md'),
     freezeDocs.baseline_doc_path,
     freezeDocs.release_notes_doc_path,
     freezeDocs.maintenance_checklist_path,
@@ -460,8 +481,13 @@ const evaluateEcosystem = () => {
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_candidate_governance.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'OPERATIONAL_READINESS.md'),
+    path.join(RELEASE_ROOT, 'README.md'),
+    path.join(RELEASE_ROOT, 'RELEASE_NOTES.md'),
     path.join(RELEASE_ROOT, 'docs', 'CANON_SOURCE_OF_TRUTH.md'),
+    path.join(RELEASE_ROOT, 'docs', 'CANONICAL_RELEASE_NOTES.md'),
     path.join(RELEASE_ROOT, 'docs', 'THEORY_SYSTEM_INTERFACE.md'),
+    path.join(RELEASE_ROOT, 'corpus', 'pdf_release', 'manifest.json'),
+    path.join(RELEASE_ROOT, 'release', 'CANON_MAP.v1.json'),
     path.join(RELEASE_ROOT, 'release', 'release_freeze_manifest.json')
   ];
   const model = {

@@ -5,7 +5,7 @@
   "authoritative_batch_id": "execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch",
   "baseline_linkage": {
     "qicn_system_head": "a90cf500464cbfd235c73681a2d2a81e08129ab7",
-    "qicn_release_head": "91ed18c6c0f5cfc528f75fbaf1bee50c39502086",
+    "qicn_release_head": "43fe77faa4bb0cd4421ed9f589633cda8e01f56c",
     "canonical_freeze_commit": "2d7504be95ca33af5941e30abf7059dc2774edca",
     "ecosystem_candidate_manifest_ref": "artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json",
     "evaluation_architecture_freeze_ref": "docs/evaluation_architecture_freeze.v1.json"

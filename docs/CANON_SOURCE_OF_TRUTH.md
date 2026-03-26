@@ -8,33 +8,41 @@ This implementation repository is not the canonical theory repository. It is the
 
 | Item | Value | Status |
 | --- | --- | --- |
-| Canonical theory working tree referenced by release materials | `../rigid-identity-framework/` | observed_working_tree |
-| Verified frozen external package | `../release_repo_qicn_2026-03-01/` | verified_freeze_package |
-| Frozen external package commit | `2b0d0c0` | verified_from_freeze_audit |
-| Frozen external package tag | `release-2026-03-01` | verified_from_freeze_audit |
-| Upstream theory repo commit or tag for `rigid-identity-framework/` | `TBD_UPSTREAM_REPO_PIN_REQUIRED` | unresolved |
+| Canonical theory lineage referenced by release materials | `rigid-identity-framework/*` as recorded inside `QICN-RELEASE` manifests | lineage_reference_only |
+| Verified frozen canonical corpus repo | `QICN-RELEASE/main` | verified_public_source_of_truth |
+| Verified frozen canonical corpus commit | `43fe77faa4bb0cd4421ed9f589633cda8e01f56c` | verified_git_head |
+| Frozen canonical corpus tag | `canonical-freeze-2026-03-01` -> `2d7504be95ca33af5941e30abf7059dc2774edca` | verified_from_release_freeze |
+| Direct upstream repo pin for the pre-freeze `rigid-identity-framework` working tree | not separately pinned in this repo | not_required_for_frozen_release_baseline |
 | Local runtime source of truth | `src/` | active |
 | Local build authority | `build.cjs` | active |
 
-The strongest external freeze currently verifiable from this workspace is the release package `release_repo_qicn_2026-03-01`, whose own freeze audit records commit `2b0d0c0` and tag `release-2026-03-01`. That freeze package documents source lineage into `rigid-identity-framework/` through `release/CANON_MAP.v1.json` and related release artifacts.
+The strongest external canonical baseline currently verifiable from this
+repository is `QICN-RELEASE` at the pinned public baseline above. Its freeze
+manifests and tags document source lineage into `rigid-identity-framework/*`
+without requiring a local sibling checkout of that historical working tree.
 
-This does not yet close the upstream theory-repository pin for `rigid-identity-framework/` itself. The current repo can therefore rely on a verified external freeze package, but it cannot yet claim a directly pinned upstream theory commit for the primary canonical working tree.
+This still does not create a separate direct git pin, inside this repository,
+for the original pre-freeze `rigid-identity-framework` workspace. The current
+repo therefore relies on the frozen canonical corpus baseline, not on a second
+live theory branch or a private sibling working tree.
 
 ## Verified External Freeze Boundary
 
-The following external artifacts were verified in the local workspace:
+The following external artifacts were verified at the pinned `QICN-RELEASE`
+baseline:
 
-- `../release_repo_qicn_2026-03-01/release/FREEZE_AUDIT_v1/git_log_1.txt`
-- `../release_repo_qicn_2026-03-01/release/FREEZE_AUDIT_v1/git_tags.txt`
-- `../release_repo_qicn_2026-03-01/release/CANON_MAP.v1.json`
-- `../release_repo_qicn_2026-03-01/CHANGELOG.md`
-- `../release_repo_qicn_2026-03-01/RELEASE_NOTES.md`
+- `QICN-RELEASE/release/FREEZE_AUDIT_v1/git_log_1.txt`
+- `QICN-RELEASE/release/FREEZE_AUDIT_v1/git_tags.txt`
+- `QICN-RELEASE/release/CANON_MAP.v1.json`
+- `QICN-RELEASE/CHANGELOG.md`
+- `QICN-RELEASE/RELEASE_NOTES.md`
 
 Verified facts from those artifacts:
 
-- the frozen external package is `release_repo_qicn_2026-03-01`
-- its recorded freeze commit is `2b0d0c0`
-- its recorded release tag is `release-2026-03-01`
+- the canonical external corpus repo is `QICN-RELEASE`
+- its current public source-of-truth branch is `main`
+- its pinned canonical freeze commit is `2d7504be95ca33af5941e30abf7059dc2774edca`
+- its explicit canonical freeze tag is `canonical-freeze-2026-03-01`
 - its canon map points primary theory lineage to `rigid-identity-framework/CANONICAL_CORE.tex` and `rigid-identity-framework/paper1..paper4/main.tex`
 
 This freeze package is the strongest currently verifiable external boundary available to this repository.
@@ -51,9 +59,10 @@ This freeze package is the strongest currently verifiable external boundary avai
 
 ## Pinning Outcome
 
-- External freeze package pin: available and verified at `release_repo_qicn_2026-03-01`, commit `2b0d0c0`, tag `release-2026-03-01`.
-- Upstream theory working tree pin for `rigid-identity-framework/`: still unresolved in this repository.
-- Required discipline: do not present the release-package freeze as equivalent to a direct upstream theory-repo pin.
+- External canonical corpus baseline: available and verified at `QICN-RELEASE/main`, pinned for the current ecosystem baseline at `43fe77faa4bb0cd4421ed9f589633cda8e01f56c`.
+- Canonical freeze authority: `canonical-freeze-2026-03-01` -> `2d7504be95ca33af5941e30abf7059dc2774edca`.
+- Separate direct upstream theory working-tree pin for `rigid-identity-framework/`: not established here and not required for the frozen release baseline.
+- Required discipline: do not present the canonical release freeze as equivalent to a direct upstream theory-repo pin for the original working tree.
 
 ## Inherited Claim Families
 

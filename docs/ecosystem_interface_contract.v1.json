@@ -16,14 +16,22 @@
     },
     "qicn_release": {
       "name": "QICN-RELEASE",
-      "workspace_relative_path_from_system_repo": "../release_repo_qicn_2026-03-01",
+      "repository_locator": {
+        "preferred_sibling_dir": "QICN-RELEASE",
+        "accepted_sibling_dirs": [
+          "QICN-RELEASE",
+          "QUICN-RELEASE",
+          "release_repo_qicn_2026-03-01"
+        ],
+        "environment_override": "ECO_RELEASE_ROOT"
+      },
       "purpose": "canonical theoretical corpus, freeze governance, claim registry, canonical release bundle",
       "source_of_truth": [
-        "../release_repo_qicn_2026-03-01/docs/CANON_SOURCE_OF_TRUTH.md",
-        "../release_repo_qicn_2026-03-01/docs/CLAIM_REGISTRY.md",
-        "../release_repo_qicn_2026-03-01/docs/LAYER_BOUNDARIES.md",
-        "../release_repo_qicn_2026-03-01/release/release_freeze_manifest.json",
-        "../release_repo_qicn_2026-03-01/release/claim_registry.v1.json"
+        "QICN-RELEASE/docs/CANON_SOURCE_OF_TRUTH.md",
+        "QICN-RELEASE/docs/CLAIM_REGISTRY.md",
+        "QICN-RELEASE/docs/LAYER_BOUNDARIES.md",
+        "QICN-RELEASE/release/release_freeze_manifest.json",
+        "QICN-RELEASE/release/claim_registry.v1.json"
       ]
     }
   },

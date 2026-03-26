@@ -22,29 +22,31 @@ QICN ecosystem composed by `QICN-SYSTEM` and `QICN-RELEASE`.
 ## First files to inspect
 
 1. `external_audit_package_manifest.json`
-2. `external_audit_status.json`
-3. `internal_red_team_report.json`
-4. `ecosystem_candidate/ecosystem_release_candidate_manifest.json`
-5. `ecosystem_candidate/ecosystem/manifests/execution_campaign_audit_readout.json`
-6. `ecosystem_candidate/release/manifests/release_freeze_manifest.json`
+2. `docs/EXTERNAL_AUDIT_SETUP.md`
+3. `external_audit_status.json`
+4. `internal_red_team_report.json`
+5. `ecosystem_candidate/ecosystem_release_candidate_manifest.json`
+6. `ecosystem_candidate/ecosystem/manifests/execution_campaign_audit_readout.json`
+7. `ecosystem_candidate/release/manifests/release_freeze_manifest.json`
 
 ## Minimum reproduction path
 
-1. clone `QICN-SYSTEM` and `QICN-RELEASE` at the exact SHAs listed in
+1. follow `docs/EXTERNAL_AUDIT_SETUP.md`
+2. clone `QICN-SYSTEM` and `QICN-RELEASE` at the exact SHAs listed in
    `external_audit_package_manifest.json`
-2. in `QICN-SYSTEM`, run:
+3. in `QICN-SYSTEM`, run:
    - `npm run verify:operational-readiness`
    - `npm run verify:artifacts`
    - `npm run smoke:operational`
    - `npm run verify:evaluation-phase`
    - `npm run audit:campaign`
    - `npm run verify:ecosystem-integrity`
-3. in `QICN-RELEASE`, run:
+4. in `QICN-RELEASE`, run:
    - `node scripts/verify-canonical-integrity.cjs`
    - `node scripts/verify-claim-registry.cjs`
    - `node scripts/verify-canonical-release.cjs`
-4. confirm that the latest ecosystem candidate remains `PASS`
-5. inspect the latest accepted comparable campaign and the preserved invalid
+5. confirm that the latest ecosystem candidate remains `PASS`
+6. inspect the latest accepted comparable campaign and the preserved invalid
    attempt before reading any higher-level summary
 
 ## PASS orientation

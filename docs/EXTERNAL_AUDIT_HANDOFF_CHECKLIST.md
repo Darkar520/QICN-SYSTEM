@@ -20,6 +20,7 @@
 
 ## Minimum instructions to the reviewer
 
+- follow `docs/EXTERNAL_AUDIT_SETUP.md` before running verification commands
 - verify the pinned SHAs first
 - reproduce the minimum command set in both repos
 - inspect blocked outputs as blocked outputs only

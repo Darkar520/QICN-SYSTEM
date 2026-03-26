@@ -12,7 +12,7 @@ const {
 } = require('./ecosystem-release-common.cjs');
 
 const EXTERNAL_AUDIT_ARTIFACT_ROOT = path.join(SYSTEM_ROOT, 'artifacts', 'external_audit_package');
-const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio/i;
+const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
 
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const readText = (file) => fs.readFileSync(file, 'utf8');
@@ -151,6 +151,7 @@ if (invalidAttempt) {
 }
 
 [
+  ['docs/EXTERNAL_AUDIT_SETUP.md', 'docs/EXTERNAL_AUDIT_SETUP.md'],
   ['docs/EXTERNAL_AUDIT_QUICKSTART.md', 'docs/EXTERNAL_AUDIT_QUICKSTART.md'],
   ['docs/EXTERNAL_AUDIT_TECHNICAL_PATH.md', 'docs/EXTERNAL_AUDIT_TECHNICAL_PATH.md'],
   ['docs/EXTERNAL_AUDIT_HANDOFF_CHECKLIST.md', 'docs/EXTERNAL_AUDIT_HANDOFF_CHECKLIST.md']
@@ -308,6 +309,7 @@ const packageManifest = {
   package_root: '.',
   package_status: externalAuditStatus.readiness_status,
   entrypoints: {
+    setup: 'docs/EXTERNAL_AUDIT_SETUP.md',
     quickstart: 'docs/EXTERNAL_AUDIT_QUICKSTART.md',
     technical_path: 'docs/EXTERNAL_AUDIT_TECHNICAL_PATH.md',
     handoff_checklist: 'docs/EXTERNAL_AUDIT_HANDOFF_CHECKLIST.md',

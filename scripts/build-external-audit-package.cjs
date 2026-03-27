@@ -151,6 +151,13 @@ if (invalidAttempt) {
 }
 
 [
+  ['docs/EXTERNAL_AUDIT_ACTIVATION_PLAN.md', 'docs/EXTERNAL_AUDIT_ACTIVATION_PLAN.md'],
+  ['docs/EXTERNAL_AUDIT_PROFILE_MATRIX.md', 'docs/EXTERNAL_AUDIT_PROFILE_MATRIX.md'],
+  ['docs/EXTERNAL_AUDIT_HANDOFF_PROTOCOL.md', 'docs/EXTERNAL_AUDIT_HANDOFF_PROTOCOL.md'],
+  ['docs/EXTERNAL_AUDIT_FINDINGS_SCHEMA.md', 'docs/EXTERNAL_AUDIT_FINDINGS_SCHEMA.md'],
+  ['docs/EXTERNAL_AUDIT_INTAKE_AND_TRIAGE.md', 'docs/EXTERNAL_AUDIT_INTAKE_AND_TRIAGE.md'],
+  ['docs/EXTERNAL_AUDIT_REVIEWER_MAP.md', 'docs/EXTERNAL_AUDIT_REVIEWER_MAP.md'],
+  ['docs/EXTERNAL_AUDIT_GLOSSARY.md', 'docs/EXTERNAL_AUDIT_GLOSSARY.md'],
   ['docs/EXTERNAL_AUDIT_SETUP.md', 'docs/EXTERNAL_AUDIT_SETUP.md'],
   ['docs/EXTERNAL_AUDIT_QUICKSTART.md', 'docs/EXTERNAL_AUDIT_QUICKSTART.md'],
   ['docs/EXTERNAL_AUDIT_TECHNICAL_PATH.md', 'docs/EXTERNAL_AUDIT_TECHNICAL_PATH.md'],
@@ -212,6 +219,29 @@ const redTeamFindings = [
     evidence: [
       latestAudit.campaign_surface_gating.status,
       'condition_comparison_report.json remains blocked claim-facing'
+    ],
+    minimal_correction: null
+  },
+  {
+    id: 'handoff.external_audit_not_overclaimed',
+    severity: 'no_issue',
+    area: 'handoff_layer',
+    finding: 'The handoff layer keeps package readiness separate from any claim that external audit already occurred.',
+    evidence: [
+      'docs/EXTERNAL_AUDIT_ACTIVATION_PLAN.md',
+      'docs/EXTERNAL_AUDIT_HANDOFF_PROTOCOL.md',
+      'external_audit_status.json'
+    ],
+    minimal_correction: null
+  },
+  {
+    id: 'handoff.auditor_profiles_separated',
+    severity: 'no_issue',
+    area: 'handoff_layer',
+    finding: 'The external handoff separates auditor profiles and requested scope instead of collapsing them into one amorphous review.',
+    evidence: [
+      'docs/EXTERNAL_AUDIT_PROFILE_MATRIX.md',
+      'docs/EXTERNAL_AUDIT_REVIEWER_MAP.md'
     ],
     minimal_correction: null
   },
@@ -290,12 +320,18 @@ const externalAuditStatus = {
     'local private path dependency remains unresolved'
   ],
   findings_reception_format: [
+    'audit_session_id',
+    'auditor_profile',
     'finding_id',
     'severity',
+    'category',
+    'finding_domain',
     'location',
     'reproduction_steps',
     'observed_behavior',
     'expected_behavior',
+    'evidence_refs',
+    'boundary_risk',
     'minimal_correction'
   ],
   interpretation_boundary: 'External-audit readiness status only; not an external verdict, not validation, not theory confirmation.'
@@ -309,6 +345,13 @@ const packageManifest = {
   package_root: '.',
   package_status: externalAuditStatus.readiness_status,
   entrypoints: {
+    activation_plan: 'docs/EXTERNAL_AUDIT_ACTIVATION_PLAN.md',
+    profile_matrix: 'docs/EXTERNAL_AUDIT_PROFILE_MATRIX.md',
+    handoff_protocol: 'docs/EXTERNAL_AUDIT_HANDOFF_PROTOCOL.md',
+    findings_schema: 'docs/EXTERNAL_AUDIT_FINDINGS_SCHEMA.md',
+    intake_and_triage: 'docs/EXTERNAL_AUDIT_INTAKE_AND_TRIAGE.md',
+    reviewer_map: 'docs/EXTERNAL_AUDIT_REVIEWER_MAP.md',
+    glossary: 'docs/EXTERNAL_AUDIT_GLOSSARY.md',
     setup: 'docs/EXTERNAL_AUDIT_SETUP.md',
     quickstart: 'docs/EXTERNAL_AUDIT_QUICKSTART.md',
     technical_path: 'docs/EXTERNAL_AUDIT_TECHNICAL_PATH.md',

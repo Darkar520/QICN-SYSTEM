@@ -32,13 +32,24 @@
 Ask the reviewer to report each finding with:
 
 - `finding_id`
+- `audit_session_id`
+- `auditor_profile`
 - `severity`: `blocker`, `material_issue`, `note`, or `no_issue`
+- `category`
+- `finding_domain`
 - `location`
 - `reproduction_steps`
 - `observed_behavior`
 - `expected_behavior`
+- `evidence_refs`
 - `boundary_risk`
 - `minimal_correction`
+
+The canonical delivery procedure is defined in
+`docs/EXTERNAL_AUDIT_HANDOFF_PROTOCOL.md`.
+
+The canonical findings format is defined in
+`docs/EXTERNAL_AUDIT_FINDINGS_SCHEMA.md`.
 
 ## Process success
 

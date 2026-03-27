@@ -15,24 +15,39 @@ No PowerShell-specific step is required on the critical audit path.
 
 Clone both repositories from GitHub:
 
-- `QICN-SYSTEM`
-- `QICN-RELEASE`
+- `QICN-SYSTEM` — `https://github.com/Darkar520/QICN-SYSTEM.git`
+- `QUICN-RELEASE` — `https://github.com/Darkar520/QUICN-RELEASE.git`
+  (note: the official GitHub name uses `QUICN` with a `U`)
+
+The ecosystem also recognizes these local folder aliases:
+
+- `QICN-RELEASE/` (without the `U`)
+- `release_repo_qicn_2026-03-01/`
 
 The preferred sibling layout is:
 
 ```text
 <workspace>/
   QICN-SYSTEM/
-  QICN-RELEASE/
+  QUICN-RELEASE/       # or any accepted alias above
 ```
-
-The critical ecosystem scripts also accept:
-
-- `QUICN-RELEASE/`
-- `release_repo_qicn_2026-03-01/`
 
 If the release repo lives elsewhere, set `ECO_RELEASE_ROOT` to its absolute
 path before running the ecosystem commands.
+
+## Generate the audit package artifacts first
+
+Before pinning repos, generate the audit package locally:
+
+```bash
+npm install
+npm run release:external-audit-package
+```
+
+This produces
+`artifacts/external_audit_package/external_audit_package_manifest.json`, which
+contains the exact pinned SHAs for both repos. The manifest does not exist
+until this build step completes.
 
 ## Pin both repos
 

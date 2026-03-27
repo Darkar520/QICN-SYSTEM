@@ -15,8 +15,10 @@ No PowerShell-specific step is required on the critical audit path.
 
 Clone both repositories from GitHub:
 
-- `QICN-SYSTEM`
-- `QICN-RELEASE`
+```bash
+git clone https://github.com/Darkar520/QICN-SYSTEM.git
+git clone https://github.com/Darkar520/QUICN-RELEASE.git
+```
 
 The preferred sibling layout is:
 

@@ -10,8 +10,9 @@ The goal of this repository is development, testing, auditability by commit and 
 
 If you are a third-party auditor, start here:
 
-- [`docs/EXTERNAL_AUDIT_QUICKSTART.md`](docs/EXTERNAL_AUDIT_QUICKSTART.md) — audit orientation, first files to inspect, minimum reproduction path
-- [`docs/EXTERNAL_AUDIT_SETUP.md`](docs/EXTERNAL_AUDIT_SETUP.md) — cross-platform setup, dependencies, package generation, and pin instructions
+- [`docs/EXTERNAL_AUDIT_REVIEWER_MAP.md`](docs/EXTERNAL_AUDIT_REVIEWER_MAP.md) - reviewer-oriented map of the package, entrypoints, and expected reading order
+- [`docs/EXTERNAL_AUDIT_QUICKSTART.md`](docs/EXTERNAL_AUDIT_QUICKSTART.md) - audit orientation, first files to inspect, minimum reproduction path
+- [`docs/EXTERNAL_AUDIT_SETUP.md`](docs/EXTERNAL_AUDIT_SETUP.md) - cross-platform setup, dependencies, package generation, and pin instructions
 
 ## Scope
 

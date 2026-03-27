@@ -46,6 +46,34 @@ jobs:
       - name: Test
         run: npm test
 
+  audit-verification:
+    name: ci/audit-verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: npm
+          cache-dependency-path: "package-lock.json"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify evaluation phase
+        run: npm run verify:evaluation-phase
+
+      - name: Verify artifacts
+        run: npm run verify:artifacts
+
+      # verify:ecosystem-integrity is intentionally excluded from CI because it
+      # requires the sibling QUICN-RELEASE repo to be present locally, which is
+      # not available in the CI runner. Run it manually during audit handoff.
+
   selfpatch-policy-check:
     name: ci/selfpatch-policy-check
     runs-on: ubuntu-latest

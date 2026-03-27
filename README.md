@@ -46,6 +46,14 @@ npm run build
 npm run scoreboard:run
 ```
 
+## External Audit
+
+If you are an external reviewer, start here:
+
+- [External Audit Quickstart](docs/EXTERNAL_AUDIT_QUICKSTART.md)
+- [Reviewer Map](docs/REVIEWER_MAP.md)
+- [Operational Glossary](docs/GLOSSARY_OPERATIONAL.md)
+
 ## What This Repository Does Not Claim
 
 - It does not claim external validation, independent replication, or publication readiness by itself.

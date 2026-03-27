@@ -1,7 +1,29 @@
 # External Audit Quickstart
 
 This document is the entrypoint for a third-party audit of the frozen internal
-QICN ecosystem composed by `QICN-SYSTEM` and `QICN-RELEASE`.
+QICN ecosystem composed by `QICN-SYSTEM` and `QUICN-RELEASE`.
+
+**GitHub repositories:**
+- `https://github.com/Darkar520/QICN-SYSTEM`
+- `https://github.com/Darkar520/QUICN-RELEASE`
+
+## Terminology
+
+If any term in this document is unfamiliar, consult the operational glossary
+before proceeding:
+
+- [`docs/GLOSSARY_OPERATIONAL.md`](GLOSSARY_OPERATIONAL.md) — runtime and audit
+  terms (ROEO, SNO, support labels, blocked outputs, admissibility gate, etc.)
+- [`release/GLOSSARY_CANONICAL.v1.md`](https://github.com/Darkar520/QUICN-RELEASE) in
+  QUICN-RELEASE — corpus-level and theoretical terms
+
+## Repository navigation
+
+If the repository structure or script families are unfamiliar, consult the
+reviewer map before proceeding:
+
+- [`docs/REVIEWER_MAP.md`](REVIEWER_MAP.md) — module layout, key script families,
+  artifact flow, and what NOT to over-read
 
 ## What this package is
 

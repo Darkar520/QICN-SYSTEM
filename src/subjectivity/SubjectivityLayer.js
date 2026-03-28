@@ -18,17 +18,18 @@ export const SUBJECTIVITY_ROOT_SCHEMAS = Object.freeze({
   subjective_continuity_report: readJson('./schemas/subjective_continuity_report.v1.json'),
   first_person_perspective_report: readJson('./schemas/first_person_perspective_report.v1.json'),
   subjective_valuation_report: readJson('./schemas/subjective_valuation_report.v1.json'),
-  subjectivity_intervention_profile: readJson('./schemas/subjectivity_intervention_profile.v1.json')
+  subjectivity_intervention_profile: readJson('./schemas/subjectivity_intervention_profile.v1.json'),
+  subjectivity_reducibility_report: readJson('./schemas/subjectivity_reducibility_report.v1.json')
 });
 
 export const SUBJECTIVITY_LAYER_STATUS = Object.freeze({
   layer_name: 'Subjectivity Runtime Layer',
-  layer_id: 'subjectivity_runtime_layer.srt3',
+  layer_id: 'subjectivity_runtime_layer.srt4',
   implementation_status: 'partial_runtime_path',
   execution_status:
-    'executing_selfindex_ownership_continuity_perspective_valuation_intervention_only_in_srt3',
+    'executing_selfindex_ownership_continuity_perspective_valuation_intervention_and_partial_reducibility_only_in_srt4',
   interpretation_boundary:
-    'SRT-3 implements SelfIndex, OwnershipField, ContinuityField, FirstPersonPerspective, ValuationAsymmetry, and a minimal InterventionProfile surface only. It does not compute IrreducibilityMargin, compare weak rivals, or emit subjectivity support verdicts.'
+    'SRT-4 implements SelfIndex, OwnershipField, ContinuityField, FirstPersonPerspective, ValuationAsymmetry, a minimal InterventionProfile surface, and a partial reducibility comparator only. It does not execute the final subjectivity gate, batch closure, or claim-facing promotion.'
 });
 
 export class SubjectivityLayer {

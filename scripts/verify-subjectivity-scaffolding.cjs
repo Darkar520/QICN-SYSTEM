@@ -34,6 +34,7 @@ const REQUIRED_SRC_FILES = [
   'src/subjectivity/FirstPersonPerspectiveMapper.js',
   'src/subjectivity/SubjectiveValuationEngine.js',
   'src/subjectivity/SubjectivityInterventionHarness.js',
+  'src/subjectivity/SubjectivityReducibilityComparator.js',
   'src/subjectivity/schemas/subjectivity_manifest.v1.json',
   'src/subjectivity/schemas/subjectivity_runtime_projection.v1.json',
   'src/subjectivity/schemas/subjectivity_gate_result.v1.json',
@@ -42,7 +43,8 @@ const REQUIRED_SRC_FILES = [
   'src/subjectivity/schemas/subjective_continuity_report.v1.json',
   'src/subjectivity/schemas/first_person_perspective_report.v1.json',
   'src/subjectivity/schemas/subjective_valuation_report.v1.json',
-  'src/subjectivity/schemas/subjectivity_intervention_profile.v1.json'
+  'src/subjectivity/schemas/subjectivity_intervention_profile.v1.json',
+  'src/subjectivity/schemas/subjectivity_reducibility_report.v1.json'
 ];
 
 const EXPECTED_COORDINATES = [
@@ -122,7 +124,7 @@ async function verifySubjectivityScaffolding() {
   );
   assert(
     protocol.implementation_status === 'partial_runtime_path',
-    'protocol implementation_status must be partial_runtime_path in SRT-2',
+    'protocol implementation_status must remain partial_runtime_path in SRT-4',
     protocolErrors
   );
   assert(
@@ -136,53 +138,64 @@ async function verifySubjectivityScaffolding() {
     .map((entry) => entry.id);
   assert(
     JSON.stringify(implementedCoordinates) === JSON.stringify(EXPECTED_IMPLEMENTED_COORDINATES),
-    'SRT-2 must implement exactly SelfIndex, OwnershipField, ContinuityField, and FirstPersonPerspective',
+    'SRT-4 must keep the first six coordinates as implemented_internal_support_pre_comparator',
     protocolErrors
   );
   assert(
-    protocol.functional?.status === 'defined_in_paper_not_executed_in_srt3',
-    'functional status must remain non-executed in SRT-3',
+    (protocol.coordinates || []).find((entry) => entry.id === 'IrreducibilityMargin')
+      ?.status === 'implemented_internal_partial_comparator',
+    'SRT-4 must mark IrreducibilityMargin as implemented_internal_partial_comparator',
+    protocolErrors
+  );
+  assert(
+    protocol.functional?.status === 'defined_in_paper_not_executed_in_srt4',
+    'functional status must remain non-executed in SRT-4',
     protocolErrors
   );
 
   assert(
-    thresholds.status === 'provisional_srt3_local_coordinate_thresholds_not_empirically_calibrated',
-    'threshold registry must remain provisional in SRT-3',
+    thresholds.status === 'provisional_srt4_local_coordinate_and_comparator_thresholds_not_empirically_calibrated',
+    'threshold registry must remain provisional in SRT-4',
     thresholdErrors
   );
   assert(
     thresholds.calibration_boundary?.usable_for_runtime_gate === false,
-    'threshold registry must not authorize runtime gate execution in SRT-1',
+    'threshold registry must not authorize runtime gate execution in SRT-4',
     thresholdErrors
   );
   assert(
     thresholds.calibration_boundary?.usable_for_selfindex_local_heuristics === true,
-    'threshold registry must authorize SelfIndex local heuristics in SRT-1',
+    'threshold registry must authorize SelfIndex local heuristics in SRT-4',
     thresholdErrors
   );
   assert(
     thresholds.calibration_boundary?.usable_for_ownership_local_heuristics === true,
-    'threshold registry must authorize Ownership local heuristics in SRT-2',
+    'threshold registry must authorize Ownership local heuristics in SRT-4',
     thresholdErrors
   );
   assert(
     thresholds.calibration_boundary?.usable_for_continuity_local_heuristics === true,
-    'threshold registry must authorize Continuity local heuristics in SRT-2',
+    'threshold registry must authorize Continuity local heuristics in SRT-4',
     thresholdErrors
   );
   assert(
     thresholds.calibration_boundary?.usable_for_perspective_local_heuristics === true,
-    'threshold registry must authorize Perspective local heuristics in SRT-2',
+    'threshold registry must authorize Perspective local heuristics in SRT-4',
     thresholdErrors
   );
   assert(
     thresholds.calibration_boundary?.usable_for_valuation_local_heuristics === true,
-    'threshold registry must authorize Valuation local heuristics in SRT-3',
+    'threshold registry must authorize Valuation local heuristics in SRT-4',
     thresholdErrors
   );
   assert(
     thresholds.calibration_boundary?.usable_for_intervention_local_heuristics === true,
-    'threshold registry must authorize Intervention local heuristics in SRT-3',
+    'threshold registry must authorize Intervention local heuristics in SRT-4',
+    thresholdErrors
+  );
+  assert(
+    thresholds.calibration_boundary?.usable_for_reducibility_local_heuristics === true,
+    'threshold registry must authorize Reducibility local heuristics in SRT-4',
     thresholdErrors
   );
 
@@ -192,8 +205,8 @@ async function verifySubjectivityScaffolding() {
     rivalErrors
   );
   assert(
-    rivals.comparator_implementation_status === 'scaffolded_not_executable',
-    'rival family registry must remain scaffolded_not_executable in SRT-1',
+    rivals.comparator_implementation_status === 'minimally_executable_partial_runtime',
+    'rival family registry must be minimally_executable_partial_runtime in SRT-4',
     rivalErrors
   );
 
@@ -239,6 +252,11 @@ async function verifySubjectivityScaffolding() {
     artifactErrors
   );
   assert(
+    artifactSchema.root_schema_refs?.['subjectivity_reducibility_report.json'] === 'src/subjectivity/schemas/subjectivity_reducibility_report.v1.json',
+    'root schema ref for subjectivity_reducibility_report.json is incorrect',
+    artifactErrors
+  );
+  assert(
     artifactSchema.artifacts?.['self_index_state.json']?.implementation_status === 'implemented_internal_support_in_srt1',
     'self_index_state.json must be marked implemented_internal_support_in_srt1',
     artifactErrors
@@ -266,6 +284,11 @@ async function verifySubjectivityScaffolding() {
   assert(
     artifactSchema.artifacts?.['subjectivity_intervention_profile.json']?.implementation_status === 'implemented_internal_support_in_srt3',
     'subjectivity_intervention_profile.json must be marked implemented_internal_support_in_srt3',
+    artifactErrors
+  );
+  assert(
+    artifactSchema.artifacts?.['subjectivity_reducibility_report.json']?.implementation_status === 'implemented_internal_support_in_srt4',
+    'subjectivity_reducibility_report.json must be marked implemented_internal_support_in_srt4',
     artifactErrors
   );
 
@@ -314,6 +337,11 @@ async function verifySubjectivityScaffolding() {
     'subjectivity_intervention_profile.json surface policy must reflect implemented_internal_support_pre_comparator',
     surfaceErrors
   );
+  assert(
+    surfacePolicy.outputs?.['subjectivity_reducibility_report.json']?.runtime_status === 'implemented_internal_partial_comparator',
+    'subjectivity_reducibility_report.json surface policy must reflect implemented_internal_partial_comparator',
+    surfaceErrors
+  );
 
   for (const relPath of [
     'docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md',
@@ -341,7 +369,9 @@ async function verifySubjectivityScaffolding() {
     hasValuation:
       typeof imported.createSubjectiveValuationEngine === 'function',
     hasIntervention:
-      typeof imported.createSubjectivityInterventionHarness === 'function'
+      typeof imported.createSubjectivityInterventionHarness === 'function',
+    hasReducibility:
+      typeof imported.createSubjectivityReducibilityComparator === 'function'
   };
 
   const ok =
@@ -362,12 +392,13 @@ async function verifySubjectivityScaffolding() {
     importSanity.hasContinuity &&
     importSanity.hasPerspective &&
     importSanity.hasValuation &&
-    importSanity.hasIntervention;
+    importSanity.hasIntervention &&
+    importSanity.hasReducibility;
 
   const payload = {
     artifact_role: 'subjectivity_scaffolding_check',
     schema_version: '1.0.0',
-    layer_id: 'subjectivity_runtime_layer.srt3',
+    layer_id: 'subjectivity_runtime_layer.srt4',
     status: ok ? 'PASS' : 'FAIL',
     missing_docs: missingDocs,
     missing_src_files: missingSrcFiles,
@@ -380,7 +411,7 @@ async function verifySubjectivityScaffolding() {
     local_path_leaks: localPathLeaks,
     import_sanity: importSanity,
     interpretation_boundary:
-      'Subjectivity scaffolding verification only; structural consistency check for SRT-3, not subjectivity support, not external validation.'
+      'Subjectivity scaffolding verification only; structural consistency check for SRT-4, not subjectivity support, not external validation.'
   };
 
   fs.mkdirSync(ARTIFACTS_ROOT, { recursive: true });

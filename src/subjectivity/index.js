@@ -61,3 +61,8 @@ export {
   SubjectivityInterventionHarness,
   createSubjectivityInterventionHarness
 } from './SubjectivityInterventionHarness.js';
+
+export {
+  SubjectivityReducibilityComparator,
+  createSubjectivityReducibilityComparator
+} from './SubjectivityReducibilityComparator.js';

@@ -1,7 +1,7 @@
 {
   "artifact_role": "subjectivity_surface_policy",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt3",
+  "layer_id": "subjectivity_runtime_layer.srt4",
   "layer_status": "partial_runtime_path",
   "governed_surfaces": {
     "developer_inspection_surface": {
@@ -18,7 +18,7 @@
     },
     "controlled_statement_surface": {
       "requires_boundary": true,
-      "description": "Controlled statements surface. Blocked in SRT-2."
+      "description": "Controlled statements surface. Blocked by default for the Subjectivity Runtime Layer."
     },
     "external_claim_facing_surface": {
       "requires_boundary": true,
@@ -112,18 +112,18 @@
     },
     "subjectivity_reducibility_report.json": {
       "artifact_class": "derived",
-      "runtime_status": "planned_not_emitted_in_srt3",
+      "runtime_status": "implemented_internal_partial_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["comparator_not_executable", "claim_facing_blocked"],
-      "interpretation_allowed": "Comparator diagnostics only once implemented.",
-      "interpretation_not_allowed": ["external validation", "subjectivity support"]
+      "blocked_by": ["partial_comparator_only", "not_final_irreducibility", "claim_facing_blocked"],
+      "interpretation_allowed": "Internal reducibility diagnostics over SRT-4 available coordinates only.",
+      "interpretation_not_allowed": ["external validation", "final irreducibility proof", "subjectivity support"]
     },
     "self_nonself_swap_report.json": {
       "artifact_class": "derived",
-      "runtime_status": "planned_not_emitted_in_srt3",
+      "runtime_status": "planned_not_emitted_in_srt4",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
@@ -134,7 +134,7 @@
     },
     "subjectivity_manifest.json": {
       "artifact_class": "manifest_root",
-      "runtime_status": "planned_not_emitted_in_srt3",
+      "runtime_status": "planned_not_emitted_in_srt4",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
@@ -145,7 +145,7 @@
     },
     "subjectivity_runtime_projection.json": {
       "artifact_class": "derived",
-      "runtime_status": "planned_not_emitted_in_srt3",
+      "runtime_status": "planned_not_emitted_in_srt4",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
@@ -156,7 +156,7 @@
     },
     "subjectivity_gate_result.json": {
       "artifact_class": "gate_facing",
-      "runtime_status": "planned_not_emitted_in_srt3",
+      "runtime_status": "planned_not_emitted_in_srt4",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface"],
       "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
@@ -166,5 +166,5 @@
       "interpretation_not_allowed": ["external validation", "subjectivity support"]
     }
   },
-  "default_interpretation_boundary": "Subjectivity artifacts remain framework-internal only, pre-comparator, not externally validated, not equivalent to human subjectivity, not metaphysical closure, and not automatic corpus confirmation."
+  "default_interpretation_boundary": "Subjectivity artifacts remain framework-internal only, not externally validated, not equivalent to human subjectivity, not metaphysical closure, and not automatic corpus confirmation. SRT-4 reducibility remains partial comparator support only."
 }

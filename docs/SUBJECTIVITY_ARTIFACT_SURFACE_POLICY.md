@@ -21,7 +21,7 @@ It is not externally validated.
   - structural manifest only
   - never evidence by itself
 
-## SRT-3 outputs
+## SRT-4 outputs
 
 Currently implemented outputs:
 
@@ -31,13 +31,14 @@ Currently implemented outputs:
 - `first_person_perspective_report.json`
 - `subjective_valuation_report.json`
 - `subjectivity_intervention_profile.json`
+- `subjectivity_reducibility_report.json`
 
-Allowed surfaces for all six:
+Allowed surfaces for all seven:
 
 - `developer_inspection_surface`
 - `local_artifact_surface`
 
-Blocked surfaces for all six:
+Blocked surfaces for all seven:
 
 - `local_report_surface`
 - `controlled_statement_surface`
@@ -53,8 +54,9 @@ No subjectivity artifact created by this layer may be promoted as:
 - corpus confirmation
 - public claim-facing support
 
-## SRT-3 rule
+## SRT-4 rule
 
-Because SRT-3 is still pre-comparator and pre-gate, the six implemented
-artifacts remain internal diagnostics only. They are not sufficient for
-subjectivity support and cannot be used as controlled statements.
+Because SRT-4 is still pre-gate and only partially comparator-backed, the seven
+implemented artifacts remain internal diagnostics only. They are not sufficient
+for subjectivity support, final irreducibility closure, or controlled
+statements.

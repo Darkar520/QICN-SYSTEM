@@ -1,7 +1,7 @@
 {
   "artifact_role": "subjectivity_artifact_schema_registry",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt3",
+  "layer_id": "subjectivity_runtime_layer.srt4",
   "layer_status": "partial_runtime_path",
   "root_schema_refs": {
     "subjectivity_manifest.json": "src/subjectivity/schemas/subjectivity_manifest.v1.json",
@@ -12,14 +12,15 @@
     "subjective_continuity_report.json": "src/subjectivity/schemas/subjective_continuity_report.v1.json",
     "first_person_perspective_report.json": "src/subjectivity/schemas/first_person_perspective_report.v1.json",
     "subjective_valuation_report.json": "src/subjectivity/schemas/subjective_valuation_report.v1.json",
-    "subjectivity_intervention_profile.json": "src/subjectivity/schemas/subjectivity_intervention_profile.v1.json"
+    "subjectivity_intervention_profile.json": "src/subjectivity/schemas/subjectivity_intervention_profile.v1.json",
+    "subjectivity_reducibility_report.json": "src/subjectivity/schemas/subjectivity_reducibility_report.v1.json"
   },
   "artifacts": {
     "subjectivity_manifest.json": {
       "artifact_role": "subjectivity_manifest",
       "artifact_class": "manifest_root",
       "source_of_truth_status": "authoritative_bundle_manifest_when_emitted",
-      "implementation_status": "schema_only_in_srt3",
+      "implementation_status": "schema_only_in_srt4",
       "minimum_fields": [
         "artifact_role",
         "schema_version",
@@ -43,7 +44,7 @@
       "artifact_role": "subjectivity_runtime_projection",
       "artifact_class": "derived",
       "source_of_truth_status": "derived_internal_when_emitted",
-      "implementation_status": "schema_only_in_srt3",
+      "implementation_status": "schema_only_in_srt4",
       "minimum_fields": [
         "artifact_role",
         "schema_version",
@@ -63,7 +64,7 @@
       "artifact_role": "subjectivity_gate_result",
       "artifact_class": "gate_facing",
       "source_of_truth_status": "authoritative_internal_gate_when_emitted",
-      "implementation_status": "schema_only_in_srt3",
+      "implementation_status": "schema_only_in_srt4",
       "minimum_fields": [
         "artifact_role",
         "schema_version",
@@ -266,21 +267,43 @@
       "artifact_role": "subjectivity_reducibility_report",
       "artifact_class": "derived",
       "source_of_truth_status": "derived_comparator_when_emitted",
-      "implementation_status": "planned_not_implemented",
+      "implementation_status": "implemented_internal_support_in_srt4",
       "minimum_fields": [
         "artifact_role",
-        "schema_version",
+        "artifact_version",
+        "layer_version",
+        "paper_source",
+        "runtime_status",
         "run_id",
+        "compared_components",
+        "rival_family_used",
+        "hybrid_family_used",
+        "strong_model_loss",
         "best_weak_rival",
+        "best_weak_loss",
+        "best_weak_hybrid",
+        "best_hybrid_loss",
         "irreducibility_margin",
         "comparison_supported",
-        "implementation_status",
-        "interpretation_boundary"
+        "classification",
+        "warnings",
+        "interpretation_boundary",
+        "provenance",
+        "schema_ref"
       ],
       "provenance_fields": [
         "protocol_ref",
         "rival_family_ref",
-        "source_artifacts"
+        "thresholds_ref",
+        "self_index_ref",
+        "ownership_ref",
+        "continuity_ref",
+        "perspective_ref",
+        "valuation_ref",
+        "intervention_ref",
+        "source_trace_ref",
+        "input_profile",
+        "control_mode"
       ]
     },
     "self_nonself_swap_report.json": {

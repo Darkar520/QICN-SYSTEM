@@ -16,6 +16,7 @@
     "verify:subjectivity-selfindex-ownership": "node scripts/verify-subjectivity-selfindex-ownership.cjs",
     "verify:subjectivity-continuity-perspective": "node scripts/verify-subjectivity-continuity-perspective.cjs",
     "verify:subjectivity-valuation-intervention": "node scripts/verify-subjectivity-valuation-intervention.cjs",
+    "verify:subjectivity-reducibility": "node scripts/verify-subjectivity-reducibility.cjs",
     "verify:descriptor-registry": "node scripts/validate-descriptor-registry.cjs",
     "verify:artifacts": "node scripts/verify-artifacts.cjs artifacts --scope=small_batch",
     "verify:policies": "node tests/output-support-labels.v65.test.js && node tests/output-consumption-policy.v66.test.js && node tests/output-surface-policy.v67.test.js && node tests/output-surface-enforcer.v68.test.js",

@@ -1,8 +1,8 @@
 {
   "artifact_role": "external_audit_status",
   "schema_version": "1.0.0",
-  "generated_at": "2026-03-28T21:00:08.189Z",
-  "package_id": "external_audit_package_2026-03-28T21-00-08-189Z",
+  "generated_at": "2026-03-28T23:09:45.745Z",
+  "package_id": "external_audit_package_2026-03-28T23-09-45-745Z",
   "readiness_status": "READY_FOR_EXTERNAL_AUDIT",
   "external_execution_status": "NOT_EXECUTED_EXTERNALLY",
   "remaining_dependency": "No independent external auditor or external execution record is present in the current baseline.",

@@ -1,8 +1,8 @@
 {
   "artifact_role": "external_audit_package_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-03-28T21:00:08.189Z",
-  "package_id": "external_audit_package_2026-03-28T21-00-08-189Z",
+  "generated_at": "2026-03-28T23:09:45.745Z",
+  "package_id": "external_audit_package_2026-03-28T23-09-45-745Z",
   "package_root": ".",
   "package_status": "READY_FOR_EXTERNAL_AUDIT",
   "entrypoints": {
@@ -25,20 +25,20 @@
     "qicn_system": {
       "repository": "QICN-SYSTEM",
       "branch": "main",
-      "head": "60486d330d212255126aeb86f28688ed7e93c98b",
+      "head": "2c49a9ba7da48a6717c3d2451a6370d02373ef62",
       "upstream": "origin/main",
       "remote_url": "https://github.com/Darkar520/QICN-SYSTEM.git"
     },
     "qicn_release": {
       "repository": "QICN-RELEASE",
       "branch": "main",
-      "head": "af3ae8a3501129ad8808403acc4d2d1d07a17448",
+      "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
       "upstream": "origin/main",
       "remote_url": "https://github.com/Darkar520/QICN-RELEASE.git"
     }
   },
   "authoritative_refs": {
-    "ecosystem_candidate_bundle_id": "ecosystem_release_candidate_2026-03-28T20-59-44-382Z",
+    "ecosystem_candidate_bundle_id": "ecosystem_release_candidate_2026-03-28T23-06-28-591Z",
     "qicn_release_canonical_freeze_tag": "release-2026-03-01",
     "qicn_release_canonical_freeze_commit": "2d7504be95ca33af5941e30abf7059dc2774edca",
     "frozen_primary_campaign_id": "execution_campaign_primary_2026-03-25T02-15-00-000Z",

@@ -1,7 +1,7 @@
 # Subjectivity Interventions And Negative Controls
 
-This document records the planned intervention family for the Subjectivity
-Runtime Layer. In SRT-0 these items are protocol entries only.
+This document records the intervention family planned for the Subjectivity
+Runtime Layer and the minimal negative controls already executed in SRT-1.
 
 ## Planned intervention family
 
@@ -16,7 +16,7 @@ Runtime Layer. In SRT-0 these items are protocol entries only.
 - `self_permutation`
 - `cross_substrate_remap`
 
-## Minimum SRT-0 condition set
+## Minimum protocol condition set
 
 - `baseline_subjectivity_enabled`
 - `ownership_lesion`
@@ -26,29 +26,34 @@ Runtime Layer. In SRT-0 these items are protocol entries only.
 - `valuation_inversion`
 - `weak_rival_reconstruction`
 
-## Planned negative controls
+## Negative controls
+
+Implemented in SRT-1 verification:
 
 - `label_only_swap_control`
+- `bookkeeping_control`
+
+Still planned for later blocks:
+
 - `memory_rich_non_owning_control`
 - `policy_retuned_control`
 - `narrative_preserving_control`
-- `bookkeeping_control`
 - `nonselective_damage_control`
 
 ## Role of the family
 
-- interventions are meant to test selective degradation
+- interventions are meant to test selective degradation once the corresponding coordinates exist
 - negative controls are meant to block flattering misreads
-- weak-rival reconstruction is meant to support the irreducibility burden
+- weak-rival reconstruction is meant to support the irreducibility burden in later blocks
 
-## SRT-0 boundary
+## SRT-1 boundary
 
-In SRT-0:
+In SRT-1:
 
-- no intervention is executed
-- no negative control is executed
+- no full intervention family is executed
 - no comparator is executed
-- no intervention artifact is evidence
+- only two negative controls are executed
+- no intervention artifact is claim evidence
 
 These names exist now so that later blocks do not invent incompatible wording or
 implicit scope.

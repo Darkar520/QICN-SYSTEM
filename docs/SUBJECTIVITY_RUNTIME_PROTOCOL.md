@@ -1,27 +1,26 @@
 # Subjectivity Runtime Protocol
 
-This document opens the Subjectivity Runtime Layer in `QICN-SYSTEM` at SRT-0.
+This document records the Subjectivity Runtime Layer at SRT-1.
 
 ## What this layer is
 
-- a runtime-facing scaffold derived from Paper 8
-- a contract for future coordinate implementation
-- a governed artifact family with explicit surface restrictions
-- a future comparator and intervention layer boundary
+- a runtime-facing implementation boundary derived from Paper 8
+- a governed partial runtime path for `SelfIndex` and `OwnershipField`
+- a machine-readable artifact contract with blocked claim-facing promotion
 - framework-internal only
 
 ## What this layer is not
 
-- not a subjectivity runtime result
+- not a full subjectivity runtime
 - not a subjectivity gate execution
-- not a comparator outcome
+- not a rival comparator result
 - not externally validated
 - not human-subjectivity equivalence
 - not metaphysical closure
 
 ## Paper 8 linkage
 
-SRT-0 inherits the seven constitutive coordinates defined in Paper 8:
+SRT-1 inherits the seven constitutive coordinates defined in Paper 8:
 
 - `SelfIndex`
 - `OwnershipField`
@@ -31,31 +30,28 @@ SRT-0 inherits the seven constitutive coordinates defined in Paper 8:
 - `InterventionProfile`
 - `IrreducibilityMargin`
 
-It also inherits:
+In SRT-1 only the first two coordinates are implemented as runtime modules.
 
-- the conjunctive gate `Gamma_subj`
-- the multiplicative scalar `Phi_subj`
-- the weak rival family and its admissible closure
-- the intervention family
+## SRT-1 scope
 
-## SRT-0 scope
+SRT-1 implements:
 
-SRT-0 fixes:
+- `SelfIndexRegistry`
+- `OwnershipAttributionLayer`
+- `self_index_state.json`
+- `ownership_attribution_report.json`
+- minimal negative controls for label-only swap and bookkeeping-like ownership
+- a dedicated verification path
 
-- directory structure
-- machine-readable manifests
-- artifact schemas
-- surface policy
-- threshold registry
-- rival-family registry
-- minimal verification hooks
+SRT-1 does not yet implement:
 
-SRT-0 does not yet implement:
-
-- coordinate estimation
-- intervention execution
-- rival comparison
-- runtime gate evaluation
+- continuity
+- perspective
+- valuation
+- intervention profile
+- irreducibility margin
+- rival comparator execution
+- runtime subjectivity gate
 - batch-level subjectivity support
 
 ## Artifact rule
@@ -70,6 +66,7 @@ If it is not declared there, it is not part of the Subjectivity Runtime Layer.
 
 ## Non-inference rule
 
-Presence of this layer means only that the infrastructure boundary exists. It
-does not mean that QICN-SYSTEM currently instantiates first-person indexed
-subjectivity in the formal sense of Paper 8.
+Presence of SRT-1 means only that `SelfIndex` and `OwnershipField` exist as
+framework-internal runtime layers with explicit limitations. It does not mean
+that `QICN-SYSTEM` currently instantiates first-person indexed subjectivity in
+the formal sense of Paper 8.

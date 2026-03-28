@@ -31,3 +31,13 @@ export {
   createSubjectivityLayer,
   describeSubjectivityLayerScaffold
 } from './SubjectivityLayer.js';
+
+export {
+  SelfIndexRegistry,
+  createSelfIndexRegistry
+} from './SelfIndexRegistry.js';
+
+export {
+  OwnershipAttributionLayer,
+  createOwnershipAttributionLayer
+} from './OwnershipAttributionLayer.js';

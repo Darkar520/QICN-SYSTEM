@@ -1,12 +1,12 @@
 {
   "artifact_role": "subjectivity_surface_policy",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt0",
-  "layer_status": "scaffold_only",
+  "layer_id": "subjectivity_runtime_layer.srt1",
+  "layer_status": "partial_runtime_path",
   "governed_surfaces": {
     "developer_inspection_surface": {
       "requires_boundary": true,
-      "description": "Developer-facing inspection surface for schema, registry, and future runtime diagnostics."
+      "description": "Developer-facing inspection surface for internal subjectivity diagnostics."
     },
     "local_artifact_surface": {
       "requires_boundary": true,
@@ -14,11 +14,11 @@
     },
     "local_report_surface": {
       "requires_boundary": true,
-      "description": "Local human-readable governed report surface. Not claim-facing."
+      "description": "Local human-readable governed report surface. Still not claim-facing."
     },
     "controlled_statement_surface": {
       "requires_boundary": true,
-      "description": "Controlled statements surface. Blocked by default in SRT-0."
+      "description": "Controlled statements surface. Blocked in SRT-1."
     },
     "external_claim_facing_surface": {
       "requires_boundary": true,
@@ -46,123 +46,114 @@
   "outputs": {
     "self_index_state.json": {
       "artifact_class": "primary",
-      "runtime_status": "planned_not_emitted_in_srt0",
+      "runtime_status": "implemented_internal_support_pre_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["scaffold_only_layer", "subjectivity_not_validated", "claim_facing_blocked"],
-      "interpretation_allowed": "Internal structural ownness/index diagnostics only once implemented.",
-      "interpretation_not_allowed": [
-        "external validation",
-        "human equivalence",
-        "metaphysical closure"
-      ]
+      "blocked_by": ["pre_comparator_only", "subjectivity_not_validated", "claim_facing_blocked"],
+      "interpretation_allowed": "Internal self-index diagnostics only.",
+      "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure", "subjectivity support claim"]
     },
     "ownership_attribution_report.json": {
       "artifact_class": "primary",
-      "runtime_status": "planned_not_emitted_in_srt0",
+      "runtime_status": "implemented_internal_support_pre_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["scaffold_only_layer", "subjectivity_not_validated", "claim_facing_blocked"],
-      "interpretation_allowed": "Internal ownership-field diagnostics only once implemented.",
-      "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure"]
+      "blocked_by": ["pre_comparator_only", "subjectivity_not_validated", "claim_facing_blocked"],
+      "interpretation_allowed": "Internal ownership diagnostics only.",
+      "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure", "subjectivity support claim"]
     },
     "subjective_continuity_report.json": {
       "artifact_class": "primary",
-      "runtime_status": "planned_not_emitted_in_srt0",
+      "runtime_status": "planned_not_emitted_in_srt1",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["scaffold_only_layer", "subjectivity_not_validated", "claim_facing_blocked"],
+      "blocked_by": ["coordinate_not_implemented", "subjectivity_not_validated", "claim_facing_blocked"],
       "interpretation_allowed": "Internal continuity diagnostics only once implemented.",
       "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure"]
     },
     "first_person_perspective_report.json": {
       "artifact_class": "primary",
-      "runtime_status": "planned_not_emitted_in_srt0",
+      "runtime_status": "planned_not_emitted_in_srt1",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["scaffold_only_layer", "subjectivity_not_validated", "claim_facing_blocked"],
+      "blocked_by": ["coordinate_not_implemented", "subjectivity_not_validated", "claim_facing_blocked"],
       "interpretation_allowed": "Internal perspective diagnostics only once implemented.",
       "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure"]
     },
     "subjective_valuation_report.json": {
       "artifact_class": "primary",
-      "runtime_status": "planned_not_emitted_in_srt0",
+      "runtime_status": "planned_not_emitted_in_srt1",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["scaffold_only_layer", "subjectivity_not_validated", "claim_facing_blocked"],
+      "blocked_by": ["coordinate_not_implemented", "subjectivity_not_validated", "claim_facing_blocked"],
       "interpretation_allowed": "Internal valuation diagnostics only once implemented.",
       "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure"]
     },
     "subjectivity_reducibility_report.json": {
       "artifact_class": "derived",
-      "runtime_status": "planned_not_emitted_in_srt0",
+      "runtime_status": "planned_not_emitted_in_srt1",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["scaffold_only_layer", "comparator_not_executable", "claim_facing_blocked"],
+      "blocked_by": ["comparator_not_executable", "claim_facing_blocked"],
       "interpretation_allowed": "Comparator diagnostics only once implemented.",
       "interpretation_not_allowed": ["external validation", "subjectivity support"]
     },
     "self_nonself_swap_report.json": {
       "artifact_class": "derived",
-      "runtime_status": "planned_not_emitted_in_srt0",
+      "runtime_status": "planned_not_emitted_in_srt1",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["scaffold_only_layer", "intervention_not_executed", "claim_facing_blocked"],
+      "blocked_by": ["intervention_not_executed", "claim_facing_blocked"],
       "interpretation_allowed": "Intervention diagnostics only once implemented.",
-      "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure"]
+      "interpretation_not_allowed": ["external validation", "subjectivity support"]
+    },
+    "subjectivity_manifest.json": {
+      "artifact_class": "manifest_root",
+      "runtime_status": "planned_not_emitted_in_srt1",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
+      "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "claim_gate_status": "blocked_for_external_claiming",
+      "statement_gate_status": "blocked",
+      "blocked_by": ["bundle_not_emitted", "claim_facing_blocked"],
+      "interpretation_allowed": "Manifest scope only once emitted.",
+      "interpretation_not_allowed": ["external validation", "subjectivity support"]
     },
     "subjectivity_runtime_projection.json": {
       "artifact_class": "derived",
-      "runtime_status": "schema_only_in_srt0",
+      "runtime_status": "planned_not_emitted_in_srt1",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["scaffold_only_layer", "claim_facing_blocked"],
-      "interpretation_allowed": "Coordinate aggregation only once implemented.",
-      "interpretation_not_allowed": ["subjectivity support", "external validation"]
+      "blocked_by": ["remaining_coordinates_not_implemented", "claim_facing_blocked"],
+      "interpretation_allowed": "Projection artifact only once emitted.",
+      "interpretation_not_allowed": ["external validation", "subjectivity support"]
     },
     "subjectivity_gate_result.json": {
       "artifact_class": "gate_facing",
-      "runtime_status": "schema_only_in_srt0",
+      "runtime_status": "planned_not_emitted_in_srt1",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface"],
       "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["scaffold_only_layer", "gate_not_executable", "claim_facing_blocked"],
-      "interpretation_allowed": "Internal gate result only once implemented and only inside governed runtime review.",
-      "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure", "corpus confirmation"]
-    },
-    "subjectivity_manifest.json": {
-      "artifact_class": "manifest_root",
-      "runtime_status": "schema_only_in_srt0",
-      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
-      "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
-      "claim_gate_status": "blocked_for_external_claiming",
-      "statement_gate_status": "blocked",
-      "blocked_by": ["scaffold_only_layer", "manifest_only", "claim_facing_blocked"],
-      "interpretation_allowed": "Structural manifest only once emitted.",
-      "interpretation_not_allowed": ["subjectivity support", "external validation", "corpus confirmation"]
+      "blocked_by": ["runtime_gate_not_executed", "claim_facing_blocked"],
+      "interpretation_allowed": "Internal gate artifact only once implemented.",
+      "interpretation_not_allowed": ["external validation", "subjectivity support"]
     }
   },
-  "default_interpretation_boundary": "Subjectivity runtime artifacts are internal structural artifacts only. They are not external validation, not human equivalence, not metaphysical closure, and not automatic corpus confirmation.",
-  "non_claim_restrictions": [
-    "No subjectivity artifact is claim-facing safe by default.",
-    "Controlled statements remain blocked in SRT-0.",
-    "No surface may promote scaffold-only subjectivity artifacts as evidence."
-  ]
+  "default_interpretation_boundary": "Subjectivity artifacts remain framework-internal only, pre-comparator, not externally validated, not equivalent to human subjectivity, not metaphysical closure, and not automatic corpus confirmation."
 }

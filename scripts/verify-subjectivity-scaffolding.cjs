@@ -5,7 +5,6 @@ const path = require('path');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const DOCS = path.join(ROOT, 'docs');
 const SRC = path.join(ROOT, 'src', 'subjectivity');
 const ARTIFACTS_ROOT = path.join(ROOT, 'artifacts', 'subjectivity');
 const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
@@ -29,9 +28,13 @@ const REQUIRED_SRC_FILES = [
   'src/subjectivity/SubjectivitySurfacePolicy.js',
   'src/subjectivity/SubjectivityThresholdRegistry.js',
   'src/subjectivity/SubjectivityRivalFamilyRegistry.js',
+  'src/subjectivity/SelfIndexRegistry.js',
+  'src/subjectivity/OwnershipAttributionLayer.js',
   'src/subjectivity/schemas/subjectivity_manifest.v1.json',
   'src/subjectivity/schemas/subjectivity_runtime_projection.v1.json',
-  'src/subjectivity/schemas/subjectivity_gate_result.v1.json'
+  'src/subjectivity/schemas/subjectivity_gate_result.v1.json',
+  'src/subjectivity/schemas/self_index_state.v1.json',
+  'src/subjectivity/schemas/ownership_attribution_report.v1.json'
 ];
 
 const EXPECTED_COORDINATES = [
@@ -44,6 +47,7 @@ const EXPECTED_COORDINATES = [
   'IrreducibilityMargin'
 ];
 
+const EXPECTED_IMPLEMENTED_COORDINATES = ['SelfIndex', 'OwnershipField'];
 const EXPECTED_REQUIRED_ARTIFACTS = [
   'subjectivity_manifest.json',
   'subjectivity_runtime_projection.json',
@@ -73,9 +77,10 @@ const assert = (condition, message, bucket) => {
   if (!condition) bucket.push(message);
 };
 
-const scanLocalPathLeaks = (files) => files
-  .filter((relPath) => fs.existsSync(path.join(ROOT, relPath)))
-  .filter((relPath) => LOCAL_PATH_PATTERN.test(readText(relPath)));
+const scanLocalPathLeaks = (files) =>
+  files
+    .filter((relPath) => fs.existsSync(path.join(ROOT, relPath)))
+    .filter((relPath) => LOCAL_PATH_PATTERN.test(readText(relPath)));
 
 async function verifySubjectivityScaffolding() {
   const missingDocs = REQUIRED_DOC_FILES.filter((relPath) => !fs.existsSync(path.join(ROOT, relPath)));
@@ -100,29 +105,48 @@ async function verifySubjectivityScaffolding() {
     protocolErrors
   );
   assert(
+    protocol.implementation_status === 'partial_runtime_path',
+    'protocol implementation_status must be partial_runtime_path in SRT-1',
+    protocolErrors
+  );
+  assert(
     JSON.stringify(protocol.required_artifacts || []) === JSON.stringify(EXPECTED_REQUIRED_ARTIFACTS),
     'required artifact list is incomplete or reordered unexpectedly',
     protocolErrors
   );
+
+  const implementedCoordinates = (protocol.coordinates || [])
+    .filter((entry) => entry.status === 'implemented_internal_support_pre_comparator')
+    .map((entry) => entry.id);
   assert(
-    protocol.implementation_status === 'scaffold_only',
-    'protocol implementation_status must be scaffold_only in SRT-0',
+    JSON.stringify(implementedCoordinates) === JSON.stringify(EXPECTED_IMPLEMENTED_COORDINATES),
+    'SRT-1 must implement exactly SelfIndex and OwnershipField',
     protocolErrors
   );
   assert(
-    Array.isArray(protocol.forbidden_inferences) && protocol.forbidden_inferences.length >= 4,
-    'protocol forbidden_inferences must be explicit',
+    protocol.functional?.status === 'defined_in_paper_not_executed_in_srt1',
+    'functional status must remain non-executed in SRT-1',
     protocolErrors
   );
 
   assert(
-    thresholds.status === 'provisional_pre_srt1_not_empirically_calibrated',
-    'threshold registry must remain provisional in SRT-0',
+    thresholds.status === 'provisional_srt1_local_coordinate_thresholds_not_empirically_calibrated',
+    'threshold registry must remain provisional in SRT-1',
     thresholdErrors
   );
   assert(
     thresholds.calibration_boundary?.usable_for_runtime_gate === false,
-    'threshold registry must not authorize runtime gate execution in SRT-0',
+    'threshold registry must not authorize runtime gate execution in SRT-1',
+    thresholdErrors
+  );
+  assert(
+    thresholds.calibration_boundary?.usable_for_selfindex_local_heuristics === true,
+    'threshold registry must authorize SelfIndex local heuristics in SRT-1',
+    thresholdErrors
+  );
+  assert(
+    thresholds.calibration_boundary?.usable_for_ownership_local_heuristics === true,
+    'threshold registry must authorize Ownership local heuristics in SRT-1',
     thresholdErrors
   );
 
@@ -133,12 +157,7 @@ async function verifySubjectivityScaffolding() {
   );
   assert(
     rivals.comparator_implementation_status === 'scaffolded_not_executable',
-    'rival family registry must remain scaffolded_not_executable in SRT-0',
-    rivalErrors
-  );
-  assert(
-    typeof rivals.admissible_closure_note === 'string' && rivals.admissible_closure_note.includes('finite admissible composites'),
-    'rival family closure note must mention admissible composites',
+    'rival family registry must remain scaffolded_not_executable in SRT-1',
     rivalErrors
   );
 
@@ -152,9 +171,25 @@ async function verifySubjectivityScaffolding() {
       artifactErrors
     );
   }
+
   assert(
-    artifactSchema.root_schema_refs?.['subjectivity_manifest.json'] === 'src/subjectivity/schemas/subjectivity_manifest.v1.json',
-    'root schema ref for subjectivity_manifest.json is incorrect',
+    artifactSchema.root_schema_refs?.['self_index_state.json'] === 'src/subjectivity/schemas/self_index_state.v1.json',
+    'root schema ref for self_index_state.json is incorrect',
+    artifactErrors
+  );
+  assert(
+    artifactSchema.root_schema_refs?.['ownership_attribution_report.json'] === 'src/subjectivity/schemas/ownership_attribution_report.v1.json',
+    'root schema ref for ownership_attribution_report.json is incorrect',
+    artifactErrors
+  );
+  assert(
+    artifactSchema.artifacts?.['self_index_state.json']?.implementation_status === 'implemented_internal_support_in_srt1',
+    'self_index_state.json must be marked implemented_internal_support_in_srt1',
+    artifactErrors
+  );
+  assert(
+    artifactSchema.artifacts?.['ownership_attribution_report.json']?.implementation_status === 'implemented_internal_support_in_srt1',
+    'ownership_attribution_report.json must be marked implemented_internal_support_in_srt1',
     artifactErrors
   );
 
@@ -173,6 +208,16 @@ async function verifySubjectivityScaffolding() {
       surfaceErrors
     );
   }
+  assert(
+    surfacePolicy.outputs?.['self_index_state.json']?.runtime_status === 'implemented_internal_support_pre_comparator',
+    'self_index_state.json surface policy must reflect implemented_internal_support_pre_comparator',
+    surfaceErrors
+  );
+  assert(
+    surfacePolicy.outputs?.['ownership_attribution_report.json']?.runtime_status === 'implemented_internal_support_pre_comparator',
+    'ownership_attribution_report.json surface policy must reflect implemented_internal_support_pre_comparator',
+    surfaceErrors
+  );
 
   for (const relPath of [
     'docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md',
@@ -184,35 +229,37 @@ async function verifySubjectivityScaffolding() {
     assert(/not external(?:ly)? validated/i.test(text), `${relPath} must mention no external validation`, docErrors);
   }
 
-  const localPathLeaks = scanLocalPathLeaks([
-    ...REQUIRED_DOC_FILES,
-    ...REQUIRED_SRC_FILES
-  ]);
+  const localPathLeaks = scanLocalPathLeaks([...REQUIRED_DOC_FILES, ...REQUIRED_SRC_FILES]);
 
   const imported = await import(pathToFileURL(path.join(SRC, 'index.js')).href);
   const importSanity = {
     hasDescribe: typeof imported.describeSubjectivityLayerScaffold === 'function',
     hasThresholds: Boolean(imported.SUBJECTIVITY_THRESHOLDS),
-    hasRivals: Boolean(imported.SUBJECTIVITY_RIVAL_FAMILY)
+    hasRivals: Boolean(imported.SUBJECTIVITY_RIVAL_FAMILY),
+    hasSelfIndex: typeof imported.createSelfIndexRegistry === 'function',
+    hasOwnership: typeof imported.createOwnershipAttributionLayer === 'function'
   };
 
-  const ok = missingDocs.length === 0
-    && missingSrcFiles.length === 0
-    && protocolErrors.length === 0
-    && thresholdErrors.length === 0
-    && rivalErrors.length === 0
-    && surfaceErrors.length === 0
-    && artifactErrors.length === 0
-    && docErrors.length === 0
-    && localPathLeaks.length === 0
-    && importSanity.hasDescribe
-    && importSanity.hasThresholds
-    && importSanity.hasRivals;
+  const ok =
+    missingDocs.length === 0 &&
+    missingSrcFiles.length === 0 &&
+    protocolErrors.length === 0 &&
+    thresholdErrors.length === 0 &&
+    rivalErrors.length === 0 &&
+    surfaceErrors.length === 0 &&
+    artifactErrors.length === 0 &&
+    docErrors.length === 0 &&
+    localPathLeaks.length === 0 &&
+    importSanity.hasDescribe &&
+    importSanity.hasThresholds &&
+    importSanity.hasRivals &&
+    importSanity.hasSelfIndex &&
+    importSanity.hasOwnership;
 
   const payload = {
     artifact_role: 'subjectivity_scaffolding_check',
     schema_version: '1.0.0',
-    layer_id: 'subjectivity_runtime_layer.srt0',
+    layer_id: 'subjectivity_runtime_layer.srt1',
     status: ok ? 'PASS' : 'FAIL',
     missing_docs: missingDocs,
     missing_src_files: missingSrcFiles,
@@ -224,7 +271,8 @@ async function verifySubjectivityScaffolding() {
     doc_errors: docErrors,
     local_path_leaks: localPathLeaks,
     import_sanity: importSanity,
-    interpretation_boundary: 'Subjectivity scaffolding verification only; structural consistency check, not subjectivity support, not external validation.'
+    interpretation_boundary:
+      'Subjectivity scaffolding verification only; structural consistency check for SRT-1, not subjectivity support, not external validation.'
   };
 
   fs.mkdirSync(ARTIFACTS_ROOT, { recursive: true });
@@ -238,7 +286,9 @@ if (require.main === module) {
   verifySubjectivityScaffolding()
     .then((result) => {
       if (!result.ok) {
-        throw new Error(`Subjectivity scaffolding verification failed. See ${path.relative(ROOT, result.outputPath)}`);
+        throw new Error(
+          `Subjectivity scaffolding verification failed. See ${path.relative(ROOT, result.outputPath)}`
+        );
       }
       process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     })

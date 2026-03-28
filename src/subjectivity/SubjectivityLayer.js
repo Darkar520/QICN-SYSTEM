@@ -12,16 +12,18 @@ const readJson = (relativePath) => JSON.parse(fs.readFileSync(new URL(relativePa
 export const SUBJECTIVITY_ROOT_SCHEMAS = Object.freeze({
   manifest: readJson('./schemas/subjectivity_manifest.v1.json'),
   runtime_projection: readJson('./schemas/subjectivity_runtime_projection.v1.json'),
-  gate_result: readJson('./schemas/subjectivity_gate_result.v1.json')
+  gate_result: readJson('./schemas/subjectivity_gate_result.v1.json'),
+  self_index_state: readJson('./schemas/self_index_state.v1.json'),
+  ownership_attribution_report: readJson('./schemas/ownership_attribution_report.v1.json')
 });
 
 export const SUBJECTIVITY_LAYER_STATUS = Object.freeze({
   layer_name: 'Subjectivity Runtime Layer',
-  layer_id: 'subjectivity_runtime_layer.srt0',
-  implementation_status: 'scaffold_only',
-  execution_status: 'not_executing_subjectivity_runtime_in_srt0',
+  layer_id: 'subjectivity_runtime_layer.srt1',
+  implementation_status: 'partial_runtime_path',
+  execution_status: 'executing_selfindex_and_ownership_only_in_srt1',
   interpretation_boundary:
-    'SRT-0 provides structure only. It does not compute the seven coordinates, execute the intervention family, compare weak rivals, or emit subjectivity support verdicts.'
+    'SRT-1 implements SelfIndex and OwnershipField only. It does not compute the remaining coordinates, execute the intervention family, compare weak rivals, or emit subjectivity support verdicts.'
 });
 
 export class SubjectivityLayer {

@@ -8,26 +8,25 @@
 - not metaphysical closure
 - not automatic corpus confirmation
 
-## SRT-0 specific rule
+## SRT-1 specific rule
 
-SRT-0 establishes only:
+SRT-1 establishes only:
 
-- structure
-- naming
-- contracts
-- schemas
-- governance posture
+- a minimal executable self-index heuristic
+- a minimal executable ownership attribution layer
+- two primary artifacts for those coordinates
+- two negative controls against trivial relabeling and bookkeeping
 
-SRT-0 does not establish:
+SRT-1 does not establish:
 
 - admissible subjectivity support
 - strong subjectivity support
 - rival defeat
-- intervention selectivity
+- intervention selectivity beyond the two minimal controls
 - runtime transport
 
 ## Reading rule
 
-If a result is not backed by implemented coordinate estimators, implemented
-intervention logic, and implemented rival comparison, it must not be read as a
-subjectivity result.
+If a result is not backed by the remaining coordinates, implemented intervention
+logic, and implemented rival comparison, it must not be read as a subjectivity
+result.

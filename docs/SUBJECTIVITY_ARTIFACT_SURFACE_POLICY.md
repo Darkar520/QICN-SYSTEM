@@ -21,19 +21,23 @@ It is not externally validated.
   - structural manifest only
   - never evidence by itself
 
-## Surface rule
+## SRT-1 outputs
 
-Default posture for the layer:
+Currently implemented outputs:
 
-- allowed:
-  - `developer_inspection_surface`
-  - `local_artifact_surface`
-- blocked by default:
-  - `external_claim_facing_surface`
-  - `controlled_statement_surface`
+- `self_index_state.json`
+- `ownership_attribution_report.json`
 
-`local_report_surface` is reserved only for future gate-facing artifacts after
-real implementation, not for scaffold-only outputs.
+Allowed surfaces for both:
+
+- `developer_inspection_surface`
+- `local_artifact_surface`
+
+Blocked surfaces for both:
+
+- `local_report_surface`
+- `controlled_statement_surface`
+- `external_claim_facing_surface`
 
 ## Critical boundary
 
@@ -45,8 +49,8 @@ No subjectivity artifact created by this layer may be promoted as:
 - corpus confirmation
 - public claim-facing support
 
-## SRT-0 rule
+## SRT-1 rule
 
-Because SRT-0 is scaffold-only, no emitted artifact from this layer should be
-read as runtime evidence even on internal surfaces, except for structural
-verification of the scaffold itself.
+Because SRT-1 is still pre-comparator and pre-gate, even the two implemented
+primary artifacts remain internal diagnostics only. They are not sufficient for
+subjectivity support and cannot be used as controlled statements.

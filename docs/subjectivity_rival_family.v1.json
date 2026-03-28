@@ -1,7 +1,7 @@
 {
   "artifact_role": "subjectivity_rival_family_registry",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt2",
+  "layer_id": "subjectivity_runtime_layer.srt3",
   "comparator_implementation_status": "scaffolded_not_executable",
   "rivals": [
     {
@@ -36,14 +36,14 @@
     }
   ],
   "admissible_closure_note": "Comparator burden is against the weak family and its finite admissible composites, mixtures, and latent couplings under the same complexity budget.",
-  "admissible_composites_status": "closure_declared_not_executable_in_srt2",
+  "admissible_composites_status": "closure_declared_not_executable_in_srt3",
   "forbidden_inferences": [
     "rival_family_registry_implies_rivals_defeated",
     "closure_note_implies_weak_hybrid_coverage_implemented",
     "presence_of_rival_registry_implies_irreducibility_margin_computed"
   ],
   "notes": [
-    "SRT-2 keeps the rival family fixed but does not execute comparator logic.",
+    "SRT-3 keeps the rival family fixed but does not execute comparator logic.",
     "Rival comparison remains future executable work.",
     "No reducibility conclusion may be emitted from this registry alone."
   ],

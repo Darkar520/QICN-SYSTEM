@@ -32,13 +32,17 @@ const REQUIRED_SRC_FILES = [
   'src/subjectivity/OwnershipAttributionLayer.js',
   'src/subjectivity/SubjectiveContinuityLedger.js',
   'src/subjectivity/FirstPersonPerspectiveMapper.js',
+  'src/subjectivity/SubjectiveValuationEngine.js',
+  'src/subjectivity/SubjectivityInterventionHarness.js',
   'src/subjectivity/schemas/subjectivity_manifest.v1.json',
   'src/subjectivity/schemas/subjectivity_runtime_projection.v1.json',
   'src/subjectivity/schemas/subjectivity_gate_result.v1.json',
   'src/subjectivity/schemas/self_index_state.v1.json',
   'src/subjectivity/schemas/ownership_attribution_report.v1.json',
   'src/subjectivity/schemas/subjective_continuity_report.v1.json',
-  'src/subjectivity/schemas/first_person_perspective_report.v1.json'
+  'src/subjectivity/schemas/first_person_perspective_report.v1.json',
+  'src/subjectivity/schemas/subjective_valuation_report.v1.json',
+  'src/subjectivity/schemas/subjectivity_intervention_profile.v1.json'
 ];
 
 const EXPECTED_COORDINATES = [
@@ -55,7 +59,9 @@ const EXPECTED_IMPLEMENTED_COORDINATES = [
   'SelfIndex',
   'OwnershipField',
   'ContinuityField',
-  'FirstPersonPerspective'
+  'FirstPersonPerspective',
+  'ValuationAsymmetry',
+  'InterventionProfile'
 ];
 const EXPECTED_REQUIRED_ARTIFACTS = [
   'subjectivity_manifest.json',
@@ -66,6 +72,7 @@ const EXPECTED_REQUIRED_ARTIFACTS = [
   'subjective_continuity_report.json',
   'first_person_perspective_report.json',
   'subjective_valuation_report.json',
+  'subjectivity_intervention_profile.json',
   'subjectivity_reducibility_report.json',
   'self_nonself_swap_report.json'
 ];
@@ -133,14 +140,14 @@ async function verifySubjectivityScaffolding() {
     protocolErrors
   );
   assert(
-    protocol.functional?.status === 'defined_in_paper_not_executed_in_srt2',
-    'functional status must remain non-executed in SRT-2',
+    protocol.functional?.status === 'defined_in_paper_not_executed_in_srt3',
+    'functional status must remain non-executed in SRT-3',
     protocolErrors
   );
 
   assert(
-    thresholds.status === 'provisional_srt2_local_coordinate_thresholds_not_empirically_calibrated',
-    'threshold registry must remain provisional in SRT-2',
+    thresholds.status === 'provisional_srt3_local_coordinate_thresholds_not_empirically_calibrated',
+    'threshold registry must remain provisional in SRT-3',
     thresholdErrors
   );
   assert(
@@ -166,6 +173,16 @@ async function verifySubjectivityScaffolding() {
   assert(
     thresholds.calibration_boundary?.usable_for_perspective_local_heuristics === true,
     'threshold registry must authorize Perspective local heuristics in SRT-2',
+    thresholdErrors
+  );
+  assert(
+    thresholds.calibration_boundary?.usable_for_valuation_local_heuristics === true,
+    'threshold registry must authorize Valuation local heuristics in SRT-3',
+    thresholdErrors
+  );
+  assert(
+    thresholds.calibration_boundary?.usable_for_intervention_local_heuristics === true,
+    'threshold registry must authorize Intervention local heuristics in SRT-3',
     thresholdErrors
   );
 
@@ -212,6 +229,16 @@ async function verifySubjectivityScaffolding() {
     artifactErrors
   );
   assert(
+    artifactSchema.root_schema_refs?.['subjective_valuation_report.json'] === 'src/subjectivity/schemas/subjective_valuation_report.v1.json',
+    'root schema ref for subjective_valuation_report.json is incorrect',
+    artifactErrors
+  );
+  assert(
+    artifactSchema.root_schema_refs?.['subjectivity_intervention_profile.json'] === 'src/subjectivity/schemas/subjectivity_intervention_profile.v1.json',
+    'root schema ref for subjectivity_intervention_profile.json is incorrect',
+    artifactErrors
+  );
+  assert(
     artifactSchema.artifacts?.['self_index_state.json']?.implementation_status === 'implemented_internal_support_in_srt1',
     'self_index_state.json must be marked implemented_internal_support_in_srt1',
     artifactErrors
@@ -229,6 +256,16 @@ async function verifySubjectivityScaffolding() {
   assert(
     artifactSchema.artifacts?.['first_person_perspective_report.json']?.implementation_status === 'implemented_internal_support_in_srt2',
     'first_person_perspective_report.json must be marked implemented_internal_support_in_srt2',
+    artifactErrors
+  );
+  assert(
+    artifactSchema.artifacts?.['subjective_valuation_report.json']?.implementation_status === 'implemented_internal_support_in_srt3',
+    'subjective_valuation_report.json must be marked implemented_internal_support_in_srt3',
+    artifactErrors
+  );
+  assert(
+    artifactSchema.artifacts?.['subjectivity_intervention_profile.json']?.implementation_status === 'implemented_internal_support_in_srt3',
+    'subjectivity_intervention_profile.json must be marked implemented_internal_support_in_srt3',
     artifactErrors
   );
 
@@ -267,6 +304,16 @@ async function verifySubjectivityScaffolding() {
     'first_person_perspective_report.json surface policy must reflect implemented_internal_support_pre_comparator',
     surfaceErrors
   );
+  assert(
+    surfacePolicy.outputs?.['subjective_valuation_report.json']?.runtime_status === 'implemented_internal_support_pre_comparator',
+    'subjective_valuation_report.json surface policy must reflect implemented_internal_support_pre_comparator',
+    surfaceErrors
+  );
+  assert(
+    surfacePolicy.outputs?.['subjectivity_intervention_profile.json']?.runtime_status === 'implemented_internal_support_pre_comparator',
+    'subjectivity_intervention_profile.json surface policy must reflect implemented_internal_support_pre_comparator',
+    surfaceErrors
+  );
 
   for (const relPath of [
     'docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md',
@@ -290,7 +337,11 @@ async function verifySubjectivityScaffolding() {
     hasContinuity:
       typeof imported.createSubjectiveContinuityLedger === 'function',
     hasPerspective:
-      typeof imported.createFirstPersonPerspectiveMapper === 'function'
+      typeof imported.createFirstPersonPerspectiveMapper === 'function',
+    hasValuation:
+      typeof imported.createSubjectiveValuationEngine === 'function',
+    hasIntervention:
+      typeof imported.createSubjectivityInterventionHarness === 'function'
   };
 
   const ok =
@@ -309,12 +360,14 @@ async function verifySubjectivityScaffolding() {
     importSanity.hasSelfIndex &&
     importSanity.hasOwnership &&
     importSanity.hasContinuity &&
-    importSanity.hasPerspective;
+    importSanity.hasPerspective &&
+    importSanity.hasValuation &&
+    importSanity.hasIntervention;
 
   const payload = {
     artifact_role: 'subjectivity_scaffolding_check',
     schema_version: '1.0.0',
-    layer_id: 'subjectivity_runtime_layer.srt2',
+    layer_id: 'subjectivity_runtime_layer.srt3',
     status: ok ? 'PASS' : 'FAIL',
     missing_docs: missingDocs,
     missing_src_files: missingSrcFiles,
@@ -327,7 +380,7 @@ async function verifySubjectivityScaffolding() {
     local_path_leaks: localPathLeaks,
     import_sanity: importSanity,
     interpretation_boundary:
-      'Subjectivity scaffolding verification only; structural consistency check for SRT-2, not subjectivity support, not external validation.'
+      'Subjectivity scaffolding verification only; structural consistency check for SRT-3, not subjectivity support, not external validation.'
   };
 
   fs.mkdirSync(ARTIFACTS_ROOT, { recursive: true });

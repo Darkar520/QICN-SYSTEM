@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "subjectivity_intervention_profile.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_version",
+    "layer_version",
+    "paper_source",
+    "runtime_status",
+    "run_id",
+    "baseline_reference",
+    "intervention_runs",
+    "negative_control_runs",
+    "aggregate_profile",
+    "warnings",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "subjectivity_intervention_profile" },
+    "artifact_version": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "paper_source": { "type": "object" },
+    "runtime_status": { "type": "string" },
+    "run_id": { "type": "string" },
+    "baseline_reference": { "type": "object" },
+    "intervention_runs": { "type": "array", "items": { "type": "object" } },
+    "negative_control_runs": { "type": "array", "items": { "type": "object" } },
+    "aggregate_profile": { "type": "object" },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "const": "src/subjectivity/schemas/subjectivity_intervention_profile.v1.json" }
+  }
+}

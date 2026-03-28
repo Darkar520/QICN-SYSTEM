@@ -51,3 +51,13 @@ export {
   FirstPersonPerspectiveMapper,
   createFirstPersonPerspectiveMapper
 } from './FirstPersonPerspectiveMapper.js';
+
+export {
+  SubjectiveValuationEngine,
+  createSubjectiveValuationEngine
+} from './SubjectiveValuationEngine.js';
+
+export {
+  SubjectivityInterventionHarness,
+  createSubjectivityInterventionHarness
+} from './SubjectivityInterventionHarness.js';

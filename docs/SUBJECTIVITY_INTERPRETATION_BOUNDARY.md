@@ -8,23 +8,25 @@
 - not metaphysical closure
 - not automatic corpus confirmation
 
-## SRT-2 specific rule
+## SRT-3 specific rule
 
-SRT-2 establishes only:
+SRT-3 establishes only:
 
 - a minimal executable self-index heuristic
 - a minimal executable ownership attribution layer
 - a minimal executable continuity ledger
 - a minimal executable first-person-vs-neutral factorization comparison
-- four primary artifacts for those coordinates
-- four negative controls against trivial relabeling, bookkeeping, copied memory, and neutral factorization
+- a minimal executable valuation asymmetry layer
+- a minimal valuation-oriented intervention harness
+- six internal artifacts for those surfaces
+- negative controls against trivial relabeling, bookkeeping, copied memory, neutral factorization, reward aliasing, and nonselective damage
 
-SRT-2 does not establish:
+SRT-3 does not establish:
 
 - admissible subjectivity support
 - strong subjectivity support
 - rival defeat
-- full intervention selectivity
+- full intervention profile closure
 - runtime transport
 
 ## Reading rule

@@ -1,7 +1,8 @@
 # Subjectivity Interventions And Negative Controls
 
 This document records the intervention family planned for the Subjectivity
-Runtime Layer and the minimal negative controls already executed in SRT-2.
+Runtime Layer and the minimal valuation/intervention controls already executed
+in SRT-3.
 
 ## Planned intervention family
 
@@ -28,19 +29,20 @@ Runtime Layer and the minimal negative controls already executed in SRT-2.
 
 ## Negative controls
 
-Implemented in SRT-2 verification:
+Implemented in SRT-3 verification:
 
 - `label_only_swap_control`
 - `bookkeeping_control`
 - `memory_copy_without_continuity_control`
 - `perspective_neutral_factorization_control`
+- `reward_aliasing_control`
+- `nonselective_damage_control`
 
 Still planned for later blocks:
 
 - `memory_rich_non_owning_control`
 - `policy_retuned_control`
 - `narrative_preserving_control`
-- `nonselective_damage_control`
 
 ## Role of the family
 
@@ -48,13 +50,14 @@ Still planned for later blocks:
 - negative controls are meant to block flattering misreads
 - weak-rival reconstruction is meant to support the irreducibility burden in later blocks
 
-## SRT-2 boundary
+## SRT-3 boundary
 
-In SRT-2:
+In SRT-3:
 
 - no full intervention family is executed
 - no comparator is executed
-- only four minimal negative controls are executed
+- only a minimal valuation-oriented harness is executed
+- `self_nonself_valuation_inversion` and `risk_consequence_reassignment` are the only executed perturbations
 - no intervention artifact is claim evidence
 
 These names exist now so that later blocks do not invent incompatible wording or

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "subjective_valuation_report.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_version",
+    "layer_version",
+    "paper_source",
+    "runtime_status",
+    "run_id",
+    "valuation_asymmetry_margin",
+    "self_weight_summary",
+    "nonself_weight_summary",
+    "inversion_response",
+    "aliasing_warning",
+    "warnings",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "subjective_valuation_report" },
+    "artifact_version": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "paper_source": { "type": "object" },
+    "runtime_status": { "type": "string" },
+    "run_id": { "type": "string" },
+    "valuation_asymmetry_margin": { "type": "number" },
+    "self_weight_summary": { "type": "object" },
+    "nonself_weight_summary": { "type": "object" },
+    "inversion_response": { "type": "object" },
+    "aliasing_warning": { "type": "object" },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "const": "src/subjectivity/schemas/subjective_valuation_report.v1.json" }
+  }
+}

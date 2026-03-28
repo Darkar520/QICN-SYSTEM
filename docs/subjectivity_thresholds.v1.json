@@ -1,8 +1,8 @@
 {
   "artifact_role": "subjectivity_threshold_registry",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt1",
-  "status": "provisional_srt1_local_coordinate_thresholds_not_empirically_calibrated",
+  "layer_id": "subjectivity_runtime_layer.srt2",
+  "status": "provisional_srt2_local_coordinate_thresholds_not_empirically_calibrated",
   "coordinate_thresholds": {
     "SelfIndex": 0.5,
     "OwnershipField": 0.5,
@@ -30,11 +30,13 @@
     "usable_for_runtime_gate": false,
     "usable_for_scaffold_consistency": true,
     "usable_for_selfindex_local_heuristics": true,
-    "usable_for_ownership_local_heuristics": true
+    "usable_for_ownership_local_heuristics": true,
+    "usable_for_continuity_local_heuristics": true,
+    "usable_for_perspective_local_heuristics": true
   },
   "notes": [
     "Thresholds remain provisional and are not empirically calibrated.",
-    "SRT-1 may use SelfIndex and OwnershipField thresholds as local internal heuristics only.",
+    "SRT-2 may use SelfIndex, OwnershipField, ContinuityField, and FirstPersonPerspective thresholds as local internal heuristics only.",
     "No runtime claim may cite these thresholds as subjectivity evidence or gate closure."
   ],
   "interpretation_boundary": "Threshold registry only; provisional local heuristic values, not empirical calibration, not support evidence, not admissible gate output."

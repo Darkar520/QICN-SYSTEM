@@ -14,16 +14,18 @@ export const SUBJECTIVITY_ROOT_SCHEMAS = Object.freeze({
   runtime_projection: readJson('./schemas/subjectivity_runtime_projection.v1.json'),
   gate_result: readJson('./schemas/subjectivity_gate_result.v1.json'),
   self_index_state: readJson('./schemas/self_index_state.v1.json'),
-  ownership_attribution_report: readJson('./schemas/ownership_attribution_report.v1.json')
+  ownership_attribution_report: readJson('./schemas/ownership_attribution_report.v1.json'),
+  subjective_continuity_report: readJson('./schemas/subjective_continuity_report.v1.json'),
+  first_person_perspective_report: readJson('./schemas/first_person_perspective_report.v1.json')
 });
 
 export const SUBJECTIVITY_LAYER_STATUS = Object.freeze({
   layer_name: 'Subjectivity Runtime Layer',
-  layer_id: 'subjectivity_runtime_layer.srt1',
+  layer_id: 'subjectivity_runtime_layer.srt2',
   implementation_status: 'partial_runtime_path',
-  execution_status: 'executing_selfindex_and_ownership_only_in_srt1',
+  execution_status: 'executing_selfindex_ownership_continuity_perspective_only_in_srt2',
   interpretation_boundary:
-    'SRT-1 implements SelfIndex and OwnershipField only. It does not compute the remaining coordinates, execute the intervention family, compare weak rivals, or emit subjectivity support verdicts.'
+    'SRT-2 implements SelfIndex, OwnershipField, ContinuityField, and FirstPersonPerspective only. It does not compute the remaining coordinates, execute the intervention family, compare weak rivals, or emit subjectivity support verdicts.'
 });
 
 export class SubjectivityLayer {

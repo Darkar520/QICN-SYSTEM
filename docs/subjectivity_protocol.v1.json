@@ -2,7 +2,7 @@
   "artifact_role": "subjectivity_runtime_protocol_definition",
   "schema_version": "1.0.0",
   "layer_name": "Subjectivity Runtime Layer",
-  "layer_id": "subjectivity_runtime_layer.srt1",
+  "layer_id": "subjectivity_runtime_layer.srt2",
   "implementation_status": "partial_runtime_path",
   "paper_source": {
     "paper_id": "paper8_first_person_subjectivity",
@@ -27,13 +27,13 @@
       "id": "ContinuityField",
       "symbol": "C",
       "paper_name": "Autobiographical continuity margin",
-      "status": "planned_not_implemented"
+      "status": "implemented_internal_support_pre_comparator"
     },
     {
       "id": "FirstPersonPerspective",
       "symbol": "P",
       "paper_name": "First-person perspective organization",
-      "status": "planned_not_implemented"
+      "status": "implemented_internal_support_pre_comparator"
     },
     {
       "id": "ValuationAsymmetry",
@@ -59,7 +59,7 @@
     "gate_form": "min(I,O,C,P,V,Delta,R)",
     "scalar_name": "Phi_subj",
     "scalar_form": "multiplicative_weighted_product",
-    "status": "defined_in_paper_not_executed_in_srt1"
+    "status": "defined_in_paper_not_executed_in_srt2"
   },
   "required_artifacts": [
     "subjectivity_manifest.json",
@@ -88,7 +88,9 @@
     "policy_retuned_control",
     "narrative_preserving_control",
     "bookkeeping_control",
-    "nonselective_damage_control"
+    "nonselective_damage_control",
+    "memory_copy_without_continuity_control",
+    "perspective_neutral_factorization_control"
   ],
   "runtime_status_classes": [
     "unsupported_subjectivity_evaluation",
@@ -99,17 +101,17 @@
     "subjectivity_strong_support"
   ],
   "forbidden_inferences": [
-    "srt1_selfindex_or_ownership_implies_subjectivity_support",
+    "srt2_coordinate_artifacts_imply_subjectivity_support",
     "subjectivity_artifact_presence_implies_external_validation",
     "subjectivity_runtime_projection_implies_human_equivalence",
     "subjectivity_gate_result_implies_metaphysical_closure",
     "runtime_subjectivity_layer_implies_corpus_confirmation"
   ],
   "framework_internal_notes": [
-    "SRT-1 implements SelfIndex and OwnershipField only.",
-    "SRT-1 remains pre-comparator and pre-subjectivity-gate.",
-    "Negative controls are minimal and limited to label-only swap and bookkeeping-like ownership rejection.",
-    "No runtime claim may read SRT-1 as full first-person indexed subjectivity."
+    "SRT-2 implements SelfIndex, OwnershipField, ContinuityField, and FirstPersonPerspective only.",
+    "SRT-2 remains pre-comparator and pre-subjectivity-gate.",
+    "Perspective is implemented only as a minimal indexed-vs-neutral factorization comparison.",
+    "No runtime claim may read SRT-2 as first-person indexed subjectivity achieved."
   ],
   "interpretation_boundary": "Subjectivity runtime protocol only; framework-internal partial runtime path, not external validation, not human equivalence, not metaphysical closure, not corpus confirmation."
 }

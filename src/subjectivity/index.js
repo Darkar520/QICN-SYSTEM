@@ -41,3 +41,13 @@ export {
   OwnershipAttributionLayer,
   createOwnershipAttributionLayer
 } from './OwnershipAttributionLayer.js';
+
+export {
+  SubjectiveContinuityLedger,
+  createSubjectiveContinuityLedger
+} from './SubjectiveContinuityLedger.js';
+
+export {
+  FirstPersonPerspectiveMapper,
+  createFirstPersonPerspectiveMapper
+} from './FirstPersonPerspectiveMapper.js';

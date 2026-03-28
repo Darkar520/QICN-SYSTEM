@@ -1,7 +1,7 @@
 {
   "artifact_role": "subjectivity_surface_policy",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt1",
+  "layer_id": "subjectivity_runtime_layer.srt2",
   "layer_status": "partial_runtime_path",
   "governed_surfaces": {
     "developer_inspection_surface": {
@@ -18,7 +18,7 @@
     },
     "controlled_statement_surface": {
       "requires_boundary": true,
-      "description": "Controlled statements surface. Blocked in SRT-1."
+      "description": "Controlled statements surface. Blocked in SRT-2."
     },
     "external_claim_facing_surface": {
       "requires_boundary": true,
@@ -68,29 +68,29 @@
     },
     "subjective_continuity_report.json": {
       "artifact_class": "primary",
-      "runtime_status": "planned_not_emitted_in_srt1",
+      "runtime_status": "implemented_internal_support_pre_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["coordinate_not_implemented", "subjectivity_not_validated", "claim_facing_blocked"],
-      "interpretation_allowed": "Internal continuity diagnostics only once implemented.",
-      "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure"]
+      "blocked_by": ["pre_comparator_only", "subjectivity_not_validated", "claim_facing_blocked"],
+      "interpretation_allowed": "Internal continuity diagnostics only.",
+      "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure", "subjectivity support claim"]
     },
     "first_person_perspective_report.json": {
       "artifact_class": "primary",
-      "runtime_status": "planned_not_emitted_in_srt1",
+      "runtime_status": "implemented_internal_support_pre_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked",
-      "blocked_by": ["coordinate_not_implemented", "subjectivity_not_validated", "claim_facing_blocked"],
-      "interpretation_allowed": "Internal perspective diagnostics only once implemented.",
-      "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure"]
+      "blocked_by": ["pre_comparator_only", "subjectivity_not_validated", "claim_facing_blocked"],
+      "interpretation_allowed": "Internal first-person factorization diagnostics only.",
+      "interpretation_not_allowed": ["external validation", "human equivalence", "metaphysical closure", "subjectivity support claim"]
     },
     "subjective_valuation_report.json": {
       "artifact_class": "primary",
-      "runtime_status": "planned_not_emitted_in_srt1",
+      "runtime_status": "planned_not_emitted_in_srt2",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
@@ -101,7 +101,7 @@
     },
     "subjectivity_reducibility_report.json": {
       "artifact_class": "derived",
-      "runtime_status": "planned_not_emitted_in_srt1",
+      "runtime_status": "planned_not_emitted_in_srt2",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
@@ -112,7 +112,7 @@
     },
     "self_nonself_swap_report.json": {
       "artifact_class": "derived",
-      "runtime_status": "planned_not_emitted_in_srt1",
+      "runtime_status": "planned_not_emitted_in_srt2",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
@@ -123,7 +123,7 @@
     },
     "subjectivity_manifest.json": {
       "artifact_class": "manifest_root",
-      "runtime_status": "planned_not_emitted_in_srt1",
+      "runtime_status": "planned_not_emitted_in_srt2",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
@@ -134,7 +134,7 @@
     },
     "subjectivity_runtime_projection.json": {
       "artifact_class": "derived",
-      "runtime_status": "planned_not_emitted_in_srt1",
+      "runtime_status": "planned_not_emitted_in_srt2",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
       "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
@@ -145,7 +145,7 @@
     },
     "subjectivity_gate_result.json": {
       "artifact_class": "gate_facing",
-      "runtime_status": "planned_not_emitted_in_srt1",
+      "runtime_status": "planned_not_emitted_in_srt2",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface"],
       "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",

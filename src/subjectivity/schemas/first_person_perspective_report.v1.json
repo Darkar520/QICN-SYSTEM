@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "first_person_perspective_report.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_version",
+    "layer_version",
+    "paper_source",
+    "runtime_status",
+    "run_id",
+    "first_person_factorization_summary",
+    "baseline_neutral_summary",
+    "first_person_gain",
+    "factorization_supported",
+    "flattening_vulnerability",
+    "comparison_status",
+    "warnings",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "first_person_perspective_report" },
+    "artifact_version": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "paper_source": { "type": "object" },
+    "runtime_status": { "type": "string" },
+    "run_id": { "type": "string" },
+    "first_person_factorization_summary": { "type": "object" },
+    "baseline_neutral_summary": { "type": "object" },
+    "first_person_gain": { "type": "number" },
+    "factorization_supported": { "type": "boolean" },
+    "flattening_vulnerability": { "type": "number", "minimum": 0, "maximum": 1 },
+    "comparison_status": { "type": "string" },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "const": "src/subjectivity/schemas/first_person_perspective_report.v1.json" }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "subjective_continuity_report.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_version",
+    "layer_version",
+    "paper_source",
+    "runtime_status",
+    "run_id",
+    "continuity_status",
+    "continuity_margin",
+    "privileged_line",
+    "rival_lines_summary",
+    "fracture_flag",
+    "fork_flag",
+    "ambiguity_flag",
+    "supporting_signals",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "subjective_continuity_report" },
+    "artifact_version": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "paper_source": { "type": "object" },
+    "runtime_status": { "type": "string" },
+    "run_id": { "type": "string" },
+    "continuity_status": { "type": "string" },
+    "continuity_margin": { "type": "number" },
+    "privileged_line": { "type": ["object", "null"] },
+    "rival_lines_summary": { "type": "array", "items": { "type": "object" } },
+    "fracture_flag": { "type": "boolean" },
+    "fork_flag": { "type": "boolean" },
+    "ambiguity_flag": { "type": "boolean" },
+    "supporting_signals": { "type": "array", "items": { "type": "object" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "const": "src/subjectivity/schemas/subjective_continuity_report.v1.json" }
+  }
+}

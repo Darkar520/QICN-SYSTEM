@@ -299,8 +299,10 @@ async function verifySubjectivitySelfIndexOwnership() {
     .filter((entry) => entry.status === 'implemented_internal_support_pre_comparator')
     .map((entry) => entry.id);
   assert(
-    JSON.stringify(implementedCoordinates) === JSON.stringify(['SelfIndex', 'OwnershipField']),
-    'protocol must mark SelfIndex and OwnershipField as the only implemented coordinates in SRT-1',
+    ['SelfIndex', 'OwnershipField'].every((coordinate) =>
+      implementedCoordinates.includes(coordinate)
+    ),
+    'protocol must keep SelfIndex and OwnershipField implemented in SRT-2',
     protocolErrors
   );
 
@@ -314,7 +316,7 @@ async function verifySubjectivitySelfIndexOwnership() {
   const payload = {
     artifact_role: 'subjectivity_selfindex_ownership_check',
     schema_version: '1.0.0',
-    layer_id: 'subjectivity_runtime_layer.srt1',
+    layer_id: protocol.layer_id || 'subjectivity_runtime_layer.srt2',
     status: ok ? 'PASS' : 'FAIL',
     emitted_artifacts: [
       'artifacts/subjectivity/srt1/self_index_state.json',
@@ -337,7 +339,7 @@ async function verifySubjectivitySelfIndexOwnership() {
     claim_leak_errors: noClaimLeakErrors,
     protocol_errors: protocolErrors,
     interpretation_boundary:
-      'SRT-1 verification only; confirms executable SelfIndex and Ownership artifacts with minimal negative controls, not subjectivity support, not external validation.'
+      'SRT-1 verification only; confirms executable SelfIndex and Ownership artifacts with minimal negative controls inside the broader SRT-2 layer, not subjectivity support, not external validation.'
   };
 
   const outputPath = path.join(ARTIFACTS_DIR, 'subjectivity_selfindex_ownership_check.json');

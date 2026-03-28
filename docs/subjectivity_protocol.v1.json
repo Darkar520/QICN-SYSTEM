@@ -1,0 +1,80 @@
+{
+  "artifact_role": "subjectivity_runtime_protocol_definition",
+  "schema_version": "1.0.0",
+  "layer_name": "Subjectivity Runtime Layer",
+  "layer_id": "subjectivity_runtime_layer.srt0",
+  "implementation_status": "scaffold_only",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "preferred_source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex",
+    "lineage_status": "external_theory_reference_only"
+  },
+  "coordinates": [
+    { "id": "SelfIndex", "symbol": "I", "paper_name": "Self-index", "status": "planned_not_implemented" },
+    { "id": "OwnershipField", "symbol": "O", "paper_name": "Ownership field", "status": "planned_not_implemented" },
+    { "id": "ContinuityField", "symbol": "C", "paper_name": "Autobiographical continuity margin", "status": "planned_not_implemented" },
+    { "id": "FirstPersonPerspective", "symbol": "P", "paper_name": "First-person perspective organization", "status": "planned_not_implemented" },
+    { "id": "ValuationAsymmetry", "symbol": "V", "paper_name": "Asymmetric valuation profile", "status": "planned_not_implemented" },
+    { "id": "InterventionProfile", "symbol": "Δ", "paper_name": "Interventional sensitivity profile", "status": "planned_not_implemented" },
+    { "id": "IrreducibilityMargin", "symbol": "R", "paper_name": "Irreducibility margin", "status": "planned_not_implemented" }
+  ],
+  "functional": {
+    "gate_name": "Gamma_subj",
+    "gate_form": "min(I,O,C,P,V,Delta,R)",
+    "scalar_name": "Phi_subj",
+    "scalar_form": "multiplicative_weighted_product",
+    "status": "defined_in_paper_not_executed_in_srt0"
+  },
+  "required_artifacts": [
+    "subjectivity_manifest.json",
+    "subjectivity_runtime_projection.json",
+    "subjectivity_gate_result.json",
+    "self_index_state.json",
+    "ownership_attribution_report.json",
+    "subjective_continuity_report.json",
+    "first_person_perspective_report.json",
+    "subjective_valuation_report.json",
+    "subjectivity_reducibility_report.json",
+    "self_nonself_swap_report.json"
+  ],
+  "minimum_conditions": [
+    "baseline_subjectivity_enabled",
+    "ownership_lesion",
+    "continuity_break",
+    "self_nonself_swap",
+    "perspective_flattening",
+    "valuation_inversion",
+    "weak_rival_reconstruction"
+  ],
+  "required_negative_controls": [
+    "label_only_swap_control",
+    "memory_rich_non_owning_control",
+    "policy_retuned_control",
+    "narrative_preserving_control",
+    "bookkeeping_control",
+    "nonselective_damage_control"
+  ],
+  "runtime_status_classes": [
+    "unsupported_subjectivity_evaluation",
+    "insufficient_subjectivity_support",
+    "weak_rival_reducible",
+    "interventionally_unstable",
+    "subjectivity_admissible",
+    "subjectivity_strong_support"
+  ],
+  "forbidden_inferences": [
+    "subjectivity_scaffolding_implies_subjectivity_support",
+    "subjectivity_artifact_presence_implies_external_validation",
+    "subjectivity_runtime_projection_implies_human_equivalence",
+    "subjectivity_gate_result_implies_metaphysical_closure",
+    "runtime_subjectivity_layer_implies_corpus_confirmation"
+  ],
+  "framework_internal_notes": [
+    "SRT-0 defines contracts only.",
+    "No coordinate estimation is implemented in SRT-0.",
+    "No comparator execution is implemented in SRT-0.",
+    "No intervention result is emitted in SRT-0."
+  ],
+  "interpretation_boundary": "Subjectivity runtime protocol only; framework-internal scaffolding, not external validation, not human equivalence, not metaphysical closure, not corpus confirmation."
+}

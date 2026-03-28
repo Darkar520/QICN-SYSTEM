@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "subjectivity_gate_result.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "schema_version",
+    "run_id",
+    "gate_status",
+    "runtime_status_class",
+    "implementation_status",
+    "interpretation_boundary"
+  ],
+  "properties": {
+    "artifact_role": { "const": "subjectivity_gate_result" },
+    "schema_version": { "type": "string" },
+    "run_id": { "type": ["string", "null"] },
+    "gate_status": { "type": "string" },
+    "runtime_status_class": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

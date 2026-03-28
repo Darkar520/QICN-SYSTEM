@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "subjectivity_manifest.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "schema_version",
+    "subjectivity_layer_version",
+    "runtime_status",
+    "artifact_inventory",
+    "protocol_ref",
+    "thresholds_ref",
+    "surface_policy_ref",
+    "artifact_schema_ref",
+    "interpretation_boundary"
+  ],
+  "properties": {
+    "artifact_role": { "const": "subjectivity_manifest" },
+    "schema_version": { "type": "string" },
+    "subjectivity_layer_version": { "type": "string" },
+    "runtime_status": { "type": "string" },
+    "artifact_inventory": { "type": "array", "items": { "type": "string" } },
+    "protocol_ref": { "type": "string" },
+    "thresholds_ref": { "type": "string" },
+    "surface_policy_ref": { "type": "string" },
+    "artifact_schema_ref": { "type": "string" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

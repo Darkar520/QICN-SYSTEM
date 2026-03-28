@@ -12,6 +12,7 @@
     "build:css": "tailwindcss -c tailwind.config.cjs -i ./src/styles/tailwind.input.css -o ./dist/tailwind.css --minify",
     "verify:env-contract": "node scripts/verify-env-contract.cjs",
     "verify:source-of-truth": "node scripts/verify-source-of-truth.cjs",
+    "verify:subjectivity-scaffolding": "node scripts/verify-subjectivity-scaffolding.cjs",
     "verify:descriptor-registry": "node scripts/validate-descriptor-registry.cjs",
     "verify:artifacts": "node scripts/verify-artifacts.cjs artifacts --scope=small_batch",
     "verify:policies": "node tests/output-support-labels.v65.test.js && node tests/output-consumption-policy.v66.test.js && node tests/output-surface-policy.v67.test.js && node tests/output-surface-enforcer.v68.test.js",

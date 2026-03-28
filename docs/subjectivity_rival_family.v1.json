@@ -1,0 +1,51 @@
+{
+  "artifact_role": "subjectivity_rival_family_registry",
+  "schema_version": "1.0.0",
+  "layer_id": "subjectivity_runtime_layer.srt0",
+  "comparator_implementation_status": "scaffolded_not_executable",
+  "rivals": [
+    {
+      "id": "pure_self_monitoring",
+      "description": "Internal-state tracking plus optional self-report without constitutive self-indexed ownership.",
+      "status": "planned_not_executable"
+    },
+    {
+      "id": "memory_integration_only",
+      "description": "Historical dependence and continuity of traces without first-person binding.",
+      "status": "planned_not_executable"
+    },
+    {
+      "id": "policy_centered_agency",
+      "description": "Goal optimization from internal state without subject-level ownership or indexed continuity.",
+      "status": "planned_not_executable"
+    },
+    {
+      "id": "narrative_self_model",
+      "description": "Self-description or autobiographical narrative without constitutive first-person organization.",
+      "status": "planned_not_executable"
+    },
+    {
+      "id": "global_workspace_without_ownership",
+      "description": "Integrated broadcast architecture with rich access but no privileged ownership field.",
+      "status": "planned_not_executable"
+    },
+    {
+      "id": "latent_bookkeeping",
+      "description": "Hidden tags or registries sufficient to mimic self-related outputs without the stronger burden.",
+      "status": "planned_not_executable"
+    }
+  ],
+  "admissible_closure_note": "Comparator burden is against the weak family and its finite admissible composites, mixtures, and latent couplings under the same complexity budget.",
+  "admissible_composites_status": "closure_declared_not_executable_in_srt0",
+  "forbidden_inferences": [
+    "rival_family_registry_implies_rivals_defeated",
+    "closure_note_implies_weak_hybrid_coverage_implemented",
+    "presence_of_rival_registry_implies_irreducibility_margin_computed"
+  ],
+  "notes": [
+    "SRT-0 fixes naming and scope only.",
+    "Rival comparison remains future executable work.",
+    "No reducibility conclusion may be emitted from this registry alone."
+  ],
+  "interpretation_boundary": "Rival-family registry only; comparator scope definition, not executed model comparison, not subjectivity support."
+}

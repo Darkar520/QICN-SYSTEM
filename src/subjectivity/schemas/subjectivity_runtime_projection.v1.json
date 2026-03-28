@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "subjectivity_runtime_projection.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "schema_version",
+    "run_id",
+    "coordinate_estimates",
+    "functional_status",
+    "implementation_status",
+    "interpretation_boundary"
+  ],
+  "properties": {
+    "artifact_role": { "const": "subjectivity_runtime_projection" },
+    "schema_version": { "type": "string" },
+    "run_id": { "type": ["string", "null"] },
+    "coordinate_estimates": { "type": ["object", "null"] },
+    "functional_status": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

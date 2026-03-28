@@ -1,0 +1,39 @@
+{
+  "artifact_role": "subjectivity_threshold_registry",
+  "schema_version": "1.0.0",
+  "layer_id": "subjectivity_runtime_layer.srt0",
+  "status": "provisional_pre_srt1_not_empirically_calibrated",
+  "coordinate_thresholds": {
+    "SelfIndex": 0.5,
+    "OwnershipField": 0.5,
+    "ContinuityField": 0.5,
+    "FirstPersonPerspective": 0.5,
+    "ValuationAsymmetry": 0.5,
+    "InterventionProfile": 0.5,
+    "IrreducibilityMargin": 0.5
+  },
+  "global_thresholds": {
+    "Gamma_subj": 0.5,
+    "Phi_subj": 0.5
+  },
+  "drift_tolerances": {
+    "SelfIndex": 0.05,
+    "OwnershipField": 0.05,
+    "ContinuityField": 0.05,
+    "FirstPersonPerspective": 0.05,
+    "ValuationAsymmetry": 0.05,
+    "InterventionProfile": 0.05,
+    "IrreducibilityMargin": 0.05
+  },
+  "calibration_boundary": {
+    "empirically_calibrated": false,
+    "usable_for_runtime_gate": false,
+    "usable_for_scaffold_consistency": true
+  },
+  "notes": [
+    "Thresholds are placeholder contract values for SRT-0 only.",
+    "SRT-1 and later must calibrate or revise them before executable gate use.",
+    "No runtime claim may cite these thresholds as evidence."
+  ],
+  "interpretation_boundary": "Threshold registry only; provisional scaffold values, not empirical calibration, not support evidence, not admissible gate output."
+}

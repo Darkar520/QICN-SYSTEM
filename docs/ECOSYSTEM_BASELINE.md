@@ -70,9 +70,10 @@ Run inside `QICN-SYSTEM`:
 - documents which cross-repo bridges are operational only
 - packages a bounded internal ecosystem release candidate
 - makes the public release trunk scope explicit:
-  - primary formal spine through Paper V
-  - supporting public extensions Papers VI-VII
-  - explicit non-inclusion of Paper VIII pending public release acceptance
+  - primary formal spine through Paper VIII
+  - supporting public lineages remain separately classified in the release
+    manifests
+  - no residual pending-public-acceptance exclusion applies to Paper VIII
 
 ## What the ecosystem baseline does not do
 

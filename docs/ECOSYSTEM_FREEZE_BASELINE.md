@@ -43,9 +43,11 @@ release candidate composed by `QICN-SYSTEM` and `QICN-RELEASE`.
   - explicit upstream canonical tag `canonical-freeze-2026-03-01`
   - upstream pin status `resolved`
   - live public trunk authority: `main`
-  - public primary formal spine: Canonical Core + Papers I-V
-  - public supporting extensions: Papers VI-VII
-  - explicit public exclusion: Paper VIII pending release-audit acceptance
+  - public primary formal spine: Canonical Core + Papers I-VIII
+  - public supporting lineages remain separately classified in release
+    manifests
+  - no explicit public exclusion for Paper VIII remains at the current trunk
+    authority
 - source-of-truth artifacts:
   - `release/release_freeze_manifest.json`
   - `release/claim_registry.v1.json`

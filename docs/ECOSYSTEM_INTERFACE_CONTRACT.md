@@ -41,6 +41,8 @@ This contract fixes the explicit boundary between `QICN-SYSTEM` and
 - `Paper VI` prediction, downgrade, and internal support-status claims
 - `Paper VII` descriptor, structural-class, and operational-subjecthood-boundary
   claims
+- `Paper VIII` first-person indexed subjectivity, runtime gate, comparator, and
+  non-claim-boundary claims
 - ROEO export annexes
 - governance alignment claims relating support labels, output policies, and
   controlled statements
@@ -50,9 +52,10 @@ This contract fixes the explicit boundary between `QICN-SYSTEM` and
 - Any move from internal support or operational consistency to theory-facing
   confirmation requires external validation beyond this ecosystem layer.
 - This contract blocks that move by default.
-- Internal downstream Paper VIII work may inform runtime architecture, but it
-  remains outside the public release canon until separately accepted into
-  `QICN-RELEASE/main`.
+- Paper VIII is now public corpus material inside `QICN-RELEASE/main`, but its
+  runtime-facing subjectivity surfaces remain implementation-linked,
+  non-confirmatory, and blocked from claim-facing or external-validation
+  escalation.
 
 ## Machine-readable contract
 

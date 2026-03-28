@@ -32,9 +32,10 @@ bundle regeneration.
   - `artifacts/ecosystem_release_candidate/ecosystem_verification_matrix.json`
 - the frozen campaign remains authoritative for campaign comparability
 - the current public release trunk now exposes:
-  - primary formal spine through Paper V
-  - supporting public extensions Papers VI-VII
-  - explicit non-inclusion of Paper VIII pending public release acceptance
+  - primary formal spine through Paper VIII
+  - supporting public lineages remain separately classified in the release
+    manifests
+  - no pending-public-acceptance exclusion for Paper VIII
 - this separation prevents silent rewriting of the historical campaign baseline
   while still keeping the current trunk pin explicit
 

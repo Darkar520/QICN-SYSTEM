@@ -40,7 +40,7 @@ Every finding must be classified across all of the following:
 - `finding_domain`
 - affected repo:
   - `QICN-SYSTEM`
-  - `QUICN-RELEASE`
+  - `QICN-RELEASE`
   - `cross_repo`
 - action need:
   - `change_required`

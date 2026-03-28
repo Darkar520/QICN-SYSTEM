@@ -11,7 +11,7 @@ Use a message equivalent to the following:
 
 > You are receiving the QICN external audit package for a bounded technical and
 > semantic review. The package is pinned to exact SHAs for `QICN-SYSTEM` and
-> `QUICN-RELEASE`. This handoff does not claim external validation already
+> `QICN-RELEASE`. This handoff does not claim external validation already
 > exists. Please review only the scope assigned to your auditor profile and
 > return findings using the schema in `docs/EXTERNAL_AUDIT_FINDINGS_SCHEMA.md`.
 

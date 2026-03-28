@@ -34,6 +34,7 @@ claim closure.
   - claim registry baseline
   - canonical integrity check
   - latest canonical release bundle manifest
+  - live public trunk scope emitted by `QICN-RELEASE/release/canon_manifest.v1.json`
 
 ## Canonical ecosystem commands
 
@@ -68,6 +69,10 @@ Run inside `QICN-SYSTEM`:
 - makes the source-of-truth boundary explicit on both sides
 - documents which cross-repo bridges are operational only
 - packages a bounded internal ecosystem release candidate
+- makes the public release trunk scope explicit:
+  - primary formal spine through Paper V
+  - supporting public extensions Papers VI-VII
+  - explicit non-inclusion of Paper VIII pending public release acceptance
 
 ## What the ecosystem baseline does not do
 

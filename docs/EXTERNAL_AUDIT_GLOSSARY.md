@@ -10,7 +10,7 @@
 The fixed reference point for an execution campaign or ecosystem state. The primary baseline is the `frozen_primary` campaign. The ecosystem baseline is defined by `artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json`. A baseline does not imply external validation.
 
 ### freeze / canonical freeze
-The act of fixing an artifact, campaign, or corpus boundary at a specific commit/tag so it becomes immutable for the purposes of comparison and auditing. In `QUICN-RELEASE`, the canonical freeze is pinned by tag `canonical-freeze-2026-03-01` at commit `2d7504be95ca33af5941e30abf7059dc2774edca`. Freeze means traceable boundary — it does not mean externally validated or empirically confirmed.
+The act of fixing an artifact, campaign, or corpus boundary at a specific commit/tag so it becomes immutable for the purposes of comparison and auditing. In `QICN-RELEASE`, the canonical freeze is pinned by tag `canonical-freeze-2026-03-01` at commit `2d7504be95ca33af5941e30abf7059dc2774edca`. Freeze means traceable boundary — it does not mean externally validated or empirically confirmed.
 
 ### candidate
 The current ecosystem release candidate: a bounded snapshot of both repos at a specific state, assembled by `npm run release:ecosystem-candidate`. Status is `PASS` or `FAIL`. A `PASS` candidate is internally consistent; it is not an external validation verdict.
@@ -57,7 +57,7 @@ Outputs explicitly blocked for claim-facing use. Blocking is enforced by `Output
 The set of scripts, modules, and APIs that expose runtime outputs for consumption. Defined in `docs/OPERATIONAL_READINESS.md`. Surfaces have consumption policy attached. They are not claim-authorization surfaces.
 
 ### canonical corpus
-The immutable PDF corpus in `QUICN-RELEASE/corpus/pdf_release/`, enumerated by `release/CANON_MAP.v1.json` and `release/INDEX_PDFS.json`. It is the theoretical source material. It is not validated by the runtime.
+The immutable PDF corpus in `QICN-RELEASE/corpus/pdf_release/`, enumerated by `release/CANON_MAP.v1.json` and `release/INDEX_PDFS.json`. It is the theoretical source material. It is not validated by the runtime.
 
 ---
 

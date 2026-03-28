@@ -16,8 +16,8 @@ No PowerShell-specific step is required on the critical audit path.
 Clone both repositories from GitHub:
 
 - `QICN-SYSTEM` — `https://github.com/Darkar520/QICN-SYSTEM.git`
-- `QUICN-RELEASE` — `https://github.com/Darkar520/QUICN-RELEASE.git`
-  (note: the official GitHub name uses `QUICN` with a `U`)
+- `QICN-RELEASE` — `https://github.com/Darkar520/QICN-RELEASE.git`
+  (older `QUICN-RELEASE` remotes may still resolve, but `QICN-RELEASE` is the preferred public repository name)
 
 The ecosystem also recognizes these local folder aliases:
 
@@ -29,7 +29,7 @@ The preferred sibling layout is:
 ```text
 <workspace>/
   QICN-SYSTEM/
-  QUICN-RELEASE/       # or any accepted alias above
+  QICN-RELEASE/        # or any accepted alias above
 ```
 
 If the release repo lives elsewhere, set `ECO_RELEASE_ROOT` to its absolute

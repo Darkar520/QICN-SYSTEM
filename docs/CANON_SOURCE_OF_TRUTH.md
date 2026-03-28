@@ -10,7 +10,7 @@ This implementation repository is not the canonical theory repository. It is the
 | --- | --- | --- |
 | Canonical theory lineage referenced by release materials | `rigid-identity-framework/*` as recorded inside `QICN-RELEASE` manifests | lineage_reference_only |
 | Verified frozen canonical corpus repo | `QICN-RELEASE/main` | verified_public_source_of_truth |
-| Verified frozen canonical corpus commit | `902fec2cc569e66b3348d862e99364f0d51da455` | verified_git_head |
+| Verified frozen canonical corpus commit | `af3ae8a3501129ad8808403acc4d2d1d07a17448` | verified_git_head |
 | Frozen canonical corpus tag | `canonical-freeze-2026-03-01` -> `2d7504be95ca33af5941e30abf7059dc2774edca` | verified_from_release_freeze |
 | Direct upstream repo pin for the pre-freeze `rigid-identity-framework` working tree | not separately pinned in this repo | not_required_for_frozen_release_baseline |
 | Local runtime source of truth | `src/` | active |
@@ -43,7 +43,8 @@ Verified facts from those artifacts:
 - its current public source-of-truth branch is `main`
 - its pinned canonical freeze commit is `2d7504be95ca33af5941e30abf7059dc2774edca`
 - its explicit canonical freeze tag is `canonical-freeze-2026-03-01`
-- its canon map points primary theory lineage to `rigid-identity-framework/CANONICAL_CORE.tex` and `rigid-identity-framework/paper1..paper4/main.tex`
+- its canon map points the public primary formal spine to `rigid-identity-framework/CANONICAL_CORE.tex`, `rigid-identity-framework/paper1..paper5/main.tex`, and public supporting extensions to `rigid-identity-framework/paper6_predictions_falsation/main.tex` and `rigid-identity-framework/paper7_operational_life_subjecthood/main.tex`
+- its live public trunk scope explicitly excludes `paper8_first_person_subjectivity` pending release-audit acceptance into the public canonical release
 
 This freeze package is the strongest currently verifiable external boundary available to this repository.
 
@@ -59,10 +60,11 @@ This freeze package is the strongest currently verifiable external boundary avai
 
 ## Pinning Outcome
 
-- External canonical corpus baseline: available and verified at `QICN-RELEASE/main`, pinned for the current ecosystem baseline at `902fec2cc569e66b3348d862e99364f0d51da455`.
+- External canonical corpus baseline: available and verified at `QICN-RELEASE/main`, pinned for the current ecosystem baseline at `af3ae8a3501129ad8808403acc4d2d1d07a17448`.
 - Canonical freeze authority: `canonical-freeze-2026-03-01` -> `2d7504be95ca33af5941e30abf7059dc2774edca`.
 - Separate direct upstream theory working-tree pin for `rigid-identity-framework/`: not established here and not required for the frozen release baseline.
 - Required discipline: do not present the canonical release freeze as equivalent to a direct upstream theory-repo pin for the original working tree.
+- Public trunk scope at the pinned release baseline: primary formal spine through Paper V, accepted supporting public extensions Papers VI-VII, and explicit non-inclusion of Paper VIII in the public release canon.
 
 ## Inherited Claim Families
 

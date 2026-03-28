@@ -16,7 +16,7 @@ It covers:
 
 ## What this workflow does NOT cover
 
-The following verifications require the QUICN-RELEASE sibling repo and cannot run in CI without it:
+The following verifications require the QICN-RELEASE sibling repo and cannot run in CI without it:
 - `npm run verify:ecosystem-integrity`
 - `npm run audit:campaign`
 - `npm run verify:evaluation-phase`
@@ -35,5 +35,5 @@ A green CI run on `main` means:
 A green CI run does NOT mean:
 - a campaign ran
 - an ecosystem candidate was built or validated
-- QUICN-RELEASE integrity was verified
+- QICN-RELEASE integrity was verified
 - external audit has occurred

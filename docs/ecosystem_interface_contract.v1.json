@@ -66,8 +66,14 @@
   ],
   "implementation_linked_not_confirmatory_claim_families": [
     "paper4.qicn_v45_protocol",
+    "paper5.operational_consciousness_criterion",
+    "paper6.predictions_and_failure_modes",
+    "paper7.operational_life_subjecthood",
     "annex.roeo_export",
     "governance.non_claim_alignment"
   ],
-  "non_claim_boundary": "This contract defines allowed internal bridges and blocked cross-repo inferences. It does not validate the corpus, validate the runtime, or authorize claim closure."
+  "downstream_internal_exclusions": [
+    "paper8.first_person_subjectivity_not_yet_in_public_release"
+  ],
+  "non_claim_boundary": "This contract defines allowed internal bridges and blocked cross-repo inferences. It does not validate the corpus, validate the runtime, authorize claim closure, or auto-promote downstream Paper VIII work into the public release."
 }

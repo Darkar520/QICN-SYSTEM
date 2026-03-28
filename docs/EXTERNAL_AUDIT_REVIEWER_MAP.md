@@ -1,7 +1,7 @@
 # External Audit Reviewer Map
 
 **Purpose:** Help a competent external auditor navigate QICN-SYSTEM and
-QUICN-RELEASE without relying on private context. Read this before opening any
+QICN-RELEASE without relying on private context. Read this before opening any
 other file.
 
 ---
@@ -13,7 +13,7 @@ Two repositories compose the QICN ecosystem:
 | Repo | Role | Authority |
 | --- | --- | --- |
 | `QICN-SYSTEM` | Operational runtime, verification surface, enforcement gates | Runtime code, artifacts, CI, execution campaigns |
-| `QUICN-RELEASE` | Canonical theoretical corpus, claim registry, freeze governance | PDF corpus, freeze manifests, claim registry |
+| `QICN-RELEASE` | Canonical theoretical corpus, claim registry, freeze governance | PDF corpus, freeze manifests, claim registry |
 
 Neither repo validates the other. The runtime does not prove the theory. The
 theory does not validate the runtime. The boundary is explicit and enforced.
@@ -123,14 +123,14 @@ CI does not run:
   sibling
 - `npm run audit:campaign` because it requires artifacts from a campaign run
 - `npm run verify:evaluation-phase` because it requires evaluation artifacts
-- QUICN-RELEASE verification scripts
+- QICN-RELEASE verification scripts
 
 These must be run manually by the auditor following
 `docs/EXTERNAL_AUDIT_SETUP.md`.
 
 ---
 
-## 8 - QUICN-RELEASE structure
+## 8 - QICN-RELEASE structure
 
 | Path | What it is |
 | --- | --- |

@@ -20,6 +20,24 @@ It is not:
 - canonical freeze commit: `2d7504be95ca33af5941e30abf7059dc2774edca`
 - ecosystem candidate status required: `PASS`
 
+These refs remain the historical execution baseline of the frozen campaign
+itself. They are not the same thing as the current public trunk authority used
+by the latest ecosystem candidate after later release canonicalization and
+bundle regeneration.
+
+## Current trunk linkage
+
+- current trunk authority is emitted by:
+  - `artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json`
+  - `artifacts/ecosystem_release_candidate/ecosystem_verification_matrix.json`
+- the frozen campaign remains authoritative for campaign comparability
+- the current public release trunk now exposes:
+  - primary formal spine through Paper V
+  - supporting public extensions Papers VI-VII
+  - explicit non-inclusion of Paper VIII pending public release acceptance
+- this separation prevents silent rewriting of the historical campaign baseline
+  while still keeping the current trunk pin explicit
+
 ## Authoritative artifact set
 
 - `artifacts/execution_campaign/campaigns/execution_campaign_primary_2026-03-25T02-15-00-000Z/campaign_execution_plan.json`

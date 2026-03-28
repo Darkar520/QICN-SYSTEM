@@ -43,7 +43,7 @@ None of the following count as a real external audit:
 Do not activate an external audit unless all of the following remain true:
 
 - `QICN-SYSTEM/main` is clean, pushed, and matches the current package manifest
-- `QUICN-RELEASE/main` is clean, pushed, and matches the current package manifest
+- `QICN-RELEASE/main` is clean, pushed, and matches the current package manifest
 - the external audit package status is `READY_FOR_EXTERNAL_AUDIT`
 - the latest ecosystem candidate remains `PASS`
 - the canonical freeze boundary remains unchanged

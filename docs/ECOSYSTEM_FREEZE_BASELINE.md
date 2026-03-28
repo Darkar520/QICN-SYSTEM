@@ -42,6 +42,10 @@ release candidate composed by `QICN-SYSTEM` and `QICN-RELEASE`.
   - freeze commit `2d7504be95ca33af5941e30abf7059dc2774edca`
   - explicit upstream canonical tag `canonical-freeze-2026-03-01`
   - upstream pin status `resolved`
+  - live public trunk authority: `main`
+  - public primary formal spine: Canonical Core + Papers I-V
+  - public supporting extensions: Papers VI-VII
+  - explicit public exclusion: Paper VIII pending release-audit acceptance
 - source-of-truth artifacts:
   - `release/release_freeze_manifest.json`
   - `release/claim_registry.v1.json`

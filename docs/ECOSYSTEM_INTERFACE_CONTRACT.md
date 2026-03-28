@@ -36,7 +36,11 @@ This contract fixes the explicit boundary between `QICN-SYSTEM` and
 
 ## Implementation-linked but non-confirmatory claim families
 
-- `QICN v4.5` protocol-facing claims
+- `Paper IV` protocol-facing claims
+- `Paper V` criterion-facing and invariant-diagnostic claims
+- `Paper VI` prediction, downgrade, and internal support-status claims
+- `Paper VII` descriptor, structural-class, and operational-subjecthood-boundary
+  claims
 - ROEO export annexes
 - governance alignment claims relating support labels, output policies, and
   controlled statements
@@ -46,6 +50,9 @@ This contract fixes the explicit boundary between `QICN-SYSTEM` and
 - Any move from internal support or operational consistency to theory-facing
   confirmation requires external validation beyond this ecosystem layer.
 - This contract blocks that move by default.
+- Internal downstream Paper VIII work may inform runtime architecture, but it
+  remains outside the public release canon until separately accepted into
+  `QICN-RELEASE/main`.
 
 ## Machine-readable contract
 

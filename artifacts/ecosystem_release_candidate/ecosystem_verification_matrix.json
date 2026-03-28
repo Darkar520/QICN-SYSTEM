@@ -1,7 +1,7 @@
 {
   "artifact_role": "ecosystem_verification_matrix",
   "schema_version": "1.0.0",
-  "checked_at": "2026-03-28T20:59:44.225Z",
+  "checked_at": "2026-03-28T23:06:28.439Z",
   "status": "PASS",
   "checks": [
     {
@@ -9,7 +9,7 @@
       "status": "PASS",
       "details": {
         "branch": "main",
-        "head": "60486d330d212255126aeb86f28688ed7e93c98b",
+        "head": "f9910cb80cc16ae7bf678609701e4ad9da5de7a9",
         "clean": true,
         "pushed": true,
         "upstream": "origin/main"
@@ -55,7 +55,7 @@
       "status": "PASS",
       "details": {
         "branch": "main",
-        "head": "af3ae8a3501129ad8808403acc4d2d1d07a17448",
+        "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
         "clean": true,
         "pushed": true,
         "upstream": "origin/main"
@@ -75,7 +75,7 @@
       "status": "PASS",
       "details": {
         "registry": "release/claim_registry.v1.json",
-        "entries": 31,
+        "entries": 34,
         "family_level_subsets_retained": [
           "paper2.phenomenological_regimes",
           "release_governance"
@@ -87,7 +87,7 @@
       "status": "PASS",
       "details": {
         "check": "_build/canonical_hardening/canonical_release_check.json",
-        "manifest": "_build/canonical_release_bundle_2026-03-28T20-57-05-344Z/canonical_release_manifest.json"
+        "manifest": "_build/canonical_release_bundle_2026-03-28T22-44-31-275Z/canonical_release_manifest.json"
       }
     },
     {
@@ -194,7 +194,7 @@
   ],
   "system_baseline": {
     "branch": "main",
-    "head": "60486d330d212255126aeb86f28688ed7e93c98b",
+    "head": "f9910cb80cc16ae7bf678609701e4ad9da5de7a9",
     "upstream": "origin/main",
     "release_bundle_manifest": "artifacts/internal_release/internal_release_2026-03-28T20-57-25-417Z/release_bundle_manifest.json",
     "evaluation_protocol_manifest": "artifacts/protocolized_evaluation/evaluation_protocol_manifest.json",
@@ -202,12 +202,12 @@
   },
   "release_baseline": {
     "branch": "main",
-    "head": "af3ae8a3501129ad8808403acc4d2d1d07a17448",
+    "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
     "upstream": "origin/main",
     "freeze_tag": "release-2026-03-01",
     "freeze_commit": "2d7504be95ca33af5941e30abf7059dc2774edca",
     "upstream_pin_status": "resolved",
-    "canonical_bundle_manifest": "_build/canonical_release_bundle_2026-03-28T20-57-05-344Z/canonical_release_manifest.json"
+    "canonical_bundle_manifest": "_build/canonical_release_bundle_2026-03-28T22-44-31-275Z/canonical_release_manifest.json"
   },
   "interpretation_boundary": "Cross-repo verification matrix only; internal ecosystem readiness evidence, not external validation, not theory confirmation.",
   "warnings": [],

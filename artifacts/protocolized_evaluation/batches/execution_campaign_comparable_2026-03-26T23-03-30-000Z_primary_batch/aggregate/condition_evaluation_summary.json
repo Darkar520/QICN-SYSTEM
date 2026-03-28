@@ -1,0 +1,1547 @@
+{
+  "artifact_role": "condition_evaluation_summary",
+  "protocol_ref": "docs/evaluation_protocol.v1.json",
+  "metrics_registry_ref": "docs/evaluation_metrics_registry.v1.json",
+  "source_artifacts": {
+    "runs_root": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch/artifacts",
+    "condition_metrics_summary": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch/aggregate/condition_metrics_summary.json",
+    "condition_support_labels": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch/aggregate/condition_support_labels.json"
+  },
+  "condition_count": 6,
+  "conditions": {
+    "baseline": {
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "seeds": [
+        17084,
+        17085,
+        17086,
+        17087,
+        17088,
+        17089,
+        17090,
+        17091,
+        17092
+      ],
+      "included_run_ids": [
+        "baseline_seed_17084_rep_1",
+        "baseline_seed_17085_rep_2",
+        "baseline_seed_17086_rep_3",
+        "baseline_seed_17087_rep_4",
+        "baseline_seed_17088_rep_5",
+        "baseline_seed_17089_rep_6",
+        "baseline_seed_17090_rep_7",
+        "baseline_seed_17091_rep_8",
+        "baseline_seed_17092_rep_9"
+      ],
+      "excluded_runs": [],
+      "numerical_metrics": {
+        "fallback_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "stale_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "degraded_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "pending_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "provider_error_burden": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "buffer_exhaustion_burden": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "entropy_latency_mean_ms": {
+          "sample_count": 9,
+          "mean": 0.1111111111111111,
+          "min": 0,
+          "max": 0.3333333333333333,
+          "std_dev": 0.15713484026367722,
+          "empirical_min_max_band": [
+            0,
+            0.3333333333333333
+          ]
+        },
+        "entropy_latency_max_ms": {
+          "sample_count": 9,
+          "mean": 0.3333333333333333,
+          "min": 0,
+          "max": 1,
+          "std_dev": 0.47140452079103173,
+          "empirical_min_max_band": [
+            0,
+            1
+          ]
+        },
+        "quantum_primary_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "channel_clean_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "omega_mean": {
+          "sample_count": 9,
+          "mean": 1.015,
+          "min": 1.011,
+          "max": 1.019,
+          "std_dev": 0.002581988897471604,
+          "empirical_min_max_band": [
+            1.011,
+            1.019
+          ]
+        },
+        "ccc_mean": {
+          "sample_count": 9,
+          "mean": 0.9149999999999999,
+          "min": 0.911,
+          "max": 0.919,
+          "std_dev": 0.002581988897471633,
+          "empirical_min_max_band": [
+            0.911,
+            0.919
+          ]
+        },
+        "pmia_mean": {
+          "sample_count": 9,
+          "mean": 0.5208669421800569,
+          "min": 0.5194717534420713,
+          "max": 0.5222621309180423,
+          "std_dev": 0.0009005904578389864,
+          "empirical_min_max_band": [
+            0.5194717534420713,
+            0.5222621309180423
+          ]
+        },
+        "stasis_index_mean": {
+          "sample_count": 9,
+          "mean": 0.1351211978517393,
+          "min": 0.12564347538529977,
+          "max": 0.147276864037215,
+          "std_dev": 0.006562724822594806,
+          "empirical_min_max_band": [
+            0.12564347538529977,
+            0.147276864037215
+          ]
+        },
+        "tick_budget_p95_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "tick_budget_max_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "invalidation_incidence": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        }
+      },
+      "categorical_metrics": {
+        "run_verdict_status": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_run_level_status": {
+          "clean": 9
+        },
+        "support_label": {
+          "internal_support_only": 9
+        }
+      },
+      "assertion_pass_rates": {
+        "mode_recorded": {
+          "observed_count": 9,
+          "pass_rate": 1
+        }
+      },
+      "support_layer": {
+        "support_label": "internal_support_only",
+        "closure_state": "not_closed",
+        "validation_state": "externally_unvalidated",
+        "label_reasons": [
+          "descriptive_small_batch_only",
+          "baseline_reference_condition",
+          "condition_quality_minimum_met"
+        ],
+        "run_count": 9,
+        "status_counts": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_status_counts": {
+          "clean": 9
+        }
+      },
+      "sample_size_status": "minimal_contrast_eligible"
+    },
+    "delayed_entropy": {
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "seeds": [
+        17084,
+        17085,
+        17086,
+        17087,
+        17088,
+        17089,
+        17090,
+        17091,
+        17092
+      ],
+      "included_run_ids": [
+        "delayed_entropy_seed_17084_rep_1",
+        "delayed_entropy_seed_17085_rep_2",
+        "delayed_entropy_seed_17086_rep_3",
+        "delayed_entropy_seed_17087_rep_4",
+        "delayed_entropy_seed_17088_rep_5",
+        "delayed_entropy_seed_17089_rep_6",
+        "delayed_entropy_seed_17090_rep_7",
+        "delayed_entropy_seed_17091_rep_8",
+        "delayed_entropy_seed_17092_rep_9"
+      ],
+      "excluded_runs": [],
+      "numerical_metrics": {
+        "fallback_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "stale_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "degraded_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "pending_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "provider_error_burden": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "buffer_exhaustion_burden": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "entropy_latency_mean_ms": {
+          "sample_count": 9,
+          "mean": 60.03703703703704,
+          "min": 60,
+          "max": 60.333333333333336,
+          "std_dev": 0.10475656017578558,
+          "empirical_min_max_band": [
+            60,
+            60.333333333333336
+          ]
+        },
+        "entropy_latency_max_ms": {
+          "sample_count": 9,
+          "mean": 60.111111111111114,
+          "min": 60,
+          "max": 61,
+          "std_dev": 0.3142696805273545,
+          "empirical_min_max_band": [
+            60,
+            61
+          ]
+        },
+        "quantum_primary_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "channel_clean_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "omega_mean": {
+          "sample_count": 9,
+          "mean": 1.055,
+          "min": 1.051,
+          "max": 1.059,
+          "std_dev": 0.002581988897471604,
+          "empirical_min_max_band": [
+            1.051,
+            1.059
+          ]
+        },
+        "ccc_mean": {
+          "sample_count": 9,
+          "mean": 0.935,
+          "min": 0.931,
+          "max": 0.9390000000000001,
+          "std_dev": 0.0025819888974715943,
+          "empirical_min_max_band": [
+            0.931,
+            0.9390000000000001
+          ]
+        },
+        "pmia_mean": {
+          "sample_count": 9,
+          "mean": 0.5253780524328766,
+          "min": 0.523982863694891,
+          "max": 0.526773241170862,
+          "std_dev": 0.000900590457838996,
+          "empirical_min_max_band": [
+            0.523982863694891,
+            0.526773241170862
+          ]
+        },
+        "stasis_index_mean": {
+          "sample_count": 9,
+          "mean": 0.13535746879586477,
+          "min": 0.12306869053120462,
+          "max": 0.14470207918311984,
+          "std_dev": 0.006855283675231062,
+          "empirical_min_max_band": [
+            0.12306869053120462,
+            0.14470207918311984
+          ]
+        },
+        "tick_budget_p95_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "tick_budget_max_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "invalidation_incidence": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        }
+      },
+      "categorical_metrics": {
+        "run_verdict_status": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_run_level_status": {
+          "clean": 9
+        },
+        "support_label": {
+          "internal_support_only": 9
+        }
+      },
+      "assertion_pass_rates": {
+        "mode_recorded": {
+          "observed_count": 9,
+          "pass_rate": 1
+        },
+        "delay_parameter_recorded": {
+          "observed_count": 9,
+          "pass_rate": 1
+        }
+      },
+      "support_layer": {
+        "support_label": "internal_support_only",
+        "closure_state": "not_closed",
+        "validation_state": "externally_unvalidated",
+        "label_reasons": [
+          "descriptive_small_batch_only",
+          "comparison_available",
+          "condition_quality_minimum_met"
+        ],
+        "run_count": 9,
+        "status_counts": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_status_counts": {
+          "clean": 9
+        }
+      },
+      "sample_size_status": "minimal_contrast_eligible"
+    },
+    "dropout": {
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "seeds": [
+        17084,
+        17085,
+        17086,
+        17087,
+        17088,
+        17089,
+        17090,
+        17091,
+        17092
+      ],
+      "included_run_ids": [
+        "dropout_seed_17084_rep_1",
+        "dropout_seed_17085_rep_2",
+        "dropout_seed_17086_rep_3",
+        "dropout_seed_17087_rep_4",
+        "dropout_seed_17088_rep_5",
+        "dropout_seed_17089_rep_6",
+        "dropout_seed_17090_rep_7",
+        "dropout_seed_17091_rep_8",
+        "dropout_seed_17092_rep_9"
+      ],
+      "excluded_runs": [],
+      "numerical_metrics": {
+        "fallback_tick_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "stale_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "degraded_tick_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "pending_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "provider_error_burden": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "buffer_exhaustion_burden": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "entropy_latency_mean_ms": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "entropy_latency_max_ms": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "quantum_primary_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "channel_clean_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "omega_mean": {
+          "sample_count": 9,
+          "mean": 1.0650000000000002,
+          "min": 1.061,
+          "max": 1.069,
+          "std_dev": 0.002581988897471642,
+          "empirical_min_max_band": [
+            1.061,
+            1.069
+          ]
+        },
+        "ccc_mean": {
+          "sample_count": 9,
+          "mean": 0.9400000000000001,
+          "min": 0.936,
+          "max": 0.9440000000000001,
+          "std_dev": 0.002581988897471633,
+          "empirical_min_max_band": [
+            0.936,
+            0.9440000000000001
+          ]
+        },
+        "pmia_mean": {
+          "sample_count": 9,
+          "mean": 0.5265058299960814,
+          "min": 0.525110641258096,
+          "max": 0.527901018734067,
+          "std_dev": 0.0009005904578389816,
+          "empirical_min_max_band": [
+            0.525110641258096,
+            0.527901018734067
+          ]
+        },
+        "stasis_index_mean": {
+          "sample_count": 9,
+          "mean": 0.13486098097621124,
+          "min": 0.12538325850977172,
+          "max": 0.14701664716168694,
+          "std_dev": 0.006562724822594807,
+          "empirical_min_max_band": [
+            0.12538325850977172,
+            0.14701664716168694
+          ]
+        },
+        "tick_budget_p95_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "tick_budget_max_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "invalidation_incidence": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        }
+      },
+      "categorical_metrics": {
+        "run_verdict_status": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_run_level_status": {
+          "degraded": 9
+        },
+        "support_label": {
+          "internal_support_only": 9
+        }
+      },
+      "assertion_pass_rates": {
+        "mode_recorded": {
+          "observed_count": 9,
+          "pass_rate": 1
+        },
+        "dropout_parameter_recorded": {
+          "observed_count": 9,
+          "pass_rate": 1
+        },
+        "dropout_fallback_observed": {
+          "observed_count": 9,
+          "pass_rate": 1
+        }
+      },
+      "support_layer": {
+        "support_label": "internal_support_only",
+        "closure_state": "not_closed",
+        "validation_state": "externally_unvalidated",
+        "label_reasons": [
+          "descriptive_small_batch_only",
+          "comparison_available",
+          "condition_quality_minimum_met"
+        ],
+        "run_count": 9,
+        "status_counts": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_status_counts": {
+          "degraded": 9
+        }
+      },
+      "sample_size_status": "minimal_contrast_eligible"
+    },
+    "prng_only": {
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "seeds": [
+        17084,
+        17085,
+        17086,
+        17087,
+        17088,
+        17089,
+        17090,
+        17091,
+        17092
+      ],
+      "included_run_ids": [
+        "prng_only_seed_17084_rep_1",
+        "prng_only_seed_17085_rep_2",
+        "prng_only_seed_17086_rep_3",
+        "prng_only_seed_17087_rep_4",
+        "prng_only_seed_17088_rep_5",
+        "prng_only_seed_17089_rep_6",
+        "prng_only_seed_17090_rep_7",
+        "prng_only_seed_17091_rep_8",
+        "prng_only_seed_17092_rep_9"
+      ],
+      "excluded_runs": [],
+      "numerical_metrics": {
+        "fallback_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "stale_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "degraded_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "pending_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "provider_error_burden": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "buffer_exhaustion_burden": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "entropy_latency_mean_ms": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "entropy_latency_max_ms": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "quantum_primary_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "channel_clean_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "omega_mean": {
+          "sample_count": 9,
+          "mean": 1.0450000000000002,
+          "min": 1.0410000000000001,
+          "max": 1.0490000000000002,
+          "std_dev": 0.0025819888974716043,
+          "empirical_min_max_band": [
+            1.0410000000000001,
+            1.0490000000000002
+          ]
+        },
+        "ccc_mean": {
+          "sample_count": 9,
+          "mean": 0.9299999999999999,
+          "min": 0.926,
+          "max": 0.934,
+          "std_dev": 0.0025819888974716325,
+          "empirical_min_max_band": [
+            0.926,
+            0.934
+          ]
+        },
+        "pmia_mean": {
+          "sample_count": 9,
+          "mean": 0.5242502748696717,
+          "min": 0.5228550861316862,
+          "max": 0.5256454636076571,
+          "std_dev": 0.0009005904578389768,
+          "empirical_min_max_band": [
+            0.5228550861316862,
+            0.5256454636076571
+          ]
+        },
+        "stasis_index_mean": {
+          "sample_count": 9,
+          "mean": 0.1358539566155183,
+          "min": 0.1242205679659314,
+          "max": 0.14585395661784661,
+          "std_dev": 0.006672763929907202,
+          "empirical_min_max_band": [
+            0.1242205679659314,
+            0.14585395661784661
+          ]
+        },
+        "tick_budget_p95_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "tick_budget_max_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "invalidation_incidence": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        }
+      },
+      "categorical_metrics": {
+        "run_verdict_status": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_run_level_status": {
+          "clean": 9
+        },
+        "support_label": {
+          "internal_support_only": 9
+        }
+      },
+      "assertion_pass_rates": {
+        "mode_recorded": {
+          "observed_count": 9,
+          "pass_rate": 1
+        }
+      },
+      "support_layer": {
+        "support_label": "internal_support_only",
+        "closure_state": "not_closed",
+        "validation_state": "externally_unvalidated",
+        "label_reasons": [
+          "descriptive_small_batch_only",
+          "comparison_available",
+          "condition_quality_minimum_met"
+        ],
+        "run_count": 9,
+        "status_counts": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_status_counts": {
+          "clean": 9
+        }
+      },
+      "sample_size_status": "minimal_contrast_eligible"
+    },
+    "replay": {
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "seeds": [
+        17084,
+        17085,
+        17086,
+        17087,
+        17088,
+        17089,
+        17090,
+        17091,
+        17092
+      ],
+      "included_run_ids": [
+        "replay_seed_17084_rep_1",
+        "replay_seed_17085_rep_2",
+        "replay_seed_17086_rep_3",
+        "replay_seed_17087_rep_4",
+        "replay_seed_17088_rep_5",
+        "replay_seed_17089_rep_6",
+        "replay_seed_17090_rep_7",
+        "replay_seed_17091_rep_8",
+        "replay_seed_17092_rep_9"
+      ],
+      "excluded_runs": [],
+      "numerical_metrics": {
+        "fallback_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "stale_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "degraded_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "pending_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "provider_error_burden": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "buffer_exhaustion_burden": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "entropy_latency_mean_ms": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "entropy_latency_max_ms": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "quantum_primary_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "channel_clean_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "omega_mean": {
+          "sample_count": 9,
+          "mean": 1.025,
+          "min": 1.021,
+          "max": 1.029,
+          "std_dev": 0.0025819888974716425,
+          "empirical_min_max_band": [
+            1.021,
+            1.029
+          ]
+        },
+        "ccc_mean": {
+          "sample_count": 9,
+          "mean": 0.9200000000000002,
+          "min": 0.916,
+          "max": 0.924,
+          "std_dev": 0.0025819888974715943,
+          "empirical_min_max_band": [
+            0.916,
+            0.924
+          ]
+        },
+        "pmia_mean": {
+          "sample_count": 9,
+          "mean": 0.5219947197432617,
+          "min": 0.5205995310052763,
+          "max": 0.5233899084812473,
+          "std_dev": 0.0009005904578390055,
+          "empirical_min_max_band": [
+            0.5205995310052763,
+            0.5233899084812473
+          ]
+        },
+        "stasis_index_mean": {
+          "sample_count": 9,
+          "mean": 0.13351359892071593,
+          "min": 0.12305787742209107,
+          "max": 0.1446912660740063,
+          "std_dev": 0.007115101321709912,
+          "empirical_min_max_band": [
+            0.12305787742209107,
+            0.1446912660740063
+          ]
+        },
+        "tick_budget_p95_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "tick_budget_max_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "invalidation_incidence": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        }
+      },
+      "categorical_metrics": {
+        "run_verdict_status": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_run_level_status": {
+          "clean": 9
+        },
+        "support_label": {
+          "internal_support_only": 9
+        }
+      },
+      "assertion_pass_rates": {
+        "mode_recorded": {
+          "observed_count": 9,
+          "pass_rate": 1
+        },
+        "replay_source_recorded": {
+          "observed_count": 9,
+          "pass_rate": 1
+        }
+      },
+      "support_layer": {
+        "support_label": "internal_support_only",
+        "closure_state": "not_closed",
+        "validation_state": "externally_unvalidated",
+        "label_reasons": [
+          "descriptive_small_batch_only",
+          "comparison_available",
+          "condition_quality_minimum_met"
+        ],
+        "run_count": 9,
+        "status_counts": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_status_counts": {
+          "clean": 9
+        }
+      },
+      "sample_size_status": "minimal_contrast_eligible"
+    },
+    "shuffled": {
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "seeds": [
+        17084,
+        17085,
+        17086,
+        17087,
+        17088,
+        17089,
+        17090,
+        17091,
+        17092
+      ],
+      "included_run_ids": [
+        "shuffled_seed_17084_rep_1",
+        "shuffled_seed_17085_rep_2",
+        "shuffled_seed_17086_rep_3",
+        "shuffled_seed_17087_rep_4",
+        "shuffled_seed_17088_rep_5",
+        "shuffled_seed_17089_rep_6",
+        "shuffled_seed_17090_rep_7",
+        "shuffled_seed_17091_rep_8",
+        "shuffled_seed_17092_rep_9"
+      ],
+      "excluded_runs": [],
+      "numerical_metrics": {
+        "fallback_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "stale_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "degraded_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "pending_tick_ratio": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "provider_error_burden": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "buffer_exhaustion_burden": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "entropy_latency_mean_ms": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "entropy_latency_max_ms": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        },
+        "quantum_primary_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "channel_clean_ratio": {
+          "sample_count": 9,
+          "mean": 1,
+          "min": 1,
+          "max": 1,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            1,
+            1
+          ]
+        },
+        "omega_mean": {
+          "sample_count": 9,
+          "mean": 1.035,
+          "min": 1.031,
+          "max": 1.039,
+          "std_dev": 0.002581988897471604,
+          "empirical_min_max_band": [
+            1.031,
+            1.039
+          ]
+        },
+        "ccc_mean": {
+          "sample_count": 9,
+          "mean": 0.9249999999999999,
+          "min": 0.9209999999999999,
+          "max": 0.9289999999999999,
+          "std_dev": 0.0025819888974716134,
+          "empirical_min_max_band": [
+            0.9209999999999999,
+            0.9289999999999999
+          ]
+        },
+        "pmia_mean": {
+          "sample_count": 9,
+          "mean": 0.5231224973064665,
+          "min": 0.5217273085684812,
+          "max": 0.5245176860444521,
+          "std_dev": 0.0009005904578389721,
+          "empirical_min_max_band": [
+            0.5217273085684812,
+            0.5245176860444521
+          ]
+        },
+        "stasis_index_mean": {
+          "sample_count": 9,
+          "mean": 0.13523933332380203,
+          "min": 0.12537244540065817,
+          "max": 0.1470058340525734,
+          "std_dev": 0.006939418636642356,
+          "empirical_min_max_band": [
+            0.12537244540065817,
+            0.1470058340525734
+          ]
+        },
+        "tick_budget_p95_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "tick_budget_max_ms": {
+          "sample_count": 9,
+          "mean": 44,
+          "min": 44,
+          "max": 44,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            44,
+            44
+          ]
+        },
+        "invalidation_incidence": {
+          "sample_count": 9,
+          "mean": 0,
+          "min": 0,
+          "max": 0,
+          "std_dev": 0,
+          "empirical_min_max_band": [
+            0,
+            0
+          ]
+        }
+      },
+      "categorical_metrics": {
+        "run_verdict_status": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_run_level_status": {
+          "clean": 9
+        },
+        "support_label": {
+          "internal_support_only": 9
+        }
+      },
+      "assertion_pass_rates": {
+        "mode_recorded": {
+          "observed_count": 9,
+          "pass_rate": 1
+        },
+        "replay_source_recorded": {
+          "observed_count": 9,
+          "pass_rate": 1
+        }
+      },
+      "support_layer": {
+        "support_label": "internal_support_only",
+        "closure_state": "not_closed",
+        "validation_state": "externally_unvalidated",
+        "label_reasons": [
+          "descriptive_small_batch_only",
+          "comparison_available",
+          "condition_quality_minimum_met"
+        ],
+        "run_count": 9,
+        "status_counts": {
+          "ADMISSIBLE": 9
+        },
+        "entropy_status_counts": {
+          "clean": 9
+        }
+      },
+      "sample_size_status": "minimal_contrast_eligible"
+    }
+  },
+  "claim_facing_status": "blocked",
+  "interpretation_boundary": "Condition-level descriptive evaluation summary only; not causal confirmation, not claim closure, not external validation."
+}

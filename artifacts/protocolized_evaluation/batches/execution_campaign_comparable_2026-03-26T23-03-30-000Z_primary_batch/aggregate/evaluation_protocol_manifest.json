@@ -1,0 +1,91 @@
+{
+  "artifact_role": "evaluation_protocol_manifest",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-03-26T23:11:05.019Z",
+  "batch_id": "execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch",
+  "protocol_ref": "docs/evaluation_protocol.v1.json",
+  "comparison_matrix_ref": "docs/evaluation_comparison_matrix.v1.json",
+  "metrics_registry_ref": "docs/evaluation_metrics_registry.v1.json",
+  "controls_registry_ref": "docs/evaluation_controls_registry.v1.json",
+  "statistical_policy_ref": "docs/evaluation_statistical_policy.v1.json",
+  "interpretation_boundary_ref": "docs/EVALUATION_INTERPRETATION_BOUNDARY.md",
+  "ecosystem_candidate_manifest_ref": "artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-26T22-58-35-507Z/ecosystem_release_candidate_manifest.json",
+  "ecosystem_candidate_status": "PASS",
+  "baselines": {
+    "qicn_system": {
+      "branch": "main",
+      "head": "a4200d8d491cd2f4e0a43e86737b3024fdf8e549",
+      "upstream": "origin/main"
+    },
+    "qicn_release": {
+      "branch": "main",
+      "head": "43fe77faa4bb0cd4421ed9f589633cda8e01f56c",
+      "upstream": "origin/main",
+      "freeze_tag": "release-2026-03-01",
+      "freeze_commit": "2d7504be95ca33af5941e30abf7059dc2774edca",
+      "upstream_pin_status": "resolved"
+    }
+  },
+  "batch_paths": {
+    "batch_root": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch",
+    "runs_root": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch/artifacts",
+    "aggregate_root": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch/aggregate"
+  },
+  "seed_schedule": [
+    17084,
+    17085,
+    17086,
+    17087,
+    17088,
+    17089,
+    17090,
+    17091,
+    17092
+  ],
+  "condition_order": [
+    "baseline",
+    "replay",
+    "shuffled",
+    "prng_only",
+    "delayed_entropy",
+    "dropout"
+  ],
+  "canonical_runs_per_condition": 3,
+  "effective_runs_per_condition": 9,
+  "required_run_artifacts": [
+    "run_header.json",
+    "ticks.ndjson",
+    "run_summary.json",
+    "run_verdict.json",
+    "entropy_preverdict.json",
+    "entropy_run_diagnostics.json",
+    "run_metrics.json",
+    "support_labels.json",
+    "output_consumption_policy.json",
+    "output_surface_policy.json",
+    "controlled_statements.json",
+    "run_evaluation_metrics.json"
+  ],
+  "required_batch_artifacts": [
+    "condition_metrics_summary.json",
+    "condition_comparison.json",
+    "condition_support_labels.json",
+    "condition_output_consumption_policy.json",
+    "condition_output_surface_policy.json",
+    "condition_controlled_statements.json",
+    "artifact_manifest.json",
+    "condition_evaluation_summary.json",
+    "condition_comparison_report.json",
+    "evaluation_protocol_manifest.json",
+    "evaluation_batch_report.json"
+  ],
+  "blocked_claim_facing_outputs": [
+    "run_evaluation_metrics.json",
+    "condition_evaluation_summary.json",
+    "condition_comparison_report.json",
+    "evaluation_protocol_manifest.json",
+    "evaluation_batch_report.json"
+  ],
+  "claim_facing_status": "blocked",
+  "interpretation_boundary": "Evaluation protocol manifest only; internal experimental coordination over a frozen ecosystem baseline, never external validation, never theory confirmation."
+}

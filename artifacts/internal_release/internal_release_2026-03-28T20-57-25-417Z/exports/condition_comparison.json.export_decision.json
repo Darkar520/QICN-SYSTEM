@@ -1,0 +1,58 @@
+{
+  "artifact_role": "output_surface_enforcement_decision",
+  "scope": "small_batch",
+  "artifact": "condition_comparison.json",
+  "artifact_path": "condition_comparison.json",
+  "requested_surface": "descriptive_export_surface",
+  "canonical_surface": "descriptive_export_surface",
+  "allowed": false,
+  "reason_code": "blocked_claim_facing_output",
+  "output_role": "descriptive_output",
+  "consumption_class": "blocked_for_external_claiming",
+  "claim_gate_status": "claim_unsafe",
+  "export_gate_status": "blocked_for_external_claiming",
+  "statement_gate_status": "no_statement_authorized",
+  "allowed_surfaces": [
+    "local_artifact_surface",
+    "small_batch_summary_surface"
+  ],
+  "blocked_surfaces": [
+    "internal_runtime_surface",
+    "developer_inspection_surface",
+    "local_report_surface",
+    "descriptive_export_surface",
+    "controlled_statement_surface",
+    "external_claim_facing_surface"
+  ],
+  "required_boundaries": [
+    "interpretation_boundary"
+  ],
+  "required_refs": [
+    "support_boundary_ref",
+    "consumption_policy_ref",
+    "surface_policy_ref"
+  ],
+  "boundaries_present": {
+    "interpretation_boundary": true
+  },
+  "refs_present": {
+    "support_boundary_ref": true,
+    "consumption_policy_ref": true,
+    "surface_policy_ref": true
+  },
+  "boundary_ready": true,
+  "refs_ready": true,
+  "blocking_conditions": [
+    "external_validation_absent",
+    "causal_read_blocked",
+    "comparison_output_not_confirmatory",
+    "external_claim_surface_blocked",
+    "blocked_claim_facing_output"
+  ],
+  "interpretation_boundary": "Internal descriptive delta review only.",
+  "interpretation_not_allowed": [
+    "Do not read this as causal confirmation.",
+    "Do not read this as external validation."
+  ],
+  "emitted_to": null
+}

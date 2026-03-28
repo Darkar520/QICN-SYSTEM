@@ -1,0 +1,63 @@
+{
+  "artifact_role": "execution_campaign_freeze_baseline",
+  "schema_version": "1.0.0",
+  "authoritative_campaign_id": "execution_campaign_primary_2026-03-25T02-15-00-000Z",
+  "authoritative_batch_id": "execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch",
+  "baseline_linkage": {
+    "qicn_system_head": "a90cf500464cbfd235c73681a2d2a81e08129ab7",
+    "qicn_release_head": "902fec2cc569e66b3348d862e99364f0d51da455",
+    "canonical_freeze_commit": "2d7504be95ca33af5941e30abf7059dc2774edca",
+    "ecosystem_candidate_manifest_ref": "artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json",
+    "evaluation_architecture_freeze_ref": "docs/evaluation_architecture_freeze.v1.json"
+  },
+  "current_trunk_linkage": {
+    "authoritative_current_system_release_ref": "artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json",
+    "authoritative_current_verification_ref": "artifacts/ecosystem_release_candidate/ecosystem_verification_matrix.json",
+    "interpretation_note": "Historical execution-campaign baselines remain fixed above. Current trunk authority for cross-repo coordination is emitted by the latest ecosystem candidate artifacts.",
+    "public_release_scope_note": "Pinned public release trunk is expected to expose the primary formal spine through Paper V, supporting public extensions Papers VI-VII, and explicit non-inclusion of Paper VIII pending public acceptance."
+  },
+  "authoritative_artifacts": {
+    "campaign_execution_plan": "artifacts/execution_campaign/campaigns/execution_campaign_primary_2026-03-25T02-15-00-000Z/campaign_execution_plan.json",
+    "execution_campaign_readout": "artifacts/execution_campaign/campaigns/execution_campaign_primary_2026-03-25T02-15-00-000Z/execution_campaign_readout.json",
+    "execution_campaign_audit_readout": "artifacts/execution_campaign/campaigns/execution_campaign_primary_2026-03-25T02-15-00-000Z/execution_campaign_audit_readout.json",
+    "latest_campaign_pointer": "artifacts/execution_campaign/campaigns/execution_campaign_primary_2026-03-25T02-15-00-000Z/latest_campaign_pointer.json",
+    "evaluation_protocol_manifest": "artifacts/protocolized_evaluation/batches/execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch/aggregate/evaluation_protocol_manifest.json",
+    "evaluation_batch_report": "artifacts/protocolized_evaluation/batches/execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch/aggregate/evaluation_batch_report.json",
+    "condition_evaluation_summary": "artifacts/protocolized_evaluation/batches/execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch/aggregate/condition_evaluation_summary.json",
+    "condition_comparison_report": "artifacts/protocolized_evaluation/batches/execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch/aggregate/condition_comparison_report.json"
+  },
+  "reuse_constraints": [
+    "same_frozen_evaluation_architecture",
+    "same_six_canonical_conditions",
+    "runner_executed_batch_only",
+    "authoritative_exclusions_only",
+    "claim_facing_block_preserved",
+    "ecosystem_candidate_status_pass"
+  ],
+  "invalidates_freeze": [
+    "runtime_semantic_drift",
+    "frozen_evaluation_architecture_drift",
+    "evaluation_protocol_drift",
+    "comparison_matrix_drift",
+    "metrics_registry_drift",
+    "controls_registry_drift",
+    "statistical_policy_drift",
+    "runner_or_verifier_drift",
+    "unsupported_comparison_emitted",
+    "campaign_artifact_promoted_to_claim_facing_surface",
+    "ecosystem_candidate_status_not_pass"
+  ],
+  "requires_rerun_only": [
+    "comparable_successive_campaign",
+    "non_material_post_campaign_governance_or_audit_commit_with_explicit_new_baseline_linkage",
+    "candidate_bundle_regeneration_from_same_pushed_baselines",
+    "audit_readout_regeneration_for_same_authoritative_campaign"
+  ],
+  "mutable_latest_artifacts_not_authoritative_for_frozen_baseline": [
+    "artifacts/execution_campaign/campaign_execution_plan.json",
+    "artifacts/execution_campaign/execution_campaign_readout.json",
+    "artifacts/execution_campaign/execution_campaign_audit_readout.json",
+    "artifacts/execution_campaign/latest_campaign_pointer.json"
+  ],
+  "interpretation_boundary": "Execution campaign freeze only; operational reference for repeated internal campaigns, not external validation, not theory confirmation, not claim closure, and not a substitute for the current trunk authority emitted by the latest ecosystem candidate."
+}

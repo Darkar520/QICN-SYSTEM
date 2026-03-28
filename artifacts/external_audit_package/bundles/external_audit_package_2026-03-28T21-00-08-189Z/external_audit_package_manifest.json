@@ -1,0 +1,145 @@
+{
+  "artifact_role": "external_audit_package_manifest",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-03-28T21:00:08.189Z",
+  "package_id": "external_audit_package_2026-03-28T21-00-08-189Z",
+  "package_root": ".",
+  "package_status": "READY_FOR_EXTERNAL_AUDIT",
+  "entrypoints": {
+    "activation_plan": "docs/EXTERNAL_AUDIT_ACTIVATION_PLAN.md",
+    "profile_matrix": "docs/EXTERNAL_AUDIT_PROFILE_MATRIX.md",
+    "handoff_protocol": "docs/EXTERNAL_AUDIT_HANDOFF_PROTOCOL.md",
+    "findings_schema": "docs/EXTERNAL_AUDIT_FINDINGS_SCHEMA.md",
+    "intake_and_triage": "docs/EXTERNAL_AUDIT_INTAKE_AND_TRIAGE.md",
+    "reviewer_map": "docs/EXTERNAL_AUDIT_REVIEWER_MAP.md",
+    "glossary": "docs/EXTERNAL_AUDIT_GLOSSARY.md",
+    "setup": "docs/EXTERNAL_AUDIT_SETUP.md",
+    "quickstart": "docs/EXTERNAL_AUDIT_QUICKSTART.md",
+    "technical_path": "docs/EXTERNAL_AUDIT_TECHNICAL_PATH.md",
+    "handoff_checklist": "docs/EXTERNAL_AUDIT_HANDOFF_CHECKLIST.md",
+    "status": "external_audit_status.json",
+    "red_team": "internal_red_team_report.json",
+    "candidate_manifest": "ecosystem_candidate/ecosystem_release_candidate_manifest.json"
+  },
+  "repositories": {
+    "qicn_system": {
+      "repository": "QICN-SYSTEM",
+      "branch": "main",
+      "head": "60486d330d212255126aeb86f28688ed7e93c98b",
+      "upstream": "origin/main",
+      "remote_url": "https://github.com/Darkar520/QICN-SYSTEM.git"
+    },
+    "qicn_release": {
+      "repository": "QICN-RELEASE",
+      "branch": "main",
+      "head": "af3ae8a3501129ad8808403acc4d2d1d07a17448",
+      "upstream": "origin/main",
+      "remote_url": "https://github.com/Darkar520/QICN-RELEASE.git"
+    }
+  },
+  "authoritative_refs": {
+    "ecosystem_candidate_bundle_id": "ecosystem_release_candidate_2026-03-28T20-59-44-382Z",
+    "qicn_release_canonical_freeze_tag": "release-2026-03-01",
+    "qicn_release_canonical_freeze_commit": "2d7504be95ca33af5941e30abf7059dc2774edca",
+    "frozen_primary_campaign_id": "execution_campaign_primary_2026-03-25T02-15-00-000Z",
+    "frozen_primary_batch_id": "execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch",
+    "latest_accepted_comparable_campaign_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z",
+    "latest_accepted_comparable_batch_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch",
+    "invalid_historical_attempt_campaign_id": "execution_campaign_comparable_2026-03-26T23-03-30-000Z"
+  },
+  "copied_artifacts": {
+    "ecosystem_candidate_manifest": "ecosystem_candidate/ecosystem_release_candidate_manifest.json",
+    "frozen_primary": {
+      "campaign_execution_plan": "system_authoritative/frozen_primary/campaign_execution_plan.json",
+      "execution_campaign_readout": "system_authoritative/frozen_primary/execution_campaign_readout.json",
+      "execution_campaign_audit_readout": "system_authoritative/frozen_primary/execution_campaign_audit_readout.json",
+      "latest_campaign_pointer": "system_authoritative/frozen_primary/latest_campaign_pointer.json",
+      "evaluation_protocol_manifest": "system_authoritative/frozen_primary/evaluation_protocol_manifest.json",
+      "evaluation_batch_report": "system_authoritative/frozen_primary/evaluation_batch_report.json",
+      "condition_evaluation_summary": "system_authoritative/frozen_primary/condition_evaluation_summary.json",
+      "condition_comparison_report": "system_authoritative/frozen_primary/condition_comparison_report.json"
+    },
+    "latest_accepted_comparable": {
+      "campaign_execution_plan": "system_authoritative/latest_accepted_comparable/campaign_execution_plan.json",
+      "evaluation_protocol_manifest": "system_authoritative/latest_accepted_comparable/evaluation_protocol_manifest.json",
+      "evaluation_batch_report": "system_authoritative/latest_accepted_comparable/evaluation_batch_report.json",
+      "condition_evaluation_summary": "system_authoritative/latest_accepted_comparable/condition_evaluation_summary.json",
+      "condition_comparison_report": "system_authoritative/latest_accepted_comparable/condition_comparison_report.json",
+      "execution_campaign_readout": "system_authoritative/latest_accepted_comparable/execution_campaign_readout.json",
+      "latest_campaign_pointer": "system_authoritative/latest_accepted_comparable/latest_campaign_pointer.json",
+      "ecosystem_release_candidate_manifest": "system_authoritative/latest_accepted_comparable/ecosystem_release_candidate_manifest.json"
+    },
+    "invalid_historical_attempt": {
+      "campaign_execution_plan": "system_authoritative/invalid_historical_attempt/campaign_execution_plan.json",
+      "execution_campaign_readout": "system_authoritative/invalid_historical_attempt/execution_campaign_readout.json",
+      "execution_campaign_audit_readout": "system_authoritative/invalid_historical_attempt/execution_campaign_audit_readout.json"
+    }
+  },
+  "expected_artifacts": [
+    "external_audit_package_manifest.json",
+    "external_audit_status.json",
+    "internal_red_team_report.json",
+    "ecosystem_candidate/ecosystem_release_candidate_manifest.json",
+    "ecosystem_candidate/ecosystem/manifests/ecosystem_verification_matrix.json",
+    "ecosystem_candidate/ecosystem/manifests/ecosystem_gap_register.v1.json",
+    "system_authoritative/latest_accepted_comparable/execution_campaign_audit_readout.json",
+    "system_authoritative/latest_accepted_comparable/evaluation_batch_report.json",
+    "system_authoritative/latest_accepted_comparable/condition_comparison_report.json",
+    "system_authoritative/frozen_primary/execution_campaign_audit_readout.json"
+  ],
+  "invalidation_triggers": [
+    "runtime_semantic_drift",
+    "frozen_evaluation_architecture_drift",
+    "evaluation_protocol_drift",
+    "comparison_matrix_drift",
+    "metrics_registry_drift",
+    "controls_registry_drift",
+    "statistical_policy_drift",
+    "runner_or_verifier_drift",
+    "unsupported_comparison_emitted",
+    "campaign_artifact_promoted_to_claim_facing_surface",
+    "ecosystem_candidate_status_not_pass",
+    "repo_not_clean",
+    "repo_not_pushed",
+    "system_canonical_command_change",
+    "system_governance_script_change",
+    "evaluation_protocol_or_registry_change_without_rerun",
+    "system_internal_bundle_policy_change",
+    "release_freeze_manifest_change",
+    "release_claim_registry_change",
+    "release_canonical_boundary_change",
+    "release_bundle_category_change",
+    "ecosystem_interface_contract_change",
+    "new_blocking_gap_in_ecosystem_gap_register"
+  ],
+  "blocked_outputs": [
+    "run_evaluation_metrics.json",
+    "condition_evaluation_summary.json",
+    "condition_comparison_report.json",
+    "evaluation_protocol_manifest.json",
+    "evaluation_batch_report.json",
+    "campaign_execution_plan.json",
+    "execution_campaign_readout.json",
+    "execution_campaign_audit_readout.json",
+    "latest_campaign_pointer.json"
+  ],
+  "non_claim_restrictions": [
+    "No external validation yet.",
+    "No theory confirmation.",
+    "No claim closure.",
+    "No causal proof.",
+    "No runtime-to-corpus validation leap.",
+    "No public claim-facing escalation."
+  ],
+  "theory_system_boundary": {
+    "prohibited_inferences": [
+      "runtime_metrics_imply_core_theorem_validity",
+      "support_labels_imply_framework_confirmation",
+      "controlled_statements_imply_external_validation",
+      "formal_theorem_implies_current_runtime_instantiation",
+      "canonical_freeze_implies_system_validation"
+    ],
+    "non_claim_boundary": "The interface is explicit and limited. Public release alignment does not authorize automatic runtime closure, external validation, or subjectivity claims beyond what is explicitly released."
+  },
+  "interpretation_boundary": "External audit handoff package only; audit-ready internal package, not an external verdict, not theory closure, not public release."
+}

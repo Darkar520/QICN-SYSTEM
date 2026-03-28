@@ -1,0 +1,270 @@
+{
+  "artifact_role": "condition_output_surface_policy",
+  "scope": "small_batch",
+  "policy_version": "phase7_v1",
+  "source_artifacts": {
+    "condition_metrics_summary": "condition_metrics_summary.json",
+    "condition_comparison": "condition_comparison.json",
+    "condition_support_labels": "condition_support_labels.json",
+    "condition_output_consumption_policy": "condition_output_consumption_policy.json",
+    "condition_controlled_statements": "condition_controlled_statements.json"
+  },
+  "governed_outputs": [
+    "condition_metrics_summary.json",
+    "condition_comparison.json",
+    "condition_support_labels.json"
+  ],
+  "governed_surfaces": {
+    "internal_runtime_surface": {
+      "definition": "Internal runtime or pre-verdict machine surface only.",
+      "requires_boundary": false,
+      "blocked_by_external_validation_absence": false
+    },
+    "local_artifact_surface": {
+      "definition": "Raw local artifact persistence inside the repository or local workspace.",
+      "requires_boundary": false,
+      "blocked_by_external_validation_absence": false
+    },
+    "developer_inspection_surface": {
+      "definition": "Local human inspection surface for developers, allowed only with explicit boundaries.",
+      "requires_boundary": true,
+      "blocked_by_external_validation_absence": false
+    },
+    "local_report_surface": {
+      "definition": "Local report surface for bounded descriptive summaries assembled inside the repo.",
+      "requires_boundary": true,
+      "blocked_by_external_validation_absence": false
+    },
+    "descriptive_export_surface": {
+      "definition": "Local descriptive export surface; never claim-facing and always boundary-bound.",
+      "requires_boundary": true,
+      "blocked_by_external_validation_absence": false
+    },
+    "small_batch_summary_surface": {
+      "definition": "Internal small-batch aggregation surface for descriptive condition summaries.",
+      "requires_boundary": true,
+      "blocked_by_external_validation_absence": false
+    },
+    "controlled_statement_surface": {
+      "definition": "Restricted surface for controlled local descriptive statements only.",
+      "requires_boundary": true,
+      "blocked_by_external_validation_absence": true
+    },
+    "external_claim_facing_surface": {
+      "definition": "Any outward-facing claim, causal, or externally shareable surface.",
+      "requires_boundary": true,
+      "blocked_by_external_validation_absence": true
+    }
+  },
+  "export_gate_states": {
+    "internal_only": "Output remains internal-only and should not be exported beyond local machine reuse.",
+    "local_export_with_boundary_only": "Output may be exported locally only with explicit non-claim boundaries.",
+    "blocked_missing_boundary": "Export is blocked because required boundaries or refs are missing.",
+    "blocked_under_evaluation": "Export is blocked because the support posture remains under evaluation.",
+    "blocked_for_external_claiming": "Export is blocked for any claim-facing or externally promotable surface."
+  },
+  "statement_gate_states": {
+    "no_statement_authorized": "This output does not authorize controlled statements.",
+    "local_descriptive_statement_only": "Only local descriptive controlled statements are allowed.",
+    "blocked_under_evaluation": "Controlled statements are blocked while the support posture remains under evaluation.",
+    "blocked_missing_boundary": "Controlled statements are blocked because required boundaries or refs are missing."
+  },
+  "validation_context": {
+    "external_validation_present": false,
+    "closure_state": "not_closed",
+    "validation_state": "externally_unvalidated",
+    "baseline_present": false
+  },
+  "global_blocking_conditions": [
+    "external_validation_absent",
+    "strong_claim_promotion_blocked",
+    "external_claim_facing_surface_blocked"
+  ],
+  "outputs": {
+    "condition_metrics_summary.json": {
+      "artifact": "condition_metrics_summary.json",
+      "output_role": "descriptive_output",
+      "consumption_class": "descriptive_machine_readable",
+      "claim_gate_status": "claim_unsafe",
+      "export_gate_status": "local_export_with_boundary_only",
+      "statement_gate_status": "no_statement_authorized",
+      "allowed_surfaces": [
+        "local_artifact_surface",
+        "developer_inspection_surface",
+        "local_report_surface",
+        "descriptive_export_surface",
+        "small_batch_summary_surface"
+      ],
+      "blocked_surfaces": [
+        "internal_runtime_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "required_boundaries": [
+        "interpretation_boundary"
+      ],
+      "required_refs": [
+        "support_boundary_ref",
+        "consumption_policy_ref",
+        "surface_policy_ref"
+      ],
+      "boundaries_present": {
+        "interpretation_boundary": true
+      },
+      "refs_present": {
+        "support_boundary_ref": true,
+        "consumption_policy_ref": true,
+        "surface_policy_ref": true
+      },
+      "boundary_ready": true,
+      "refs_ready": true,
+      "human_facing_allowed": true,
+      "claim_facing_allowed": false,
+      "blocked_by": [
+        "external_validation_absent",
+        "small_batch_descriptive_only"
+      ],
+      "interpretation_allowed": "Small-batch descriptive summary review only.",
+      "interpretation_not_allowed": [
+        "Do not read this as external validation.",
+        "Do not read this as claim closure."
+      ],
+      "prohibited_statement_classes": [
+        "framework_confirmation",
+        "theory_validation",
+        "causal_confirmation",
+        "external_validation",
+        "final_classification",
+        "ontological_confirmation",
+        "truth_labeling"
+      ],
+      "notes": "Condition summary may appear only on descriptive local surfaces."
+    },
+    "condition_comparison.json": {
+      "artifact": "condition_comparison.json",
+      "output_role": "descriptive_output",
+      "consumption_class": "blocked_for_external_claiming",
+      "claim_gate_status": "claim_unsafe",
+      "export_gate_status": "blocked_for_external_claiming",
+      "statement_gate_status": "no_statement_authorized",
+      "allowed_surfaces": [
+        "local_artifact_surface",
+        "small_batch_summary_surface"
+      ],
+      "blocked_surfaces": [
+        "internal_runtime_surface",
+        "developer_inspection_surface",
+        "local_report_surface",
+        "descriptive_export_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "required_boundaries": [
+        "interpretation_boundary"
+      ],
+      "required_refs": [
+        "support_boundary_ref",
+        "consumption_policy_ref",
+        "surface_policy_ref"
+      ],
+      "boundaries_present": {
+        "interpretation_boundary": true
+      },
+      "refs_present": {
+        "support_boundary_ref": true,
+        "consumption_policy_ref": true,
+        "surface_policy_ref": true
+      },
+      "boundary_ready": true,
+      "refs_ready": true,
+      "human_facing_allowed": false,
+      "claim_facing_allowed": false,
+      "blocked_by": [
+        "external_validation_absent",
+        "causal_read_blocked",
+        "comparison_output_not_confirmatory",
+        "external_claim_surface_blocked"
+      ],
+      "interpretation_allowed": "Internal descriptive delta review only.",
+      "interpretation_not_allowed": [
+        "Do not read this as causal confirmation.",
+        "Do not read this as external validation."
+      ],
+      "prohibited_statement_classes": [
+        "framework_confirmation",
+        "theory_validation",
+        "causal_confirmation",
+        "external_validation",
+        "final_classification",
+        "ontological_confirmation",
+        "truth_labeling"
+      ],
+      "notes": "Condition comparison stays blocked for descriptive export and controlled statements."
+    },
+    "condition_support_labels.json": {
+      "artifact": "condition_support_labels.json",
+      "output_role": "support_labeled_output",
+      "consumption_class": "support_only_not_claim_safe",
+      "claim_gate_status": "support_only_not_claim_safe",
+      "export_gate_status": "blocked_under_evaluation",
+      "statement_gate_status": "blocked_under_evaluation",
+      "allowed_surfaces": [
+        "local_artifact_surface",
+        "developer_inspection_surface",
+        "local_report_surface",
+        "small_batch_summary_surface"
+      ],
+      "blocked_surfaces": [
+        "internal_runtime_surface",
+        "descriptive_export_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "required_boundaries": [
+        "non_claim_boundaries",
+        "interpretation_not_allowed"
+      ],
+      "required_refs": [
+        "consumption_policy_ref",
+        "surface_policy_ref",
+        "controlled_statements_ref"
+      ],
+      "boundaries_present": {
+        "non_claim_boundaries": true,
+        "interpretation_not_allowed": true
+      },
+      "refs_present": {
+        "consumption_policy_ref": true,
+        "surface_policy_ref": true,
+        "controlled_statements_ref": true
+      },
+      "boundary_ready": true,
+      "refs_ready": true,
+      "human_facing_allowed": true,
+      "claim_facing_allowed": false,
+      "blocked_by": [
+        "external_validation_absent",
+        "support_label_not_truth_label",
+        "support_label_under_evaluation_blocks_export",
+        "support_label_under_evaluation_blocks_statement_surface"
+      ],
+      "interpretation_allowed": "Condition-level support posture review only.",
+      "interpretation_not_allowed": [
+        "Do not read this as framework confirmation.",
+        "Do not read this as external validation."
+      ],
+      "prohibited_statement_classes": [
+        "framework_confirmation",
+        "theory_validation",
+        "causal_confirmation",
+        "external_validation",
+        "final_classification",
+        "ontological_confirmation",
+        "truth_labeling"
+      ],
+      "notes": "Condition support labels may feed only local descriptive controlled statements."
+    }
+  },
+  "condition_level_access": {},
+  "interpretation_boundary": "Condition-level surface policy only; does not promote summaries, comparisons, or support labels into causal or externally valid statements."
+}

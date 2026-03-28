@@ -1,0 +1,63 @@
+{
+  "artifact_role": "release_bundle_manifest",
+  "bundle_id": "internal_release_2026-03-28T20-57-25-417Z",
+  "bundle_root": ".",
+  "source_artifacts_root": "artifacts",
+  "git": {
+    "branch": "main",
+    "commit": "60486d330d212255126aeb86f28688ed7e93c98b"
+  },
+  "included_outputs": [
+    {
+      "artifact": "condition_metrics_summary.json",
+      "path": "exports/condition_metrics_summary.json",
+      "mode": "descriptive_export_surface"
+    },
+    {
+      "artifact": "condition_support_labels.json",
+      "path": "exports/condition_support_labels.json",
+      "mode": "local_report_surface"
+    },
+    {
+      "artifact": "condition_local_report.json",
+      "path": "condition_local_report.json",
+      "mode": "local_report_surface"
+    },
+    {
+      "artifact": "condition_output_consumption_policy.json",
+      "path": "condition_output_consumption_policy.json",
+      "mode": "governance_metadata"
+    },
+    {
+      "artifact": "condition_output_surface_policy.json",
+      "path": "condition_output_surface_policy.json",
+      "mode": "governance_metadata"
+    },
+    {
+      "artifact": "condition_controlled_statements.json",
+      "path": "condition_controlled_statements.json",
+      "mode": "governance_metadata"
+    }
+  ],
+  "excluded_outputs": [
+    {
+      "artifact": "condition_comparison.json",
+      "reason_code": "blocked_claim_facing_output",
+      "decision_path": "exports/condition_comparison.json.export_decision.json"
+    }
+  ],
+  "copied_docs": [
+    "docs/REPRODUCIBILITY_CONTRACT.md",
+    "docs/OPERATIONAL_READINESS.md",
+    "docs/RELEASE_PROCESS.md"
+  ],
+  "readiness_manifest": "operational_readiness_manifest.json",
+  "artifact_manifest": "artifact_manifest.json",
+  "interpretation_boundary": "Internal release bundle only; bounded local descriptive package, not public claim-safe release, not external validation, not scientific closure.",
+  "non_claim_restrictions": [
+    "Do not treat this bundle as external validation.",
+    "Do not treat this bundle as theory confirmation.",
+    "Do not promote excluded outputs into claim-facing material.",
+    "This bundle is internal operational packaging only."
+  ]
+}

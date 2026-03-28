@@ -1,0 +1,468 @@
+{
+  "artifact_role": "execution_campaign_audit_readout",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-03-26T23:12:24.198Z",
+  "authoritative_campaign": {
+    "campaign_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z",
+    "batch_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch",
+    "campaign_root": "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z",
+    "batch_root": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch",
+    "authoritative_artifact_set": {
+      "campaign_execution_plan": "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/campaign_execution_plan.json",
+      "evaluation_protocol_manifest": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/evaluation_protocol_manifest.json",
+      "evaluation_batch_report": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/evaluation_batch_report.json",
+      "condition_evaluation_summary": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/condition_evaluation_summary.json",
+      "condition_comparison_report": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/condition_comparison_report.json",
+      "execution_campaign_readout": "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/execution_campaign_readout.json",
+      "latest_campaign_pointer": "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/latest_campaign_pointer.json",
+      "ecosystem_release_candidate_manifest": "artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-26T23-12-17-312Z/ecosystem_release_candidate_manifest.json"
+    },
+    "authoritative_baseline_linkage": {
+      "qicn_system_head": "a34a352c831b5e4ee2ade212ad05b159fb59d748",
+      "qicn_release_head": "16651c9e7a018a4b8e8120730b4be33b63028fed",
+      "release_freeze_commit": "2d7504be95ca33af5941e30abf7059dc2774edca",
+      "ecosystem_candidate_manifest": "artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-26T23-12-17-312Z/ecosystem_release_candidate_manifest.json",
+      "evaluation_architecture_freeze": "docs/evaluation_architecture_freeze.v1.json"
+    }
+  },
+  "artifact_audit": {
+    "campaign_execution_plan": {
+      "id": "campaign_execution_plan",
+      "path": "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/campaign_execution_plan.json",
+      "role": "execution_campaign_plan",
+      "semantic_layer": "manifest",
+      "source_inputs": [
+        "docs/evaluation_architecture_freeze.v1.json",
+        "docs/evaluation_protocol.v1.json",
+        "docs/evaluation_comparison_matrix.v1.json",
+        "docs/evaluation_metrics_registry.v1.json",
+        "docs/evaluation_statistical_policy.v1.json",
+        "artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-26T23-12-17-312Z/ecosystem_release_candidate_manifest.json"
+      ],
+      "required_fields": [
+        "artifact_role",
+        "campaign_id",
+        "batch_id",
+        "architecture_freeze_ref",
+        "baseline.qicn_system_head",
+        "baseline.qicn_release_head",
+        "conditions",
+        "n_per_condition",
+        "seed_schedule",
+        "blocked_claim_facing_outputs",
+        "interpretation_boundary"
+      ],
+      "required_fields_present": true,
+      "missing_required_fields": [],
+      "local_path_leak_detected": false,
+      "non_claim_boundary": "Execution campaign plan only; internal reproducible evaluation campaign, not external validation, not theory confirmation, not claim closure.",
+      "allowed_surfaces": [
+        "local_artifact_surface",
+        "ecosystem_internal_manifest_surface"
+      ],
+      "blocked_surfaces": [
+        "claim_facing_surface",
+        "controlled_statement_surface"
+      ],
+      "risks_of_overreading": [
+        "treating planning metadata as empirical support",
+        "reading blocked outputs as export authorization"
+      ],
+      "consistency": {
+        "internal": true,
+        "notes": [
+          "campaign_plan_uses_blocked_claim_facing_outputs_without_direct_claim_facing_status_field"
+        ],
+        "failures": [],
+        "semantic_overreach": []
+      },
+      "status": "coherent_with_notes"
+    },
+    "evaluation_protocol_manifest": {
+      "id": "evaluation_protocol_manifest",
+      "path": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/evaluation_protocol_manifest.json",
+      "role": "evaluation_protocol_manifest",
+      "semantic_layer": "manifest",
+      "source_inputs": [
+        "docs/evaluation_protocol.v1.json",
+        "docs/evaluation_comparison_matrix.v1.json",
+        "docs/evaluation_metrics_registry.v1.json",
+        "docs/evaluation_controls_registry.v1.json",
+        "docs/evaluation_statistical_policy.v1.json",
+        "artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-26T23-12-17-312Z/ecosystem_release_candidate_manifest.json"
+      ],
+      "required_fields": [
+        "artifact_role",
+        "batch_id",
+        "protocol_ref",
+        "comparison_matrix_ref",
+        "metrics_registry_ref",
+        "controls_registry_ref",
+        "statistical_policy_ref",
+        "ecosystem_candidate_manifest_ref",
+        "ecosystem_candidate_status",
+        "seed_schedule",
+        "condition_order",
+        "required_run_artifacts",
+        "required_batch_artifacts",
+        "blocked_claim_facing_outputs",
+        "claim_facing_status",
+        "interpretation_boundary"
+      ],
+      "required_fields_present": true,
+      "missing_required_fields": [],
+      "local_path_leak_detected": false,
+      "non_claim_boundary": "Evaluation protocol manifest only; internal experimental coordination over a frozen ecosystem baseline, never external validation, never theory confirmation.",
+      "allowed_surfaces": [
+        "local_artifact_surface",
+        "ecosystem_internal_manifest_surface"
+      ],
+      "blocked_surfaces": [
+        "claim_facing_surface",
+        "controlled_statement_surface"
+      ],
+      "risks_of_overreading": [
+        "reading protocol linkage as empirical result"
+      ],
+      "consistency": {
+        "internal": true,
+        "notes": [],
+        "failures": [],
+        "semantic_overreach": []
+      },
+      "status": "coherent"
+    },
+    "evaluation_batch_report": {
+      "id": "evaluation_batch_report",
+      "path": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/evaluation_batch_report.json",
+      "role": "evaluation_batch_report",
+      "semantic_layer": "batch_status",
+      "source_inputs": [
+        "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/condition_evaluation_summary.json",
+        "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/condition_comparison_report.json"
+      ],
+      "required_fields": [
+        "artifact_role",
+        "batch_id",
+        "status",
+        "run_count",
+        "condition_count",
+        "seed_schedule",
+        "condition_statuses",
+        "comparison_statuses",
+        "blocked_claim_facing_outputs",
+        "interpretation_boundary"
+      ],
+      "required_fields_present": true,
+      "missing_required_fields": [],
+      "local_path_leak_detected": false,
+      "non_claim_boundary": "Batch report only; descriptive internal evaluation status, never claim closure, never corpus validation, never theory confirmation.",
+      "allowed_surfaces": [
+        "local_artifact_surface",
+        "ecosystem_internal_manifest_surface"
+      ],
+      "blocked_surfaces": [
+        "claim_facing_surface",
+        "controlled_statement_surface"
+      ],
+      "risks_of_overreading": [
+        "reading PASS as claim closure"
+      ],
+      "consistency": {
+        "internal": true,
+        "notes": [],
+        "failures": [],
+        "semantic_overreach": []
+      },
+      "status": "coherent"
+    },
+    "condition_evaluation_summary": {
+      "id": "condition_evaluation_summary",
+      "path": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/condition_evaluation_summary.json",
+      "role": "condition_evaluation_summary",
+      "semantic_layer": "summary",
+      "source_inputs": [
+        "run_evaluation_metrics.json",
+        "condition_metrics_summary.json",
+        "condition_support_labels.json"
+      ],
+      "required_fields": [
+        "artifact_role",
+        "protocol_ref",
+        "metrics_registry_ref",
+        "source_artifacts.runs_root",
+        "condition_count",
+        "conditions",
+        "claim_facing_status",
+        "interpretation_boundary"
+      ],
+      "required_fields_present": true,
+      "missing_required_fields": [],
+      "local_path_leak_detected": false,
+      "non_claim_boundary": "Condition-level descriptive evaluation summary only; not causal confirmation, not claim closure, not external validation.",
+      "allowed_surfaces": [
+        "local_artifact_surface",
+        "ecosystem_internal_manifest_surface"
+      ],
+      "blocked_surfaces": [
+        "claim_facing_surface",
+        "controlled_statement_surface"
+      ],
+      "risks_of_overreading": [
+        "reading support labels as truth labels",
+        "reading summary metrics as confirmatory"
+      ],
+      "consistency": {
+        "internal": true,
+        "notes": [],
+        "failures": [],
+        "semantic_overreach": []
+      },
+      "status": "coherent"
+    },
+    "condition_comparison_report": {
+      "id": "condition_comparison_report",
+      "path": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/condition_comparison_report.json",
+      "role": "condition_comparison_report",
+      "semantic_layer": "comparison",
+      "source_inputs": [
+        "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/condition_evaluation_summary.json",
+        "docs/evaluation_comparison_matrix.v1.json",
+        "docs/evaluation_metrics_registry.v1.json",
+        "docs/evaluation_statistical_policy.v1.json"
+      ],
+      "required_fields": [
+        "artifact_role",
+        "comparison_matrix_ref",
+        "statistical_policy_ref",
+        "source_artifacts.condition_evaluation_summary",
+        "comparisons",
+        "unsupported_comparisons",
+        "claim_facing_status",
+        "interpretation_boundary"
+      ],
+      "required_fields_present": true,
+      "missing_required_fields": [],
+      "local_path_leak_detected": false,
+      "non_claim_boundary": "Condition comparison report only; descriptive or minimal internal contrast, never causal confirmation, never theory validation.",
+      "allowed_surfaces": [
+        "local_artifact_surface",
+        "ecosystem_internal_manifest_surface"
+      ],
+      "blocked_surfaces": [
+        "claim_facing_surface",
+        "controlled_statement_surface"
+      ],
+      "risks_of_overreading": [
+        "reading minimal_contrast as causal proof",
+        "treating absent pairwise contrasts as allowed"
+      ],
+      "consistency": {
+        "internal": true,
+        "notes": [],
+        "failures": [],
+        "semantic_overreach": []
+      },
+      "status": "coherent"
+    },
+    "execution_campaign_readout": {
+      "id": "execution_campaign_readout",
+      "path": "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/execution_campaign_readout.json",
+      "role": "execution_campaign_readout",
+      "semantic_layer": "readout",
+      "source_inputs": [
+        "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/evaluation_protocol_manifest.json",
+        "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/evaluation_batch_report.json",
+        "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/condition_evaluation_summary.json",
+        "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch/aggregate/condition_comparison_report.json",
+        "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/campaign_execution_plan.json"
+      ],
+      "required_fields": [
+        "artifact_role",
+        "campaign_id",
+        "batch_id",
+        "status",
+        "architecture_freeze_ref",
+        "campaign_plan_ref",
+        "batch_artifacts.evaluation_protocol_manifest",
+        "batch_artifacts.evaluation_batch_report",
+        "batch_artifacts.condition_evaluation_summary",
+        "batch_artifacts.condition_comparison_report",
+        "run_counts.total_materialized_runs",
+        "sample_size_by_condition",
+        "comparisons",
+        "qa_qc.claim_facing_status",
+        "blocked_interpretations",
+        "interpretation_boundary"
+      ],
+      "required_fields_present": true,
+      "missing_required_fields": [],
+      "local_path_leak_detected": false,
+      "non_claim_boundary": "Execution campaign readout only; internal descriptive and minimal-contrast summary, not claim-facing, not confirmatory.",
+      "allowed_surfaces": [
+        "local_artifact_surface",
+        "ecosystem_internal_manifest_surface"
+      ],
+      "blocked_surfaces": [
+        "claim_facing_surface",
+        "controlled_statement_surface"
+      ],
+      "risks_of_overreading": [
+        "reading the readout as stronger than underlying comparison artifacts"
+      ],
+      "consistency": {
+        "internal": true,
+        "notes": [],
+        "failures": [],
+        "semantic_overreach": []
+      },
+      "status": "coherent"
+    },
+    "latest_campaign_pointer": {
+      "id": "latest_campaign_pointer",
+      "path": "artifacts/execution_campaign/latest_campaign_pointer.json",
+      "role": "execution_campaign_pointer",
+      "semantic_layer": "pointer",
+      "source_inputs": [
+        "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/campaign_execution_plan.json",
+        "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/execution_campaign_readout.json"
+      ],
+      "required_fields": [
+        "artifact_role",
+        "campaign_id",
+        "batch_id",
+        "campaign_root",
+        "batch_root",
+        "readout_path",
+        "plan_path",
+        "claim_facing_status"
+      ],
+      "required_fields_present": true,
+      "missing_required_fields": [],
+      "local_path_leak_detected": false,
+      "non_claim_boundary": "Pointer metadata only; not an interpretive artifact.",
+      "allowed_surfaces": [
+        "local_artifact_surface",
+        "ecosystem_internal_manifest_surface"
+      ],
+      "blocked_surfaces": [
+        "claim_facing_surface",
+        "controlled_statement_surface"
+      ],
+      "risks_of_overreading": [
+        "reading pointer metadata as empirical evidence"
+      ],
+      "consistency": {
+        "internal": true,
+        "notes": [
+          "pointer_is_routing_metadata_and_relies_on_referenced_artifacts_for_non_claim_boundary"
+        ],
+        "failures": [],
+        "semantic_overreach": []
+      },
+      "status": "coherent_with_notes"
+    },
+    "ecosystem_release_candidate_manifest": {
+      "id": "ecosystem_release_candidate_manifest",
+      "path": "artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-26T23-12-17-312Z/ecosystem_release_candidate_manifest.json",
+      "role": "ecosystem_release_candidate_manifest",
+      "semantic_layer": "manifest",
+      "source_inputs": [
+        "docs/EXECUTION_CAMPAIGN_FREEZE_BASELINE.md",
+        "docs/SUCCESSIVE_CAMPAIGN_DISCIPLINE.md",
+        "artifacts/ecosystem_release_candidate/ecosystem_verification_matrix.json",
+        "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/campaign_execution_plan.json",
+        "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/execution_campaign_readout.json",
+        "artifacts/execution_campaign/latest_campaign_pointer.json"
+      ],
+      "required_fields": [
+        "artifact_role",
+        "candidate_status",
+        "baselines.qicn_system.head",
+        "baselines.qicn_release.head",
+        "baselines.qicn_release.canonical_freeze_commit",
+        "protocolized_evaluation.manifests.campaign_execution_plan",
+        "protocolized_evaluation.manifests.execution_campaign_readout",
+        "protocolized_evaluation.manifests.latest_campaign_pointer",
+        "protocolized_evaluation.execution_campaign.audit_readout",
+        "protocolized_evaluation.execution_campaign.freeze_baseline",
+        "protocolized_evaluation.execution_campaign.freeze_manifest",
+        "protocolized_evaluation.execution_campaign.successive_discipline",
+        "protocolized_evaluation.execution_campaign.successive_discipline_manifest",
+        "protocolized_evaluation.execution_campaign.surface_class",
+        "protocolized_evaluation.interpretation_boundary",
+        "interpretation_boundary"
+      ],
+      "required_fields_present": true,
+      "missing_required_fields": [],
+      "local_path_leak_detected": false,
+      "non_claim_boundary": "Internal ecosystem release candidate only; cross-repo coordination layer, not external validation, not theory closure, not public release.",
+      "allowed_surfaces": [
+        "ecosystem_internal_manifest_surface"
+      ],
+      "blocked_surfaces": [
+        "claim_facing_surface",
+        "public_release_surface"
+      ],
+      "risks_of_overreading": [
+        "reading internal bundle linkage as public release or theory closure"
+      ],
+      "consistency": {
+        "internal": true,
+        "notes": [],
+        "failures": [],
+        "semantic_overreach": []
+      },
+      "status": "coherent"
+    }
+  },
+  "cross_artifact_consistency": {
+    "status": "PASS_WITH_NOTES",
+    "failures": [],
+    "notes": [
+      "one_or_more_artifacts_have_non_material_notes"
+    ]
+  },
+  "campaign_surface_gating": {
+    "status": "PASS",
+    "blocked_run_artifact": {
+      "artifact": "run_evaluation_metrics.json",
+      "decision_reason_code": "blocked_output_not_governed"
+    },
+    "blocked_batch_artifacts": [
+      {
+        "artifact": "condition_evaluation_summary.json",
+        "decision_reason_code": "blocked_output_not_governed"
+      },
+      {
+        "artifact": "condition_comparison_report.json",
+        "decision_reason_code": "blocked_output_not_governed"
+      },
+      {
+        "artifact": "evaluation_protocol_manifest.json",
+        "decision_reason_code": "blocked_output_not_governed"
+      },
+      {
+        "artifact": "evaluation_batch_report.json",
+        "decision_reason_code": "blocked_output_not_governed"
+      }
+    ],
+    "local_report_exclusions_confirmed": [
+      "condition_evaluation_summary.json",
+      "condition_comparison_report.json",
+      "evaluation_protocol_manifest.json",
+      "evaluation_batch_report.json"
+    ],
+    "campaign_artifact_policy_mode": {
+      "campaign_execution_plan": "internal_manifest_only",
+      "execution_campaign_readout": "internal_manifest_only",
+      "latest_campaign_pointer": "internal_manifest_only"
+    },
+    "notes": [
+      "campaign-level artifacts are internal-manifest-only and stay outside the small-batch surface policy, while batch artifacts are actively blocked by the export enforcer."
+    ],
+    "failures": []
+  },
+  "freezeable": true,
+  "interpretation_boundary": "Campaign audit only; operational coherence and internal-only gating audit, not external validation, not claim closure, not theory confirmation."
+}

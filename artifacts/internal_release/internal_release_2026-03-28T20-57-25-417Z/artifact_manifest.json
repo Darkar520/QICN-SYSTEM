@@ -1,0 +1,100 @@
+{
+  "artifact_role": "artifact_manifest",
+  "scope": "small_batch",
+  "artifacts_root": "artifacts",
+  "required_files": [
+    "condition_metrics_summary.json",
+    "condition_comparison.json",
+    "condition_support_labels.json",
+    "condition_output_consumption_policy.json",
+    "condition_output_surface_policy.json",
+    "condition_controlled_statements.json"
+  ],
+  "optional_files": [],
+  "missing_required_files": [],
+  "missing_optional_files": [],
+  "governed_outputs": [
+    "condition_metrics_summary.json",
+    "condition_comparison.json",
+    "condition_support_labels.json"
+  ],
+  "output_checks": {
+    "condition_metrics_summary.json": {
+      "artifact_present": true,
+      "required_refs": [
+        "support_boundary_ref",
+        "consumption_policy_ref",
+        "surface_policy_ref"
+      ],
+      "refs_present": {
+        "support_boundary_ref": true,
+        "consumption_policy_ref": true,
+        "surface_policy_ref": true
+      },
+      "required_boundaries": [
+        "interpretation_boundary"
+      ],
+      "boundaries_present": {
+        "interpretation_boundary": true
+      },
+      "local_report_decision": {
+        "allowed": true,
+        "reason_code": "allowed_surface_read"
+      }
+    },
+    "condition_comparison.json": {
+      "artifact_present": true,
+      "required_refs": [
+        "support_boundary_ref",
+        "consumption_policy_ref",
+        "surface_policy_ref"
+      ],
+      "refs_present": {
+        "support_boundary_ref": true,
+        "consumption_policy_ref": true,
+        "surface_policy_ref": true
+      },
+      "required_boundaries": [
+        "interpretation_boundary"
+      ],
+      "boundaries_present": {
+        "interpretation_boundary": true
+      },
+      "local_report_decision": {
+        "allowed": false,
+        "reason_code": "blocked_claim_facing_output"
+      }
+    },
+    "condition_support_labels.json": {
+      "artifact_present": true,
+      "required_refs": [
+        "consumption_policy_ref",
+        "surface_policy_ref",
+        "controlled_statements_ref"
+      ],
+      "refs_present": {
+        "consumption_policy_ref": true,
+        "surface_policy_ref": true,
+        "controlled_statements_ref": true
+      },
+      "required_boundaries": [
+        "non_claim_boundaries",
+        "interpretation_not_allowed"
+      ],
+      "boundaries_present": {
+        "non_claim_boundaries": true,
+        "interpretation_not_allowed": true
+      },
+      "local_report_decision": {
+        "allowed": true,
+        "reason_code": "allowed_surface_read"
+      }
+    }
+  },
+  "interpretation_boundary": "Artifact manifest only; operational structure and refs, not claim support, not external validation.",
+  "non_claim_restrictions": [
+    "Presence and refs do not imply theoretical closure.",
+    "Governed artifacts remain policy-bound outputs, not truth claims.",
+    "Local report accessibility does not imply claim-facing exportability."
+  ]
+}

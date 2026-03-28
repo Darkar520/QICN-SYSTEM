@@ -1,0 +1,56 @@
+{
+  "artifact_role": "output_surface_enforcement_decision",
+  "scope": "small_batch",
+  "artifact": "condition_metrics_summary.json",
+  "artifact_path": "condition_metrics_summary.json",
+  "requested_surface": "descriptive_export_surface",
+  "canonical_surface": "descriptive_export_surface",
+  "allowed": true,
+  "reason_code": "allowed_export",
+  "output_role": "descriptive_output",
+  "consumption_class": "descriptive_machine_readable",
+  "claim_gate_status": "claim_unsafe",
+  "export_gate_status": "local_export_with_boundary_only",
+  "statement_gate_status": "no_statement_authorized",
+  "allowed_surfaces": [
+    "local_artifact_surface",
+    "developer_inspection_surface",
+    "local_report_surface",
+    "descriptive_export_surface",
+    "small_batch_summary_surface"
+  ],
+  "blocked_surfaces": [
+    "internal_runtime_surface",
+    "controlled_statement_surface",
+    "external_claim_facing_surface"
+  ],
+  "required_boundaries": [
+    "interpretation_boundary"
+  ],
+  "required_refs": [
+    "support_boundary_ref",
+    "consumption_policy_ref",
+    "surface_policy_ref"
+  ],
+  "boundaries_present": {
+    "interpretation_boundary": true
+  },
+  "refs_present": {
+    "support_boundary_ref": true,
+    "consumption_policy_ref": true,
+    "surface_policy_ref": true
+  },
+  "boundary_ready": true,
+  "refs_ready": true,
+  "blocking_conditions": [
+    "external_validation_absent",
+    "small_batch_descriptive_only",
+    "allowed_surface_read"
+  ],
+  "interpretation_boundary": "Small-batch descriptive summary review only.",
+  "interpretation_not_allowed": [
+    "Do not read this as external validation.",
+    "Do not read this as claim closure."
+  ],
+  "emitted_to": "internal_release/internal_release_2026-03-28T20-57-25-417Z/exports/condition_metrics_summary.json"
+}

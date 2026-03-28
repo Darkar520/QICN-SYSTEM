@@ -1,0 +1,25 @@
+{
+  "activeRoot": "src",
+  "buildEntry": "src/index.jsx",
+  "sourceOfTruth": "src",
+  "legacyPathDecisions": [
+    {
+      "path": "SISTEMA CANON",
+      "decision": "LEGACY_TO_ARCHIVE",
+      "phase4ConsolidationStatus": "READY_TO_ARCHIVE_NEXT"
+    },
+    {
+      "path": "simulation",
+      "decision": "LEGACY_TO_BLOCK_FROM_RUNTIME",
+      "phase4ConsolidationStatus": "BLOCKED_KEEP_ONE_MORE_PHASE"
+    },
+    {
+      "path": "js",
+      "decision": "LEGACY_TO_BLOCK_FROM_RUNTIME",
+      "phase4ConsolidationStatus": "BLOCKED_KEEP_ONE_MORE_PHASE"
+    }
+  ],
+  "scannedFiles": 81,
+  "violations": [],
+  "status": "PASS"
+}

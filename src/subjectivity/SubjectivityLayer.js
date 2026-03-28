@@ -24,12 +24,12 @@ export const SUBJECTIVITY_ROOT_SCHEMAS = Object.freeze({
 
 export const SUBJECTIVITY_LAYER_STATUS = Object.freeze({
   layer_name: 'Subjectivity Runtime Layer',
-  layer_id: 'subjectivity_runtime_layer.srt4',
+  layer_id: 'subjectivity_runtime_layer.srt5',
   implementation_status: 'partial_runtime_path',
   execution_status:
-    'executing_selfindex_ownership_continuity_perspective_valuation_intervention_and_partial_reducibility_only_in_srt4',
+    'executing_selfindex_ownership_continuity_perspective_valuation_intervention_partial_reducibility_and_internal_gate_closure_in_srt5',
   interpretation_boundary:
-    'SRT-4 implements SelfIndex, OwnershipField, ContinuityField, FirstPersonPerspective, ValuationAsymmetry, a minimal InterventionProfile surface, and a partial reducibility comparator only. It does not execute the final subjectivity gate, batch closure, or claim-facing promotion.'
+    'SRT-5 implements SelfIndex, OwnershipField, ContinuityField, FirstPersonPerspective, ValuationAsymmetry, a minimal InterventionProfile surface, a partial reducibility comparator, and an internal non-claim-facing subjectivity gate. It does not implement external validation, phenomenality closure, batch/campaign hardening, or claim-facing promotion.'
 });
 
 export class SubjectivityLayer {

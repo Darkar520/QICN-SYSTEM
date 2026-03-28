@@ -1,8 +1,8 @@
 # Subjectivity Interventions And Negative Controls
 
 This document records the intervention family planned for the Subjectivity
-Runtime Layer and the minimal valuation/intervention controls already executed
-in SRT-4.
+Runtime Layer and the minimal valuation/intervention/gating controls executed
+through SRT-5.
 
 ## Planned intervention family
 
@@ -29,7 +29,7 @@ in SRT-4.
 
 ## Negative controls
 
-Implemented in SRT-4 verification:
+Implemented through SRT-5 verification:
 
 - `label_only_swap_control`
 - `bookkeeping_control`
@@ -39,6 +39,10 @@ Implemented in SRT-4 verification:
 - `nonselective_damage_control`
 - `unfair_loss_control`
 - `incomplete_comparator_control`
+- `gate_compensation_control`
+- `missing_coordinate_control`
+- `drift_invalidation_control`
+- `comparator_unsupported_control`
 
 Still planned for later blocks:
 
@@ -52,14 +56,15 @@ Still planned for later blocks:
 - negative controls are meant to block flattering misreads
 - weak-rival reconstruction is meant to support the irreducibility burden in later blocks
 
-## SRT-4 boundary
+## SRT-5 boundary
 
-In SRT-4:
+In SRT-5:
 
 - no full intervention family is executed
 - only a minimal valuation-oriented harness is executed
 - `self_nonself_valuation_inversion` and `risk_consequence_reassignment` are the only executed perturbations
 - only a partial reducibility comparator over currently implemented surfaces is executed
+- an internal non-claim-facing gate closure is executed over the seven available surfaces
 - no intervention artifact is claim evidence
 
 These names exist now so that later blocks do not invent incompatible wording or

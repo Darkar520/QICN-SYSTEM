@@ -4,20 +4,36 @@
   "type": "object",
   "required": [
     "artifact_role",
+    "artifact_version",
     "schema_version",
+    "layer_version",
+    "paper_source",
+    "runtime_status",
     "run_id",
     "coordinate_estimates",
     "functional_status",
+    "global_functional_result",
+    "warnings",
     "implementation_status",
-    "interpretation_boundary"
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
   ],
   "properties": {
     "artifact_role": { "const": "subjectivity_runtime_projection" },
+    "artifact_version": { "type": "string" },
     "schema_version": { "type": "string" },
-    "run_id": { "type": ["string", "null"] },
-    "coordinate_estimates": { "type": ["object", "null"] },
+    "layer_version": { "type": "string" },
+    "paper_source": { "type": "object" },
+    "runtime_status": { "type": "string" },
+    "run_id": { "type": "string" },
+    "coordinate_estimates": { "type": "object" },
     "functional_status": { "type": "string" },
+    "global_functional_result": { "type": "object" },
+    "warnings": { "type": "array", "items": { "type": "string" } },
     "implementation_status": { "type": "string" },
-    "interpretation_boundary": { "type": "string" }
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
   }
 }

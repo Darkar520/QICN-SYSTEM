@@ -1,7 +1,7 @@
 {
   "artifact_role": "subjectivity_rival_family_registry",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt4",
+  "layer_id": "subjectivity_runtime_layer.srt5",
   "comparator_implementation_status": "minimally_executable_partial_runtime",
   "rivals": [
     {
@@ -75,7 +75,7 @@
       "Hybrids use the same loss family and complexity penalty as pure rivals and the strong model.",
       "Higher-order hybrids remain out of scope in SRT-4."
     ],
-    "status": "pairwise_finite_hybrids_minimally_executable_in_srt4"
+    "status": "pairwise_finite_hybrids_minimally_executable_through_srt5"
   },
   "admissible_closure_note": "Comparator burden is against the weak family and its finite admissible composites under the same loss family and explicit complexity penalty.",
   "forbidden_inferences": [
@@ -84,9 +84,9 @@
     "presence_of_rival_registry_implies_final_irreducibility_proof"
   ],
   "notes": [
-    "SRT-4 executes a minimal pure-rival family and pairwise admissible hybrid closure only.",
-    "Comparator scope is intentionally limited to the currently implemented SRT-4 runtime coordinates.",
+    "SRT-5 inherits the SRT-4 pure-rival family and pairwise admissible hybrid closure.",
+    "Comparator scope remains intentionally limited to the currently implemented SRT-5 runtime coordinates and SRT-4-level weak closure.",
     "No reducibility conclusion may be promoted externally from this registry alone."
   ],
-  "interpretation_boundary": "Rival-family registry only; minimal comparator scope definition for SRT-4, not external validation, not final irreducibility closure."
+  "interpretation_boundary": "Rival-family registry only; minimal comparator scope definition reused by SRT-5, not external validation, not final irreducibility closure."
 }

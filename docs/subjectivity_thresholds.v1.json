@@ -1,8 +1,8 @@
 {
   "artifact_role": "subjectivity_threshold_registry",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt4",
-  "status": "provisional_srt4_local_coordinate_and_comparator_thresholds_not_empirically_calibrated",
+  "layer_id": "subjectivity_runtime_layer.srt5",
+  "status": "provisional_srt5_internal_gate_thresholds_not_empirically_calibrated",
   "coordinate_thresholds": {
     "SelfIndex": 0.5,
     "OwnershipField": 0.5,
@@ -14,7 +14,22 @@
   },
   "global_thresholds": {
     "Gamma_subj": 0.5,
-    "Phi_subj": 0.5
+    "Phi_subj": 0.55
+  },
+  "functional_weights": {
+    "SelfIndex": 0.15,
+    "OwnershipField": 0.15,
+    "ContinuityField": 0.12,
+    "FirstPersonPerspective": 0.12,
+    "ValuationAsymmetry": 0.14,
+    "InterventionProfile": 0.16,
+    "IrreducibilityMargin": 0.16
+  },
+  "support_class_thresholds": {
+    "subjectivity_internal_strong_support": {
+      "Gamma_subj": 0.7,
+      "Phi_subj": 0.68
+    }
   },
   "drift_tolerances": {
     "SelfIndex": 0.05,
@@ -27,7 +42,9 @@
   },
   "calibration_boundary": {
     "empirically_calibrated": false,
-    "usable_for_runtime_gate": false,
+    "usable_for_runtime_gate": true,
+    "usable_for_internal_subjectivity_gate": true,
+    "usable_for_external_claiming": false,
     "usable_for_scaffold_consistency": true,
     "usable_for_selfindex_local_heuristics": true,
     "usable_for_ownership_local_heuristics": true,
@@ -39,8 +56,8 @@
   },
   "notes": [
     "Thresholds remain provisional and are not empirically calibrated.",
-    "SRT-4 may use SelfIndex, OwnershipField, ContinuityField, FirstPersonPerspective, ValuationAsymmetry, InterventionProfile, and IrreducibilityMargin thresholds as local internal heuristics only.",
-    "No runtime claim may cite these thresholds as subjectivity evidence or gate closure."
+    "SRT-5 may use these thresholds for internal gate execution only.",
+    "No runtime claim may cite these thresholds as external evidence or validation."
   ],
-  "interpretation_boundary": "Threshold registry only; provisional local heuristic values, not empirical calibration, not support evidence, not admissible gate output."
+  "interpretation_boundary": "Threshold registry only; provisional internal gate thresholds for SRT-5, not empirical calibration, not external validation, not claim-facing evidence."
 }

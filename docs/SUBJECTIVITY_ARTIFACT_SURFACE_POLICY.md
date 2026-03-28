@@ -1,62 +1,23 @@
 # Subjectivity Artifact Surface Policy
 
-The Subjectivity Runtime Layer inherits the existing governed-surface posture of
-`QICN-SYSTEM`.
+## Rule
 
-This surface policy is framework-internal only.
-It is not externally validated.
+All subjectivity artifacts remain framework-internal only.
+They are not externally validated.
 
-## Artifact classes
+## Allowed surfaces
 
-- `primary`
-  - coordinate-level artifacts
-  - internal only
-- `derived`
-  - comparator or intervention summaries
-  - internal only
-- `gate_facing`
-  - internal gate outputs
-  - still not claim-facing
-- `manifest_root`
-  - structural manifest only
-  - never evidence by itself
+- primary and derived artifacts: `developer_inspection_surface`, `local_artifact_surface`
+- gate result only: `developer_inspection_surface`, `local_artifact_surface`, `local_report_surface`
 
-## SRT-4 outputs
+## Blocked surfaces
 
-Currently implemented outputs:
-
-- `self_index_state.json`
-- `ownership_attribution_report.json`
-- `subjective_continuity_report.json`
-- `first_person_perspective_report.json`
-- `subjective_valuation_report.json`
-- `subjectivity_intervention_profile.json`
-- `subjectivity_reducibility_report.json`
-
-Allowed surfaces for all seven:
-
-- `developer_inspection_surface`
-- `local_artifact_surface`
-
-Blocked surfaces for all seven:
-
-- `local_report_surface`
 - `controlled_statement_surface`
 - `external_claim_facing_surface`
 
-## Critical boundary
+## SRT-5 implication
 
-No subjectivity artifact created by this layer may be promoted as:
-
-- externally validated evidence
-- human equivalence
-- metaphysical closure
-- corpus confirmation
-- public claim-facing support
-
-## SRT-4 rule
-
-Because SRT-4 is still pre-gate and only partially comparator-backed, the seven
-implemented artifacts remain internal diagnostics only. They are not sufficient
-for subjectivity support, final irreducibility closure, or controlled
-statements.
+SRT-5 emits a gate result and a manifest, but that does not unlock controlled
+statements or public claims. The internal gate is a governed runtime closure,
+not an external validation result.
+This is not claim-facing promotion.

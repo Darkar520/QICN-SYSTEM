@@ -4,26 +4,58 @@
   "type": "object",
   "required": [
     "artifact_role",
+    "artifact_version",
     "schema_version",
     "subjectivity_layer_version",
     "runtime_status",
+    "support_class",
     "artifact_inventory",
+    "emitted_artifacts",
     "protocol_ref",
     "thresholds_ref",
     "surface_policy_ref",
     "artifact_schema_ref",
-    "interpretation_boundary"
+    "rival_family_ref",
+    "evaluator_version",
+    "estimator_version",
+    "support_summary",
+    "lineage",
+    "consumed_artifacts",
+    "drift_summary",
+    "condition_level_summary",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
   ],
   "properties": {
     "artifact_role": { "const": "subjectivity_manifest" },
+    "artifact_version": { "type": "string" },
     "schema_version": { "type": "string" },
     "subjectivity_layer_version": { "type": "string" },
     "runtime_status": { "type": "string" },
-    "artifact_inventory": { "type": "array", "items": { "type": "string" } },
+    "support_class": { "type": "string" },
+    "artifact_inventory": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "emitted_artifacts": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "protocol_ref": { "type": "string" },
     "thresholds_ref": { "type": "string" },
     "surface_policy_ref": { "type": "string" },
     "artifact_schema_ref": { "type": "string" },
-    "interpretation_boundary": { "type": "string" }
+    "rival_family_ref": { "type": "string" },
+    "evaluator_version": { "type": "string" },
+    "estimator_version": { "type": "string" },
+    "support_summary": { "type": "object" },
+    "lineage": { "type": "object" },
+    "consumed_artifacts": { "type": "object" },
+    "drift_summary": { "type": "object" },
+    "condition_level_summary": { "type": "object" },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
   }
 }

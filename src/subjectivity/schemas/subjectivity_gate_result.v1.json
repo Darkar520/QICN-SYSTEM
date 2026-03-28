@@ -4,20 +4,55 @@
   "type": "object",
   "required": [
     "artifact_role",
+    "artifact_version",
     "schema_version",
+    "layer_version",
+    "paper_source",
+    "runtime_status",
     "run_id",
+    "gamma_subj",
+    "phi_subj",
+    "local_threshold_results",
+    "global_gate_result",
+    "global_functional_result",
+    "drift_status",
     "gate_status",
     "runtime_status_class",
+    "classification",
+    "invalidation_reasons",
+    "warnings",
     "implementation_status",
-    "interpretation_boundary"
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
   ],
   "properties": {
     "artifact_role": { "const": "subjectivity_gate_result" },
+    "artifact_version": { "type": "string" },
     "schema_version": { "type": "string" },
-    "run_id": { "type": ["string", "null"] },
+    "layer_version": { "type": "string" },
+    "paper_source": { "type": "object" },
+    "runtime_status": { "type": "string" },
+    "run_id": { "type": "string" },
+    "condition_id": { "type": "string" },
+    "gamma_subj": { "type": ["number", "null"] },
+    "phi_subj": { "type": ["number", "null"] },
+    "local_threshold_results": { "type": "object" },
+    "global_gate_result": { "type": "object" },
+    "global_functional_result": { "type": "object" },
+    "drift_status": { "type": "object" },
     "gate_status": { "type": "string" },
     "runtime_status_class": { "type": "string" },
+    "classification": { "type": "string" },
+    "invalidation_reasons": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "condition_level_summary": { "type": "object" },
     "implementation_status": { "type": "string" },
-    "interpretation_boundary": { "type": "string" }
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
   }
 }

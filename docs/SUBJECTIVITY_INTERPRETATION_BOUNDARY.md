@@ -5,35 +5,33 @@
 - framework-internal only
 - not externally validated
 - not equivalent to human subjectivity
+- not phenomenality closure
 - not metaphysical closure
 - not automatic corpus confirmation
+- not claim-facing promotion
 
-## SRT-4 specific rule
+## SRT-5 specific rule
 
-SRT-4 establishes only:
+SRT-5 establishes only:
 
-- a minimal executable self-index heuristic
-- a minimal executable ownership attribution layer
-- a minimal executable continuity ledger
-- a minimal executable first-person-vs-neutral factorization comparison
-- a minimal executable valuation asymmetry layer
-- a minimal valuation-oriented intervention harness
-- a partial reducibility comparator over the currently implemented runtime surfaces
-- seven internal artifacts for those surfaces
-- negative controls against trivial relabeling, bookkeeping, copied memory, neutral factorization, reward aliasing, and nonselective damage
-- comparator negative controls against unfair loss and incomplete comparator coverage
+- seven internal coordinate surfaces with executable runtime estimators
+- a multiplicative `Phi_subj`
+- a conjunctive `Gamma_subj`
+- provisional local and global thresholds
+- lineage-based drift invalidation
+- an internal support taxonomy
 
-SRT-4 does not establish:
+SRT-5 does not establish:
 
-- admissible subjectivity support
-- strong subjectivity support
-- final rival defeat
-- full intervention profile closure
-- final irreducibility proof
-- runtime transport
+- external validation
+- human equivalence
+- phenomenality
+- ontological superiority
+- final ecosystem promotion
 
 ## Reading rule
 
-If a result is not backed by the remaining coordinates, implemented intervention
-logic, and implemented rival comparison, it must not be read as a subjectivity
-result.
+If comparator support is missing, intervention stability is weak, a coordinate is
+missing, or lineage drift is present, the SRT-5 result must be read as
+unsupported, invalidated, or insufficient rather than as a positive
+subjectivity result.

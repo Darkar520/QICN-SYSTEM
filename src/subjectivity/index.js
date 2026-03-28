@@ -66,3 +66,8 @@ export {
   SubjectivityReducibilityComparator,
   createSubjectivityReducibilityComparator
 } from './SubjectivityReducibilityComparator.js';
+
+export {
+  SubjectivityGateEvaluator,
+  createSubjectivityGateEvaluator
+} from './SubjectivityGateEvaluator.js';

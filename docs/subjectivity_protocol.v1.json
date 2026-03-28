@@ -2,7 +2,7 @@
   "artifact_role": "subjectivity_runtime_protocol_definition",
   "schema_version": "1.0.0",
   "layer_name": "Subjectivity Runtime Layer",
-  "layer_id": "subjectivity_runtime_layer.srt4",
+  "layer_id": "subjectivity_runtime_layer.srt5",
   "implementation_status": "partial_runtime_path",
   "paper_source": {
     "paper_id": "paper8_first_person_subjectivity",
@@ -59,12 +59,10 @@
     "gate_form": "min(I,O,C,P,V,Delta,R)",
     "scalar_name": "Phi_subj",
     "scalar_form": "multiplicative_weighted_product",
-    "status": "defined_in_paper_not_executed_in_srt4"
+    "status": "implemented_internal_gate_closure_in_srt5",
+    "non_compensation": true
   },
   "required_artifacts": [
-    "subjectivity_manifest.json",
-    "subjectivity_runtime_projection.json",
-    "subjectivity_gate_result.json",
     "self_index_state.json",
     "ownership_attribution_report.json",
     "subjective_continuity_report.json",
@@ -72,7 +70,9 @@
     "subjective_valuation_report.json",
     "subjectivity_intervention_profile.json",
     "subjectivity_reducibility_report.json",
-    "self_nonself_swap_report.json"
+    "subjectivity_runtime_projection.json",
+    "subjectivity_gate_result.json",
+    "subjectivity_manifest.json"
   ],
   "minimum_conditions": [
     "baseline_subjectivity_enabled",
@@ -95,7 +95,11 @@
     "perspective_neutral_factorization_control",
     "reward_aliasing_control",
     "unfair_loss_control",
-    "incomplete_comparator_control"
+    "incomplete_comparator_control",
+    "gate_compensation_control",
+    "missing_coordinate_control",
+    "drift_invalidation_control",
+    "comparator_unsupported_control"
   ],
   "reducibility_status_classes": [
     "comparison_unsupported",
@@ -105,27 +109,36 @@
     "partial_irreducibility_support"
   ],
   "runtime_status_classes": [
-    "unsupported_subjectivity_evaluation",
-    "insufficient_subjectivity_support",
+    "subjectivity_evaluation_unsupported",
+    "drift_invalidated",
     "weak_rival_reducible",
     "interventionally_unstable",
+    "subjectivity_gate_fail",
+    "insufficient_subjectivity_support",
     "subjectivity_admissible",
-    "subjectivity_strong_support"
+    "subjectivity_internal_strong_support"
+  ],
+  "strongest_defensible_claims": [
+    "Internal run-level gate closure can be computed over the seven available SRT-5 coordinates.",
+    "Gamma_subj and Phi_subj can now be evaluated with explicit non-compensation and invalidation rules.",
+    "Any admissibility class remains framework-internal only and depends on comparator support, intervention stability, and drift cleanliness."
   ],
   "forbidden_inferences": [
-    "srt4_reducibility_artifact_implies_final_irreducibility",
-    "subjectivity_artifact_presence_implies_external_validation",
-    "subjectivity_runtime_projection_implies_human_equivalence",
-    "subjectivity_gate_result_implies_metaphysical_closure",
-    "runtime_subjectivity_layer_implies_corpus_confirmation"
+    "subjectivity_gate_result_implies_external_validation",
+    "subjectivity_internal_strong_support_implies_human_equivalence",
+    "subjectivity_internal_strong_support_implies_phenomenality",
+    "subjectivity_admissible_implies_claim_facing_promotion",
+    "gate_execution_implies_final_weak_family_closure"
   ],
-  "framework_internal_notes": [
-    "SRT-4 implements SelfIndex, OwnershipField, ContinuityField, FirstPersonPerspective, ValuationAsymmetry, a minimal InterventionProfile surface, and a partial reducibility comparator only.",
-    "SRT-4 remains pre-final-irreducibility, pre-subjectivity-gate, and pre-batch closure.",
-    "Valuation is implemented only as a minimal self/non-self weighting layer over explicit valuation cases.",
-    "InterventionProfile is implemented only as a minimal valuation-oriented perturbation harness with matched negative controls.",
-    "Irreducibility is implemented only as a shared-loss, shared-penalty partial comparator over currently available runtime coordinates.",
-    "No runtime claim may read SRT-4 as first-person indexed subjectivity achieved or as final irreducibility closure."
+  "framework_internal_reading": [
+    "Read every SRT-5 status class as framework-internal only.",
+    "No SRT-5 artifact licenses phenomenality, human equivalence, metaphysical closure, or claim-facing promotion.",
+    "Comparator unsupported, intervention instability, missing artifacts, or drift invalidate or degrade the result."
   ],
-  "interpretation_boundary": "Subjectivity runtime protocol only; framework-internal partial runtime path, not external validation, not human equivalence, not metaphysical closure, not corpus confirmation."
+  "notes": [
+    "SRT-5 closes the internal run-level stack without touching external validation or ecosystem promotion.",
+    "Batch/campaign hardening and ecosystem-level candidate integration remain out of scope for this layer.",
+    "Thresholds remain provisional and not empirically calibrated."
+  ],
+  "interpretation_boundary": "Protocol definition only; SRT-5 internal gate closure over seven runtime surfaces, framework-internal only, not external validation, not phenomenality closure, not claim-facing evidence."
 }

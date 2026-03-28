@@ -1,7 +1,7 @@
 {
   "artifact_role": "subjectivity_artifact_schema_registry",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt4",
+  "layer_id": "subjectivity_runtime_layer.srt5",
   "layer_status": "partial_runtime_path",
   "root_schema_refs": {
     "subjectivity_manifest.json": "src/subjectivity/schemas/subjectivity_manifest.v1.json",
@@ -19,65 +19,108 @@
     "subjectivity_manifest.json": {
       "artifact_role": "subjectivity_manifest",
       "artifact_class": "manifest_root",
-      "source_of_truth_status": "authoritative_bundle_manifest_when_emitted",
-      "implementation_status": "schema_only_in_srt4",
+      "source_of_truth_status": "authoritative_internal_bundle_manifest_when_emitted",
+      "implementation_status": "implemented_internal_gate_closure_in_srt5",
       "minimum_fields": [
         "artifact_role",
+        "artifact_version",
         "schema_version",
         "subjectivity_layer_version",
         "runtime_status",
+        "support_class",
         "artifact_inventory",
+        "emitted_artifacts",
         "protocol_ref",
         "thresholds_ref",
         "surface_policy_ref",
         "artifact_schema_ref",
-        "interpretation_boundary"
+        "rival_family_ref",
+        "evaluator_version",
+        "estimator_version",
+        "support_summary",
+        "lineage",
+        "consumed_artifacts",
+        "drift_summary",
+        "condition_level_summary",
+        "interpretation_boundary",
+        "provenance",
+        "schema_ref"
       ],
       "provenance_fields": [
         "protocol_ref",
         "thresholds_ref",
         "surface_policy_ref",
-        "artifact_schema_ref"
+        "artifact_schema_ref",
+        "rival_family_ref",
+        "evaluator_version",
+        "estimator_version"
       ]
     },
     "subjectivity_runtime_projection.json": {
       "artifact_role": "subjectivity_runtime_projection",
       "artifact_class": "derived",
-      "source_of_truth_status": "derived_internal_when_emitted",
-      "implementation_status": "schema_only_in_srt4",
+      "source_of_truth_status": "derived_internal_projection_when_emitted",
+      "implementation_status": "implemented_internal_gate_closure_in_srt5",
       "minimum_fields": [
         "artifact_role",
+        "artifact_version",
         "schema_version",
+        "layer_version",
+        "paper_source",
+        "runtime_status",
         "run_id",
         "coordinate_estimates",
         "functional_status",
+        "global_functional_result",
+        "warnings",
         "implementation_status",
-        "interpretation_boundary"
+        "interpretation_boundary",
+        "provenance",
+        "schema_ref"
       ],
       "provenance_fields": [
         "protocol_ref",
         "thresholds_ref",
-        "source_artifacts"
+        "rival_family_ref",
+        "source_artifacts",
+        "estimator_version"
       ]
     },
     "subjectivity_gate_result.json": {
       "artifact_role": "subjectivity_gate_result",
       "artifact_class": "gate_facing",
       "source_of_truth_status": "authoritative_internal_gate_when_emitted",
-      "implementation_status": "schema_only_in_srt4",
+      "implementation_status": "implemented_internal_gate_closure_in_srt5",
       "minimum_fields": [
         "artifact_role",
+        "artifact_version",
         "schema_version",
+        "layer_version",
+        "paper_source",
+        "runtime_status",
         "run_id",
+        "gamma_subj",
+        "phi_subj",
+        "local_threshold_results",
+        "global_gate_result",
+        "global_functional_result",
+        "drift_status",
         "gate_status",
         "runtime_status_class",
+        "classification",
+        "invalidation_reasons",
+        "warnings",
         "implementation_status",
-        "interpretation_boundary"
+        "interpretation_boundary",
+        "provenance",
+        "schema_ref"
       ],
       "provenance_fields": [
+        "projection_ref",
         "protocol_ref",
         "thresholds_ref",
-        "projection_ref"
+        "rival_family_ref",
+        "estimator_version"
       ]
     },
     "self_index_state.json": {
@@ -96,18 +139,13 @@
         "candidate_indices",
         "candidate_count",
         "ambiguity_flag",
+        "stability_hint",
         "supporting_signals",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
       ],
-      "provenance_fields": [
-        "protocol_ref",
-        "thresholds_ref",
-        "source_trace_ref",
-        "input_profile",
-        "control_mode"
-      ]
+      "provenance_fields": ["protocol_ref", "source_trace_ref", "input_profile"]
     },
     "ownership_attribution_report.json": {
       "artifact_role": "ownership_attribution_report",
@@ -130,13 +168,7 @@
         "provenance",
         "schema_ref"
       ],
-      "provenance_fields": [
-        "protocol_ref",
-        "self_index_ref",
-        "source_trace_ref",
-        "input_profile",
-        "control_mode"
-      ]
+      "provenance_fields": ["protocol_ref", "self_index_ref", "source_trace_ref", "input_profile"]
     },
     "subjective_continuity_report.json": {
       "artifact_role": "subjective_continuity_report",
@@ -153,7 +185,7 @@
         "continuity_status",
         "continuity_margin",
         "privileged_line",
-        "rival_lines_summary",
+        "rival_line_count",
         "fracture_flag",
         "fork_flag",
         "ambiguity_flag",
@@ -162,14 +194,7 @@
         "provenance",
         "schema_ref"
       ],
-      "provenance_fields": [
-        "protocol_ref",
-        "self_index_ref",
-        "ownership_ref",
-        "source_trace_ref",
-        "input_profile",
-        "control_mode"
-      ]
+      "provenance_fields": ["protocol_ref", "self_index_ref", "ownership_ref", "source_trace_ref", "input_profile"]
     },
     "first_person_perspective_report.json": {
       "artifact_role": "first_person_perspective_report",
@@ -188,21 +213,12 @@
         "first_person_gain",
         "factorization_supported",
         "flattening_vulnerability",
-        "comparison_status",
         "warnings",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
       ],
-      "provenance_fields": [
-        "protocol_ref",
-        "self_index_ref",
-        "ownership_ref",
-        "continuity_ref",
-        "source_trace_ref",
-        "input_profile",
-        "control_mode"
-      ]
+      "provenance_fields": ["protocol_ref", "self_index_ref", "ownership_ref", "continuity_ref", "source_trace_ref", "input_profile"]
     },
     "subjective_valuation_report.json": {
       "artifact_role": "subjective_valuation_report",
@@ -216,6 +232,7 @@
         "paper_source",
         "runtime_status",
         "run_id",
+        "weighting_classification",
         "valuation_asymmetry_margin",
         "self_weight_summary",
         "nonself_weight_summary",
@@ -226,19 +243,12 @@
         "provenance",
         "schema_ref"
       ],
-      "provenance_fields": [
-        "protocol_ref",
-        "self_index_ref",
-        "ownership_ref",
-        "continuity_ref",
-        "perspective_ref",
-        "source_trace_ref"
-      ]
+      "provenance_fields": ["protocol_ref", "source_trace_ref", "input_profile"]
     },
     "subjectivity_intervention_profile.json": {
       "artifact_role": "subjectivity_intervention_profile",
       "artifact_class": "derived",
-      "source_of_truth_status": "derived_intervention_profile_when_emitted",
+      "source_of_truth_status": "authoritative_run_level_when_emitted",
       "implementation_status": "implemented_internal_support_in_srt3",
       "minimum_fields": [
         "artifact_role",
@@ -256,18 +266,13 @@
         "provenance",
         "schema_ref"
       ],
-      "provenance_fields": [
-        "protocol_ref",
-        "valuation_ref",
-        "source_trace_ref",
-        "input_profile"
-      ]
+      "provenance_fields": ["protocol_ref", "valuation_ref", "source_trace_ref", "input_profile"]
     },
     "subjectivity_reducibility_report.json": {
       "artifact_role": "subjectivity_reducibility_report",
       "artifact_class": "derived",
-      "source_of_truth_status": "derived_comparator_when_emitted",
-      "implementation_status": "implemented_internal_support_in_srt4",
+      "source_of_truth_status": "authoritative_run_level_when_emitted",
+      "implementation_status": "implemented_internal_partial_comparator_in_srt4",
       "minimum_fields": [
         "artifact_role",
         "artifact_version",
@@ -291,42 +296,8 @@
         "provenance",
         "schema_ref"
       ],
-      "provenance_fields": [
-        "protocol_ref",
-        "rival_family_ref",
-        "thresholds_ref",
-        "self_index_ref",
-        "ownership_ref",
-        "continuity_ref",
-        "perspective_ref",
-        "valuation_ref",
-        "intervention_ref",
-        "source_trace_ref",
-        "input_profile",
-        "control_mode"
-      ]
-    },
-    "self_nonself_swap_report.json": {
-      "artifact_role": "self_nonself_swap_report",
-      "artifact_class": "derived",
-      "source_of_truth_status": "derived_intervention_when_emitted",
-      "implementation_status": "planned_not_implemented",
-      "minimum_fields": [
-        "artifact_role",
-        "schema_version",
-        "run_id",
-        "intervention_name",
-        "selective_drop_signature",
-        "matched_control_ref",
-        "implementation_status",
-        "interpretation_boundary"
-      ],
-      "provenance_fields": [
-        "protocol_ref",
-        "source_artifacts",
-        "matched_control_ref"
-      ]
+      "provenance_fields": ["protocol_ref", "rival_family_ref", "thresholds_ref", "source_trace_ref", "input_profile"]
     }
   },
-  "interpretation_boundary": "Artifact schema registry only; framework-internal artifact contract, not evidence of subjectivity support or external validation."
+  "interpretation_boundary": "Artifact-schema registry only; SRT-5 contract for internal subjectivity artifacts, not external validation, not claim-facing evidence."
 }

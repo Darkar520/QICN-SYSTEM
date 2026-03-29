@@ -1,0 +1,151 @@
+{
+  "artifact_role": "evaluation_controls_registry",
+  "schema_version": "1.0.0",
+  "protocol_ref": "docs/evaluation_protocol.v1.json",
+  "entries": [
+    {
+      "id": "baseline",
+      "control_class": "baseline_condition",
+      "manipulates": [],
+      "preserves": [
+        "upstream_custom_source_path",
+        "no_forced_delay",
+        "no_forced_dropout"
+      ],
+      "breaks": [],
+      "minimal_hypothesis_tension": "Reference path for channel/burden and status metrics.",
+      "required_artifact_reflection": [
+        "run_metrics.experimental_condition.mode"
+      ],
+      "does_not_allow_concluding": [
+        "theory_confirmation",
+        "causal_support"
+      ]
+    },
+    {
+      "id": "replay",
+      "control_class": "control_condition",
+      "manipulates": [
+        "source_sequence_origin"
+      ],
+      "preserves": [
+        "replay_sequence_order",
+        "deterministic_source_fixture"
+      ],
+      "breaks": [
+        "live_upstream_dependence"
+      ],
+      "minimal_hypothesis_tension": "Tensions whether preserved source order alone changes supported metrics.",
+      "required_artifact_reflection": [
+        "run_metrics.experimental_condition.mode",
+        "run_metrics.experimental_condition.replay_source_id"
+      ],
+      "does_not_allow_concluding": [
+        "causal_dependence_on_upstream_entropy",
+        "framework_validation"
+      ]
+    },
+    {
+      "id": "shuffled",
+      "control_class": "control_condition",
+      "manipulates": [
+        "source_temporal_order"
+      ],
+      "preserves": [
+        "replay_value_multiset",
+        "deterministic_seed_reproducibility"
+      ],
+      "breaks": [
+        "original_replay_order"
+      ],
+      "minimal_hypothesis_tension": "Tensions temporal-order sensitivity without changing the value multiset.",
+      "required_artifact_reflection": [
+        "run_metrics.experimental_condition.mode",
+        "run_metrics.experimental_condition.replay_source_id"
+      ],
+      "does_not_allow_concluding": [
+        "causal_runtime_mechanism",
+        "theory_confirmation"
+      ]
+    },
+    {
+      "id": "prng_only",
+      "control_class": "ablation_condition",
+      "manipulates": [
+        "provider_source_class"
+      ],
+      "preserves": [
+        "seeded_reproducibility"
+      ],
+      "breaks": [
+        "provider_sample_origin"
+      ],
+      "minimal_hypothesis_tension": "Tensions dependence on provider-origin samples at the channel surface.",
+      "required_artifact_reflection": [
+        "run_metrics.experimental_condition.mode"
+      ],
+      "does_not_allow_concluding": [
+        "theory_invalidation",
+        "source_equivalence_claims"
+      ]
+    },
+    {
+      "id": "delayed_entropy",
+      "control_class": "intervention_condition",
+      "manipulates": [
+        "delivery_latency"
+      ],
+      "preserves": [
+        "provider_source_path",
+        "sample_content"
+      ],
+      "breaks": [
+        "baseline_delivery_timing"
+      ],
+      "minimal_hypothesis_tension": "Tensions whether latency burden appears on supported channel metrics.",
+      "required_artifact_reflection": [
+        "run_metrics.experimental_condition.mode",
+        "run_metrics.experimental_condition.delay_ms",
+        "run_metrics.stability.entropy_latency_mean_ms"
+      ],
+      "does_not_allow_concluding": [
+        "causal_effect_on_theoretical_state",
+        "framework_confirmation"
+      ]
+    },
+    {
+      "id": "dropout",
+      "control_class": "intervention_condition",
+      "manipulates": [
+        "delivery_availability"
+      ],
+      "preserves": [
+        "upstream_attempt_path"
+      ],
+      "breaks": [
+        "delivery_continuity"
+      ],
+      "minimal_hypothesis_tension": "Tensions whether fallback burden appears on supported channel metrics.",
+      "required_artifact_reflection": [
+        "run_metrics.experimental_condition.mode",
+        "run_metrics.experimental_condition.dropout_rate",
+        "run_metrics.burden.fallback_tick_ratio"
+      ],
+      "does_not_allow_concluding": [
+        "causal_effect_on_theoretical_state",
+        "framework_confirmation"
+      ]
+    }
+  ],
+  "unsupported_control_ideas": [
+    {
+      "id": "closed_loop_causal_runtime_intervention",
+      "reason": "Not instrumented as an evaluation surface in the current repository."
+    },
+    {
+      "id": "theory_level_counterfactual_corpus_intervention",
+      "reason": "Outside the scope of QICN-SYSTEM evaluation artifacts."
+    }
+  ],
+  "interpretation_boundary": "Controls registry only; experimental controls do not become theory confirmation."
+}

@@ -1,0 +1,155 @@
+{
+  "artifact_role": "ecosystem_release_candidate_manifest",
+  "generated_at": "2026-03-29T05:32:06.168Z",
+  "bundle_id": "ecosystem_release_candidate_2026-03-29T05-32-06-168Z",
+  "bundle_root": ".",
+  "candidate_status": "PASS",
+  "baselines": {
+    "qicn_system": {
+      "repository": "QICN-SYSTEM",
+      "branch": "main",
+      "head": "be0dc7c6cb252e1aedc3412feeaa939216bf9d71",
+      "upstream": "origin/main",
+      "operational_readiness_manifest": "system/manifests/operational_readiness_manifest.json",
+      "artifact_manifest": "system/manifests/artifact_manifest.json",
+      "operational_smoke_manifest": "system/manifests/operational_smoke_manifest.json",
+      "internal_release_bundle_manifest": "system/manifests/release_bundle_manifest.json",
+      "canonical_commands": [
+        "npm run verify:operational-readiness",
+        "npm run verify:artifacts",
+        "npm run smoke:operational",
+        "npm run release:bundle"
+      ],
+      "interpretation_boundary": "Operational baseline only; not theory confirmation, not external validation."
+    },
+    "qicn_release": {
+      "repository": "QICN-RELEASE",
+      "branch": "main",
+      "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+      "upstream": "origin/main",
+      "canonical_freeze_tag": "release-2026-03-01",
+      "canonical_freeze_commit": "2d7504be95ca33af5941e30abf7059dc2774edca",
+      "upstream_pin_status": "resolved",
+      "freeze_manifest": "release/manifests/release_freeze_manifest.json",
+      "claim_registry": "release/manifests/claim_registry.v1.json",
+      "canonical_release_manifest": "release/manifests/canonical_release_manifest.json",
+      "interpretation_boundary": "Canonical corpus baseline only; not external validation, not runtime validation."
+    }
+  },
+  "protocolized_evaluation": {
+    "architecture_freeze": {
+      "documentation": "ecosystem/docs/PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md",
+      "machine_readable": "ecosystem/manifests/evaluation_architecture_freeze.v1.json"
+    },
+    "execution_campaign": {
+      "freeze_baseline": "ecosystem/docs/EXECUTION_CAMPAIGN_FREEZE_BASELINE.md",
+      "freeze_manifest": "ecosystem/manifests/execution_campaign_freeze.v1.json",
+      "successive_discipline": "ecosystem/docs/SUCCESSIVE_CAMPAIGN_DISCIPLINE.md",
+      "successive_discipline_manifest": "ecosystem/manifests/successive_campaign_discipline.v1.json",
+      "audit_readout": "ecosystem/manifests/execution_campaign_audit_readout.json",
+      "latest_campaign_pointer": "ecosystem/manifests/latest_campaign_pointer.json",
+      "surface_class": "internal_manifest_only"
+    },
+    "documentation": {
+      "protocol": "ecosystem/docs/PROTOCOLIZED_EVALUATION_PROTOCOL.md",
+      "comparison_matrix": "ecosystem/docs/EVALUATION_COMPARISON_MATRIX.md",
+      "metrics_baseline": "ecosystem/docs/EVALUATION_METRICS_BASELINE.md",
+      "controls_registry": "ecosystem/docs/EVALUATION_CONTROLS_AND_INTERVENTIONS.md",
+      "statistical_policy": "ecosystem/docs/EVALUATION_STATISTICAL_POLICY.md",
+      "interpretation_boundary": "ecosystem/docs/EVALUATION_INTERPRETATION_BOUNDARY.md"
+    },
+    "manifests": {
+      "protocol_definition": "ecosystem/manifests/evaluation_protocol.v1.json",
+      "comparison_matrix": "ecosystem/manifests/evaluation_comparison_matrix.v1.json",
+      "metrics_registry": "ecosystem/manifests/evaluation_metrics_registry.v1.json",
+      "controls_registry": "ecosystem/manifests/evaluation_controls_registry.v1.json",
+      "statistical_policy": "ecosystem/manifests/evaluation_statistical_policy.v1.json",
+      "protocol_manifest": "ecosystem/manifests/evaluation_protocol_manifest.json",
+      "batch_report": "ecosystem/manifests/evaluation_batch_report.json",
+      "condition_summary": "ecosystem/manifests/condition_evaluation_summary.json",
+      "comparison_report": "ecosystem/manifests/condition_comparison_report.json",
+      "protocol_check": "ecosystem/manifests/evaluation_protocol_check.json",
+      "metrics_check": "ecosystem/manifests/evaluation_metrics_check.json",
+      "comparisons_check": "ecosystem/manifests/evaluation_comparisons_check.json",
+      "campaign_execution_plan": "ecosystem/manifests/campaign_execution_plan.json",
+      "execution_campaign_readout": "ecosystem/manifests/execution_campaign_readout.json",
+      "execution_campaign_audit_readout": "ecosystem/manifests/execution_campaign_audit_readout.json",
+      "latest_campaign_pointer": "ecosystem/manifests/latest_campaign_pointer.json"
+    },
+    "interpretation_boundary": "Protocolized evaluation only; internal descriptive/minimal-contrast layer, not external validation, not theory confirmation."
+  },
+  "interface_contract": {
+    "documentation": "ecosystem/docs/ECOSYSTEM_INTERFACE_CONTRACT.md",
+    "machine_readable": "ecosystem/manifests/ecosystem_interface_contract.v1.json"
+  },
+  "candidate_governance": {
+    "documentation": "ecosystem/docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md",
+    "machine_readable": "ecosystem/manifests/ecosystem_candidate_governance.v1.json"
+  },
+  "subjectivity": {
+    "layer_id": "subjectivity_runtime_layer.srt6",
+    "documentation": {
+      "runtime_protocol": "subjectivity/docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md",
+      "interpretation_boundary": "subjectivity/docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md",
+      "surface_policy": "subjectivity/docs/SUBJECTIVITY_ARTIFACT_SURFACE_POLICY.md",
+      "candidate_integration": "subjectivity/docs/SUBJECTIVITY_CANDIDATE_INTEGRATION.md",
+      "maintenance": "subjectivity/docs/SUBJECTIVITY_MAINTENANCE.md"
+    },
+    "manifests": {
+      "protocol": "subjectivity/manifests/subjectivity_protocol.v1.json",
+      "thresholds": "subjectivity/manifests/subjectivity_thresholds.v1.json",
+      "rival_family": "subjectivity/manifests/subjectivity_rival_family.v1.json",
+      "surface_policy": "subjectivity/manifests/subjectivity_surface_policy.v1.json",
+      "artifact_schema": "subjectivity/manifests/subjectivity_artifact_schema.v1.json"
+    },
+    "authoritative_artifacts": {
+      "runtime_projection": "subjectivity/subjectivity_runtime_projection.json",
+      "gate_result": "subjectivity/subjectivity_gate_result.json",
+      "manifest": "subjectivity/subjectivity_manifest.json",
+      "condition_summary": "subjectivity/subjectivity_condition_summary.json",
+      "batch_summary": "subjectivity/subjectivity_batch_summary.json",
+      "campaign_summary": "subjectivity/subjectivity_campaign_summary.json",
+      "candidate_projection": "subjectivity/subjectivity_candidate_projection.json",
+      "verification_matrix": "subjectivity/subjectivity_verification_matrix.json"
+    },
+    "status": {
+      "implemented": true,
+      "internally_supported": true,
+      "framework_internal_only": true,
+      "not_externally_validated": true
+    },
+    "interpretation_boundary": "Framework-internal subjectivity integration only; candidate inclusion does not authorize claim closure, external validation, phenomenality, or human equivalence."
+  },
+  "freeze_baseline": {
+    "documentation": "ecosystem/docs/ECOSYSTEM_FREEZE_BASELINE.md",
+    "release_notes": "ecosystem/docs/ECOSYSTEM_RELEASE_NOTES.md",
+    "maintenance_checklist": "ecosystem/docs/ECOSYSTEM_MAINTENANCE_CHECKLIST.md"
+  },
+  "gap_register": "ecosystem/manifests/ecosystem_gap_register.v1.json",
+  "verification_matrix": "ecosystem/manifests/ecosystem_verification_matrix.json",
+  "candidate_freeze_condition": {
+    "required_status": "PASS",
+    "required_open_gap_count": 0,
+    "required_repo_state": "clean_and_pushed_for_both_repositories"
+  },
+  "open_gaps": [],
+  "allowed_internal_use": [
+    "repo-local operational verification",
+    "repo-local canonical review",
+    "bounded internal bundle review",
+    "cross-repo governance and traceability review"
+  ],
+  "blocked_interpretations": [
+    "runtime outputs validate the corpus",
+    "canonical freeze validates the runtime",
+    "claim registry closes the claims",
+    "internal release candidate equals public claim-safe release"
+  ],
+  "interpretation_boundary": "Internal ecosystem release candidate only; cross-repo coordination layer, not external validation, not theory closure, not public release.",
+  "non_claim_restrictions": [
+    "Do not read this bundle as framework validation.",
+    "Do not read operational readiness as theoretical confirmation.",
+    "Do not read the canonical freeze as runtime proof.",
+    "Do not read implementation-linked claims as confirmatory claims."
+  ]
+}

@@ -51,7 +51,7 @@
     "derived_lineage_material_implies_primary_source_of_truth"
   ],
   "baseline_refs": {
-    "qicn_system_head": "cf8dddfcc862a4b402dce67349b3dc95849a3e3d",
+    "qicn_system_head": "be0dc7c6cb252e1aedc3412feeaa939216bf9d71",
     "qicn_release_head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
     "protocol_ref": "docs/subjectivity_protocol.v1.json",
     "thresholds_ref": "docs/subjectivity_thresholds.v1.json",
@@ -60,7 +60,7 @@
   },
   "interpretation_boundary": "Framework-internal only; subjectivity candidate projection records internal inclusion discipline for ecosystem candidate packaging, not externally validated, not claim closure, not phenomenality closure, and not human equivalence.",
   "provenance": {
-    "generated_at": "2026-03-29T05:26:41.686Z",
+    "generated_at": "2026-03-29T05:32:05.952Z",
     "current_lineage": {
       "layer_version": "subjectivity_runtime_layer.srt6.ecosystem.v1",
       "estimator_version": "subjectivity_ecosystem_integrator.srt6.v1",
@@ -102,7 +102,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "cf8dddfcc862a4b402dce67349b3dc95849a3e3d",
+        "head": "be0dc7c6cb252e1aedc3412feeaa939216bf9d71",
         "upstream": "origin/main"
       },
       "qicn_release": {

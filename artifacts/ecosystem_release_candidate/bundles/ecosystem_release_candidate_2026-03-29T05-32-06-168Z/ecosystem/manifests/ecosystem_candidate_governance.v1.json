@@ -1,0 +1,89 @@
+{
+  "artifact_role": "ecosystem_candidate_governance",
+  "schema_version": "1.1.0",
+  "candidate_designation": "internal_ecosystem_release_candidate",
+  "scope": [
+    "internal reproducibility",
+    "canonical traceability",
+    "cross_repo governance"
+  ],
+  "non_scope": [
+    "external_validation",
+    "theory_confirmation",
+    "claim_closure",
+    "public_release_authorization"
+  ],
+  "invalidates_candidate": [
+    "repo_not_clean",
+    "repo_not_pushed",
+    "system_canonical_command_change",
+    "system_governance_script_change",
+    "evaluation_protocol_or_registry_change_without_rerun",
+    "system_internal_bundle_policy_change",
+    "release_freeze_manifest_change",
+    "release_claim_registry_change",
+    "release_canonical_boundary_change",
+    "release_bundle_category_change",
+    "ecosystem_interface_contract_change",
+    "subjectivity_protocol_or_threshold_or_rival_family_change_without_rerun",
+    "subjectivity_candidate_projection_stale_or_invalidated",
+    "new_blocking_gap_in_ecosystem_gap_register"
+  ],
+  "requires_verifier_rerun": [
+    "manifest_change_copied_into_ecosystem_bundle",
+    "bundle_builder_change",
+    "verifier_change",
+    "baseline_doc_change",
+    "evaluation_runner_or_verifier_change",
+    "evaluation_artifact_change",
+    "subjectivity_manifest_or_policy_change",
+    "subjectivity_ecosystem_artifact_change",
+    "git_state_change"
+  ],
+  "requires_explicit_human_review": [
+    "canonical_freeze_reference_change",
+    "upstream_pin_evidence_change",
+    "claim_registry_granularity_or_classification_change",
+    "cross_repo_interface_boundary_change",
+    "attempted_protocolized_evaluation_to_corpus_validation_inference",
+    "attempted_runtime_to_corpus_validation_inference",
+    "attempted_corpus_to_runtime_confirmation_inference"
+  ],
+  "allowed_non_material_change": [
+    "typo_only_doc_edit_without_meaning_change",
+    "portable_path_fix_without_baseline_change",
+    "bundle_regeneration_from_same_pushed_baselines",
+    "provenance_note_update_without_gap_reclassification"
+  ],
+  "candidate_source_of_truth": [
+    "artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json",
+    "artifacts/ecosystem_release_candidate/ecosystem_verification_matrix.json",
+    "artifacts/ecosystem_release_candidate/ecosystem_gap_register.v1.json",
+    "docs/ECOSYSTEM_FREEZE_BASELINE.md",
+    "docs/ECOSYSTEM_INTERFACE_CONTRACT.md",
+    "docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md",
+    "docs/ECOSYSTEM_MAINTENANCE_CHECKLIST.md",
+    "docs/PROTOCOLIZED_EVALUATION_PROTOCOL.md",
+    "docs/EVALUATION_COMPARISON_MATRIX.md",
+    "docs/EVALUATION_METRICS_BASELINE.md",
+    "docs/EVALUATION_CONTROLS_AND_INTERVENTIONS.md",
+    "docs/EVALUATION_STATISTICAL_POLICY.md",
+    "docs/EVALUATION_INTERPRETATION_BOUNDARY.md",
+    "docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md",
+    "docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md",
+    "docs/SUBJECTIVITY_CANDIDATE_INTEGRATION.md",
+    "docs/SUBJECTIVITY_MAINTENANCE.md",
+    "docs/SUBJECTIVITY_AUDIT_HANDOFF.md",
+    "docs/subjectivity_protocol.v1.json",
+    "docs/subjectivity_thresholds.v1.json",
+    "docs/subjectivity_rival_family.v1.json",
+    "docs/subjectivity_surface_policy.v1.json",
+    "docs/subjectivity_artifact_schema.v1.json",
+    "artifacts/subjectivity/srt5/subjectivity_gate_result.json",
+    "artifacts/subjectivity/srt5/subjectivity_manifest.json",
+    "artifacts/subjectivity/srt6/subjectivity_candidate_projection.json",
+    "artifacts/subjectivity/srt6/subjectivity_verification_matrix.json",
+    "artifacts/subjectivity/srt6/subjectivity_campaign_summary.json"
+  ],
+  "interpretation_boundary": "Candidate governance only; subjectivity inclusion means implemented and internally supported, not external validation, not theory confirmation, not claim closure, not public release authorization."
+}

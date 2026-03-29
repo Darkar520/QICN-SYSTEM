@@ -25,7 +25,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; subjectivity batch summary is internal governance and comparability metadata, not externally validated, not claim-facing evidence, not phenomenality closure, and not human equivalence.",
   "provenance": {
-    "generated_at": "2026-03-29T05:26:41.685Z",
+    "generated_at": "2026-03-29T05:32:05.951Z",
     "current_lineage": {
       "layer_version": "subjectivity_runtime_layer.srt6.ecosystem.v1",
       "estimator_version": "subjectivity_ecosystem_integrator.srt6.v1",
@@ -67,7 +67,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "cf8dddfcc862a4b402dce67349b3dc95849a3e3d",
+        "head": "be0dc7c6cb252e1aedc3412feeaa939216bf9d71",
         "upstream": "origin/main"
       },
       "qicn_release": {

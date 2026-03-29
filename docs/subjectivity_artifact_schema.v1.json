@@ -13,6 +13,7 @@
     "subjectivity_candidate_projection.json": "src/subjectivity/schemas/subjectivity_candidate_projection.v1.json",
     "subjectivity_audit_handoff_summary.json": "src/subjectivity/schemas/subjectivity_audit_handoff_summary.v1.json",
     "subjectivity_verification_matrix.json": "src/subjectivity/schemas/subjectivity_verification_matrix.v1.json",
+    "subjectivity_consolidation_check.json": "src/subjectivity/schemas/subjectivity_consolidation_check.v1.json",
     "self_index_state.json": "src/subjectivity/schemas/self_index_state.v1.json",
     "ownership_attribution_report.json": "src/subjectivity/schemas/ownership_attribution_report.v1.json",
     "subjective_continuity_report.json": "src/subjectivity/schemas/subjective_continuity_report.v1.json",
@@ -278,6 +279,41 @@
         "schema_ref"
       ],
       "provenance_fields": ["current_lineage", "candidate_projection_ref", "audit_handoff_ref"]
+    },
+    "subjectivity_consolidation_check.json": {
+      "artifact_role": "subjectivity_consolidation_check",
+      "artifact_class": "consolidation_audit",
+      "source_of_truth_status": "authoritative_internal_consolidation_audit_when_emitted",
+      "implementation_status": "implemented_internal_consolidation_audit_post_srt6",
+      "minimum_fields": [
+        "artifact_role",
+        "artifact_version",
+        "schema_version",
+        "layer_version",
+        "runtime_status",
+        "status",
+        "repo_alignment",
+        "srt_audit",
+        "artifact_audit",
+        "surface_governance_audit",
+        "lineage_audit",
+        "readiness_gate",
+        "pre_bpf_gaps",
+        "pre_paper9_gaps",
+        "warnings",
+        "interpretation_boundary",
+        "provenance",
+        "schema_ref"
+      ],
+      "provenance_fields": [
+        "stack_check_ref",
+        "ecosystem_check_ref",
+        "verification_matrix_ref",
+        "candidate_manifest_ref",
+        "external_audit_manifest_ref",
+        "internal_release_bundle_manifest_ref",
+        "release_refs"
+      ]
     },
     "self_index_state.json": {
       "artifact_role": "self_index_state",

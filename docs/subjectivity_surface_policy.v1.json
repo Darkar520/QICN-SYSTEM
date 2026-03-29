@@ -69,6 +69,10 @@
     "verification_matrix": {
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
       "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"]
+    },
+    "consolidation_audit": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface"],
+      "blocked_surfaces": ["internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"]
     }
   },
   "outputs": {
@@ -199,7 +203,15 @@
       "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked"
+    },
+    "subjectivity_consolidation_check.json": {
+      "artifact_class": "consolidation_audit",
+      "runtime_status": "implemented_internal_consolidation_audit_post_srt6",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface"],
+      "blocked_surfaces": ["internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "claim_gate_status": "blocked_for_external_claiming",
+      "statement_gate_status": "blocked"
     }
   },
-  "default_interpretation_boundary": "Framework-internal only. Subjectivity artifacts may enter internal bundle, ecosystem candidate, and audit-facing package surfaces only under explicit non-claim boundaries. All subjectivity artifacts remain blocked from controlled-statement and external-claim surfaces. SRT-6 does not license external validation, human equivalence, phenomenality, metaphysical closure, or claim-facing promotion."
+  "default_interpretation_boundary": "Framework-internal only. Subjectivity artifacts may enter internal bundle, ecosystem candidate, and audit-facing package surfaces only under explicit non-claim boundaries. Consolidation audit outputs remain local-governance only. All subjectivity artifacts remain blocked from controlled-statement and external-claim surfaces. SRT-6 does not license external validation, human equivalence, phenomenality, metaphysical closure, or claim-facing promotion."
 }

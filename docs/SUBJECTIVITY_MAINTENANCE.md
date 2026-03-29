@@ -16,6 +16,7 @@ stack.
   - `artifacts/subjectivity/srt6/subjectivity_candidate_projection.json`
   - `artifacts/subjectivity/srt6/subjectivity_audit_handoff_summary.json`
   - `artifacts/subjectivity/srt6/subjectivity_verification_matrix.json`
+  - `artifacts/subjectivity/srt6/subjectivity_consolidation_check.json`
 
 ## Mandatory rerun triggers
 
@@ -35,9 +36,17 @@ stack.
 1. `npm run verify:subjectivity-gate`
 2. `npm run verify:subjectivity-ecosystem`
 3. `npm run verify:subjectivity-stack`
-4. `npm run release:bundle`
-5. `npm run release:ecosystem-candidate`
-6. `npm run release:external-audit-package`
+4. `npm run verify:subjectivity-consolidation`
+5. `npm run release:bundle`
+6. `npm run release:ecosystem-candidate`
+7. `npm run release:external-audit-package`
+
+## Consolidation references
+
+- `docs/SUBJECTIVITY_FINAL_INTERNAL_AUDIT.md`
+- `docs/SUBJECTIVITY_READINESS_GATE.md`
+- `docs/BRIDGE_TO_PHENOMENALITY_PREREQUISITES.md`
+- `docs/PAPER9_PREREQUISITES.md`
 
 ## Non-claims
 

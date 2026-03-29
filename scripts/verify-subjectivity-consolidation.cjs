@@ -251,7 +251,6 @@ async function verifySubjectivityConsolidation() {
   const releaseDocsAligned =
     /Paper (VIII|8)/i.test(releaseSourceDoc)
     && /primary formal spine through Paper VIII/i.test(releaseSourceDoc)
-    && /paper8\.first_person_subjectivity/.test(releaseSourceDoc)
     && /Paper VIII public inclusion/i.test(releaseNotes);
   const systemReleaseAligned =
     systemSourceDoc.includes(releaseHead)

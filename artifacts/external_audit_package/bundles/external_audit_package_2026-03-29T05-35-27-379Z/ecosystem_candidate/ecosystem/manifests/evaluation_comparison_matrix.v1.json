@@ -1,0 +1,194 @@
+{
+  "artifact_role": "evaluation_comparison_matrix",
+  "schema_version": "1.0.0",
+  "protocol_ref": "docs/evaluation_protocol.v1.json",
+  "metrics_registry_ref": "docs/evaluation_metrics_registry.v1.json",
+  "statistical_policy_ref": "docs/evaluation_statistical_policy.v1.json",
+  "comparisons": [
+    {
+      "id": "baseline_vs_replay",
+      "baseline": "baseline",
+      "target": "replay",
+      "comparison_type": "inter_condition",
+      "support_level": "description_only",
+      "primary_metrics": [
+        "quantum_primary_ratio",
+        "channel_clean_ratio"
+      ],
+      "secondary_metrics": [
+        "fallback_tick_ratio",
+        "entropy_latency_mean_ms",
+        "run_verdict_status"
+      ],
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 999,
+      "required_artifacts": [
+        "run_evaluation_metrics.json",
+        "condition_evaluation_summary.json",
+        "evaluation_batch_report.json"
+      ],
+      "non_claim_boundary": "Descriptive control contrast only; not causal or theory-facing."
+    },
+    {
+      "id": "baseline_vs_shuffled",
+      "baseline": "baseline",
+      "target": "shuffled",
+      "comparison_type": "inter_condition",
+      "support_level": "description_only",
+      "primary_metrics": [
+        "quantum_primary_ratio",
+        "channel_clean_ratio"
+      ],
+      "secondary_metrics": [
+        "fallback_tick_ratio",
+        "entropy_latency_mean_ms",
+        "run_verdict_status"
+      ],
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 999,
+      "required_artifacts": [
+        "run_evaluation_metrics.json",
+        "condition_evaluation_summary.json",
+        "evaluation_batch_report.json"
+      ],
+      "non_claim_boundary": "Descriptive control contrast only; not causal or theory-facing."
+    },
+    {
+      "id": "baseline_vs_prng_only",
+      "baseline": "baseline",
+      "target": "prng_only",
+      "comparison_type": "inter_condition",
+      "support_level": "description_only",
+      "primary_metrics": [
+        "quantum_primary_ratio",
+        "channel_clean_ratio"
+      ],
+      "secondary_metrics": [
+        "fallback_tick_ratio",
+        "entropy_latency_mean_ms",
+        "run_verdict_status"
+      ],
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 999,
+      "required_artifacts": [
+        "run_evaluation_metrics.json",
+        "condition_evaluation_summary.json",
+        "evaluation_batch_report.json"
+      ],
+      "non_claim_boundary": "Source-ablation descriptive contrast only; not confirmatory."
+    },
+    {
+      "id": "baseline_vs_delayed_entropy",
+      "baseline": "baseline",
+      "target": "delayed_entropy",
+      "comparison_type": "inter_condition",
+      "support_level": "minimal_contrast",
+      "primary_metrics": [
+        "entropy_latency_mean_ms",
+        "entropy_latency_max_ms"
+      ],
+      "secondary_metrics": [
+        "fallback_tick_ratio",
+        "tick_budget_p95_ms",
+        "run_verdict_status"
+      ],
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 3,
+      "required_artifacts": [
+        "run_evaluation_metrics.json",
+        "condition_evaluation_summary.json",
+        "condition_comparison_report.json"
+      ],
+      "non_claim_boundary": "Delivery-latency contrast only; not causal confirmation."
+    },
+    {
+      "id": "baseline_vs_dropout",
+      "baseline": "baseline",
+      "target": "dropout",
+      "comparison_type": "inter_condition",
+      "support_level": "minimal_contrast",
+      "primary_metrics": [
+        "fallback_tick_ratio",
+        "degraded_tick_ratio"
+      ],
+      "secondary_metrics": [
+        "pending_tick_ratio",
+        "quantum_primary_ratio",
+        "run_verdict_status"
+      ],
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 3,
+      "required_artifacts": [
+        "run_evaluation_metrics.json",
+        "condition_evaluation_summary.json",
+        "condition_comparison_report.json"
+      ],
+      "non_claim_boundary": "Delivery-dropout contrast only; not causal confirmation."
+    },
+    {
+      "id": "baseline_replicate_dispersion",
+      "baseline": "baseline",
+      "target": "baseline",
+      "comparison_type": "intra_condition",
+      "support_level": "minimal_contrast",
+      "primary_metrics": [
+        "entropy_latency_mean_ms",
+        "fallback_tick_ratio"
+      ],
+      "secondary_metrics": [
+        "omega_mean",
+        "ccc_mean",
+        "pmia_mean",
+        "stasis_index_mean"
+      ],
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 3,
+      "required_artifacts": [
+        "run_evaluation_metrics.json",
+        "condition_evaluation_summary.json"
+      ],
+      "non_claim_boundary": "Replicate-consistency check only; not confirmation."
+    },
+    {
+      "id": "prng_only_replicate_dispersion",
+      "baseline": "prng_only",
+      "target": "prng_only",
+      "comparison_type": "intra_condition",
+      "support_level": "minimal_contrast",
+      "primary_metrics": [
+        "fallback_tick_ratio",
+        "entropy_latency_mean_ms"
+      ],
+      "secondary_metrics": [
+        "omega_mean",
+        "ccc_mean"
+      ],
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 3,
+      "required_artifacts": [
+        "run_evaluation_metrics.json",
+        "condition_evaluation_summary.json"
+      ],
+      "non_claim_boundary": "Seed-consistency check only; not theory-facing."
+    }
+  ],
+  "unsupported_comparisons": [
+    {
+      "id": "replay_vs_shuffled",
+      "reason": "Direct non-baseline pairwise contrasts are not frozen for this phase."
+    },
+    {
+      "id": "replay_vs_prng_only",
+      "reason": "Direct non-baseline pairwise contrasts are not frozen for this phase."
+    },
+    {
+      "id": "shuffled_vs_prng_only",
+      "reason": "Direct non-baseline pairwise contrasts are not frozen for this phase."
+    },
+    {
+      "id": "runtime_to_corpus_claim_mapping",
+      "reason": "Theory-facing comparison is outside the protocol scope."
+    }
+  ],
+  "interpretation_boundary": "Comparison matrix only; it defines allowed internal contrasts, not confirmatory semantics."
+}

@@ -1,0 +1,82 @@
+{
+  "artifact_role": "subjectivity_batch_summary",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_version": "subjectivity_runtime_layer.srt6.ecosystem.v1",
+  "runtime_status": "implemented_internal_ecosystem_hardening_in_srt6",
+  "batch_id": "subjectivity_internal_batch_baseline",
+  "condition_count": 1,
+  "minimum_required_conditions": 1,
+  "condition_refs": [
+    "subjectivity_condition_summary.json"
+  ],
+  "comparability_status": "internally_comparable_minimal_batch",
+  "aggregate_support": {
+    "mean_gamma_subj": 0.5121645600000001,
+    "mean_phi_subj": 0.7063836296642603,
+    "gate_pass_count": 1,
+    "support_classes": {
+      "subjectivity_admissible": 1
+    }
+  },
+  "invalidation_reasons": [],
+  "warnings": [
+    "single_condition_single_run_batch_summary"
+  ],
+  "interpretation_boundary": "Framework-internal only; subjectivity batch summary is internal governance and comparability metadata, not externally validated, not claim-facing evidence, not phenomenality closure, and not human equivalence.",
+  "provenance": {
+    "generated_at": "2026-03-29T05:32:05.951Z",
+    "current_lineage": {
+      "layer_version": "subjectivity_runtime_layer.srt6.ecosystem.v1",
+      "estimator_version": "subjectivity_ecosystem_integrator.srt6.v1",
+      "protocol": {
+        "ref": "docs/subjectivity_protocol.v1.json",
+        "sha256": "d82bf51f05fb92016cb757d515825e42a197f028708e83fc686a863c1ddd6e96"
+      },
+      "thresholds": {
+        "ref": "docs/subjectivity_thresholds.v1.json",
+        "sha256": "19cecb3002013eb88a22452ede991cef582a71479b8c1aca71cde913ebb2dbb2"
+      },
+      "rival_family": {
+        "ref": "docs/subjectivity_rival_family.v1.json",
+        "sha256": "8163f91c7a276f096557ba97872ce3d52c5bc4a75a71234ae98b529e539b456f"
+      },
+      "surface_policy": {
+        "ref": "docs/subjectivity_surface_policy.v1.json",
+        "sha256": "abc00bbff29b79a8c17d47603d245fc175b91ada6a08398fe1595aaf26e38d50"
+      },
+      "artifact_schema": {
+        "ref": "docs/subjectivity_artifact_schema.v1.json",
+        "sha256": "0e18b811c0edd3fa064893cfb8a06de1dd701a7b88dfdb04b22125f8a6e5d421"
+      },
+      "candidate_governance": {
+        "ref": "docs/ecosystem_candidate_governance.v1.json",
+        "sha256": "14884375b62241fec77ffa74995f01b3d944902dfca986e3104a17903b57504e"
+      },
+      "interface_contract": {
+        "ref": "docs/ecosystem_interface_contract.v1.json",
+        "sha256": "5774e732ffde5484c8da8ae99e2d6b142f8a695dd06280d32184ae045a0c49c5"
+      },
+      "campaign_discipline": {
+        "ref": "docs/successive_campaign_discipline.v1.json",
+        "sha256": "fb8dbc96dc52f78858848f96498963db658350f6aa50e755e4663c8f14c51de2"
+      },
+      "execution_campaign_freeze": {
+        "ref": "docs/execution_campaign_freeze.v1.json",
+        "sha256": "7418724f3d30dfdd4bbfc2003307533585cf52a87557d39bfc61e4917a2b50ff"
+      },
+      "qicn_system": {
+        "branch": "main",
+        "head": "be0dc7c6cb252e1aedc3412feeaa939216bf9d71",
+        "upstream": "origin/main"
+      },
+      "qicn_release": {
+        "branch": "main",
+        "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+        "upstream": "origin/main"
+      }
+    },
+    "condition_summary_ref": "subjectivity_condition_summary.json"
+  },
+  "schema_ref": "src/subjectivity/schemas/subjectivity_batch_summary.v1.json"
+}

@@ -1,7 +1,7 @@
 {
   "artifact_role": "internal_red_team_report",
   "schema_version": "1.0.0",
-  "generated_at": "2026-03-29T01:47:30.281Z",
+  "generated_at": "2026-03-29T05:35:27.379Z",
   "scope": "external_audit_readiness",
   "findings": [
     {
@@ -10,9 +10,9 @@
       "area": "engineering_reproducibility",
       "finding": "The package exposes exact repo SHAs, canonical freeze commit, current ecosystem candidate, and immutable campaign refs.",
       "evidence": [
-        "QICN-SYSTEM@b34a190e895a5d679f1c33ad2b6743fdd522c8a6",
+        "QICN-SYSTEM@40b324ecd903d61b22ea12aef1dfdc16f6a2798d",
         "QICN-RELEASE@e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
-        "candidate=ecosystem_release_candidate_2026-03-29T01-40-33-696Z",
+        "candidate=ecosystem_release_candidate_2026-03-29T05-32-06-168Z",
         "latest_comparable=execution_campaign_comparable_2026-03-26T23-12-30-000Z"
       ],
       "minimal_correction": null

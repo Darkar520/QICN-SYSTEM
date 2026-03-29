@@ -1,0 +1,434 @@
+{
+  "artifact_role": "execution_campaign_readout",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-03-26T23:11:09.580Z",
+  "campaign_id": "execution_campaign_comparable_2026-03-26T23-03-30-000Z",
+  "batch_id": "execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch",
+  "status": "PASS",
+  "architecture_freeze_ref": "docs/evaluation_architecture_freeze.v1.json",
+  "campaign_plan_ref": "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-03-30-000Z/campaign_execution_plan.json",
+  "batch_artifacts": {
+    "evaluation_protocol_manifest": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch/aggregate/evaluation_protocol_manifest.json",
+    "evaluation_batch_report": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch/aggregate/evaluation_batch_report.json",
+    "condition_evaluation_summary": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch/aggregate/condition_evaluation_summary.json",
+    "condition_comparison_report": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-03-30-000Z_primary_batch/aggregate/condition_comparison_report.json"
+  },
+  "run_counts": {
+    "total_materialized_runs": 54,
+    "included_runs": 54,
+    "excluded_runs": 0
+  },
+  "sample_size_by_condition": {
+    "baseline": {
+      "sample_size_status": "minimal_contrast_eligible",
+      "materialized_runs": 9,
+      "included_runs": 9,
+      "excluded_runs": 0
+    },
+    "replay": {
+      "sample_size_status": "minimal_contrast_eligible",
+      "materialized_runs": 9,
+      "included_runs": 9,
+      "excluded_runs": 0
+    },
+    "shuffled": {
+      "sample_size_status": "minimal_contrast_eligible",
+      "materialized_runs": 9,
+      "included_runs": 9,
+      "excluded_runs": 0
+    },
+    "prng_only": {
+      "sample_size_status": "minimal_contrast_eligible",
+      "materialized_runs": 9,
+      "included_runs": 9,
+      "excluded_runs": 0
+    },
+    "delayed_entropy": {
+      "sample_size_status": "minimal_contrast_eligible",
+      "materialized_runs": 9,
+      "included_runs": 9,
+      "excluded_runs": 0
+    },
+    "dropout": {
+      "sample_size_status": "minimal_contrast_eligible",
+      "materialized_runs": 9,
+      "included_runs": 9,
+      "excluded_runs": 0
+    }
+  },
+  "comparisons": {
+    "emitted": [
+      {
+        "id": "baseline_vs_replay",
+        "declared_support_level": "description_only",
+        "realized_support_level": "description_only",
+        "blocking_conditions": [],
+        "primary_metric_deltas": {
+          "quantum_primary_ratio": {
+            "delta_abs": 0,
+            "delta_rel": 0,
+            "hedges_g": null
+          },
+          "channel_clean_ratio": {
+            "delta_abs": 0,
+            "delta_rel": 0,
+            "hedges_g": null
+          }
+        }
+      },
+      {
+        "id": "baseline_vs_shuffled",
+        "declared_support_level": "description_only",
+        "realized_support_level": "description_only",
+        "blocking_conditions": [],
+        "primary_metric_deltas": {
+          "quantum_primary_ratio": {
+            "delta_abs": 0,
+            "delta_rel": 0,
+            "hedges_g": null
+          },
+          "channel_clean_ratio": {
+            "delta_abs": 0,
+            "delta_rel": 0,
+            "hedges_g": null
+          }
+        }
+      },
+      {
+        "id": "baseline_vs_prng_only",
+        "declared_support_level": "description_only",
+        "realized_support_level": "description_only",
+        "blocking_conditions": [],
+        "primary_metric_deltas": {
+          "quantum_primary_ratio": {
+            "delta_abs": 0,
+            "delta_rel": 0,
+            "hedges_g": null
+          },
+          "channel_clean_ratio": {
+            "delta_abs": 0,
+            "delta_rel": 0,
+            "hedges_g": null
+          }
+        }
+      },
+      {
+        "id": "baseline_vs_delayed_entropy",
+        "declared_support_level": "minimal_contrast",
+        "realized_support_level": "minimal_contrast",
+        "blocking_conditions": [],
+        "primary_metric_deltas": {
+          "entropy_latency_mean_ms": {
+            "delta_abs": 59.925925925925924,
+            "delta_rel": 539.3333333333334,
+            "hedges_g": 427.38329404400884
+          },
+          "entropy_latency_max_ms": {
+            "delta_abs": 59.77777777777778,
+            "delta_rel": 179.33333333333334,
+            "hedges_g": 142.10890741389198
+          }
+        }
+      },
+      {
+        "id": "baseline_vs_dropout",
+        "declared_support_level": "minimal_contrast",
+        "realized_support_level": "minimal_contrast",
+        "blocking_conditions": [],
+        "primary_metric_deltas": {
+          "fallback_tick_ratio": {
+            "delta_abs": 1,
+            "delta_rel": null,
+            "hedges_g": null
+          },
+          "degraded_tick_ratio": {
+            "delta_abs": 1,
+            "delta_rel": null,
+            "hedges_g": null
+          }
+        }
+      },
+      {
+        "id": "baseline_replicate_dispersion",
+        "declared_support_level": "minimal_contrast",
+        "realized_support_level": "minimal_contrast",
+        "blocking_conditions": [],
+        "primary_metric_deltas": {
+          "entropy_latency_mean_ms": {
+            "delta_abs": 0,
+            "delta_rel": 0,
+            "hedges_g": 0
+          },
+          "fallback_tick_ratio": {
+            "delta_abs": 0,
+            "delta_rel": null,
+            "hedges_g": null
+          }
+        }
+      },
+      {
+        "id": "prng_only_replicate_dispersion",
+        "declared_support_level": "minimal_contrast",
+        "realized_support_level": "minimal_contrast",
+        "blocking_conditions": [],
+        "primary_metric_deltas": {
+          "fallback_tick_ratio": {
+            "delta_abs": 0,
+            "delta_rel": null,
+            "hedges_g": null
+          },
+          "entropy_latency_mean_ms": {
+            "delta_abs": 0,
+            "delta_rel": null,
+            "hedges_g": null
+          }
+        }
+      }
+    ],
+    "unsupported": [
+      {
+        "id": "replay_vs_shuffled",
+        "reason": "Direct non-baseline pairwise contrasts are not frozen for this phase."
+      },
+      {
+        "id": "replay_vs_prng_only",
+        "reason": "Direct non-baseline pairwise contrasts are not frozen for this phase."
+      },
+      {
+        "id": "shuffled_vs_prng_only",
+        "reason": "Direct non-baseline pairwise contrasts are not frozen for this phase."
+      },
+      {
+        "id": "runtime_to_corpus_claim_mapping",
+        "reason": "Theory-facing comparison is outside the protocol scope."
+      }
+    ],
+    "by_support_level": {
+      "description_only": [
+        "baseline_vs_replay",
+        "baseline_vs_shuffled",
+        "baseline_vs_prng_only"
+      ],
+      "minimal_contrast": [
+        "baseline_vs_delayed_entropy",
+        "baseline_vs_dropout",
+        "baseline_replicate_dispersion",
+        "prng_only_replicate_dispersion"
+      ],
+      "unsupported": [
+        "replay_vs_shuffled",
+        "replay_vs_prng_only",
+        "shuffled_vs_prng_only",
+        "runtime_to_corpus_claim_mapping"
+      ]
+    }
+  },
+  "burden_and_stability_snapshot": {
+    "baseline": {
+      "fallback_tick_ratio": {
+        "sample_count": 9,
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "std_dev": 0,
+        "empirical_min_max_band": [
+          0,
+          0
+        ]
+      },
+      "entropy_latency_mean_ms": {
+        "sample_count": 9,
+        "mean": 0.1111111111111111,
+        "min": 0,
+        "max": 0.3333333333333333,
+        "std_dev": 0.15713484026367722,
+        "empirical_min_max_band": [
+          0,
+          0.3333333333333333
+        ]
+      },
+      "omega_mean": {
+        "sample_count": 9,
+        "mean": 1.015,
+        "min": 1.011,
+        "max": 1.019,
+        "std_dev": 0.002581988897471604,
+        "empirical_min_max_band": [
+          1.011,
+          1.019
+        ]
+      },
+      "ccc_mean": {
+        "sample_count": 9,
+        "mean": 0.9149999999999999,
+        "min": 0.911,
+        "max": 0.919,
+        "std_dev": 0.002581988897471633,
+        "empirical_min_max_band": [
+          0.911,
+          0.919
+        ]
+      }
+    },
+    "delayed_entropy": {
+      "entropy_latency_mean_ms": {
+        "sample_count": 9,
+        "mean": 60.03703703703704,
+        "min": 60,
+        "max": 60.333333333333336,
+        "std_dev": 0.10475656017578558,
+        "empirical_min_max_band": [
+          60,
+          60.333333333333336
+        ]
+      },
+      "entropy_latency_max_ms": {
+        "sample_count": 9,
+        "mean": 60.111111111111114,
+        "min": 60,
+        "max": 61,
+        "std_dev": 0.3142696805273545,
+        "empirical_min_max_band": [
+          60,
+          61
+        ]
+      },
+      "tick_budget_p95_ms": {
+        "sample_count": 9,
+        "mean": 44,
+        "min": 44,
+        "max": 44,
+        "std_dev": 0,
+        "empirical_min_max_band": [
+          44,
+          44
+        ]
+      }
+    },
+    "dropout": {
+      "fallback_tick_ratio": {
+        "sample_count": 9,
+        "mean": 1,
+        "min": 1,
+        "max": 1,
+        "std_dev": 0,
+        "empirical_min_max_band": [
+          1,
+          1
+        ]
+      },
+      "degraded_tick_ratio": {
+        "sample_count": 9,
+        "mean": 1,
+        "min": 1,
+        "max": 1,
+        "std_dev": 0,
+        "empirical_min_max_band": [
+          1,
+          1
+        ]
+      },
+      "pending_tick_ratio": {
+        "sample_count": 9,
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "std_dev": 0,
+        "empirical_min_max_band": [
+          0,
+          0
+        ]
+      }
+    },
+    "prng_only": {
+      "fallback_tick_ratio": {
+        "sample_count": 9,
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "std_dev": 0,
+        "empirical_min_max_band": [
+          0,
+          0
+        ]
+      },
+      "entropy_latency_mean_ms": {
+        "sample_count": 9,
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "std_dev": 0,
+        "empirical_min_max_band": [
+          0,
+          0
+        ]
+      },
+      "omega_mean": {
+        "sample_count": 9,
+        "mean": 1.0450000000000002,
+        "min": 1.0410000000000001,
+        "max": 1.0490000000000002,
+        "std_dev": 0.0025819888974716043,
+        "empirical_min_max_band": [
+          1.0410000000000001,
+          1.0490000000000002
+        ]
+      },
+      "ccc_mean": {
+        "sample_count": 9,
+        "mean": 0.9299999999999999,
+        "min": 0.926,
+        "max": 0.934,
+        "std_dev": 0.0025819888974716325,
+        "empirical_min_max_band": [
+          0.926,
+          0.934
+        ]
+      }
+    }
+  },
+  "seed_dispersion_snapshot": {
+    "baseline": {
+      "omega_mean_std_dev": 0.002581988897471604,
+      "ccc_mean_std_dev": 0.002581988897471633,
+      "entropy_latency_mean_ms_std_dev": 0.15713484026367722
+    },
+    "prng_only": {
+      "omega_mean_std_dev": 0.0025819888974716043,
+      "ccc_mean_std_dev": 0.0025819888974716325,
+      "entropy_latency_mean_ms_std_dev": 0
+    }
+  },
+  "qa_qc": {
+    "structural_issues": [],
+    "campaign_warnings": [],
+    "legitimate_degradations": [],
+    "artifacts_missing": [],
+    "protocol_drift_detected": true,
+    "local_path_leaks": [],
+    "blocked_claim_facing_outputs": [
+      "run_evaluation_metrics.json",
+      "condition_evaluation_summary.json",
+      "condition_comparison_report.json",
+      "evaluation_protocol_manifest.json",
+      "evaluation_batch_report.json"
+    ],
+    "claim_facing_status": "blocked"
+  },
+  "supported_internal_reads": [
+    "condition-level descriptive burden and stability summary",
+    "matrix-permitted minimal contrasts only",
+    "seed-dispersion visibility within the frozen policy"
+  ],
+  "blocked_interpretations": [
+    "external_validation",
+    "theory_confirmation",
+    "claim_closure",
+    "framework_validation",
+    "causal_proof",
+    "corpus_validation_from_runtime",
+    "automatic_promotion_from_contrast_to_claim",
+    "public_release_readiness"
+  ],
+  "interpretation_boundary": "Execution campaign readout only; internal descriptive and minimal-contrast summary, not claim-facing, not confirmatory."
+}

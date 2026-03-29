@@ -1,0 +1,131 @@
+{
+  "artifact_role": "internal_red_team_report",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-03-29T05:35:27.379Z",
+  "scope": "external_audit_readiness",
+  "findings": [
+    {
+      "id": "engineering.repo_refs_and_candidate_traceability",
+      "severity": "no_issue",
+      "area": "engineering_reproducibility",
+      "finding": "The package exposes exact repo SHAs, canonical freeze commit, current ecosystem candidate, and immutable campaign refs.",
+      "evidence": [
+        "QICN-SYSTEM@40b324ecd903d61b22ea12aef1dfdc16f6a2798d",
+        "QICN-RELEASE@e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+        "candidate=ecosystem_release_candidate_2026-03-29T05-32-06-168Z",
+        "latest_comparable=execution_campaign_comparable_2026-03-26T23-12-30-000Z"
+      ],
+      "minimal_correction": null
+    },
+    {
+      "id": "engineering.local_context_dependency",
+      "severity": "no_issue",
+      "area": "engineering_reproducibility",
+      "finding": "The generated external package is repo-relative and does not serialize local private paths.",
+      "evidence": [
+        "package portability scan passes",
+        "ecosystem candidate portability scan passes"
+      ],
+      "minimal_correction": null
+    },
+    {
+      "id": "campaign.latest_pointer_overread",
+      "severity": "note",
+      "area": "campaign_layer",
+      "finding": "The latest pointer remains mutable routing metadata and must not be read as frozen authority.",
+      "evidence": [
+        "latest_campaign_pointer.json",
+        "execution_campaign_freeze.v1.json mutable_latest_artifacts_not_authoritative_for_frozen_baseline"
+      ],
+      "minimal_correction": "Keep the pointer explicitly labeled as routing metadata only in external-facing docs and manifests."
+    },
+    {
+      "id": "campaign.series_internal_only",
+      "severity": "note",
+      "area": "campaign_layer",
+      "finding": "The accepted comparable series is internally stable, but still supports only internal descriptive or minimal-contrast reading.",
+      "evidence": [
+        "two accepted comparable campaigns preserved",
+        "support levels remain description_only or minimal_contrast"
+      ],
+      "minimal_correction": "Retain the non-claim boundary that internal series continuity is not external validation."
+    },
+    {
+      "id": "gating.internal_outputs_blocked",
+      "severity": "no_issue",
+      "area": "gating_surfaces",
+      "finding": "Blocked outputs remain blocked for claim-facing use and the package does not promote them.",
+      "evidence": [
+        "PASS",
+        "condition_comparison_report.json remains blocked claim-facing"
+      ],
+      "minimal_correction": null
+    },
+    {
+      "id": "handoff.external_audit_not_overclaimed",
+      "severity": "no_issue",
+      "area": "handoff_layer",
+      "finding": "The handoff layer keeps package readiness separate from any claim that external audit already occurred.",
+      "evidence": [
+        "docs/EXTERNAL_AUDIT_ACTIVATION_PLAN.md",
+        "docs/EXTERNAL_AUDIT_HANDOFF_PROTOCOL.md",
+        "external_audit_status.json"
+      ],
+      "minimal_correction": null
+    },
+    {
+      "id": "handoff.auditor_profiles_separated",
+      "severity": "no_issue",
+      "area": "handoff_layer",
+      "finding": "The external handoff separates auditor profiles and requested scope instead of collapsing them into one amorphous review.",
+      "evidence": [
+        "docs/EXTERNAL_AUDIT_PROFILE_MATRIX.md",
+        "docs/EXTERNAL_AUDIT_REVIEWER_MAP.md"
+      ],
+      "minimal_correction": null
+    },
+    {
+      "id": "theory_system.interface_one_way_default",
+      "severity": "no_issue",
+      "area": "theory_system_boundary",
+      "finding": "The theory-system boundary remains explicit and one-way by default; the runtime does not close corpus claims.",
+      "evidence": [
+        "release/system_interface_boundary.v1.json",
+        "docs/EVALUATION_INTERPRETATION_BOUNDARY.md"
+      ],
+      "minimal_correction": null
+    },
+    {
+      "id": "subjectivity.audit_handoff_boundary",
+      "severity": "no_issue",
+      "area": "subjectivity_layer",
+      "finding": "The subjectivity layer is included with explicit framework-internal and non-validatory boundaries instead of being hidden or overpromoted.",
+      "evidence": [
+        "subjectivity/subjectivity_audit_handoff_summary.json",
+        "subjectivity/subjectivity_candidate_projection.json",
+        "subjectivity/subjectivity_verification_matrix.json"
+      ],
+      "minimal_correction": null
+    },
+    {
+      "id": "banal_alternative.pipeline_explanation",
+      "severity": "note",
+      "area": "banal_rival_explanations",
+      "finding": "At minimum, the stable comparable series can be read as frozen pipeline, condition, and artifact discipline continuity without conceding stronger theory claims.",
+      "evidence": [
+        "same condition set",
+        "same matrix",
+        "same metrics registry",
+        "same statistical policy"
+      ],
+      "minimal_correction": "Keep internal series statements limited to continuity, comparability, and governance preservation."
+    }
+  ],
+  "summary": {
+    "blocker_count": 0,
+    "material_issue_count": 0,
+    "note_count": 3,
+    "no_issue_count": 7
+  },
+  "interpretation_boundary": "Internal adversarial review only; not external validation, not a substitute for an independent audit."
+}

@@ -1,0 +1,12 @@
+{
+  "artifact_role": "evaluation_comparisons_check",
+  "checked_at": "2026-03-26T22:50:39.272Z",
+  "status": "PASS",
+  "failures": [],
+  "warnings": [],
+  "checks": {
+    "missing_files": [],
+    "portability_matches": []
+  },
+  "interpretation_boundary": "Evaluation comparison check only; verifies allowed contrast structure, not claim semantics."
+}

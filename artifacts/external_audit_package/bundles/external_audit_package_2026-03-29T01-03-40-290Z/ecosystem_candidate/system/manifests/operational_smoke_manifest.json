@@ -1,0 +1,67 @@
+{
+  "artifact_role": "operational_smoke_manifest",
+  "project_root": ".",
+  "scratch_materialization": "temporary_os_dir_not_persisted_in_manifest",
+  "run_ids": [
+    "operational_smoke_a",
+    "operational_smoke_b"
+  ],
+  "aggregate_artifacts": [
+    "condition_metrics_summary.json",
+    "condition_comparison.json",
+    "condition_support_labels.json",
+    "condition_output_consumption_policy.json",
+    "condition_output_surface_policy.json",
+    "condition_controlled_statements.json",
+    "artifact_manifest.json",
+    "condition_local_report.json"
+  ],
+  "step_count": 7,
+  "steps": [
+    {
+      "label": "run_1_materialized",
+      "ok": true,
+      "run_id": "operational_smoke_a"
+    },
+    {
+      "label": "run_2_materialized",
+      "ok": true,
+      "run_id": "operational_smoke_b"
+    },
+    {
+      "label": "small_batch_materialized",
+      "ok": true,
+      "summary_artifact": "condition_metrics_summary.json",
+      "comparison_artifact": "condition_comparison.json",
+      "support_labels_artifact": "condition_support_labels.json",
+      "surface_policy_artifact": "condition_output_surface_policy.json",
+      "controlled_statements_artifact": "condition_controlled_statements.json"
+    },
+    {
+      "label": "artifact_verification",
+      "ok": true,
+      "manifest_artifact": "artifact_manifest.json"
+    },
+    {
+      "label": "local_report",
+      "ok": true,
+      "report_artifact": "condition_local_report.json"
+    },
+    {
+      "label": "summary_export",
+      "ok": true,
+      "decision_artifact": "condition_metrics_summary.json.export_decision.json"
+    },
+    {
+      "label": "controlled_statement",
+      "ok": true,
+      "decision_artifact": "controlled_statement_emission.json"
+    }
+  ],
+  "interpretation_boundary": "Operational smoke suite only; verifies governed runtime/artifact flow, not external validation, not theory closure, not claim promotion.",
+  "non_claim_restrictions": [
+    "Smoke success does not imply scientific closure.",
+    "Smoke success does not imply causal confirmation.",
+    "Smoke success does not imply external validation."
+  ]
+}

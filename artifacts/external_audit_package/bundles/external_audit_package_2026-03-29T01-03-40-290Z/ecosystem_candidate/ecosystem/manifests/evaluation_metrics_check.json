@@ -1,0 +1,14 @@
+{
+  "artifact_role": "evaluation_metrics_check",
+  "checked_at": "2026-03-26T22:50:38.449Z",
+  "status": "PASS",
+  "failures": [],
+  "warnings": [],
+  "checks": {
+    "missing_files": [],
+    "condition_count": 6,
+    "batch_report_status": "PASS",
+    "portability_matches": []
+  },
+  "interpretation_boundary": "Evaluation metrics check only; structural and sample-size validation, not confirmatory interpretation."
+}

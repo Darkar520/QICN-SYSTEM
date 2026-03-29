@@ -1,0 +1,92 @@
+{
+  "artifact_role": "subjectivity_rival_family_registry",
+  "schema_version": "1.0.0",
+  "layer_id": "subjectivity_runtime_layer.srt6",
+  "comparator_implementation_status": "minimally_executable_partial_runtime",
+  "rivals": [
+    {
+      "id": "pure_self_monitoring",
+      "description": "Internal-state tracking and self-related readout without constitutive ownership or privileged continuity.",
+      "absorbs": ["SelfIndex", "FirstPersonPerspective"],
+      "does_not_attempt": ["OwnershipField", "InterventionProfile"],
+      "inputs_used": ["self_index_state", "first_person_perspective_report"],
+      "outputs_produced": ["self_index_signal", "perspective_signal"],
+      "limitations": ["No constitutive ownership field.", "Selectivity only weakly approximated."],
+      "status": "minimally_executable"
+    },
+    {
+      "id": "memory_integration_only",
+      "description": "Historical dependence and continuity of traces without first-person binding.",
+      "absorbs": ["ContinuityField"],
+      "does_not_attempt": ["OwnershipField", "InterventionProfile"],
+      "inputs_used": ["subjective_continuity_report"],
+      "outputs_produced": ["continuity_signal"],
+      "limitations": ["Continuity reduces to memory-linked persistence.", "Weak on valuation-sensitive perturbations."],
+      "status": "minimally_executable"
+    },
+    {
+      "id": "policy_centered_agency",
+      "description": "Goal optimization from internal state without subject-level ownership or indexed continuity.",
+      "absorbs": ["ValuationAsymmetry", "InterventionProfile"],
+      "does_not_attempt": ["OwnershipField", "ContinuityField"],
+      "inputs_used": ["subjective_valuation_report", "subjectivity_intervention_profile"],
+      "outputs_produced": ["valuation_signal", "intervention_signal", "targeted_drop_mean"],
+      "limitations": ["Tradeoffs may collapse to reward shaping.", "No owned autobiographical line."],
+      "status": "minimally_executable"
+    },
+    {
+      "id": "narrative_self_model",
+      "description": "Autobiographical narrative and self-description without constitutive first-person organization.",
+      "absorbs": ["ContinuityField", "FirstPersonPerspective"],
+      "does_not_attempt": ["OwnershipField", "InterventionProfile"],
+      "inputs_used": ["subjective_continuity_report", "first_person_perspective_report"],
+      "outputs_produced": ["continuity_signal", "perspective_signal"],
+      "limitations": ["Narrative richness can mimic continuity without ownership.", "No constitutive valuation asymmetry."],
+      "status": "minimally_executable"
+    },
+    {
+      "id": "global_workspace_without_ownership",
+      "description": "Integrated broadcast architecture with rich access but no privileged ownership field.",
+      "absorbs": ["FirstPersonPerspective"],
+      "does_not_attempt": ["OwnershipField", "ValuationAsymmetry"],
+      "inputs_used": ["first_person_perspective_report"],
+      "outputs_produced": ["perspective_signal"],
+      "limitations": ["Can explain access without ownedness.", "Weak on intervention selectivity."],
+      "status": "minimally_executable"
+    },
+    {
+      "id": "latent_bookkeeping",
+      "description": "Hidden tags or registries sufficient to mimic self-related outputs without the stronger burden.",
+      "absorbs": ["SelfIndex", "OwnershipField"],
+      "does_not_attempt": ["InterventionProfile", "ValuationAsymmetry"],
+      "inputs_used": ["self_index_state", "ownership_attribution_report"],
+      "outputs_produced": ["self_index_signal", "ownership_signal"],
+      "limitations": ["Can mimic labels and ownership summaries while remaining interventionally inert.", "Weak on continuity-sensitive perturbations."],
+      "status": "minimally_executable"
+    }
+  ],
+  "weak_closure_runtime": {
+    "closure_id": "M_weak_runtime_closure_srt4",
+    "allowed_hybrid_size": 2,
+    "allowed_compositions": "pairwise_finite_admissible_composites",
+    "weight_grid": [0.35, 0.5, 0.65],
+    "restrictions": [
+      "Only finite pairwise hybrids are executable in SRT-4.",
+      "Hybrids use the same loss family and complexity penalty as pure rivals and the strong model.",
+      "Higher-order hybrids remain out of scope in SRT-4."
+    ],
+    "status": "pairwise_finite_hybrids_minimally_executable_through_srt6"
+  },
+  "admissible_closure_note": "Comparator burden is against the weak family and its finite admissible composites under the same loss family and explicit complexity penalty.",
+  "forbidden_inferences": [
+    "rival_family_registry_implies_rivals_defeated",
+    "partial_hybrid_closure_implies_final_weak_family_completeness",
+    "presence_of_rival_registry_implies_final_irreducibility_proof"
+  ],
+  "notes": [
+    "SRT-5 inherits the SRT-4 pure-rival family and pairwise admissible hybrid closure.",
+    "Comparator scope remains intentionally limited to the currently implemented SRT-5 runtime coordinates and SRT-4-level weak closure.",
+    "No reducibility conclusion may be promoted externally from this registry alone."
+  ],
+  "interpretation_boundary": "Rival-family registry only; minimal comparator scope definition reused by SRT-5, not external validation, not final irreducibility closure."
+}

@@ -1,0 +1,11 @@
+{
+  "artifact_role": "execution_campaign_pointer",
+  "generated_at": "2026-03-26T23:11:55.570Z",
+  "campaign_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z",
+  "batch_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch",
+  "campaign_root": "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z",
+  "batch_root": "artifacts/protocolized_evaluation/batches/execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch",
+  "readout_path": "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/execution_campaign_readout.json",
+  "plan_path": "artifacts/execution_campaign/campaigns/execution_campaign_comparable_2026-03-26T23-12-30-000Z/campaign_execution_plan.json",
+  "claim_facing_status": "blocked"
+}

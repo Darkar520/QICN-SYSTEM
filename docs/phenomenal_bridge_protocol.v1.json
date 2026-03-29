@@ -1,0 +1,112 @@
+{
+  "artifact_role": "phenomenal_bridge_protocol_definition",
+  "schema_version": "1.0.0",
+  "layer_name": "Phenomenal Bridge Formal Layer",
+  "layer_id": "phenomenal_bridge_formal_layer.bpf0",
+  "implementation_status": "scaffold_only_opening_layer",
+  "runtime_status": "formal_bridge_not_implemented",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "preferred_source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex",
+    "lineage_status": "public_formal_source_of_truth_reference"
+  },
+  "inherits_from": {
+    "formal_upstream": [
+      "paper8_first_person_subjectivity"
+    ],
+    "runtime_upstream": [
+      "subjectivity_runtime_layer.srt6",
+      "subjectivity_stack_consolidation_post_srt6"
+    ]
+  },
+  "bridge_target_predicates": [
+    {
+      "id": "Pi_D",
+      "name": "phenomenal_differentiation",
+      "formal_type": "bridge_predicate",
+      "status": "named_not_runtime_estimated",
+      "does_not_imply": [
+        "qualia",
+        "phenomenality",
+        "external_validation"
+      ]
+    },
+    {
+      "id": "Pi_V",
+      "name": "valence_structure",
+      "formal_type": "bridge_predicate",
+      "status": "named_not_runtime_estimated",
+      "does_not_imply": [
+        "felt_valence",
+        "human_equivalence"
+      ]
+    },
+    {
+      "id": "Pi_W",
+      "name": "world_richness",
+      "formal_type": "bridge_predicate",
+      "status": "named_not_runtime_estimated",
+      "does_not_imply": [
+        "veridical_world_modeling",
+        "phenomenality"
+      ]
+    },
+    {
+      "id": "Pi_A",
+      "name": "ambiguity_bearing",
+      "formal_type": "bridge_predicate",
+      "status": "named_not_runtime_estimated",
+      "does_not_imply": [
+        "conscious_uncertainty",
+        "metaphysical_subjecthood"
+      ]
+    },
+    {
+      "id": "Pi_E",
+      "name": "embodied_closure",
+      "formal_type": "bridge_predicate",
+      "status": "named_not_runtime_estimated",
+      "does_not_imply": [
+        "biological_embodiment",
+        "felt_body_ownership"
+      ]
+    },
+    {
+      "id": "Pi_T",
+      "name": "temporal_lived_structure",
+      "formal_type": "bridge_predicate",
+      "status": "named_not_runtime_estimated",
+      "does_not_imply": [
+        "human_lived_time",
+        "phenomenality"
+      ]
+    }
+  ],
+  "bridge_burdens": {
+    "predicate_burden": "open_in_bpf1",
+    "intervention_burden": "open_in_bpf2",
+    "comparator_burden": "open_in_bpf3",
+    "gate_burden": "open_in_bpf4",
+    "ecosystem_burden": "open_in_bpf5",
+    "final_audit_burden": "open_in_bpf6"
+  },
+  "non_claims": [
+    "no_external_validation_inference",
+    "no_human_equivalence_inference",
+    "no_metaphysical_subjecthood_inference",
+    "no_phenomenality_proven_inference",
+    "no_automatic_paper9_promotion",
+    "no_runtime_to_corpus_confirmation_loop"
+  ],
+  "implementation_blocks": [
+    "BPF-0",
+    "BPF-1",
+    "BPF-2",
+    "BPF-3",
+    "BPF-4",
+    "BPF-5",
+    "BPF-6"
+  ],
+  "interpretation_boundary": "BPF-0 opens the formal bridge program only. It does not implement bridge estimators, interventions, comparators, gate logic, bridge support classes, external validation, phenomenality, or Paper 9."
+}

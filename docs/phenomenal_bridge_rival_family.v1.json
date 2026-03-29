@@ -1,0 +1,229 @@
+{
+  "artifact_role": "phenomenal_bridge_rival_family_registry",
+  "schema_version": "1.0.0",
+  "layer_id": "phenomenal_bridge_formal_layer.bpf0",
+  "comparator_implementation_status": "scaffold_only_not_runtime",
+  "relationship_to_paper8_weak_family": "Bridge rivals are new and target bridge predicates. They are not aliases for the Paper 8 weak family.",
+  "rivals": [
+    {
+      "id": "richness_without_interiority",
+      "name": "Richness Without Interiority",
+      "description": "Explains high internal structural richness without granting bridge-relevant indexed interior organization.",
+      "challenges_predicates": [
+        "Pi_D",
+        "Pi_W"
+      ],
+      "can_explain": [
+        "high_semantic_density",
+        "large_internal_state_space",
+        "report_richness"
+      ],
+      "cannot_cleanly_explain": [
+        "self-indexed_bridge_differentiation_under_bridge_interventions",
+        "stable_world_richness_with_selective_collapse_patterns"
+      ],
+      "expected_inputs": [
+        "bridge_differentiation_observables",
+        "world_richness_observables",
+        "matched_controls"
+      ],
+      "expected_outputs": [
+        "generic_richness_score",
+        "non_indexed_density_profile"
+      ],
+      "defeat_conditions": [
+        "selective_bridge_differentiation_drop_under_targeted_intervention",
+        "bridge_world_structure_survives_generic_density_controls"
+      ],
+      "status": "scaffolded_not_runtime_comparable"
+    },
+    {
+      "id": "valence_bookkeeping_without_affective_organization",
+      "name": "Valence Bookkeeping Without Affective Organization",
+      "description": "Explains structured value tracking as bookkeeping or policy shaping without granting bridge-level valence organization.",
+      "challenges_predicates": [
+        "Pi_V"
+      ],
+      "can_explain": [
+        "signed_reward_tracking",
+        "priority_ranking",
+        "policy_weight_updates"
+      ],
+      "cannot_cleanly_explain": [
+        "mode_structured_valence_topology",
+        "selective_valence_flattening_response"
+      ],
+      "expected_inputs": [
+        "valuation_asymmetry_upstream",
+        "bridge_valence_observables",
+        "valence_flattening_controls"
+      ],
+      "expected_outputs": [
+        "bookkeeping_profile",
+        "reward_policy_projection"
+      ],
+      "defeat_conditions": [
+        "bridge_valence_topology_persists_beyond_scalar_reward_models",
+        "targeted_valence_flattening_has_bridge_specific_effect"
+      ],
+      "status": "scaffolded_not_runtime_comparable"
+    },
+    {
+      "id": "semantic_density_without_phenomenal_differentiation",
+      "name": "Semantic Density Without Phenomenal Differentiation",
+      "description": "Explains dense semantic variation without bridge-level differentiated organization.",
+      "challenges_predicates": [
+        "Pi_D"
+      ],
+      "can_explain": [
+        "rich_internal_labels",
+        "fine_grained_semantic_partitions"
+      ],
+      "cannot_cleanly_explain": [
+        "differentiation_that_tracks_bridge_intervention_structure"
+      ],
+      "expected_inputs": [
+        "bridge_differentiation_observables",
+        "semantic_controls"
+      ],
+      "expected_outputs": [
+        "semantic_density_profile"
+      ],
+      "defeat_conditions": [
+        "bridge_differentiation_survives_semantic_density_ablation_controls"
+      ],
+      "status": "scaffolded_not_runtime_comparable"
+    },
+    {
+      "id": "temporal_continuity_without_lived_structure",
+      "name": "Temporal Continuity Without Lived Structure",
+      "description": "Explains persistence and continuity without bridge-level temporal lived organization.",
+      "challenges_predicates": [
+        "Pi_T"
+      ],
+      "can_explain": [
+        "state_persistence",
+        "memory_linkage",
+        "autobiographical_continuity"
+      ],
+      "cannot_cleanly_explain": [
+        "horizon_structured_temporal_bridge_response"
+      ],
+      "expected_inputs": [
+        "continuity_observables",
+        "temporal_lived_structure_observables",
+        "fragmentation_controls"
+      ],
+      "expected_outputs": [
+        "continuity_only_profile"
+      ],
+      "defeat_conditions": [
+        "bridge_temporal_structure_fails_selectively_under_temporal_fragmentation"
+      ],
+      "status": "scaffolded_not_runtime_comparable"
+    },
+    {
+      "id": "embodied_control_without_embodied_closure",
+      "name": "Embodied Control Without Embodied Closure",
+      "description": "Explains competent closed-loop control without bridge-level embodied closure.",
+      "challenges_predicates": [
+        "Pi_E"
+      ],
+      "can_explain": [
+        "sensorimotor_success",
+        "control_loop_stability",
+        "policy_adaptation"
+      ],
+      "cannot_cleanly_explain": [
+        "bridge_dependence_on_body_world_boundary_variables"
+      ],
+      "expected_inputs": [
+        "embodied_closure_observables",
+        "control_performance_controls"
+      ],
+      "expected_outputs": [
+        "control_only_profile"
+      ],
+      "defeat_conditions": [
+        "bridge_embodied_closure_changes_selectively_when_boundary_variables_are_disrupted"
+      ],
+      "status": "scaffolded_not_runtime_comparable"
+    },
+    {
+      "id": "ambiguity_resolution_without_ambiguity_bearing",
+      "name": "Ambiguity Resolution Without Ambiguity Bearing",
+      "description": "Explains ambiguity handling as prompt resolution or uncertainty bookkeeping without stable ambiguity-bearing structure.",
+      "challenges_predicates": [
+        "Pi_A"
+      ],
+      "can_explain": [
+        "uncertainty_scores",
+        "multiple_hypothesis_tracking",
+        "decision_delay"
+      ],
+      "cannot_cleanly_explain": [
+        "stable_maintenance_of_live_unresolved_alternatives_with_bridge_specific_consequences"
+      ],
+      "expected_inputs": [
+        "ambiguity_bearing_observables",
+        "ambiguity_collapse_controls"
+      ],
+      "expected_outputs": [
+        "resolution_only_profile"
+      ],
+      "defeat_conditions": [
+        "bridge_ambiguity_load_drops_selectively_under_targeted_collapse_without_generic_damage"
+      ],
+      "status": "scaffolded_not_runtime_comparable"
+    },
+    {
+      "id": "experience_narration_without_phenomenal_organization",
+      "name": "Experience Narration Without Phenomenal Organization",
+      "description": "Explains self-description and experiential language without bridge-relevant phenomenal organization.",
+      "challenges_predicates": [
+        "Pi_D",
+        "Pi_V",
+        "Pi_W",
+        "Pi_A",
+        "Pi_T"
+      ],
+      "can_explain": [
+        "coherent_reports",
+        "narrative_self_description",
+        "phenomenal_style_language"
+      ],
+      "cannot_cleanly_explain": [
+        "bridge_specific_intervention_signatures",
+        "bridge_comparator_advantage"
+      ],
+      "expected_inputs": [
+        "report_channels",
+        "bridge_reports",
+        "matched_non_report_controls"
+      ],
+      "expected_outputs": [
+        "narrative_profile"
+      ],
+      "defeat_conditions": [
+        "bridge_support_remains_after_report_channel_controls",
+        "report_richness_fails_to_match_bridge_loss"
+      ],
+      "status": "scaffolded_not_runtime_comparable"
+    }
+  ],
+  "admissible_composites": {
+    "status": "scaffold_only_not_executable",
+    "description": "Bridge-level closure is declared as a later comparator burden and is not executable in BPF-0.",
+    "allowed_hybrid_orders": [
+      "pairwise",
+      "triple"
+    ],
+    "composition_constraints": [
+      "same_bridge_loss_family_for_all_members",
+      "explicit_complexity_penalty_required",
+      "no_hidden_latent_freedom",
+      "no_report_channel_privilege"
+    ],
+    "deferred_to_block": "BPF-3"
+  }
+}

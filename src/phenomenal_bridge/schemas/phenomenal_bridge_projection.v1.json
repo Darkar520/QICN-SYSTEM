@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "phenomenal_bridge_projection.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_version",
+    "schema_version",
+    "layer_version",
+    "bridge_status",
+    "run_id",
+    "predicate_estimates",
+    "warnings",
+    "implementation_status",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "phenomenal_bridge_projection" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "bridge_status": { "type": "string" },
+    "run_id": { "type": "string" },
+    "predicate_estimates": { "type": "object" },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "implementation_status": { "type": "string" },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "phenomenal_bridge_manifest.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_version",
+    "schema_version",
+    "bridge_layer_version",
+    "runtime_status",
+    "protocol_ref",
+    "axiom_registry_ref",
+    "rival_family_ref",
+    "thresholds_ref",
+    "surface_policy_ref",
+    "artifact_schema_ref",
+    "implementation_block",
+    "emitted_artifacts",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "phenomenal_bridge_manifest" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "bridge_layer_version": { "type": "string" },
+    "runtime_status": { "type": "string" },
+    "protocol_ref": { "type": "string" },
+    "axiom_registry_ref": { "type": "string" },
+    "rival_family_ref": { "type": "string" },
+    "thresholds_ref": { "type": "string" },
+    "surface_policy_ref": { "type": "string" },
+    "artifact_schema_ref": { "type": "string" },
+    "implementation_block": { "type": "string" },
+    "emitted_artifacts": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

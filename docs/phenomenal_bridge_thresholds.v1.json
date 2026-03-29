@@ -1,0 +1,132 @@
+{
+  "artifact_role": "phenomenal_bridge_threshold_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "phenomenal_bridge_formal_layer.bpf0",
+  "status": "symbolic_uncalibrated_deferred_to_bpf4",
+  "binding_policy": {
+    "numeric_binding_state": "unbound",
+    "numeric_binding_allowed_in_bpf0": false,
+    "binding_block": "BPF-4",
+    "honesty_rule": "No numeric threshold may be presented as calibrated before bridge estimators, bridge interventions, and bridge comparator families are implemented and audited."
+  },
+  "local_threshold_slots": [
+    {
+      "slot_id": "lambda_D",
+      "predicate": "Pi_D",
+      "binding_state": "unbound",
+      "value": null,
+      "status": "symbolic"
+    },
+    {
+      "slot_id": "lambda_V",
+      "predicate": "Pi_V",
+      "binding_state": "unbound",
+      "value": null,
+      "status": "symbolic"
+    },
+    {
+      "slot_id": "lambda_W",
+      "predicate": "Pi_W",
+      "binding_state": "unbound",
+      "value": null,
+      "status": "symbolic"
+    },
+    {
+      "slot_id": "lambda_A",
+      "predicate": "Pi_A",
+      "binding_state": "unbound",
+      "value": null,
+      "status": "symbolic"
+    },
+    {
+      "slot_id": "lambda_E",
+      "predicate": "Pi_E",
+      "binding_state": "unbound",
+      "value": null,
+      "status": "symbolic"
+    },
+    {
+      "slot_id": "lambda_T",
+      "predicate": "Pi_T",
+      "binding_state": "unbound",
+      "value": null,
+      "status": "symbolic"
+    },
+    {
+      "slot_id": "lambda_Rb",
+      "predicate": "R_b",
+      "binding_state": "unbound",
+      "value": null,
+      "status": "symbolic"
+    },
+    {
+      "slot_id": "lambda_Delta_b",
+      "predicate": "Delta_b",
+      "binding_state": "unbound",
+      "value": null,
+      "status": "symbolic"
+    }
+  ],
+  "global_gate_slot": {
+    "slot_id": "lambda_G_bpf",
+    "symbol": "Gamma_bpf",
+    "binding_state": "unbound",
+    "value": null,
+    "status": "symbolic"
+  },
+  "functional_slot": {
+    "slot_id": "lambda_Phi_bpf",
+    "symbol": "Phi_bpf",
+    "binding_state": "unbound",
+    "value": null,
+    "status": "symbolic"
+  },
+  "drift_slots": [
+    {
+      "slot_id": "epsilon_protocol",
+      "scope": "protocol_lineage",
+      "binding_state": "symbolic_guard",
+      "value": null
+    },
+    {
+      "slot_id": "epsilon_axioms",
+      "scope": "axiom_registry_lineage",
+      "binding_state": "symbolic_guard",
+      "value": null
+    },
+    {
+      "slot_id": "epsilon_rivals",
+      "scope": "rival_family_lineage",
+      "binding_state": "symbolic_guard",
+      "value": null
+    },
+    {
+      "slot_id": "epsilon_schemas",
+      "scope": "artifact_schema_lineage",
+      "binding_state": "symbolic_guard",
+      "value": null
+    },
+    {
+      "slot_id": "epsilon_surface_policy",
+      "scope": "surface_policy_lineage",
+      "binding_state": "symbolic_guard",
+      "value": null
+    }
+  ],
+  "policy_semantics": {
+    "non_compensation_required": true,
+    "gate_must_not_be_replaced_by_functional": true,
+    "comparator_invalidation_required": true,
+    "intervention_instability_invalidation_required": true,
+    "drift_invalidation_required": true
+  },
+  "later_binding_requirements": [
+    "bridge_predicate_estimators_exist",
+    "bridge_intervention_family_exists",
+    "bridge_rival_family_runtime_exists",
+    "bridge_loss_family_exists",
+    "bridge_negative_controls_exist",
+    "bridge_drift_policy_is_testable"
+  ],
+  "interpretation_boundary": "Threshold slots exist only to prevent hidden calibration debt. In BPF-0 they are symbolic, uncalibrated, and not numerically bound."
+}

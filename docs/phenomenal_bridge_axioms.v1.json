@@ -1,0 +1,186 @@
+{
+  "artifact_role": "phenomenal_bridge_axiom_registry",
+  "schema_version": "1.0.0",
+  "layer_id": "phenomenal_bridge_formal_layer.bpf0",
+  "layer_status": "scaffold_only_opening_layer",
+  "axioms": [
+    {
+      "id": "A_B1",
+      "name": "Operational Binding Requirement",
+      "classification": "operational_definition",
+      "statement": "Every bridge predicate must be tied to explicit observables, artifacts, comparators, and interventions.",
+      "role": "Prevents bridge predicates from remaining rhetorical labels.",
+      "licenses": [
+        "machine_readable_bridge_predicates",
+        "later_estimator_design",
+        "later_verifier_design"
+      ],
+      "does_not_license": [
+        "phenomenality",
+        "external_validation",
+        "bridge_support"
+      ],
+      "depends_on": [
+        "paper8_first_person_subjectivity",
+        "subjectivity_runtime_layer.srt6"
+      ],
+      "status": "active_scaffold"
+    },
+    {
+      "id": "A_B2",
+      "name": "Subjectivity Upstream Dependency",
+      "classification": "bridge_axiom",
+      "statement": "Bridge reasoning is admissible only if the upstream subjectivity stack remains supported, non-drifted, comparator-clean, and intervention-clean under Paper 8 and SRT governance.",
+      "role": "Prevents BPF from bypassing the upstream burden structure.",
+      "licenses": [
+        "opening_bpf_after_srt6_consolidation"
+      ],
+      "does_not_license": [
+        "bridge_success",
+        "phenomenal_inference"
+      ],
+      "depends_on": [
+        "subjectivity_consolidation_post_srt6"
+      ],
+      "status": "active_scaffold"
+    },
+    {
+      "id": "A_B3",
+      "name": "Differentiation Beyond Semantic Density",
+      "classification": "falsifiable_hypothesis",
+      "statement": "A bridge-relevant differentiation burden requires structured internal discrimination that cannot be reduced to semantic density, report richness, or descriptive narration alone.",
+      "role": "Opens the target predicate Pi_D without collapsing it into generic representational richness.",
+      "licenses": [
+        "future_differentiation_estimator_design",
+        "future_bridge_rival_tests"
+      ],
+      "does_not_license": [
+        "qualia",
+        "phenomenality"
+      ],
+      "depends_on": [
+        "A_B1",
+        "A_B2"
+      ],
+      "status": "active_scaffold"
+    },
+    {
+      "id": "A_B4",
+      "name": "Structured Valence Requirement",
+      "classification": "falsifiable_hypothesis",
+      "statement": "A bridge-relevant valence burden requires organized evaluative topology that is not exhausted by policy optimization or scalar reward bookkeeping.",
+      "role": "Separates bridge valence structure from the already-closed Paper 8 valuation asymmetry.",
+      "licenses": [
+        "future_valence_structure_estimator_design",
+        "future_bridge_intervention_design"
+      ],
+      "does_not_license": [
+        "felt_pleasure",
+        "felt_pain"
+      ],
+      "depends_on": [
+        "A_B1",
+        "A_B2"
+      ],
+      "status": "active_scaffold"
+    },
+    {
+      "id": "A_B5",
+      "name": "World Richness Requirement",
+      "classification": "bridge_axiom",
+      "statement": "A bridge-relevant world-richness burden concerns organized self-indexed world structure rather than generic scene complexity or task competence.",
+      "role": "Defines the formal burden for Pi_W.",
+      "licenses": [
+        "future_world_richness_report_design"
+      ],
+      "does_not_license": [
+        "veridical_perception",
+        "world_experience"
+      ],
+      "depends_on": [
+        "A_B1",
+        "A_B2",
+        "A_B3"
+      ],
+      "status": "active_scaffold"
+    },
+    {
+      "id": "A_B6",
+      "name": "Ambiguity Bearing Requirement",
+      "classification": "falsifiable_hypothesis",
+      "statement": "A bridge-relevant ambiguity burden requires stable maintenance of unresolved alternatives with differential causal consequences prior to collapse.",
+      "role": "Opens Pi_A as a testable target rather than a linguistic metaphor.",
+      "licenses": [
+        "future_ambiguity_bearing_report_design",
+        "future_ambiguity_collapse_intervention"
+      ],
+      "does_not_license": [
+        "conscious_uncertainty",
+        "phenomenal_ambiguity"
+      ],
+      "depends_on": [
+        "A_B1",
+        "A_B2"
+      ],
+      "status": "active_scaffold"
+    },
+    {
+      "id": "A_B7",
+      "name": "Embodied Closure Relevance",
+      "classification": "open_inference",
+      "statement": "Embodied closure may be bridge-relevant only if body-world-boundary variables contribute constitutively to bridge predicates rather than merely modulating generic control success.",
+      "role": "Keeps Pi_E open but bounded.",
+      "licenses": [
+        "future_embodied_closure_investigation"
+      ],
+      "does_not_license": [
+        "biological_privilege",
+        "felt_embodiment"
+      ],
+      "depends_on": [
+        "A_B1",
+        "A_B2"
+      ],
+      "status": "active_scaffold"
+    },
+    {
+      "id": "A_B8",
+      "name": "Comparator Non-Collapse Rule",
+      "classification": "bridge_axiom",
+      "statement": "No bridge-level support class is admissible if a bridge-specific rival family or admissible hybrid matches the bridge task bundle at equal or lower penalized loss.",
+      "role": "Forces BPF to earn bridge irreducibility comparatively.",
+      "licenses": [
+        "future_bridge_reducibility_logic"
+      ],
+      "does_not_license": [
+        "metaphysical_irreducibility",
+        "bridge_support_without_comparators"
+      ],
+      "depends_on": [
+        "A_B1",
+        "A_B2"
+      ],
+      "status": "active_scaffold"
+    },
+    {
+      "id": "A_B9",
+      "name": "Non-Compensation and Anti-Inflation Governance",
+      "classification": "design_choice",
+      "statement": "Bridge formalization, candidate inclusion, and audit-facing inclusion must not be readable as bridge support, phenomenality, or Paper 9 authorization in the absence of the full bridge burden stack.",
+      "role": "Prevents governance drift from outrunning bridge evidence.",
+      "licenses": [
+        "blocked_claim_facing_surfaces",
+        "bounded_internal_bridge_language"
+      ],
+      "does_not_license": [
+        "claim_facing_bridge_promotion",
+        "paper9_scope_opening"
+      ],
+      "depends_on": [
+        "A_B2",
+        "A_B8"
+      ],
+      "status": "active_scaffold"
+    }
+  ]
+}

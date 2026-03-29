@@ -2,8 +2,8 @@
   "artifact_role": "subjectivity_runtime_protocol_definition",
   "schema_version": "1.0.0",
   "layer_name": "Subjectivity Runtime Layer",
-  "layer_id": "subjectivity_runtime_layer.srt5",
-  "implementation_status": "partial_runtime_path",
+  "layer_id": "subjectivity_runtime_layer.srt6",
+  "implementation_status": "ecosystem_hardened_runtime_path",
   "paper_source": {
     "paper_id": "paper8_first_person_subjectivity",
     "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
@@ -72,7 +72,13 @@
     "subjectivity_reducibility_report.json",
     "subjectivity_runtime_projection.json",
     "subjectivity_gate_result.json",
-    "subjectivity_manifest.json"
+    "subjectivity_manifest.json",
+    "subjectivity_condition_summary.json",
+    "subjectivity_batch_summary.json",
+    "subjectivity_campaign_summary.json",
+    "subjectivity_candidate_projection.json",
+    "subjectivity_audit_handoff_summary.json",
+    "subjectivity_verification_matrix.json"
   ],
   "minimum_conditions": [
     "baseline_subjectivity_enabled",
@@ -99,7 +105,10 @@
     "gate_compensation_control",
     "missing_coordinate_control",
     "drift_invalidation_control",
-    "comparator_unsupported_control"
+    "comparator_unsupported_control",
+    "stale_threshold_control",
+    "unsupported_gate_control",
+    "claim_surface_leak_control"
   ],
   "reducibility_status_classes": [
     "comparison_unsupported",
@@ -121,7 +130,8 @@
   "strongest_defensible_claims": [
     "Internal run-level gate closure can be computed over the seven available SRT-5 coordinates.",
     "Gamma_subj and Phi_subj can now be evaluated with explicit non-compensation and invalidation rules.",
-    "Any admissibility class remains framework-internal only and depends on comparator support, intervention stability, and drift cleanliness."
+    "Any admissibility class remains framework-internal only and depends on comparator support, intervention stability, and drift cleanliness.",
+    "SRT-6 can aggregate the existing internal subjectivity stack into condition, batch, campaign, candidate, and audit-facing internal summaries without lifting the layer into claim-facing use."
   ],
   "forbidden_inferences": [
     "subjectivity_gate_result_implies_external_validation",
@@ -131,14 +141,15 @@
     "gate_execution_implies_final_weak_family_closure"
   ],
   "framework_internal_reading": [
-    "Read every SRT-5 status class as framework-internal only.",
-    "No SRT-5 artifact licenses phenomenality, human equivalence, metaphysical closure, or claim-facing promotion.",
+    "Read every SRT-6 status class as framework-internal only.",
+    "No SRT-6 artifact licenses phenomenality, human equivalence, metaphysical closure, or claim-facing promotion.",
     "Comparator unsupported, intervention instability, missing artifacts, or drift invalidate or degrade the result."
   ],
   "notes": [
     "SRT-5 closes the internal run-level stack without touching external validation or ecosystem promotion.",
-    "Batch/campaign hardening and ecosystem-level candidate integration remain out of scope for this layer.",
+    "SRT-6 integrates the subjectivity layer into internal bundle, ecosystem candidate, and audit-facing package flows while preserving framework-internal-only boundaries.",
+    "Batch/campaign summaries remain governance and maintenance objects; they do not constitute external validation.",
     "Thresholds remain provisional and not empirically calibrated."
   ],
-  "interpretation_boundary": "Protocol definition only; SRT-5 internal gate closure over seven runtime surfaces, framework-internal only, not external validation, not phenomenality closure, not claim-facing evidence."
+  "interpretation_boundary": "Protocol definition only; SRT-6 keeps the seven-surface internal gate and adds ecosystem hardening over condition/batch/campaign/candidate/audit summaries, framework-internal only, not external validation, not phenomenality closure, not claim-facing evidence."
 }

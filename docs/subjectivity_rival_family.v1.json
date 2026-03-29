@@ -1,7 +1,7 @@
 {
   "artifact_role": "subjectivity_rival_family_registry",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt5",
+  "layer_id": "subjectivity_runtime_layer.srt6",
   "comparator_implementation_status": "minimally_executable_partial_runtime",
   "rivals": [
     {
@@ -75,7 +75,7 @@
       "Hybrids use the same loss family and complexity penalty as pure rivals and the strong model.",
       "Higher-order hybrids remain out of scope in SRT-4."
     ],
-    "status": "pairwise_finite_hybrids_minimally_executable_through_srt5"
+    "status": "pairwise_finite_hybrids_minimally_executable_through_srt6"
   },
   "admissible_closure_note": "Comparator burden is against the weak family and its finite admissible composites under the same loss family and explicit complexity penalty.",
   "forbidden_inferences": [

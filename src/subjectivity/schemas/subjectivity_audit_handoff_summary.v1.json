@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "subjectivity_audit_handoff_summary.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_version",
+    "schema_version",
+    "layer_version",
+    "runtime_status",
+    "support_class",
+    "readiness_class",
+    "included_artifacts",
+    "excluded_artifacts",
+    "boundary_assertions",
+    "invalidation_reasons",
+    "warnings",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "subjectivity_audit_handoff_summary" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "runtime_status": { "type": "string" },
+    "support_class": { "type": "string" },
+    "readiness_class": { "type": "string" },
+    "included_artifacts": { "type": "array", "items": { "type": "string" } },
+    "excluded_artifacts": { "type": "array", "items": { "type": "string" } },
+    "boundary_assertions": { "type": "array", "items": { "type": "string" } },
+    "invalidation_reasons": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

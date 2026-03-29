@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "subjectivity_campaign_summary.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_version",
+    "schema_version",
+    "layer_version",
+    "runtime_status",
+    "campaign_id",
+    "batch_count",
+    "minimum_required_batches",
+    "batch_refs",
+    "campaign_status",
+    "governance_context",
+    "aggregate_support",
+    "invalidation_reasons",
+    "warnings",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "subjectivity_campaign_summary" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "runtime_status": { "type": "string" },
+    "campaign_id": { "type": "string" },
+    "batch_count": { "type": "number" },
+    "minimum_required_batches": { "type": "number" },
+    "batch_refs": { "type": "array", "items": { "type": "string" } },
+    "campaign_status": { "type": "string" },
+    "governance_context": { "type": "object" },
+    "aggregate_support": { "type": "object" },
+    "invalidation_reasons": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

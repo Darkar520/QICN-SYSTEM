@@ -1,8 +1,8 @@
 {
   "artifact_role": "subjectivity_threshold_registry",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt5",
-  "status": "provisional_srt5_internal_gate_thresholds_not_empirically_calibrated",
+  "layer_id": "subjectivity_runtime_layer.srt6",
+  "status": "provisional_srt6_internal_gate_thresholds_and_ecosystem_hardening_not_empirically_calibrated",
   "coordinate_thresholds": {
     "SelfIndex": 0.5,
     "OwnershipField": 0.5,
@@ -57,7 +57,8 @@
   "notes": [
     "Thresholds remain provisional and are not empirically calibrated.",
     "SRT-5 may use these thresholds for internal gate execution only.",
+    "SRT-6 additionally pins these thresholds into candidate, internal bundle, and audit-facing subjectivity artifacts.",
     "No runtime claim may cite these thresholds as external evidence or validation."
   ],
-  "interpretation_boundary": "Threshold registry only; provisional internal gate thresholds for SRT-5, not empirical calibration, not external validation, not claim-facing evidence."
+  "interpretation_boundary": "Threshold registry only; provisional internal gate thresholds reused by SRT-6 ecosystem hardening, not empirical calibration, not external validation, not claim-facing evidence."
 }

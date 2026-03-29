@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "subjectivity_verification_matrix.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_version",
+    "schema_version",
+    "layer_version",
+    "runtime_status",
+    "support_class",
+    "readiness_class",
+    "status",
+    "checks",
+    "failures",
+    "warnings",
+    "baseline_refs",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "subjectivity_verification_matrix" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "runtime_status": { "type": "string" },
+    "support_class": { "type": "string" },
+    "readiness_class": { "type": "string" },
+    "status": { "type": "string" },
+    "checks": { "type": "array", "items": { "type": "object" } },
+    "failures": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "baseline_refs": { "type": "object" },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

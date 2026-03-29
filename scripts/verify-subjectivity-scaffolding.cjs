@@ -15,6 +15,9 @@ const REQUIRED_DOC_FILES = [
   'docs/SUBJECTIVITY_INTERVENTIONS_AND_NEGATIVE_CONTROLS.md',
   'docs/SUBJECTIVITY_ARTIFACT_SURFACE_POLICY.md',
   'docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md',
+  'docs/SUBJECTIVITY_MAINTENANCE.md',
+  'docs/SUBJECTIVITY_CANDIDATE_INTEGRATION.md',
+  'docs/SUBJECTIVITY_AUDIT_HANDOFF.md',
   'docs/subjectivity_protocol.v1.json',
   'docs/subjectivity_thresholds.v1.json',
   'docs/subjectivity_rival_family.v1.json',
@@ -37,9 +40,16 @@ const REQUIRED_SRC_FILES = [
   'src/subjectivity/SubjectivityInterventionHarness.js',
   'src/subjectivity/SubjectivityReducibilityComparator.js',
   'src/subjectivity/SubjectivityGateEvaluator.js',
+  'src/subjectivity/SubjectivityEcosystemIntegrator.js',
   'src/subjectivity/schemas/subjectivity_manifest.v1.json',
   'src/subjectivity/schemas/subjectivity_runtime_projection.v1.json',
   'src/subjectivity/schemas/subjectivity_gate_result.v1.json',
+  'src/subjectivity/schemas/subjectivity_condition_summary.v1.json',
+  'src/subjectivity/schemas/subjectivity_batch_summary.v1.json',
+  'src/subjectivity/schemas/subjectivity_campaign_summary.v1.json',
+  'src/subjectivity/schemas/subjectivity_candidate_projection.v1.json',
+  'src/subjectivity/schemas/subjectivity_audit_handoff_summary.v1.json',
+  'src/subjectivity/schemas/subjectivity_verification_matrix.v1.json',
   'src/subjectivity/schemas/self_index_state.v1.json',
   'src/subjectivity/schemas/ownership_attribution_report.v1.json',
   'src/subjectivity/schemas/subjective_continuity_report.v1.json',
@@ -78,7 +88,13 @@ const EXPECTED_REQUIRED_ARTIFACTS = [
   'subjectivity_reducibility_report.json',
   'subjectivity_runtime_projection.json',
   'subjectivity_gate_result.json',
-  'subjectivity_manifest.json'
+  'subjectivity_manifest.json',
+  'subjectivity_condition_summary.json',
+  'subjectivity_batch_summary.json',
+  'subjectivity_campaign_summary.json',
+  'subjectivity_candidate_projection.json',
+  'subjectivity_audit_handoff_summary.json',
+  'subjectivity_verification_matrix.json'
 ];
 
 const GATE_STATUS_CLASSES = [
@@ -122,8 +138,8 @@ async function verifySubjectivityScaffolding() {
   const docErrors = [];
 
   assert(
-    protocol.layer_id === 'subjectivity_runtime_layer.srt5',
-    'protocol layer_id must be subjectivity_runtime_layer.srt5',
+    protocol.layer_id === 'subjectivity_runtime_layer.srt6',
+    'protocol layer_id must be subjectivity_runtime_layer.srt6',
     protocolErrors
   );
   assert(
@@ -156,14 +172,14 @@ async function verifySubjectivityScaffolding() {
   );
 
   assert(
-    thresholds.layer_id === 'subjectivity_runtime_layer.srt5',
-    'threshold registry must move to subjectivity_runtime_layer.srt5',
+    thresholds.layer_id === 'subjectivity_runtime_layer.srt6',
+    'threshold registry must move to subjectivity_runtime_layer.srt6',
     thresholdErrors
   );
   assert(
     thresholds.status ===
-      'provisional_srt5_internal_gate_thresholds_not_empirically_calibrated',
-    'threshold registry must reflect SRT-5 provisional internal gate thresholds',
+      'provisional_srt6_internal_gate_thresholds_and_ecosystem_hardening_not_empirically_calibrated',
+    'threshold registry must reflect SRT-6 provisional internal gate thresholds',
     thresholdErrors
   );
   assert(
@@ -300,7 +316,9 @@ async function verifySubjectivityScaffolding() {
     hasReducibility:
       typeof imported.createSubjectivityReducibilityComparator === 'function',
     hasGate:
-      typeof imported.createSubjectivityGateEvaluator === 'function'
+      typeof imported.createSubjectivityGateEvaluator === 'function',
+    hasEcosystemIntegrator:
+      typeof imported.createSubjectivityEcosystemIntegrator === 'function'
   };
 
   const ok =
@@ -318,7 +336,7 @@ async function verifySubjectivityScaffolding() {
   const payload = {
     artifact_role: 'subjectivity_scaffolding_check',
     schema_version: '1.0.0',
-    layer_id: 'subjectivity_runtime_layer.srt5',
+    layer_id: 'subjectivity_runtime_layer.srt6',
     status: ok ? 'PASS' : 'FAIL',
     missing_docs: missingDocs,
     missing_src_files: missingSrcFiles,
@@ -331,7 +349,7 @@ async function verifySubjectivityScaffolding() {
     local_path_leaks: localPathLeaks,
     import_sanity: importSanity,
     interpretation_boundary:
-      'Subjectivity scaffolding verification only; structural consistency check for SRT-5, not subjectivity support, not external validation.'
+      'Subjectivity scaffolding verification only; structural consistency check for SRT-6 ecosystem hardening, not subjectivity support, not external validation.'
   };
 
   fs.mkdirSync(ARTIFACTS_ROOT, { recursive: true });

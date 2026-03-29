@@ -10,7 +10,10 @@ const {
   copyFile,
   evaluateEcosystem
 } = require('./ecosystem-release-common.cjs');
+const { buildSubjectivityEcosystem } = require('./build-subjectivity-ecosystem.cjs');
 
+async function buildEcosystemReleaseCandidate() {
+await buildSubjectivityEcosystem();
 const { model, gapRegister, verificationMatrix } = evaluateEcosystem();
 const generatedAt = new Date().toISOString();
 const bundleId = `ecosystem_release_candidate_${generatedAt.replace(/[:.]/g, '-')}`;
@@ -106,6 +109,41 @@ const bundleManifest = {
     documentation: 'ecosystem/docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md',
     machine_readable: 'ecosystem/manifests/ecosystem_candidate_governance.v1.json'
   },
+  subjectivity: {
+    layer_id: 'subjectivity_runtime_layer.srt6',
+    documentation: {
+      runtime_protocol: 'subjectivity/docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md',
+      interpretation_boundary: 'subjectivity/docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md',
+      surface_policy: 'subjectivity/docs/SUBJECTIVITY_ARTIFACT_SURFACE_POLICY.md',
+      candidate_integration: 'subjectivity/docs/SUBJECTIVITY_CANDIDATE_INTEGRATION.md',
+      maintenance: 'subjectivity/docs/SUBJECTIVITY_MAINTENANCE.md'
+    },
+    manifests: {
+      protocol: 'subjectivity/manifests/subjectivity_protocol.v1.json',
+      thresholds: 'subjectivity/manifests/subjectivity_thresholds.v1.json',
+      rival_family: 'subjectivity/manifests/subjectivity_rival_family.v1.json',
+      surface_policy: 'subjectivity/manifests/subjectivity_surface_policy.v1.json',
+      artifact_schema: 'subjectivity/manifests/subjectivity_artifact_schema.v1.json'
+    },
+    authoritative_artifacts: {
+      runtime_projection: 'subjectivity/subjectivity_runtime_projection.json',
+      gate_result: 'subjectivity/subjectivity_gate_result.json',
+      manifest: 'subjectivity/subjectivity_manifest.json',
+      condition_summary: 'subjectivity/subjectivity_condition_summary.json',
+      batch_summary: 'subjectivity/subjectivity_batch_summary.json',
+      campaign_summary: 'subjectivity/subjectivity_campaign_summary.json',
+      candidate_projection: 'subjectivity/subjectivity_candidate_projection.json',
+      verification_matrix: 'subjectivity/subjectivity_verification_matrix.json'
+    },
+    status: {
+      implemented: true,
+      internally_supported: true,
+      framework_internal_only: true,
+      not_externally_validated: true
+    },
+    interpretation_boundary:
+      'Framework-internal subjectivity integration only; candidate inclusion does not authorize claim closure, external validation, phenomenality, or human equivalence.'
+  },
   freeze_baseline: {
     documentation: 'ecosystem/docs/ECOSYSTEM_FREEZE_BASELINE.md',
     release_notes: 'ecosystem/docs/ECOSYSTEM_RELEASE_NOTES.md',
@@ -164,6 +202,7 @@ const releaseNotes = `# ECOSYSTEM RELEASE NOTES
 - ecosystem interface contract
 - ecosystem candidate governance
 - ecosystem freeze baseline and maintenance checklist
+- subjectivity runtime protocol, maintenance docs, machine manifests, and SRT-6 ecosystem summaries
 - ecosystem verification matrix
 - ecosystem gap register
 
@@ -171,6 +210,7 @@ const releaseNotes = `# ECOSYSTEM RELEASE NOTES
 
 - non-canonical corpus material under \`release/_non_canonical/\`
 - blocked claim-facing system outputs
+- primary SRT-1..4 subjectivity run artifacts that remain local-only
 - raw runtime outputs as theory-validation material
 - unclassified or non-baseline materials outside the two repository baselines
 
@@ -196,6 +236,24 @@ This ecosystem bundle is an internal release candidate only. It does not imply e
   [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_FREEZE_BASELINE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_FREEZE_BASELINE.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_RELEASE_NOTES.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_RELEASE_NOTES.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_MAINTENANCE_CHECKLIST.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'ECOSYSTEM_MAINTENANCE_CHECKLIST.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'SUBJECTIVITY_RUNTIME_PROTOCOL.md'), path.join(bundleRoot, 'subjectivity', 'docs', 'SUBJECTIVITY_RUNTIME_PROTOCOL.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'SUBJECTIVITY_INTERPRETATION_BOUNDARY.md'), path.join(bundleRoot, 'subjectivity', 'docs', 'SUBJECTIVITY_INTERPRETATION_BOUNDARY.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'SUBJECTIVITY_ARTIFACT_SURFACE_POLICY.md'), path.join(bundleRoot, 'subjectivity', 'docs', 'SUBJECTIVITY_ARTIFACT_SURFACE_POLICY.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'SUBJECTIVITY_CANDIDATE_INTEGRATION.md'), path.join(bundleRoot, 'subjectivity', 'docs', 'SUBJECTIVITY_CANDIDATE_INTEGRATION.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'SUBJECTIVITY_MAINTENANCE.md'), path.join(bundleRoot, 'subjectivity', 'docs', 'SUBJECTIVITY_MAINTENANCE.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'subjectivity_protocol.v1.json'), path.join(bundleRoot, 'subjectivity', 'manifests', 'subjectivity_protocol.v1.json')],
+  [path.join(SYSTEM_ROOT, 'docs', 'subjectivity_thresholds.v1.json'), path.join(bundleRoot, 'subjectivity', 'manifests', 'subjectivity_thresholds.v1.json')],
+  [path.join(SYSTEM_ROOT, 'docs', 'subjectivity_rival_family.v1.json'), path.join(bundleRoot, 'subjectivity', 'manifests', 'subjectivity_rival_family.v1.json')],
+  [path.join(SYSTEM_ROOT, 'docs', 'subjectivity_surface_policy.v1.json'), path.join(bundleRoot, 'subjectivity', 'manifests', 'subjectivity_surface_policy.v1.json')],
+  [path.join(SYSTEM_ROOT, 'docs', 'subjectivity_artifact_schema.v1.json'), path.join(bundleRoot, 'subjectivity', 'manifests', 'subjectivity_artifact_schema.v1.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt5', 'subjectivity_runtime_projection.json'), path.join(bundleRoot, 'subjectivity', 'subjectivity_runtime_projection.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt5', 'subjectivity_gate_result.json'), path.join(bundleRoot, 'subjectivity', 'subjectivity_gate_result.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt5', 'subjectivity_manifest.json'), path.join(bundleRoot, 'subjectivity', 'subjectivity_manifest.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_condition_summary.json'), path.join(bundleRoot, 'subjectivity', 'subjectivity_condition_summary.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_batch_summary.json'), path.join(bundleRoot, 'subjectivity', 'subjectivity_batch_summary.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_campaign_summary.json'), path.join(bundleRoot, 'subjectivity', 'subjectivity_campaign_summary.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_candidate_projection.json'), path.join(bundleRoot, 'subjectivity', 'subjectivity_candidate_projection.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_verification_matrix.json'), path.join(bundleRoot, 'subjectivity', 'subjectivity_verification_matrix.json')],
   [path.join(SYSTEM_ROOT, 'docs', 'PROTOCOLIZED_EVALUATION_PROTOCOL.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'PROTOCOLIZED_EVALUATION_PROTOCOL.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'EXECUTION_CAMPAIGN_FREEZE_BASELINE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'EXECUTION_CAMPAIGN_FREEZE_BASELINE.md')],
@@ -260,11 +318,28 @@ writeJson(path.join(ECOSYSTEM_ARTIFACT_ROOT, 'ecosystem_gap_register.v1.json'), 
 writeJson(path.join(ECOSYSTEM_ARTIFACT_ROOT, 'ecosystem_verification_matrix.json'), verificationMatrix);
 fs.writeFileSync(path.join(ECOSYSTEM_ARTIFACT_ROOT, 'ECOSYSTEM_RELEASE_NOTES.md'), releaseNotes, 'utf8');
 
-process.stdout.write(`${JSON.stringify({
+const result = {
   output: normalize(path.relative(SYSTEM_ROOT, manifestPath)),
   root_manifest: 'artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json',
   bundle_id: bundleId,
   artifact_role: bundleManifest.artifact_role,
   status: verificationMatrix.status,
   gap_register: normalize(path.relative(SYSTEM_ROOT, gapPath))
-}, null, 2)}\n`);
+};
+return result;
+}
+
+if (require.main === module) {
+  buildEcosystemReleaseCandidate()
+    .then((result) => {
+      process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    })
+    .catch((error) => {
+      console.error(`FAIL build-ecosystem-release-candidate: ${error.message}`);
+      process.exit(1);
+    });
+}
+
+module.exports = {
+  buildEcosystemReleaseCandidate
+};

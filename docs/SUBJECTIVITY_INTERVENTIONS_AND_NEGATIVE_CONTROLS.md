@@ -2,7 +2,7 @@
 
 This document records the intervention family planned for the Subjectivity
 Runtime Layer and the minimal valuation/intervention/gating controls executed
-through SRT-5.
+through SRT-6.
 
 ## Planned intervention family
 
@@ -44,6 +44,12 @@ Implemented through SRT-5 verification:
 - `drift_invalidation_control`
 - `comparator_unsupported_control`
 
+Implemented through SRT-6 ecosystem verification:
+
+- `stale_threshold_control`
+- `unsupported_gate_control`
+- `claim_surface_leak_control`
+
 Still planned for later blocks:
 
 - `memory_rich_non_owning_control`
@@ -56,16 +62,19 @@ Still planned for later blocks:
 - negative controls are meant to block flattering misreads
 - weak-rival reconstruction is meant to support the irreducibility burden in later blocks
 
-## SRT-5 boundary
+## SRT-6 boundary
 
-In SRT-5:
+In SRT-6:
 
 - no full intervention family is executed
 - only a minimal valuation-oriented harness is executed
 - `self_nonself_valuation_inversion` and `risk_consequence_reassignment` are the only executed perturbations
 - only a partial reducibility comparator over currently implemented surfaces is executed
 - an internal non-claim-facing gate closure is executed over the seven available surfaces
+- condition, batch, campaign, candidate, and audit-facing summaries are
+  emitted only as governed ecosystem derivatives of that already-internal stack
 - no intervention artifact is claim evidence
+- no ecosystem artifact is claim evidence
 
 These names exist now so that later blocks do not invent incompatible wording or
 implicit scope.

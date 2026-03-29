@@ -71,3 +71,8 @@ export {
   SubjectivityGateEvaluator,
   createSubjectivityGateEvaluator
 } from './SubjectivityGateEvaluator.js';
+
+export {
+  SubjectivityEcosystemIntegrator,
+  createSubjectivityEcosystemIntegrator
+} from './SubjectivityEcosystemIntegrator.js';

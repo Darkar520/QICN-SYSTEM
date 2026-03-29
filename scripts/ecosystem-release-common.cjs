@@ -81,6 +81,66 @@ const tryGit = (cwd, args) => {
   }
 };
 
+const resolveGitDir = (repoRoot) => {
+  const dotGitPath = path.join(repoRoot, '.git');
+  if (exists(dotGitPath) && fs.statSync(dotGitPath).isDirectory()) {
+    return dotGitPath;
+  }
+  if (exists(dotGitPath) && fs.statSync(dotGitPath).isFile()) {
+    const contents = readText(dotGitPath);
+    const match = contents.match(/^gitdir:\s*(.+)\s*$/im);
+    if (match) {
+      return path.resolve(repoRoot, match[1].trim());
+    }
+  }
+  return null;
+};
+
+const readLooseGitRef = (gitDir, refName) => {
+  const refPath = path.join(gitDir, ...refName.split('/'));
+  if (exists(refPath)) return readText(refPath).trim();
+  const packedRefsPath = path.join(gitDir, 'packed-refs');
+  if (!exists(packedRefsPath)) return null;
+  const lines = readText(packedRefsPath).split(/\r?\n/);
+  for (const line of lines) {
+    if (!line || line.startsWith('#') || line.startsWith('^')) continue;
+    const [sha, ref] = line.split(' ');
+    if (ref === refName) return sha;
+  }
+  return null;
+};
+
+const readGitStateFallback = (repoRoot) => {
+  const gitDir = resolveGitDir(repoRoot);
+  if (!gitDir) return null;
+  const headPath = path.join(gitDir, 'HEAD');
+  if (!exists(headPath)) return null;
+  const headContents = readText(headPath).trim();
+  if (headContents.startsWith('ref: ')) {
+    const refName = headContents.slice(5).trim();
+    return {
+      branch: refName.replace(/^refs\/heads\//, ''),
+      head: readLooseGitRef(gitDir, refName) || 'unknown_commit',
+      upstream: null,
+      upstream_head: null,
+      remote: 'origin',
+      remote_url: tryGit(repoRoot, ['config', '--get', 'remote.origin.url']),
+      clean: true,
+      pushed: false
+    };
+  }
+  return {
+    branch: 'detached_head',
+    head: headContents || 'unknown_commit',
+    upstream: null,
+    upstream_head: null,
+    remote: 'origin',
+    remote_url: tryGit(repoRoot, ['config', '--get', 'remote.origin.url']),
+    clean: true,
+    pushed: false
+  };
+};
+
 const getRepoStateFromEnv = (prefix) => {
   const branch = process.env[`${prefix}_BRANCH`];
   const head = process.env[`${prefix}_HEAD`];
@@ -100,13 +160,17 @@ const getRepoStateFromEnv = (prefix) => {
 const getRepoState = (repoRoot, envPrefix) => {
   const fromEnv = getRepoStateFromEnv(envPrefix);
   if (fromEnv) return fromEnv;
-  const branch = git(repoRoot, ['rev-parse', '--abbrev-ref', 'HEAD']);
-  const head = git(repoRoot, ['rev-parse', 'HEAD']);
-  const statusPorcelain = git(repoRoot, ['status', '--porcelain']);
+  const branch = tryGit(repoRoot, ['rev-parse', '--abbrev-ref', 'HEAD']);
+  const head = tryGit(repoRoot, ['rev-parse', 'HEAD']);
+  const statusPorcelain = tryGit(repoRoot, ['status', '--porcelain']);
   const upstream = tryGit(repoRoot, ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']);
   const upstreamHead = upstream ? tryGit(repoRoot, ['rev-parse', '@{u}']) : null;
   const remote = upstream ? upstream.split('/')[0] : 'origin';
   const remoteUrl = tryGit(repoRoot, ['config', '--get', `remote.${remote}.url`]);
+  if (!branch || !head) {
+    const fallback = readGitStateFallback(repoRoot);
+    if (fallback) return fallback;
+  }
   return {
     branch,
     head,
@@ -278,6 +342,57 @@ const loadEvaluationPhase = () => {
   };
 };
 
+const loadSubjectivityEcosystem = () => {
+  const docs = {
+    runtime_protocol_doc_path: path.join(SYSTEM_ROOT, 'docs', 'SUBJECTIVITY_RUNTIME_PROTOCOL.md'),
+    interpretation_boundary_doc_path: path.join(SYSTEM_ROOT, 'docs', 'SUBJECTIVITY_INTERPRETATION_BOUNDARY.md'),
+    surface_policy_doc_path: path.join(SYSTEM_ROOT, 'docs', 'SUBJECTIVITY_ARTIFACT_SURFACE_POLICY.md'),
+    maintenance_doc_path: path.join(SYSTEM_ROOT, 'docs', 'SUBJECTIVITY_MAINTENANCE.md'),
+    candidate_integration_doc_path: path.join(SYSTEM_ROOT, 'docs', 'SUBJECTIVITY_CANDIDATE_INTEGRATION.md'),
+    audit_handoff_doc_path: path.join(SYSTEM_ROOT, 'docs', 'SUBJECTIVITY_AUDIT_HANDOFF.md')
+  };
+  const manifests = {
+    protocol_json_path: path.join(SYSTEM_ROOT, 'docs', 'subjectivity_protocol.v1.json'),
+    thresholds_json_path: path.join(SYSTEM_ROOT, 'docs', 'subjectivity_thresholds.v1.json'),
+    rival_family_json_path: path.join(SYSTEM_ROOT, 'docs', 'subjectivity_rival_family.v1.json'),
+    artifact_schema_json_path: path.join(SYSTEM_ROOT, 'docs', 'subjectivity_artifact_schema.v1.json'),
+    surface_policy_json_path: path.join(SYSTEM_ROOT, 'docs', 'subjectivity_surface_policy.v1.json')
+  };
+  const artifacts = {
+    runtime_projection_path: path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt5', 'subjectivity_runtime_projection.json'),
+    gate_result_path: path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt5', 'subjectivity_gate_result.json'),
+    manifest_path: path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt5', 'subjectivity_manifest.json'),
+    condition_summary_path: path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_condition_summary.json'),
+    batch_summary_path: path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_batch_summary.json'),
+    campaign_summary_path: path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_campaign_summary.json'),
+    candidate_projection_path: path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_candidate_projection.json'),
+    audit_handoff_path: path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_audit_handoff_summary.json'),
+    verification_matrix_path: path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_verification_matrix.json'),
+    ecosystem_check_path: path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_ecosystem_check.json'),
+    stack_check_path: path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_stack_check.json')
+  };
+  return {
+    docs,
+    manifests,
+    artifacts,
+    docs_present: Object.values(docs).every((file) => exists(file)),
+    manifests_present: Object.values(manifests).every((file) => exists(file)),
+    artifacts_present: Object.values(artifacts).every((file) => exists(file)),
+    candidate_projection: exists(artifacts.candidate_projection_path)
+      ? readJson(artifacts.candidate_projection_path)
+      : null,
+    verification_matrix: exists(artifacts.verification_matrix_path)
+      ? readJson(artifacts.verification_matrix_path)
+      : null,
+    ecosystem_check: exists(artifacts.ecosystem_check_path)
+      ? readJson(artifacts.ecosystem_check_path)
+      : null,
+    stack_check: exists(artifacts.stack_check_path)
+      ? readJson(artifacts.stack_check_path)
+      : null
+  };
+};
+
 const portabilityMatches = (files) => {
   const matches = [];
   for (const file of files) {
@@ -430,6 +545,53 @@ const buildGapRegister = (model) => {
       closure_requirement: 'Resolve evaluation-phase warnings or keep them explicit.'
     });
   }
+  if (!model.subjectivity.docs_present || !model.subjectivity.manifests_present) {
+    gaps.push({
+      id: 'system.subjectivity_docs_or_manifests_missing',
+      classification: 'blocking_gap',
+      impact: 'SRT-6 subjectivity ecosystem governance is incomplete.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: false,
+      evidence: 'One or more subjectivity runtime, maintenance, integration, or machine-readable governance files are missing.',
+      closure_requirement: 'Restore the SRT-6 subjectivity docs and machine-readable manifests.'
+    });
+  }
+  if (!model.subjectivity.artifacts_present) {
+    gaps.push({
+      id: 'system.subjectivity_ecosystem_artifacts_missing',
+      classification: 'blocking_gap',
+      impact: 'Subjectivity ecosystem artifacts are missing from the authoritative internal baseline.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: false,
+      evidence: 'One or more SRT-6 subjectivity artifacts are missing under artifacts/subjectivity/srt6/.',
+      closure_requirement: 'Rebuild the subjectivity ecosystem artifacts and rerun the stack verifier.'
+    });
+  }
+  if (model.subjectivity.verification_matrix?.status && model.subjectivity.verification_matrix.status !== 'PASS') {
+    gaps.push({
+      id: 'system.subjectivity_ecosystem_verification_failed',
+      classification: 'blocking_gap',
+      impact: 'Subjectivity ecosystem integration is failing and cannot enter the candidate bundle cleanly.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: false,
+      evidence: model.subjectivity.verification_matrix.failures || [],
+      closure_requirement: 'Repair subjectivity ecosystem integration until subjectivity_verification_matrix.json reports PASS.'
+    });
+  }
+  if (
+    model.subjectivity.candidate_projection
+    && !['subjectivity_stack_candidate_ready', 'subjectivity_stack_audit_ready_internal'].includes(model.subjectivity.candidate_projection.readiness_class)
+  ) {
+    gaps.push({
+      id: 'system.subjectivity_candidate_projection_not_ready',
+      classification: 'blocking_gap',
+      impact: 'The subjectivity layer is not candidate-compatible under the current SRT-6 lineage.',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: false,
+      evidence: model.subjectivity.candidate_projection.readiness_class,
+      closure_requirement: 'Regenerate the subjectivity stack and clear invalidation reasons until readiness reaches candidate-ready or audit-ready-internal.'
+    });
+  }
   return {
     artifact_role: 'ecosystem_gap_register',
     schema_version: '1.0.0',
@@ -449,6 +611,7 @@ const evaluateEcosystem = () => {
   const candidateGovernance = loadCandidateGovernance();
   const freezeDocs = loadFreezeDocs();
   const evaluation = loadEvaluationPhase();
+  const subjectivity = loadSubjectivityEcosystem();
   const portabilityTargets = [
     path.join(SYSTEM_ROOT, 'docs', 'CANON_SOURCE_OF_TRUTH.md'),
     path.join(SYSTEM_ROOT, 'docs', 'ECOSYSTEM_BASELINE.md'),
@@ -489,6 +652,28 @@ const evaluateEcosystem = () => {
     evaluation.artifacts.campaign_readout_path,
     evaluation.artifacts.campaign_pointer_path,
     evaluation.artifacts.campaign_audit_path,
+    subjectivity.docs.runtime_protocol_doc_path,
+    subjectivity.docs.interpretation_boundary_doc_path,
+    subjectivity.docs.surface_policy_doc_path,
+    subjectivity.docs.maintenance_doc_path,
+    subjectivity.docs.candidate_integration_doc_path,
+    subjectivity.docs.audit_handoff_doc_path,
+    subjectivity.manifests.protocol_json_path,
+    subjectivity.manifests.thresholds_json_path,
+    subjectivity.manifests.rival_family_json_path,
+    subjectivity.manifests.artifact_schema_json_path,
+    subjectivity.manifests.surface_policy_json_path,
+    subjectivity.artifacts.runtime_projection_path,
+    subjectivity.artifacts.gate_result_path,
+    subjectivity.artifacts.manifest_path,
+    subjectivity.artifacts.condition_summary_path,
+    subjectivity.artifacts.batch_summary_path,
+    subjectivity.artifacts.campaign_summary_path,
+    subjectivity.artifacts.candidate_projection_path,
+    subjectivity.artifacts.audit_handoff_path,
+    subjectivity.artifacts.verification_matrix_path,
+    subjectivity.artifacts.ecosystem_check_path,
+    subjectivity.artifacts.stack_check_path,
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_interface_contract.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'ecosystem_candidate_governance.v1.json'),
     path.join(SYSTEM_ROOT, 'docs', 'OPERATIONAL_READINESS.md'),
@@ -509,6 +694,7 @@ const evaluateEcosystem = () => {
     candidateGovernance,
     freezeDocs,
     evaluation,
+    subjectivity,
     portability_targets: portabilityTargets
   };
 
@@ -544,9 +730,11 @@ const evaluateEcosystem = () => {
   addCheck('system_internal_bundle', Boolean(system.bundle_manifest)
     && Array.isArray(system.bundle_manifest.excluded_outputs)
     && system.bundle_manifest.excluded_outputs.some((item) => item.artifact === 'condition_comparison.json')
+    && Boolean(system.bundle_manifest.subjectivity_bundle)
     ? 'PASS' : 'FAIL', {
     manifest: system.bundle_manifest_path ? normalize(path.relative(SYSTEM_ROOT, system.bundle_manifest_path)) : null,
-    git_commit: system.bundle_manifest ? system.bundle_manifest.git.commit : null
+    git_commit: system.bundle_manifest ? system.bundle_manifest.git.commit : null,
+    subjectivity_bundle_present: Boolean(system.bundle_manifest?.subjectivity_bundle)
   });
 
   addCheck('release_repo_state', release.state.clean && release.state.pushed ? 'PASS' : 'FAIL', {
@@ -625,6 +813,18 @@ const evaluateEcosystem = () => {
       ? normalize(path.relative(SYSTEM_ROOT, evaluation.artifacts.batch_report_path))
       : null,
     check_statuses: evaluationCheckStatuses
+  });
+  addCheck('subjectivity_ecosystem_stack', subjectivity.docs_present
+    && subjectivity.manifests_present
+    && subjectivity.artifacts_present
+    && subjectivity.verification_matrix?.status === 'PASS'
+    && ['subjectivity_stack_candidate_ready', 'subjectivity_stack_audit_ready_internal'].includes(subjectivity.candidate_projection?.readiness_class)
+    ? 'PASS' : 'FAIL', {
+    docs_present: subjectivity.docs_present,
+    manifests_present: subjectivity.manifests_present,
+    artifacts_present: subjectivity.artifacts_present,
+    readiness_class: subjectivity.candidate_projection?.readiness_class || null,
+    verification_status: subjectivity.verification_matrix?.status || null
   });
 
   const portability = portabilityMatches(portabilityTargets);

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "subjectivity_batch_summary.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_version",
+    "schema_version",
+    "layer_version",
+    "runtime_status",
+    "batch_id",
+    "condition_count",
+    "minimum_required_conditions",
+    "condition_refs",
+    "comparability_status",
+    "aggregate_support",
+    "invalidation_reasons",
+    "warnings",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "subjectivity_batch_summary" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "runtime_status": { "type": "string" },
+    "batch_id": { "type": "string" },
+    "condition_count": { "type": "number" },
+    "minimum_required_conditions": { "type": "number" },
+    "condition_refs": { "type": "array", "items": { "type": "string" } },
+    "comparability_status": { "type": "string" },
+    "aggregate_support": { "type": "object" },
+    "invalidation_reasons": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

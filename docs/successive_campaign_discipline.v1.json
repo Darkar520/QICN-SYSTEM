@@ -7,6 +7,8 @@
     "frozen_evaluation_architecture_unchanged",
     "post_freeze_repo_head_change_limited_to_governance_audit_or_bundle_layers",
     "ecosystem_candidate_bundle_regenerated_if_baseline_linkage_changed",
+    "subjectivity_thresholds_and_rival_family_unchanged_or_rerun",
+    "subjectivity_gate_projection_and_candidate_summary_present",
     "runner_executed_campaign_plan_present",
     "canonical_condition_set_preserved",
     "claim_facing_block_preserved",
@@ -18,6 +20,8 @@
     "verify_evaluation_comparisons",
     "verify_evaluation_phase",
     "verify_ecosystem_integrity",
+    "verify_subjectivity_ecosystem",
+    "verify_subjectivity_stack",
     "release_ecosystem_candidate_if_candidate_manifest_baseline_linkage_is_stale"
   ],
   "successive_campaign_breaks_baseline": [
@@ -27,6 +31,10 @@
     "controls_registry_drift",
     "statistical_policy_drift",
     "runtime_semantic_drift",
+    "subjectivity_threshold_drift",
+    "subjectivity_rival_family_drift",
+    "subjectivity_estimator_version_drift",
+    "subjectivity_surface_policy_drift",
     "frozen_evaluation_architecture_drift",
     "unsupported_comparisons_emitted",
     "claim_facing_block_not_enforced"
@@ -68,7 +76,13 @@
     "campaign_execution_plan.json",
     "execution_campaign_readout.json",
     "execution_campaign_audit_readout.json",
-    "latest_campaign_pointer.json"
+    "latest_campaign_pointer.json",
+    "subjectivity_condition_summary.json",
+    "subjectivity_batch_summary.json",
+    "subjectivity_campaign_summary.json",
+    "subjectivity_candidate_projection.json",
+    "subjectivity_audit_handoff_summary.json",
+    "subjectivity_verification_matrix.json"
   ],
   "blocked_inferences": [
     "external_validation",

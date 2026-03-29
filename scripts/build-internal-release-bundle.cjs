@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { verifyOperationalReadiness } = require('./verify-operational-readiness.cjs');
 const { verifyArtifacts } = require('./verify-artifacts.cjs');
+const { buildSubjectivityEcosystem } = require('./build-subjectivity-ecosystem.cjs');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
@@ -84,6 +85,11 @@ async function buildInternalReleaseBundle({
     throw new Error('Artifact verification failed before bundle build.');
   }
 
+  const subjectivityBuild = await buildSubjectivityEcosystem();
+  if (!subjectivityBuild.ok) {
+    throw new Error('Subjectivity ecosystem build failed before internal release bundle build.');
+  }
+
   const { exportOutputForSurface, buildLocalReportForSurface } = await import('../src/experiments/OutputSurfaceEnforcer.js');
 
   const summaryExport = exportOutputForSurface({
@@ -128,10 +134,35 @@ async function buildInternalReleaseBundle({
   const docsToCopy = [
     'docs/REPRODUCIBILITY_CONTRACT.md',
     'docs/OPERATIONAL_READINESS.md',
-    'docs/RELEASE_PROCESS.md'
+    'docs/RELEASE_PROCESS.md',
+    'docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md',
+    'docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md',
+    'docs/SUBJECTIVITY_ARTIFACT_SURFACE_POLICY.md',
+    'docs/SUBJECTIVITY_MAINTENANCE.md',
+    'docs/SUBJECTIVITY_CANDIDATE_INTEGRATION.md',
+    'docs/SUBJECTIVITY_AUDIT_HANDOFF.md'
   ];
   for (const relPath of docsToCopy) {
     fs.copyFileSync(path.join(repoRoot, relPath), path.join(docsDir, path.basename(relPath)));
+  }
+
+  const subjectivityArtifacts = [
+    'artifacts/subjectivity/srt5/subjectivity_runtime_projection.json',
+    'artifacts/subjectivity/srt5/subjectivity_gate_result.json',
+    'artifacts/subjectivity/srt5/subjectivity_manifest.json',
+    'artifacts/subjectivity/srt6/subjectivity_condition_summary.json',
+    'artifacts/subjectivity/srt6/subjectivity_batch_summary.json',
+    'artifacts/subjectivity/srt6/subjectivity_campaign_summary.json',
+    'artifacts/subjectivity/srt6/subjectivity_candidate_projection.json',
+    'artifacts/subjectivity/srt6/subjectivity_verification_matrix.json'
+  ];
+  const subjectivityBundleDir = path.join(bundleRoot, 'subjectivity');
+  fs.mkdirSync(subjectivityBundleDir, { recursive: true });
+  for (const relPath of subjectivityArtifacts) {
+    fs.copyFileSync(
+      path.join(repoRoot, relPath),
+      path.join(subjectivityBundleDir, path.basename(relPath))
+    );
   }
 
   const manifest = {
@@ -153,6 +184,17 @@ async function buildInternalReleaseBundle({
         decision_path: toBundleRelative(comparisonExport.decisionPath)
       }
     ].filter(Boolean),
+    subjectivity_bundle: {
+      readiness_class: subjectivityBuild.readiness_class,
+      verification_status: subjectivityBuild.verification_status,
+      included_outputs: subjectivityArtifacts.map((relPath) => ({
+        artifact: path.basename(relPath),
+        path: toBundleRelative(path.join(subjectivityBundleDir, path.basename(relPath))),
+        mode: 'internal_release_bundle_surface'
+      })),
+      interpretation_boundary:
+        'Subjectivity bundle is framework-internal only; internal release packaging of gated and ecosystem-hardened artifacts, not external validation, not claim-facing evidence.'
+    },
     copied_docs: docsToCopy.map((relPath) => `docs/${path.basename(relPath)}`),
     readiness_manifest: 'operational_readiness_manifest.json',
     artifact_manifest: 'artifact_manifest.json',

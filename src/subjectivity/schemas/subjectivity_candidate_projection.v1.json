@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "subjectivity_candidate_projection.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_version",
+    "schema_version",
+    "layer_version",
+    "runtime_status",
+    "support_class",
+    "readiness_class",
+    "candidate_inclusion_status",
+    "surface_status",
+    "invalidation_reasons",
+    "warnings",
+    "blocked_inferences",
+    "baseline_refs",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "subjectivity_candidate_projection" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "runtime_status": { "type": "string" },
+    "support_class": { "type": "string" },
+    "readiness_class": { "type": "string" },
+    "candidate_inclusion_status": { "type": "object" },
+    "surface_status": { "type": "object" },
+    "invalidation_reasons": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "blocked_inferences": { "type": "array", "items": { "type": "string" } },
+    "baseline_refs": { "type": "object" },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

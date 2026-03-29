@@ -10,6 +10,7 @@ const {
   copyFile,
   evaluateEcosystem
 } = require('./ecosystem-release-common.cjs');
+const { buildSubjectivityEcosystem } = require('./build-subjectivity-ecosystem.cjs');
 
 const EXTERNAL_AUDIT_ARTIFACT_ROOT = path.join(SYSTEM_ROOT, 'artifacts', 'external_audit_package');
 const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
@@ -92,6 +93,8 @@ const copyLabeledArtifacts = (label, refs, bundleRoot) => {
   return copied;
 };
 
+async function buildExternalAuditPackage() {
+await buildSubjectivityEcosystem();
 const { model, verificationMatrix } = evaluateEcosystem();
 if (verificationMatrix.status !== 'PASS') {
   throw new Error(`external audit package requires ecosystem candidate PASS; got ${verificationMatrix.status}`);
@@ -162,6 +165,18 @@ if (invalidAttempt) {
   ['docs/EXTERNAL_AUDIT_QUICKSTART.md', 'docs/EXTERNAL_AUDIT_QUICKSTART.md'],
   ['docs/EXTERNAL_AUDIT_TECHNICAL_PATH.md', 'docs/EXTERNAL_AUDIT_TECHNICAL_PATH.md'],
   ['docs/EXTERNAL_AUDIT_HANDOFF_CHECKLIST.md', 'docs/EXTERNAL_AUDIT_HANDOFF_CHECKLIST.md']
+].forEach(([from, to]) => copyFile(path.join(SYSTEM_ROOT, from), path.join(bundleRoot, to)));
+
+[
+  ['docs/SUBJECTIVITY_AUDIT_HANDOFF.md', 'subjectivity/docs/SUBJECTIVITY_AUDIT_HANDOFF.md'],
+  ['docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md', 'subjectivity/docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md'],
+  ['docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md', 'subjectivity/docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md'],
+  ['artifacts/subjectivity/srt5/subjectivity_gate_result.json', 'subjectivity/subjectivity_gate_result.json'],
+  ['artifacts/subjectivity/srt5/subjectivity_manifest.json', 'subjectivity/subjectivity_manifest.json'],
+  ['artifacts/subjectivity/srt6/subjectivity_campaign_summary.json', 'subjectivity/subjectivity_campaign_summary.json'],
+  ['artifacts/subjectivity/srt6/subjectivity_candidate_projection.json', 'subjectivity/subjectivity_candidate_projection.json'],
+  ['artifacts/subjectivity/srt6/subjectivity_audit_handoff_summary.json', 'subjectivity/subjectivity_audit_handoff_summary.json'],
+  ['artifacts/subjectivity/srt6/subjectivity_verification_matrix.json', 'subjectivity/subjectivity_verification_matrix.json']
 ].forEach(([from, to]) => copyFile(path.join(SYSTEM_ROOT, from), path.join(bundleRoot, to)));
 
 const redTeamFindings = [
@@ -257,6 +272,18 @@ const redTeamFindings = [
     minimal_correction: null
   },
   {
+    id: 'subjectivity.audit_handoff_boundary',
+    severity: 'no_issue',
+    area: 'subjectivity_layer',
+    finding: 'The subjectivity layer is included with explicit framework-internal and non-validatory boundaries instead of being hidden or overpromoted.',
+    evidence: [
+      'subjectivity/subjectivity_audit_handoff_summary.json',
+      'subjectivity/subjectivity_candidate_projection.json',
+      'subjectivity/subjectivity_verification_matrix.json'
+    ],
+    minimal_correction: null
+  },
+  {
     id: 'banal_alternative.pipeline_explanation',
     severity: 'note',
     area: 'banal_rival_explanations',
@@ -291,6 +318,7 @@ const readyConditions = [
   'baseline_primary_frozen_and_traced',
   'canonical_release_freeze_traced',
   'ecosystem_candidate_pass',
+  'subjectivity_audit_handoff_clean',
   'comparable_series_minimally_stable',
   'non_claim_boundaries_explicit',
   'blocked_outputs_preserved',
@@ -358,7 +386,9 @@ const packageManifest = {
     handoff_checklist: 'docs/EXTERNAL_AUDIT_HANDOFF_CHECKLIST.md',
     status: 'external_audit_status.json',
     red_team: 'internal_red_team_report.json',
-    candidate_manifest: 'ecosystem_candidate/ecosystem_release_candidate_manifest.json'
+    candidate_manifest: 'ecosystem_candidate/ecosystem_release_candidate_manifest.json',
+    subjectivity_handoff: 'subjectivity/subjectivity_audit_handoff_summary.json',
+    subjectivity_projection: 'subjectivity/subjectivity_candidate_projection.json'
   },
   repositories: {
     qicn_system: {
@@ -384,10 +414,21 @@ const packageManifest = {
     frozen_primary_batch_id: freezeManifest.authoritative_batch_id,
     latest_accepted_comparable_campaign_id: latestPointer.campaign_id,
     latest_accepted_comparable_batch_id: latestPointer.batch_id,
-    invalid_historical_attempt_campaign_id: invalidAttempt ? invalidAttempt.campaign_id : null
+    invalid_historical_attempt_campaign_id: invalidAttempt ? invalidAttempt.campaign_id : null,
+    subjectivity_layer_version: 'subjectivity_runtime_layer.srt6',
+    subjectivity_support_class: 'subjectivity_admissible',
+    subjectivity_readiness_class: 'subjectivity_stack_audit_ready_internal'
   },
   copied_artifacts: {
     ecosystem_candidate_manifest: 'ecosystem_candidate/ecosystem_release_candidate_manifest.json',
+    subjectivity: {
+      gate_result: 'subjectivity/subjectivity_gate_result.json',
+      manifest: 'subjectivity/subjectivity_manifest.json',
+      campaign_summary: 'subjectivity/subjectivity_campaign_summary.json',
+      candidate_projection: 'subjectivity/subjectivity_candidate_projection.json',
+      audit_handoff_summary: 'subjectivity/subjectivity_audit_handoff_summary.json',
+      verification_matrix: 'subjectivity/subjectivity_verification_matrix.json'
+    },
     frozen_primary: copiedPrimaryArtifacts,
     latest_accepted_comparable: copiedComparableArtifacts,
     invalid_historical_attempt: copiedInvalidArtifacts
@@ -399,6 +440,9 @@ const packageManifest = {
     'ecosystem_candidate/ecosystem_release_candidate_manifest.json',
     'ecosystem_candidate/ecosystem/manifests/ecosystem_verification_matrix.json',
     'ecosystem_candidate/ecosystem/manifests/ecosystem_gap_register.v1.json',
+    'subjectivity/subjectivity_audit_handoff_summary.json',
+    'subjectivity/subjectivity_candidate_projection.json',
+    'subjectivity/subjectivity_verification_matrix.json',
     'system_authoritative/latest_accepted_comparable/execution_campaign_audit_readout.json',
     'system_authoritative/latest_accepted_comparable/evaluation_batch_report.json',
     'system_authoritative/latest_accepted_comparable/condition_comparison_report.json',
@@ -406,7 +450,11 @@ const packageManifest = {
   ],
   invalidation_triggers: [
     ...freezeManifest.invalidates_freeze,
-    ...governanceManifest.invalidates_candidate
+    ...governanceManifest.invalidates_candidate,
+    'subjectivity_threshold_drift',
+    'subjectivity_rival_family_drift',
+    'subjectivity_surface_policy_drift',
+    'subjectivity_candidate_projection_stale'
   ],
   blocked_outputs: disciplineManifest.internal_only_outputs,
   non_claim_restrictions: [
@@ -433,11 +481,28 @@ writeJson(path.join(EXTERNAL_AUDIT_ARTIFACT_ROOT, 'external_audit_package_manife
 writeJson(path.join(EXTERNAL_AUDIT_ARTIFACT_ROOT, 'external_audit_status.json'), externalAuditStatus);
 writeJson(path.join(EXTERNAL_AUDIT_ARTIFACT_ROOT, 'internal_red_team_report.json'), redTeamReport);
 
-process.stdout.write(`${JSON.stringify({
+const result = {
   output: normalize(path.relative(SYSTEM_ROOT, path.join(bundleRoot, 'external_audit_package_manifest.json'))),
   root_manifest: 'artifacts/external_audit_package/external_audit_package_manifest.json',
   package_id: packageId,
   status: externalAuditStatus.readiness_status,
   external_execution_status: externalAuditStatus.external_execution_status,
   portability_matches: portabilityMatches
-}, null, 2)}\n`);
+};
+return result;
+}
+
+if (require.main === module) {
+  buildExternalAuditPackage()
+    .then((result) => {
+      process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    })
+    .catch((error) => {
+      console.error(`FAIL build-external-audit-package: ${error.message}`);
+      process.exit(1);
+    });
+}
+
+module.exports = {
+  buildExternalAuditPackage
+};

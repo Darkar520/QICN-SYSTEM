@@ -1,8 +1,8 @@
 {
   "artifact_role": "subjectivity_surface_policy",
   "schema_version": "1.0.0",
-  "layer_id": "subjectivity_runtime_layer.srt5",
-  "layer_status": "partial_runtime_path",
+  "layer_id": "subjectivity_runtime_layer.srt6",
+  "layer_status": "ecosystem_hardened_runtime_path",
   "governed_surfaces": {
     "developer_inspection_surface": {
       "requires_boundary": true,
@@ -16,6 +16,18 @@
       "requires_boundary": true,
       "description": "Local human-readable governed report surface. Still not claim-facing."
     },
+    "internal_release_bundle_surface": {
+      "requires_boundary": true,
+      "description": "Internal release bundle surface for authoritative ecosystem packaging."
+    },
+    "ecosystem_candidate_surface": {
+      "requires_boundary": true,
+      "description": "Internal ecosystem candidate surface. Still framework-internal only."
+    },
+    "audit_facing_package_surface": {
+      "requires_boundary": true,
+      "description": "Audit-facing package surface. Reviewable by auditors but still not claim-facing."
+    },
     "controlled_statement_surface": {
       "requires_boundary": true,
       "description": "Controlled statements surface. Blocked by default for the Subjectivity Runtime Layer."
@@ -27,48 +39,36 @@
   },
   "artifact_classes": {
     "primary": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface"
-      ],
-      "blocked_surfaces": [
-        "local_report_surface",
-        "controlled_statement_surface",
-        "external_claim_facing_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
+      "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"]
     },
     "derived": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface"
-      ],
-      "blocked_surfaces": [
-        "local_report_surface",
-        "controlled_statement_surface",
-        "external_claim_facing_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
+      "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"]
     },
     "gate_facing": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface"
-      ],
-      "blocked_surfaces": [
-        "controlled_statement_surface",
-        "external_claim_facing_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"]
     },
     "manifest_root": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface"
-      ],
-      "blocked_surfaces": [
-        "local_report_surface",
-        "controlled_statement_surface",
-        "external_claim_facing_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"]
+    },
+    "ecosystem_summary": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"]
+    },
+    "candidate_manifest": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"]
+    },
+    "audit_handoff": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"]
+    },
+    "verification_matrix": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"]
     }
   },
   "outputs": {
@@ -76,7 +76,7 @@
       "artifact_class": "primary",
       "runtime_status": "implemented_internal_support_pre_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
-      "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked"
     },
@@ -84,7 +84,7 @@
       "artifact_class": "primary",
       "runtime_status": "implemented_internal_support_pre_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
-      "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked"
     },
@@ -92,7 +92,7 @@
       "artifact_class": "primary",
       "runtime_status": "implemented_internal_support_pre_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
-      "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked"
     },
@@ -100,7 +100,7 @@
       "artifact_class": "primary",
       "runtime_status": "implemented_internal_support_pre_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
-      "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked"
     },
@@ -108,7 +108,7 @@
       "artifact_class": "primary",
       "runtime_status": "implemented_internal_support_pre_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
-      "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked"
     },
@@ -116,7 +116,7 @@
       "artifact_class": "derived",
       "runtime_status": "implemented_internal_support_pre_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
-      "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked"
     },
@@ -124,22 +124,22 @@
       "artifact_class": "derived",
       "runtime_status": "implemented_internal_partial_comparator",
       "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
-      "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked"
     },
     "subjectivity_runtime_projection.json": {
-      "artifact_class": "derived",
+      "artifact_class": "gate_facing",
       "runtime_status": "implemented_internal_gate_closure_in_srt5",
-      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
-      "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked"
     },
     "subjectivity_gate_result.json": {
       "artifact_class": "gate_facing",
       "runtime_status": "implemented_internal_gate_closure_in_srt5",
-      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface"],
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
       "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked"
@@ -147,11 +147,59 @@
     "subjectivity_manifest.json": {
       "artifact_class": "manifest_root",
       "runtime_status": "implemented_internal_gate_closure_in_srt5",
-      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
-      "blocked_surfaces": ["local_report_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
+      "claim_gate_status": "blocked_for_external_claiming",
+      "statement_gate_status": "blocked"
+    },
+    "subjectivity_condition_summary.json": {
+      "artifact_class": "ecosystem_summary",
+      "runtime_status": "implemented_internal_ecosystem_hardening_in_srt6",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
+      "claim_gate_status": "blocked_for_external_claiming",
+      "statement_gate_status": "blocked"
+    },
+    "subjectivity_batch_summary.json": {
+      "artifact_class": "ecosystem_summary",
+      "runtime_status": "implemented_internal_ecosystem_hardening_in_srt6",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
+      "claim_gate_status": "blocked_for_external_claiming",
+      "statement_gate_status": "blocked"
+    },
+    "subjectivity_campaign_summary.json": {
+      "artifact_class": "ecosystem_summary",
+      "runtime_status": "implemented_internal_ecosystem_hardening_in_srt6",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
+      "claim_gate_status": "blocked_for_external_claiming",
+      "statement_gate_status": "blocked"
+    },
+    "subjectivity_candidate_projection.json": {
+      "artifact_class": "candidate_manifest",
+      "runtime_status": "implemented_internal_ecosystem_hardening_in_srt6",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
+      "claim_gate_status": "blocked_for_external_claiming",
+      "statement_gate_status": "blocked"
+    },
+    "subjectivity_audit_handoff_summary.json": {
+      "artifact_class": "audit_handoff",
+      "runtime_status": "implemented_internal_ecosystem_hardening_in_srt6",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
+      "claim_gate_status": "blocked_for_external_claiming",
+      "statement_gate_status": "blocked"
+    },
+    "subjectivity_verification_matrix.json": {
+      "artifact_class": "verification_matrix",
+      "runtime_status": "implemented_internal_ecosystem_hardening_in_srt6",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"],
       "claim_gate_status": "blocked_for_external_claiming",
       "statement_gate_status": "blocked"
     }
   },
-  "default_interpretation_boundary": "Framework-internal only. Subjectivity artifacts remain blocked from controlled-statement and external-claim surfaces. SRT-5 gate closure does not license external validation, human equivalence, phenomenality, metaphysical closure, or claim-facing promotion."
+  "default_interpretation_boundary": "Framework-internal only. Subjectivity artifacts may enter internal bundle, ecosystem candidate, and audit-facing package surfaces only under explicit non-claim boundaries. All subjectivity artifacts remain blocked from controlled-statement and external-claim surfaces. SRT-6 does not license external validation, human equivalence, phenomenality, metaphysical closure, or claim-facing promotion."
 }

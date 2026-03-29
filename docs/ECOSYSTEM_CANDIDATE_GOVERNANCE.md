@@ -25,6 +25,9 @@ This note governs the internal ecosystem release candidate formed by
 - `QICN-RELEASE` freeze manifest, claim registry, canonical boundary, or
   canonical bundle category structure changes
 - the ecosystem interface contract changes
+- subjectivity protocol, thresholds, rival family, artifact schema, surface
+  policy, or evaluator lineage changes without a clean subjectivity rerun
+- subjectivity candidate projection becomes stale, invalidated, or unsupported
 - a new blocking gap appears in the ecosystem gap register
 
 ## requires_verifier_rerun
@@ -37,6 +40,13 @@ This note governs the internal ecosystem release candidate formed by
 - any change to `docs/PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md`,
   `docs/evaluation_architecture_freeze.v1.json`, or
   artifacts under `artifacts/execution_campaign/`
+- any change to `docs/subjectivity_protocol.v1.json`,
+  `docs/subjectivity_thresholds.v1.json`,
+  `docs/subjectivity_rival_family.v1.json`,
+  `docs/subjectivity_surface_policy.v1.json`,
+  `docs/subjectivity_artifact_schema.v1.json`
+- any change to subjectivity ecosystem artifacts under
+  `artifacts/subjectivity/srt5/` or `artifacts/subjectivity/srt6/`
 - any change to repo state that affects branch, commit, upstream, or push state
 
 ## requires_explicit_human_review
@@ -76,8 +86,24 @@ This note governs the internal ecosystem release candidate formed by
 - `docs/evaluation_architecture_freeze.v1.json`
 - `artifacts/execution_campaign/campaign_execution_plan.json`
 - `artifacts/execution_campaign/execution_campaign_readout.json`
+- `docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md`
+- `docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md`
+- `docs/SUBJECTIVITY_CANDIDATE_INTEGRATION.md`
+- `docs/SUBJECTIVITY_MAINTENANCE.md`
+- `docs/SUBJECTIVITY_AUDIT_HANDOFF.md`
+- `docs/subjectivity_protocol.v1.json`
+- `docs/subjectivity_thresholds.v1.json`
+- `docs/subjectivity_rival_family.v1.json`
+- `docs/subjectivity_surface_policy.v1.json`
+- `docs/subjectivity_artifact_schema.v1.json`
+- `artifacts/subjectivity/srt5/subjectivity_gate_result.json`
+- `artifacts/subjectivity/srt5/subjectivity_manifest.json`
+- `artifacts/subjectivity/srt6/subjectivity_candidate_projection.json`
+- `artifacts/subjectivity/srt6/subjectivity_verification_matrix.json`
+- `artifacts/subjectivity/srt6/subjectivity_campaign_summary.json`
 
 ## Interpretation boundary
 
-Candidate governance is maintenance policy only. It does not raise the meaning
-of the ecosystem beyond internal release-candidate discipline.
+Candidate governance is maintenance policy only. Subjectivity inclusion means
+implemented, internally supported, and bundle-pinned. It does not raise the
+meaning of the ecosystem beyond internal release-candidate discipline.

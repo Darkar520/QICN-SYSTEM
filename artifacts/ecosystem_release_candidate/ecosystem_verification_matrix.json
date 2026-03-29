@@ -1,7 +1,7 @@
 {
   "artifact_role": "ecosystem_verification_matrix",
   "schema_version": "1.0.0",
-  "checked_at": "2026-03-29T05:49:21.990Z",
+  "checked_at": "2026-03-29T05:59:13.768Z",
   "status": "PASS",
   "checks": [
     {
@@ -9,7 +9,7 @@
       "status": "PASS",
       "details": {
         "branch": "main",
-        "head": "3b53d447efb99ab8e0c2d0667decb787d71292e5",
+        "head": "925773f4a44ef9bed2d9514aed06f57d0bc59aba",
         "clean": true,
         "pushed": true,
         "upstream": "origin/main"
@@ -228,7 +228,7 @@
   ],
   "system_baseline": {
     "branch": "main",
-    "head": "3b53d447efb99ab8e0c2d0667decb787d71292e5",
+    "head": "925773f4a44ef9bed2d9514aed06f57d0bc59aba",
     "upstream": "origin/main",
     "release_bundle_manifest": "artifacts/internal_release/internal_release_2026-03-29T05-26-28-505Z/release_bundle_manifest.json",
     "evaluation_protocol_manifest": "artifacts/protocolized_evaluation/evaluation_protocol_manifest.json",

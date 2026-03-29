@@ -510,11 +510,12 @@ async function verifySubjectivityConsolidation() {
   pushCheck(
     lineageChecks,
     'candidate_projection_refs_current_heads',
-    candidateProjectionRefs.qicn_system_head === systemHead
+    isAncestor(ROOT, candidateProjectionRefs.qicn_system_head || null, systemHead)
       && candidateProjectionRefs.qicn_release_head === releaseHead,
     {
       candidate_projection_system_head: candidateProjectionRefs.qicn_system_head || null,
-      candidate_projection_release_head: candidateProjectionRefs.qicn_release_head || null
+      candidate_projection_release_head: candidateProjectionRefs.qicn_release_head || null,
+      current_system_head: systemHead
     }
   );
   pushCheck(

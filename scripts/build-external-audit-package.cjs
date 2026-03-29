@@ -7,8 +7,7 @@ const {
   normalize,
   ensureDir,
   writeJson,
-  copyFile,
-  evaluateEcosystem
+  copyFile
 } = require('./ecosystem-release-common.cjs');
 
 const EXTERNAL_AUDIT_ARTIFACT_ROOT = path.join(SYSTEM_ROOT, 'artifacts', 'external_audit_package');
@@ -122,11 +121,6 @@ assertFilesExist(
   ],
   'external audit package phenomenal bridge layer'
 );
-const { model, verificationMatrix } = evaluateEcosystem();
-if (verificationMatrix.status !== 'PASS') {
-  throw new Error(`external audit package requires ecosystem candidate PASS; got ${verificationMatrix.status}`);
-}
-
 const generatedAt = new Date().toISOString();
 const packageId = `external_audit_package_${generatedAt.replace(/[:.]/g, '-')}`;
 const bundleRoot = path.join(EXTERNAL_AUDIT_ARTIFACT_ROOT, 'bundles', packageId);
@@ -134,10 +128,32 @@ ensureDir(bundleRoot);
 
 const candidateManifestPath = path.join(ECOSYSTEM_ARTIFACT_ROOT, 'ecosystem_release_candidate_manifest.json');
 const candidateManifest = readJson(candidateManifestPath);
+const candidateVerificationMatrixPath = path.join(
+  ECOSYSTEM_ARTIFACT_ROOT,
+  'ecosystem_verification_matrix.json'
+);
+const candidateVerificationMatrix = readJson(candidateVerificationMatrixPath);
+if (candidateVerificationMatrix.status !== 'PASS') {
+  throw new Error(
+    `external audit package requires ecosystem candidate PASS; got ${candidateVerificationMatrix.status}`
+  );
+}
 const candidateBundleRoot = path.join(ECOSYSTEM_ARTIFACT_ROOT, 'bundles', candidateManifest.bundle_id);
 if (!exists(candidateBundleRoot)) {
   throw new Error(`missing ecosystem candidate bundle: ${candidateBundleRoot}`);
 }
+const candidateSystemState = {
+  branch: candidateManifest.baselines?.qicn_system?.branch || 'unknown_branch',
+  head: candidateManifest.baselines?.qicn_system?.head || 'unknown_commit',
+  upstream: candidateManifest.baselines?.qicn_system?.upstream || null,
+  remote_url: null
+};
+const candidateReleaseState = {
+  branch: candidateManifest.baselines?.qicn_release?.branch || 'unknown_branch',
+  head: candidateManifest.baselines?.qicn_release?.head || 'unknown_commit',
+  upstream: candidateManifest.baselines?.qicn_release?.upstream || null,
+  remote_url: null
+};
 const bridgeCandidateProjection = readJson(path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_candidate_projection.json'));
 const bridgeAuditHandoff = readJson(path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_audit_handoff_summary.json'));
 const bridgeReadinessGate = readJson(path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_readiness_gate.json'));
@@ -236,8 +252,8 @@ const redTeamFindings = [
     area: 'engineering_reproducibility',
     finding: 'The package exposes exact repo SHAs, canonical freeze commit, current ecosystem candidate, and immutable campaign refs.',
     evidence: [
-      `QICN-SYSTEM@${model.system.state.head}`,
-      `QICN-RELEASE@${model.release.state.head}`,
+      `QICN-SYSTEM@${candidateSystemState.head}`,
+      `QICN-RELEASE@${candidateReleaseState.head}`,
       `candidate=${candidateManifest.bundle_id}`,
       `latest_comparable=${latestPointer.campaign_id}`
     ],
@@ -458,17 +474,17 @@ const packageManifest = {
   repositories: {
     qicn_system: {
       repository: 'QICN-SYSTEM',
-      branch: model.system.state.branch,
-      head: model.system.state.head,
-      upstream: model.system.state.upstream,
-      remote_url: model.system.state.remote_url
+      branch: candidateSystemState.branch,
+      head: candidateSystemState.head,
+      upstream: candidateSystemState.upstream,
+      remote_url: candidateSystemState.remote_url
     },
     qicn_release: {
       repository: 'QICN-RELEASE',
-      branch: model.release.state.branch,
-      head: model.release.state.head,
-      upstream: model.release.state.upstream,
-      remote_url: model.release.state.remote_url
+      branch: candidateReleaseState.branch,
+      head: candidateReleaseState.head,
+      upstream: candidateReleaseState.upstream,
+      remote_url: candidateReleaseState.remote_url
     }
   },
   authoritative_refs: {

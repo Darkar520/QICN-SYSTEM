@@ -1,8 +1,8 @@
 {
   "artifact_role": "external_audit_status",
   "schema_version": "1.0.0",
-  "generated_at": "2026-03-29T05:35:27.379Z",
-  "package_id": "external_audit_package_2026-03-29T05-35-27-379Z",
+  "generated_at": "2026-03-29T22:40:46.359Z",
+  "package_id": "external_audit_package_2026-03-29T22-40-46-359Z",
   "readiness_status": "READY_FOR_EXTERNAL_AUDIT",
   "external_execution_status": "NOT_EXECUTED_EXTERNALLY",
   "remaining_dependency": "No independent external auditor or external execution record is present in the current baseline.",
@@ -11,6 +11,7 @@
     "canonical_release_freeze_traced",
     "ecosystem_candidate_pass",
     "subjectivity_audit_handoff_clean",
+    "phenomenal_bridge_audit_handoff_clean",
     "comparable_series_minimally_stable",
     "non_claim_boundaries_explicit",
     "blocked_outputs_preserved",

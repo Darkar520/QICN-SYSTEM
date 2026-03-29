@@ -1,8 +1,8 @@
 {
   "artifact_role": "external_audit_package_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-03-29T05:35:27.379Z",
-  "package_id": "external_audit_package_2026-03-29T05-35-27-379Z",
+  "generated_at": "2026-03-29T22:40:46.359Z",
+  "package_id": "external_audit_package_2026-03-29T22-40-46-359Z",
   "package_root": ".",
   "package_status": "READY_FOR_EXTERNAL_AUDIT",
   "entrypoints": {
@@ -21,26 +21,28 @@
     "red_team": "internal_red_team_report.json",
     "candidate_manifest": "ecosystem_candidate/ecosystem_release_candidate_manifest.json",
     "subjectivity_handoff": "subjectivity/subjectivity_audit_handoff_summary.json",
-    "subjectivity_projection": "subjectivity/subjectivity_candidate_projection.json"
+    "subjectivity_projection": "subjectivity/subjectivity_candidate_projection.json",
+    "phenomenal_bridge_handoff": "phenomenal_bridge/phenomenal_bridge_audit_handoff_summary.json",
+    "phenomenal_bridge_projection": "phenomenal_bridge/phenomenal_bridge_candidate_projection.json"
   },
   "repositories": {
     "qicn_system": {
       "repository": "QICN-SYSTEM",
       "branch": "main",
-      "head": "40b324ecd903d61b22ea12aef1dfdc16f6a2798d",
+      "head": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
       "upstream": "origin/main",
-      "remote_url": "https://github.com/Darkar520/QICN-SYSTEM.git"
+      "remote_url": null
     },
     "qicn_release": {
       "repository": "QICN-RELEASE",
       "branch": "main",
       "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
       "upstream": "origin/main",
-      "remote_url": "https://github.com/Darkar520/QICN-RELEASE.git"
+      "remote_url": null
     }
   },
   "authoritative_refs": {
-    "ecosystem_candidate_bundle_id": "ecosystem_release_candidate_2026-03-29T05-32-06-168Z",
+    "ecosystem_candidate_bundle_id": "ecosystem_release_candidate_2026-03-29T22-37-36-424Z",
     "qicn_release_canonical_freeze_tag": "release-2026-03-01",
     "qicn_release_canonical_freeze_commit": "2d7504be95ca33af5941e30abf7059dc2774edca",
     "frozen_primary_campaign_id": "execution_campaign_primary_2026-03-25T02-15-00-000Z",
@@ -50,7 +52,11 @@
     "invalid_historical_attempt_campaign_id": "execution_campaign_comparable_2026-03-26T23-03-30-000Z",
     "subjectivity_layer_version": "subjectivity_runtime_layer.srt6",
     "subjectivity_support_class": "subjectivity_admissible",
-    "subjectivity_readiness_class": "subjectivity_stack_audit_ready_internal"
+    "subjectivity_readiness_class": "subjectivity_stack_audit_ready_internal",
+    "phenomenal_bridge_layer_version": "phenomenal_bridge_formal_layer.bpfm3",
+    "phenomenal_bridge_support_class": "bridge_internal_admissible",
+    "phenomenal_bridge_readiness_class": "bridge_internal_audit_ready",
+    "phenomenal_bridge_paper9_final_hardening_status": "not_ready_for_paper9_final_hardening"
   },
   "copied_artifacts": {
     "ecosystem_candidate_manifest": "ecosystem_candidate/ecosystem_release_candidate_manifest.json",
@@ -61,6 +67,16 @@
       "candidate_projection": "subjectivity/subjectivity_candidate_projection.json",
       "audit_handoff_summary": "subjectivity/subjectivity_audit_handoff_summary.json",
       "verification_matrix": "subjectivity/subjectivity_verification_matrix.json"
+    },
+    "phenomenal_bridge": {
+      "projection": "phenomenal_bridge/phenomenal_bridge_projection.json",
+      "gate_result": "phenomenal_bridge/phenomenal_bridge_gate_result.json",
+      "manifest": "phenomenal_bridge/phenomenal_bridge_manifest.json",
+      "campaign_summary": "phenomenal_bridge/phenomenal_bridge_campaign_summary.json",
+      "candidate_projection": "phenomenal_bridge/phenomenal_bridge_candidate_projection.json",
+      "audit_handoff_summary": "phenomenal_bridge/phenomenal_bridge_audit_handoff_summary.json",
+      "verification_matrix": "phenomenal_bridge/phenomenal_bridge_verification_matrix.json",
+      "readiness_gate": "phenomenal_bridge/phenomenal_bridge_readiness_gate.json"
     },
     "frozen_primary": {
       "campaign_execution_plan": "system_authoritative/frozen_primary/campaign_execution_plan.json",
@@ -98,6 +114,9 @@
     "subjectivity/subjectivity_audit_handoff_summary.json",
     "subjectivity/subjectivity_candidate_projection.json",
     "subjectivity/subjectivity_verification_matrix.json",
+    "phenomenal_bridge/phenomenal_bridge_audit_handoff_summary.json",
+    "phenomenal_bridge/phenomenal_bridge_candidate_projection.json",
+    "phenomenal_bridge/phenomenal_bridge_verification_matrix.json",
     "system_authoritative/latest_accepted_comparable/execution_campaign_audit_readout.json",
     "system_authoritative/latest_accepted_comparable/evaluation_batch_report.json",
     "system_authoritative/latest_accepted_comparable/condition_comparison_report.json",
@@ -132,7 +151,11 @@
     "subjectivity_threshold_drift",
     "subjectivity_rival_family_drift",
     "subjectivity_surface_policy_drift",
-    "subjectivity_candidate_projection_stale"
+    "subjectivity_candidate_projection_stale",
+    "phenomenal_bridge_threshold_drift",
+    "phenomenal_bridge_rival_family_drift",
+    "phenomenal_bridge_surface_policy_drift",
+    "phenomenal_bridge_candidate_projection_stale"
   ],
   "blocked_outputs": [
     "run_evaluation_metrics.json",
@@ -156,6 +179,7 @@
     "No theory confirmation.",
     "No claim closure.",
     "No causal proof.",
+    "No bridge artifact may be read as phenomenality proof or human equivalence.",
     "No runtime-to-corpus validation leap.",
     "No public claim-facing escalation."
   ],

@@ -21,7 +21,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; bridge readiness gate classifies internal ecosystem state and bounded readiness, not external validation, not human equivalence, not phenomenality proof, not metaphysical closure, and not public claim authorization.",
   "provenance": {
-    "generated_at": "2026-03-29T22:27:15.806Z",
+    "generated_at": "2026-03-29T22:44:40.664Z",
     "current_lineage": {
       "layer_version": "phenomenal_bridge_formal_layer.bpfm3.audit.v1",
       "estimator_version": "phenomenal_bridge_final_auditor.bpfm3.v1",
@@ -61,13 +61,13 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "33203f82fde6863911fdbbc975255d9df88867fe",
-        "upstream": "origin/main"
+        "head": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
+        "upstream": null
       },
       "qicn_release": {
         "branch": "main",
         "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
-        "upstream": "origin/main"
+        "upstream": null
       }
     },
     "final_audit_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_final_internal_audit.json"

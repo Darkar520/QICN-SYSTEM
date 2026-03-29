@@ -67,7 +67,7 @@
     }
   ],
   "system_baseline": {
-    "qicn_system_head": "33203f82fde6863911fdbbc975255d9df88867fe",
+    "qicn_system_head": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
     "qicn_release_head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b"
   },
   "bridge_baseline": {
@@ -86,7 +86,7 @@
   "failures": [],
   "interpretation_boundary": "Framework-internal only; bridge verification matrix is an internal ecosystem hardening artifact, not external validation, not public proof, not phenomenality proof, and not human equivalence.",
   "provenance": {
-    "generated_at": "2026-03-29T22:27:14.563Z",
+    "generated_at": "2026-03-29T22:44:40.595Z",
     "current_lineage": {
       "layer_version": "phenomenal_bridge_formal_layer.bpfm3.ecosystem.v1",
       "estimator_version": "phenomenal_bridge_ecosystem_integrator.bpfm3.v1",
@@ -126,13 +126,13 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "33203f82fde6863911fdbbc975255d9df88867fe",
-        "upstream": "origin/main"
+        "head": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
+        "upstream": null
       },
       "qicn_release": {
         "branch": "main",
         "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
-        "upstream": "origin/main"
+        "upstream": null
       }
     }
   },

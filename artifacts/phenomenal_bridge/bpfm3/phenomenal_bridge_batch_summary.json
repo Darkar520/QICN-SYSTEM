@@ -29,7 +29,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; bridge batch summary is bounded internal comparability and governance metadata, not external validation, not human equivalence, not phenomenality proof, and not claim-facing evidence.",
   "provenance": {
-    "generated_at": "2026-03-29T22:27:14.560Z",
+    "generated_at": "2026-03-29T22:44:40.592Z",
     "current_lineage": {
       "layer_version": "phenomenal_bridge_formal_layer.bpfm3.ecosystem.v1",
       "estimator_version": "phenomenal_bridge_ecosystem_integrator.bpfm3.v1",
@@ -69,13 +69,13 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "33203f82fde6863911fdbbc975255d9df88867fe",
-        "upstream": "origin/main"
+        "head": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
+        "upstream": null
       },
       "qicn_release": {
         "branch": "main",
         "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
-        "upstream": "origin/main"
+        "upstream": null
       }
     },
     "condition_summary_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_condition_summary.json"

@@ -1,7 +1,7 @@
 {
   "artifact_role": "ecosystem_verification_matrix",
   "schema_version": "1.0.0",
-  "checked_at": "2026-03-29T22:27:15.874Z",
+  "checked_at": "2026-03-29T22:45:30.726Z",
   "status": "FAIL",
   "checks": [
     {
@@ -9,7 +9,7 @@
       "status": "FAIL",
       "details": {
         "branch": "main",
-        "head": "33203f82fde6863911fdbbc975255d9df88867fe",
+        "head": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
         "clean": false,
         "pushed": true,
         "upstream": "origin/main"
@@ -46,8 +46,8 @@
       "id": "system_internal_bundle",
       "status": "PASS",
       "details": {
-        "manifest": "artifacts/internal_release/internal_release_2026-03-29T22-26-33-377Z/release_bundle_manifest.json",
-        "git_commit": "33203f82fde6863911fdbbc975255d9df88867fe",
+        "manifest": "artifacts/internal_release/internal_release_2026-03-29T22-45-09-072Z/release_bundle_manifest.json",
+        "git_commit": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
         "subjectivity_bundle_present": true
       }
     },
@@ -228,9 +228,9 @@
   ],
   "system_baseline": {
     "branch": "main",
-    "head": "33203f82fde6863911fdbbc975255d9df88867fe",
+    "head": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
     "upstream": "origin/main",
-    "release_bundle_manifest": "artifacts/internal_release/internal_release_2026-03-29T22-26-33-377Z/release_bundle_manifest.json",
+    "release_bundle_manifest": "artifacts/internal_release/internal_release_2026-03-29T22-45-09-072Z/release_bundle_manifest.json",
     "evaluation_protocol_manifest": "artifacts/protocolized_evaluation/evaluation_protocol_manifest.json",
     "evaluation_batch_report": "artifacts/protocolized_evaluation/evaluation_batch_report.json"
   },

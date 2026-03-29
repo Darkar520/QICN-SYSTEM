@@ -1,0 +1,43 @@
+{
+  "artifact_role": "condition_controlled_statements",
+  "scope": "small_batch",
+  "source_artifacts": {
+    "condition_support_labels": "condition_support_labels.json",
+    "condition_output_consumption_policy": "condition_output_consumption_policy.json",
+    "condition_output_surface_policy": "condition_output_surface_policy.json"
+  },
+  "validation_context": {
+    "external_validation_present": false,
+    "support_statement_status": "blocked"
+  },
+  "statement_gate_status": "blocked",
+  "allowed_surfaces": [],
+  "blocked_surfaces": [
+    "external_claim_facing_surface"
+  ],
+  "permitted_statement_classes": [],
+  "prohibited_statement_classes": [
+    "framework_confirmation",
+    "theory_validation",
+    "causal_confirmation",
+    "external_validation",
+    "final_classification",
+    "ontological_confirmation",
+    "truth_labeling"
+  ],
+  "prohibited_statement_templates": [
+    "This validates the framework.",
+    "This confirms the theory.",
+    "This establishes causal support.",
+    "This proves the system class.",
+    "This is externally validated."
+  ],
+  "emitted_statements": [],
+  "blocked_statements": [],
+  "interpretation_boundary": "Condition-level controlled statements only; descriptive internal posture, never claim closure, never causal confirmation, never external validation.",
+  "non_claim_restrictions": [
+    "Do not promote to external claim-facing surfaces.",
+    "Do not read as causal confirmation.",
+    "Do not read as framework confirmation."
+  ]
+}

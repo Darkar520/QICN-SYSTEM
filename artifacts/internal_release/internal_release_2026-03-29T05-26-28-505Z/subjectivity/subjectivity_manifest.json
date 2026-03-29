@@ -1,0 +1,249 @@
+{
+  "artifact_role": "subjectivity_manifest",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "subjectivity_layer_version": "subjectivity_runtime_layer.srt5.gate.v1",
+  "runtime_status": "implemented_internal_gate_closure_in_srt5",
+  "support_class": "subjectivity_admissible",
+  "artifact_inventory": [
+    "self_index_state.json",
+    "ownership_attribution_report.json",
+    "subjective_continuity_report.json",
+    "first_person_perspective_report.json",
+    "subjective_valuation_report.json",
+    "subjectivity_intervention_profile.json",
+    "subjectivity_reducibility_report.json",
+    "subjectivity_runtime_projection.json",
+    "subjectivity_gate_result.json",
+    "subjectivity_manifest.json"
+  ],
+  "emitted_artifacts": [
+    "subjectivity_runtime_projection.json",
+    "subjectivity_gate_result.json",
+    "subjectivity_manifest.json"
+  ],
+  "protocol_ref": "docs/subjectivity_protocol.v1.json",
+  "thresholds_ref": "docs/subjectivity_thresholds.v1.json",
+  "surface_policy_ref": "docs/subjectivity_surface_policy.v1.json",
+  "artifact_schema_ref": "docs/subjectivity_artifact_schema.v1.json",
+  "rival_family_ref": "docs/subjectivity_rival_family.v1.json",
+  "evaluator_version": "subjectivity_runtime_layer.srt5.gate.v1",
+  "estimator_version": "subjectivity_runtime_estimators.srt5.v1",
+  "support_summary": {
+    "classification": "subjectivity_admissible",
+    "gate_status": "pass",
+    "gamma_subj": 0.5121645600000001,
+    "phi_subj": 0.7063836296642603
+  },
+  "lineage": {
+    "estimator_version": "subjectivity_runtime_estimators.srt5.v1",
+    "layer_version": "subjectivity_runtime_layer.srt5.gate.v1",
+    "protocol": {
+      "ref": "docs/subjectivity_protocol.v1.json",
+      "sha256": "d82bf51f05fb92016cb757d515825e42a197f028708e83fc686a863c1ddd6e96"
+    },
+    "thresholds": {
+      "ref": "docs/subjectivity_thresholds.v1.json",
+      "sha256": "19cecb3002013eb88a22452ede991cef582a71479b8c1aca71cde913ebb2dbb2"
+    },
+    "rival_family": {
+      "ref": "docs/subjectivity_rival_family.v1.json",
+      "sha256": "8163f91c7a276f096557ba97872ce3d52c5bc4a75a71234ae98b529e539b456f"
+    },
+    "surface_policy": {
+      "ref": "docs/subjectivity_surface_policy.v1.json",
+      "sha256": "abc00bbff29b79a8c17d47603d245fc175b91ada6a08398fe1595aaf26e38d50"
+    },
+    "artifact_schema": {
+      "ref": "docs/subjectivity_artifact_schema.v1.json",
+      "sha256": "0e18b811c0edd3fa064893cfb8a06de1dd701a7b88dfdb04b22125f8a6e5d421"
+    },
+    "root_schema_hashes": {
+      "subjectivity_manifest.json": {
+        "ref": "src/subjectivity/schemas/subjectivity_manifest.v1.json",
+        "sha256": "5b8283505c7b37ef28daf2f0a818d696d35b24e4a6fed0bf025c3b90d6d1b19e"
+      },
+      "subjectivity_runtime_projection.json": {
+        "ref": "src/subjectivity/schemas/subjectivity_runtime_projection.v1.json",
+        "sha256": "e460a9fda456923e3b8fa98ca358b0a6cb3c4b6763899f371e4f58f62cf0b177"
+      },
+      "subjectivity_gate_result.json": {
+        "ref": "src/subjectivity/schemas/subjectivity_gate_result.v1.json",
+        "sha256": "8d8ccf4ff076f2588e28704c5829297414e5048cfb1ba51ea063259e015a349f"
+      },
+      "subjectivity_reducibility_report.json": {
+        "ref": "src/subjectivity/schemas/subjectivity_reducibility_report.v1.json",
+        "sha256": "e843cc5a32a4edc4797381c5e65fe54672dfe6adb16d38018eadfe352fa83462"
+      }
+    }
+  },
+  "consumed_artifacts": {
+    "SelfIndex": {
+      "artifact_name": "self_index_state.json",
+      "artifact_role": "self_index_state",
+      "run_id": "srt3_valuation_intervention_baseline",
+      "schema_ref": "src/subjectivity/schemas/self_index_state.v1.json",
+      "artifact_version": "1.0.0"
+    },
+    "OwnershipField": {
+      "artifact_name": "ownership_attribution_report.json",
+      "artifact_role": "ownership_attribution_report",
+      "run_id": "srt3_valuation_intervention_baseline",
+      "schema_ref": "src/subjectivity/schemas/ownership_attribution_report.v1.json",
+      "artifact_version": "1.0.0"
+    },
+    "ContinuityField": {
+      "artifact_name": "subjective_continuity_report.json",
+      "artifact_role": "subjective_continuity_report",
+      "run_id": "srt3_valuation_intervention_baseline",
+      "schema_ref": "src/subjectivity/schemas/subjective_continuity_report.v1.json",
+      "artifact_version": "1.0.0"
+    },
+    "FirstPersonPerspective": {
+      "artifact_name": "first_person_perspective_report.json",
+      "artifact_role": "first_person_perspective_report",
+      "run_id": "srt3_valuation_intervention_baseline",
+      "schema_ref": "src/subjectivity/schemas/first_person_perspective_report.v1.json",
+      "artifact_version": "1.0.0"
+    },
+    "ValuationAsymmetry": {
+      "artifact_name": "subjective_valuation_report.json",
+      "artifact_role": "subjective_valuation_report",
+      "run_id": "srt3_valuation_intervention_baseline",
+      "schema_ref": "src/subjectivity/schemas/subjective_valuation_report.v1.json",
+      "artifact_version": "1.0.0"
+    },
+    "InterventionProfile": {
+      "artifact_name": "subjectivity_intervention_profile.json",
+      "artifact_role": "subjectivity_intervention_profile",
+      "run_id": "srt3_valuation_intervention_baseline",
+      "schema_ref": "src/subjectivity/schemas/subjectivity_intervention_profile.v1.json",
+      "artifact_version": "1.0.0"
+    },
+    "IrreducibilityMargin": {
+      "artifact_name": "subjectivity_reducibility_report.json",
+      "artifact_role": "subjectivity_reducibility_report",
+      "run_id": "srt4_reducibility_baseline",
+      "schema_ref": "src/subjectivity/schemas/subjectivity_reducibility_report.v1.json",
+      "artifact_version": "1.0.0"
+    }
+  },
+  "drift_summary": {
+    "lineage_status": {
+      "expected_lineage": {
+        "estimator_version": "subjectivity_runtime_estimators.srt5.v1",
+        "layer_version": "subjectivity_runtime_layer.srt5.gate.v1",
+        "protocol": {
+          "ref": "docs/subjectivity_protocol.v1.json",
+          "sha256": "d82bf51f05fb92016cb757d515825e42a197f028708e83fc686a863c1ddd6e96"
+        },
+        "thresholds": {
+          "ref": "docs/subjectivity_thresholds.v1.json",
+          "sha256": "19cecb3002013eb88a22452ede991cef582a71479b8c1aca71cde913ebb2dbb2"
+        },
+        "rival_family": {
+          "ref": "docs/subjectivity_rival_family.v1.json",
+          "sha256": "8163f91c7a276f096557ba97872ce3d52c5bc4a75a71234ae98b529e539b456f"
+        },
+        "surface_policy": {
+          "ref": "docs/subjectivity_surface_policy.v1.json",
+          "sha256": "abc00bbff29b79a8c17d47603d245fc175b91ada6a08398fe1595aaf26e38d50"
+        },
+        "artifact_schema": {
+          "ref": "docs/subjectivity_artifact_schema.v1.json",
+          "sha256": "0e18b811c0edd3fa064893cfb8a06de1dd701a7b88dfdb04b22125f8a6e5d421"
+        },
+        "root_schema_hashes": {
+          "subjectivity_manifest.json": {
+            "ref": "src/subjectivity/schemas/subjectivity_manifest.v1.json",
+            "sha256": "5b8283505c7b37ef28daf2f0a818d696d35b24e4a6fed0bf025c3b90d6d1b19e"
+          },
+          "subjectivity_runtime_projection.json": {
+            "ref": "src/subjectivity/schemas/subjectivity_runtime_projection.v1.json",
+            "sha256": "e460a9fda456923e3b8fa98ca358b0a6cb3c4b6763899f371e4f58f62cf0b177"
+          },
+          "subjectivity_gate_result.json": {
+            "ref": "src/subjectivity/schemas/subjectivity_gate_result.v1.json",
+            "sha256": "8d8ccf4ff076f2588e28704c5829297414e5048cfb1ba51ea063259e015a349f"
+          },
+          "subjectivity_reducibility_report.json": {
+            "ref": "src/subjectivity/schemas/subjectivity_reducibility_report.v1.json",
+            "sha256": "e843cc5a32a4edc4797381c5e65fe54672dfe6adb16d38018eadfe352fa83462"
+          }
+        }
+      },
+      "current_lineage": {
+        "estimator_version": "subjectivity_runtime_estimators.srt5.v1",
+        "layer_version": "subjectivity_runtime_layer.srt5.gate.v1",
+        "protocol": {
+          "ref": "docs/subjectivity_protocol.v1.json",
+          "sha256": "d82bf51f05fb92016cb757d515825e42a197f028708e83fc686a863c1ddd6e96"
+        },
+        "thresholds": {
+          "ref": "docs/subjectivity_thresholds.v1.json",
+          "sha256": "19cecb3002013eb88a22452ede991cef582a71479b8c1aca71cde913ebb2dbb2"
+        },
+        "rival_family": {
+          "ref": "docs/subjectivity_rival_family.v1.json",
+          "sha256": "8163f91c7a276f096557ba97872ce3d52c5bc4a75a71234ae98b529e539b456f"
+        },
+        "surface_policy": {
+          "ref": "docs/subjectivity_surface_policy.v1.json",
+          "sha256": "abc00bbff29b79a8c17d47603d245fc175b91ada6a08398fe1595aaf26e38d50"
+        },
+        "artifact_schema": {
+          "ref": "docs/subjectivity_artifact_schema.v1.json",
+          "sha256": "0e18b811c0edd3fa064893cfb8a06de1dd701a7b88dfdb04b22125f8a6e5d421"
+        },
+        "root_schema_hashes": {
+          "subjectivity_manifest.json": {
+            "ref": "src/subjectivity/schemas/subjectivity_manifest.v1.json",
+            "sha256": "5b8283505c7b37ef28daf2f0a818d696d35b24e4a6fed0bf025c3b90d6d1b19e"
+          },
+          "subjectivity_runtime_projection.json": {
+            "ref": "src/subjectivity/schemas/subjectivity_runtime_projection.v1.json",
+            "sha256": "e460a9fda456923e3b8fa98ca358b0a6cb3c4b6763899f371e4f58f62cf0b177"
+          },
+          "subjectivity_gate_result.json": {
+            "ref": "src/subjectivity/schemas/subjectivity_gate_result.v1.json",
+            "sha256": "8d8ccf4ff076f2588e28704c5829297414e5048cfb1ba51ea063259e015a349f"
+          },
+          "subjectivity_reducibility_report.json": {
+            "ref": "src/subjectivity/schemas/subjectivity_reducibility_report.v1.json",
+            "sha256": "e843cc5a32a4edc4797381c5e65fe54672dfe6adb16d38018eadfe352fa83462"
+          }
+        }
+      },
+      "mismatch_reasons": [],
+      "invalidated": false
+    },
+    "coordinate_drift_status": {
+      "compared": false,
+      "exceeded": [],
+      "invalidated": false
+    },
+    "invalidated": false
+  },
+  "condition_level_summary": {
+    "condition_id": "baseline_subjectivity_enabled",
+    "evaluated_runs": 1,
+    "mean_gamma_subj": 0.5121645600000001,
+    "mean_phi_subj": 0.7063836296642603,
+    "gate_pass_count": 1,
+    "classification_counts": {
+      "subjectivity_admissible": 1
+    }
+  },
+  "interpretation_boundary": "Framework-internal only; subjectivity bundle lineage and support-class manifest for SRT-5, not externally validated, not human equivalence, not phenomenality closure, not claim-facing evidence.",
+  "provenance": {
+    "generated_at": "2026-03-29T05:26:27.811Z",
+    "protocol_ref": "docs/subjectivity_protocol.v1.json",
+    "thresholds_ref": "docs/subjectivity_thresholds.v1.json",
+    "surface_policy_ref": "docs/subjectivity_surface_policy.v1.json",
+    "artifact_schema_ref": "docs/subjectivity_artifact_schema.v1.json",
+    "rival_family_ref": "docs/subjectivity_rival_family.v1.json",
+    "source_trace_ref": "subjectivity_inputs/srt5_gate_baseline",
+    "input_profile": "srt5_verification_baseline"
+  },
+  "schema_ref": "src/subjectivity/schemas/subjectivity_manifest.v1.json"
+}

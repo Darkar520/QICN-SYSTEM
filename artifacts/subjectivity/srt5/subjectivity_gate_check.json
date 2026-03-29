@@ -46,11 +46,11 @@
           },
           "surface_policy": {
             "ref": "docs/subjectivity_surface_policy.v1.json",
-            "sha256": "8b1fccbba3ee1fa5e037a61c4272198e5b72e0061bf2a9cdc930ae0aacc961ed"
+            "sha256": "abc00bbff29b79a8c17d47603d245fc175b91ada6a08398fe1595aaf26e38d50"
           },
           "artifact_schema": {
             "ref": "docs/subjectivity_artifact_schema.v1.json",
-            "sha256": "2fb79bd89050316d3c4707c2a895a5e523e4c9b4689860c33dfc0edff2002dbb"
+            "sha256": "0e18b811c0edd3fa064893cfb8a06de1dd701a7b88dfdb04b22125f8a6e5d421"
           },
           "root_schema_hashes": {
             "subjectivity_manifest.json": {
@@ -88,11 +88,11 @@
           },
           "surface_policy": {
             "ref": "docs/subjectivity_surface_policy.v1.json",
-            "sha256": "8b1fccbba3ee1fa5e037a61c4272198e5b72e0061bf2a9cdc930ae0aacc961ed"
+            "sha256": "abc00bbff29b79a8c17d47603d245fc175b91ada6a08398fe1595aaf26e38d50"
           },
           "artifact_schema": {
             "ref": "docs/subjectivity_artifact_schema.v1.json",
-            "sha256": "2fb79bd89050316d3c4707c2a895a5e523e4c9b4689860c33dfc0edff2002dbb"
+            "sha256": "0e18b811c0edd3fa064893cfb8a06de1dd701a7b88dfdb04b22125f8a6e5d421"
           },
           "root_schema_hashes": {
             "subjectivity_manifest.json": {

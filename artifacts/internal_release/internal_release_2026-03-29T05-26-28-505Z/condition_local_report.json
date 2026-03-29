@@ -1,0 +1,233 @@
+{
+  "artifact_role": "local_surface_report",
+  "scope": "small_batch",
+  "governed_surface": "local_report_surface",
+  "source_artifacts": {
+    "surface_policy": "condition_output_surface_policy.json",
+    "controlled_statements": "condition_controlled_statements.json"
+  },
+  "included_outputs": {
+    "condition_metrics_summary.json": {
+      "decision": {
+        "artifact_role": "output_surface_enforcement_decision",
+        "scope": "small_batch",
+        "artifact": "condition_metrics_summary.json",
+        "artifact_path": "condition_metrics_summary.json",
+        "requested_surface": "local_report_surface",
+        "canonical_surface": "local_report_surface",
+        "allowed": true,
+        "reason_code": "allowed_surface_read",
+        "output_role": "descriptive_output",
+        "consumption_class": "descriptive_machine_readable",
+        "claim_gate_status": "claim_unsafe",
+        "export_gate_status": "local_export_with_boundary_only",
+        "statement_gate_status": "no_statement_authorized",
+        "allowed_surfaces": [
+          "local_artifact_surface",
+          "developer_inspection_surface",
+          "local_report_surface",
+          "descriptive_export_surface",
+          "small_batch_summary_surface"
+        ],
+        "blocked_surfaces": [
+          "internal_runtime_surface",
+          "controlled_statement_surface",
+          "external_claim_facing_surface"
+        ],
+        "required_boundaries": [
+          "interpretation_boundary"
+        ],
+        "required_refs": [
+          "support_boundary_ref",
+          "consumption_policy_ref",
+          "surface_policy_ref"
+        ],
+        "boundaries_present": {
+          "interpretation_boundary": true
+        },
+        "refs_present": {
+          "support_boundary_ref": true,
+          "consumption_policy_ref": true,
+          "surface_policy_ref": true
+        },
+        "boundary_ready": true,
+        "refs_ready": true,
+        "blocking_conditions": [
+          "external_validation_absent",
+          "small_batch_descriptive_only",
+          "allowed_surface_read"
+        ],
+        "interpretation_boundary": "Small-batch descriptive summary review only.",
+        "interpretation_not_allowed": [
+          "Do not read this as external validation.",
+          "Do not read this as claim closure."
+        ],
+        "emitted_to": null
+      },
+      "artifact": {
+        "artifact_role": "small_batch_condition_summary",
+        "source_artifact": "run_metrics.json",
+        "support_boundary_ref": "condition_support_labels.json",
+        "consumption_policy_ref": "condition_output_consumption_policy.json",
+        "surface_policy_ref": "condition_output_surface_policy.json",
+        "interpretation_boundary": "Small-batch descriptive summary only; not claim-safe and not externally validated.",
+        "condition_count": 0,
+        "conditions": {}
+      }
+    },
+    "condition_support_labels.json": {
+      "decision": {
+        "artifact_role": "output_surface_enforcement_decision",
+        "scope": "small_batch",
+        "artifact": "condition_support_labels.json",
+        "artifact_path": "condition_support_labels.json",
+        "requested_surface": "local_report_surface",
+        "canonical_surface": "local_report_surface",
+        "allowed": true,
+        "reason_code": "allowed_surface_read",
+        "output_role": "support_labeled_output",
+        "consumption_class": "support_only_not_claim_safe",
+        "claim_gate_status": "support_only_not_claim_safe",
+        "export_gate_status": "blocked_under_evaluation",
+        "statement_gate_status": "blocked_under_evaluation",
+        "allowed_surfaces": [
+          "local_artifact_surface",
+          "developer_inspection_surface",
+          "local_report_surface",
+          "small_batch_summary_surface"
+        ],
+        "blocked_surfaces": [
+          "internal_runtime_surface",
+          "descriptive_export_surface",
+          "controlled_statement_surface",
+          "external_claim_facing_surface"
+        ],
+        "required_boundaries": [
+          "non_claim_boundaries",
+          "interpretation_not_allowed"
+        ],
+        "required_refs": [
+          "consumption_policy_ref",
+          "surface_policy_ref",
+          "controlled_statements_ref"
+        ],
+        "boundaries_present": {
+          "non_claim_boundaries": true,
+          "interpretation_not_allowed": true
+        },
+        "refs_present": {
+          "consumption_policy_ref": true,
+          "surface_policy_ref": true,
+          "controlled_statements_ref": true
+        },
+        "boundary_ready": true,
+        "refs_ready": true,
+        "blocking_conditions": [
+          "external_validation_absent",
+          "support_label_not_truth_label",
+          "support_label_under_evaluation_blocks_export",
+          "support_label_under_evaluation_blocks_statement_surface",
+          "allowed_surface_read"
+        ],
+        "interpretation_boundary": "Condition-level support posture review only.",
+        "interpretation_not_allowed": [
+          "Do not read this as framework confirmation.",
+          "Do not read this as external validation."
+        ],
+        "emitted_to": null
+      },
+      "artifact": {
+        "artifact_role": "condition_support_label_output",
+        "consumption_policy_ref": "condition_output_consumption_policy.json",
+        "surface_policy_ref": "condition_output_surface_policy.json",
+        "controlled_statements_ref": "condition_controlled_statements.json",
+        "source_artifacts": {
+          "condition_metrics_summary": "condition_metrics_summary.json",
+          "condition_comparison": "condition_comparison.json"
+        },
+        "baseline_present": false,
+        "conditions": {},
+        "comparison_count": 0,
+        "interpretation_allowed": "Descriptive internal comparison posture only.",
+        "interpretation_not_allowed": [
+          "Do not read these labels as causal confirmation.",
+          "Do not read these labels as theory validation.",
+          "Do not read these labels as external validation."
+        ],
+        "non_claim_boundaries": [
+          "No implica validacion externa.",
+          "No implica inferencia causal fuerte.",
+          "No implica confirmacion del marco.",
+          "No implica claim fuerte.",
+          "No reemplaza revision cientifica externa."
+        ]
+      }
+    }
+  },
+  "blocked_outputs": {
+    "condition_comparison.json": {
+      "artifact_role": "output_surface_enforcement_decision",
+      "scope": "small_batch",
+      "artifact": "condition_comparison.json",
+      "artifact_path": "condition_comparison.json",
+      "requested_surface": "local_report_surface",
+      "canonical_surface": "local_report_surface",
+      "allowed": false,
+      "reason_code": "blocked_claim_facing_output",
+      "output_role": "descriptive_output",
+      "consumption_class": "blocked_for_external_claiming",
+      "claim_gate_status": "claim_unsafe",
+      "export_gate_status": "blocked_for_external_claiming",
+      "statement_gate_status": "no_statement_authorized",
+      "allowed_surfaces": [
+        "local_artifact_surface",
+        "small_batch_summary_surface"
+      ],
+      "blocked_surfaces": [
+        "internal_runtime_surface",
+        "developer_inspection_surface",
+        "local_report_surface",
+        "descriptive_export_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "required_boundaries": [
+        "interpretation_boundary"
+      ],
+      "required_refs": [
+        "support_boundary_ref",
+        "consumption_policy_ref",
+        "surface_policy_ref"
+      ],
+      "boundaries_present": {
+        "interpretation_boundary": true
+      },
+      "refs_present": {
+        "support_boundary_ref": true,
+        "consumption_policy_ref": true,
+        "surface_policy_ref": true
+      },
+      "boundary_ready": true,
+      "refs_ready": true,
+      "blocking_conditions": [
+        "external_validation_absent",
+        "causal_read_blocked",
+        "comparison_output_not_confirmatory",
+        "external_claim_surface_blocked",
+        "blocked_claim_facing_output"
+      ],
+      "interpretation_boundary": "Internal descriptive delta review only.",
+      "interpretation_not_allowed": [
+        "Do not read this as causal confirmation.",
+        "Do not read this as external validation."
+      ],
+      "emitted_to": null
+    }
+  },
+  "interpretation_boundary": "Local descriptive report only; includes only outputs permitted on local_report_surface and does not authorize claim-facing interpretation.",
+  "non_claim_restrictions": [
+    "Do not export as external claim-facing report.",
+    "Do not read included outputs as external validation.",
+    "Do not collapse this report into framework confirmation."
+  ]
+}

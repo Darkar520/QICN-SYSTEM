@@ -63,7 +63,7 @@
       "id": "claim_facing_block_preserved",
       "status": "PASS",
       "details": {
-        "governed_output_count": 16
+        "governed_output_count": 17
       }
     }
   ],
@@ -80,14 +80,14 @@
     "reward_aliasing_control:control_confounded"
   ],
   "baseline_refs": {
-    "qicn_system_head": "feee49846b316089f5b105dfd5a148d8ce44c595",
+    "qicn_system_head": "cf8dddfcc862a4b402dce67349b3dc95849a3e3d",
     "qicn_release_head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
     "latest_execution_campaign_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z",
     "latest_execution_batch_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch"
   },
   "interpretation_boundary": "Framework-internal only; subjectivity ecosystem verification matrix is an internal hardening artifact, not externally validated, not claim-facing evidence, not phenomenality closure, and not human equivalence.",
   "provenance": {
-    "generated_at": "2026-03-29T01:40:33.533Z",
+    "generated_at": "2026-03-29T05:26:41.687Z",
     "current_lineage": {
       "layer_version": "subjectivity_runtime_layer.srt6.ecosystem.v1",
       "estimator_version": "subjectivity_ecosystem_integrator.srt6.v1",
@@ -105,11 +105,11 @@
       },
       "surface_policy": {
         "ref": "docs/subjectivity_surface_policy.v1.json",
-        "sha256": "8b1fccbba3ee1fa5e037a61c4272198e5b72e0061bf2a9cdc930ae0aacc961ed"
+        "sha256": "abc00bbff29b79a8c17d47603d245fc175b91ada6a08398fe1595aaf26e38d50"
       },
       "artifact_schema": {
         "ref": "docs/subjectivity_artifact_schema.v1.json",
-        "sha256": "2fb79bd89050316d3c4707c2a895a5e523e4c9b4689860c33dfc0edff2002dbb"
+        "sha256": "0e18b811c0edd3fa064893cfb8a06de1dd701a7b88dfdb04b22125f8a6e5d421"
       },
       "candidate_governance": {
         "ref": "docs/ecosystem_candidate_governance.v1.json",
@@ -129,7 +129,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "feee49846b316089f5b105dfd5a148d8ce44c595",
+        "head": "cf8dddfcc862a4b402dce67349b3dc95849a3e3d",
         "upstream": "origin/main"
       },
       "qicn_release": {

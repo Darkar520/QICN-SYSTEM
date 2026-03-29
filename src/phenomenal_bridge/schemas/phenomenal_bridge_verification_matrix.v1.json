@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "phenomenal_bridge_verification_matrix.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "bridge_layer_id",
+    "layer_version",
+    "runtime_status",
+    "status",
+    "checks",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ]
+}

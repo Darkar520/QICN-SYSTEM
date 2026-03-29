@@ -5,7 +5,6 @@ const path = require('path');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const ARTIFACTS = path.join(ROOT, 'artifacts');
 
 const LOCAL_PATH_PATTERN =
   /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|TRADING 3\.0|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
@@ -23,6 +22,24 @@ const ALLOWED_AXIOM_CLASSIFICATIONS = new Set([
   'open_inference',
   'speculation',
   'non_decidable_from_current_evidence'
+]);
+const ALLOWED_LAYER_IDS = new Set([
+  'phenomenal_bridge_formal_layer.bpf0',
+  'phenomenal_bridge_formal_layer.bpf1',
+  'phenomenal_bridge_formal_layer.bpfm2',
+  'phenomenal_bridge_formal_layer.bpfm3'
+]);
+const ALLOWED_IMPLEMENTATION_STATUS = new Set([
+  'scaffold_only_opening_layer',
+  'provisional_bridge_surfaces_implemented',
+  'adversarial_bridge_runtime_implemented',
+  'internal_bridge_closure_layer_implemented'
+]);
+const ALLOWED_PREDICATE_STATUS = new Set([
+  'named_not_runtime_estimated',
+  'provisional_runtime_estimator_implemented',
+  'root_consumed_in_bpfm3',
+  'root_consumed_in_bpfm3_proxy_floor'
 ]);
 
 const REQUIRED_DOCS = [
@@ -65,18 +82,6 @@ const assert = (condition, message) => {
   }
 };
 
-const collectFiles = (basePath) => {
-  if (!fs.existsSync(basePath)) return [];
-  const entries = fs.readdirSync(basePath, { withFileTypes: true });
-  return entries.flatMap((entry) => {
-    const full = path.join(basePath, entry.name);
-    if (entry.isDirectory()) return collectFiles(full);
-    return [full];
-  });
-};
-
-const relative = (fullPath) => path.relative(ROOT, fullPath).replace(/\\/g, '/');
-
 const ensureFilesExist = (relativePaths) => {
   relativePaths.forEach((filePath) =>
     assert(exists(filePath), `Missing required file: ${filePath}`)
@@ -99,22 +104,6 @@ const ensureNoOverclaimWording = (relativePaths) => {
   });
 };
 
-const ensureNoPrematureBridgeRoots = () => {
-  const artifactFiles = collectFiles(ARTIFACTS).map(relative);
-  const forbiddenNames = [
-    'phenomenal_bridge_projection.json',
-    'phenomenal_bridge_gate_result.json',
-    'phenomenal_bridge_manifest.json'
-  ];
-  const forbidden = artifactFiles.filter((filePath) =>
-    forbiddenNames.some((name) => filePath.endsWith(name))
-  );
-  assert(
-    forbidden.length === 0,
-    `BPF scaffolding must not emit premature bridge root/comparator/intervention artifacts, but found: ${forbidden.join(', ')}`
-  );
-};
-
 const verifyManifestCoherence = () => {
   const protocol = readJson('docs/phenomenal_bridge_protocol.v1.json');
   const axioms = readJson('docs/phenomenal_bridge_axioms.v1.json');
@@ -123,41 +112,35 @@ const verifyManifestCoherence = () => {
   const artifactSchema = readJson('docs/phenomenal_bridge_artifact_schema.v1.json');
   const surfacePolicy = readJson('docs/phenomenal_bridge_surface_policy.v1.json');
 
+  assert(ALLOWED_LAYER_IDS.has(protocol.layer_id), 'Unexpected protocol layer id');
   assert(
-    [
-      'phenomenal_bridge_formal_layer.bpf0',
-      'phenomenal_bridge_formal_layer.bpf1',
-      'phenomenal_bridge_formal_layer.bpfm2'
-    ].includes(
-      protocol.layer_id
-    ),
-    'Unexpected protocol layer id'
-  );
-  assert(
-    [
-      'scaffold_only_opening_layer',
-      'provisional_bridge_surfaces_implemented',
-      'adversarial_bridge_runtime_implemented'
-    ].includes(
-      protocol.implementation_status
-    ),
+    ALLOWED_IMPLEMENTATION_STATUS.has(protocol.implementation_status),
     'Unexpected BPF implementation status'
   );
   assert(Array.isArray(protocol.bridge_target_predicates), 'Protocol predicates must be an array');
   assert(protocol.bridge_target_predicates.length === 6, 'Protocol must define six bridge predicates');
   assert(
-    protocol.bridge_target_predicates.every((entry) =>
-      ['named_not_runtime_estimated', 'provisional_runtime_estimator_implemented'].includes(
-        entry.status
-      )
-    ),
-    'Bridge predicates must remain either scaffold-only or provisional'
+    protocol.bridge_target_predicates.every((entry) => ALLOWED_PREDICATE_STATUS.has(entry.status)),
+    'Protocol bridge predicate status must remain bounded'
   );
 
   assert(Array.isArray(axioms.axioms) && axioms.axioms.length >= 6, 'Axiom registry must be populated');
   axioms.axioms.forEach((entry) => {
-    ['id', 'name', 'classification', 'statement', 'role', 'licenses', 'does_not_license', 'depends_on', 'status'].forEach((field) =>
-      assert(Object.prototype.hasOwnProperty.call(entry, field), `Axiom ${entry.id || '<unknown>'} missing ${field}`)
+    [
+      'id',
+      'name',
+      'classification',
+      'statement',
+      'role',
+      'licenses',
+      'does_not_license',
+      'depends_on',
+      'status'
+    ].forEach((field) =>
+      assert(
+        Object.prototype.hasOwnProperty.call(entry, field),
+        `Axiom ${entry.id || '<unknown>'} missing ${field}`
+      )
     );
     assert(
       ALLOWED_AXIOM_CLASSIFICATIONS.has(entry.classification),
@@ -167,34 +150,74 @@ const verifyManifestCoherence = () => {
 
   assert(Array.isArray(rivals.rivals) && rivals.rivals.length >= 5, 'Rival family must be populated');
   rivals.rivals.forEach((entry) => {
-    ['id', 'name', 'description', 'challenges_predicates', 'can_explain', 'cannot_cleanly_explain', 'expected_inputs', 'expected_outputs', 'defeat_conditions', 'status'].forEach((field) =>
-      assert(Object.prototype.hasOwnProperty.call(entry, field), `Rival ${entry.id || '<unknown>'} missing ${field}`)
-    );
-    assert(
-      ['scaffolded_not_runtime_comparable', 'runtime_comparable_weak_rival'].includes(entry.status),
-      `Rival ${entry.id} must remain bounded to scaffolded or runtime-comparable weak-rival status`
+    [
+      'id',
+      'name',
+      'description',
+      'challenges_predicates',
+      'can_explain',
+      'cannot_cleanly_explain',
+      'expected_inputs',
+      'expected_outputs',
+      'defeat_conditions',
+      'status'
+    ].forEach((field) =>
+      assert(
+        Object.prototype.hasOwnProperty.call(entry, field),
+        `Rival ${entry.id || '<unknown>'} missing ${field}`
+      )
     );
   });
 
   assert(
-    thresholds.status === 'symbolic_uncalibrated_deferred_to_bpf4',
-    'Threshold manifest must declare symbolic uncalibrated status'
+    ['symbolic_uncalibrated_deferred_to_bpf4', 'provisional_internal_binding_bpfm3'].includes(
+      thresholds.status
+    ),
+    'Threshold manifest must remain bounded to symbolic or provisional-internal binding status'
   );
-  thresholds.local_threshold_slots.forEach((entry) => {
-    assert(entry.value === null, `Threshold ${entry.slot_id} must remain unbound`);
-    assert(entry.status === 'symbolic', `Threshold ${entry.slot_id} must remain symbolic`);
-  });
+  if (thresholds.status === 'symbolic_uncalibrated_deferred_to_bpf4') {
+    thresholds.local_threshold_slots.forEach((entry) => {
+      assert(entry.value === null, `Threshold ${entry.slot_id} must remain unbound`);
+      assert(entry.status === 'symbolic', `Threshold ${entry.slot_id} must remain symbolic`);
+    });
+  } else {
+    assert(
+      thresholds.binding_policy?.numeric_binding_state === 'provisional_internal_bound',
+      'Bound thresholds must declare provisional internal binding'
+    );
+    thresholds.local_threshold_slots.forEach((entry) => {
+      assert(typeof entry.value === 'number', `Threshold ${entry.slot_id} must be numeric when bound`);
+      assert(
+        ['bound', 'bound_proxy_floor'].includes(entry.status),
+        `Threshold ${entry.slot_id} must be provisionally bound`
+      );
+    });
+  }
 
-  Object.values(artifactSchema.root_schema_refs).forEach((schemaPath) =>
+  Object.values(artifactSchema.root_schema_refs || {}).forEach((schemaPath) =>
     assert(exists(schemaPath), `Missing root schema ${schemaPath}`)
   );
-  const reportSchemaRefs = artifactSchema.report_schema_refs || {};
-  Object.values(reportSchemaRefs).forEach((schemaPath) =>
+  Object.values(artifactSchema.report_schema_refs || {}).forEach((schemaPath) =>
     assert(exists(schemaPath), `Missing report schema ${schemaPath}`)
   );
-  Object.entries(artifactSchema.artifacts).forEach(([artifactName, spec]) => {
-    ['id', 'artifact_name', 'role', 'artifact_class', 'level', 'authoritative_status', 'allowed_surfaces', 'blocked_surfaces', 'minimum_fields', 'non_implications', 'status'].forEach((field) =>
-      assert(Object.prototype.hasOwnProperty.call(spec, field), `Artifact spec ${artifactName} missing ${field}`)
+  Object.entries(artifactSchema.artifacts || {}).forEach(([artifactName, spec]) => {
+    [
+      'id',
+      'artifact_name',
+      'role',
+      'artifact_class',
+      'level',
+      'authoritative_status',
+      'allowed_surfaces',
+      'blocked_surfaces',
+      'minimum_fields',
+      'non_implications',
+      'status'
+    ].forEach((field) =>
+      assert(
+        Object.prototype.hasOwnProperty.call(spec, field),
+        `Artifact spec ${artifactName} missing ${field}`
+      )
     );
     assert(
       spec.blocked_surfaces.includes('controlled_statement_surface'),
@@ -207,10 +230,9 @@ const verifyManifestCoherence = () => {
   });
 
   assert(
-    surfacePolicy.default_interpretation_boundary.includes('does not license')
-      || surfacePolicy.default_interpretation_boundary.includes('does not')
+    surfacePolicy.default_interpretation_boundary.includes('Framework-internal')
       || surfacePolicy.default_interpretation_boundary.includes('framework-internal'),
-    'Surface policy must carry explicit non-license boundary'
+    'Surface policy must carry explicit framework-internal boundary'
   );
 };
 
@@ -220,22 +242,23 @@ const verifyDocs = () => {
   const nonClaims = readText('docs/PHENOMENAL_BRIDGE_NONCLAIMS.md');
   const plan = readText('docs/PHENOMENAL_BRIDGE_IMPLEMENTATION_PLAN.md');
 
-  assert(
-    boundary.includes('BPF-M2') || boundary.includes('BPF-1') || boundary.includes('BPF-0'),
-    'Interpretation boundary must mention BPF-0/BPF-1/BPF-M2'
-  );
+  assert(boundary.includes('BPF-M3'), 'Interpretation boundary must mention BPF-M3');
   assert(policy.includes('controlled_statement_surface'), 'Surface policy must mention controlled_statement_surface');
   assert(policy.includes('external_claim_facing_surface'), 'Surface policy must mention external claim-facing blockage');
-  [
-    'phenomenality proven',
-    'human equivalence',
-    'external validation',
-    'automatic Paper 9 promotion'
-  ].forEach((phrase) =>
+  ['phenomenality proven', 'human equivalence', 'external validation'].forEach((phrase) =>
     assert(nonClaims.includes(phrase), `Non-claims doc missing phrase: ${phrase}`)
   );
-  ['BPF-0', 'BPF-1', 'BPF-2', 'BPF-3', 'BPF-4', 'BPF-5', 'BPF-6'].forEach((block) =>
+  assert(
+    nonClaims.includes('automatic Paper 9 promotion')
+      || nonClaims.includes('Paper 9 final hardening'),
+    'Non-claims doc must block automatic Paper 9 escalation'
+  );
+  ['BPF-0', 'BPF-1', 'BPF-M3'].forEach((block) =>
     assert(plan.includes(block), `Implementation plan missing ${block}`)
+  );
+  assert(
+    plan.includes('BPF-M2'),
+    'Implementation plan must preserve the adversarial bridge block'
   );
 };
 
@@ -246,15 +269,12 @@ const verifyRuntimeImport = async () => {
   const description = bridge.describePhenomenalBridgeLayerScaffold();
   assert(description.framework_internal_only === true, 'Bridge layer must remain framework-internal');
   assert(description.not_phenomenality_support === true, 'Bridge layer must declare no phenomenality support');
+  assert(description.not_bridge_support === true, 'Bridge layer must declare no bridge support');
+  assert(description.not_paper9_authorization === true, 'Bridge layer must declare no Paper 9 authorization');
   assert(
-    description.scaffold_opening_intact === true || description.scaffold_only === true,
-    'BPF scaffold opening must remain intact'
+    description.scaffold_opening_intact === true || description.provisional_runtime_surfaces === true,
+    'Bridge layer must preserve scaffold opening and runtime bridge lineage'
   );
-  assert(
-    description.not_bridge_support === true || description.scaffold_only === true,
-    'Bridge layer must declare no bridge support'
-  );
-  assert(description.not_runtime_bridge_gate === true, 'Bridge layer must remain pre-gate');
 };
 
 const main = async () => {
@@ -268,7 +288,6 @@ const main = async () => {
   ensureFilesExist(allStructuredFiles);
   ensureNoPathLeaks(allStructuredFiles);
   ensureNoOverclaimWording(allStructuredFiles);
-  ensureNoPrematureBridgeRoots();
   verifyManifestCoherence();
   verifyDocs();
   await verifyRuntimeImport();

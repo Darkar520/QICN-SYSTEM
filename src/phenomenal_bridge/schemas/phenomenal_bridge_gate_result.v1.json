@@ -4,38 +4,72 @@
   "type": "object",
   "required": [
     "artifact_role",
+    "artifact_name",
     "artifact_version",
     "schema_version",
+    "bridge_layer_id",
     "layer_version",
+    "estimator_version",
+    "implementation_status",
     "bridge_status",
     "run_id",
+    "gate_inputs",
+    "threshold_values",
+    "local_threshold_results",
+    "global_threshold_results",
     "gate_status",
     "classification",
     "invalidation_reasons",
     "warnings",
-    "implementation_status",
+    "non_implications",
+    "allowed_surfaces",
+    "blocked_surfaces",
     "interpretation_boundary",
     "provenance",
     "schema_ref"
   ],
   "properties": {
     "artifact_role": { "const": "phenomenal_bridge_gate_result" },
+    "artifact_name": { "const": "phenomenal_bridge_gate_result.json" },
     "artifact_version": { "type": "string" },
     "schema_version": { "type": "string" },
+    "bridge_layer_id": { "type": "string" },
     "layer_version": { "type": "string" },
+    "estimator_version": { "type": "string" },
+    "implementation_status": { "type": "string" },
     "bridge_status": { "type": "string" },
     "run_id": { "type": "string" },
+    "gate_inputs": { "type": "object" },
+    "threshold_values": { "type": "object" },
+    "local_threshold_results": { "type": "object" },
+    "global_threshold_results": { "type": "object" },
     "gate_status": { "type": "string" },
+    "gate_definition": { "type": "object" },
     "classification": { "type": "string" },
     "invalidation_reasons": {
       "type": "array",
       "items": { "type": "string" }
     },
+    "drift_status": { "type": "object" },
+    "lineage_status": { "type": "object" },
+    "comparator_status": { "type": "object" },
+    "intervention_status": { "type": "object" },
     "warnings": {
       "type": "array",
       "items": { "type": "string" }
     },
-    "implementation_status": { "type": "string" },
+    "non_implications": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "allowed_surfaces": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "blocked_surfaces": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "interpretation_boundary": { "type": "string" },
     "provenance": { "type": "object" },
     "schema_ref": { "type": "string" }

@@ -2,110 +2,57 @@
 
 ## BPF-0
 
-- Objective: open the bridge layer with protocol, manifests, schemas, non-claims, and scaffold-only code.
-- Modules: docs manifests, bridge registries, root schema stubs, verifier.
-- Artifacts: none emitted; schemas only.
-- Verifiers: `verify-phenomenal-bridge-scaffolding.cjs`
-- Risks: semantic inflation, fake thresholds, fake gate language.
-- Closes: formal opening discipline only.
-- Remains open: all bridge runtime work.
+- Objective: open the bridge layer with protocol, manifests, schemas, boundaries, and scaffold-only code.
+- Status: closed.
 
 ## BPF-1
 
 - Objective: implement first runtime-facing bridge predicate surfaces and provisional estimators.
-- Modules:
-  - `PhenomenalDifferentiationMapper.js`
-  - `ValenceStructureMapper.js`
-  - `WorldRichnessMapper.js`
-  - `AmbiguityBearingMapper.js`
-  - `EmbodiedClosureMapper.js`
-  - `TemporalLivedStructureMapper.js`
-  - `PhenomenalBridgeSurfaceBuilder.js`
-- Artifacts:
-  - `phenomenal_differentiation_report.json`
-  - `valence_structure_report.json`
-  - `world_richness_report.json`
-  - `ambiguity_bearing_report.json`
-  - `embodied_closure_report.json`
-  - `temporal_lived_structure_report.json`
-- Verifiers: `verify-phenomenal-bridge-scaffolding.cjs`, `verify-phenomenal-bridge-surfaces.cjs`
-- Risks: decorative ontology, estimator circularity, proxy inflation, SRT re-export under new names.
-- Closes: bridge predicates become provisionally measurable at run level.
-- Remains open: interventions, comparators, bridge gate, bridge roots, ecosystem integration.
+- Status: closed at run-level surface scope only.
 
 ## BPF-M2
 
-- Objective: adversarialize the bridge layer by condensing the original BPF-2
-  and BPF-3 burdens into a single block.
+- Objective: implement bridge interventions, matched controls, executable weak rivals, admissible composites, shared bridge loss family, complexity penalty, and bridge reducibility comparison.
+- Status: closed at adversarial pre-gate scope only.
+
+## BPF-M3
+
+- Objective: close the internal bridge runtime with root evaluation, bounded threshold binding, root artifacts, ecosystem integration, final audit, and readiness gate.
 - Modules:
-  - `PhenomenalBridgeInputBundleLoader.js`
-  - `PhenomenalBridgeInterventionDefinitions.js`
-  - `PhenomenalBridgeInterventionHarness.js`
-  - `PhenomenalBridgeComparatorFamily.js`
-  - `PhenomenalBridgeReducibilityComparator.js`
-  - `build-phenomenal-bridge-adversarial.cjs`
-- Artifacts:
-  - `bridge_intervention_profile.json`
-  - `bridge_reducibility_report.json`
-- Verifiers:
-  - `verify-phenomenal-bridge-interventions.cjs`
-  - `verify-phenomenal-bridge-reducibility.cjs`
-  - plus retained BPF-0 and BPF-1 verifiers
-- Risks:
-  - relabeling SRT perturbations instead of creating bridge perturbations
-  - matched controls that accidentally mimic the targeted signatures
-  - weak bridge rivals that do not pay shared loss or complexity
-  - overreading partial irreducibility support as bridge closure
-- Closes:
-  - bridge intervention burden
-  - bridge comparator burden
-  - bridge complexity and reducibility burden at run level
-- Remains open:
-  - bridge gate
-  - bridge roots
-  - bridge ecosystem integration
-  - final bridge audit
-
-## BPF-4
-
-- Objective: implement bridge functional, bridge gate, symbolic-to-bound threshold binding, and run-level bridge roots.
-- Modules: bridge evaluator, threshold binder, drift logic.
+  - `PhenomenalBridgeGateEvaluator.js`
+  - `PhenomenalBridgeEcosystemIntegrator.js`
+  - `PhenomenalBridgeFinalAuditor.js`
+  - `build-phenomenal-bridge-root.cjs`
+  - `build-phenomenal-bridge-ecosystem.cjs`
 - Artifacts:
   - `phenomenal_bridge_projection.json`
   - `phenomenal_bridge_gate_result.json`
   - `phenomenal_bridge_manifest.json`
-- Verifiers: no-compensation control, comparator invalidation control, intervention instability control, drift invalidation control.
-- Risks: premature verdicts, fake calibration, bridge support inflation.
-- Closes: run-level bridge evaluation.
-- Remains open: ecosystem integration and final bridge audit.
-
-## BPF-5
-
-- Objective: integrate BPF into condition, batch, campaign, candidate, and audit-facing governance.
-- Modules: bridge ecosystem integrator, bundle wiring, anti-stale lineage checks.
-- Artifacts:
-  - condition/batch/campaign bridge summaries
-  - bridge candidate projection
-  - bridge audit handoff summary
-  - bridge verification matrix
-- Verifiers: bundle integrity, stale bundle invalidation, surface enforcement.
-- Risks: candidate misuse, audit misuse, claim-facing leakage.
-- Closes: ecosystem integration.
-- Remains open: final bridge audit.
-
-## BPF-6
-
-- Objective: execute final internal bridge audit and readiness gate.
-- Modules: consolidation verifier, bridge readiness gate, gap register updater.
-- Artifacts: bridge consolidation audit and readiness outputs.
-- Verifiers: full stack BPF-0..6, cross-repo alignment, anti-overclaim governance.
-- Risks: overreading internal admissibility as phenomenality, premature Paper 9 opening.
-- Closes: internal bridge audit only.
-- Remains open: external validation, human equivalence, Paper 9 theorem program.
-
-## Planning rule
-
-No later block may be treated as closed merely because terminology exists in
-BPF-0, provisional reports exist in BPF-1, or adversarial artifacts exist in
-BPF-M2. Gate closure, root-verdict closure, ecosystem bridge inclusion, and
-final bridge audit remain separate burdens.
+  - `phenomenal_bridge_condition_summary.json`
+  - `phenomenal_bridge_batch_summary.json`
+  - `phenomenal_bridge_campaign_summary.json`
+  - `phenomenal_bridge_candidate_projection.json`
+  - `phenomenal_bridge_audit_handoff_summary.json`
+  - `phenomenal_bridge_verification_matrix.json`
+  - `phenomenal_bridge_final_internal_audit.json`
+  - `phenomenal_bridge_readiness_gate.json`
+- Verifiers:
+  - `verify-phenomenal-bridge-gate.cjs`
+  - `verify-phenomenal-bridge-ecosystem.cjs`
+  - `verify-phenomenal-bridge-final-audit.cjs`
+  - plus retained BPF-0, BPF-1, and BPF-M2 verifiers
+- Risks:
+  - threshold overreading
+  - candidate/audit overreading
+  - single-run bridge campaign inflation
+  - stale lineage bypass
+- Closes:
+  - internal bridge root evaluation
+  - bounded bridge ecosystem integration
+  - final internal bridge audit and readiness gate
+- Remains open:
+  - external validation
+  - human comparator adjudication
+  - phenomenality proof
+  - metaphysical closure
+  - Paper 9 final hardening

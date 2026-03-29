@@ -1,127 +1,56 @@
 {
   "artifact_role": "phenomenal_bridge_surface_policy",
   "schema_version": "1.0.0",
-  "layer_id": "phenomenal_bridge_formal_layer.bpfm2",
-  "layer_status": "adversarial_bridge_runtime_implemented",
+  "layer_id": "phenomenal_bridge_formal_layer.bpfm3",
+  "layer_status": "internal_bridge_closure_layer_implemented",
+  "default_interpretation_boundary": "Framework-internal only; bridge artifacts may not be read as external validation, human phenomenal equivalence, phenomenality proof, metaphysical closure, or claim-facing authorization.",
   "governed_surfaces": {
-    "developer_inspection_surface": {
-      "requires_boundary": true,
-      "description": "Developer-facing internal inspection surface."
-    },
-    "local_artifact_surface": {
-      "requires_boundary": true,
-      "description": "Local repository artifact review surface."
-    },
-    "local_report_surface": {
-      "requires_boundary": true,
-      "description": "Local human-readable non-claim-facing report surface."
-    },
-    "internal_release_bundle_surface": {
-      "requires_boundary": true,
-      "description": "Internal release bundle surface."
-    },
-    "ecosystem_candidate_surface": {
-      "requires_boundary": true,
-      "description": "Internal ecosystem candidate surface."
-    },
-    "audit_facing_package_surface": {
-      "requires_boundary": true,
-      "description": "Audit-facing package surface."
-    },
-    "controlled_statement_surface": {
-      "requires_boundary": true,
-      "description": "Controlled statement surface."
-    },
-    "external_claim_facing_surface": {
-      "requires_boundary": true,
-      "description": "Public claim-facing or externally promotable surface."
-    }
+    "developer_inspection_surface": { "requires_boundary": true, "description": "Developer-facing internal inspection surface." },
+    "local_artifact_surface": { "requires_boundary": true, "description": "Local repository artifact review surface." },
+    "local_report_surface": { "requires_boundary": true, "description": "Local human-readable non-claim-facing report surface." },
+    "internal_release_bundle_surface": { "requires_boundary": true, "description": "Internal release bundle surface." },
+    "ecosystem_candidate_surface": { "requires_boundary": true, "description": "Internal ecosystem candidate surface." },
+    "audit_facing_package_surface": { "requires_boundary": true, "description": "Audit-facing package surface." },
+    "controlled_statement_surface": { "requires_boundary": true, "description": "Controlled statement surface." },
+    "external_claim_facing_surface": { "requires_boundary": true, "description": "Public claim-facing or externally promotable surface." }
   },
   "artifact_classes": {
-    "manifest_root": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface"
-      ],
-      "blocked_surfaces": [
-        "local_report_surface",
-        "internal_release_bundle_surface",
-        "ecosystem_candidate_surface",
-        "audit_facing_package_surface",
-        "controlled_statement_surface",
-        "external_claim_facing_surface"
-      ]
+    "low_level_bridge_report": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
+      "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"]
     },
-    "projection_root": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface"
-      ],
-      "blocked_surfaces": [
-        "local_report_surface",
-        "internal_release_bundle_surface",
-        "ecosystem_candidate_surface",
-        "audit_facing_package_surface",
-        "controlled_statement_surface",
-        "external_claim_facing_surface"
-      ]
+    "adversarial_bridge_report": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"],
+      "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"]
     },
-    "gate_root": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface"
-      ],
-      "blocked_surfaces": [
-        "local_report_surface",
-        "internal_release_bundle_surface",
-        "ecosystem_candidate_surface",
-        "audit_facing_package_surface",
-        "controlled_statement_surface",
-        "external_claim_facing_surface"
-      ]
+    "root_bridge_artifact": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"],
+      "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"]
     },
-    "primary_report": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface"
-      ],
-      "blocked_surfaces": [
-        "local_report_surface",
-        "internal_release_bundle_surface",
-        "ecosystem_candidate_surface",
-        "audit_facing_package_surface",
-        "controlled_statement_surface",
-        "external_claim_facing_surface"
-      ]
-    },
-    "intervention_profile": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface"
-      ],
-      "blocked_surfaces": [
-        "local_report_surface",
-        "internal_release_bundle_surface",
-        "ecosystem_candidate_surface",
-        "audit_facing_package_surface",
-        "controlled_statement_surface",
-        "external_claim_facing_surface"
-      ]
-    },
-    "reducibility_report": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface"
-      ],
-      "blocked_surfaces": [
-        "local_report_surface",
-        "internal_release_bundle_surface",
-        "ecosystem_candidate_surface",
-        "audit_facing_package_surface",
-        "controlled_statement_surface",
-        "external_claim_facing_surface"
-      ]
+    "internal_bridge_audit_artifact": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"]
     }
   },
-  "default_interpretation_boundary": "BPF artifacts remain framework-internal only. BPF-M2 emits provisional bridge coordinate reports, a bridge intervention profile, and a bridge reducibility report locally, but it does not license bridge support, bridge admissibility, phenomenality, external validation, human equivalence, or Paper 9 authorization."
+  "outputs": {
+    "phenomenal_differentiation_report.json": { "artifact_class": "low_level_bridge_report", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"], "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "valence_structure_report.json": { "artifact_class": "low_level_bridge_report", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"], "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "world_richness_report.json": { "artifact_class": "low_level_bridge_report", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"], "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "ambiguity_bearing_report.json": { "artifact_class": "low_level_bridge_report", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"], "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "embodied_closure_report.json": { "artifact_class": "low_level_bridge_report", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"], "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "temporal_lived_structure_report.json": { "artifact_class": "low_level_bridge_report", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"], "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "bridge_intervention_profile.json": { "artifact_class": "adversarial_bridge_report", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"], "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "bridge_reducibility_report.json": { "artifact_class": "adversarial_bridge_report", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface"], "blocked_surfaces": ["local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "phenomenal_bridge_projection.json": { "artifact_class": "root_bridge_artifact", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"], "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"] },
+    "phenomenal_bridge_gate_result.json": { "artifact_class": "root_bridge_artifact", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"], "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"] },
+    "phenomenal_bridge_manifest.json": { "artifact_class": "root_bridge_artifact", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"], "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"] },
+    "phenomenal_bridge_condition_summary.json": { "artifact_class": "root_bridge_artifact", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "blocked_surfaces": ["ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "phenomenal_bridge_batch_summary.json": { "artifact_class": "root_bridge_artifact", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "blocked_surfaces": ["ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "phenomenal_bridge_campaign_summary.json": { "artifact_class": "root_bridge_artifact", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"], "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"] },
+    "phenomenal_bridge_candidate_projection.json": { "artifact_class": "root_bridge_artifact", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"], "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"] },
+    "phenomenal_bridge_audit_handoff_summary.json": { "artifact_class": "root_bridge_artifact", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "audit_facing_package_surface"], "blocked_surfaces": ["ecosystem_candidate_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "phenomenal_bridge_verification_matrix.json": { "artifact_class": "root_bridge_artifact", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"], "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"] },
+    "phenomenal_bridge_final_internal_audit.json": { "artifact_class": "internal_bridge_audit_artifact", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "blocked_surfaces": ["ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"] },
+    "phenomenal_bridge_readiness_gate.json": { "artifact_class": "root_bridge_artifact", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface", "ecosystem_candidate_surface", "audit_facing_package_surface"], "blocked_surfaces": ["controlled_statement_surface", "external_claim_facing_surface"] }
+  }
 }

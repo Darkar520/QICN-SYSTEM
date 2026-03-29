@@ -11,13 +11,21 @@ const {
   evaluateEcosystem
 } = require('./ecosystem-release-common.cjs');
 const { buildSubjectivityEcosystem } = require('./build-subjectivity-ecosystem.cjs');
+const { buildPhenomenalBridgeEcosystem } = require('./build-phenomenal-bridge-ecosystem.cjs');
+
+const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
 async function buildEcosystemReleaseCandidate() {
 await buildSubjectivityEcosystem();
+await buildPhenomenalBridgeEcosystem();
 const { model, gapRegister, verificationMatrix } = evaluateEcosystem();
 const generatedAt = new Date().toISOString();
 const bundleId = `ecosystem_release_candidate_${generatedAt.replace(/[:.]/g, '-')}`;
 const bundleRoot = path.join(ECOSYSTEM_ARTIFACT_ROOT, 'bundles', bundleId);
+
+const bridgeCandidateProjection = readJson(path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_candidate_projection.json'));
+const bridgeReadinessGate = readJson(path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_readiness_gate.json'));
+const bridgeVerificationMatrix = readJson(path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_verification_matrix.json'));
 
 ensureDir(bundleRoot);
 
@@ -144,6 +152,42 @@ const bundleManifest = {
     interpretation_boundary:
       'Framework-internal subjectivity integration only; candidate inclusion does not authorize claim closure, external validation, phenomenality, or human equivalence.'
   },
+  phenomenal_bridge: {
+    layer_id: 'phenomenal_bridge_formal_layer.bpfm3',
+    documentation: {
+      protocol: 'phenomenal_bridge/docs/PHENOMENAL_BRIDGE_PROTOCOL.md',
+      interpretation_boundary: 'phenomenal_bridge/docs/PHENOMENAL_BRIDGE_INTERPRETATION_BOUNDARY.md',
+      surface_policy: 'phenomenal_bridge/docs/PHENOMENAL_BRIDGE_SURFACE_POLICY.md',
+      nonclaims: 'phenomenal_bridge/docs/PHENOMENAL_BRIDGE_NONCLAIMS.md'
+    },
+    manifests: {
+      protocol: 'phenomenal_bridge/manifests/phenomenal_bridge_protocol.v1.json',
+      thresholds: 'phenomenal_bridge/manifests/phenomenal_bridge_thresholds.v1.json',
+      rival_family: 'phenomenal_bridge/manifests/phenomenal_bridge_rival_family.v1.json',
+      surface_policy: 'phenomenal_bridge/manifests/phenomenal_bridge_surface_policy.v1.json',
+      artifact_schema: 'phenomenal_bridge/manifests/phenomenal_bridge_artifact_schema.v1.json'
+    },
+    authoritative_artifacts: {
+      projection: 'phenomenal_bridge/phenomenal_bridge_projection.json',
+      gate_result: 'phenomenal_bridge/phenomenal_bridge_gate_result.json',
+      manifest: 'phenomenal_bridge/phenomenal_bridge_manifest.json',
+      campaign_summary: 'phenomenal_bridge/phenomenal_bridge_campaign_summary.json',
+      candidate_projection: 'phenomenal_bridge/phenomenal_bridge_candidate_projection.json',
+      verification_matrix: 'phenomenal_bridge/phenomenal_bridge_verification_matrix.json',
+      readiness_gate: 'phenomenal_bridge/phenomenal_bridge_readiness_gate.json'
+    },
+    status: {
+      implemented: true,
+      internally_supported: true,
+      framework_internal_only: true,
+      not_externally_validated: true,
+      support_class: bridgeCandidateProjection.support_class,
+      readiness_class: bridgeCandidateProjection.readiness_class,
+      paper9_final_hardening_status: bridgeReadinessGate.paper9_final_hardening_status
+    },
+    interpretation_boundary:
+      'Framework-internal bridge integration only; candidate inclusion is bounded and does not imply external validation, human equivalence, phenomenality proof, metaphysical closure, or claim-facing authorization.'
+  },
   freeze_baseline: {
     documentation: 'ecosystem/docs/ECOSYSTEM_FREEZE_BASELINE.md',
     release_notes: 'ecosystem/docs/ECOSYSTEM_RELEASE_NOTES.md',
@@ -171,13 +215,16 @@ const bundleManifest = {
     'runtime outputs validate the corpus',
     'canonical freeze validates the runtime',
     'claim registry closes the claims',
-    'internal release candidate equals public claim-safe release'
+    'internal release candidate equals public claim-safe release',
+    'bridge candidate projection equals phenomenality proof',
+    'bridge gate pass equals external validation'
   ],
   interpretation_boundary: 'Internal ecosystem release candidate only; cross-repo coordination layer, not external validation, not theory closure, not public release.',
   non_claim_restrictions: [
     'Do not read this bundle as framework validation.',
     'Do not read operational readiness as theoretical confirmation.',
     'Do not read the canonical freeze as runtime proof.',
+    'Do not read bounded bridge artifacts as phenomenality proof or human equivalence evidence.',
     'Do not read implementation-linked claims as confirmatory claims.'
   ]
 };
@@ -203,6 +250,7 @@ const releaseNotes = `# ECOSYSTEM RELEASE NOTES
 - ecosystem candidate governance
 - ecosystem freeze baseline and maintenance checklist
 - subjectivity runtime protocol, maintenance docs, machine manifests, and SRT-6 ecosystem summaries
+- phenomenal bridge protocol/manifests and bounded BPF-M3 candidate-facing artifacts
 - ecosystem verification matrix
 - ecosystem gap register
 
@@ -211,6 +259,7 @@ const releaseNotes = `# ECOSYSTEM RELEASE NOTES
 - non-canonical corpus material under \`release/_non_canonical/\`
 - blocked claim-facing system outputs
 - primary SRT-1..4 subjectivity run artifacts that remain local-only
+- BPF-1 low-level bridge reports and BPF-M2 adversarial reports that remain local-only
 - raw runtime outputs as theory-validation material
 - unclassified or non-baseline materials outside the two repository baselines
 
@@ -254,6 +303,22 @@ This ecosystem bundle is an internal release candidate only. It does not imply e
   [path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_campaign_summary.json'), path.join(bundleRoot, 'subjectivity', 'subjectivity_campaign_summary.json')],
   [path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_candidate_projection.json'), path.join(bundleRoot, 'subjectivity', 'subjectivity_candidate_projection.json')],
   [path.join(SYSTEM_ROOT, 'artifacts', 'subjectivity', 'srt6', 'subjectivity_verification_matrix.json'), path.join(bundleRoot, 'subjectivity', 'subjectivity_verification_matrix.json')],
+  [path.join(SYSTEM_ROOT, 'docs', 'PHENOMENAL_BRIDGE_PROTOCOL.md'), path.join(bundleRoot, 'phenomenal_bridge', 'docs', 'PHENOMENAL_BRIDGE_PROTOCOL.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'PHENOMENAL_BRIDGE_INTERPRETATION_BOUNDARY.md'), path.join(bundleRoot, 'phenomenal_bridge', 'docs', 'PHENOMENAL_BRIDGE_INTERPRETATION_BOUNDARY.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'PHENOMENAL_BRIDGE_SURFACE_POLICY.md'), path.join(bundleRoot, 'phenomenal_bridge', 'docs', 'PHENOMENAL_BRIDGE_SURFACE_POLICY.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'PHENOMENAL_BRIDGE_NONCLAIMS.md'), path.join(bundleRoot, 'phenomenal_bridge', 'docs', 'PHENOMENAL_BRIDGE_NONCLAIMS.md')],
+  [path.join(SYSTEM_ROOT, 'docs', 'phenomenal_bridge_protocol.v1.json'), path.join(bundleRoot, 'phenomenal_bridge', 'manifests', 'phenomenal_bridge_protocol.v1.json')],
+  [path.join(SYSTEM_ROOT, 'docs', 'phenomenal_bridge_thresholds.v1.json'), path.join(bundleRoot, 'phenomenal_bridge', 'manifests', 'phenomenal_bridge_thresholds.v1.json')],
+  [path.join(SYSTEM_ROOT, 'docs', 'phenomenal_bridge_rival_family.v1.json'), path.join(bundleRoot, 'phenomenal_bridge', 'manifests', 'phenomenal_bridge_rival_family.v1.json')],
+  [path.join(SYSTEM_ROOT, 'docs', 'phenomenal_bridge_surface_policy.v1.json'), path.join(bundleRoot, 'phenomenal_bridge', 'manifests', 'phenomenal_bridge_surface_policy.v1.json')],
+  [path.join(SYSTEM_ROOT, 'docs', 'phenomenal_bridge_artifact_schema.v1.json'), path.join(bundleRoot, 'phenomenal_bridge', 'manifests', 'phenomenal_bridge_artifact_schema.v1.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_projection.json'), path.join(bundleRoot, 'phenomenal_bridge', 'phenomenal_bridge_projection.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_gate_result.json'), path.join(bundleRoot, 'phenomenal_bridge', 'phenomenal_bridge_gate_result.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_manifest.json'), path.join(bundleRoot, 'phenomenal_bridge', 'phenomenal_bridge_manifest.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_campaign_summary.json'), path.join(bundleRoot, 'phenomenal_bridge', 'phenomenal_bridge_campaign_summary.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_candidate_projection.json'), path.join(bundleRoot, 'phenomenal_bridge', 'phenomenal_bridge_candidate_projection.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_verification_matrix.json'), path.join(bundleRoot, 'phenomenal_bridge', 'phenomenal_bridge_verification_matrix.json')],
+  [path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_readiness_gate.json'), path.join(bundleRoot, 'phenomenal_bridge', 'phenomenal_bridge_readiness_gate.json')],
   [path.join(SYSTEM_ROOT, 'docs', 'PROTOCOLIZED_EVALUATION_PROTOCOL.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'PROTOCOLIZED_EVALUATION_PROTOCOL.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md')],
   [path.join(SYSTEM_ROOT, 'docs', 'EXECUTION_CAMPAIGN_FREEZE_BASELINE.md'), path.join(bundleRoot, 'ecosystem', 'docs', 'EXECUTION_CAMPAIGN_FREEZE_BASELINE.md')],

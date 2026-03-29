@@ -11,6 +11,7 @@ const {
   evaluateEcosystem
 } = require('./ecosystem-release-common.cjs');
 const { buildSubjectivityEcosystem } = require('./build-subjectivity-ecosystem.cjs');
+const { buildPhenomenalBridgeEcosystem } = require('./build-phenomenal-bridge-ecosystem.cjs');
 
 const EXTERNAL_AUDIT_ARTIFACT_ROOT = path.join(SYSTEM_ROOT, 'artifacts', 'external_audit_package');
 const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
@@ -109,6 +110,7 @@ const missingSubjectivityInputs = REQUIRED_SUBJECTIVITY_AUDIT_INPUTS.filter(
 if (missingSubjectivityInputs.length > 0) {
   await buildSubjectivityEcosystem();
 }
+await buildPhenomenalBridgeEcosystem();
 const { model, verificationMatrix } = evaluateEcosystem();
 if (verificationMatrix.status !== 'PASS') {
   throw new Error(`external audit package requires ecosystem candidate PASS; got ${verificationMatrix.status}`);
@@ -125,6 +127,9 @@ const candidateBundleRoot = path.join(ECOSYSTEM_ARTIFACT_ROOT, 'bundles', candid
 if (!exists(candidateBundleRoot)) {
   throw new Error(`missing ecosystem candidate bundle: ${candidateBundleRoot}`);
 }
+const bridgeCandidateProjection = readJson(path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_candidate_projection.json'));
+const bridgeAuditHandoff = readJson(path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_audit_handoff_summary.json'));
+const bridgeReadinessGate = readJson(path.join(SYSTEM_ROOT, 'artifacts', 'phenomenal_bridge', 'bpfm3', 'phenomenal_bridge_readiness_gate.json'));
 
 const freezeManifestPath = path.join(SYSTEM_ROOT, 'docs', 'execution_campaign_freeze.v1.json');
 const freezeManifest = readJson(freezeManifestPath);
@@ -191,6 +196,26 @@ if (invalidAttempt) {
   ['artifacts/subjectivity/srt6/subjectivity_candidate_projection.json', 'subjectivity/subjectivity_candidate_projection.json'],
   ['artifacts/subjectivity/srt6/subjectivity_audit_handoff_summary.json', 'subjectivity/subjectivity_audit_handoff_summary.json'],
   ['artifacts/subjectivity/srt6/subjectivity_verification_matrix.json', 'subjectivity/subjectivity_verification_matrix.json']
+].forEach(([from, to]) => copyFile(path.join(SYSTEM_ROOT, from), path.join(bundleRoot, to)));
+
+[
+  ['docs/PHENOMENAL_BRIDGE_PROTOCOL.md', 'phenomenal_bridge/docs/PHENOMENAL_BRIDGE_PROTOCOL.md'],
+  ['docs/PHENOMENAL_BRIDGE_INTERPRETATION_BOUNDARY.md', 'phenomenal_bridge/docs/PHENOMENAL_BRIDGE_INTERPRETATION_BOUNDARY.md'],
+  ['docs/PHENOMENAL_BRIDGE_SURFACE_POLICY.md', 'phenomenal_bridge/docs/PHENOMENAL_BRIDGE_SURFACE_POLICY.md'],
+  ['docs/PHENOMENAL_BRIDGE_NONCLAIMS.md', 'phenomenal_bridge/docs/PHENOMENAL_BRIDGE_NONCLAIMS.md'],
+  ['docs/phenomenal_bridge_protocol.v1.json', 'phenomenal_bridge/manifests/phenomenal_bridge_protocol.v1.json'],
+  ['docs/phenomenal_bridge_thresholds.v1.json', 'phenomenal_bridge/manifests/phenomenal_bridge_thresholds.v1.json'],
+  ['docs/phenomenal_bridge_rival_family.v1.json', 'phenomenal_bridge/manifests/phenomenal_bridge_rival_family.v1.json'],
+  ['docs/phenomenal_bridge_surface_policy.v1.json', 'phenomenal_bridge/manifests/phenomenal_bridge_surface_policy.v1.json'],
+  ['docs/phenomenal_bridge_artifact_schema.v1.json', 'phenomenal_bridge/manifests/phenomenal_bridge_artifact_schema.v1.json'],
+  ['artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json', 'phenomenal_bridge/phenomenal_bridge_projection.json'],
+  ['artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_gate_result.json', 'phenomenal_bridge/phenomenal_bridge_gate_result.json'],
+  ['artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_manifest.json', 'phenomenal_bridge/phenomenal_bridge_manifest.json'],
+  ['artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_campaign_summary.json', 'phenomenal_bridge/phenomenal_bridge_campaign_summary.json'],
+  ['artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_candidate_projection.json', 'phenomenal_bridge/phenomenal_bridge_candidate_projection.json'],
+  ['artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_audit_handoff_summary.json', 'phenomenal_bridge/phenomenal_bridge_audit_handoff_summary.json'],
+  ['artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_verification_matrix.json', 'phenomenal_bridge/phenomenal_bridge_verification_matrix.json'],
+  ['artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_readiness_gate.json', 'phenomenal_bridge/phenomenal_bridge_readiness_gate.json']
 ].forEach(([from, to]) => copyFile(path.join(SYSTEM_ROOT, from), path.join(bundleRoot, to)));
 
 const redTeamFindings = [
@@ -298,6 +323,18 @@ const redTeamFindings = [
     minimal_correction: null
   },
   {
+    id: 'bridge.audit_handoff_boundary',
+    severity: 'no_issue',
+    area: 'phenomenal_bridge_layer',
+    finding: 'The phenomenal bridge layer is included with bounded audit-facing summaries and root artifacts while keeping low-level and adversarial bridge artifacts out of the audit package.',
+    evidence: [
+      'phenomenal_bridge/phenomenal_bridge_candidate_projection.json',
+      'phenomenal_bridge/phenomenal_bridge_audit_handoff_summary.json',
+      'phenomenal_bridge/phenomenal_bridge_verification_matrix.json'
+    ],
+    minimal_correction: null
+  },
+  {
     id: 'banal_alternative.pipeline_explanation',
     severity: 'note',
     area: 'banal_rival_explanations',
@@ -333,6 +370,7 @@ const readyConditions = [
   'canonical_release_freeze_traced',
   'ecosystem_candidate_pass',
   'subjectivity_audit_handoff_clean',
+  'phenomenal_bridge_audit_handoff_clean',
   'comparable_series_minimally_stable',
   'non_claim_boundaries_explicit',
   'blocked_outputs_preserved',
@@ -402,7 +440,9 @@ const packageManifest = {
     red_team: 'internal_red_team_report.json',
     candidate_manifest: 'ecosystem_candidate/ecosystem_release_candidate_manifest.json',
     subjectivity_handoff: 'subjectivity/subjectivity_audit_handoff_summary.json',
-    subjectivity_projection: 'subjectivity/subjectivity_candidate_projection.json'
+    subjectivity_projection: 'subjectivity/subjectivity_candidate_projection.json',
+    phenomenal_bridge_handoff: 'phenomenal_bridge/phenomenal_bridge_audit_handoff_summary.json',
+    phenomenal_bridge_projection: 'phenomenal_bridge/phenomenal_bridge_candidate_projection.json'
   },
   repositories: {
     qicn_system: {
@@ -431,7 +471,11 @@ const packageManifest = {
     invalid_historical_attempt_campaign_id: invalidAttempt ? invalidAttempt.campaign_id : null,
     subjectivity_layer_version: 'subjectivity_runtime_layer.srt6',
     subjectivity_support_class: 'subjectivity_admissible',
-    subjectivity_readiness_class: 'subjectivity_stack_audit_ready_internal'
+    subjectivity_readiness_class: 'subjectivity_stack_audit_ready_internal',
+    phenomenal_bridge_layer_version: 'phenomenal_bridge_formal_layer.bpfm3',
+    phenomenal_bridge_support_class: bridgeCandidateProjection.support_class,
+    phenomenal_bridge_readiness_class: bridgeCandidateProjection.readiness_class,
+    phenomenal_bridge_paper9_final_hardening_status: bridgeReadinessGate.paper9_final_hardening_status
   },
   copied_artifacts: {
     ecosystem_candidate_manifest: 'ecosystem_candidate/ecosystem_release_candidate_manifest.json',
@@ -442,6 +486,16 @@ const packageManifest = {
       candidate_projection: 'subjectivity/subjectivity_candidate_projection.json',
       audit_handoff_summary: 'subjectivity/subjectivity_audit_handoff_summary.json',
       verification_matrix: 'subjectivity/subjectivity_verification_matrix.json'
+    },
+    phenomenal_bridge: {
+      projection: 'phenomenal_bridge/phenomenal_bridge_projection.json',
+      gate_result: 'phenomenal_bridge/phenomenal_bridge_gate_result.json',
+      manifest: 'phenomenal_bridge/phenomenal_bridge_manifest.json',
+      campaign_summary: 'phenomenal_bridge/phenomenal_bridge_campaign_summary.json',
+      candidate_projection: 'phenomenal_bridge/phenomenal_bridge_candidate_projection.json',
+      audit_handoff_summary: 'phenomenal_bridge/phenomenal_bridge_audit_handoff_summary.json',
+      verification_matrix: 'phenomenal_bridge/phenomenal_bridge_verification_matrix.json',
+      readiness_gate: 'phenomenal_bridge/phenomenal_bridge_readiness_gate.json'
     },
     frozen_primary: copiedPrimaryArtifacts,
     latest_accepted_comparable: copiedComparableArtifacts,
@@ -457,6 +511,9 @@ const packageManifest = {
     'subjectivity/subjectivity_audit_handoff_summary.json',
     'subjectivity/subjectivity_candidate_projection.json',
     'subjectivity/subjectivity_verification_matrix.json',
+    'phenomenal_bridge/phenomenal_bridge_audit_handoff_summary.json',
+    'phenomenal_bridge/phenomenal_bridge_candidate_projection.json',
+    'phenomenal_bridge/phenomenal_bridge_verification_matrix.json',
     'system_authoritative/latest_accepted_comparable/execution_campaign_audit_readout.json',
     'system_authoritative/latest_accepted_comparable/evaluation_batch_report.json',
     'system_authoritative/latest_accepted_comparable/condition_comparison_report.json',
@@ -468,7 +525,11 @@ const packageManifest = {
     'subjectivity_threshold_drift',
     'subjectivity_rival_family_drift',
     'subjectivity_surface_policy_drift',
-    'subjectivity_candidate_projection_stale'
+    'subjectivity_candidate_projection_stale',
+    'phenomenal_bridge_threshold_drift',
+    'phenomenal_bridge_rival_family_drift',
+    'phenomenal_bridge_surface_policy_drift',
+    'phenomenal_bridge_candidate_projection_stale'
   ],
   blocked_outputs: disciplineManifest.internal_only_outputs,
   non_claim_restrictions: [
@@ -476,6 +537,7 @@ const packageManifest = {
     'No theory confirmation.',
     'No claim closure.',
     'No causal proof.',
+    'No bridge artifact may be read as phenomenality proof or human equivalence.',
     'No runtime-to-corpus validation leap.',
     'No public claim-facing escalation.'
   ],

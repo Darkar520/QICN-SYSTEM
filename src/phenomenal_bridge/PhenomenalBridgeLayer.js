@@ -15,6 +15,14 @@ export const PHENOMENAL_BRIDGE_ROOT_SCHEMAS = Object.freeze({
   manifest: readJson('./schemas/phenomenal_bridge_manifest.v1.json'),
   projection: readJson('./schemas/phenomenal_bridge_projection.v1.json'),
   gate_result: readJson('./schemas/phenomenal_bridge_gate_result.v1.json'),
+  condition_summary: readJson('./schemas/phenomenal_bridge_condition_summary.v1.json'),
+  batch_summary: readJson('./schemas/phenomenal_bridge_batch_summary.v1.json'),
+  campaign_summary: readJson('./schemas/phenomenal_bridge_campaign_summary.v1.json'),
+  candidate_projection: readJson('./schemas/phenomenal_bridge_candidate_projection.v1.json'),
+  audit_handoff_summary: readJson('./schemas/phenomenal_bridge_audit_handoff_summary.v1.json'),
+  verification_matrix: readJson('./schemas/phenomenal_bridge_verification_matrix.v1.json'),
+  final_internal_audit: readJson('./schemas/phenomenal_bridge_final_internal_audit.v1.json'),
+  readiness_gate: readJson('./schemas/phenomenal_bridge_readiness_gate.v1.json'),
   phenomenal_differentiation_report: readJson(
     './schemas/phenomenal_differentiation_report.v1.json'
   ),
@@ -31,12 +39,12 @@ export const PHENOMENAL_BRIDGE_ROOT_SCHEMAS = Object.freeze({
 
 export const PHENOMENAL_BRIDGE_LAYER_STATUS = Object.freeze({
   layer_name: 'Phenomenal Bridge Formal Layer',
-  layer_id: 'phenomenal_bridge_formal_layer.bpfm2',
-  implementation_status: 'adversarial_bridge_runtime_implemented',
+  layer_id: 'phenomenal_bridge_formal_layer.bpfm3',
+  implementation_status: 'internal_bridge_closure_layer_implemented',
   execution_status:
-    'executing_provisional_bridge_surfaces_with_adversarial_bridge_burden_pre_gate_pre_ecosystem',
+    'executing_root_bridge_evaluation_with_bounded_ecosystem_integration_and_final_internal_audit',
   interpretation_boundary:
-    'BPF-M2 preserves the BPF-0 scaffold and the BPF-1 surface layer while adding a bridge-specific intervention family, matched controls, executable weak rivals, admissible pairwise composites, a shared bridge loss family, and a bridge reducibility artifact. It still does not implement a bridge gate, bridge root verdict artifacts, bridge ecosystem integration, bridge support classes, phenomenality evidence, or Paper 9 authorization.'
+    'BPF-M3 preserves BPF-0, BPF-1, and BPF-M2 while adding a bounded root bridge evaluator, provisional threshold binding, bridge functional and gate logic, run/condition/batch/campaign summaries, candidate and audit-facing bounded projections, and a final internal bridge audit. It remains framework-internal only and does not establish external validation, human equivalence, phenomenality proof, metaphysical closure, public claim authorization, or Paper 9 final hardening.'
 });
 
 export class PhenomenalBridgeLayer {
@@ -54,14 +62,15 @@ export class PhenomenalBridgeLayer {
       default_surface_boundary: PHENOMENAL_BRIDGE_SURFACE_POLICY.default_interpretation_boundary,
       scaffold_opening_intact: true,
       provisional_runtime_surfaces: true,
-      not_runtime_bridge_gate: true,
+      runtime_bridge_gate_implemented: true,
       runtime_bridge_comparator_implemented: true,
       runtime_bridge_intervention_harness_implemented: true,
       runtime_bridge_reducibility_artifact_implemented: true,
-      not_runtime_bridge_root_verdict: true,
-      not_runtime_bridge_ecosystem_integration: true,
-      not_runtime_bridge_candidate_integration: true,
-      not_runtime_bridge_audit_integration: true,
+      runtime_bridge_root_artifacts_implemented: true,
+      runtime_bridge_ecosystem_integration_implemented: true,
+      runtime_bridge_candidate_integration_bounded: true,
+      runtime_bridge_audit_integration_bounded: true,
+      runtime_bridge_final_audit_implemented: true,
       not_paper9_authorization: true,
       not_bridge_support: true,
       not_phenomenality_support: true,

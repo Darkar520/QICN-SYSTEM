@@ -1,14 +1,14 @@
 {
   "artifact_role": "ecosystem_release_candidate_manifest",
-  "generated_at": "2026-03-29T05:32:06.168Z",
-  "bundle_id": "ecosystem_release_candidate_2026-03-29T05-32-06-168Z",
+  "generated_at": "2026-03-29T22:06:13.118Z",
+  "bundle_id": "ecosystem_release_candidate_2026-03-29T22-06-13-118Z",
   "bundle_root": ".",
-  "candidate_status": "PASS",
+  "candidate_status": "FAIL",
   "baselines": {
     "qicn_system": {
       "repository": "QICN-SYSTEM",
       "branch": "main",
-      "head": "be0dc7c6cb252e1aedc3412feeaa939216bf9d71",
+      "head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
       "upstream": "origin/main",
       "operational_readiness_manifest": "system/manifests/operational_readiness_manifest.json",
       "artifact_manifest": "system/manifests/artifact_manifest.json",
@@ -120,6 +120,41 @@
     },
     "interpretation_boundary": "Framework-internal subjectivity integration only; candidate inclusion does not authorize claim closure, external validation, phenomenality, or human equivalence."
   },
+  "phenomenal_bridge": {
+    "layer_id": "phenomenal_bridge_formal_layer.bpfm3",
+    "documentation": {
+      "protocol": "phenomenal_bridge/docs/PHENOMENAL_BRIDGE_PROTOCOL.md",
+      "interpretation_boundary": "phenomenal_bridge/docs/PHENOMENAL_BRIDGE_INTERPRETATION_BOUNDARY.md",
+      "surface_policy": "phenomenal_bridge/docs/PHENOMENAL_BRIDGE_SURFACE_POLICY.md",
+      "nonclaims": "phenomenal_bridge/docs/PHENOMENAL_BRIDGE_NONCLAIMS.md"
+    },
+    "manifests": {
+      "protocol": "phenomenal_bridge/manifests/phenomenal_bridge_protocol.v1.json",
+      "thresholds": "phenomenal_bridge/manifests/phenomenal_bridge_thresholds.v1.json",
+      "rival_family": "phenomenal_bridge/manifests/phenomenal_bridge_rival_family.v1.json",
+      "surface_policy": "phenomenal_bridge/manifests/phenomenal_bridge_surface_policy.v1.json",
+      "artifact_schema": "phenomenal_bridge/manifests/phenomenal_bridge_artifact_schema.v1.json"
+    },
+    "authoritative_artifacts": {
+      "projection": "phenomenal_bridge/phenomenal_bridge_projection.json",
+      "gate_result": "phenomenal_bridge/phenomenal_bridge_gate_result.json",
+      "manifest": "phenomenal_bridge/phenomenal_bridge_manifest.json",
+      "campaign_summary": "phenomenal_bridge/phenomenal_bridge_campaign_summary.json",
+      "candidate_projection": "phenomenal_bridge/phenomenal_bridge_candidate_projection.json",
+      "verification_matrix": "phenomenal_bridge/phenomenal_bridge_verification_matrix.json",
+      "readiness_gate": "phenomenal_bridge/phenomenal_bridge_readiness_gate.json"
+    },
+    "status": {
+      "implemented": true,
+      "internally_supported": true,
+      "framework_internal_only": true,
+      "not_externally_validated": true,
+      "support_class": "bridge_internal_admissible",
+      "readiness_class": "bridge_internal_audit_ready",
+      "paper9_final_hardening_status": "not_ready_for_paper9_final_hardening"
+    },
+    "interpretation_boundary": "Framework-internal bridge integration only; candidate inclusion is bounded and does not imply external validation, human equivalence, phenomenality proof, metaphysical closure, or claim-facing authorization."
+  },
   "freeze_baseline": {
     "documentation": "ecosystem/docs/ECOSYSTEM_FREEZE_BASELINE.md",
     "release_notes": "ecosystem/docs/ECOSYSTEM_RELEASE_NOTES.md",
@@ -132,7 +167,13 @@
     "required_open_gap_count": 0,
     "required_repo_state": "clean_and_pushed_for_both_repositories"
   },
-  "open_gaps": [],
+  "open_gaps": [
+    {
+      "id": "system.repo_not_clean",
+      "classification": "blocking_gap",
+      "affects_internal_release_candidate": true
+    }
+  ],
   "allowed_internal_use": [
     "repo-local operational verification",
     "repo-local canonical review",
@@ -143,13 +184,16 @@
     "runtime outputs validate the corpus",
     "canonical freeze validates the runtime",
     "claim registry closes the claims",
-    "internal release candidate equals public claim-safe release"
+    "internal release candidate equals public claim-safe release",
+    "bridge candidate projection equals phenomenality proof",
+    "bridge gate pass equals external validation"
   ],
   "interpretation_boundary": "Internal ecosystem release candidate only; cross-repo coordination layer, not external validation, not theory closure, not public release.",
   "non_claim_restrictions": [
     "Do not read this bundle as framework validation.",
     "Do not read operational readiness as theoretical confirmation.",
     "Do not read the canonical freeze as runtime proof.",
+    "Do not read bounded bridge artifacts as phenomenality proof or human equivalence evidence.",
     "Do not read implementation-linked claims as confirmatory claims."
   ]
 }

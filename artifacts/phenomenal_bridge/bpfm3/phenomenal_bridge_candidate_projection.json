@@ -1,0 +1,113 @@
+{
+  "artifact_role": "phenomenal_bridge_candidate_projection",
+  "artifact_name": "phenomenal_bridge_candidate_projection.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "bridge_layer_id": "phenomenal_bridge_formal_layer.bpfm3",
+  "layer_version": "phenomenal_bridge_formal_layer.bpfm3.ecosystem.v1",
+  "runtime_status": "implemented_internal_bridge_ecosystem_hardening_in_bpfm3",
+  "support_class": "bridge_internal_admissible",
+  "readiness_class": "bridge_internal_audit_ready",
+  "condition_summary_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_condition_summary.json",
+  "batch_summary_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_batch_summary.json",
+  "campaign_summary_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_campaign_summary.json",
+  "verification_matrix_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_verification_matrix.json",
+  "candidate_inclusion_status": {
+    "implemented": true,
+    "bounded_internal_only": true,
+    "support_class_bounded": true,
+    "not_external_validation": true
+  },
+  "sample_size_status": "single_batch_single_condition_single_run",
+  "surface_status": {
+    "internal_release_bundle_surface": {
+      "pass": true,
+      "failures": []
+    },
+    "ecosystem_candidate_surface": {
+      "pass": true,
+      "failures": []
+    },
+    "audit_facing_package_surface": {
+      "pass": true,
+      "failures": []
+    }
+  },
+  "invalidation_reasons": [],
+  "warnings": [
+    "single_run_condition_summary_only",
+    "not_statistically_replicated",
+    "single_condition_single_run_batch_summary",
+    "single_batch_campaign_summary_only",
+    "bridge_campaign_not_yet_replicated"
+  ],
+  "blocked_inferences": [
+    "No external validation inference.",
+    "No human phenomenal equivalence inference.",
+    "No phenomenality-proven inference.",
+    "No candidate-to-public-claim shortcut."
+  ],
+  "baseline_refs": {
+    "qicn_system_head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
+    "qicn_release_head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+    "protocol_ref": "docs/phenomenal_bridge_protocol.v1.json",
+    "thresholds_ref": "docs/phenomenal_bridge_thresholds.v1.json",
+    "rival_family_ref": "docs/phenomenal_bridge_rival_family.v1.json",
+    "surface_policy_ref": "docs/phenomenal_bridge_surface_policy.v1.json"
+  },
+  "interpretation_boundary": "Framework-internal only; bridge candidate projection records bounded inclusion for the internal ecosystem candidate, not external validation, not public proof, not phenomenality proof, and not human equivalence.",
+  "provenance": {
+    "generated_at": "2026-03-29T22:06:10.661Z",
+    "current_lineage": {
+      "layer_version": "phenomenal_bridge_formal_layer.bpfm3.ecosystem.v1",
+      "estimator_version": "phenomenal_bridge_ecosystem_integrator.bpfm3.v1",
+      "protocol": {
+        "ref": "docs/phenomenal_bridge_protocol.v1.json",
+        "sha256": "154bb0bf10002b98c8351d366549a439278d6378170cc514292509f874f16bb3"
+      },
+      "thresholds": {
+        "ref": "docs/phenomenal_bridge_thresholds.v1.json",
+        "sha256": "7564e212b00c267c888fa45aa432c4676b8caefaee3d515bb6bff1839b7218bc"
+      },
+      "rival_family": {
+        "ref": "docs/phenomenal_bridge_rival_family.v1.json",
+        "sha256": "7b935da20cc9f5c17d95e910429435ac6cf430b4a97c2cf39f91855ee8f06aeb"
+      },
+      "surface_policy": {
+        "ref": "docs/phenomenal_bridge_surface_policy.v1.json",
+        "sha256": "52548005cce92c32402737d52d5ad37ab64bae610b0c5675c4bd31a65d6b41d4"
+      },
+      "artifact_schema": {
+        "ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
+        "sha256": "cd724ff1cc241ce47627cc84a38d31f79f0aecd032f847bf718e669763b615d8"
+      },
+      "root_schema_hashes": {
+        "phenomenal_bridge_manifest.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_manifest.v1.json",
+          "sha256": "bdd647ee900bb2e0440d79818523d41378f0964fe53e812f4b47718d4939707c"
+        },
+        "phenomenal_bridge_projection.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_projection.v1.json",
+          "sha256": "7bc4e7f3f9e084f3c27a66d7a6cd28a5156ee930c99450419a582d46825b4660"
+        },
+        "phenomenal_bridge_gate_result.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_gate_result.v1.json",
+          "sha256": "01deb3ef3c1d15ca827d25f630b7a27e39507777c815fdb4f29b3c2a1c4acb35"
+        }
+      },
+      "qicn_system": {
+        "branch": "main",
+        "head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
+        "upstream": "origin/main"
+      },
+      "qicn_release": {
+        "branch": "main",
+        "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+        "upstream": "origin/main"
+      }
+    },
+    "gate_result_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_gate_result.json",
+    "manifest_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_manifest.json"
+  },
+  "schema_ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_candidate_projection.v1.json"
+}

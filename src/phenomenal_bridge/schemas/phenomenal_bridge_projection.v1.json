@@ -4,31 +4,66 @@
   "type": "object",
   "required": [
     "artifact_role",
+    "artifact_name",
     "artifact_version",
     "schema_version",
+    "bridge_layer_id",
     "layer_version",
+    "estimator_version",
+    "implementation_status",
     "bridge_status",
     "run_id",
-    "predicate_estimates",
+    "coordinate_estimates",
+    "bridge_functional",
+    "bridge_gate_preview",
+    "bridge_intervention_status_summary",
+    "bridge_reducibility_status_summary",
     "warnings",
-    "implementation_status",
+    "boundary_flags",
+    "allowed_surfaces",
+    "blocked_surfaces",
     "interpretation_boundary",
     "provenance",
     "schema_ref"
   ],
   "properties": {
     "artifact_role": { "const": "phenomenal_bridge_projection" },
+    "artifact_name": { "const": "phenomenal_bridge_projection.json" },
     "artifact_version": { "type": "string" },
     "schema_version": { "type": "string" },
+    "bridge_layer_id": { "type": "string" },
     "layer_version": { "type": "string" },
+    "estimator_version": { "type": "string" },
+    "implementation_status": { "type": "string" },
     "bridge_status": { "type": "string" },
     "run_id": { "type": "string" },
-    "predicate_estimates": { "type": "object" },
+    "coordinate_estimates": { "type": "object" },
+    "coordinate_details": { "type": "object" },
+    "bridge_functional": { "type": "object" },
+    "bridge_gate_preview": { "type": "object" },
+    "bridge_intervention_status_summary": { "type": "object" },
+    "bridge_reducibility_status_summary": { "type": "object" },
+    "weakness_markers": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "uncertainty_markers": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "warnings": {
       "type": "array",
       "items": { "type": "string" }
     },
-    "implementation_status": { "type": "string" },
+    "boundary_flags": { "type": "object" },
+    "allowed_surfaces": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "blocked_surfaces": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "interpretation_boundary": { "type": "string" },
     "provenance": { "type": "object" },
     "schema_ref": { "type": "string" }

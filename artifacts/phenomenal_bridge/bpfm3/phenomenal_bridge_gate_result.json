@@ -1,0 +1,321 @@
+{
+  "artifact_role": "phenomenal_bridge_gate_result",
+  "artifact_name": "phenomenal_bridge_gate_result.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "bridge_layer_id": "phenomenal_bridge_formal_layer.bpfm3",
+  "layer_version": "phenomenal_bridge_formal_layer.bpfm3.root.v1",
+  "estimator_version": "phenomenal_bridge_root_evaluator.bpfm3.v1",
+  "implementation_status": "bpfm3_root_bridge_evaluation_implemented",
+  "bridge_status": "framework_internal_bridge_gate",
+  "run_id": "bpfm3_bridge_root_baseline",
+  "gate_inputs": {
+    "Pi_D": 0.640223792348,
+    "Pi_V": 0.608886401395,
+    "Pi_W": 0.625981126104,
+    "Pi_A": 0.278102351528,
+    "Pi_E": 0.34755,
+    "Pi_T": 0.637052211111,
+    "R_b": 0.884396830768,
+    "Delta_b": 0.859799920297
+  },
+  "threshold_values": {
+    "coordinate_thresholds": {
+      "Pi_D": 0.55,
+      "Pi_V": 0.55,
+      "Pi_W": 0.55,
+      "Pi_A": 0.24,
+      "Pi_E": 0.3,
+      "Pi_T": 0.55,
+      "R_b": 0.65,
+      "Delta_b": 0.7
+    },
+    "global_thresholds": {
+      "Phi_bpf": 0.52,
+      "Gamma_bpf": 0.24
+    },
+    "strong_support_thresholds": {
+      "Gamma_bpf": 0.32,
+      "Phi_bpf": 0.62,
+      "minimum_condition_runs": 2,
+      "minimum_batch_conditions": 2,
+      "minimum_campaign_batches": 2
+    }
+  },
+  "local_threshold_results": {
+    "Pi_D": {
+      "threshold": 0.55,
+      "observed": 0.640223792348,
+      "pass": true
+    },
+    "Pi_V": {
+      "threshold": 0.55,
+      "observed": 0.608886401395,
+      "pass": true
+    },
+    "Pi_W": {
+      "threshold": 0.55,
+      "observed": 0.625981126104,
+      "pass": true
+    },
+    "Pi_A": {
+      "threshold": 0.24,
+      "observed": 0.278102351528,
+      "pass": true
+    },
+    "Pi_E": {
+      "threshold": 0.3,
+      "observed": 0.34755,
+      "pass": true
+    },
+    "Pi_T": {
+      "threshold": 0.55,
+      "observed": 0.637052211111,
+      "pass": true
+    },
+    "R_b": {
+      "threshold": 0.65,
+      "observed": 0.884396830768,
+      "pass": true
+    },
+    "Delta_b": {
+      "threshold": 0.7,
+      "observed": 0.859799920297,
+      "pass": true
+    }
+  },
+  "global_threshold_results": {
+    "Phi_bpf": {
+      "threshold": 0.52,
+      "observed": 0.598104406341,
+      "pass": true
+    },
+    "Gamma_bpf": {
+      "threshold": 0.24,
+      "observed": 0.278102351528,
+      "pass": true
+    }
+  },
+  "gate_status": "pass",
+  "gate_definition": {
+    "symbol": "Gamma_bpf",
+    "non_compensatory": true,
+    "functional_is_not_gate": true,
+    "hard_requirements": [
+      "all_coordinate_thresholds_pass",
+      "gamma_threshold_pass",
+      "phi_threshold_pass",
+      "reducibility_comparison_supported",
+      "intervention_profile_supported",
+      "no_lineage_invalidation",
+      "no_drift_invalidation"
+    ]
+  },
+  "classification": "bridge_internal_admissible",
+  "invalidation_reasons": [],
+  "drift_status": {
+    "compared": true,
+    "exceeded": [],
+    "invalidated": false
+  },
+  "lineage_status": {
+    "expected_lineage": {
+      "layer_version": "phenomenal_bridge_formal_layer.bpfm3.root.v1",
+      "estimator_version": "phenomenal_bridge_root_evaluator.bpfm3.v1",
+      "protocol": {
+        "ref": "docs/phenomenal_bridge_protocol.v1.json",
+        "sha256": "154bb0bf10002b98c8351d366549a439278d6378170cc514292509f874f16bb3"
+      },
+      "thresholds": {
+        "ref": "docs/phenomenal_bridge_thresholds.v1.json",
+        "sha256": "7564e212b00c267c888fa45aa432c4676b8caefaee3d515bb6bff1839b7218bc"
+      },
+      "rival_family": {
+        "ref": "docs/phenomenal_bridge_rival_family.v1.json",
+        "sha256": "7b935da20cc9f5c17d95e910429435ac6cf430b4a97c2cf39f91855ee8f06aeb"
+      },
+      "surface_policy": {
+        "ref": "docs/phenomenal_bridge_surface_policy.v1.json",
+        "sha256": "52548005cce92c32402737d52d5ad37ab64bae610b0c5675c4bd31a65d6b41d4"
+      },
+      "artifact_schema": {
+        "ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
+        "sha256": "cd724ff1cc241ce47627cc84a38d31f79f0aecd032f847bf718e669763b615d8"
+      },
+      "root_schema_hashes": {
+        "phenomenal_bridge_manifest.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_manifest.v1.json",
+          "sha256": "bdd647ee900bb2e0440d79818523d41378f0964fe53e812f4b47718d4939707c"
+        },
+        "phenomenal_bridge_projection.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_projection.v1.json",
+          "sha256": "7bc4e7f3f9e084f3c27a66d7a6cd28a5156ee930c99450419a582d46825b4660"
+        },
+        "phenomenal_bridge_gate_result.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_gate_result.v1.json",
+          "sha256": "01deb3ef3c1d15ca827d25f630b7a27e39507777c815fdb4f29b3c2a1c4acb35"
+        }
+      },
+      "qicn_system": {
+        "branch": "main",
+        "head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
+        "upstream": null
+      },
+      "qicn_release": {
+        "branch": "main",
+        "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+        "upstream": null
+      }
+    },
+    "current_lineage": {
+      "layer_version": "phenomenal_bridge_formal_layer.bpfm3.root.v1",
+      "estimator_version": "phenomenal_bridge_root_evaluator.bpfm3.v1",
+      "protocol": {
+        "ref": "docs/phenomenal_bridge_protocol.v1.json",
+        "sha256": "154bb0bf10002b98c8351d366549a439278d6378170cc514292509f874f16bb3"
+      },
+      "thresholds": {
+        "ref": "docs/phenomenal_bridge_thresholds.v1.json",
+        "sha256": "7564e212b00c267c888fa45aa432c4676b8caefaee3d515bb6bff1839b7218bc"
+      },
+      "rival_family": {
+        "ref": "docs/phenomenal_bridge_rival_family.v1.json",
+        "sha256": "7b935da20cc9f5c17d95e910429435ac6cf430b4a97c2cf39f91855ee8f06aeb"
+      },
+      "surface_policy": {
+        "ref": "docs/phenomenal_bridge_surface_policy.v1.json",
+        "sha256": "52548005cce92c32402737d52d5ad37ab64bae610b0c5675c4bd31a65d6b41d4"
+      },
+      "artifact_schema": {
+        "ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
+        "sha256": "cd724ff1cc241ce47627cc84a38d31f79f0aecd032f847bf718e669763b615d8"
+      },
+      "root_schema_hashes": {
+        "phenomenal_bridge_manifest.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_manifest.v1.json",
+          "sha256": "bdd647ee900bb2e0440d79818523d41378f0964fe53e812f4b47718d4939707c"
+        },
+        "phenomenal_bridge_projection.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_projection.v1.json",
+          "sha256": "7bc4e7f3f9e084f3c27a66d7a6cd28a5156ee930c99450419a582d46825b4660"
+        },
+        "phenomenal_bridge_gate_result.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_gate_result.v1.json",
+          "sha256": "01deb3ef3c1d15ca827d25f630b7a27e39507777c815fdb4f29b3c2a1c4acb35"
+        }
+      },
+      "qicn_system": {
+        "branch": "main",
+        "head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
+        "upstream": null
+      },
+      "qicn_release": {
+        "branch": "main",
+        "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+        "upstream": null
+      }
+    },
+    "mismatch_reasons": [],
+    "invalidated": false
+  },
+  "comparator_status": {
+    "comparison_supported": true,
+    "classification": "bridge_partial_irreducibility_support",
+    "normalized_support": 0.884396830768
+  },
+  "intervention_status": {
+    "comparison_supported": true,
+    "status": "bridge_intervention_supported_pre_gate",
+    "normalized_support": 0.859799920297
+  },
+  "warnings": [
+    "no_live_ambiguity_state_detected",
+    "ownership_uncertainty_is_not_bridge_ambiguity",
+    "valuation_aliasing_does_not_count_as_ambiguity_bearing",
+    "embodied_closure_surface_uses_proxy_signals_only",
+    "no_explicit_body_world_boundary_trace_available",
+    "control_confounded_intervention_profile_present"
+  ],
+  "non_implications": [
+    "No external validation follows from this gate result.",
+    "No human phenomenal equivalence follows from this gate result.",
+    "No metaphysical closure follows from this gate result.",
+    "No candidate or audit inclusion may be read as public proof."
+  ],
+  "allowed_surfaces": [
+    "developer_inspection_surface",
+    "local_artifact_surface",
+    "local_report_surface",
+    "internal_release_bundle_surface",
+    "ecosystem_candidate_surface",
+    "audit_facing_package_surface"
+  ],
+  "blocked_surfaces": [
+    "controlled_statement_surface",
+    "external_claim_facing_surface"
+  ],
+  "interpretation_boundary": "Framework-internal only; root bridge gate result over implemented bridge reports, bridge intervention profile, and bridge reducibility report, not external validation, not human equivalence, not phenomenality proof, not metaphysical closure, and not sufficient for public claim promotion.",
+  "provenance": {
+    "generated_at": "2026-03-29T22:18:03.068Z",
+    "projection_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json",
+    "baseline_report_refs": {
+      "phenomenal_differentiation_report": "artifacts/phenomenal_bridge/bpf1/phenomenal_differentiation_report.json",
+      "valence_structure_report": "artifacts/phenomenal_bridge/bpf1/valence_structure_report.json",
+      "world_richness_report": "artifacts/phenomenal_bridge/bpf1/world_richness_report.json",
+      "ambiguity_bearing_report": "artifacts/phenomenal_bridge/bpf1/ambiguity_bearing_report.json",
+      "embodied_closure_report": "artifacts/phenomenal_bridge/bpf1/embodied_closure_report.json",
+      "temporal_lived_structure_report": "artifacts/phenomenal_bridge/bpf1/temporal_lived_structure_report.json"
+    },
+    "intervention_profile_ref": "artifacts/phenomenal_bridge/bpfm2/bridge_intervention_profile.json",
+    "reducibility_report_ref": "artifacts/phenomenal_bridge/bpfm2/bridge_reducibility_report.json",
+    "current_lineage": {
+      "layer_version": "phenomenal_bridge_formal_layer.bpfm3.root.v1",
+      "estimator_version": "phenomenal_bridge_root_evaluator.bpfm3.v1",
+      "protocol": {
+        "ref": "docs/phenomenal_bridge_protocol.v1.json",
+        "sha256": "154bb0bf10002b98c8351d366549a439278d6378170cc514292509f874f16bb3"
+      },
+      "thresholds": {
+        "ref": "docs/phenomenal_bridge_thresholds.v1.json",
+        "sha256": "7564e212b00c267c888fa45aa432c4676b8caefaee3d515bb6bff1839b7218bc"
+      },
+      "rival_family": {
+        "ref": "docs/phenomenal_bridge_rival_family.v1.json",
+        "sha256": "7b935da20cc9f5c17d95e910429435ac6cf430b4a97c2cf39f91855ee8f06aeb"
+      },
+      "surface_policy": {
+        "ref": "docs/phenomenal_bridge_surface_policy.v1.json",
+        "sha256": "52548005cce92c32402737d52d5ad37ab64bae610b0c5675c4bd31a65d6b41d4"
+      },
+      "artifact_schema": {
+        "ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
+        "sha256": "cd724ff1cc241ce47627cc84a38d31f79f0aecd032f847bf718e669763b615d8"
+      },
+      "root_schema_hashes": {
+        "phenomenal_bridge_manifest.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_manifest.v1.json",
+          "sha256": "bdd647ee900bb2e0440d79818523d41378f0964fe53e812f4b47718d4939707c"
+        },
+        "phenomenal_bridge_projection.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_projection.v1.json",
+          "sha256": "7bc4e7f3f9e084f3c27a66d7a6cd28a5156ee930c99450419a582d46825b4660"
+        },
+        "phenomenal_bridge_gate_result.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_gate_result.v1.json",
+          "sha256": "01deb3ef3c1d15ca827d25f630b7a27e39507777c815fdb4f29b3c2a1c4acb35"
+        }
+      },
+      "qicn_system": {
+        "branch": "main",
+        "head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
+        "upstream": null
+      },
+      "qicn_release": {
+        "branch": "main",
+        "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+        "upstream": null
+      }
+    }
+  },
+  "schema_ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_gate_result.v1.json"
+}

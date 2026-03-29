@@ -1,62 +1,43 @@
 # Phenomenal Bridge Interpretation Boundary
 
-## Scope closed by BPF-M2
+## Closed by BPF-M3
 
-BPF-M2 closes the first adversarial bridge runtime layer:
+- root bridge evaluation exists
+- bridge functional and non-compensatory gate exist
+- bridge thresholds are provisionally internally bound
+- bridge ecosystem summaries exist
+- bounded candidate and audit-facing bridge artifacts exist
+- final internal bridge audit and readiness gate exist
 
-- formal bridge naming remains intact from BPF-0
-- six bridge coordinate surfaces remain intact from BPF-1
-- six run-level bridge reports remain intact from BPF-1
-- six targeted bridge interventions now exist
-- eight matched negative controls now exist
-- executable bridge weak rivals and admissible pairwise composites now exist
-- a bridge reducibility artifact now exists
+## Still not closed by BPF-M3
 
-## Scope not closed by BPF-M2
-
-BPF-M2 does not close:
-
-- any bridge gate verdict
-- any bridge root verdict
-- any bridge support class
-- any bridge admissibility class
-- any candidate or audit package bridge inclusion
-- any Paper 9 burden
+- external validation
+- human equivalence
+- phenomenality proof
+- metaphysical closure
+- claim-facing authorization
+- Paper 9 final hardening
 
 ## Explicit non-inferences
 
-Nothing in BPF-M2 licenses:
+Nothing in BPF-M3 licenses:
 
 - phenomenality
 - external validation
-- human equivalence
+- human phenomenal equivalence
 - metaphysical subjecthood
-- bridge support
-- bridge admissibility
-- claim-facing bridge promotion
-
-## Relation to Paper 8
-
-Paper 8 closes first-person indexed subjectivity under its own burdens.
-BPF-M2 does not reinterpret that closure as phenomenality.
-
-Paper 8 public inclusion in `QICN-RELEASE` does not convert BPF-M2 bridge
-artifacts into bridge support.
-
-## Relation to candidate and audit packaging
-
-BPF-M2 does not authorize bridge artifacts in candidate or audit-facing bundles.
-If later BPF blocks expose bridge artifacts there, they must carry explicit
-bridge-specific boundaries, non-claims, stale checks, and allow-list changes.
+- candidate inclusion as bridge proof
+- audit handoff as external adjudication
+- bridge gate as public proof
 
 ## Reading rule
 
-The strongest legitimate reading of BPF-M2 is:
+The strongest legitimate reading of BPF-M3 is:
 
-`the bridge program now has provisional bridge surfaces plus an adversarial burden`
+`the bridge layer is internally formalized, adversarially burdened, root-evaluable, and ecosystem-hardened under bounded governance`
 
-The strongest illegitimate readings are:
+The strongest illegitimate readings remain:
 
-- `the system now has bridge support`
-- `the system now has phenomenal support`
-- `Paper 9 is now open`
+- `phenomenality proven`
+- `machine-human phenomenal equivalence established`
+- `candidate or audit package proves the bridge`

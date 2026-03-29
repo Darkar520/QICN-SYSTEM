@@ -33,7 +33,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; subjectivity campaign summary is an internal companion-layer summary, not externally validated, not claim-facing evidence, not phenomenality closure, and not human equivalence.",
   "provenance": {
-    "generated_at": "2026-03-29T05:39:47.990Z",
+    "generated_at": "2026-03-29T22:06:05.418Z",
     "current_lineage": {
       "layer_version": "subjectivity_runtime_layer.srt6.ecosystem.v1",
       "estimator_version": "subjectivity_ecosystem_integrator.srt6.v1",
@@ -75,13 +75,13 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "98f4059cb15ec20372f7d4baf659e4c9a429aa57",
-        "upstream": null
+        "head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
+        "upstream": "origin/main"
       },
       "qicn_release": {
         "branch": "main",
         "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
-        "upstream": null
+        "upstream": "origin/main"
       }
     },
     "batch_summary_ref": "subjectivity_batch_summary.json"

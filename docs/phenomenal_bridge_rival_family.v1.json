@@ -1,8 +1,8 @@
 {
   "artifact_role": "phenomenal_bridge_rival_family_registry",
   "schema_version": "1.0.0",
-  "layer_id": "phenomenal_bridge_formal_layer.bpfm2",
-  "comparator_implementation_status": "runtime_bridge_comparator_implemented",
+  "layer_id": "phenomenal_bridge_formal_layer.bpfm3",
+  "comparator_implementation_status": "runtime_bridge_comparator_implemented_and_consumed_by_root_gate",
   "relationship_to_paper8_weak_family": "Bridge rivals are new and target bridge predicates. They are not aliases for the Paper 8 weak family.",
   "rivals": [
     {

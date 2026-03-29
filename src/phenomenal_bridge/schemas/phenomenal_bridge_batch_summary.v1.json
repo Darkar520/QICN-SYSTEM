@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "phenomenal_bridge_batch_summary.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "bridge_layer_id",
+    "layer_version",
+    "runtime_status",
+    "batch_id",
+    "condition_count",
+    "comparability_status",
+    "aggregate_support",
+    "support_class_tendency",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ]
+}

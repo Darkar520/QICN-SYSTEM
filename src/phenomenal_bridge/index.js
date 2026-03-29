@@ -84,6 +84,21 @@ export {
   createPhenomenalBridgeReducibilityComparator
 } from './PhenomenalBridgeReducibilityComparator.js';
 
+export {
+  PhenomenalBridgeGateEvaluator,
+  createPhenomenalBridgeGateEvaluator
+} from './PhenomenalBridgeGateEvaluator.js';
+
+export {
+  PhenomenalBridgeEcosystemIntegrator,
+  createPhenomenalBridgeEcosystemIntegrator
+} from './PhenomenalBridgeEcosystemIntegrator.js';
+
+export {
+  PhenomenalBridgeFinalAuditor,
+  createPhenomenalBridgeFinalAuditor
+} from './PhenomenalBridgeFinalAuditor.js';
+
 export { mapPhenomenalDifferentiation } from './PhenomenalDifferentiationMapper.js';
 export { mapValenceStructure } from './ValenceStructureMapper.js';
 export { mapWorldRichness } from './WorldRichnessMapper.js';

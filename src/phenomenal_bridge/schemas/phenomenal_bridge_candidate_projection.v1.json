@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "phenomenal_bridge_candidate_projection.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "bridge_layer_id",
+    "layer_version",
+    "runtime_status",
+    "support_class",
+    "readiness_class",
+    "candidate_inclusion_status",
+    "surface_status",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ]
+}

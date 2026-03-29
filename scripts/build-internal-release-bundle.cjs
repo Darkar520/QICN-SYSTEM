@@ -3,6 +3,7 @@ const path = require('path');
 const { verifyOperationalReadiness } = require('./verify-operational-readiness.cjs');
 const { verifyArtifacts } = require('./verify-artifacts.cjs');
 const { buildSubjectivityEcosystem } = require('./build-subjectivity-ecosystem.cjs');
+const { buildPhenomenalBridgeEcosystem } = require('./build-phenomenal-bridge-ecosystem.cjs');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
@@ -89,6 +90,10 @@ async function buildInternalReleaseBundle({
   if (!subjectivityBuild.ok) {
     throw new Error('Subjectivity ecosystem build failed before internal release bundle build.');
   }
+  const bridgeBuild = await buildPhenomenalBridgeEcosystem();
+  if (!bridgeBuild.ok) {
+    throw new Error('Phenomenal bridge ecosystem build failed before internal release bundle build.');
+  }
 
   const { exportOutputForSurface, buildLocalReportForSurface } = await import('../src/experiments/OutputSurfaceEnforcer.js');
 
@@ -165,6 +170,50 @@ async function buildInternalReleaseBundle({
     );
   }
 
+  const bridgeDocs = [
+    'docs/PHENOMENAL_BRIDGE_PROTOCOL.md',
+    'docs/PHENOMENAL_BRIDGE_INTERPRETATION_BOUNDARY.md',
+    'docs/PHENOMENAL_BRIDGE_SURFACE_POLICY.md',
+    'docs/PHENOMENAL_BRIDGE_IMPLEMENTATION_PLAN.md',
+    'docs/PHENOMENAL_BRIDGE_NONCLAIMS.md',
+    'docs/PHENOMENAL_BRIDGE_FINAL_INTERNAL_AUDIT.md',
+    'docs/PHENOMENAL_BRIDGE_READINESS_GATE.md'
+  ];
+  const bridgeManifests = [
+    'docs/phenomenal_bridge_protocol.v1.json',
+    'docs/phenomenal_bridge_thresholds.v1.json',
+    'docs/phenomenal_bridge_rival_family.v1.json',
+    'docs/phenomenal_bridge_surface_policy.v1.json',
+    'docs/phenomenal_bridge_artifact_schema.v1.json'
+  ];
+  const bridgeArtifacts = [
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_gate_result.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_manifest.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_condition_summary.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_batch_summary.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_campaign_summary.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_candidate_projection.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_audit_handoff_summary.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_verification_matrix.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_final_internal_audit.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_readiness_gate.json'
+  ];
+  const bridgeBundleDir = path.join(bundleRoot, 'phenomenal_bridge');
+  const bridgeDocsDir = path.join(bridgeBundleDir, 'docs');
+  const bridgeManifestDir = path.join(bridgeBundleDir, 'manifests');
+  fs.mkdirSync(bridgeDocsDir, { recursive: true });
+  fs.mkdirSync(bridgeManifestDir, { recursive: true });
+  for (const relPath of bridgeDocs) {
+    fs.copyFileSync(path.join(repoRoot, relPath), path.join(bridgeDocsDir, path.basename(relPath)));
+  }
+  for (const relPath of bridgeManifests) {
+    fs.copyFileSync(path.join(repoRoot, relPath), path.join(bridgeManifestDir, path.basename(relPath)));
+  }
+  for (const relPath of bridgeArtifacts) {
+    fs.copyFileSync(path.join(repoRoot, relPath), path.join(bridgeBundleDir, path.basename(relPath)));
+  }
+
   const manifest = {
     artifact_role: 'release_bundle_manifest',
     bundle_id: bundleId,
@@ -195,13 +244,31 @@ async function buildInternalReleaseBundle({
       interpretation_boundary:
         'Subjectivity bundle is framework-internal only; internal release packaging of gated and ecosystem-hardened artifacts, not external validation, not claim-facing evidence.'
     },
-    copied_docs: docsToCopy.map((relPath) => `docs/${path.basename(relPath)}`),
+    phenomenal_bridge_bundle: {
+      support_class: bridgeBuild.support_class,
+      readiness_state: bridgeBuild.readiness_state,
+      paper9_final_hardening_status: bridgeBuild.paper9_final_hardening_status,
+      verification_status: bridgeBuild.verification_status,
+      included_outputs: bridgeArtifacts.map((relPath) => ({
+        artifact: path.basename(relPath),
+        path: toBundleRelative(path.join(bridgeBundleDir, path.basename(relPath))),
+        mode: 'internal_release_bundle_surface'
+      })),
+      interpretation_boundary:
+        'Phenomenal bridge bundle is framework-internal only; bounded internal bridge evaluation packaging, not external validation, not human equivalence, not phenomenality proof, and not claim-facing evidence.'
+    },
+    copied_docs: [
+      ...docsToCopy.map((relPath) => `docs/${path.basename(relPath)}`),
+      ...bridgeDocs.map((relPath) => `phenomenal_bridge/docs/${path.basename(relPath)}`),
+      ...bridgeManifests.map((relPath) => `phenomenal_bridge/manifests/${path.basename(relPath)}`)
+    ],
     readiness_manifest: 'operational_readiness_manifest.json',
     artifact_manifest: 'artifact_manifest.json',
     interpretation_boundary: 'Internal release bundle only; bounded local descriptive package, not public claim-safe release, not external validation, not scientific closure.',
     non_claim_restrictions: [
       'Do not treat this bundle as external validation.',
       'Do not treat this bundle as theory confirmation.',
+      'Do not treat bounded bridge artifacts as phenomenality proof or human equivalence evidence.',
       'Do not promote excluded outputs into claim-facing material.',
       'This bundle is internal operational packaging only.'
     ]

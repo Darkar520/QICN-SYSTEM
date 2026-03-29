@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "phenomenal_bridge_readiness_gate.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "bridge_layer_id",
+    "layer_version",
+    "runtime_status",
+    "support_class",
+    "bridge_ecosystem_state",
+    "bridge_readiness_state",
+    "paper9_final_hardening_status",
+    "external_validation_status",
+    "human_comparator_status",
+    "metaphysical_closure_status",
+    "blocking_reasons",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ]
+}

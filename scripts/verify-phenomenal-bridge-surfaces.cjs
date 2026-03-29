@@ -36,13 +36,7 @@ const REQUIRED_REPORTS = [
   'embodied_closure_report.json',
   'temporal_lived_structure_report.json'
 ];
-const FORBIDDEN_ARTIFACT_NAMES = [
-  'phenomenal_bridge_projection.json',
-  'phenomenal_bridge_gate_result.json',
-  'phenomenal_bridge_manifest.json',
-  'phenomenal_bridge_candidate_projection.json',
-  'phenomenal_bridge_audit_handoff_summary.json'
-];
+const LOW_LEVEL_NAMES = new Set(REQUIRED_REPORTS);
 const REQUIRED_BOUNDARY_FLAGS = [
   'framework_internal_only',
   'provisional_bridge_estimator',
@@ -54,8 +48,6 @@ const LOCAL_PATH_PATTERN =
 const BANNED_CLOSURE_PATTERNS = [
   /phenomenality achieved/i,
   /bridge support achieved/i,
-  /bridge_internal_admissible/i,
-  /bridge_internal_strong_support/i,
   /phenomenal support/i,
   /paper ?9 authorized/i
 ];
@@ -65,7 +57,6 @@ const readJson = (relativePath) => JSON.parse(fs.readFileSync(path.join(ROOT, re
 const assert = (condition, message) => {
   if (!condition) throw new Error(message);
 };
-const relative = (fullPath) => path.relative(ROOT, fullPath).replace(/\\/g, '/');
 
 const collectFiles = (basePath) => {
   if (!fs.existsSync(basePath)) return [];
@@ -182,23 +173,13 @@ const verifyReport = (report, expectedFileName) => {
   ensureNoPathLeaksOrOverclaims(report, expectedFileName);
 };
 
-const verifyNoPrematureArtifacts = () => {
-  const bridgeFiles = collectFiles(path.join(ROOT, 'artifacts', 'phenomenal_bridge')).map(relative);
-  const forbidden = bridgeFiles.filter((filePath) =>
-    FORBIDDEN_ARTIFACT_NAMES.some((name) => filePath.endsWith(name))
+const verifyNoLowLevelLeakage = () => {
+  const leaked = [...collectFiles(CANDIDATE_DIR), ...collectFiles(AUDIT_DIR)]
+    .filter((filePath) => LOW_LEVEL_NAMES.has(path.basename(filePath)));
+  assert(
+    leaked.length === 0,
+    `Low-level bridge reports leaked into candidate/audit surfaces: ${leaked.join(', ')}`
   );
-  assert(forbidden.length === 0, `Found forbidden bridge artifacts: ${forbidden.join(', ')}`);
-};
-
-const verifyNoBridgeBundleLeakage = () => {
-  const candidateFiles = collectFiles(CANDIDATE_DIR).map(relative);
-  const auditFiles = collectFiles(AUDIT_DIR).map(relative);
-  const leaked = [...candidateFiles, ...auditFiles].filter((filePath) =>
-    /phenomenal_bridge|phenomenal_differentiation_report|valence_structure_report|world_richness_report|ambiguity_bearing_report|embodied_closure_report|temporal_lived_structure_report/i.test(
-      filePath
-    )
-  );
-  assert(leaked.length === 0, `Bridge artifacts leaked into candidate/audit surfaces: ${leaked.join(', ')}`);
 };
 
 const verifySchemaRegistry = () => {
@@ -219,13 +200,8 @@ const verifyRuntimeImport = async () => {
   const description = bridge.describePhenomenalBridgeLayer();
   assert(description.provisional_runtime_surfaces === true, 'Layer must expose provisional runtime surfaces');
   assert(description.not_bridge_support === true, 'Layer must remain non-supporting');
-  assert(description.not_runtime_bridge_gate === true, 'Layer must remain pre-gate');
+  assert(description.not_phenomenality_support === true, 'Layer must remain non-phenomenal');
   assert(description.framework_internal_only === true, 'Layer must remain framework-internal');
-  assert(description.not_runtime_bridge_root_verdict === true, 'Layer must remain pre-root-verdict');
-  assert(
-    description.not_runtime_bridge_ecosystem_integration === true,
-    'Layer must remain pre-ecosystem-integration'
-  );
 };
 
 const writeAndVerifyRealReports = async () => {
@@ -235,7 +211,7 @@ const writeAndVerifyRealReports = async () => {
   REQUIRED_REPORTS.forEach((fileName) =>
     assert(fs.existsSync(path.join(BRIDGE_DIR, fileName)), `Missing emitted bridge report ${fileName}`)
   );
-  Object.entries(result.outputs).forEach(([, filePath]) => {
+  Object.values(result.outputs).forEach((filePath) => {
     const report = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     verifyReport(report, path.basename(filePath));
   });
@@ -246,7 +222,7 @@ const verifySyntheticEmission = async () => {
   const builder = bridge.createPhenomenalBridgeSurfaceBuilder();
   fs.rmSync(SYNTHETIC_DIR, { recursive: true, force: true });
   const result = builder.writeReports(makeSyntheticBundle(loadRealBundle()), SYNTHETIC_DIR);
-  Object.entries(result.outputs).forEach(([, filePath]) => {
+  Object.values(result.outputs).forEach((filePath) => {
     const report = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     verifyReport(report, path.basename(filePath));
   });
@@ -266,8 +242,7 @@ const main = async () => {
   await verifyRuntimeImport();
   await writeAndVerifyRealReports();
   await verifySyntheticEmission();
-  verifyNoPrematureArtifacts();
-  verifyNoBridgeBundleLeakage();
+  verifyNoLowLevelLeakage();
 
   console.log('PASS verify-phenomenal-bridge-surfaces');
 };

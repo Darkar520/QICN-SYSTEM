@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "phenomenal_bridge_final_internal_audit.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "bridge_layer_id",
+    "layer_version",
+    "runtime_status",
+    "audit_status",
+    "support_class",
+    "layer_integrity",
+    "coherence",
+    "actually_supported",
+    "still_open",
+    "stronger_claim_blockers",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ]
+}

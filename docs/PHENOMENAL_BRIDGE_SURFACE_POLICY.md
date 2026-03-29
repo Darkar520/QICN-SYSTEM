@@ -2,67 +2,45 @@
 
 ## Rule
 
-All BPF artifacts remain framework-internal only by default. BPF-M2 adds local
-run-level bridge reports, a bridge intervention profile, and a bridge
-reducibility report, but still not bridge support.
+All bridge artifacts remain framework-internal only. BPF-M3 opens bounded
+root and ecosystem artifacts to internal release, ecosystem candidate, and
+audit-facing package surfaces only where the artifact already carries explicit
+non-claims, bounded interpretation, and blocked claim-facing surfaces.
 
-## Allowed surfaces in BPF-M2
+## Still local-only
 
-- `developer_inspection_surface`
-- `local_artifact_surface`
-
-These surfaces may contain:
-
-- protocol docs
-- axiom registry
-- rival-family registry
-- threshold policy
-- artifact schema registry
-- scaffold metadata
-- BPF-1 run-level bridge reports
+- BPF-1 low-level bridge reports
 - BPF-M2 bridge intervention profile
 - BPF-M2 bridge reducibility report
 
-## Blocked even in BPF-M2
+## Bounded M3 surfaces
 
-- `local_report_surface`
-- `internal_release_bundle_surface`
-- `ecosystem_candidate_surface`
-- `audit_facing_package_surface`
+May appear on internal release bundle, ecosystem candidate, and audit-facing
+package surfaces:
+
+- `phenomenal_bridge_projection.json`
+- `phenomenal_bridge_gate_result.json`
+- `phenomenal_bridge_manifest.json`
+- `phenomenal_bridge_campaign_summary.json`
+- `phenomenal_bridge_candidate_projection.json`
+- `phenomenal_bridge_audit_handoff_summary.json`
+- `phenomenal_bridge_verification_matrix.json`
+- `phenomenal_bridge_readiness_gate.json`
+
+Only the internal release bundle may additionally include:
+
+- `phenomenal_bridge_condition_summary.json`
+- `phenomenal_bridge_batch_summary.json`
+- `phenomenal_bridge_final_internal_audit.json`
+
+## Always blocked
+
 - `controlled_statement_surface`
 - `external_claim_facing_surface`
 
-The local-report surface remains blocked at BPF-M2 because the bridge
-artifacts are still provisional, pre-gate, and easy to quote-mine out of
-context.
-
-## Conditionally allowed in later BPF blocks
-
-- `internal_release_bundle_surface`
-- `ecosystem_candidate_surface`
-- `audit_facing_package_surface`
-
-These stay blocked until later BPF blocks supply:
-
-- bridge-specific non-claims
-- bridge-specific stale and drift checks
-- bridge-specific allow-list updates
-- bridge-specific bundle semantics
-
 ## Prohibited inferences
 
-- candidate inclusion implies bridge support
-- audit handoff implies external adjudication
-- internal bridge report implies phenomenality
-- provisional bridge estimate implies bridge admissibility
-- bridge formalization implies Paper 9 legitimacy
-
-## Machine-governance rule
-
-Any bridge artifact that does not carry:
-
-- explicit non-claims
-- explicit interpretation boundary
-- explicit surface allow-list
-
-must be treated as blocked outside local internal surfaces.
+- root bridge gate implies public proof
+- candidate inclusion implies bridge proof
+- audit inclusion implies external validation
+- bridge_internal_admissible implies phenomenality

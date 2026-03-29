@@ -2,8 +2,8 @@
 
 ## Status
 
-- Candidate status: `PASS`
-- QICN-SYSTEM baseline: `main@be0dc7c6cb252e1aedc3412feeaa939216bf9d71`
+- Candidate status: `FAIL`
+- QICN-SYSTEM baseline: `main@5da8d718eeeaa408d3f1c504029f9a0b31676afa`
 - QICN-RELEASE repo baseline: `main@e4ce7bae5d86ad256ea2b70407b18b2b81645f8b`
 - QICN-RELEASE canonical freeze: `release-2026-03-01@2d7504be95ca33af5941e30abf7059dc2774edca`
 - QICN-RELEASE upstream pin status: `resolved`
@@ -19,6 +19,7 @@
 - ecosystem candidate governance
 - ecosystem freeze baseline and maintenance checklist
 - subjectivity runtime protocol, maintenance docs, machine manifests, and SRT-6 ecosystem summaries
+- phenomenal bridge protocol/manifests and bounded BPF-M3 candidate-facing artifacts
 - ecosystem verification matrix
 - ecosystem gap register
 
@@ -27,12 +28,13 @@
 - non-canonical corpus material under `release/_non_canonical/`
 - blocked claim-facing system outputs
 - primary SRT-1..4 subjectivity run artifacts that remain local-only
+- BPF-1 low-level bridge reports and BPF-M2 adversarial reports that remain local-only
 - raw runtime outputs as theory-validation material
 - unclassified or non-baseline materials outside the two repository baselines
 
 ## Residual gaps
 
-- none
+- `system.repo_not_clean` [blocking_gap]: Blocks internal ecosystem release candidate because QICN-SYSTEM is not clean.
 
 ## Maintenance
 

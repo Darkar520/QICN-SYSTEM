@@ -20,6 +20,16 @@ const REQUIRED_MODULES = [
   'src/phenomenal_bridge/PhenomenalBridgeReducibilityComparator.js'
 ];
 const REQUIRED_SCHEMA = 'src/phenomenal_bridge/schemas/bridge_reducibility_report.v1.json';
+const LOW_LEVEL_OR_ADVERSARIAL = new Set([
+  'phenomenal_differentiation_report.json',
+  'valence_structure_report.json',
+  'world_richness_report.json',
+  'ambiguity_bearing_report.json',
+  'embodied_closure_report.json',
+  'temporal_lived_structure_report.json',
+  'bridge_intervention_profile.json',
+  'bridge_reducibility_report.json'
+]);
 const ALLOWED_CLASSIFICATIONS = new Set([
   'bridge_comparison_unsupported',
   'bridge_weak_model_sufficient',
@@ -32,7 +42,6 @@ const LOCAL_PATH_PATTERN =
 const BANNED_PATTERNS = [
   /phenomenality achieved/i,
   /bridge support achieved/i,
-  /bridge_internal_admissible/i,
   /bridge_internal_strong_support/i,
   /paper ?9 authorized/i
 ];
@@ -59,11 +68,11 @@ const ensureNoLeakage = (payload, label) => {
   );
 };
 
-const ensureNoCandidateAuditLeakage = () => {
+const ensureNoLowLevelLeakage = () => {
   const leaked = [...collectFiles(CANDIDATE_DIR), ...collectFiles(AUDIT_DIR)].filter((filePath) =>
-    /phenomenal_bridge|bridge_intervention_profile|bridge_reducibility_report/i.test(filePath)
+    LOW_LEVEL_OR_ADVERSARIAL.has(path.basename(filePath))
   );
-  assert(leaked.length === 0, `Bridge artifacts leaked into candidate/audit surfaces: ${leaked.join(', ')}`);
+  assert(leaked.length === 0, `Low-level/adversarial bridge artifacts leaked into candidate/audit surfaces: ${leaked.join(', ')}`);
 };
 
 const verifyLoss = (loss, label) => {
@@ -113,18 +122,8 @@ const main = () => {
     assert(Object.prototype.hasOwnProperty.call(artifact, field), `Reducibility artifact missing ${field}`)
   );
 
-  assert(
-    artifact.artifact_role === 'bridge_reducibility_report',
-    'Unexpected reducibility artifact role'
-  );
-  assert(
-    artifact.bridge_layer_id === 'phenomenal_bridge_formal_layer.bpfm2',
-    'Reducibility artifact must bind to BPF-M2'
-  );
-  assert(
-    artifact.implementation_status === 'bpfm2_adversarial_pre_gate',
-    'Reducibility artifact must remain pre-gate'
-  );
+  assert(artifact.artifact_role === 'bridge_reducibility_report', 'Unexpected reducibility artifact role');
+  assert(artifact.bridge_layer_id === 'phenomenal_bridge_formal_layer.bpfm2', 'Reducibility artifact must bind to BPF-M2');
   assert(ALLOWED_CLASSIFICATIONS.has(artifact.classification), 'Unexpected reducibility classification');
   assert(
     artifact.boundary_flags.framework_internal_only === true
@@ -146,19 +145,12 @@ const main = () => {
   verifyLoss(artifact.strong_model_loss, 'strong_model_loss');
   verifyLoss(artifact.best_weak_rival.loss, 'best_weak_rival.loss');
   verifyLoss(artifact.best_bridge_composite.loss, 'best_bridge_composite.loss');
-
-  assert(
-    typeof artifact.bridge_irreducibility_margin === 'number',
-    'bridge_irreducibility_margin must be numeric'
-  );
+  assert(typeof artifact.bridge_irreducibility_margin === 'number', 'bridge_irreducibility_margin must be numeric');
   assert(
     artifact.implemented_loss_family.formula.includes('L_b(M)='),
     'Loss family formula must be explicit'
   );
-  assert(
-    artifact.implemented_rivals.length >= 7,
-    'Bridge reducibility artifact must expose the implemented rival family'
-  );
+  assert(artifact.implemented_rivals.length >= 7, 'Bridge reducibility artifact must expose the implemented rival family');
   assert(
     artifact.implemented_composite_scope.includes('pairwise'),
     'Composite scope must remain explicitly bounded'
@@ -166,7 +158,7 @@ const main = () => {
   ['gate_status', 'support_class', 'bridge_support', 'bridge_admissibility'].forEach((field) =>
     assert(!Object.prototype.hasOwnProperty.call(artifact, field), `Reducibility artifact must not expose ${field}`)
   );
-  ensureNoCandidateAuditLeakage();
+  ensureNoLowLevelLeakage();
   ensureNoLeakage(artifact, 'bridge_reducibility_report.json');
 
   console.log('PASS verify-phenomenal-bridge-reducibility');

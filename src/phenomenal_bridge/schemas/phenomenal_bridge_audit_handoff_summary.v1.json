@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "phenomenal_bridge_audit_handoff_summary.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "bridge_layer_id",
+    "layer_version",
+    "runtime_status",
+    "support_class",
+    "readiness_class",
+    "included_artifacts",
+    "excluded_artifacts",
+    "boundary_assertions",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ]
+}

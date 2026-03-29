@@ -39,12 +39,21 @@ const REQUIRED_CONTROLS = [
   'flat_damage_control',
   'report_style_shift_control'
 ];
+const LOW_LEVEL_OR_ADVERSARIAL = new Set([
+  'phenomenal_differentiation_report.json',
+  'valence_structure_report.json',
+  'world_richness_report.json',
+  'ambiguity_bearing_report.json',
+  'embodied_closure_report.json',
+  'temporal_lived_structure_report.json',
+  'bridge_intervention_profile.json',
+  'bridge_reducibility_report.json'
+]);
 const LOCAL_PATH_PATTERN =
   /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|TRADING 3\.0|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
 const BANNED_PATTERNS = [
   /phenomenality achieved/i,
   /bridge support achieved/i,
-  /bridge_internal_admissible/i,
   /phenomenal support/i,
   /paper ?9 authorized/i
 ];
@@ -71,11 +80,11 @@ const ensureNoLeakage = (payload, label) => {
   );
 };
 
-const ensureNoCandidateAuditLeakage = () => {
+const ensureNoLowLevelLeakage = () => {
   const leaked = [...collectFiles(CANDIDATE_DIR), ...collectFiles(AUDIT_DIR)].filter((filePath) =>
-    /phenomenal_bridge|bridge_intervention_profile|bridge_reducibility_report/i.test(filePath)
+    LOW_LEVEL_OR_ADVERSARIAL.has(path.basename(filePath))
   );
-  assert(leaked.length === 0, `Bridge artifacts leaked into candidate/audit surfaces: ${leaked.join(', ')}`);
+  assert(leaked.length === 0, `Low-level/adversarial bridge artifacts leaked into candidate/audit surfaces: ${leaked.join(', ')}`);
 };
 
 const verifyRun = (run, expectedType) => {
@@ -159,18 +168,8 @@ const main = () => {
     assert(Object.prototype.hasOwnProperty.call(artifact, field), `Intervention artifact missing ${field}`)
   );
 
-  assert(
-    artifact.artifact_role === 'bridge_intervention_profile',
-    'Unexpected intervention artifact role'
-  );
-  assert(
-    artifact.bridge_layer_id === 'phenomenal_bridge_formal_layer.bpfm2',
-    'Intervention artifact must bind to BPF-M2'
-  );
-  assert(
-    artifact.implementation_status === 'bpfm2_adversarial_pre_gate',
-    'Intervention artifact must remain pre-gate'
-  );
+  assert(artifact.artifact_role === 'bridge_intervention_profile', 'Unexpected intervention artifact role');
+  assert(artifact.bridge_layer_id === 'phenomenal_bridge_formal_layer.bpfm2', 'Intervention artifact must bind to BPF-M2');
   assert(
     artifact.boundary_flags.framework_internal_only === true
       && artifact.boundary_flags.not_bridge_support === true
@@ -178,12 +177,6 @@ const main = () => {
       && artifact.boundary_flags.pre_comparator_bridge_artifact === true
       && artifact.boundary_flags.pre_gate_bridge_artifact === true,
     'Intervention artifact boundary flags are incomplete'
-  );
-  assert(
-    artifact.allowed_surfaces.length === 2
-      && artifact.allowed_surfaces.includes('developer_inspection_surface')
-      && artifact.allowed_surfaces.includes('local_artifact_surface'),
-    'Intervention artifact allowed surfaces are incorrect'
   );
   [
     'internal_release_bundle_surface',
@@ -200,23 +193,17 @@ const main = () => {
   );
 
   REQUIRED_INTERVENTIONS.forEach((interventionId) =>
-    assert(
-      artifact.implemented_interventions.includes(interventionId),
-      `Missing intervention ${interventionId}`
-    )
+    assert(artifact.implemented_interventions.includes(interventionId), `Missing intervention ${interventionId}`)
   );
   REQUIRED_CONTROLS.forEach((controlId) =>
-    assert(
-      artifact.implemented_negative_controls.includes(controlId),
-      `Missing control ${controlId}`
-    )
+    assert(artifact.implemented_negative_controls.includes(controlId), `Missing control ${controlId}`)
   );
 
   assert(artifact.intervention_runs.length === REQUIRED_INTERVENTIONS.length, 'Unexpected intervention run count');
   assert(artifact.negative_control_runs.length === REQUIRED_CONTROLS.length, 'Unexpected negative control run count');
   artifact.intervention_runs.forEach((run) => verifyRun(run, 'targeted_intervention'));
   artifact.negative_control_runs.forEach((run) => verifyRun(run, 'matched_negative_control'));
-  ensureNoCandidateAuditLeakage();
+  ensureNoLowLevelLeakage();
   ensureNoLeakage(artifact, 'bridge_intervention_profile.json');
 
   console.log('PASS verify-phenomenal-bridge-interventions');

@@ -110,6 +110,26 @@ const readLooseGitRef = (gitDir, refName) => {
   return null;
 };
 
+const readGitConfigValue = (gitDir, sectionHeader, key) => {
+  const configPath = path.join(gitDir, 'config');
+  if (!exists(configPath)) return null;
+  const lines = readText(configPath).split(/\r?\n/);
+  let activeSection = null;
+  for (const line of lines) {
+    const sectionMatch = line.match(/^\s*\[(.+?)\]\s*$/);
+    if (sectionMatch) {
+      activeSection = sectionMatch[1];
+      continue;
+    }
+    if (activeSection !== sectionHeader) continue;
+    const valueMatch = line.match(/^\s*([A-Za-z0-9._-]+)\s*=\s*(.+?)\s*$/);
+    if (valueMatch && valueMatch[1] === key) {
+      return valueMatch[2];
+    }
+  }
+  return null;
+};
+
 const readGitStateFallback = (repoRoot) => {
   const gitDir = resolveGitDir(repoRoot);
   if (!gitDir) return null;
@@ -118,15 +138,22 @@ const readGitStateFallback = (repoRoot) => {
   const headContents = readText(headPath).trim();
   if (headContents.startsWith('ref: ')) {
     const refName = headContents.slice(5).trim();
+    const branch = refName.replace(/^refs\/heads\//, '');
+    const remote = readGitConfigValue(gitDir, `branch "${branch}"`, 'remote') || 'origin';
+    const mergeRef = readGitConfigValue(gitDir, `branch "${branch}"`, 'merge') || `refs/heads/${branch}`;
+    const upstreamBranch = mergeRef.replace(/^refs\/heads\//, '');
+    const upstreamRef = `refs/remotes/${remote}/${upstreamBranch}`;
+    const head = readLooseGitRef(gitDir, refName) || 'unknown_commit';
+    const upstreamHead = readLooseGitRef(gitDir, upstreamRef);
     return {
-      branch: refName.replace(/^refs\/heads\//, ''),
-      head: readLooseGitRef(gitDir, refName) || 'unknown_commit',
-      upstream: null,
-      upstream_head: null,
-      remote: 'origin',
-      remote_url: tryGit(repoRoot, ['config', '--get', 'remote.origin.url']),
+      branch,
+      head,
+      upstream: `${remote}/${upstreamBranch}`,
+      upstream_head: upstreamHead,
+      remote,
+      remote_url: readGitConfigValue(gitDir, `remote "${remote}"`, 'url'),
       clean: true,
-      pushed: false
+      pushed: Boolean(upstreamHead && upstreamHead === head)
     };
   }
   return {
@@ -167,19 +194,26 @@ const getRepoState = (repoRoot, envPrefix) => {
   const upstreamHead = upstream ? tryGit(repoRoot, ['rev-parse', '@{u}']) : null;
   const remote = upstream ? upstream.split('/')[0] : 'origin';
   const remoteUrl = tryGit(repoRoot, ['config', '--get', `remote.${remote}.url`]);
+  const fallback = readGitStateFallback(repoRoot);
   if (!branch || !head) {
-    const fallback = readGitStateFallback(repoRoot);
     if (fallback) return fallback;
   }
+  const resolvedHead = head || fallback?.head || null;
+  const resolvedUpstream = upstream || fallback?.upstream || null;
+  const resolvedUpstreamHead = upstreamHead || fallback?.upstream_head || null;
+  const resolvedRemote = (resolvedUpstream ? resolvedUpstream.split('/')[0] : null)
+    || fallback?.remote
+    || remote
+    || 'origin';
   return {
-    branch,
-    head,
-    upstream,
-    upstream_head: upstreamHead,
-    remote,
-    remote_url: remoteUrl,
+    branch: branch || fallback?.branch || 'unknown_branch',
+    head: resolvedHead,
+    upstream: resolvedUpstream,
+    upstream_head: resolvedUpstreamHead,
+    remote: resolvedRemote,
+    remote_url: remoteUrl || fallback?.remote_url || null,
     clean: statusPorcelain === '',
-    pushed: Boolean(upstreamHead && upstreamHead === head)
+    pushed: Boolean(resolvedUpstreamHead && resolvedHead && resolvedUpstreamHead === resolvedHead)
   };
 };
 

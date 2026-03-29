@@ -2,7 +2,7 @@
   "artifact_role": "subjectivity_stack_check",
   "schema_version": "1.0.0",
   "layer_id": "subjectivity_runtime_layer.srt6",
-  "status": "FAIL",
+  "status": "PASS",
   "steps": [
     {
       "id": "srt0_scaffolding",
@@ -41,16 +41,10 @@
     }
   ],
   "ecosystem_integrity": {
-    "status": "FAIL",
-    "failures": [
-      "system.repo_not_pushed",
-      "release.repo_not_pushed",
-      "system.subjectivity_ecosystem_artifacts_missing"
-    ],
+    "status": "PASS",
+    "failures": [],
     "warnings": []
   },
-  "failed_steps": [
-    "ecosystem_integrity"
-  ],
+  "failed_steps": [],
   "interpretation_boundary": "SRT-0..6 subjectivity stack verification only; internal execution integrity and ecosystem hardening check, not external validation, not phenomenality closure."
 }

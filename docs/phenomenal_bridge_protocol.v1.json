@@ -2,9 +2,9 @@
   "artifact_role": "phenomenal_bridge_protocol_definition",
   "schema_version": "1.0.0",
   "layer_name": "Phenomenal Bridge Formal Layer",
-  "layer_id": "phenomenal_bridge_formal_layer.bpf1",
-  "implementation_status": "provisional_bridge_surfaces_implemented",
-  "runtime_status": "provisional_bridge_surfaces_pre_comparator_pre_intervention_pre_gate",
+  "layer_id": "phenomenal_bridge_formal_layer.bpfm2",
+  "implementation_status": "adversarial_bridge_runtime_implemented",
+  "runtime_status": "provisional_bridge_surfaces_with_adversarial_burden_pre_gate_pre_ecosystem",
   "paper_source": {
     "paper_id": "paper8_first_person_subjectivity",
     "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
@@ -17,7 +17,9 @@
     ],
     "runtime_upstream": [
       "subjectivity_runtime_layer.srt6",
-      "subjectivity_stack_consolidation_post_srt6"
+      "subjectivity_stack_consolidation_post_srt6",
+      "phenomenal_bridge_formal_layer.bpf0",
+      "phenomenal_bridge_formal_layer.bpf1"
     ]
   },
   "bpf1_runtime_inputs": [
@@ -103,8 +105,8 @@
   ],
   "bridge_burdens": {
     "predicate_burden": "implemented_provisional_surfaces_in_bpf1",
-    "intervention_burden": "open_in_bpf2",
-    "comparator_burden": "open_in_bpf3",
+    "intervention_burden": "implemented_runtime_in_bpfm2",
+    "comparator_burden": "implemented_runtime_in_bpfm2",
     "gate_burden": "open_in_bpf4",
     "ecosystem_burden": "open_in_bpf5",
     "final_audit_burden": "open_in_bpf6"
@@ -115,11 +117,11 @@
     "world_richness_report.json",
     "ambiguity_bearing_report.json",
     "embodied_closure_report.json",
-    "temporal_lived_structure_report.json"
+    "temporal_lived_structure_report.json",
+    "bridge_intervention_profile.json",
+    "bridge_reducibility_report.json"
   ],
   "deferred_artifacts": [
-    "bridge_intervention_profile.json",
-    "bridge_reducibility_report.json",
     "phenomenal_bridge_projection.json",
     "phenomenal_bridge_gate_result.json",
     "phenomenal_bridge_manifest.json"
@@ -129,18 +131,17 @@
     "no_human_equivalence_inference",
     "no_metaphysical_subjecthood_inference",
     "no_phenomenality_proven_inference",
-    "no_bridge_support_inference_from_bpf1_surfaces",
+    "no_bridge_support_inference_from_bridge_adversarial_artifacts",
     "no_automatic_paper9_promotion",
     "no_runtime_to_corpus_confirmation_loop"
   ],
   "implementation_blocks": [
     "BPF-0",
     "BPF-1",
-    "BPF-2",
-    "BPF-3",
+    "BPF-M2",
     "BPF-4",
     "BPF-5",
     "BPF-6"
   ],
-  "interpretation_boundary": "BPF-1 adds provisional bridge surfaces and run-level bridge reports only. It does not implement a bridge comparator, bridge intervention harness, bridge gate, bridge root verdict artifacts, bridge ecosystem integration, phenomenality evidence, or Paper 9 authorization."
+  "interpretation_boundary": "BPF-M2 adds a bridge intervention family, matched controls, executable weak rivals, admissible pairwise composites, a shared bridge loss family, a bridge complexity penalty, and a bridge reducibility artifact above the BPF-1 surfaces. It does not implement a bridge gate, bridge root verdict artifacts, bridge ecosystem integration, phenomenality evidence, or Paper 9 authorization."
 }

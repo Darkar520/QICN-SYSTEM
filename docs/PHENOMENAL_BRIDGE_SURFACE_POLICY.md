@@ -2,10 +2,11 @@
 
 ## Rule
 
-All BPF artifacts remain framework-internal only by default. BPF-1 adds local
-run-level bridge reports, not bridge support.
+All BPF artifacts remain framework-internal only by default. BPF-M2 adds local
+run-level bridge reports, a bridge intervention profile, and a bridge
+reducibility report, but still not bridge support.
 
-## Allowed surfaces in BPF-1
+## Allowed surfaces in BPF-M2
 
 - `developer_inspection_surface`
 - `local_artifact_surface`
@@ -19,8 +20,10 @@ These surfaces may contain:
 - artifact schema registry
 - scaffold metadata
 - BPF-1 run-level bridge reports
+- BPF-M2 bridge intervention profile
+- BPF-M2 bridge reducibility report
 
-## Blocked even in BPF-1
+## Blocked even in BPF-M2
 
 - `local_report_surface`
 - `internal_release_bundle_surface`
@@ -29,8 +32,9 @@ These surfaces may contain:
 - `controlled_statement_surface`
 - `external_claim_facing_surface`
 
-The local-report surface remains blocked at BPF-1 because the new bridge
-reports are still provisional and easy to quote-mine out of context.
+The local-report surface remains blocked at BPF-M2 because the bridge
+artifacts are still provisional, pre-gate, and easy to quote-mine out of
+context.
 
 ## Conditionally allowed in later BPF blocks
 

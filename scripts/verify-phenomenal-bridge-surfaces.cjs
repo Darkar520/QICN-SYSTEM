@@ -40,8 +40,6 @@ const FORBIDDEN_ARTIFACT_NAMES = [
   'phenomenal_bridge_projection.json',
   'phenomenal_bridge_gate_result.json',
   'phenomenal_bridge_manifest.json',
-  'bridge_intervention_profile.json',
-  'bridge_reducibility_report.json',
   'phenomenal_bridge_candidate_projection.json',
   'phenomenal_bridge_audit_handoff_summary.json'
 ];
@@ -222,10 +220,11 @@ const verifyRuntimeImport = async () => {
   assert(description.provisional_runtime_surfaces === true, 'Layer must expose provisional runtime surfaces');
   assert(description.not_bridge_support === true, 'Layer must remain non-supporting');
   assert(description.not_runtime_bridge_gate === true, 'Layer must remain pre-gate');
-  assert(description.not_runtime_bridge_comparator === true, 'Layer must remain pre-comparator');
+  assert(description.framework_internal_only === true, 'Layer must remain framework-internal');
+  assert(description.not_runtime_bridge_root_verdict === true, 'Layer must remain pre-root-verdict');
   assert(
-    description.not_runtime_bridge_intervention_harness === true,
-    'Layer must remain pre-intervention-harness'
+    description.not_runtime_bridge_ecosystem_integration === true,
+    'Layer must remain pre-ecosystem-integration'
   );
 };
 

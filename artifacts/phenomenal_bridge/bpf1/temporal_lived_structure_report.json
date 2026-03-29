@@ -18,7 +18,7 @@
   "bridge_role": "Provisional temporal-organization readout stronger than continuity records alone but still proxy-bound and weaker than any lived-time verdict.",
   "artifact_class": "primary_report",
   "level": "run_level_report",
-  "authoritative_status": "authoritative_run_level_report_within_bpf1_scope",
+  "authoritative_status": "authoritative_local_surface_report",
   "estimator_status": "provisional_runtime_bridge_estimator",
   "provisional_estimate": 0.6370522111111112,
   "component_scores": {
@@ -94,9 +94,11 @@
   },
   "non_implications": [
     "not_bridge_support",
-    "not_bridge_verdict",
+    "not_phenomenality_evidence",
+    "not_bridge_gate",
+    "not_human_lived_time",
     "not_phenomenality",
-    "not_human_lived_time"
+    "not_bridge_verdict"
   ],
   "allowed_surfaces": [
     "developer_inspection_surface",
@@ -113,7 +115,7 @@
   "implementation_status": "bpf1_surface_only",
   "interpretation_boundary": "Framework-internal only; BPF-1 emits provisional bridge coordinate reports derived from upstream subjectivity artifacts. These reports are not bridge support, not bridge admissibility, not comparator closure, not intervention closure, not gate closure, not phenomenality evidence, not human equivalence, and not Paper 9 authorization.",
   "provenance": {
-    "generated_at": "2026-03-29T15:49:48.973Z",
+    "generated_at": "2026-03-29T19:56:28.645Z",
     "protocol_ref": "docs/phenomenal_bridge_protocol.v1.json",
     "surface_policy_ref": "docs/phenomenal_bridge_surface_policy.v1.json",
     "artifact_schema_ref": "docs/phenomenal_bridge_artifact_schema.v1.json",

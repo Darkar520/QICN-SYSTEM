@@ -1,8 +1,8 @@
 {
   "artifact_role": "phenomenal_bridge_artifact_schema_registry",
   "schema_version": "1.0.0",
-  "layer_id": "phenomenal_bridge_formal_layer.bpf1",
-  "layer_status": "provisional_bridge_surfaces_implemented",
+  "layer_id": "phenomenal_bridge_formal_layer.bpfm2",
+  "layer_status": "adversarial_bridge_runtime_implemented",
   "root_schema_refs": {
     "phenomenal_bridge_manifest.json": "src/phenomenal_bridge/schemas/phenomenal_bridge_manifest.v1.json",
     "phenomenal_bridge_projection.json": "src/phenomenal_bridge/schemas/phenomenal_bridge_projection.v1.json",
@@ -14,7 +14,9 @@
     "world_richness_report.json": "src/phenomenal_bridge/schemas/world_richness_report.v1.json",
     "ambiguity_bearing_report.json": "src/phenomenal_bridge/schemas/ambiguity_bearing_report.v1.json",
     "embodied_closure_report.json": "src/phenomenal_bridge/schemas/embodied_closure_report.v1.json",
-    "temporal_lived_structure_report.json": "src/phenomenal_bridge/schemas/temporal_lived_structure_report.v1.json"
+    "temporal_lived_structure_report.json": "src/phenomenal_bridge/schemas/temporal_lived_structure_report.v1.json",
+    "bridge_intervention_profile.json": "src/phenomenal_bridge/schemas/bridge_intervention_profile.v1.json",
+    "bridge_reducibility_report.json": "src/phenomenal_bridge/schemas/bridge_reducibility_report.v1.json"
   },
   "artifacts": {
     "phenomenal_bridge_manifest.json": {
@@ -43,13 +45,8 @@
         "bridge_layer_version",
         "runtime_status",
         "protocol_ref",
-        "axiom_registry_ref",
-        "rival_family_ref",
-        "thresholds_ref",
         "surface_policy_ref",
         "artifact_schema_ref",
-        "implementation_block",
-        "emitted_artifacts",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
@@ -84,20 +81,17 @@
         "artifact_role",
         "artifact_version",
         "schema_version",
-        "layer_version",
         "bridge_status",
-        "run_id",
         "predicate_estimates",
         "warnings",
-        "implementation_status",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
       ],
       "non_implications": [
-        "not_bridge_gate_pass",
+        "not_bridge_support",
         "not_phenomenality",
-        "not_human_equivalence"
+        "not_external_validation"
       ],
       "status": "schema_defined_not_emitted"
     },
@@ -124,14 +118,9 @@
         "artifact_role",
         "artifact_version",
         "schema_version",
-        "layer_version",
-        "bridge_status",
-        "run_id",
         "gate_status",
         "classification",
-        "invalidation_reasons",
         "warnings",
-        "implementation_status",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
@@ -149,7 +138,7 @@
       "role": "bridge_coordinate_surface_report",
       "artifact_class": "primary_report",
       "level": "run_level_report",
-      "authoritative_status": "authoritative_run_level_report_within_bpf1_scope",
+      "authoritative_status": "authoritative_local_surface_report",
       "allowed_surfaces": [
         "developer_inspection_surface",
         "local_artifact_surface"
@@ -163,23 +152,17 @@
         "external_claim_facing_surface"
       ],
       "minimum_fields": [
-        "artifact_role",
-        "runtime_surface",
         "predicate_id",
-        "estimator_status",
         "provisional_estimate",
         "boundary_flags",
-        "non_implications",
-        "allowed_surfaces",
-        "blocked_surfaces",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
       ],
       "non_implications": [
         "not_bridge_support",
-        "not_bridge_verdict",
-        "not_phenomenality"
+        "not_phenomenality_evidence",
+        "not_bridge_gate"
       ],
       "status": "implemented_run_level_report"
     },
@@ -189,7 +172,7 @@
       "role": "bridge_coordinate_surface_report",
       "artifact_class": "primary_report",
       "level": "run_level_report",
-      "authoritative_status": "authoritative_run_level_report_within_bpf1_scope",
+      "authoritative_status": "authoritative_local_surface_report",
       "allowed_surfaces": [
         "developer_inspection_surface",
         "local_artifact_surface"
@@ -203,23 +186,17 @@
         "external_claim_facing_surface"
       ],
       "minimum_fields": [
-        "artifact_role",
-        "runtime_surface",
         "predicate_id",
-        "estimator_status",
         "provisional_estimate",
         "boundary_flags",
-        "non_implications",
-        "allowed_surfaces",
-        "blocked_surfaces",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
       ],
       "non_implications": [
         "not_bridge_support",
-        "not_bridge_verdict",
-        "not_phenomenality"
+        "not_phenomenality_evidence",
+        "not_bridge_gate"
       ],
       "status": "implemented_run_level_report"
     },
@@ -229,7 +206,7 @@
       "role": "bridge_coordinate_surface_report",
       "artifact_class": "primary_report",
       "level": "run_level_report",
-      "authoritative_status": "authoritative_run_level_report_within_bpf1_scope",
+      "authoritative_status": "authoritative_local_surface_report",
       "allowed_surfaces": [
         "developer_inspection_surface",
         "local_artifact_surface"
@@ -243,23 +220,17 @@
         "external_claim_facing_surface"
       ],
       "minimum_fields": [
-        "artifact_role",
-        "runtime_surface",
         "predicate_id",
-        "estimator_status",
         "provisional_estimate",
         "boundary_flags",
-        "non_implications",
-        "allowed_surfaces",
-        "blocked_surfaces",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
       ],
       "non_implications": [
         "not_bridge_support",
-        "not_bridge_verdict",
-        "not_phenomenality"
+        "not_phenomenality_evidence",
+        "not_bridge_gate"
       ],
       "status": "implemented_run_level_report"
     },
@@ -269,7 +240,7 @@
       "role": "bridge_coordinate_surface_report",
       "artifact_class": "primary_report",
       "level": "run_level_report",
-      "authoritative_status": "authoritative_run_level_report_within_bpf1_scope",
+      "authoritative_status": "authoritative_local_surface_report",
       "allowed_surfaces": [
         "developer_inspection_surface",
         "local_artifact_surface"
@@ -283,23 +254,17 @@
         "external_claim_facing_surface"
       ],
       "minimum_fields": [
-        "artifact_role",
-        "runtime_surface",
         "predicate_id",
-        "estimator_status",
         "provisional_estimate",
         "boundary_flags",
-        "non_implications",
-        "allowed_surfaces",
-        "blocked_surfaces",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
       ],
       "non_implications": [
         "not_bridge_support",
-        "not_bridge_verdict",
-        "not_phenomenality"
+        "not_phenomenality_evidence",
+        "not_bridge_gate"
       ],
       "status": "implemented_run_level_report"
     },
@@ -309,7 +274,7 @@
       "role": "bridge_coordinate_surface_report",
       "artifact_class": "primary_report",
       "level": "run_level_report",
-      "authoritative_status": "authoritative_run_level_report_within_bpf1_scope",
+      "authoritative_status": "authoritative_local_surface_report",
       "allowed_surfaces": [
         "developer_inspection_surface",
         "local_artifact_surface"
@@ -323,23 +288,17 @@
         "external_claim_facing_surface"
       ],
       "minimum_fields": [
-        "artifact_role",
-        "runtime_surface",
         "predicate_id",
-        "estimator_status",
         "provisional_estimate",
         "boundary_flags",
-        "non_implications",
-        "allowed_surfaces",
-        "blocked_surfaces",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
       ],
       "non_implications": [
         "not_bridge_support",
-        "not_bridge_verdict",
-        "not_phenomenality"
+        "not_phenomenality_evidence",
+        "not_bridge_gate"
       ],
       "status": "implemented_run_level_report"
     },
@@ -349,7 +308,7 @@
       "role": "bridge_coordinate_surface_report",
       "artifact_class": "primary_report",
       "level": "run_level_report",
-      "authoritative_status": "authoritative_run_level_report_within_bpf1_scope",
+      "authoritative_status": "authoritative_local_surface_report",
       "allowed_surfaces": [
         "developer_inspection_surface",
         "local_artifact_surface"
@@ -363,33 +322,27 @@
         "external_claim_facing_surface"
       ],
       "minimum_fields": [
-        "artifact_role",
-        "runtime_surface",
         "predicate_id",
-        "estimator_status",
         "provisional_estimate",
         "boundary_flags",
-        "non_implications",
-        "allowed_surfaces",
-        "blocked_surfaces",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
       ],
       "non_implications": [
         "not_bridge_support",
-        "not_bridge_verdict",
-        "not_phenomenality"
+        "not_phenomenality_evidence",
+        "not_bridge_gate"
       ],
       "status": "implemented_run_level_report"
     },
     "bridge_intervention_profile.json": {
       "id": "bridge_intervention_profile",
       "artifact_name": "bridge_intervention_profile.json",
-      "role": "bridge_intervention_profile",
+      "role": "bridge_adversarial_intervention_profile",
       "artifact_class": "intervention_profile",
-      "level": "run_level_report",
-      "authoritative_status": "authoritative_when_emitted",
+      "level": "run_level_adversarial_artifact",
+      "authoritative_status": "authoritative_local_adversarial_artifact",
       "allowed_surfaces": [
         "developer_inspection_surface",
         "local_artifact_surface"
@@ -403,28 +356,34 @@
         "external_claim_facing_surface"
       ],
       "minimum_fields": [
-        "artifact_role",
-        "run_id",
-        "intervention_family",
-        "warnings",
+        "baseline_reference",
+        "intervention_runs",
+        "negative_control_runs",
+        "targeted_bridge_drop",
+        "collateral_damage",
+        "intervention_selectivity",
+        "confound_flags",
+        "profile_status",
+        "boundary_flags",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
       ],
       "non_implications": [
         "not_bridge_support",
-        "not_phenomenality",
-        "not_external_validation"
+        "not_phenomenality_evidence",
+        "not_bridge_gate",
+        "not_bridge_admissibility"
       ],
-      "status": "planned_only_open_in_bpf2"
+      "status": "implemented_adversarial_run_level_artifact"
     },
     "bridge_reducibility_report.json": {
       "id": "bridge_reducibility_report",
       "artifact_name": "bridge_reducibility_report.json",
-      "role": "bridge_reducibility_report",
+      "role": "bridge_adversarial_reducibility_report",
       "artifact_class": "reducibility_report",
-      "level": "run_level_report",
-      "authoritative_status": "authoritative_when_emitted",
+      "level": "run_level_adversarial_artifact",
+      "authoritative_status": "authoritative_local_adversarial_artifact",
       "allowed_surfaces": [
         "developer_inspection_surface",
         "local_artifact_surface"
@@ -438,21 +397,28 @@
         "external_claim_facing_surface"
       ],
       "minimum_fields": [
-        "artifact_role",
-        "run_id",
-        "rival_family_used",
-        "irreducibility_margin",
-        "warnings",
+        "baseline_bridge_bundle_reference",
+        "bridge_intervention_profile_reference",
+        "strong_model_loss",
+        "best_weak_rival",
+        "best_weak_rival_loss",
+        "best_bridge_composite",
+        "best_bridge_composite_loss",
+        "bridge_irreducibility_margin",
+        "comparison_supported",
+        "classification",
+        "boundary_flags",
         "interpretation_boundary",
         "provenance",
         "schema_ref"
       ],
       "non_implications": [
         "not_bridge_support",
-        "not_phenomenality",
-        "not_external_validation"
+        "not_phenomenality_evidence",
+        "not_bridge_gate",
+        "not_bridge_admissibility"
       ],
-      "status": "planned_only_open_in_bpf3"
+      "status": "implemented_adversarial_run_level_artifact"
     }
   }
 }

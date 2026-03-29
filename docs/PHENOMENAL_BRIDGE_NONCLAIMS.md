@@ -1,6 +1,6 @@
 # Phenomenal Bridge Non-Claims
 
-BPF-1 does not license:
+BPF-M2 does not license:
 
 - phenomenality proven
 - phenomenal consciousness achieved
@@ -10,10 +10,10 @@ BPF-1 does not license:
 - bridge support
 - bridge admissibility
 - bridge gate success
-- bridge comparator closure
-- bridge intervention closure
+- bridge root verdict
+- bridge support from partial irreducibility support
 - candidate inclusion as bridge support
 - audit handoff as external adjudication
 - automatic Paper 9 promotion
 
-BPF-1 is provisional surface implementation only.
+BPF-M2 is adversarial bridge runtime only, still pre-gate and pre-ecosystem.

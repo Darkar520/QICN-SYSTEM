@@ -104,9 +104,7 @@ const ensureNoPrematureBridgeRoots = () => {
   const forbiddenNames = [
     'phenomenal_bridge_projection.json',
     'phenomenal_bridge_gate_result.json',
-    'phenomenal_bridge_manifest.json',
-    'bridge_intervention_profile.json',
-    'bridge_reducibility_report.json'
+    'phenomenal_bridge_manifest.json'
   ];
   const forbidden = artifactFiles.filter((filePath) =>
     forbiddenNames.some((name) => filePath.endsWith(name))
@@ -126,13 +124,21 @@ const verifyManifestCoherence = () => {
   const surfacePolicy = readJson('docs/phenomenal_bridge_surface_policy.v1.json');
 
   assert(
-    ['phenomenal_bridge_formal_layer.bpf0', 'phenomenal_bridge_formal_layer.bpf1'].includes(
+    [
+      'phenomenal_bridge_formal_layer.bpf0',
+      'phenomenal_bridge_formal_layer.bpf1',
+      'phenomenal_bridge_formal_layer.bpfm2'
+    ].includes(
       protocol.layer_id
     ),
     'Unexpected protocol layer id'
   );
   assert(
-    ['scaffold_only_opening_layer', 'provisional_bridge_surfaces_implemented'].includes(
+    [
+      'scaffold_only_opening_layer',
+      'provisional_bridge_surfaces_implemented',
+      'adversarial_bridge_runtime_implemented'
+    ].includes(
       protocol.implementation_status
     ),
     'Unexpected BPF implementation status'
@@ -165,8 +171,8 @@ const verifyManifestCoherence = () => {
       assert(Object.prototype.hasOwnProperty.call(entry, field), `Rival ${entry.id || '<unknown>'} missing ${field}`)
     );
     assert(
-      entry.status === 'scaffolded_not_runtime_comparable',
-      `Rival ${entry.id} must remain scaffold-only`
+      ['scaffolded_not_runtime_comparable', 'runtime_comparable_weak_rival'].includes(entry.status),
+      `Rival ${entry.id} must remain bounded to scaffolded or runtime-comparable weak-rival status`
     );
   });
 
@@ -214,7 +220,10 @@ const verifyDocs = () => {
   const nonClaims = readText('docs/PHENOMENAL_BRIDGE_NONCLAIMS.md');
   const plan = readText('docs/PHENOMENAL_BRIDGE_IMPLEMENTATION_PLAN.md');
 
-  assert(boundary.includes('BPF-1') || boundary.includes('BPF-0'), 'Interpretation boundary must mention BPF-0/BPF-1');
+  assert(
+    boundary.includes('BPF-M2') || boundary.includes('BPF-1') || boundary.includes('BPF-0'),
+    'Interpretation boundary must mention BPF-0/BPF-1/BPF-M2'
+  );
   assert(policy.includes('controlled_statement_surface'), 'Surface policy must mention controlled_statement_surface');
   assert(policy.includes('external_claim_facing_surface'), 'Surface policy must mention external claim-facing blockage');
   [
@@ -245,6 +254,7 @@ const verifyRuntimeImport = async () => {
     description.not_bridge_support === true || description.scaffold_only === true,
     'Bridge layer must declare no bridge support'
   );
+  assert(description.not_runtime_bridge_gate === true, 'Bridge layer must remain pre-gate');
 };
 
 const main = async () => {

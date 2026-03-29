@@ -1,0 +1,155 @@
+{
+  "artifact_role": "bridge_reducibility_report",
+  "artifact_name": "bridge_reducibility_report.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "bridge_layer_id": "phenomenal_bridge_formal_layer.bpfm2",
+  "implementation_status": "bpfm2_adversarial_pre_gate",
+  "runtime_status": "bridge_reducibility_runtime_implemented_pre_gate",
+  "baseline_bridge_bundle_reference": {
+    "bridge_report_refs": {
+      "phenomenal_differentiation_report": "artifacts/phenomenal_bridge/bpf1/phenomenal_differentiation_report.json",
+      "valence_structure_report": "artifacts/phenomenal_bridge/bpf1/valence_structure_report.json",
+      "world_richness_report": "artifacts/phenomenal_bridge/bpf1/world_richness_report.json",
+      "ambiguity_bearing_report": "artifacts/phenomenal_bridge/bpf1/ambiguity_bearing_report.json",
+      "embodied_closure_report": "artifacts/phenomenal_bridge/bpf1/embodied_closure_report.json",
+      "temporal_lived_structure_report": "artifacts/phenomenal_bridge/bpf1/temporal_lived_structure_report.json"
+    },
+    "baseline_run_id": "bpf1_bridge_surfaces_baseline"
+  },
+  "bridge_intervention_profile_reference": {
+    "artifact_name": "bridge_intervention_profile.json",
+    "profile_status": "selectivity_detected_pre_comparator",
+    "comparison_readiness": true
+  },
+  "implemented_rivals": [
+    "richness_without_interiority",
+    "valence_bookkeeping_without_affective_organization",
+    "semantic_density_without_phenomenal_differentiation",
+    "temporal_continuity_without_lived_structure",
+    "embodied_control_without_embodied_closure",
+    "ambiguity_resolution_without_ambiguity_bearing",
+    "experience_narration_without_phenomenal_organization"
+  ],
+  "implemented_composite_scope": "pairwise_bridge_composites_with_weight_grid_0.35_0.50_0.65",
+  "implemented_loss_family": {
+    "formula": "L_b(M)=w_f e_fit + w_i e_intervention + w_s e_selectivity + w_p e_Pi + w_c Omega(M)",
+    "weights": {
+      "fit": 0.22,
+      "intervention": 0.28,
+      "selectivity": 0.18,
+      "predicate": 0.2,
+      "complexity": 0.12
+    },
+    "complexity_policy": {
+      "mechanism_count_weight": 0.18,
+      "composite_size_weight": 0.18,
+      "auxiliary_latent_flexibility_weight": 0.18,
+      "narrative_decoder_slack_weight": 0.16,
+      "bookkeeping_convenience_weight": 0.15,
+      "ambiguity_absorption_capacity_weight": 0.15,
+      "mechanism_cap": 8,
+      "composite_size_cap": 3
+    }
+  },
+  "strong_model_loss": {
+    "e_fit": 0,
+    "e_intervention": 0,
+    "e_selectivity": 0,
+    "e_predicates": 0,
+    "complexity_penalty": 0.2356,
+    "total_loss": 0.028272
+  },
+  "best_weak_rival": {
+    "rival_id": "richness_without_interiority",
+    "targeted_predicates": [
+      "Pi_D",
+      "Pi_W"
+    ],
+    "complexity_profile": {
+      "mechanism_count": 3,
+      "composite_size": 1,
+      "auxiliary_latent_flexibility": 0.24,
+      "narrative_decoder_slack": 0.28,
+      "bookkeeping_convenience": 0.08,
+      "ambiguity_absorption_capacity": 0.22
+    },
+    "loss": {
+      "e_fit": 0.101453209392,
+      "e_intervention": 0.059778989786,
+      "e_selectivity": 0.415230965254,
+      "e_predicates": 0.124410174264,
+      "complexity_penalty": 0.2005,
+      "total_loss": 0.162741431805
+    }
+  },
+  "best_weak_rival_loss": 0.162741431805,
+  "best_bridge_composite": {
+    "composite_id": "richness_without_interiority__embodied_control_without_embodied_closure__w65",
+    "components": [
+      "richness_without_interiority",
+      "embodied_control_without_embodied_closure"
+    ],
+    "lhs_weight": 0.65,
+    "rhs_weight": 0.35,
+    "implemented_scope": "pairwise_composite_only",
+    "complexity_profile": {
+      "mechanism_count": 6,
+      "composite_size": 2,
+      "auxiliary_latent_flexibility": 0.33199999999999996,
+      "narrative_decoder_slack": 0.29700000000000004,
+      "bookkeeping_convenience": 0.115,
+      "ambiguity_absorption_capacity": 0.17800000000000002
+    },
+    "loss": {
+      "e_fit": 0.057228146195,
+      "e_intervention": 0.059142951421,
+      "e_selectivity": 0.414980965254,
+      "e_predicates": 0.150671466525,
+      "complexity_penalty": 0.34623,
+      "total_loss": 0.175528685612
+    }
+  },
+  "best_bridge_composite_loss": 0.175528685612,
+  "bridge_irreducibility_margin": 0.134469431805,
+  "comparison_supported": true,
+  "classification": "bridge_partial_irreducibility_support",
+  "warnings": [],
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "not_bridge_support": true,
+    "not_phenomenality_evidence": true,
+    "pre_gate_bridge_artifact": true,
+    "pre_ecosystem_bridge_artifact": true
+  },
+  "non_implications": [
+    "not_bridge_support",
+    "not_bridge_admissibility",
+    "not_phenomenality_evidence",
+    "not_external_validation"
+  ],
+  "allowed_surfaces": [
+    "developer_inspection_surface",
+    "local_artifact_surface"
+  ],
+  "blocked_surfaces": [
+    "local_report_surface",
+    "internal_release_bundle_surface",
+    "ecosystem_candidate_surface",
+    "audit_facing_package_surface",
+    "controlled_statement_surface",
+    "external_claim_facing_surface"
+  ],
+  "interpretation_boundary": "BPF-M2 reducibility comparison is an adversarial bridge burden only. It compares provisional bridge organization against weak bridge rivals and admissible composites, but it does not implement a bridge gate, a bridge root verdict, bridge admissibility, phenomenality evidence, or any candidate or audit-facing bridge conclusion.",
+  "provenance": {
+    "generated_at": "2026-03-29T19:56:28.748Z",
+    "protocol_ref": "docs/phenomenal_bridge_protocol.v1.json",
+    "rival_family_ref": "docs/phenomenal_bridge_rival_family.v1.json",
+    "surface_policy_ref": "docs/phenomenal_bridge_surface_policy.v1.json",
+    "artifact_schema_ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
+    "intervention_harness_ref": "src/phenomenal_bridge/PhenomenalBridgeInterventionHarness.js",
+    "comparator_family_ref": "src/phenomenal_bridge/PhenomenalBridgeComparatorFamily.js",
+    "reducibility_comparator_ref": "src/phenomenal_bridge/PhenomenalBridgeReducibilityComparator.js"
+  },
+  "schema_ref": "src/phenomenal_bridge/schemas/bridge_reducibility_report.v1.json"
+}

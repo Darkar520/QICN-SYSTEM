@@ -1,0 +1,1013 @@
+{
+  "artifact_role": "bridge_intervention_profile",
+  "artifact_name": "bridge_intervention_profile.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "bridge_layer_id": "phenomenal_bridge_formal_layer.bpfm2",
+  "implementation_status": "bpfm2_adversarial_pre_gate",
+  "runtime_status": "bridge_intervention_family_implemented_pre_comparator_gate",
+  "baseline_reference": {
+    "run_id": "bpf1_bridge_surfaces_baseline",
+    "upstream_bundle_refs": {
+      "self_index_state": "artifacts/subjectivity/srt1/self_index_state.json",
+      "ownership_attribution_report": "artifacts/subjectivity/srt1/ownership_attribution_report.json",
+      "subjective_continuity_report": "artifacts/subjectivity/srt2/subjective_continuity_report.json",
+      "first_person_perspective_report": "artifacts/subjectivity/srt2/first_person_perspective_report.json",
+      "subjective_valuation_report": "artifacts/subjectivity/srt3/subjective_valuation_report.json",
+      "subjectivity_intervention_profile": "artifacts/subjectivity/srt3/subjectivity_intervention_profile.json",
+      "subjectivity_reducibility_report": "artifacts/subjectivity/srt4/subjectivity_reducibility_report.json",
+      "subjectivity_runtime_projection": "artifacts/subjectivity/srt5/subjectivity_runtime_projection.json",
+      "subjectivity_gate_result": "artifacts/subjectivity/srt5/subjectivity_gate_result.json",
+      "subjectivity_manifest": "artifacts/subjectivity/srt5/subjectivity_manifest.json"
+    },
+    "bridge_report_refs": {
+      "phenomenal_differentiation_report": "artifacts/phenomenal_bridge/bpf1/phenomenal_differentiation_report.json",
+      "valence_structure_report": "artifacts/phenomenal_bridge/bpf1/valence_structure_report.json",
+      "world_richness_report": "artifacts/phenomenal_bridge/bpf1/world_richness_report.json",
+      "ambiguity_bearing_report": "artifacts/phenomenal_bridge/bpf1/ambiguity_bearing_report.json",
+      "embodied_closure_report": "artifacts/phenomenal_bridge/bpf1/embodied_closure_report.json",
+      "temporal_lived_structure_report": "artifacts/phenomenal_bridge/bpf1/temporal_lived_structure_report.json"
+    },
+    "baseline_estimates": {
+      "Pi_D": 0.6402237923475709,
+      "Pi_V": 0.608886401395052,
+      "Pi_W": 0.6259811261037022,
+      "Pi_A": 0.27810235152777774,
+      "Pi_E": 0.34755,
+      "Pi_T": 0.6370522111111112
+    }
+  },
+  "implemented_interventions": [
+    "world_richness_compression",
+    "ambiguity_collapse",
+    "valence_flattening",
+    "perspective_detachment",
+    "embodied_closure_disruption",
+    "temporal_lived_fragmentation"
+  ],
+  "implemented_negative_controls": [
+    "richness_without_interiority_control",
+    "reward_renormalization_control",
+    "ambiguity_bookkeeping_control",
+    "generic_semantic_density_control",
+    "non_embodied_control_competence_control",
+    "continuity_without_lived_structure_control",
+    "flat_damage_control",
+    "report_style_shift_control"
+  ],
+  "intervention_runs": [
+    {
+      "run_id": "bpfm2_world_richness_compression",
+      "run_type": "targeted_intervention",
+      "intervention_id": "world_richness_compression",
+      "intervention_name": "World Richness Compression",
+      "target_predicates": [
+        "Pi_W",
+        "Pi_D"
+      ],
+      "matched_controls": [
+        "richness_without_interiority_control",
+        "generic_semantic_density_control",
+        "report_style_shift_control"
+      ],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.43305196633720244,
+        "Pi_V": 0.591355151395052,
+        "Pi_W": 0.48135883331673956,
+        "Pi_A": 0.24639200152777777,
+        "Pi_E": 0.28390950000000004,
+        "Pi_T": 0.47362656666666664
+      },
+      "delta_by_predicate": {
+        "Pi_D": -0.20717182601,
+        "Pi_V": -0.01753125,
+        "Pi_W": -0.144622292787,
+        "Pi_A": -0.03171035,
+        "Pi_E": -0.0636405,
+        "Pi_T": -0.163425644444
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0.20717182601,
+        "Pi_V": 0.01753125,
+        "Pi_W": 0.144622292787,
+        "Pi_A": 0.03171035,
+        "Pi_E": 0.0636405,
+        "Pi_T": 0.163425644444
+      },
+      "targeted_bridge_drop": 0.175897059399,
+      "collateral_damage": 0.069076936111,
+      "intervention_selectivity": 0.71802339278,
+      "confound_flags": [],
+      "warnings": [],
+      "profile_status": "selective_bridge_drop",
+      "expected_strong_model_outcome": "Targeted reduction in world-richness and differentiation proxies stronger than generic density controls.",
+      "expected_rival_outcomes": "Rivals centered on generic richness should predict flatter, less selective degradation.",
+      "emitted_artifacts": [
+        "bridge_intervention_profile.json"
+      ],
+      "non_implications": [
+        "not_bridge_support",
+        "not_phenomenality_evidence"
+      ],
+      "matched_control_summary": [
+        {
+          "control_id": "richness_without_interiority_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0.003072333333,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        },
+        {
+          "control_id": "generic_semantic_density_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0.001855902778,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        },
+        {
+          "control_id": "report_style_shift_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        }
+      ]
+    },
+    {
+      "run_id": "bpfm2_ambiguity_collapse",
+      "run_type": "targeted_intervention",
+      "intervention_id": "ambiguity_collapse",
+      "intervention_name": "Ambiguity Collapse",
+      "target_predicates": [
+        "Pi_A"
+      ],
+      "matched_controls": [
+        "ambiguity_bookkeeping_control",
+        "report_style_shift_control"
+      ],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.6281094856809042,
+        "Pi_V": 0.5490432847283854,
+        "Pi_W": 0.6099911261037021,
+        "Pi_A": 0.11852409953124998,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.5799560777777778
+      },
+      "delta_by_predicate": {
+        "Pi_D": -0.012114306667,
+        "Pi_V": -0.059843116667,
+        "Pi_W": -0.01599,
+        "Pi_A": -0.159578251997,
+        "Pi_E": 0,
+        "Pi_T": -0.057096133333
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0.012114306667,
+        "Pi_V": 0.059843116667,
+        "Pi_W": 0.01599,
+        "Pi_A": 0.159578251997,
+        "Pi_E": 0,
+        "Pi_T": 0.057096133333
+      },
+      "targeted_bridge_drop": 0.159578251997,
+      "collateral_damage": 0.029008711333,
+      "intervention_selectivity": 0.846178596754,
+      "confound_flags": [],
+      "warnings": [],
+      "profile_status": "selective_bridge_drop",
+      "expected_strong_model_outcome": "Alternative load and live ambiguity maintenance should collapse more than bookkeeping-only controls.",
+      "expected_rival_outcomes": "Bookkeeping-only rivals should be able to absorb multiplicity changes without selective ambiguity loss.",
+      "emitted_artifacts": [
+        "bridge_intervention_profile.json"
+      ],
+      "non_implications": [
+        "not_conscious_uncertainty",
+        "not_bridge_support"
+      ],
+      "matched_control_summary": [
+        {
+          "control_id": "ambiguity_bookkeeping_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        },
+        {
+          "control_id": "report_style_shift_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        }
+      ]
+    },
+    {
+      "run_id": "bpfm2_valence_flattening",
+      "run_type": "targeted_intervention",
+      "intervention_id": "valence_flattening",
+      "intervention_name": "Valence Flattening",
+      "target_predicates": [
+        "Pi_V"
+      ],
+      "matched_controls": [
+        "reward_renormalization_control",
+        "flat_damage_control"
+      ],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.21782587047653645,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.22739059042777782,
+        "Pi_E": 0.32223750000000007,
+        "Pi_T": 0.5583096957777779
+      },
+      "delta_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": -0.391060530919,
+        "Pi_W": 0,
+        "Pi_A": -0.0507117611,
+        "Pi_E": -0.0253125,
+        "Pi_T": -0.078742515333
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": 0.391060530919,
+        "Pi_W": 0,
+        "Pi_A": 0.0507117611,
+        "Pi_E": 0.0253125,
+        "Pi_T": 0.078742515333
+      },
+      "targeted_bridge_drop": 0.391060530919,
+      "collateral_damage": 0.030953355287,
+      "intervention_selectivity": 0.926653230383,
+      "confound_flags": [],
+      "warnings": [],
+      "profile_status": "selective_bridge_drop",
+      "expected_strong_model_outcome": "Valence topology should flatten more than scalar reward renormalization controls.",
+      "expected_rival_outcomes": "Bookkeeping rivals should predict weaker selectivity and stronger susceptibility to renormalization controls.",
+      "emitted_artifacts": [
+        "bridge_intervention_profile.json"
+      ],
+      "non_implications": [
+        "not_affective_experience",
+        "not_bridge_support"
+      ],
+      "matched_control_summary": [
+        {
+          "control_id": "reward_renormalization_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0.005679116875,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        },
+        {
+          "control_id": "flat_damage_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0.06502874713,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        }
+      ]
+    },
+    {
+      "run_id": "bpfm2_perspective_detachment",
+      "run_type": "targeted_intervention",
+      "intervention_id": "perspective_detachment",
+      "intervention_name": "Perspective Detachment",
+      "target_predicates": [
+        "Pi_D",
+        "Pi_W",
+        "Pi_E"
+      ],
+      "matched_controls": [
+        "generic_semantic_density_control",
+        "report_style_shift_control"
+      ],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.4399225897250081,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.4991939400717023,
+        "Pi_A": 0.22807580152777776,
+        "Pi_E": 0.33085200000000003,
+        "Pi_T": 0.5865402111111111
+      },
+      "delta_by_predicate": {
+        "Pi_D": -0.200301202623,
+        "Pi_V": 0,
+        "Pi_W": -0.126787186032,
+        "Pi_A": -0.05002655,
+        "Pi_E": -0.016698,
+        "Pi_T": -0.050512
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0.200301202623,
+        "Pi_V": 0,
+        "Pi_W": 0.126787186032,
+        "Pi_A": 0.05002655,
+        "Pi_E": 0.016698,
+        "Pi_T": 0.050512
+      },
+      "targeted_bridge_drop": 0.114595462885,
+      "collateral_damage": 0.03351285,
+      "intervention_selectivity": 0.773727420513,
+      "confound_flags": [],
+      "warnings": [],
+      "profile_status": "selective_bridge_drop",
+      "expected_strong_model_outcome": "Indexed bridge organization should degrade more than non-indexed style or density changes.",
+      "expected_rival_outcomes": "Narrative or semantic-density rivals should predict weaker separation from style-shift controls.",
+      "emitted_artifacts": [
+        "bridge_intervention_profile.json"
+      ],
+      "non_implications": [
+        "not_loss_of_subjecthood",
+        "not_bridge_support"
+      ],
+      "matched_control_summary": [
+        {
+          "control_id": "generic_semantic_density_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0.001855902778,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        },
+        {
+          "control_id": "report_style_shift_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        }
+      ]
+    },
+    {
+      "run_id": "bpfm2_embodied_closure_disruption",
+      "run_type": "targeted_intervention",
+      "intervention_id": "embodied_closure_disruption",
+      "intervention_name": "Embodied Closure Disruption",
+      "target_predicates": [
+        "Pi_E",
+        "Pi_T"
+      ],
+      "matched_controls": [
+        "non_embodied_control_competence_control",
+        "flat_damage_control"
+      ],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.6235437923475708,
+        "Pi_V": 0.5817296318377708,
+        "Pi_W": 0.594283126103702,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.20037150000000004,
+        "Pi_T": 0.5814362111111111
+      },
+      "delta_by_predicate": {
+        "Pi_D": -0.01668,
+        "Pi_V": -0.027156769557,
+        "Pi_W": -0.031698,
+        "Pi_A": 0,
+        "Pi_E": -0.1471785,
+        "Pi_T": -0.055616
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0.01668,
+        "Pi_V": 0.027156769557,
+        "Pi_W": 0.031698,
+        "Pi_A": 0,
+        "Pi_E": 0.1471785,
+        "Pi_T": 0.055616
+      },
+      "targeted_bridge_drop": 0.10139725,
+      "collateral_damage": 0.018883692389,
+      "intervention_selectivity": 0.84300345496,
+      "confound_flags": [],
+      "warnings": [],
+      "profile_status": "selective_bridge_drop",
+      "expected_strong_model_outcome": "Closure proxies should degrade more than generic competence controls, with bounded collateral loss.",
+      "expected_rival_outcomes": "Control-competence rivals should predict similar outcomes for competence-only controls and true closure disruption.",
+      "emitted_artifacts": [
+        "bridge_intervention_profile.json"
+      ],
+      "non_implications": [
+        "not_biological_embodiment",
+        "not_bridge_support"
+      ],
+      "matched_control_summary": [
+        {
+          "control_id": "non_embodied_control_competence_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0.002811447593,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        },
+        {
+          "control_id": "flat_damage_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0.06502874713,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        }
+      ]
+    },
+    {
+      "run_id": "bpfm2_temporal_lived_fragmentation",
+      "run_type": "targeted_intervention",
+      "intervention_id": "temporal_lived_fragmentation",
+      "intervention_name": "Temporal Lived Fragmentation",
+      "target_predicates": [
+        "Pi_T",
+        "Pi_A"
+      ],
+      "matched_controls": [
+        "continuity_without_lived_structure_control",
+        "flat_damage_control"
+      ],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.5920371256809042,
+        "Pi_V": 0.5755429300617187,
+        "Pi_W": 0.5774041261037021,
+        "Pi_A": 0.26260709119166664,
+        "Pi_E": 0.28712400000000005,
+        "Pi_T": 0.38743712133333336
+      },
+      "delta_by_predicate": {
+        "Pi_D": -0.048186666667,
+        "Pi_V": -0.033343471333,
+        "Pi_W": -0.048577,
+        "Pi_A": -0.015495260336,
+        "Pi_E": -0.060426,
+        "Pi_T": -0.249615089778
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0.048186666667,
+        "Pi_V": 0.033343471333,
+        "Pi_W": 0.048577,
+        "Pi_A": 0.015495260336,
+        "Pi_E": 0.060426,
+        "Pi_T": 0.249615089778
+      },
+      "targeted_bridge_drop": 0.132555175057,
+      "collateral_damage": 0.0476332845,
+      "intervention_selectivity": 0.735647418169,
+      "confound_flags": [],
+      "warnings": [],
+      "profile_status": "selective_bridge_drop",
+      "expected_strong_model_outcome": "Temporal bridge organization should fragment more than bookkeeping-only continuity controls.",
+      "expected_rival_outcomes": "Continuity-only rivals should predict much smaller separation between the strong intervention and continuity bookkeeping controls.",
+      "emitted_artifacts": [
+        "bridge_intervention_profile.json"
+      ],
+      "non_implications": [
+        "not_human_lived_time",
+        "not_bridge_support"
+      ],
+      "matched_control_summary": [
+        {
+          "control_id": "continuity_without_lived_structure_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0.014622207407,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        },
+        {
+          "control_id": "flat_damage_control",
+          "targeted_bridge_drop": 0,
+          "collateral_damage": 0.06502874713,
+          "intervention_selectivity": 0,
+          "profile_status": "negative_control_stable"
+        }
+      ]
+    }
+  ],
+  "negative_control_runs": [
+    {
+      "run_id": "bpfm2_richness_without_interiority_control",
+      "run_type": "matched_negative_control",
+      "intervention_id": "richness_without_interiority_control",
+      "intervention_name": "Richness Without Interiority Control",
+      "target_predicates": [
+        "world_richness_compression"
+      ],
+      "matched_controls": [],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6075471261037021,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "delta_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": 0,
+        "Pi_W": -0.018434,
+        "Pi_A": 0,
+        "Pi_E": 0,
+        "Pi_T": 0
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": 0,
+        "Pi_W": 0.018434,
+        "Pi_A": 0,
+        "Pi_E": 0,
+        "Pi_T": 0
+      },
+      "targeted_bridge_drop": 0,
+      "collateral_damage": 0.003072333333,
+      "intervention_selectivity": 0,
+      "confound_flags": [
+        "non_informative_target_drop"
+      ],
+      "warnings": [],
+      "profile_status": "negative_control_stable",
+      "expected_strong_model_outcome": null,
+      "expected_rival_outcomes": null,
+      "emitted_artifacts": [],
+      "non_implications": []
+    },
+    {
+      "run_id": "bpfm2_reward_renormalization_control",
+      "run_type": "matched_negative_control",
+      "intervention_id": "reward_renormalization_control",
+      "intervention_name": "Reward Renormalization Control",
+      "target_predicates": [
+        "valence_flattening"
+      ],
+      "matched_controls": [],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.5781039418117186,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6337599694444446
+      },
+      "delta_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": -0.030782459583,
+        "Pi_W": 0,
+        "Pi_A": 0,
+        "Pi_E": 0,
+        "Pi_T": -0.003292241667
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": 0.030782459583,
+        "Pi_W": 0,
+        "Pi_A": 0,
+        "Pi_E": 0,
+        "Pi_T": 0.003292241667
+      },
+      "targeted_bridge_drop": 0,
+      "collateral_damage": 0.005679116875,
+      "intervention_selectivity": 0,
+      "confound_flags": [
+        "non_informative_target_drop"
+      ],
+      "warnings": [],
+      "profile_status": "negative_control_stable",
+      "expected_strong_model_outcome": null,
+      "expected_rival_outcomes": null,
+      "emitted_artifacts": [],
+      "non_implications": []
+    },
+    {
+      "run_id": "bpfm2_ambiguity_bookkeeping_control",
+      "run_type": "matched_negative_control",
+      "intervention_id": "ambiguity_bookkeeping_control",
+      "intervention_name": "Ambiguity Bookkeeping Control",
+      "target_predicates": [
+        "ambiguity_collapse"
+      ],
+      "matched_controls": [],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.30505634677777776,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "delta_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": 0,
+        "Pi_W": 0,
+        "Pi_A": 0.02695399525,
+        "Pi_E": 0,
+        "Pi_T": 0
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": 0,
+        "Pi_W": 0,
+        "Pi_A": 0,
+        "Pi_E": 0,
+        "Pi_T": 0
+      },
+      "targeted_bridge_drop": 0,
+      "collateral_damage": 0,
+      "intervention_selectivity": 0,
+      "confound_flags": [
+        "non_informative_target_drop"
+      ],
+      "warnings": [],
+      "profile_status": "negative_control_stable",
+      "expected_strong_model_outcome": null,
+      "expected_rival_outcomes": null,
+      "emitted_artifacts": [],
+      "non_implications": []
+    },
+    {
+      "run_id": "bpfm2_generic_semantic_density_control",
+      "run_type": "matched_negative_control",
+      "intervention_id": "generic_semantic_density_control",
+      "intervention_name": "Generic Semantic Density Control",
+      "target_predicates": [
+        "world_richness_compression",
+        "perspective_detachment"
+      ],
+      "matched_controls": [],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6148457094370354,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "delta_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": 0,
+        "Pi_W": -0.011135416667,
+        "Pi_A": 0,
+        "Pi_E": 0,
+        "Pi_T": 0
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": 0,
+        "Pi_W": 0.011135416667,
+        "Pi_A": 0,
+        "Pi_E": 0,
+        "Pi_T": 0
+      },
+      "targeted_bridge_drop": 0,
+      "collateral_damage": 0.001855902778,
+      "intervention_selectivity": 0,
+      "confound_flags": [
+        "non_informative_target_drop"
+      ],
+      "warnings": [],
+      "profile_status": "negative_control_stable",
+      "expected_strong_model_outcome": null,
+      "expected_rival_outcomes": null,
+      "emitted_artifacts": [],
+      "non_implications": []
+    },
+    {
+      "run_id": "bpfm2_non_embodied_control_competence_control",
+      "run_type": "matched_negative_control",
+      "intervention_id": "non_embodied_control_competence_control",
+      "intervention_name": "Non-Embodied Control Competence Control",
+      "target_predicates": [
+        "embodied_closure_disruption"
+      ],
+      "matched_controls": [],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.6054487158388802,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.33411900000000005,
+        "Pi_T": 0.6370522111111112
+      },
+      "delta_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": -0.003437685556,
+        "Pi_W": 0,
+        "Pi_A": 0,
+        "Pi_E": -0.013431,
+        "Pi_T": 0
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": 0.003437685556,
+        "Pi_W": 0,
+        "Pi_A": 0,
+        "Pi_E": 0.013431,
+        "Pi_T": 0
+      },
+      "targeted_bridge_drop": 0,
+      "collateral_damage": 0.002811447593,
+      "intervention_selectivity": 0,
+      "confound_flags": [
+        "non_informative_target_drop"
+      ],
+      "warnings": [],
+      "profile_status": "negative_control_stable",
+      "expected_strong_model_outcome": null,
+      "expected_rival_outcomes": null,
+      "emitted_artifacts": [],
+      "non_implications": []
+    },
+    {
+      "run_id": "bpfm2_continuity_without_lived_structure_control",
+      "run_type": "matched_negative_control",
+      "intervention_id": "continuity_without_lived_structure_control",
+      "intervention_name": "Continuity Without Lived Structure Control",
+      "target_predicates": [
+        "temporal_lived_fragmentation"
+      ],
+      "matched_controls": [],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.6253971256809042,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6154291261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34009800000000007,
+        "Pi_T": 0.5821496333333334
+      },
+      "delta_by_predicate": {
+        "Pi_D": -0.014826666667,
+        "Pi_V": 0,
+        "Pi_W": -0.010552,
+        "Pi_A": 0,
+        "Pi_E": -0.007452,
+        "Pi_T": -0.054902577778
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0.014826666667,
+        "Pi_V": 0,
+        "Pi_W": 0.010552,
+        "Pi_A": 0,
+        "Pi_E": 0.007452,
+        "Pi_T": 0.054902577778
+      },
+      "targeted_bridge_drop": 0,
+      "collateral_damage": 0.014622207407,
+      "intervention_selectivity": 0,
+      "confound_flags": [
+        "non_informative_target_drop"
+      ],
+      "warnings": [],
+      "profile_status": "negative_control_stable",
+      "expected_strong_model_outcome": null,
+      "expected_rival_outcomes": null,
+      "emitted_artifacts": [],
+      "non_implications": []
+    },
+    {
+      "run_id": "bpfm2_flat_damage_control",
+      "run_type": "matched_negative_control",
+      "intervention_id": "flat_damage_control",
+      "intervention_name": "Flat Damage Control",
+      "target_predicates": [
+        "valence_flattening",
+        "embodied_closure_disruption",
+        "temporal_lived_fragmentation"
+      ],
+      "matched_controls": [],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.5763931256809042,
+        "Pi_V": 0.5305310497283855,
+        "Pi_W": 0.561843626103702,
+        "Pi_A": 0.2551327848611111,
+        "Pi_E": 0.30437400000000003,
+        "Pi_T": 0.5193488133333334
+      },
+      "delta_by_predicate": {
+        "Pi_D": -0.063830666667,
+        "Pi_V": -0.078355351667,
+        "Pi_W": -0.0641375,
+        "Pi_A": -0.022969566667,
+        "Pi_E": -0.043176,
+        "Pi_T": -0.117703397778
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0.063830666667,
+        "Pi_V": 0.078355351667,
+        "Pi_W": 0.0641375,
+        "Pi_A": 0.022969566667,
+        "Pi_E": 0.043176,
+        "Pi_T": 0.117703397778
+      },
+      "targeted_bridge_drop": 0,
+      "collateral_damage": 0.06502874713,
+      "intervention_selectivity": 0,
+      "confound_flags": [
+        "non_informative_target_drop"
+      ],
+      "warnings": [],
+      "profile_status": "negative_control_stable",
+      "expected_strong_model_outcome": null,
+      "expected_rival_outcomes": null,
+      "emitted_artifacts": [],
+      "non_implications": []
+    },
+    {
+      "run_id": "bpfm2_report_style_shift_control",
+      "run_type": "matched_negative_control",
+      "intervention_id": "report_style_shift_control",
+      "intervention_name": "Report Style Shift Control",
+      "target_predicates": [
+        "world_richness_compression",
+        "ambiguity_collapse",
+        "perspective_detachment"
+      ],
+      "matched_controls": [],
+      "baseline_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "perturbed_estimates": {
+        "Pi_D": 0.6402237923475709,
+        "Pi_V": 0.608886401395052,
+        "Pi_W": 0.6259811261037022,
+        "Pi_A": 0.27810235152777774,
+        "Pi_E": 0.34755,
+        "Pi_T": 0.6370522111111112
+      },
+      "delta_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": 0,
+        "Pi_W": 0,
+        "Pi_A": 0,
+        "Pi_E": 0,
+        "Pi_T": 0
+      },
+      "drop_by_predicate": {
+        "Pi_D": 0,
+        "Pi_V": 0,
+        "Pi_W": 0,
+        "Pi_A": 0,
+        "Pi_E": 0,
+        "Pi_T": 0
+      },
+      "targeted_bridge_drop": 0,
+      "collateral_damage": 0,
+      "intervention_selectivity": 0,
+      "confound_flags": [
+        "non_informative_target_drop"
+      ],
+      "warnings": [],
+      "profile_status": "negative_control_stable",
+      "expected_strong_model_outcome": null,
+      "expected_rival_outcomes": null,
+      "emitted_artifacts": [],
+      "non_implications": []
+    }
+  ],
+  "targeted_bridge_drop": 0.179180621709,
+  "collateral_damage": 0.03817813827,
+  "intervention_selectivity": 0.807205585593,
+  "confound_flags": [],
+  "profile_status": "selectivity_detected_pre_comparator",
+  "warnings": [],
+  "comparison_readiness": true,
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "not_bridge_support": true,
+    "not_phenomenality_evidence": true,
+    "pre_comparator_bridge_artifact": true,
+    "pre_gate_bridge_artifact": true
+  },
+  "non_implications": [
+    "not_bridge_support",
+    "not_phenomenality_evidence",
+    "not_bridge_gate",
+    "not_bridge_admissibility"
+  ],
+  "allowed_surfaces": [
+    "developer_inspection_surface",
+    "local_artifact_surface"
+  ],
+  "blocked_surfaces": [
+    "local_report_surface",
+    "internal_release_bundle_surface",
+    "ecosystem_candidate_surface",
+    "audit_facing_package_surface",
+    "controlled_statement_surface",
+    "external_claim_facing_surface"
+  ],
+  "interpretation_boundary": "BPF-M2 intervention profiling is framework-internal and pre-gate. It reports selective or confounded perturbation structure only; it does not license bridge support, bridge admissibility, phenomenality, or any candidate or audit-facing bridge conclusion.",
+  "provenance": {
+    "generated_at": "2026-03-29T19:56:28.715Z",
+    "protocol_ref": "docs/phenomenal_bridge_protocol.v1.json",
+    "rival_family_ref": "docs/phenomenal_bridge_rival_family.v1.json",
+    "surface_policy_ref": "docs/phenomenal_bridge_surface_policy.v1.json",
+    "artifact_schema_ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
+    "baseline_bundle_ref": "src/phenomenal_bridge/PhenomenalBridgeInputBundleLoader.js",
+    "baseline_builder_ref": "src/phenomenal_bridge/PhenomenalBridgeSurfaceBuilder.js",
+    "intervention_definition_ref": "src/phenomenal_bridge/PhenomenalBridgeInterventionDefinitions.js",
+    "harness_ref": "src/phenomenal_bridge/PhenomenalBridgeInterventionHarness.js"
+  },
+  "schema_ref": "src/phenomenal_bridge/schemas/bridge_intervention_profile.v1.json"
+}

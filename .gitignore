@@ -69,6 +69,10 @@ artifacts/phenomenal_bridge/bpf1/*
 !artifacts/phenomenal_bridge/bpf1/ambiguity_bearing_report.json
 !artifacts/phenomenal_bridge/bpf1/embodied_closure_report.json
 !artifacts/phenomenal_bridge/bpf1/temporal_lived_structure_report.json
+!artifacts/phenomenal_bridge/bpfm2/
+artifacts/phenomenal_bridge/bpfm2/*
+!artifacts/phenomenal_bridge/bpfm2/bridge_intervention_profile.json
+!artifacts/phenomenal_bridge/bpfm2/bridge_reducibility_report.json
 !artifacts/protocolized_evaluation/
 artifacts/protocolized_evaluation/*
 !artifacts/protocolized_evaluation/evaluation_protocol_manifest.json

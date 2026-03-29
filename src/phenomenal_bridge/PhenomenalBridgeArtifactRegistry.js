@@ -16,7 +16,7 @@ export const PHENOMENAL_BRIDGE_EXPECTED_ARTIFACTS = Object.freeze(
 
 export const PHENOMENAL_BRIDGE_IMPLEMENTED_ARTIFACTS = Object.freeze(
   Object.entries(PHENOMENAL_BRIDGE_ARTIFACT_SCHEMA.artifacts || {})
-    .filter(([, spec]) => spec.status === 'implemented_run_level_report')
+    .filter(([, spec]) => typeof spec.status === 'string' && spec.status.startsWith('implemented'))
     .map(([artifactName]) => artifactName)
 );
 

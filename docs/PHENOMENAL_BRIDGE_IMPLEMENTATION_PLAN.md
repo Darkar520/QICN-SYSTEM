@@ -33,25 +33,38 @@
 - Closes: bridge predicates become provisionally measurable at run level.
 - Remains open: interventions, comparators, bridge gate, bridge roots, ecosystem integration.
 
-## BPF-2
+## BPF-M2
 
-- Objective: implement bridge intervention family and matched controls.
-- Modules: bridge intervention harness, control registry, perturbation descriptors.
-- Artifacts: `bridge_intervention_profile.json`
-- Verifiers: intervention selectivity checks, matched-control checks, instability checks.
-- Risks: rebranding SRT interventions, generic damage mistaken for bridge evidence.
-- Closes: bridge perturbation burden.
-- Remains open: comparator burden and gate.
-
-## BPF-3
-
-- Objective: implement bridge rival family, admissible composites, bridge loss family, and bridge irreducibility margin.
-- Modules: bridge rival registry runtime, bridge comparator, bridge loss policy.
-- Artifacts: `bridge_reducibility_report.json`
-- Verifiers: loss-sharing checks, anti-strawman checks, composite coverage checks.
-- Risks: weak rivals, unfair loss, naming-based irreducibility.
-- Closes: bridge comparator burden.
-- Remains open: bridge gate and ecosystem integration.
+- Objective: adversarialize the bridge layer by condensing the original BPF-2
+  and BPF-3 burdens into a single block.
+- Modules:
+  - `PhenomenalBridgeInputBundleLoader.js`
+  - `PhenomenalBridgeInterventionDefinitions.js`
+  - `PhenomenalBridgeInterventionHarness.js`
+  - `PhenomenalBridgeComparatorFamily.js`
+  - `PhenomenalBridgeReducibilityComparator.js`
+  - `build-phenomenal-bridge-adversarial.cjs`
+- Artifacts:
+  - `bridge_intervention_profile.json`
+  - `bridge_reducibility_report.json`
+- Verifiers:
+  - `verify-phenomenal-bridge-interventions.cjs`
+  - `verify-phenomenal-bridge-reducibility.cjs`
+  - plus retained BPF-0 and BPF-1 verifiers
+- Risks:
+  - relabeling SRT perturbations instead of creating bridge perturbations
+  - matched controls that accidentally mimic the targeted signatures
+  - weak bridge rivals that do not pay shared loss or complexity
+  - overreading partial irreducibility support as bridge closure
+- Closes:
+  - bridge intervention burden
+  - bridge comparator burden
+  - bridge complexity and reducibility burden at run level
+- Remains open:
+  - bridge gate
+  - bridge roots
+  - bridge ecosystem integration
+  - final bridge audit
 
 ## BPF-4
 
@@ -93,5 +106,6 @@
 ## Planning rule
 
 No later block may be treated as closed merely because terminology exists in
-BPF-0 or provisional reports exist in BPF-1. Comparator closure, intervention
-closure, gate closure, and ecosystem bridge inclusion remain separate burdens.
+BPF-0, provisional reports exist in BPF-1, or adversarial artifacts exist in
+BPF-M2. Gate closure, root-verdict closure, ecosystem bridge inclusion, and
+final bridge audit remain separate burdens.

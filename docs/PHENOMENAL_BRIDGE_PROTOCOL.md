@@ -3,10 +3,12 @@
 ## Purpose
 
 BPF opens a formal bridge layer above the consolidated Subjectivity Runtime
-Layer. BPF-1 is the first runtime-facing bridge block: it adds provisional
-bridge coordinate surfaces and run-level bridge reports while keeping the whole
-program framework-internal, pre-comparator, pre-intervention-harness, and
-pre-gate.
+Layer. BPF-M2 is the first adversarial bridge block: it preserves the BPF-0
+scaffold and the BPF-1 surface layer, then adds a bridge-specific intervention
+family, matched negative controls, executable bridge weak rivals, admissible
+pairwise bridge composites, a shared bridge loss family, a bridge complexity
+penalty, and a run-level bridge reducibility artifact while keeping the whole
+program framework-internal, pre-gate, pre-root-verdict, and pre-ecosystem.
 
 ## What BPF is not
 
@@ -72,7 +74,20 @@ That layer must introduce:
 - bridge functional and gate
 - bridge-specific governance
 
-Only the first of those runtime burdens is implemented in BPF-1.
+Implemented now in BPF-M2:
+
+- bridge predicate surfaces
+- bridge intervention family
+- matched negative controls
+- bridge weak rivals and admissible pairwise composites
+- bridge loss family and complexity penalty
+- bridge reducibility comparison
+
+Still deferred:
+
+- bridge gate and bridge roots
+- bridge ecosystem integration
+- final bridge audit
 
 ## Bridge predicate family
 
@@ -85,7 +100,7 @@ The BPF target family is now:
 - `Pi_E`: embodied closure
 - `Pi_T`: temporal lived structure
 
-Status in BPF-1:
+Status after BPF-M2:
 
 - formally named
 - machine-registered
@@ -93,8 +108,9 @@ Status in BPF-1:
 - provisionally estimated
 - emitted only as run-level bridge reports
 - not gate-bound
-- not comparator-closed
-- not intervention-closed
+- adversarially perturbed
+- comparator-tested
+- still not bridge support
 
 ## Bridge-level burden structure
 
@@ -107,7 +123,9 @@ Any later bridge-support reading must still carry all of the following:
 5. bridge governance burden
 6. bridge drift and stale-lineage burden
 
-BPF-1 closes only the first burden, and only provisionally.
+BPF-M2 closes the predicate burden, the intervention burden, and the comparator
+burden at a bounded runtime level. It does not close the bridge gate burden,
+the root-verdict burden, the ecosystem burden, or the final audit burden.
 
 ## Bridge-level comparator burden
 
@@ -115,7 +133,9 @@ The Paper 8 weak family is necessary background but insufficient for BPF.
 BPF requires a new rival family able to explain away bridge predicates without
 granting phenomenal organization.
 
-BPF-1 does not implement that comparator runtime.
+BPF-M2 now implements that comparator runtime with a bridge-specific weak rival
+family, admissible pairwise composites, a shared bridge loss family, and a
+bridge reducibility artifact. This still does not constitute a bridge gate.
 
 ## Bridge-level intervention burden
 
@@ -123,7 +143,9 @@ Paper 8 intervention logic is necessary background but insufficient for BPF.
 BPF requires new perturbation families that test bridge predicates rather than
 only the seven Paper 8 coordinates.
 
-BPF-1 does not implement that intervention harness.
+BPF-M2 now implements that intervention harness with six targeted bridge
+perturbations and eight matched negative controls. These artifacts remain
+pre-gate and non-claim-facing.
 
 ## Bridge-level artifact burden
 
@@ -136,13 +158,16 @@ Implemented in BPF-1:
 - `embodied_closure_report.json`
 - `temporal_lived_structure_report.json`
 
-Still not emitted in BPF-1:
+Implemented in BPF-M2:
+
+- `bridge_intervention_profile.json`
+- `bridge_reducibility_report.json`
+
+Still not emitted in BPF-M2:
 
 - `phenomenal_bridge_projection.json`
 - `phenomenal_bridge_gate_result.json`
 - `phenomenal_bridge_manifest.json`
-- `bridge_intervention_profile.json`
-- `bridge_reducibility_report.json`
 
 ## Bridge-level non-claims
 
@@ -156,29 +181,29 @@ BPF does not authorize:
 - bridge admissibility claims
 - automatic Paper 9 opening
 - runtime-to-corpus confirmation loops
+- bridge partial irreducibility support as a bridge gate
 
 ## Relation to BPF-0..6
 
 - `BPF-0`: protocol, manifests, schemas, boundaries, and scaffold-only code
 - `BPF-1`: provisional bridge predicate surfaces and run-level bridge reports
-- `BPF-2`: bridge intervention family and negative controls
-- `BPF-3`: bridge comparator family, admissible composites, and bridge loss
+- `BPF-M2`: bridge intervention family, matched controls, executable rival family, admissible composites, shared bridge loss family, bridge complexity penalty, and bridge reducibility comparison
 - `BPF-4`: bridge gate, functional, thresholds, and run-level bridge roots
 - `BPF-5`: ecosystem integration
 - `BPF-6`: final bridge audit and readiness gate
 
 ## Interpretation rule
 
-The strongest legitimate reading of BPF-1 is:
+The strongest legitimate reading of BPF-M2 is:
 
 - bridge predicate surfaces exist
-- bridge reports can now be emitted
-- the bridge program has moved beyond pure scaffold
+- bridge intervention and comparator burdens are now runtime-real
+- bridge reducibility can now be assessed in a bounded framework-internal way
 
 The strongest illegitimate readings are:
 
 - bridge support exists
 - phenomenality is supported
-- comparator burden is closed
-- intervention burden is closed
+- the bridge gate is closed
+- candidate or audit integration is authorized
 - Paper 9 is authorized

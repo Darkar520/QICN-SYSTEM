@@ -1,0 +1,286 @@
+{
+  "artifact_role": "condition_output_consumption_policy",
+  "scope": "small_batch",
+  "policy_version": "phase6_v1",
+  "source_artifacts": {
+    "condition_metrics_summary": "condition_metrics_summary.json",
+    "condition_comparison": "condition_comparison.json",
+    "condition_support_labels": "condition_support_labels.json"
+  },
+  "policy_classes": {
+    "internal_only": {
+      "definition": "Machine-readable internal artifact only; do not surface directly to human-facing or claim-facing outputs.",
+      "allows": [
+        "internal_machine_reuse",
+        "pre_verdict_runtime_diagnostics"
+      ],
+      "prohibits": [
+        "human_facing_export",
+        "claim_facing_export",
+        "external_validation_read"
+      ]
+    },
+    "descriptive_machine_readable": {
+      "definition": "Descriptive machine-readable output; it may be reused programmatically and surfaced to humans only with explicit boundaries.",
+      "allows": [
+        "internal_machine_reuse",
+        "bounded_human_review",
+        "descriptive_export_with_boundary"
+      ],
+      "prohibits": [
+        "causal_confirmation",
+        "claim_closure",
+        "external_validation_read"
+      ]
+    },
+    "displayable_with_boundary": {
+      "definition": "May be displayed to humans only with explicit boundaries and without claim promotion.",
+      "allows": [
+        "bounded_human_review",
+        "internal_machine_reuse"
+      ],
+      "prohibits": [
+        "claim_facing_export",
+        "truth_labeling",
+        "external_validation_read"
+      ]
+    },
+    "support_only_not_claim_safe": {
+      "definition": "Internal support posture only; not safe for truth labels, claim closure, or external validation language.",
+      "allows": [
+        "bounded_internal_support_review"
+      ],
+      "prohibits": [
+        "claim_facing_export",
+        "truth_labeling",
+        "external_validation_read"
+      ]
+    },
+    "blocked_for_external_claiming": {
+      "definition": "May remain machine-readable and internally reviewable, but any external or claim-facing promotion is blocked.",
+      "allows": [
+        "internal_machine_reuse",
+        "bounded_internal_review"
+      ],
+      "prohibits": [
+        "external_claiming",
+        "causal_confirmation",
+        "claim_facing_export"
+      ]
+    }
+  },
+  "export_policies": {
+    "internal_only": "Internal tooling only; no direct human-facing export.",
+    "machine_readable_with_boundary_only": "Machine-readable export is allowed, but any human-facing use requires an explicit boundary.",
+    "human_facing_with_boundary_only": "Human-facing display/export is allowed only with explicit non-claim boundaries.",
+    "blocked_for_claim_facing_export": "Claim-facing or externalizing export is blocked in this phase."
+  },
+  "claim_safety_states": {
+    "claim_unsafe": "Artifact is not safe for claim use.",
+    "support_only_not_claim_safe": "Artifact can contribute only to internal support posture, never to claim closure.",
+    "external_validation_required_for_promotion": "Any stronger interpretive promotion requires external validation not present in this repo."
+  },
+  "governed_outputs": [
+    "condition_metrics_summary.json",
+    "condition_comparison.json",
+    "condition_support_labels.json"
+  ],
+  "support_statement_policy": {
+    "status": "blocked",
+    "dependencies": [
+      "condition_metrics_summary.json",
+      "condition_support_labels.json",
+      "condition_output_consumption_policy.json"
+    ],
+    "blocked_by": [
+      "external_validation_absent",
+      "support_label_under_evaluation_blocks_support_statement"
+    ],
+    "interpretation_boundary": "Any condition-level support statement remains descriptive, repository-local, not causal, not closed, and externally unvalidated."
+  },
+  "validation_context": {
+    "external_validation_present": false,
+    "baseline_present": false,
+    "closure_state": "not_closed",
+    "validation_state": "externally_unvalidated"
+  },
+  "global_blocking_conditions": [
+    "external_validation_absent",
+    "strong_claim_promotion_blocked"
+  ],
+  "outputs": {
+    "condition_metrics_summary.json": {
+      "artifact": "condition_metrics_summary.json",
+      "output_role": "descriptive_output",
+      "present": true,
+      "consumption_class": "descriptive_machine_readable",
+      "export_policy": "human_facing_with_boundary_only",
+      "claim_safety": "claim_unsafe",
+      "claim_gate_status": "claim_unsafe",
+      "support_statement_status": "blocked",
+      "promotion_requirement": "external_validation_required",
+      "machine_readable_allowed": true,
+      "human_facing_allowed": true,
+      "claim_facing_allowed": false,
+      "required_boundaries": [
+        "interpretation_boundary"
+      ],
+      "required_refs": [
+        "support_boundary_ref",
+        "consumption_policy_ref"
+      ],
+      "allowed_consumption": [
+        "internal_machine_reuse",
+        "bounded_human_review",
+        "descriptive_export_with_boundary"
+      ],
+      "blocked_consumption": [
+        "causal_confirmation",
+        "claim_closure",
+        "external_validation_read",
+        "external_validation_absent",
+        "small_batch_descriptive_only"
+      ],
+      "boundaries_present": {
+        "interpretation_boundary": true
+      },
+      "refs_present": {
+        "support_boundary_ref": true,
+        "consumption_policy_ref": true
+      },
+      "boundary_ready": true,
+      "refs_ready": true,
+      "blocking_conditions": [
+        "external_validation_absent",
+        "small_batch_descriptive_only"
+      ],
+      "interpretation_allowed": "Small-batch descriptive review only.",
+      "interpretation_not_allowed": [
+        "Do not read this as causal confirmation.",
+        "Do not read this as external validation."
+      ],
+      "explicit_non_claim_restrictions": [
+        "Do not read this as causal confirmation.",
+        "Do not read this as external validation."
+      ],
+      "notes": "Condition summaries remain descriptive small-batch artifacts."
+    },
+    "condition_comparison.json": {
+      "artifact": "condition_comparison.json",
+      "output_role": "descriptive_output",
+      "present": true,
+      "consumption_class": "blocked_for_external_claiming",
+      "export_policy": "blocked_for_claim_facing_export",
+      "claim_safety": "claim_unsafe",
+      "claim_gate_status": "claim_unsafe",
+      "support_statement_status": "blocked",
+      "promotion_requirement": "external_validation_required",
+      "machine_readable_allowed": true,
+      "human_facing_allowed": false,
+      "claim_facing_allowed": false,
+      "required_boundaries": [
+        "interpretation_boundary"
+      ],
+      "required_refs": [
+        "support_boundary_ref",
+        "consumption_policy_ref"
+      ],
+      "allowed_consumption": [
+        "internal_machine_reuse",
+        "bounded_internal_review"
+      ],
+      "blocked_consumption": [
+        "external_claiming",
+        "causal_confirmation",
+        "claim_facing_export",
+        "external_validation_absent",
+        "causal_read_blocked",
+        "comparison_output_not_confirmatory"
+      ],
+      "boundaries_present": {
+        "interpretation_boundary": true
+      },
+      "refs_present": {
+        "support_boundary_ref": true,
+        "consumption_policy_ref": true
+      },
+      "boundary_ready": true,
+      "refs_ready": true,
+      "blocking_conditions": [
+        "external_validation_absent",
+        "causal_read_blocked",
+        "comparison_output_not_confirmatory"
+      ],
+      "interpretation_allowed": "Internal descriptive delta review only.",
+      "interpretation_not_allowed": [
+        "Do not read this as causal confirmation.",
+        "Do not read this as theory validation.",
+        "Do not read this as an externally valid comparison."
+      ],
+      "explicit_non_claim_restrictions": [
+        "Do not read this as causal confirmation.",
+        "Do not read this as theory validation.",
+        "Do not read this as an externally valid comparison."
+      ],
+      "notes": "Condition comparisons remain blocked for claim-facing export in this phase."
+    },
+    "condition_support_labels.json": {
+      "artifact": "condition_support_labels.json",
+      "output_role": "support_labeled_output",
+      "present": true,
+      "consumption_class": "support_only_not_claim_safe",
+      "export_policy": "human_facing_with_boundary_only",
+      "claim_safety": "support_only_not_claim_safe",
+      "claim_gate_status": "support_only_not_claim_safe",
+      "support_statement_status": "blocked",
+      "promotion_requirement": "external_validation_required",
+      "machine_readable_allowed": true,
+      "human_facing_allowed": true,
+      "claim_facing_allowed": false,
+      "required_boundaries": [
+        "non_claim_boundaries",
+        "interpretation_not_allowed"
+      ],
+      "required_refs": [
+        "consumption_policy_ref"
+      ],
+      "allowed_consumption": [
+        "bounded_internal_support_review"
+      ],
+      "blocked_consumption": [
+        "claim_facing_export",
+        "truth_labeling",
+        "external_validation_read",
+        "external_validation_absent",
+        "support_label_not_truth_label"
+      ],
+      "boundaries_present": {
+        "non_claim_boundaries": true,
+        "interpretation_not_allowed": true
+      },
+      "refs_present": {
+        "consumption_policy_ref": true
+      },
+      "boundary_ready": true,
+      "refs_ready": true,
+      "blocking_conditions": [
+        "external_validation_absent",
+        "support_label_not_truth_label"
+      ],
+      "interpretation_allowed": "Internal condition-level support posture only.",
+      "interpretation_not_allowed": [
+        "Do not read this as final classification.",
+        "Do not read this as external validation.",
+        "Do not read this as claim closure."
+      ],
+      "explicit_non_claim_restrictions": [
+        "Do not read this as final classification.",
+        "Do not read this as external validation.",
+        "Do not read this as claim closure."
+      ],
+      "notes": "Condition support labels remain support-only and claim-unsafe."
+    }
+  },
+  "condition_level_access": {},
+  "interpretation_boundary": "Condition-level consumption policy only; does not upgrade descriptive summaries, comparisons, or support labels into claims."
+}

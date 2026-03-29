@@ -1,14 +1,14 @@
 {
   "artifact_role": "ecosystem_release_candidate_manifest",
-  "generated_at": "2026-03-29T22:45:30.814Z",
-  "bundle_id": "ecosystem_release_candidate_2026-03-29T22-45-30-814Z",
+  "generated_at": "2026-03-29T22:49:10.559Z",
+  "bundle_id": "ecosystem_release_candidate_2026-03-29T22-49-10-559Z",
   "bundle_root": ".",
-  "candidate_status": "FAIL",
+  "candidate_status": "PASS",
   "baselines": {
     "qicn_system": {
       "repository": "QICN-SYSTEM",
       "branch": "main",
-      "head": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
+      "head": "278b52f0340a41586d216b7a129a955a4faa0ebe",
       "upstream": "origin/main",
       "operational_readiness_manifest": "system/manifests/operational_readiness_manifest.json",
       "artifact_manifest": "system/manifests/artifact_manifest.json",
@@ -167,13 +167,7 @@
     "required_open_gap_count": 0,
     "required_repo_state": "clean_and_pushed_for_both_repositories"
   },
-  "open_gaps": [
-    {
-      "id": "system.repo_not_clean",
-      "classification": "blocking_gap",
-      "affects_internal_release_candidate": true
-    }
-  ],
+  "open_gaps": [],
   "allowed_internal_use": [
     "repo-local operational verification",
     "repo-local canonical review",

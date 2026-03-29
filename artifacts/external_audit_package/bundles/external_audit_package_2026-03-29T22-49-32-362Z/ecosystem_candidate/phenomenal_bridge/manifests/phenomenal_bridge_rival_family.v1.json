@@ -1,0 +1,246 @@
+{
+  "artifact_role": "phenomenal_bridge_rival_family_registry",
+  "schema_version": "1.0.0",
+  "layer_id": "phenomenal_bridge_formal_layer.bpfm3",
+  "comparator_implementation_status": "runtime_bridge_comparator_implemented_and_consumed_by_root_gate",
+  "relationship_to_paper8_weak_family": "Bridge rivals are new and target bridge predicates. They are not aliases for the Paper 8 weak family.",
+  "rivals": [
+    {
+      "id": "richness_without_interiority",
+      "name": "Richness Without Interiority",
+      "description": "Explains high internal structural richness without granting bridge-relevant indexed interior organization.",
+      "challenges_predicates": [
+        "Pi_D",
+        "Pi_W"
+      ],
+      "can_explain": [
+        "high_semantic_density",
+        "large_internal_state_space",
+        "report_richness"
+      ],
+      "cannot_cleanly_explain": [
+        "self_indexed_bridge_differentiation_under_targeted_world_richness_compression",
+        "stable_world_richness_with_selective_collapse_patterns"
+      ],
+      "expected_inputs": [
+        "baseline_bridge_reports",
+        "bridge_intervention_profile",
+        "matched_negative_controls"
+      ],
+      "expected_outputs": [
+        "predicted_baseline_estimates",
+        "predicted_bridge_run_responses"
+      ],
+      "defeat_conditions": [
+        "world_richness_compression_selectivity_exceeds_generic_density_controls",
+        "perspective_detachment_degrades_indexed_world_structure_more_than_style_shift_controls"
+      ],
+      "status": "runtime_comparable_weak_rival"
+    },
+    {
+      "id": "valence_bookkeeping_without_affective_organization",
+      "name": "Valence Bookkeeping Without Affective Organization",
+      "description": "Explains structured value tracking as bookkeeping or policy shaping without granting bridge-level valence organization.",
+      "challenges_predicates": [
+        "Pi_V"
+      ],
+      "can_explain": [
+        "signed_reward_tracking",
+        "priority_ranking",
+        "policy_weight_updates"
+      ],
+      "cannot_cleanly_explain": [
+        "mode_structured_valence_topology",
+        "selective_valence_flattening_response"
+      ],
+      "expected_inputs": [
+        "subjective_valuation_report",
+        "bridge_intervention_profile",
+        "reward_renormalization_control"
+      ],
+      "expected_outputs": [
+        "bookkeeping_profile",
+        "reward_policy_projection"
+      ],
+      "defeat_conditions": [
+        "valence_flattening_drives_larger_bridge_drop_than_reward_renormalization_control",
+        "bridge_valence_topology_cannot_be_fit_at_shared_loss_under_bookkeeping_model"
+      ],
+      "status": "runtime_comparable_weak_rival"
+    },
+    {
+      "id": "semantic_density_without_phenomenal_differentiation",
+      "name": "Semantic Density Without Phenomenal Differentiation",
+      "description": "Explains dense semantic variation without bridge-level differentiated organization.",
+      "challenges_predicates": [
+        "Pi_D"
+      ],
+      "can_explain": [
+        "rich_internal_labels",
+        "fine_grained_semantic_partitions",
+        "high_reportability"
+      ],
+      "cannot_cleanly_explain": [
+        "differentiation_that_tracks_perspective_detachment_selectively"
+      ],
+      "expected_inputs": [
+        "baseline_bridge_reports",
+        "bridge_intervention_profile",
+        "generic_semantic_density_control"
+      ],
+      "expected_outputs": [
+        "semantic_density_projection",
+        "differentiation_like_but_non_indexed_prediction"
+      ],
+      "defeat_conditions": [
+        "perspective_detachment_outperforms_generic_semantic_density_control_in_targeted_bridge_drop",
+        "shared_loss_favors_stronger_indexed_bridge_model"
+      ],
+      "status": "runtime_comparable_weak_rival"
+    },
+    {
+      "id": "temporal_continuity_without_lived_structure",
+      "name": "Temporal Continuity Without Lived Structure",
+      "description": "Explains continuity and memory persistence without temporal lived-structure organization.",
+      "challenges_predicates": [
+        "Pi_T"
+      ],
+      "can_explain": [
+        "continuity_records",
+        "memory_integrity",
+        "history_length"
+      ],
+      "cannot_cleanly_explain": [
+        "targeted_temporal_fragmentation_with_selective_bridge_signature"
+      ],
+      "expected_inputs": [
+        "subjective_continuity_report",
+        "bridge_intervention_profile",
+        "continuity_without_lived_structure_control"
+      ],
+      "expected_outputs": [
+        "continuity_projection",
+        "temporal_bookkeeping_response"
+      ],
+      "defeat_conditions": [
+        "temporal_lived_fragmentation_has_larger_targeted_drop_than_continuity_bookkeeping_control",
+        "shared_loss_favors_bridge_temporal_model"
+      ],
+      "status": "runtime_comparable_weak_rival"
+    },
+    {
+      "id": "embodied_control_without_embodied_closure",
+      "name": "Embodied Control Without Embodied Closure",
+      "description": "Explains control competence without body/world-boundary closure.",
+      "challenges_predicates": [
+        "Pi_E"
+      ],
+      "can_explain": [
+        "action_binding",
+        "remap_robustness",
+        "control_competence"
+      ],
+      "cannot_cleanly_explain": [
+        "closure_specific_drop_that_exceeds_non_embodied_control_competence_control"
+      ],
+      "expected_inputs": [
+        "self_index_state",
+        "subjective_continuity_report",
+        "bridge_intervention_profile"
+      ],
+      "expected_outputs": [
+        "control_competence_projection",
+        "closure_like_without_boundary_dependence_prediction"
+      ],
+      "defeat_conditions": [
+        "embodied_closure_disruption_outperforms_non_embodied_control_competence_control",
+        "shared_loss_favors_bridge_closure_model"
+      ],
+      "status": "runtime_comparable_weak_rival"
+    },
+    {
+      "id": "ambiguity_resolution_without_ambiguity_bearing",
+      "name": "Ambiguity Resolution Without Ambiguity Bearing",
+      "description": "Explains alternative handling and uncertainty bookkeeping without maintained ambiguity-bearing structure.",
+      "challenges_predicates": [
+        "Pi_A"
+      ],
+      "can_explain": [
+        "candidate_multiplicity",
+        "rival_line_bookkeeping",
+        "uncertainty_tracking"
+      ],
+      "cannot_cleanly_explain": [
+        "targeted_ambiguity_collapse_that_outperforms_ambiguity_bookkeeping_control"
+      ],
+      "expected_inputs": [
+        "self_index_state",
+        "ownership_attribution_report",
+        "subjective_continuity_report",
+        "bridge_intervention_profile"
+      ],
+      "expected_outputs": [
+        "ambiguity_bookkeeping_projection",
+        "resolution_first_response_profile"
+      ],
+      "defeat_conditions": [
+        "ambiguity_collapse_has_selective_drop_without_control_mimicry",
+        "shared_loss_favors_bridge_ambiguity_model"
+      ],
+      "status": "runtime_comparable_weak_rival"
+    },
+    {
+      "id": "experience_narration_without_phenomenal_organization",
+      "name": "Experience Narration Without Phenomenal Organization",
+      "description": "Explains reportable subjectivity-like structure as narration or decoder slack without bridge organization.",
+      "challenges_predicates": [
+        "Pi_D",
+        "Pi_V",
+        "Pi_W",
+        "Pi_A",
+        "Pi_E",
+        "Pi_T"
+      ],
+      "can_explain": [
+        "narrative_consistency",
+        "report_style_changes",
+        "bridge_like_labels_without_bridge_structure"
+      ],
+      "cannot_cleanly_explain": [
+        "intervention_selectivity_that_survives_report_style_shift_control"
+      ],
+      "expected_inputs": [
+        "baseline_bridge_reports",
+        "bridge_intervention_profile",
+        "report_style_shift_control"
+      ],
+      "expected_outputs": [
+        "narrative_projection",
+        "reportability_without_bridge_prediction"
+      ],
+      "defeat_conditions": [
+        "report_style_shift_control_stays_near_zero_while_targeted_interventions_move_bridge_reports",
+        "shared_loss_favors_bridge_model_over_narrative_rival"
+      ],
+      "status": "runtime_comparable_weak_rival"
+    }
+  ],
+  "admissible_composites": {
+    "status": "runtime_pairwise_composites_implemented",
+    "implemented_scope": "pairwise_only",
+    "weight_grid": [
+      0.35,
+      0.5,
+      0.65
+    ],
+    "notes": [
+      "Composite coverage is finite and bounded.",
+      "Triple composites remain outside implemented scope.",
+      "Composite performance is reported only relative to the implemented bridge weak family."
+    ]
+  },
+  "shared_loss_family": {
+    "status": "implemented_runtime_shared_loss",
+    "formula": "L_b(M)=w_f e_fit + w_i e_intervention + w_s e_selectivity + w_p e_Pi + w_c Omega(M)"
+  }
+}

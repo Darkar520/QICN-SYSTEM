@@ -1,0 +1,80 @@
+{
+  "artifact_role": "operational_readiness_manifest",
+  "project_root": ".",
+  "canonical_scripts": [
+    "build:js",
+    "verify:env-contract",
+    "verify:artifacts",
+    "verify:policies",
+    "verify:evaluation-protocol",
+    "verify:evaluation-metrics",
+    "verify:evaluation-comparisons",
+    "verify:evaluation-phase",
+    "verify:operational-readiness",
+    "smoke:operational",
+    "regression:minimal",
+    "release:bundle",
+    "aggregate:small-batch",
+    "evaluate:protocolized",
+    "evaluate:campaign"
+  ],
+  "missing_canonical_scripts": [],
+  "docs_required": [
+    "docs/REPRODUCIBILITY_CONTRACT.md",
+    "docs/OPERATIONAL_READINESS.md",
+    "docs/RELEASE_PROCESS.md",
+    "docs/PROTOCOLIZED_EVALUATION_PROTOCOL.md",
+    "docs/PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md",
+    "docs/EVALUATION_COMPARISON_MATRIX.md",
+    "docs/EVALUATION_METRICS_BASELINE.md",
+    "docs/EVALUATION_CONTROLS_AND_INTERVENTIONS.md",
+    "docs/EVALUATION_STATISTICAL_POLICY.md",
+    "docs/EVALUATION_INTERPRETATION_BOUNDARY.md"
+  ],
+  "docs_missing": [],
+  "scripts_required": [
+    "scripts/verify-env-contract.cjs",
+    "scripts/verify-artifacts.cjs",
+    "scripts/verify-evaluation-protocol.cjs",
+    "scripts/verify-evaluation-metrics.cjs",
+    "scripts/verify-evaluation-comparisons.cjs",
+    "scripts/verify-operational-readiness.cjs",
+    "scripts/run-operational-smoke-suite.cjs",
+    "scripts/build-internal-release-bundle.cjs",
+    "scripts/build-entropy-condition-metrics.cjs",
+    "scripts/run-protocolized-evaluation.cjs",
+    "scripts/run-execution-campaign.cjs",
+    "scripts/evaluation-phase-common.cjs",
+    "scripts/export-governed-output.cjs",
+    "scripts/emit-controlled-statement.cjs",
+    "scripts/build-local-governed-report.cjs"
+  ],
+  "scripts_missing": [],
+  "entrypoints_required": [
+    "build.cjs",
+    "scripts/run-episode.cjs",
+    "scripts/evaluate-admissibility.cjs"
+  ],
+  "entrypoints_missing": [],
+  "environment_contract": {
+    "ok": true,
+    "output": "artifacts\\operational_readiness\\environment_contract_manifest.json"
+  },
+  "workflow": {
+    "path": ".github\\workflows\\ci.yml",
+    "present": true,
+    "runs_on_node_20": true,
+    "verifies_operational_readiness": true,
+    "runs_smoke_operational": true,
+    "covers_codex_branches": true
+  },
+  "package_engines": {
+    "node": "20.x"
+  },
+  "interpretation_boundary": "Operational readiness manifest only; not external validation, not framework confirmation, not claim closure.",
+  "non_claim_restrictions": [
+    "CI green does not imply theoretical closure.",
+    "Canonical commands do not imply external validation.",
+    "Release readiness is an internal operational property only."
+  ]
+}

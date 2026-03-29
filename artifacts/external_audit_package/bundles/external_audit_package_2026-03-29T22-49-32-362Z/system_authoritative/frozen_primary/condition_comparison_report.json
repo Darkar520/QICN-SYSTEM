@@ -1,0 +1,1415 @@
+{
+  "artifact_role": "condition_comparison_report",
+  "comparison_matrix_ref": "docs/evaluation_comparison_matrix.v1.json",
+  "statistical_policy_ref": "docs/evaluation_statistical_policy.v1.json",
+  "source_artifacts": {
+    "condition_evaluation_summary": "artifacts/protocolized_evaluation/batches/execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch/aggregate/condition_evaluation_summary.json",
+    "condition_metrics_summary": "artifacts/protocolized_evaluation/batches/execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch/aggregate/condition_metrics_summary.json"
+  },
+  "comparisons": [
+    {
+      "id": "baseline_vs_replay",
+      "baseline": "baseline",
+      "target": "replay",
+      "comparison_type": "inter_condition",
+      "support_level_declared": "description_only",
+      "realized_support_level": "description_only",
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 999,
+      "baseline_included_n": 9,
+      "target_included_n": 9,
+      "blocking_conditions": [],
+      "primary_metrics": {
+        "quantum_primary_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "baseline_counts": {
+            "1": 9
+          },
+          "target_counts": {
+            "1": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": null
+        },
+        "channel_clean_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "baseline_counts": {
+            "1": 9
+          },
+          "target_counts": {
+            "1": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": null
+        }
+      },
+      "secondary_metrics": {
+        "fallback_tick_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        },
+        "entropy_latency_mean_ms": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        },
+        "run_verdict_status": {
+          "metric_kind": "categorical_or_unsupported",
+          "baseline": {
+            "sample_count": 0,
+            "mean": null,
+            "min": null,
+            "max": null,
+            "std_dev": null,
+            "empirical_min_max_band": null
+          },
+          "target": {
+            "sample_count": 0,
+            "mean": null,
+            "min": null,
+            "max": null,
+            "std_dev": null,
+            "empirical_min_max_band": null
+          },
+          "baseline_counts": {
+            "ADMISSIBLE": 9
+          },
+          "target_counts": {
+            "ADMISSIBLE": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        }
+      },
+      "non_claim_boundary": "Descriptive control contrast only; not causal or theory-facing."
+    },
+    {
+      "id": "baseline_vs_shuffled",
+      "baseline": "baseline",
+      "target": "shuffled",
+      "comparison_type": "inter_condition",
+      "support_level_declared": "description_only",
+      "realized_support_level": "description_only",
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 999,
+      "baseline_included_n": 9,
+      "target_included_n": 9,
+      "blocking_conditions": [],
+      "primary_metrics": {
+        "quantum_primary_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "baseline_counts": {
+            "1": 9
+          },
+          "target_counts": {
+            "1": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": null
+        },
+        "channel_clean_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "baseline_counts": {
+            "1": 9
+          },
+          "target_counts": {
+            "1": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": null
+        }
+      },
+      "secondary_metrics": {
+        "fallback_tick_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        },
+        "entropy_latency_mean_ms": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        },
+        "run_verdict_status": {
+          "metric_kind": "categorical_or_unsupported",
+          "baseline": {
+            "sample_count": 0,
+            "mean": null,
+            "min": null,
+            "max": null,
+            "std_dev": null,
+            "empirical_min_max_band": null
+          },
+          "target": {
+            "sample_count": 0,
+            "mean": null,
+            "min": null,
+            "max": null,
+            "std_dev": null,
+            "empirical_min_max_band": null
+          },
+          "baseline_counts": {
+            "ADMISSIBLE": 9
+          },
+          "target_counts": {
+            "ADMISSIBLE": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        }
+      },
+      "non_claim_boundary": "Descriptive control contrast only; not causal or theory-facing."
+    },
+    {
+      "id": "baseline_vs_prng_only",
+      "baseline": "baseline",
+      "target": "prng_only",
+      "comparison_type": "inter_condition",
+      "support_level_declared": "description_only",
+      "realized_support_level": "description_only",
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 999,
+      "baseline_included_n": 9,
+      "target_included_n": 9,
+      "blocking_conditions": [],
+      "primary_metrics": {
+        "quantum_primary_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "baseline_counts": {
+            "1": 9
+          },
+          "target_counts": {
+            "1": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": null
+        },
+        "channel_clean_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "baseline_counts": {
+            "1": 9
+          },
+          "target_counts": {
+            "1": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": null
+        }
+      },
+      "secondary_metrics": {
+        "fallback_tick_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        },
+        "entropy_latency_mean_ms": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        },
+        "run_verdict_status": {
+          "metric_kind": "categorical_or_unsupported",
+          "baseline": {
+            "sample_count": 0,
+            "mean": null,
+            "min": null,
+            "max": null,
+            "std_dev": null,
+            "empirical_min_max_band": null
+          },
+          "target": {
+            "sample_count": 0,
+            "mean": null,
+            "min": null,
+            "max": null,
+            "std_dev": null,
+            "empirical_min_max_band": null
+          },
+          "baseline_counts": {
+            "ADMISSIBLE": 9
+          },
+          "target_counts": {
+            "ADMISSIBLE": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        }
+      },
+      "non_claim_boundary": "Source-ablation descriptive contrast only; not confirmatory."
+    },
+    {
+      "id": "baseline_vs_delayed_entropy",
+      "baseline": "baseline",
+      "target": "delayed_entropy",
+      "comparison_type": "inter_condition",
+      "support_level_declared": "minimal_contrast",
+      "realized_support_level": "minimal_contrast",
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 3,
+      "baseline_included_n": 9,
+      "target_included_n": 9,
+      "blocking_conditions": [],
+      "primary_metrics": {
+        "entropy_latency_mean_ms": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 60.03703703703704,
+            "min": 60,
+            "max": 60.333333333333336,
+            "std_dev": 0.10475656017578558,
+            "empirical_min_max_band": [
+              60,
+              60.333333333333336
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "60": 8,
+            "60.333333333333336": 1
+          },
+          "delta_abs": 60.03703703703704,
+          "delta_rel": null,
+          "hedges_g": 771.9047619047562
+        },
+        "entropy_latency_max_ms": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 60.111111111111114,
+            "min": 60,
+            "max": 61,
+            "std_dev": 0.3142696805273545,
+            "empirical_min_max_band": [
+              60,
+              61
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "60": 8,
+            "61": 1
+          },
+          "delta_abs": 60.111111111111114,
+          "delta_rel": null,
+          "hedges_g": 257.6190476190476
+        }
+      },
+      "secondary_metrics": {
+        "fallback_tick_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        },
+        "tick_budget_p95_ms": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 44,
+            "min": 44,
+            "max": 44,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              44,
+              44
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 44,
+            "min": 44,
+            "max": 44,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              44,
+              44
+            ]
+          },
+          "baseline_counts": {
+            "44": 9
+          },
+          "target_counts": {
+            "44": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": null
+        },
+        "run_verdict_status": {
+          "metric_kind": "categorical_or_unsupported",
+          "baseline": {
+            "sample_count": 0,
+            "mean": null,
+            "min": null,
+            "max": null,
+            "std_dev": null,
+            "empirical_min_max_band": null
+          },
+          "target": {
+            "sample_count": 0,
+            "mean": null,
+            "min": null,
+            "max": null,
+            "std_dev": null,
+            "empirical_min_max_band": null
+          },
+          "baseline_counts": {
+            "ADMISSIBLE": 9
+          },
+          "target_counts": {
+            "ADMISSIBLE": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        }
+      },
+      "non_claim_boundary": "Delivery-latency contrast only; not causal confirmation."
+    },
+    {
+      "id": "baseline_vs_dropout",
+      "baseline": "baseline",
+      "target": "dropout",
+      "comparison_type": "inter_condition",
+      "support_level_declared": "minimal_contrast",
+      "realized_support_level": "minimal_contrast",
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 3,
+      "baseline_included_n": 9,
+      "target_included_n": 9,
+      "blocking_conditions": [],
+      "primary_metrics": {
+        "fallback_tick_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "1": 9
+          },
+          "delta_abs": 1,
+          "delta_rel": null,
+          "hedges_g": null
+        },
+        "degraded_tick_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "1": 9
+          },
+          "delta_abs": 1,
+          "delta_rel": null,
+          "hedges_g": null
+        }
+      },
+      "secondary_metrics": {
+        "pending_tick_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        },
+        "quantum_primary_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 1,
+            "min": 1,
+            "max": 1,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              1,
+              1
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "1": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": -1,
+          "delta_rel": -1,
+          "hedges_g": null
+        },
+        "run_verdict_status": {
+          "metric_kind": "categorical_or_unsupported",
+          "baseline": {
+            "sample_count": 0,
+            "mean": null,
+            "min": null,
+            "max": null,
+            "std_dev": null,
+            "empirical_min_max_band": null
+          },
+          "target": {
+            "sample_count": 0,
+            "mean": null,
+            "min": null,
+            "max": null,
+            "std_dev": null,
+            "empirical_min_max_band": null
+          },
+          "baseline_counts": {
+            "ADMISSIBLE": 9
+          },
+          "target_counts": {
+            "ADMISSIBLE": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        }
+      },
+      "non_claim_boundary": "Delivery-dropout contrast only; not causal confirmation."
+    },
+    {
+      "id": "baseline_replicate_dispersion",
+      "baseline": "baseline",
+      "target": "baseline",
+      "comparison_type": "intra_condition",
+      "support_level_declared": "minimal_contrast",
+      "realized_support_level": "minimal_contrast",
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 3,
+      "baseline_included_n": 9,
+      "target_included_n": 9,
+      "blocking_conditions": [],
+      "primary_metrics": {
+        "entropy_latency_mean_ms": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        },
+        "fallback_tick_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        }
+      },
+      "secondary_metrics": {
+        "omega_mean": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 1.015,
+            "min": 1.011,
+            "max": 1.019,
+            "std_dev": 0.002581988897471604,
+            "empirical_min_max_band": [
+              1.011,
+              1.019
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 1.015,
+            "min": 1.011,
+            "max": 1.019,
+            "std_dev": 0.002581988897471604,
+            "empirical_min_max_band": [
+              1.011,
+              1.019
+            ]
+          },
+          "baseline_counts": {
+            "1.011": 1,
+            "1.0120000000000002": 1,
+            "1.013": 1,
+            "1.014": 1,
+            "1.015": 1,
+            "1.016": 1,
+            "1.0170000000000001": 1,
+            "1.018": 1,
+            "1.019": 1
+          },
+          "target_counts": {
+            "1.011": 1,
+            "1.0120000000000002": 1,
+            "1.013": 1,
+            "1.014": 1,
+            "1.015": 1,
+            "1.016": 1,
+            "1.0170000000000001": 1,
+            "1.018": 1,
+            "1.019": 1
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": 0
+        },
+        "ccc_mean": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0.9149999999999999,
+            "min": 0.911,
+            "max": 0.919,
+            "std_dev": 0.002581988897471633,
+            "empirical_min_max_band": [
+              0.911,
+              0.919
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0.9149999999999999,
+            "min": 0.911,
+            "max": 0.919,
+            "std_dev": 0.002581988897471633,
+            "empirical_min_max_band": [
+              0.911,
+              0.919
+            ]
+          },
+          "baseline_counts": {
+            "0.911": 1,
+            "0.912": 1,
+            "0.9129999999999999": 1,
+            "0.914": 1,
+            "0.915": 1,
+            "0.916": 1,
+            "0.9170000000000001": 1,
+            "0.918": 1,
+            "0.919": 1
+          },
+          "target_counts": {
+            "0.911": 1,
+            "0.912": 1,
+            "0.9129999999999999": 1,
+            "0.914": 1,
+            "0.915": 1,
+            "0.916": 1,
+            "0.9170000000000001": 1,
+            "0.918": 1,
+            "0.919": 1
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": 0
+        },
+        "pmia_mean": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0.5167860151214492,
+            "min": 0.5153908263834638,
+            "max": 0.5181812038594348,
+            "std_dev": 0.0009005904578389816,
+            "empirical_min_max_band": [
+              0.5153908263834638,
+              0.5181812038594348
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0.5167860151214492,
+            "min": 0.5153908263834638,
+            "max": 0.5181812038594348,
+            "std_dev": 0.0009005904578389816,
+            "empirical_min_max_band": [
+              0.5153908263834638,
+              0.5181812038594348
+            ]
+          },
+          "baseline_counts": {
+            "0.5153908263834638": 1,
+            "0.5157396235679602": 1,
+            "0.5160884207524564": 1,
+            "0.5164372179369529": 1,
+            "0.5167860151214493": 1,
+            "0.5171348123059456": 1,
+            "0.5174836094904419": 1,
+            "0.5178324066749384": 1,
+            "0.5181812038594348": 1
+          },
+          "target_counts": {
+            "0.5153908263834638": 1,
+            "0.5157396235679602": 1,
+            "0.5160884207524564": 1,
+            "0.5164372179369529": 1,
+            "0.5167860151214493": 1,
+            "0.5171348123059456": 1,
+            "0.5174836094904419": 1,
+            "0.5178324066749384": 1,
+            "0.5181812038594348": 1
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": 0
+        },
+        "stasis_index_mean": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0.13667721735029212,
+            "min": 0.12563266227618622,
+            "max": 0.14726605092810144,
+            "std_dev": 0.006573983526549288,
+            "empirical_min_max_band": [
+              0.12563266227618622,
+              0.14726605092810144
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0.13667721735029212,
+            "min": 0.12563266227618622,
+            "max": 0.14726605092810144,
+            "std_dev": 0.006573983526549288,
+            "empirical_min_max_band": [
+              0.12563266227618622,
+              0.14726605092810144
+            ]
+          },
+          "baseline_counts": {
+            "0.14236588498632563": 1,
+            "0.1339992736312559": 1,
+            "0.12563266227618622": 1,
+            "0.14726605092810144": 1,
+            "0.13889943957303172": 1,
+            "0.13053282821796203": 1,
+            "0.13216621686522065": 1,
+            "0.14379960551480755": 1,
+            "0.13543299415973784": 1
+          },
+          "target_counts": {
+            "0.14236588498632563": 1,
+            "0.1339992736312559": 1,
+            "0.12563266227618622": 1,
+            "0.14726605092810144": 1,
+            "0.13889943957303172": 1,
+            "0.13053282821796203": 1,
+            "0.13216621686522065": 1,
+            "0.14379960551480755": 1,
+            "0.13543299415973784": 1
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": 0
+        }
+      },
+      "non_claim_boundary": "Replicate-consistency check only; not confirmation."
+    },
+    {
+      "id": "prng_only_replicate_dispersion",
+      "baseline": "prng_only",
+      "target": "prng_only",
+      "comparison_type": "intra_condition",
+      "support_level_declared": "minimal_contrast",
+      "realized_support_level": "minimal_contrast",
+      "minimum_n_per_condition_for_description": 2,
+      "minimum_n_per_condition_for_minimal_contrast": 3,
+      "baseline_included_n": 9,
+      "target_included_n": 9,
+      "blocking_conditions": [],
+      "primary_metrics": {
+        "fallback_tick_ratio": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        },
+        "entropy_latency_mean_ms": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "std_dev": 0,
+            "empirical_min_max_band": [
+              0,
+              0
+            ]
+          },
+          "baseline_counts": {
+            "0": 9
+          },
+          "target_counts": {
+            "0": 9
+          },
+          "delta_abs": 0,
+          "delta_rel": null,
+          "hedges_g": null
+        }
+      },
+      "secondary_metrics": {
+        "omega_mean": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 1.0450000000000002,
+            "min": 1.0410000000000001,
+            "max": 1.0490000000000002,
+            "std_dev": 0.0025819888974716043,
+            "empirical_min_max_band": [
+              1.0410000000000001,
+              1.0490000000000002
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 1.0450000000000002,
+            "min": 1.0410000000000001,
+            "max": 1.0490000000000002,
+            "std_dev": 0.0025819888974716043,
+            "empirical_min_max_band": [
+              1.0410000000000001,
+              1.0490000000000002
+            ]
+          },
+          "baseline_counts": {
+            "1.0410000000000001": 1,
+            "1.042": 1,
+            "1.043": 1,
+            "1.0440000000000003": 1,
+            "1.045": 1,
+            "1.046": 1,
+            "1.047": 1,
+            "1.048": 1,
+            "1.0490000000000002": 1
+          },
+          "target_counts": {
+            "1.0410000000000001": 1,
+            "1.042": 1,
+            "1.043": 1,
+            "1.0440000000000003": 1,
+            "1.045": 1,
+            "1.046": 1,
+            "1.047": 1,
+            "1.048": 1,
+            "1.0490000000000002": 1
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": 0
+        },
+        "ccc_mean": {
+          "metric_kind": "numeric",
+          "baseline": {
+            "sample_count": 9,
+            "mean": 0.9299999999999999,
+            "min": 0.926,
+            "max": 0.934,
+            "std_dev": 0.0025819888974716325,
+            "empirical_min_max_band": [
+              0.926,
+              0.934
+            ]
+          },
+          "target": {
+            "sample_count": 9,
+            "mean": 0.9299999999999999,
+            "min": 0.926,
+            "max": 0.934,
+            "std_dev": 0.0025819888974716325,
+            "empirical_min_max_band": [
+              0.926,
+              0.934
+            ]
+          },
+          "baseline_counts": {
+            "0.926": 1,
+            "0.927": 1,
+            "0.928": 1,
+            "0.9289999999999999": 1,
+            "0.93": 1,
+            "0.931": 1,
+            "0.932": 1,
+            "0.9330000000000002": 1,
+            "0.934": 1
+          },
+          "target_counts": {
+            "0.926": 1,
+            "0.927": 1,
+            "0.928": 1,
+            "0.9289999999999999": 1,
+            "0.93": 1,
+            "0.931": 1,
+            "0.932": 1,
+            "0.9330000000000002": 1,
+            "0.934": 1
+          },
+          "delta_abs": 0,
+          "delta_rel": 0,
+          "hedges_g": 0
+        }
+      },
+      "non_claim_boundary": "Seed-consistency check only; not theory-facing."
+    }
+  ],
+  "unsupported_comparisons": [
+    {
+      "id": "replay_vs_shuffled",
+      "reason": "Direct non-baseline pairwise contrasts are not frozen for this phase."
+    },
+    {
+      "id": "replay_vs_prng_only",
+      "reason": "Direct non-baseline pairwise contrasts are not frozen for this phase."
+    },
+    {
+      "id": "shuffled_vs_prng_only",
+      "reason": "Direct non-baseline pairwise contrasts are not frozen for this phase."
+    },
+    {
+      "id": "runtime_to_corpus_claim_mapping",
+      "reason": "Theory-facing comparison is outside the protocol scope."
+    }
+  ],
+  "claim_facing_status": "blocked",
+  "interpretation_boundary": "Condition comparison report only; descriptive or minimal internal contrast, never causal confirmation, never theory validation."
+}

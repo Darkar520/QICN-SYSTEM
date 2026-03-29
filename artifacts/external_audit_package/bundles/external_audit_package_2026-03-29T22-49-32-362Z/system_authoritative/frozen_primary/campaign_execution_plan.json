@@ -1,0 +1,112 @@
+{
+  "artifact_role": "execution_campaign_plan",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-03-25T02:31:20.458Z",
+  "campaign_id": "execution_campaign_primary_2026-03-25T02-15-00-000Z",
+  "batch_id": "execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch",
+  "campaign_class": "serious_internal_execution_campaign",
+  "ecosystem_candidate_required_status": "PASS",
+  "architecture_freeze_ref": "docs/evaluation_architecture_freeze.v1.json",
+  "baseline": {
+    "qicn_system_head": "a90cf500464cbfd235c73681a2d2a81e08129ab7",
+    "qicn_release_head": "91ed18c6c0f5cfc528f75fbaf1bee50c39502086",
+    "release_freeze_commit": "2d7504be95ca33af5941e30abf7059dc2774edca",
+    "release_upstream_pin_status": "resolved"
+  },
+  "frozen_sources_of_truth": {
+    "protocol_ref": "docs/evaluation_protocol.v1.json",
+    "comparison_matrix_ref": "docs/evaluation_comparison_matrix.v1.json",
+    "metrics_registry_ref": "docs/evaluation_metrics_registry.v1.json",
+    "controls_registry_ref": "docs/evaluation_controls_registry.v1.json",
+    "statistical_policy_ref": "docs/evaluation_statistical_policy.v1.json",
+    "interpretation_boundary_ref": "docs/EVALUATION_INTERPRETATION_BOUNDARY.md"
+  },
+  "conditions": [
+    "baseline",
+    "replay",
+    "shuffled",
+    "prng_only",
+    "delayed_entropy",
+    "dropout"
+  ],
+  "n_per_condition": 9,
+  "seed_schedule": [
+    17057,
+    17058,
+    17059,
+    17060,
+    17061,
+    17062,
+    17063,
+    17064,
+    17065
+  ],
+  "execution_order": [
+    "baseline",
+    "replay",
+    "shuffled",
+    "prng_only",
+    "delayed_entropy",
+    "dropout"
+  ],
+  "justification": {
+    "rationale": "One primary serious batch at 9 runs per condition. This is 3x the protocol minimum for minimal contrast and 50% above the prior serious batch size, while remaining operationally lightweight on the frozen baseline.",
+    "cost_posture": "single_runner_batch_no_manual_stitching",
+    "statistical_posture": "improves dispersion visibility without changing the statistical policy"
+  },
+  "rerun_policy": {
+    "rerun_same_campaign_if": [
+      "campaign_batch_fails_structurally",
+      "required_artifact_missing",
+      "repo_baselines_drift_before_execution"
+    ],
+    "do_not_rerun_for": [
+      "desire_for_better_story",
+      "unsupported_comparisons",
+      "non_claim_facing_readout_preferences"
+    ]
+  },
+  "exclusion_policy": [
+    "exclude_run_if_run_verdict_not_admissible",
+    "exclude_run_if_entropy_diagnostics_invalidates_run",
+    "exclude_run_if_required_run_artifact_missing",
+    "no_automatic_outlier_drop"
+  ],
+  "invalidates_batch_if": [
+    "required_condition_missing",
+    "included_run_count_below_minimum_runs_per_condition",
+    "aggregate_artifact_verification_failed",
+    "condition_assertion_failure"
+  ],
+  "required_artifacts": {
+    "batch": [
+      "condition_metrics_summary.json",
+      "condition_comparison.json",
+      "condition_support_labels.json",
+      "condition_output_consumption_policy.json",
+      "condition_output_surface_policy.json",
+      "condition_controlled_statements.json",
+      "artifact_manifest.json",
+      "condition_evaluation_summary.json",
+      "condition_comparison_report.json",
+      "evaluation_protocol_manifest.json",
+      "evaluation_batch_report.json"
+    ],
+    "campaign": [
+      "campaign_execution_plan.json",
+      "execution_campaign_readout.json",
+      "latest_campaign_pointer.json"
+    ]
+  },
+  "blocked_claim_facing_outputs": [
+    "run_evaluation_metrics.json",
+    "condition_evaluation_summary.json",
+    "condition_comparison_report.json",
+    "evaluation_protocol_manifest.json",
+    "evaluation_batch_report.json",
+    "campaign_execution_plan.json",
+    "execution_campaign_readout.json",
+    "latest_campaign_pointer.json"
+  ],
+  "interpretation_boundary": "Execution campaign plan only; internal reproducible evaluation campaign, not external validation, not theory confirmation, not claim closure."
+}

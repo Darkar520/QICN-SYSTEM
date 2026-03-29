@@ -1,0 +1,252 @@
+{
+  "artifact_role": "ecosystem_verification_matrix",
+  "schema_version": "1.0.0",
+  "checked_at": "2026-03-29T22:49:10.443Z",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "system_repo_state",
+      "status": "PASS",
+      "details": {
+        "branch": "main",
+        "head": "278b52f0340a41586d216b7a129a955a4faa0ebe",
+        "clean": true,
+        "pushed": true,
+        "upstream": "origin/main"
+      }
+    },
+    {
+      "id": "system_operational_readiness",
+      "status": "PASS",
+      "details": {
+        "manifest": "artifacts/operational_readiness_manifest.json",
+        "missing_canonical_scripts": [],
+        "docs_missing": [],
+        "scripts_missing": [],
+        "entrypoints_missing": []
+      }
+    },
+    {
+      "id": "system_artifact_governance",
+      "status": "PASS",
+      "details": {
+        "manifest": "artifacts/artifact_manifest.json",
+        "blocked_local_report_artifact": "blocked_claim_facing_output"
+      }
+    },
+    {
+      "id": "system_operational_smoke",
+      "status": "PASS",
+      "details": {
+        "manifest": "artifacts/operational_smoke_manifest.json",
+        "step_count": 7
+      }
+    },
+    {
+      "id": "system_internal_bundle",
+      "status": "PASS",
+      "details": {
+        "manifest": "artifacts/internal_release/internal_release_2026-03-29T22-48-49-659Z/release_bundle_manifest.json",
+        "git_commit": "278b52f0340a41586d216b7a129a955a4faa0ebe",
+        "subjectivity_bundle_present": true
+      }
+    },
+    {
+      "id": "release_repo_state",
+      "status": "PASS",
+      "details": {
+        "branch": "main",
+        "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+        "clean": true,
+        "pushed": true,
+        "upstream": "origin/main"
+      }
+    },
+    {
+      "id": "release_canonical_integrity",
+      "status": "PASS",
+      "details": {
+        "manifest": "_build/canonical_hardening/canonical_integrity_check.json",
+        "status": "PASS",
+        "warnings": []
+      }
+    },
+    {
+      "id": "release_claim_registry",
+      "status": "PASS",
+      "details": {
+        "registry": "release/claim_registry.v1.json",
+        "entries": 34,
+        "family_level_subsets_retained": [
+          "paper2.phenomenological_regimes",
+          "release_governance"
+        ]
+      }
+    },
+    {
+      "id": "release_canonical_bundle",
+      "status": "PASS",
+      "details": {
+        "check": "_build/canonical_hardening/canonical_release_check.json",
+        "manifest": "_build/canonical_release_bundle_2026-03-28T22-44-31-275Z/canonical_release_manifest.json"
+      }
+    },
+    {
+      "id": "ecosystem_interface_contract",
+      "status": "PASS",
+      "details": {
+        "doc_path": "docs/ECOSYSTEM_INTERFACE_CONTRACT.md",
+        "json_path": "docs/ecosystem_interface_contract.v1.json"
+      }
+    },
+    {
+      "id": "ecosystem_candidate_governance",
+      "status": "PASS",
+      "details": {
+        "doc_path": "docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md",
+        "json_path": "docs/ecosystem_candidate_governance.v1.json"
+      }
+    },
+    {
+      "id": "ecosystem_freeze_docs",
+      "status": "PASS",
+      "details": {
+        "baseline_doc_path": "docs/ECOSYSTEM_FREEZE_BASELINE.md",
+        "release_notes_doc_path": "docs/ECOSYSTEM_RELEASE_NOTES.md",
+        "maintenance_checklist_path": "docs/ECOSYSTEM_MAINTENANCE_CHECKLIST.md"
+      }
+    },
+    {
+      "id": "system_protocolized_evaluation_phase",
+      "status": "PASS",
+      "details": {
+        "docs_present": true,
+        "artifacts_present": true,
+        "campaign_artifacts_present": true,
+        "protocol_manifest": "artifacts/protocolized_evaluation/evaluation_protocol_manifest.json",
+        "batch_report": "artifacts/protocolized_evaluation/evaluation_batch_report.json",
+        "check_statuses": [
+          "PASS",
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "id": "subjectivity_ecosystem_stack",
+      "status": "PASS",
+      "details": {
+        "docs_present": true,
+        "manifests_present": true,
+        "artifacts_present": true,
+        "readiness_class": "subjectivity_stack_audit_ready_internal",
+        "verification_status": "PASS"
+      }
+    },
+    {
+      "id": "ecosystem_portability_targets",
+      "status": "PASS",
+      "details": {
+        "scanned_files": [
+          "docs/CANON_SOURCE_OF_TRUTH.md",
+          "docs/ECOSYSTEM_BASELINE.md",
+          "docs/ECOSYSTEM_INTERFACE_CONTRACT.md",
+          "docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md",
+          "docs/EXTERNAL_AUDIT_SETUP.md",
+          "docs/EXTERNAL_AUDIT_QUICKSTART.md",
+          "docs/EXTERNAL_AUDIT_TECHNICAL_PATH.md",
+          "docs/EXTERNAL_AUDIT_HANDOFF_CHECKLIST.md",
+          "docs/ECOSYSTEM_FREEZE_BASELINE.md",
+          "docs/ECOSYSTEM_RELEASE_NOTES.md",
+          "docs/ECOSYSTEM_MAINTENANCE_CHECKLIST.md",
+          "docs/PROTOCOLIZED_EVALUATION_PROTOCOL.md",
+          "docs/EVALUATION_COMPARISON_MATRIX.md",
+          "docs/EVALUATION_METRICS_BASELINE.md",
+          "docs/EVALUATION_CONTROLS_AND_INTERVENTIONS.md",
+          "docs/EVALUATION_STATISTICAL_POLICY.md",
+          "docs/EVALUATION_INTERPRETATION_BOUNDARY.md",
+          "docs/PROTOCOLIZED_EVALUATION_FREEZE_BASELINE.md",
+          "docs/EXECUTION_CAMPAIGN_FREEZE_BASELINE.md",
+          "docs/SUCCESSIVE_CAMPAIGN_DISCIPLINE.md",
+          "docs/evaluation_protocol.v1.json",
+          "docs/evaluation_comparison_matrix.v1.json",
+          "docs/evaluation_metrics_registry.v1.json",
+          "docs/evaluation_controls_registry.v1.json",
+          "docs/evaluation_statistical_policy.v1.json",
+          "docs/evaluation_architecture_freeze.v1.json",
+          "docs/execution_campaign_freeze.v1.json",
+          "docs/successive_campaign_discipline.v1.json",
+          "artifacts/protocolized_evaluation/evaluation_protocol_manifest.json",
+          "artifacts/protocolized_evaluation/evaluation_batch_report.json",
+          "artifacts/protocolized_evaluation/condition_evaluation_summary.json",
+          "artifacts/protocolized_evaluation/condition_comparison_report.json",
+          "artifacts/protocolized_evaluation/evaluation_protocol_check.json",
+          "artifacts/protocolized_evaluation/evaluation_metrics_check.json",
+          "artifacts/protocolized_evaluation/evaluation_comparisons_check.json",
+          "artifacts/execution_campaign/campaign_execution_plan.json",
+          "artifacts/execution_campaign/execution_campaign_readout.json",
+          "artifacts/execution_campaign/latest_campaign_pointer.json",
+          "artifacts/execution_campaign/execution_campaign_audit_readout.json",
+          "docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md",
+          "docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md",
+          "docs/SUBJECTIVITY_ARTIFACT_SURFACE_POLICY.md",
+          "docs/SUBJECTIVITY_MAINTENANCE.md",
+          "docs/SUBJECTIVITY_CANDIDATE_INTEGRATION.md",
+          "docs/SUBJECTIVITY_AUDIT_HANDOFF.md",
+          "docs/subjectivity_protocol.v1.json",
+          "docs/subjectivity_thresholds.v1.json",
+          "docs/subjectivity_rival_family.v1.json",
+          "docs/subjectivity_artifact_schema.v1.json",
+          "docs/subjectivity_surface_policy.v1.json",
+          "artifacts/subjectivity/srt5/subjectivity_runtime_projection.json",
+          "artifacts/subjectivity/srt5/subjectivity_gate_result.json",
+          "artifacts/subjectivity/srt5/subjectivity_manifest.json",
+          "artifacts/subjectivity/srt6/subjectivity_condition_summary.json",
+          "artifacts/subjectivity/srt6/subjectivity_batch_summary.json",
+          "artifacts/subjectivity/srt6/subjectivity_campaign_summary.json",
+          "artifacts/subjectivity/srt6/subjectivity_candidate_projection.json",
+          "artifacts/subjectivity/srt6/subjectivity_audit_handoff_summary.json",
+          "artifacts/subjectivity/srt6/subjectivity_verification_matrix.json",
+          "artifacts/subjectivity/srt6/subjectivity_ecosystem_check.json",
+          "artifacts/subjectivity/srt6/subjectivity_stack_check.json",
+          "docs/ecosystem_interface_contract.v1.json",
+          "docs/ecosystem_candidate_governance.v1.json",
+          "docs/OPERATIONAL_READINESS.md",
+          "QICN-RELEASE/README.md",
+          "QICN-RELEASE/RELEASE_NOTES.md",
+          "QICN-RELEASE/docs/CANON_SOURCE_OF_TRUTH.md",
+          "QICN-RELEASE/docs/CANONICAL_RELEASE_NOTES.md",
+          "QICN-RELEASE/docs/THEORY_SYSTEM_INTERFACE.md",
+          "QICN-RELEASE/corpus/pdf_release/manifest.json",
+          "QICN-RELEASE/release/CANON_MAP.v1.json",
+          "QICN-RELEASE/release/release_freeze_manifest.json"
+        ],
+        "matches": []
+      }
+    }
+  ],
+  "system_baseline": {
+    "branch": "main",
+    "head": "278b52f0340a41586d216b7a129a955a4faa0ebe",
+    "upstream": "origin/main",
+    "release_bundle_manifest": "artifacts/internal_release/internal_release_2026-03-29T22-48-49-659Z/release_bundle_manifest.json",
+    "evaluation_protocol_manifest": "artifacts/protocolized_evaluation/evaluation_protocol_manifest.json",
+    "evaluation_batch_report": "artifacts/protocolized_evaluation/evaluation_batch_report.json"
+  },
+  "release_baseline": {
+    "branch": "main",
+    "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+    "upstream": "origin/main",
+    "freeze_tag": "release-2026-03-01",
+    "freeze_commit": "2d7504be95ca33af5941e30abf7059dc2774edca",
+    "upstream_pin_status": "resolved",
+    "canonical_bundle_manifest": "_build/canonical_release_bundle_2026-03-28T22-44-31-275Z/canonical_release_manifest.json"
+  },
+  "interpretation_boundary": "Cross-repo verification matrix only; internal ecosystem readiness evidence, not external validation, not theory confirmation.",
+  "warnings": [],
+  "failures": [],
+  "provenance_notes": [
+    "release.historical_dirty_start"
+  ]
+}

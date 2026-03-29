@@ -1,0 +1,33 @@
+{
+  "artifact_role": "evaluation_protocol_check",
+  "checked_at": "2026-03-26T22:50:37.442Z",
+  "status": "PASS",
+  "failures": [],
+  "warnings": [],
+  "checks": {
+    "missing_docs": [],
+    "protocol_condition_ids": [
+      "baseline",
+      "replay",
+      "shuffled",
+      "prng_only",
+      "delayed_entropy",
+      "dropout"
+    ],
+    "controls_registry_ids": [
+      "baseline",
+      "replay",
+      "shuffled",
+      "prng_only",
+      "delayed_entropy",
+      "dropout"
+    ],
+    "duplicate_metric_ids": [],
+    "duplicate_comparison_ids": [],
+    "invalid_comparison_targets": [],
+    "comparison_metric_registry_gap": [],
+    "stats_alignment_ok": true,
+    "portability_matches": []
+  },
+  "interpretation_boundary": "Protocol check only; structural integrity of the evaluation phase, not validation semantics."
+}

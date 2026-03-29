@@ -23,6 +23,11 @@ const resolveReleaseRoot = () => {
 const RELEASE_ROOT = resolveReleaseRoot();
 const ECOSYSTEM_ARTIFACT_ROOT = path.join(SYSTEM_ROOT, 'artifacts', 'ecosystem_release_candidate');
 const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
+const NON_BASELINE_GENERATED_ROOTS = [
+  'artifacts/internal_release/',
+  'artifacts/ecosystem_release_candidate/',
+  'artifacts/external_audit_package/'
+];
 
 const normalize = (value) => String(value || '').replace(/\\/g, '/');
 const exists = (file) => fs.existsSync(file);
@@ -79,6 +84,33 @@ const tryGit = (cwd, args) => {
   } catch (error) {
     return null;
   }
+};
+
+const parseStatusPath = (line) => {
+  if (typeof line !== 'string' || line.length < 4) return null;
+  const payload = line.slice(3).trim();
+  if (!payload) return null;
+  const normalized = normalize(payload.includes(' -> ') ? payload.split(' -> ').pop() : payload)
+    .replace(/^"+|"+$/g, '');
+  return normalized || null;
+};
+
+const isNonBaselineGeneratedPath = (relativePath) =>
+  NON_BASELINE_GENERATED_ROOTS.some((root) => String(relativePath || '').startsWith(root));
+
+const computeRepoCleanState = (statusPorcelain) => {
+  const lines = String(statusPorcelain || '')
+    .split(/\r?\n/)
+    .map((line) => line.trimEnd())
+    .filter(Boolean);
+  const relevantChanges = lines.filter((line) => {
+    const relativePath = parseStatusPath(line);
+    return relativePath && !isNonBaselineGeneratedPath(relativePath);
+  });
+  return {
+    clean: relevantChanges.length === 0,
+    relevant_changes: relevantChanges
+  };
 };
 
 const resolveGitDir = (repoRoot) => {
@@ -190,6 +222,7 @@ const getRepoState = (repoRoot, envPrefix) => {
   const branch = tryGit(repoRoot, ['rev-parse', '--abbrev-ref', 'HEAD']);
   const head = tryGit(repoRoot, ['rev-parse', 'HEAD']);
   const statusPorcelain = tryGit(repoRoot, ['status', '--porcelain']);
+  const cleanState = computeRepoCleanState(statusPorcelain);
   const upstream = tryGit(repoRoot, ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']);
   const upstreamHead = upstream ? tryGit(repoRoot, ['rev-parse', '@{u}']) : null;
   const remote = upstream ? upstream.split('/')[0] : 'origin';
@@ -212,7 +245,7 @@ const getRepoState = (repoRoot, envPrefix) => {
     upstream_head: resolvedUpstreamHead,
     remote: resolvedRemote,
     remote_url: remoteUrl || fallback?.remote_url || null,
-    clean: statusPorcelain === '',
+    clean: cleanState.clean,
     pushed: Boolean(resolvedUpstreamHead && resolvedHead && resolvedUpstreamHead === resolvedHead)
   };
 };

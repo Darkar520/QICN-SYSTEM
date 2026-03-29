@@ -143,6 +143,8 @@ artifacts/internal_release/*
 !artifacts/internal_release/internal_release_2026-03-29T00-45-55-223Z/**
 !artifacts/internal_release/internal_release_2026-03-29T01-40-25-537Z/
 !artifacts/internal_release/internal_release_2026-03-29T01-40-25-537Z/**
+!artifacts/internal_release/internal_release_2026-03-29T22-48-49-659Z/
+!artifacts/internal_release/internal_release_2026-03-29T22-48-49-659Z/**
 !artifacts/ecosystem_release_candidate/
 artifacts/ecosystem_release_candidate/*
 !artifacts/ecosystem_release_candidate/ECOSYSTEM_RELEASE_NOTES.md
@@ -157,6 +159,8 @@ artifacts/ecosystem_release_candidate/bundles/*
 !artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-29T00-46-33-168Z/**
 !artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-29T01-40-33-696Z/
 !artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-29T01-40-33-696Z/**
+!artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-29T22-49-10-559Z/
+!artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-29T22-49-10-559Z/**
 !artifacts/external_audit_package/
 artifacts/external_audit_package/*
 !artifacts/external_audit_package/external_audit_package_manifest.json
@@ -170,6 +174,8 @@ artifacts/external_audit_package/bundles/*
 !artifacts/external_audit_package/bundles/external_audit_package_2026-03-29T01-03-40-290Z/**
 !artifacts/external_audit_package/bundles/external_audit_package_2026-03-29T01-47-30-281Z/
 !artifacts/external_audit_package/bundles/external_audit_package_2026-03-29T01-47-30-281Z/**
+!artifacts/external_audit_package/bundles/external_audit_package_2026-03-29T22-49-32-362Z/
+!artifacts/external_audit_package/bundles/external_audit_package_2026-03-29T22-49-32-362Z/**
 archive/
 backups/
 /bundle.js

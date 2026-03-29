@@ -1,0 +1,273 @@
+{
+  "artifact_role": "phenomenal_bridge_projection",
+  "artifact_name": "phenomenal_bridge_projection.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "bridge_layer_id": "phenomenal_bridge_formal_layer.bpfm3",
+  "layer_version": "phenomenal_bridge_formal_layer.bpfm3.root.v1",
+  "estimator_version": "phenomenal_bridge_root_evaluator.bpfm3.v1",
+  "implementation_status": "bpfm3_root_bridge_evaluation_implemented",
+  "bridge_status": "framework_internal_bridge_root_projection",
+  "run_id": "bpfm3_bridge_root_baseline",
+  "coordinate_estimates": {
+    "Pi_D": 0.640223792348,
+    "Pi_V": 0.608886401395,
+    "Pi_W": 0.625981126104,
+    "Pi_A": 0.278102351528,
+    "Pi_E": 0.34755,
+    "Pi_T": 0.637052211111,
+    "R_b": 0.884396830768,
+    "Delta_b": 0.859799920297
+  },
+  "coordinate_details": {
+    "Pi_D": {
+      "predicate_id": "Pi_D",
+      "estimate": 0.640223792348,
+      "status": "provisional_runtime_bridge_estimator",
+      "weakness_markers": [],
+      "uncertainty_markers": [
+        "perspective_comparison_is_minimal"
+      ],
+      "warnings": [
+        "flattening_vulnerability_high"
+      ],
+      "report_ref": "artifacts/phenomenal_bridge/bpf1/phenomenal_differentiation_report.json"
+    },
+    "Pi_V": {
+      "predicate_id": "Pi_V",
+      "estimate": 0.608886401395,
+      "status": "provisional_runtime_bridge_estimator",
+      "weakness_markers": [],
+      "uncertainty_markers": [],
+      "warnings": [
+        "valuation_aliasing_penalty_applied",
+        "control_confounded_intervention_profile_present"
+      ],
+      "report_ref": "artifacts/phenomenal_bridge/bpf1/valence_structure_report.json"
+    },
+    "Pi_W": {
+      "predicate_id": "Pi_W",
+      "estimate": 0.625981126104,
+      "status": "provisional_runtime_bridge_estimator",
+      "weakness_markers": [],
+      "uncertainty_markers": [
+        "no_explicit_bridge_world_model_artifact"
+      ],
+      "warnings": [
+        "world_richness_is_proxy_bound_to_subjectivity_surfaces"
+      ],
+      "report_ref": "artifacts/phenomenal_bridge/bpf1/world_richness_report.json"
+    },
+    "Pi_A": {
+      "predicate_id": "Pi_A",
+      "estimate": 0.278102351528,
+      "status": "provisional_runtime_bridge_estimator",
+      "weakness_markers": [],
+      "uncertainty_markers": [
+        "no_direct_live_ambiguity_trace"
+      ],
+      "warnings": [
+        "no_live_ambiguity_state_detected",
+        "ownership_uncertainty_is_not_bridge_ambiguity",
+        "valuation_aliasing_does_not_count_as_ambiguity_bearing"
+      ],
+      "report_ref": "artifacts/phenomenal_bridge/bpf1/ambiguity_bearing_report.json"
+    },
+    "Pi_E": {
+      "predicate_id": "Pi_E",
+      "estimate": 0.34755,
+      "status": "provisional_runtime_bridge_estimator",
+      "weakness_markers": [],
+      "uncertainty_markers": [
+        "proxy_only_for_embodied_closure",
+        "requires_bpf2_or_later_for_direct_embodiment_tests"
+      ],
+      "warnings": [
+        "embodied_closure_surface_uses_proxy_signals_only",
+        "no_explicit_body_world_boundary_trace_available",
+        "control_confounded_intervention_profile_present"
+      ],
+      "report_ref": "artifacts/phenomenal_bridge/bpf1/embodied_closure_report.json"
+    },
+    "Pi_T": {
+      "predicate_id": "Pi_T",
+      "estimate": 0.637052211111,
+      "status": "provisional_runtime_bridge_estimator",
+      "weakness_markers": [],
+      "uncertainty_markers": [
+        "no_direct_retention_protention_module",
+        "proxy_only_for_lived_temporality"
+      ],
+      "warnings": [
+        "temporal_lived_structure_uses_continuity_proxy_family"
+      ],
+      "report_ref": "artifacts/phenomenal_bridge/bpf1/temporal_lived_structure_report.json"
+    },
+    "R_b": {
+      "predicate_id": "R_b",
+      "estimate": 0.884396830768,
+      "status": "normalized_reducibility_support",
+      "weakness_markers": [],
+      "uncertainty_markers": [],
+      "warnings": []
+    },
+    "Delta_b": {
+      "predicate_id": "Delta_b",
+      "estimate": 0.859799920297,
+      "status": "normalized_intervention_support",
+      "weakness_markers": [],
+      "uncertainty_markers": [],
+      "warnings": []
+    }
+  },
+  "bridge_functional": {
+    "symbol": "Phi_bpf",
+    "formula": "exp(sum_i w_i * log(max(s_i, 1e-6))) over Pi_D, Pi_V, Pi_W, Pi_A, Pi_E, Pi_T, R_b, Delta_b",
+    "weights": {
+      "Pi_D": 0.13,
+      "Pi_V": 0.13,
+      "Pi_W": 0.13,
+      "Pi_A": 0.1,
+      "Pi_E": 0.1,
+      "Pi_T": 0.13,
+      "R_b": 0.14,
+      "Delta_b": 0.14
+    },
+    "value": 0.598104406341,
+    "not_the_gate": true
+  },
+  "bridge_gate_preview": {
+    "symbol": "Gamma_bpf",
+    "formula": "min(Pi_D, Pi_V, Pi_W, Pi_A, Pi_E, Pi_T, R_b, Delta_b)",
+    "value": 0.278102351528
+  },
+  "bridge_intervention_status_summary": {
+    "profile_status": "selectivity_detected_pre_comparator",
+    "targeted_bridge_drop": 0.179180621709,
+    "collateral_damage": 0.03817813827,
+    "intervention_selectivity": 0.807205585593,
+    "normalized_support": 0.859799920297,
+    "comparison_supported": true
+  },
+  "bridge_reducibility_status_summary": {
+    "classification": "bridge_partial_irreducibility_support",
+    "bridge_irreducibility_margin": 0.134469431805,
+    "best_weak_rival": "richness_without_interiority",
+    "best_bridge_composite": "richness_without_interiority__embodied_control_without_embodied_closure__w65",
+    "normalized_support": 0.884396830768,
+    "comparison_supported": true
+  },
+  "weakness_markers": [],
+  "uncertainty_markers": [
+    "perspective_comparison_is_minimal",
+    "no_explicit_bridge_world_model_artifact",
+    "no_direct_live_ambiguity_trace",
+    "proxy_only_for_embodied_closure",
+    "requires_bpf2_or_later_for_direct_embodiment_tests",
+    "no_direct_retention_protention_module",
+    "proxy_only_for_lived_temporality"
+  ],
+  "warnings": [
+    "no_live_ambiguity_state_detected",
+    "ownership_uncertainty_is_not_bridge_ambiguity",
+    "valuation_aliasing_does_not_count_as_ambiguity_bearing",
+    "embodied_closure_surface_uses_proxy_signals_only",
+    "no_explicit_body_world_boundary_trace_available",
+    "control_confounded_intervention_profile_present"
+  ],
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "not_bridge_public_claim": true,
+    "not_bridge_support": true,
+    "not_phenomenality_evidence": true,
+    "not_human_equivalence": true,
+    "not_external_validation": true
+  },
+  "allowed_surfaces": [
+    "developer_inspection_surface",
+    "local_artifact_surface",
+    "local_report_surface",
+    "internal_release_bundle_surface",
+    "ecosystem_candidate_surface",
+    "audit_facing_package_surface"
+  ],
+  "blocked_surfaces": [
+    "controlled_statement_surface",
+    "external_claim_facing_surface"
+  ],
+  "interpretation_boundary": "Framework-internal only; root bridge projection over implemented bridge reports and adversarial artifacts, not external validation, not human equivalence, not phenomenality proof, not metaphysical closure, not claim-facing evidence.",
+  "provenance": {
+    "generated_at": "2026-03-29T22:44:40.541Z",
+    "baseline_bundle_refs": {
+      "self_index_state": "artifacts/subjectivity/srt1/self_index_state.json",
+      "ownership_attribution_report": "artifacts/subjectivity/srt1/ownership_attribution_report.json",
+      "subjective_continuity_report": "artifacts/subjectivity/srt2/subjective_continuity_report.json",
+      "first_person_perspective_report": "artifacts/subjectivity/srt2/first_person_perspective_report.json",
+      "subjective_valuation_report": "artifacts/subjectivity/srt3/subjective_valuation_report.json",
+      "subjectivity_intervention_profile": "artifacts/subjectivity/srt3/subjectivity_intervention_profile.json",
+      "subjectivity_reducibility_report": "artifacts/subjectivity/srt4/subjectivity_reducibility_report.json",
+      "subjectivity_runtime_projection": "artifacts/subjectivity/srt5/subjectivity_runtime_projection.json",
+      "subjectivity_gate_result": "artifacts/subjectivity/srt5/subjectivity_gate_result.json",
+      "subjectivity_manifest": "artifacts/subjectivity/srt5/subjectivity_manifest.json"
+    },
+    "baseline_report_refs": {
+      "phenomenal_differentiation_report": "artifacts/phenomenal_bridge/bpf1/phenomenal_differentiation_report.json",
+      "valence_structure_report": "artifacts/phenomenal_bridge/bpf1/valence_structure_report.json",
+      "world_richness_report": "artifacts/phenomenal_bridge/bpf1/world_richness_report.json",
+      "ambiguity_bearing_report": "artifacts/phenomenal_bridge/bpf1/ambiguity_bearing_report.json",
+      "embodied_closure_report": "artifacts/phenomenal_bridge/bpf1/embodied_closure_report.json",
+      "temporal_lived_structure_report": "artifacts/phenomenal_bridge/bpf1/temporal_lived_structure_report.json"
+    },
+    "intervention_profile_ref": "artifacts/phenomenal_bridge/bpfm2/bridge_intervention_profile.json",
+    "reducibility_report_ref": "artifacts/phenomenal_bridge/bpfm2/bridge_reducibility_report.json",
+    "current_lineage": {
+      "layer_version": "phenomenal_bridge_formal_layer.bpfm3.root.v1",
+      "estimator_version": "phenomenal_bridge_root_evaluator.bpfm3.v1",
+      "protocol": {
+        "ref": "docs/phenomenal_bridge_protocol.v1.json",
+        "sha256": "154bb0bf10002b98c8351d366549a439278d6378170cc514292509f874f16bb3"
+      },
+      "thresholds": {
+        "ref": "docs/phenomenal_bridge_thresholds.v1.json",
+        "sha256": "7564e212b00c267c888fa45aa432c4676b8caefaee3d515bb6bff1839b7218bc"
+      },
+      "rival_family": {
+        "ref": "docs/phenomenal_bridge_rival_family.v1.json",
+        "sha256": "7b935da20cc9f5c17d95e910429435ac6cf430b4a97c2cf39f91855ee8f06aeb"
+      },
+      "surface_policy": {
+        "ref": "docs/phenomenal_bridge_surface_policy.v1.json",
+        "sha256": "52548005cce92c32402737d52d5ad37ab64bae610b0c5675c4bd31a65d6b41d4"
+      },
+      "artifact_schema": {
+        "ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
+        "sha256": "cd724ff1cc241ce47627cc84a38d31f79f0aecd032f847bf718e669763b615d8"
+      },
+      "root_schema_hashes": {
+        "phenomenal_bridge_manifest.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_manifest.v1.json",
+          "sha256": "bdd647ee900bb2e0440d79818523d41378f0964fe53e812f4b47718d4939707c"
+        },
+        "phenomenal_bridge_projection.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_projection.v1.json",
+          "sha256": "7bc4e7f3f9e084f3c27a66d7a6cd28a5156ee930c99450419a582d46825b4660"
+        },
+        "phenomenal_bridge_gate_result.json": {
+          "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_gate_result.v1.json",
+          "sha256": "01deb3ef3c1d15ca827d25f630b7a27e39507777c815fdb4f29b3c2a1c4acb35"
+        }
+      },
+      "qicn_system": {
+        "branch": "main",
+        "head": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
+        "upstream": null
+      },
+      "qicn_release": {
+        "branch": "main",
+        "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+        "upstream": null
+      }
+    }
+  },
+  "schema_ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_projection.v1.json"
+}

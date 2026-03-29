@@ -2,8 +2,8 @@
 
 ## Status
 
-- Candidate status: `FAIL`
-- QICN-SYSTEM baseline: `main@582ee76778ef2877b74d5b3319d199e8b82b4c82`
+- Candidate status: `PASS`
+- QICN-SYSTEM baseline: `main@278b52f0340a41586d216b7a129a955a4faa0ebe`
 - QICN-RELEASE repo baseline: `main@e4ce7bae5d86ad256ea2b70407b18b2b81645f8b`
 - QICN-RELEASE canonical freeze: `release-2026-03-01@2d7504be95ca33af5941e30abf7059dc2774edca`
 - QICN-RELEASE upstream pin status: `resolved`
@@ -34,7 +34,7 @@
 
 ## Residual gaps
 
-- `system.repo_not_clean` [blocking_gap]: Blocks internal ecosystem release candidate because QICN-SYSTEM is not clean.
+- none
 
 ## Maintenance
 

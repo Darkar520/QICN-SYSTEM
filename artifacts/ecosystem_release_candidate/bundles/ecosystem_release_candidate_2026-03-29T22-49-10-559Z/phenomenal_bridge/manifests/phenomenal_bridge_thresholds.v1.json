@@ -1,0 +1,120 @@
+{
+  "artifact_role": "phenomenal_bridge_threshold_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "phenomenal_bridge_formal_layer.bpfm3",
+  "status": "provisional_internal_binding_bpfm3",
+  "binding_policy": {
+    "numeric_binding_state": "provisional_internal_bound",
+    "numeric_binding_allowed_in_bpfm3": true,
+    "binding_block": "BPF-M3",
+    "external_truth_status": "not_external_truth",
+    "honesty_rule": "All thresholds remain provisional internal bindings derived from implemented bridge estimators, bridge intervention profile, and bridge reducibility artifacts; they are not externally validated truths."
+  },
+  "binding_provenance": {
+    "baseline_bridge_reports": [
+      "artifacts/phenomenal_bridge/bpf1/phenomenal_differentiation_report.json",
+      "artifacts/phenomenal_bridge/bpf1/valence_structure_report.json",
+      "artifacts/phenomenal_bridge/bpf1/world_richness_report.json",
+      "artifacts/phenomenal_bridge/bpf1/ambiguity_bearing_report.json",
+      "artifacts/phenomenal_bridge/bpf1/embodied_closure_report.json",
+      "artifacts/phenomenal_bridge/bpf1/temporal_lived_structure_report.json"
+    ],
+    "adversarial_bridge_reports": [
+      "artifacts/phenomenal_bridge/bpfm2/bridge_intervention_profile.json",
+      "artifacts/phenomenal_bridge/bpfm2/bridge_reducibility_report.json"
+    ],
+    "binding_note": "Proxy coordinates Pi_A and Pi_E use lower reporting floors because BPF-1 explicitly marks them as proxy-only and underdetermined. Strong-support thresholds require repeated runs beyond the current single-run campaign."
+  },
+  "local_threshold_slots": [
+    { "slot_id": "lambda_D", "predicate": "Pi_D", "binding_state": "provisional_internal_bound", "value": 0.55, "status": "bound" },
+    { "slot_id": "lambda_V", "predicate": "Pi_V", "binding_state": "provisional_internal_bound", "value": 0.55, "status": "bound" },
+    { "slot_id": "lambda_W", "predicate": "Pi_W", "binding_state": "provisional_internal_bound", "value": 0.55, "status": "bound" },
+    { "slot_id": "lambda_A", "predicate": "Pi_A", "binding_state": "provisional_internal_bound_proxy_floor", "value": 0.24, "status": "bound_proxy_floor" },
+    { "slot_id": "lambda_E", "predicate": "Pi_E", "binding_state": "provisional_internal_bound_proxy_floor", "value": 0.3, "status": "bound_proxy_floor" },
+    { "slot_id": "lambda_T", "predicate": "Pi_T", "binding_state": "provisional_internal_bound", "value": 0.55, "status": "bound" },
+    { "slot_id": "lambda_Rb", "predicate": "R_b", "binding_state": "provisional_internal_bound", "value": 0.65, "status": "bound" },
+    { "slot_id": "lambda_Delta_b", "predicate": "Delta_b", "binding_state": "provisional_internal_bound", "value": 0.7, "status": "bound" }
+  ],
+  "coordinate_thresholds": {
+    "Pi_D": 0.55,
+    "Pi_V": 0.55,
+    "Pi_W": 0.55,
+    "Pi_A": 0.24,
+    "Pi_E": 0.3,
+    "Pi_T": 0.55,
+    "R_b": 0.65,
+    "Delta_b": 0.7
+  },
+  "global_gate_slot": {
+    "slot_id": "lambda_G_bpf",
+    "symbol": "Gamma_bpf",
+    "binding_state": "provisional_internal_bound",
+    "value": 0.24,
+    "status": "bound"
+  },
+  "functional_slot": {
+    "slot_id": "lambda_Phi_bpf",
+    "symbol": "Phi_bpf",
+    "binding_state": "provisional_internal_bound",
+    "value": 0.52,
+    "status": "bound"
+  },
+  "global_thresholds": {
+    "Gamma_bpf": 0.24,
+    "Phi_bpf": 0.52
+  },
+  "functional_weights": {
+    "Pi_D": 0.13,
+    "Pi_V": 0.13,
+    "Pi_W": 0.13,
+    "Pi_A": 0.1,
+    "Pi_E": 0.1,
+    "Pi_T": 0.13,
+    "R_b": 0.14,
+    "Delta_b": 0.14
+  },
+  "drift_slots": [
+    { "slot_id": "epsilon_Pi_D", "scope": "Pi_D", "binding_state": "provisional_internal_bound", "value": 0.08, "status": "bound" },
+    { "slot_id": "epsilon_Pi_V", "scope": "Pi_V", "binding_state": "provisional_internal_bound", "value": 0.08, "status": "bound" },
+    { "slot_id": "epsilon_Pi_W", "scope": "Pi_W", "binding_state": "provisional_internal_bound", "value": 0.08, "status": "bound" },
+    { "slot_id": "epsilon_Pi_A", "scope": "Pi_A", "binding_state": "provisional_internal_bound_proxy_floor", "value": 0.1, "status": "bound_proxy_floor" },
+    { "slot_id": "epsilon_Pi_E", "scope": "Pi_E", "binding_state": "provisional_internal_bound_proxy_floor", "value": 0.1, "status": "bound_proxy_floor" },
+    { "slot_id": "epsilon_Pi_T", "scope": "Pi_T", "binding_state": "provisional_internal_bound", "value": 0.08, "status": "bound" },
+    { "slot_id": "epsilon_Rb", "scope": "R_b", "binding_state": "provisional_internal_bound", "value": 0.07, "status": "bound" },
+    { "slot_id": "epsilon_Delta_b", "scope": "Delta_b", "binding_state": "provisional_internal_bound", "value": 0.07, "status": "bound" }
+  ],
+  "drift_tolerances": {
+    "Pi_D": 0.08,
+    "Pi_V": 0.08,
+    "Pi_W": 0.08,
+    "Pi_A": 0.1,
+    "Pi_E": 0.1,
+    "Pi_T": 0.08,
+    "R_b": 0.07,
+    "Delta_b": 0.07
+  },
+  "reporting_floors": {
+    "bridge_irreducibility_margin": 0.03,
+    "targeted_bridge_drop": 0.05,
+    "intervention_selectivity": 0.6
+  },
+  "support_class_thresholds": {
+    "bridge_internal_admissible": {
+      "Gamma_bpf": 0.24,
+      "Phi_bpf": 0.52
+    },
+    "bridge_internal_strong_support": {
+      "Gamma_bpf": 0.32,
+      "Phi_bpf": 0.62,
+      "minimum_condition_runs": 2,
+      "minimum_batch_conditions": 2,
+      "minimum_campaign_batches": 2
+    }
+  },
+  "non_implications": [
+    "These thresholds do not constitute external validation.",
+    "These thresholds do not establish human phenomenal equivalence.",
+    "These thresholds do not establish metaphysical closure.",
+    "These thresholds do not authorize claim-facing promotion."
+  ]
+}

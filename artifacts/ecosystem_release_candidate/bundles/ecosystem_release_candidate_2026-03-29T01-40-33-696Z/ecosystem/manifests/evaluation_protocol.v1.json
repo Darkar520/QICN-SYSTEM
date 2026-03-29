@@ -1,0 +1,221 @@
+{
+  "artifact_role": "evaluation_protocol_definition",
+  "schema_version": "1.0.0",
+  "protocol_id": "protocolized_evaluation_phase.v1",
+  "ecosystem_candidate_required": true,
+  "ecosystem_candidate_manifest_ref": "artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json",
+  "experimental_units": {
+    "run": {
+      "id": "run",
+      "description": "Single instrumented runtime episode with one explicit entropy experimental condition."
+    },
+    "small_batch": {
+      "id": "small_batch",
+      "description": "Grouped repeated runs per condition aggregated under one protocolized batch."
+    },
+    "comparison": {
+      "id": "comparison",
+      "description": "Condition-level descriptive or minimal-contrast comparison record."
+    }
+  },
+  "baseline_condition": "baseline",
+  "canonical_seed_schedule": [
+    17057,
+    17058,
+    17059
+  ],
+  "minimum_runs_per_condition": 2,
+  "canonical_runs_per_condition": 3,
+  "minimum_runs_per_condition_for_minimal_contrast": 3,
+  "tick_count_per_run": 3,
+  "condition_order": [
+    "baseline",
+    "replay",
+    "shuffled",
+    "prng_only",
+    "delayed_entropy",
+    "dropout"
+  ],
+  "required_run_artifacts": [
+    "run_header.json",
+    "ticks.ndjson",
+    "run_summary.json",
+    "run_verdict.json",
+    "entropy_preverdict.json",
+    "entropy_run_diagnostics.json",
+    "run_metrics.json",
+    "support_labels.json",
+    "output_consumption_policy.json",
+    "output_surface_policy.json",
+    "controlled_statements.json",
+    "run_evaluation_metrics.json"
+  ],
+  "required_batch_artifacts": [
+    "condition_metrics_summary.json",
+    "condition_comparison.json",
+    "condition_support_labels.json",
+    "condition_output_consumption_policy.json",
+    "condition_output_surface_policy.json",
+    "condition_controlled_statements.json",
+    "artifact_manifest.json",
+    "condition_evaluation_summary.json",
+    "condition_comparison_report.json",
+    "evaluation_protocol_manifest.json",
+    "evaluation_batch_report.json"
+  ],
+  "exclusion_rules": [
+    "exclude_run_if_run_verdict_not_admissible",
+    "exclude_run_if_entropy_diagnostics_invalidates_run",
+    "exclude_run_if_required_run_artifact_missing",
+    "no_automatic_outlier_drop"
+  ],
+  "rerun_policy": {
+    "full_protocol_rerun_if": [
+      "entropy_experiment_controller_changes",
+      "run_metrics_logic_changes",
+      "admissibility_or_invalidation_logic_changes",
+      "evaluation_protocol_definition_changes",
+      "evaluation_metrics_registry_changes",
+      "evaluation_comparison_matrix_changes",
+      "evaluation_statistical_policy_changes"
+    ],
+    "batch_only_rerun_if": [
+      "artifacts_missing_or_stale",
+      "frozen_repo_baselines_unchanged"
+    ]
+  },
+  "conditions": {
+    "baseline": {
+      "condition_class": "baseline_condition",
+      "operational_definition": "Upstream/custom provider path without experimental source replacement or delivery perturbation.",
+      "intervention_applied": "none",
+      "surface_affected": "none",
+      "controller_config": {
+        "mode": "baseline",
+        "seed_mode": "protocol_seed",
+        "delayMs": 0,
+        "dropoutRate": 0
+      },
+      "minimal_falsifiable_expectation": "Artifacts record baseline mode and no forced replay, shuffle, delay, or dropout is active.",
+      "does_not_prove": [
+        "theory_validation",
+        "framework_confirmation",
+        "causal_support"
+      ],
+      "required_artifacts_reflection": [
+        "run_metrics.experimental_condition.mode",
+        "entropy_preverdict.experiment.last_condition",
+        "run_verdict.entropy.experiment.last_condition"
+      ]
+    },
+    "replay": {
+      "condition_class": "control_condition",
+      "operational_definition": "Deterministic replay of a preserved sequence in original order.",
+      "intervention_applied": "source_sequence_reinjection",
+      "surface_affected": "source_replacement",
+      "controller_config": {
+        "mode": "replay",
+        "seed_mode": "protocol_seed",
+        "replaySourceId": "protocol_replay_fixture_v1"
+      },
+      "minimal_falsifiable_expectation": "Replay source id is present and the source replacement is artifact-visible.",
+      "does_not_prove": [
+        "runtime_superiority",
+        "causal_dependence_on_upstream_entropy"
+      ],
+      "required_artifacts_reflection": [
+        "run_metrics.experimental_condition.mode",
+        "run_metrics.experimental_condition.replay_source_id",
+        "entropy_preverdict.experiment.last_condition.replay_source_id"
+      ]
+    },
+    "shuffled": {
+      "condition_class": "control_condition",
+      "operational_definition": "Deterministic permutation of a preserved replay sequence under fixed seed.",
+      "intervention_applied": "source_sequence_permutation",
+      "surface_affected": "source_replacement",
+      "controller_config": {
+        "mode": "shuffled",
+        "seed_mode": "protocol_seed",
+        "replaySourceId": "protocol_shuffled_fixture_v1"
+      },
+      "minimal_falsifiable_expectation": "Shuffled source replacement is artifact-visible and reproducible by seed.",
+      "does_not_prove": [
+        "causal_runtime_difference",
+        "theory_confirmation"
+      ],
+      "required_artifacts_reflection": [
+        "run_metrics.experimental_condition.mode",
+        "run_metrics.experimental_condition.replay_source_id"
+      ]
+    },
+    "prng_only": {
+      "condition_class": "ablation_condition",
+      "operational_definition": "Synthetic seeded PRNG-only source replacing provider samples.",
+      "intervention_applied": "provider_source_ablation",
+      "surface_affected": "source_replacement",
+      "controller_config": {
+        "mode": "prng_only",
+        "seed_mode": "protocol_seed"
+      },
+      "minimal_falsifiable_expectation": "PRNG-only source is reproducible under fixed seed and recorded in artifacts.",
+      "does_not_prove": [
+        "equivalence_to_upstream_entropy",
+        "invalidity_of_runtime"
+      ],
+      "required_artifacts_reflection": [
+        "run_metrics.experimental_condition.mode",
+        "entropy_preverdict.experiment.last_condition.mode"
+      ]
+    },
+    "delayed_entropy": {
+      "condition_class": "intervention_condition",
+      "operational_definition": "Upstream/custom provider path with explicit delivery delay injection.",
+      "intervention_applied": "delivery_delay",
+      "surface_affected": "delivery_delay",
+      "controller_config": {
+        "mode": "delayed_entropy",
+        "seed_mode": "protocol_seed",
+        "delayMs": 60
+      },
+      "minimal_falsifiable_expectation": "Entropy latency burden increases relative to baseline on supported channel metrics.",
+      "does_not_prove": [
+        "causal_effect_on_theory_facing_metrics",
+        "framework_confirmation"
+      ],
+      "required_artifacts_reflection": [
+        "run_metrics.experimental_condition.mode",
+        "run_metrics.experimental_condition.delay_ms",
+        "run_metrics.stability.entropy_latency_mean_ms"
+      ]
+    },
+    "dropout": {
+      "condition_class": "intervention_condition",
+      "operational_definition": "Upstream/custom provider path with explicit delivery dropout injection.",
+      "intervention_applied": "delivery_dropout",
+      "surface_affected": "delivery_dropout",
+      "controller_config": {
+        "mode": "dropout",
+        "seed_mode": "protocol_seed",
+        "dropoutRate": 1
+      },
+      "minimal_falsifiable_expectation": "Fallback burden increases relative to baseline on supported channel metrics.",
+      "does_not_prove": [
+        "causal_effect_on_theory_facing_metrics",
+        "framework_confirmation"
+      ],
+      "required_artifacts_reflection": [
+        "run_metrics.experimental_condition.mode",
+        "run_metrics.experimental_condition.dropout_rate",
+        "run_metrics.burden.fallback_tick_ratio"
+      ]
+    }
+  },
+  "interpretation_boundary": "Protocol definition only; internal evaluation coordination, never external validation, never theory confirmation, never claim closure.",
+  "blocked_inferences": [
+    "protocol_success_implies_external_validation",
+    "condition_delta_implies_causal_confirmation",
+    "support_label_implies_framework_confirmation",
+    "run_verdict_implies_scientific_closure"
+  ]
+}

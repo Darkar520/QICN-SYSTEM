@@ -72,7 +72,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; pre-comparator ownership diagnostic, not externally validated, not sufficient for subjectivity claim, not human equivalence, not metaphysical closure.",
   "provenance": {
-    "generated_at": "2026-03-29T01:22:34.039Z",
+    "generated_at": "2026-03-29T01:40:30.887Z",
     "protocol_ref": "docs/subjectivity_protocol.v1.json",
     "self_index_ref": "self_index_state.json",
     "source_trace_ref": "subjectivity_inputs/srt3_baseline_trace",

@@ -114,6 +114,8 @@ artifacts/internal_release/*
 !artifacts/internal_release/internal_release_2026-03-28T20-57-25-417Z/**
 !artifacts/internal_release/internal_release_2026-03-29T00-45-55-223Z/
 !artifacts/internal_release/internal_release_2026-03-29T00-45-55-223Z/**
+!artifacts/internal_release/internal_release_2026-03-29T01-40-25-537Z/
+!artifacts/internal_release/internal_release_2026-03-29T01-40-25-537Z/**
 !artifacts/ecosystem_release_candidate/
 artifacts/ecosystem_release_candidate/*
 !artifacts/ecosystem_release_candidate/ECOSYSTEM_RELEASE_NOTES.md
@@ -126,6 +128,8 @@ artifacts/ecosystem_release_candidate/bundles/*
 !artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-28T20-59-44-382Z/**
 !artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-29T00-46-33-168Z/
 !artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-29T00-46-33-168Z/**
+!artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-29T01-40-33-696Z/
+!artifacts/ecosystem_release_candidate/bundles/ecosystem_release_candidate_2026-03-29T01-40-33-696Z/**
 !artifacts/external_audit_package/
 artifacts/external_audit_package/*
 !artifacts/external_audit_package/external_audit_package_manifest.json

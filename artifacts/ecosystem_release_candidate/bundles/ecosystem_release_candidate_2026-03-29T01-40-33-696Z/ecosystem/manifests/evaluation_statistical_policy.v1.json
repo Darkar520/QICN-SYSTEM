@@ -1,0 +1,44 @@
+{
+  "artifact_role": "evaluation_statistical_policy",
+  "schema_version": "1.0.0",
+  "minimum_n_for_condition_summary": 2,
+  "canonical_n_per_condition": 3,
+  "minimum_n_per_arm_for_minimal_contrast": 3,
+  "if_n_below_two": "unsupported",
+  "if_n_equals_two": "description_only",
+  "if_n_at_least_three": "minimal_contrast_allowed_for_matrix_permitted_comparisons",
+  "required_descriptive_fields": [
+    "sample_count",
+    "mean",
+    "min",
+    "max",
+    "std_dev",
+    "empirical_min_max_band"
+  ],
+  "minimal_contrast_outputs": [
+    "delta_abs",
+    "delta_rel",
+    "hedges_g",
+    "empirical_min_max_band"
+  ],
+  "outlier_policy": {
+    "automatic_outlier_deletion": false,
+    "authoritative_exclusions_only": [
+      "non_admissible_run",
+      "entropy_invalidated_run",
+      "missing_required_artifact"
+    ]
+  },
+  "seed_sensitivity_policy": {
+    "seed_schedule_must_be_explicit": true,
+    "single_seed_survival_status": "not_closed"
+  },
+  "unsupported_analyses": [
+    "p_value_significance_testing",
+    "causal_estimation",
+    "bayesian_model_comparison",
+    "theory_validation_inference",
+    "cross_repo_confirmatory_inference"
+  ],
+  "interpretation_boundary": "Statistical policy only; bounded internal contrast, never confirmatory inference."
+}

@@ -3,7 +3,7 @@
 ## Status
 
 - Candidate status: `PASS`
-- QICN-SYSTEM baseline: `main@737a005e280365e2deb6ed1a6a80160f1373bea0`
+- QICN-SYSTEM baseline: `main@feee49846b316089f5b105dfd5a148d8ce44c595`
 - QICN-RELEASE repo baseline: `main@e4ce7bae5d86ad256ea2b70407b18b2b81645f8b`
 - QICN-RELEASE canonical freeze: `release-2026-03-01@2d7504be95ca33af5941e30abf7059dc2774edca`
 - QICN-RELEASE upstream pin status: `resolved`

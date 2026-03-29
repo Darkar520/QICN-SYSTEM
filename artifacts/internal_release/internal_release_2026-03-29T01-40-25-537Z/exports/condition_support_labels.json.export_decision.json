@@ -1,0 +1,60 @@
+{
+  "artifact_role": "output_surface_enforcement_decision",
+  "scope": "small_batch",
+  "artifact": "condition_support_labels.json",
+  "artifact_path": "condition_support_labels.json",
+  "requested_surface": "local_report_surface",
+  "canonical_surface": "local_report_surface",
+  "allowed": true,
+  "reason_code": "allowed_export",
+  "output_role": "support_labeled_output",
+  "consumption_class": "support_only_not_claim_safe",
+  "claim_gate_status": "support_only_not_claim_safe",
+  "export_gate_status": "blocked_under_evaluation",
+  "statement_gate_status": "blocked_under_evaluation",
+  "allowed_surfaces": [
+    "local_artifact_surface",
+    "developer_inspection_surface",
+    "local_report_surface",
+    "small_batch_summary_surface"
+  ],
+  "blocked_surfaces": [
+    "internal_runtime_surface",
+    "descriptive_export_surface",
+    "controlled_statement_surface",
+    "external_claim_facing_surface"
+  ],
+  "required_boundaries": [
+    "non_claim_boundaries",
+    "interpretation_not_allowed"
+  ],
+  "required_refs": [
+    "consumption_policy_ref",
+    "surface_policy_ref",
+    "controlled_statements_ref"
+  ],
+  "boundaries_present": {
+    "non_claim_boundaries": true,
+    "interpretation_not_allowed": true
+  },
+  "refs_present": {
+    "consumption_policy_ref": true,
+    "surface_policy_ref": true,
+    "controlled_statements_ref": true
+  },
+  "boundary_ready": true,
+  "refs_ready": true,
+  "blocking_conditions": [
+    "external_validation_absent",
+    "support_label_not_truth_label",
+    "support_label_under_evaluation_blocks_export",
+    "support_label_under_evaluation_blocks_statement_surface",
+    "allowed_surface_read"
+  ],
+  "interpretation_boundary": "Condition-level support posture review only.",
+  "interpretation_not_allowed": [
+    "Do not read this as framework confirmation.",
+    "Do not read this as external validation."
+  ],
+  "emitted_to": "internal_release/internal_release_2026-03-29T01-40-25-537Z/exports/condition_support_labels.json"
+}

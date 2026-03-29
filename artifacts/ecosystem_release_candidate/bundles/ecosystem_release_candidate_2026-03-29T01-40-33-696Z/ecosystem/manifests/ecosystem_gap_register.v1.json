@@ -1,0 +1,17 @@
+{
+  "artifact_role": "ecosystem_gap_register",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-03-29T01:40:33.694Z",
+  "overall_blocking_gap_count": 0,
+  "overall_warning_count": 0,
+  "provenance_note_count": 1,
+  "gaps": [],
+  "provenance_notes": [
+    {
+      "id": "release.historical_dirty_start",
+      "class": "provenance_note",
+      "impact": "Historical repo state at hardening start only; not an active operational warning.",
+      "evidence": "canonical_integrity_check.json provenance_notes includes working_tree_not_clean_at_hardening_start"
+    }
+  ]
+}

@@ -1,14 +1,14 @@
 {
   "artifact_role": "ecosystem_release_candidate_manifest",
-  "generated_at": "2026-03-29T00:46:33.168Z",
-  "bundle_id": "ecosystem_release_candidate_2026-03-29T00-46-33-168Z",
+  "generated_at": "2026-03-29T01:40:33.696Z",
+  "bundle_id": "ecosystem_release_candidate_2026-03-29T01-40-33-696Z",
   "bundle_root": ".",
   "candidate_status": "PASS",
   "baselines": {
     "qicn_system": {
       "repository": "QICN-SYSTEM",
       "branch": "main",
-      "head": "737a005e280365e2deb6ed1a6a80160f1373bea0",
+      "head": "feee49846b316089f5b105dfd5a148d8ce44c595",
       "upstream": "origin/main",
       "operational_readiness_manifest": "system/manifests/operational_readiness_manifest.json",
       "artifact_manifest": "system/manifests/artifact_manifest.json",

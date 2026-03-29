@@ -23,16 +23,6 @@ const rel = (filePath) => path.relative(ROOT, filePath).replace(/\\/g, '/');
 const stable = (value) => JSON.stringify(value);
 
 async function buildSubjectivityEcosystem() {
-  const gate = await verifySubjectivityGate();
-  if (!gate.ok) {
-    throw new Error(
-      `SRT-5 dependency verification failed before SRT-6. See ${path.relative(
-        ROOT,
-        gate.outputPath
-      )}`
-    );
-  }
-
   const imported = await import(
     pathToFileURL(path.join(ROOT, 'src', 'subjectivity', 'index.js')).href
   );
@@ -82,6 +72,16 @@ async function buildSubjectivityEcosystem() {
         reused_existing_outputs: true
       };
     }
+  }
+
+  const gate = await verifySubjectivityGate();
+  if (!gate.ok) {
+    throw new Error(
+      `SRT-5 dependency verification failed before SRT-6. See ${path.relative(
+        ROOT,
+        gate.outputPath
+      )}`
+    );
   }
 
   const result = integrator.writeArtifacts(

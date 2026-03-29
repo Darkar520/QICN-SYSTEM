@@ -1,0 +1,151 @@
+{
+  "artifact_role": "ambiguity_bearing_report",
+  "artifact_name": "ambiguity_bearing_report.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_version": "phenomenal_bridge_formal_layer.bpf1.surfaces.v1",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "preferred_source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex",
+    "lineage_status": "public_formal_source_of_truth_reference"
+  },
+  "runtime_status": "implemented_internal_provisional_bridge_surfaces_pre_comparator_pre_intervention_pre_gate",
+  "run_id": "bpf1_bridge_surfaces_baseline",
+  "predicate_id": "Pi_A",
+  "predicate_name": "ambiguity_bearing",
+  "runtime_surface": "ambiguity_bearing_surface",
+  "bridge_role": "Maintained unresolved alternative load beyond uncertainty bookkeeping, represented only provisionally in BPF-1 via structural ambiguity proxies.",
+  "artifact_class": "primary_report",
+  "level": "run_level_report",
+  "authoritative_status": "authoritative_run_level_report_within_bpf1_scope",
+  "estimator_status": "provisional_runtime_bridge_estimator",
+  "provisional_estimate": 0.27810235152777774,
+  "component_scores": {
+    "alternative_load": 0.42500000000000004,
+    "live_maintenance": 0.1426,
+    "ambiguity_sensitivity": 0.7620183333333335,
+    "bookkeeping_penalty": 0.18333333333333335,
+    "no_live_ambiguity_penalty": 0.7
+  },
+  "transformation_logic": {
+    "normalization_rules": [
+      "extra self-index candidates normalized against provisional cap 3",
+      "rival_line_count normalized against provisional cap 2",
+      "flattening_vulnerability used only as ambiguity sensitivity proxy",
+      "absolute inversion margin shift normalized against provisional cap 0.15",
+      "first_person_gain normalized against provisional cap 0.35"
+    ],
+    "aggregation_rule": "(0.45 alternative_load + 0.20 live_maintenance + 0.35 ambiguity_sensitivity) multiplied by (1-bookkeeping_penalty) and by no_live_ambiguity_penalty when no direct ambiguity flag exists",
+    "penalties_applied": [
+      "no_live_ambiguity_state_detected",
+      "ownership_uncertainty_is_not_bridge_ambiguity",
+      "valuation_aliasing_does_not_count_as_ambiguity_bearing"
+    ]
+  },
+  "upstream_dependencies": [
+    {
+      "artifact_name": "self_index_state.json",
+      "artifact_role": "self_index_state"
+    },
+    {
+      "artifact_name": "ownership_attribution_report.json",
+      "artifact_role": "ownership_attribution_report"
+    },
+    {
+      "artifact_name": "subjective_continuity_report.json",
+      "artifact_role": "subjective_continuity_report"
+    },
+    {
+      "artifact_name": "first_person_perspective_report.json",
+      "artifact_role": "first_person_perspective_report"
+    },
+    {
+      "artifact_name": "subjective_valuation_report.json",
+      "artifact_role": "subjective_valuation_report"
+    }
+  ],
+  "fields_used": [
+    "self_index_state.candidate_count",
+    "subjective_continuity_report.rival_line_count",
+    "subjective_continuity_report.ambiguity_flag",
+    "subjective_continuity_report.fork_flag",
+    "first_person_perspective_report.flattening_vulnerability",
+    "first_person_perspective_report.first_person_gain",
+    "subjective_valuation_report.inversion_response.margin_shift",
+    "subjective_valuation_report.aliasing_warning.flag",
+    "ownership_attribution_report.uncertain_fraction"
+  ],
+  "bridge_specific_structure": {
+    "alternative_basis": "candidate_and_rival_line_multiplicity",
+    "maintenance_basis": "direct_ambiguity_or_fork_signal_when_available",
+    "sensitivity_basis": "structured_response_to_inversion_and_perspective_change",
+    "penalty_basis": "bookkeeping_uncertainty_and_absent_live_ambiguity"
+  },
+  "uncertainty_markers": [
+    "no_direct_live_ambiguity_trace"
+  ],
+  "warnings": [
+    "no_live_ambiguity_state_detected",
+    "ownership_uncertainty_is_not_bridge_ambiguity",
+    "valuation_aliasing_does_not_count_as_ambiguity_bearing"
+  ],
+  "collapse_risks": [
+    "uncertainty_bookkeeping_without_ambiguity_bearing",
+    "narrated_alternatives_without_live_maintenance",
+    "ambiguity_resolved_too_early_to_count_as_bridge_structure"
+  ],
+  "collapse_status": "proxy_only_underdetermined",
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "provisional_bridge_estimator": true,
+    "not_bridge_support": true,
+    "not_phenomenality_evidence": true
+  },
+  "non_implications": [
+    "not_bridge_support",
+    "not_bridge_verdict",
+    "not_phenomenality",
+    "not_conscious_uncertainty",
+    "not_deliberative_experience"
+  ],
+  "allowed_surfaces": [
+    "developer_inspection_surface",
+    "local_artifact_surface"
+  ],
+  "blocked_surfaces": [
+    "local_report_surface",
+    "internal_release_bundle_surface",
+    "ecosystem_candidate_surface",
+    "audit_facing_package_surface",
+    "controlled_statement_surface",
+    "external_claim_facing_surface"
+  ],
+  "implementation_status": "bpf1_surface_only",
+  "interpretation_boundary": "Framework-internal only; BPF-1 emits provisional bridge coordinate reports derived from upstream subjectivity artifacts. These reports are not bridge support, not bridge admissibility, not comparator closure, not intervention closure, not gate closure, not phenomenality evidence, not human equivalence, and not Paper 9 authorization.",
+  "provenance": {
+    "generated_at": "2026-03-29T15:49:48.972Z",
+    "protocol_ref": "docs/phenomenal_bridge_protocol.v1.json",
+    "surface_policy_ref": "docs/phenomenal_bridge_surface_policy.v1.json",
+    "artifact_schema_ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
+    "upstream_refs": {
+      "self_index_state": "artifacts/subjectivity/srt1/self_index_state.json",
+      "ownership_attribution_report": "artifacts/subjectivity/srt1/ownership_attribution_report.json",
+      "subjective_continuity_report": "artifacts/subjectivity/srt2/subjective_continuity_report.json",
+      "first_person_perspective_report": "artifacts/subjectivity/srt2/first_person_perspective_report.json",
+      "subjective_valuation_report": "artifacts/subjectivity/srt3/subjective_valuation_report.json",
+      "subjectivity_intervention_profile": "artifacts/subjectivity/srt3/subjectivity_intervention_profile.json",
+      "subjectivity_reducibility_report": "artifacts/subjectivity/srt4/subjectivity_reducibility_report.json",
+      "subjectivity_runtime_projection": "artifacts/subjectivity/srt5/subjectivity_runtime_projection.json",
+      "subjectivity_gate_result": "artifacts/subjectivity/srt5/subjectivity_gate_result.json",
+      "subjectivity_manifest": "artifacts/subjectivity/srt5/subjectivity_manifest.json"
+    },
+    "input_profile": "bpf1_bridge_surface_baseline",
+    "source_trace_ref": "phenomenal_bridge_inputs/bpf1_bridge_surface_baseline",
+    "bridge_estimator_version": "phenomenal_bridge_surfaces.bpf1.v1",
+    "bridge_layer_version": "phenomenal_bridge_formal_layer.bpf1.surfaces.v1",
+    "emitted_artifact": "ambiguity_bearing_report.json",
+    "run_id": "bpf1_bridge_surfaces_baseline"
+  },
+  "schema_ref": "src/phenomenal_bridge/schemas/ambiguity_bearing_report.v1.json"
+}

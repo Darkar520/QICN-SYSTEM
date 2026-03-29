@@ -1,0 +1,140 @@
+{
+  "artifact_role": "temporal_lived_structure_report",
+  "artifact_name": "temporal_lived_structure_report.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_version": "phenomenal_bridge_formal_layer.bpf1.surfaces.v1",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "preferred_source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex",
+    "lineage_status": "public_formal_source_of_truth_reference"
+  },
+  "runtime_status": "implemented_internal_provisional_bridge_surfaces_pre_comparator_pre_intervention_pre_gate",
+  "run_id": "bpf1_bridge_surfaces_baseline",
+  "predicate_id": "Pi_T",
+  "predicate_name": "temporal_lived_structure",
+  "runtime_surface": "temporal_lived_structure_surface",
+  "bridge_role": "Provisional temporal-organization readout stronger than continuity records alone but still proxy-bound and weaker than any lived-time verdict.",
+  "artifact_class": "primary_report",
+  "level": "run_level_report",
+  "authoritative_status": "authoritative_run_level_report_within_bpf1_scope",
+  "estimator_status": "provisional_runtime_bridge_estimator",
+  "provisional_estimate": 0.6370522111111112,
+  "component_scores": {
+    "retention_support": 0.8310000000000001,
+    "horizon_depth": 0.7704444444444446,
+    "temporal_asymmetry_proxy": 0.7635485416666666,
+    "lived_time_penalty": 0.8
+  },
+  "transformation_logic": {
+    "normalization_rules": [
+      "history_length normalized against provisional cap 8",
+      "continuity_margin normalized against provisional cap 0.75",
+      "first_person_gain normalized against provisional cap 0.35",
+      "valuation_asymmetry_margin normalized against provisional cap 0.40",
+      "absolute inversion margin shift normalized against provisional cap 0.15"
+    ],
+    "aggregation_rule": "(0.45 retention_support + 0.35 horizon_depth + 0.20 temporal_asymmetry_proxy) multiplied by lived_time_penalty=0.80",
+    "penalties_applied": [
+      "temporal_lived_structure_uses_continuity_proxy_family"
+    ]
+  },
+  "upstream_dependencies": [
+    {
+      "artifact_name": "subjective_continuity_report.json",
+      "artifact_role": "subjective_continuity_report"
+    },
+    {
+      "artifact_name": "first_person_perspective_report.json",
+      "artifact_role": "first_person_perspective_report"
+    },
+    {
+      "artifact_name": "subjective_valuation_report.json",
+      "artifact_role": "subjective_valuation_report"
+    },
+    {
+      "artifact_name": "subjectivity_runtime_projection.json",
+      "artifact_role": "subjectivity_runtime_projection"
+    }
+  ],
+  "fields_used": [
+    "subjective_continuity_report.supporting_signals[*].supporting_signals.temporal_linkage",
+    "subjective_continuity_report.supporting_signals[*].supporting_signals.memory_integrity",
+    "subjective_continuity_report.supporting_signals[*].history_length",
+    "subjective_continuity_report.continuity_margin",
+    "first_person_perspective_report.first_person_gain",
+    "subjective_valuation_report.valuation_asymmetry_margin",
+    "subjective_valuation_report.inversion_response.margin_shift",
+    "subjectivity_runtime_projection.coordinate_estimates.ContinuityField.estimate"
+  ],
+  "bridge_specific_structure": {
+    "retention_basis": "temporal_linkage_plus_memory_integrity_plus_srt5_continuity_anchor",
+    "horizon_basis": "history_depth_plus_indexed_perspective_gain",
+    "asymmetry_basis": "valuation_shift_used_as_temporal_asymmetry_proxy"
+  },
+  "uncertainty_markers": [
+    "no_direct_retention_protention_module",
+    "proxy_only_for_lived_temporality"
+  ],
+  "warnings": [
+    "temporal_lived_structure_uses_continuity_proxy_family"
+  ],
+  "collapse_risks": [
+    "continuity_records_without_lived_structure",
+    "memory_persistence_without_temporal_horizon",
+    "timestamp_coherence_without_temporal_organization"
+  ],
+  "collapse_status": "provisional_structure_detected",
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "provisional_bridge_estimator": true,
+    "not_bridge_support": true,
+    "not_phenomenality_evidence": true
+  },
+  "non_implications": [
+    "not_bridge_support",
+    "not_bridge_verdict",
+    "not_phenomenality",
+    "not_human_lived_time"
+  ],
+  "allowed_surfaces": [
+    "developer_inspection_surface",
+    "local_artifact_surface"
+  ],
+  "blocked_surfaces": [
+    "local_report_surface",
+    "internal_release_bundle_surface",
+    "ecosystem_candidate_surface",
+    "audit_facing_package_surface",
+    "controlled_statement_surface",
+    "external_claim_facing_surface"
+  ],
+  "implementation_status": "bpf1_surface_only",
+  "interpretation_boundary": "Framework-internal only; BPF-1 emits provisional bridge coordinate reports derived from upstream subjectivity artifacts. These reports are not bridge support, not bridge admissibility, not comparator closure, not intervention closure, not gate closure, not phenomenality evidence, not human equivalence, and not Paper 9 authorization.",
+  "provenance": {
+    "generated_at": "2026-03-29T15:49:48.973Z",
+    "protocol_ref": "docs/phenomenal_bridge_protocol.v1.json",
+    "surface_policy_ref": "docs/phenomenal_bridge_surface_policy.v1.json",
+    "artifact_schema_ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
+    "upstream_refs": {
+      "self_index_state": "artifacts/subjectivity/srt1/self_index_state.json",
+      "ownership_attribution_report": "artifacts/subjectivity/srt1/ownership_attribution_report.json",
+      "subjective_continuity_report": "artifacts/subjectivity/srt2/subjective_continuity_report.json",
+      "first_person_perspective_report": "artifacts/subjectivity/srt2/first_person_perspective_report.json",
+      "subjective_valuation_report": "artifacts/subjectivity/srt3/subjective_valuation_report.json",
+      "subjectivity_intervention_profile": "artifacts/subjectivity/srt3/subjectivity_intervention_profile.json",
+      "subjectivity_reducibility_report": "artifacts/subjectivity/srt4/subjectivity_reducibility_report.json",
+      "subjectivity_runtime_projection": "artifacts/subjectivity/srt5/subjectivity_runtime_projection.json",
+      "subjectivity_gate_result": "artifacts/subjectivity/srt5/subjectivity_gate_result.json",
+      "subjectivity_manifest": "artifacts/subjectivity/srt5/subjectivity_manifest.json"
+    },
+    "input_profile": "bpf1_bridge_surface_baseline",
+    "source_trace_ref": "phenomenal_bridge_inputs/bpf1_bridge_surface_baseline",
+    "bridge_estimator_version": "phenomenal_bridge_surfaces.bpf1.v1",
+    "bridge_layer_version": "phenomenal_bridge_formal_layer.bpf1.surfaces.v1",
+    "emitted_artifact": "temporal_lived_structure_report.json",
+    "run_id": "bpf1_bridge_surfaces_baseline"
+  },
+  "schema_ref": "src/phenomenal_bridge/schemas/temporal_lived_structure_report.v1.json"
+}

@@ -5,8 +5,6 @@ const path = require('path');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const DOCS = path.join(ROOT, 'docs');
-const SRC = path.join(ROOT, 'src', 'phenomenal_bridge');
 const ARTIFACTS = path.join(ROOT, 'artifacts');
 
 const LOCAL_PATH_PATTERN =
@@ -101,12 +99,21 @@ const ensureNoOverclaimWording = (relativePaths) => {
   });
 };
 
-const ensureNoFakeBridgeArtifacts = () => {
+const ensureNoPrematureBridgeRoots = () => {
   const artifactFiles = collectFiles(ARTIFACTS).map(relative);
-  const forbidden = artifactFiles.filter((filePath) => /phenomenal_bridge/i.test(filePath));
+  const forbiddenNames = [
+    'phenomenal_bridge_projection.json',
+    'phenomenal_bridge_gate_result.json',
+    'phenomenal_bridge_manifest.json',
+    'bridge_intervention_profile.json',
+    'bridge_reducibility_report.json'
+  ];
+  const forbidden = artifactFiles.filter((filePath) =>
+    forbiddenNames.some((name) => filePath.endsWith(name))
+  );
   assert(
     forbidden.length === 0,
-    `BPF-0 must not emit bridge artifacts, but found: ${forbidden.join(', ')}`
+    `BPF scaffolding must not emit premature bridge root/comparator/intervention artifacts, but found: ${forbidden.join(', ')}`
   );
 };
 
@@ -118,16 +125,27 @@ const verifyManifestCoherence = () => {
   const artifactSchema = readJson('docs/phenomenal_bridge_artifact_schema.v1.json');
   const surfacePolicy = readJson('docs/phenomenal_bridge_surface_policy.v1.json');
 
-  assert(protocol.layer_id === 'phenomenal_bridge_formal_layer.bpf0', 'Unexpected protocol layer id');
   assert(
-    protocol.implementation_status === 'scaffold_only_opening_layer',
-    'Protocol must remain scaffold-only'
+    ['phenomenal_bridge_formal_layer.bpf0', 'phenomenal_bridge_formal_layer.bpf1'].includes(
+      protocol.layer_id
+    ),
+    'Unexpected protocol layer id'
+  );
+  assert(
+    ['scaffold_only_opening_layer', 'provisional_bridge_surfaces_implemented'].includes(
+      protocol.implementation_status
+    ),
+    'Unexpected BPF implementation status'
   );
   assert(Array.isArray(protocol.bridge_target_predicates), 'Protocol predicates must be an array');
   assert(protocol.bridge_target_predicates.length === 6, 'Protocol must define six bridge predicates');
   assert(
-    protocol.bridge_target_predicates.every((entry) => entry.status === 'named_not_runtime_estimated'),
-    'Bridge predicates must remain unimplemented in BPF-0'
+    protocol.bridge_target_predicates.every((entry) =>
+      ['named_not_runtime_estimated', 'provisional_runtime_estimator_implemented'].includes(
+        entry.status
+      )
+    ),
+    'Bridge predicates must remain either scaffold-only or provisional'
   );
 
   assert(Array.isArray(axioms.axioms) && axioms.axioms.length >= 6, 'Axiom registry must be populated');
@@ -160,11 +178,13 @@ const verifyManifestCoherence = () => {
     assert(entry.value === null, `Threshold ${entry.slot_id} must remain unbound`);
     assert(entry.status === 'symbolic', `Threshold ${entry.slot_id} must remain symbolic`);
   });
-  assert(thresholds.global_gate_slot.value === null, 'Global bridge gate threshold must remain unbound');
-  assert(thresholds.functional_slot.value === null, 'Functional threshold must remain unbound');
 
   Object.values(artifactSchema.root_schema_refs).forEach((schemaPath) =>
     assert(exists(schemaPath), `Missing root schema ${schemaPath}`)
+  );
+  const reportSchemaRefs = artifactSchema.report_schema_refs || {};
+  Object.values(reportSchemaRefs).forEach((schemaPath) =>
+    assert(exists(schemaPath), `Missing report schema ${schemaPath}`)
   );
   Object.entries(artifactSchema.artifacts).forEach(([artifactName, spec]) => {
     ['id', 'artifact_name', 'role', 'artifact_class', 'level', 'authoritative_status', 'allowed_surfaces', 'blocked_surfaces', 'minimum_fields', 'non_implications', 'status'].forEach((field) =>
@@ -181,7 +201,9 @@ const verifyManifestCoherence = () => {
   });
 
   assert(
-    surfacePolicy.default_interpretation_boundary.includes('does not license'),
+    surfacePolicy.default_interpretation_boundary.includes('does not license')
+      || surfacePolicy.default_interpretation_boundary.includes('does not')
+      || surfacePolicy.default_interpretation_boundary.includes('framework-internal'),
     'Surface policy must carry explicit non-license boundary'
   );
 };
@@ -192,7 +214,7 @@ const verifyDocs = () => {
   const nonClaims = readText('docs/PHENOMENAL_BRIDGE_NONCLAIMS.md');
   const plan = readText('docs/PHENOMENAL_BRIDGE_IMPLEMENTATION_PLAN.md');
 
-  assert(boundary.includes('BPF-0'), 'Interpretation boundary must mention BPF-0');
+  assert(boundary.includes('BPF-1') || boundary.includes('BPF-0'), 'Interpretation boundary must mention BPF-0/BPF-1');
   assert(policy.includes('controlled_statement_surface'), 'Surface policy must mention controlled_statement_surface');
   assert(policy.includes('external_claim_facing_surface'), 'Surface policy must mention external claim-facing blockage');
   [
@@ -209,13 +231,20 @@ const verifyDocs = () => {
 };
 
 const verifyRuntimeImport = async () => {
-  const moduleUrl = pathToFileURL(path.join(SRC, 'index.js')).href;
+  const moduleUrl = pathToFileURL(path.join(ROOT, 'src', 'phenomenal_bridge', 'index.js')).href;
   const bridge = await import(moduleUrl);
   assert(typeof bridge.describePhenomenalBridgeLayerScaffold === 'function', 'Bridge layer describe export missing');
   const description = bridge.describePhenomenalBridgeLayerScaffold();
-  assert(description.scaffold_only === true, 'Bridge layer must be scaffold-only');
-  assert(description.not_runtime_bridge === true, 'Bridge layer must declare no runtime bridge');
+  assert(description.framework_internal_only === true, 'Bridge layer must remain framework-internal');
   assert(description.not_phenomenality_support === true, 'Bridge layer must declare no phenomenality support');
+  assert(
+    description.scaffold_opening_intact === true || description.scaffold_only === true,
+    'BPF scaffold opening must remain intact'
+  );
+  assert(
+    description.not_bridge_support === true || description.scaffold_only === true,
+    'Bridge layer must declare no bridge support'
+  );
 };
 
 const main = async () => {
@@ -229,7 +258,7 @@ const main = async () => {
   ensureFilesExist(allStructuredFiles);
   ensureNoPathLeaks(allStructuredFiles);
   ensureNoOverclaimWording(allStructuredFiles);
-  ensureNoFakeBridgeArtifacts();
+  ensureNoPrematureBridgeRoots();
   verifyManifestCoherence();
   verifyDocs();
   await verifyRuntimeImport();

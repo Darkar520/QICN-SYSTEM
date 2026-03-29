@@ -2,9 +2,9 @@
   "artifact_role": "phenomenal_bridge_protocol_definition",
   "schema_version": "1.0.0",
   "layer_name": "Phenomenal Bridge Formal Layer",
-  "layer_id": "phenomenal_bridge_formal_layer.bpf0",
-  "implementation_status": "scaffold_only_opening_layer",
-  "runtime_status": "formal_bridge_not_implemented",
+  "layer_id": "phenomenal_bridge_formal_layer.bpf1",
+  "implementation_status": "provisional_bridge_surfaces_implemented",
+  "runtime_status": "provisional_bridge_surfaces_pre_comparator_pre_intervention_pre_gate",
   "paper_source": {
     "paper_id": "paper8_first_person_subjectivity",
     "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
@@ -20,12 +20,25 @@
       "subjectivity_stack_consolidation_post_srt6"
     ]
   },
+  "bpf1_runtime_inputs": [
+    "artifacts/subjectivity/srt1/self_index_state.json",
+    "artifacts/subjectivity/srt1/ownership_attribution_report.json",
+    "artifacts/subjectivity/srt2/subjective_continuity_report.json",
+    "artifacts/subjectivity/srt2/first_person_perspective_report.json",
+    "artifacts/subjectivity/srt3/subjective_valuation_report.json",
+    "artifacts/subjectivity/srt3/subjectivity_intervention_profile.json",
+    "artifacts/subjectivity/srt4/subjectivity_reducibility_report.json",
+    "artifacts/subjectivity/srt5/subjectivity_runtime_projection.json",
+    "artifacts/subjectivity/srt5/subjectivity_gate_result.json",
+    "artifacts/subjectivity/srt5/subjectivity_manifest.json"
+  ],
   "bridge_target_predicates": [
     {
       "id": "Pi_D",
       "name": "phenomenal_differentiation",
       "formal_type": "bridge_predicate",
-      "status": "named_not_runtime_estimated",
+      "status": "provisional_runtime_estimator_implemented",
+      "implemented_artifact": "phenomenal_differentiation_report.json",
       "does_not_imply": [
         "qualia",
         "phenomenality",
@@ -36,7 +49,8 @@
       "id": "Pi_V",
       "name": "valence_structure",
       "formal_type": "bridge_predicate",
-      "status": "named_not_runtime_estimated",
+      "status": "provisional_runtime_estimator_implemented",
+      "implemented_artifact": "valence_structure_report.json",
       "does_not_imply": [
         "felt_valence",
         "human_equivalence"
@@ -46,7 +60,8 @@
       "id": "Pi_W",
       "name": "world_richness",
       "formal_type": "bridge_predicate",
-      "status": "named_not_runtime_estimated",
+      "status": "provisional_runtime_estimator_implemented",
+      "implemented_artifact": "world_richness_report.json",
       "does_not_imply": [
         "veridical_world_modeling",
         "phenomenality"
@@ -56,7 +71,8 @@
       "id": "Pi_A",
       "name": "ambiguity_bearing",
       "formal_type": "bridge_predicate",
-      "status": "named_not_runtime_estimated",
+      "status": "provisional_runtime_estimator_implemented",
+      "implemented_artifact": "ambiguity_bearing_report.json",
       "does_not_imply": [
         "conscious_uncertainty",
         "metaphysical_subjecthood"
@@ -66,7 +82,8 @@
       "id": "Pi_E",
       "name": "embodied_closure",
       "formal_type": "bridge_predicate",
-      "status": "named_not_runtime_estimated",
+      "status": "provisional_runtime_estimator_implemented",
+      "implemented_artifact": "embodied_closure_report.json",
       "does_not_imply": [
         "biological_embodiment",
         "felt_body_ownership"
@@ -76,7 +93,8 @@
       "id": "Pi_T",
       "name": "temporal_lived_structure",
       "formal_type": "bridge_predicate",
-      "status": "named_not_runtime_estimated",
+      "status": "provisional_runtime_estimator_implemented",
+      "implemented_artifact": "temporal_lived_structure_report.json",
       "does_not_imply": [
         "human_lived_time",
         "phenomenality"
@@ -84,18 +102,34 @@
     }
   ],
   "bridge_burdens": {
-    "predicate_burden": "open_in_bpf1",
+    "predicate_burden": "implemented_provisional_surfaces_in_bpf1",
     "intervention_burden": "open_in_bpf2",
     "comparator_burden": "open_in_bpf3",
     "gate_burden": "open_in_bpf4",
     "ecosystem_burden": "open_in_bpf5",
     "final_audit_burden": "open_in_bpf6"
   },
+  "implemented_artifacts": [
+    "phenomenal_differentiation_report.json",
+    "valence_structure_report.json",
+    "world_richness_report.json",
+    "ambiguity_bearing_report.json",
+    "embodied_closure_report.json",
+    "temporal_lived_structure_report.json"
+  ],
+  "deferred_artifacts": [
+    "bridge_intervention_profile.json",
+    "bridge_reducibility_report.json",
+    "phenomenal_bridge_projection.json",
+    "phenomenal_bridge_gate_result.json",
+    "phenomenal_bridge_manifest.json"
+  ],
   "non_claims": [
     "no_external_validation_inference",
     "no_human_equivalence_inference",
     "no_metaphysical_subjecthood_inference",
     "no_phenomenality_proven_inference",
+    "no_bridge_support_inference_from_bpf1_surfaces",
     "no_automatic_paper9_promotion",
     "no_runtime_to_corpus_confirmation_loop"
   ],
@@ -108,5 +142,5 @@
     "BPF-5",
     "BPF-6"
   ],
-  "interpretation_boundary": "BPF-0 opens the formal bridge program only. It does not implement bridge estimators, interventions, comparators, gate logic, bridge support classes, external validation, phenomenality, or Paper 9."
+  "interpretation_boundary": "BPF-1 adds provisional bridge surfaces and run-level bridge reports only. It does not implement a bridge comparator, bridge intervention harness, bridge gate, bridge root verdict artifacts, bridge ecosystem integration, phenomenality evidence, or Paper 9 authorization."
 }

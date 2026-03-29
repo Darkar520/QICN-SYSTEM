@@ -2,14 +2,13 @@
 
 ## Rule
 
-All BPF artifacts are framework-internal only by default. BPF-0 opens schema
-and governance scaffolding, not bridge support.
+All BPF artifacts remain framework-internal only by default. BPF-1 adds local
+run-level bridge reports, not bridge support.
 
-## Allowed surfaces in BPF-0
+## Allowed surfaces in BPF-1
 
 - `developer_inspection_surface`
 - `local_artifact_surface`
-- `local_report_surface`
 
 These surfaces may contain:
 
@@ -18,7 +17,20 @@ These surfaces may contain:
 - rival-family registry
 - threshold policy
 - artifact schema registry
-- scaffold-only layer metadata
+- scaffold metadata
+- BPF-1 run-level bridge reports
+
+## Blocked even in BPF-1
+
+- `local_report_surface`
+- `internal_release_bundle_surface`
+- `ecosystem_candidate_surface`
+- `audit_facing_package_surface`
+- `controlled_statement_surface`
+- `external_claim_facing_surface`
+
+The local-report surface remains blocked at BPF-1 because the new bridge
+reports are still provisional and easy to quote-mine out of context.
 
 ## Conditionally allowed in later BPF blocks
 
@@ -26,34 +38,24 @@ These surfaces may contain:
 - `ecosystem_candidate_surface`
 - `audit_facing_package_surface`
 
-These surfaces remain blocked for bridge outputs in BPF-0. Later opening would
-require:
+These stay blocked until later BPF blocks supply:
 
-- implemented bridge artifacts
-- bridge-specific boundary text
 - bridge-specific non-claims
-- stale and drift checks
-- explicit allow-list updates
-
-## Blocked surfaces
-
-- `controlled_statement_surface`
-- `external_claim_facing_surface`
-
-These surfaces remain blocked for all bridge artifacts by default, including
-future bridge gate outputs, unless an explicit later governance block changes
-the policy.
+- bridge-specific stale and drift checks
+- bridge-specific allow-list updates
+- bridge-specific bundle semantics
 
 ## Prohibited inferences
 
-- candidate inclusion implies phenomenal support
+- candidate inclusion implies bridge support
 - audit handoff implies external adjudication
-- internal bridge artifact implies phenomenality
+- internal bridge report implies phenomenality
+- provisional bridge estimate implies bridge admissibility
 - bridge formalization implies Paper 9 legitimacy
 
 ## Machine-governance rule
 
-Any later bridge artifact that does not carry:
+Any bridge artifact that does not carry:
 
 - explicit non-claims
 - explicit interpretation boundary

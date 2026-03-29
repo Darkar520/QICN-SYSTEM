@@ -1,0 +1,138 @@
+{
+  "artifact_role": "valence_structure_report",
+  "artifact_name": "valence_structure_report.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_version": "phenomenal_bridge_formal_layer.bpf1.surfaces.v1",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "preferred_source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex",
+    "lineage_status": "public_formal_source_of_truth_reference"
+  },
+  "runtime_status": "implemented_internal_provisional_bridge_surfaces_pre_comparator_pre_intervention_pre_gate",
+  "run_id": "bpf1_bridge_surfaces_baseline",
+  "predicate_id": "Pi_V",
+  "predicate_name": "valence_structure",
+  "runtime_surface": "valence_structure_surface",
+  "bridge_role": "Organized evaluative topology stronger than raw self/non-self asymmetry but still weaker than any affective or phenomenal verdict.",
+  "artifact_class": "primary_report",
+  "level": "run_level_report",
+  "authoritative_status": "authoritative_run_level_report_within_bpf1_scope",
+  "estimator_status": "provisional_runtime_bridge_estimator",
+  "provisional_estimate": 0.608886401395052,
+  "component_scores": {
+    "polarity_separation": 0.8230604166666666,
+    "valence_topology": 0.6584483333333333,
+    "inversion_gradient": 0.7040366666666666,
+    "perturbation_selectivity": 0.5446223965625001,
+    "aliasing_penalty": 0.85
+  },
+  "transformation_logic": {
+    "normalization_rules": [
+      "valuation_asymmetry_margin normalized against provisional cap 0.40",
+      "self-minus-nonself mean weight difference normalized against provisional cap 0.50",
+      "absolute inversion margin shift normalized against provisional cap 0.15",
+      "intervention selectivity combines aggregate selective-drop ratio with SRT-5 intervention estimate"
+    ],
+    "aggregation_rule": "0.40 polarity_separation + 0.25 valence_topology + 0.20 inversion_gradient + 0.15 perturbation_selectivity, multiplied by aliasing penalty when needed",
+    "penalties_applied": [
+      "valuation_aliasing_penalty_applied",
+      "control_confounded_intervention_profile_present"
+    ]
+  },
+  "upstream_dependencies": [
+    {
+      "artifact_name": "subjective_valuation_report.json",
+      "artifact_role": "subjective_valuation_report"
+    },
+    {
+      "artifact_name": "subjectivity_intervention_profile.json",
+      "artifact_role": "subjectivity_intervention_profile"
+    },
+    {
+      "artifact_name": "subjectivity_runtime_projection.json",
+      "artifact_role": "subjectivity_runtime_projection"
+    }
+  ],
+  "fields_used": [
+    "subjective_valuation_report.valuation_asymmetry_margin",
+    "subjective_valuation_report.self_weight_summary.mean_weight",
+    "subjective_valuation_report.nonself_weight_summary.mean_weight",
+    "subjective_valuation_report.weighting_classification",
+    "subjective_valuation_report.inversion_response.margin_shift",
+    "subjective_valuation_report.aliasing_warning.flag",
+    "subjectivity_intervention_profile.aggregate_profile.selective_drop_count",
+    "subjectivity_intervention_profile.aggregate_profile.flat_damage_count",
+    "subjectivity_intervention_profile.aggregate_profile.control_confounded_count",
+    "subjectivity_runtime_projection.coordinate_estimates.InterventionProfile.estimate"
+  ],
+  "bridge_specific_structure": {
+    "polarity_basis": "valuation_margin_and_self_nonself_weight_gap",
+    "topology_basis": "distributed_self_preserving_case_structure",
+    "perturbation_basis": "valuation_selectivity_under_minimal_srt3_interventions"
+  },
+  "uncertainty_markers": [],
+  "warnings": [
+    "valuation_aliasing_penalty_applied",
+    "control_confounded_intervention_profile_present"
+  ],
+  "collapse_risks": [
+    "reward_bookkeeping_without_affective_organization",
+    "uniform_reward_scaling_absorbs_apparent_valence",
+    "policy_optimization_without_bridge_valence_structure"
+  ],
+  "collapse_status": "provisional_structure_detected",
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "provisional_bridge_estimator": true,
+    "not_bridge_support": true,
+    "not_phenomenality_evidence": true
+  },
+  "non_implications": [
+    "not_bridge_support",
+    "not_bridge_verdict",
+    "not_phenomenality",
+    "not_felt_valence",
+    "not_suffering"
+  ],
+  "allowed_surfaces": [
+    "developer_inspection_surface",
+    "local_artifact_surface"
+  ],
+  "blocked_surfaces": [
+    "local_report_surface",
+    "internal_release_bundle_surface",
+    "ecosystem_candidate_surface",
+    "audit_facing_package_surface",
+    "controlled_statement_surface",
+    "external_claim_facing_surface"
+  ],
+  "implementation_status": "bpf1_surface_only",
+  "interpretation_boundary": "Framework-internal only; BPF-1 emits provisional bridge coordinate reports derived from upstream subjectivity artifacts. These reports are not bridge support, not bridge admissibility, not comparator closure, not intervention closure, not gate closure, not phenomenality evidence, not human equivalence, and not Paper 9 authorization.",
+  "provenance": {
+    "generated_at": "2026-03-29T15:49:48.970Z",
+    "protocol_ref": "docs/phenomenal_bridge_protocol.v1.json",
+    "surface_policy_ref": "docs/phenomenal_bridge_surface_policy.v1.json",
+    "artifact_schema_ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
+    "upstream_refs": {
+      "self_index_state": "artifacts/subjectivity/srt1/self_index_state.json",
+      "ownership_attribution_report": "artifacts/subjectivity/srt1/ownership_attribution_report.json",
+      "subjective_continuity_report": "artifacts/subjectivity/srt2/subjective_continuity_report.json",
+      "first_person_perspective_report": "artifacts/subjectivity/srt2/first_person_perspective_report.json",
+      "subjective_valuation_report": "artifacts/subjectivity/srt3/subjective_valuation_report.json",
+      "subjectivity_intervention_profile": "artifacts/subjectivity/srt3/subjectivity_intervention_profile.json",
+      "subjectivity_reducibility_report": "artifacts/subjectivity/srt4/subjectivity_reducibility_report.json",
+      "subjectivity_runtime_projection": "artifacts/subjectivity/srt5/subjectivity_runtime_projection.json",
+      "subjectivity_gate_result": "artifacts/subjectivity/srt5/subjectivity_gate_result.json",
+      "subjectivity_manifest": "artifacts/subjectivity/srt5/subjectivity_manifest.json"
+    },
+    "input_profile": "bpf1_bridge_surface_baseline",
+    "source_trace_ref": "phenomenal_bridge_inputs/bpf1_bridge_surface_baseline",
+    "bridge_estimator_version": "phenomenal_bridge_surfaces.bpf1.v1",
+    "bridge_layer_version": "phenomenal_bridge_formal_layer.bpf1.surfaces.v1",
+    "emitted_artifact": "valence_structure_report.json",
+    "run_id": "bpf1_bridge_surfaces_baseline"
+  },
+  "schema_ref": "src/phenomenal_bridge/schemas/valence_structure_report.v1.json"
+}

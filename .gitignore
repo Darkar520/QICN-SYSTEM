@@ -59,6 +59,16 @@ artifacts/subjectivity/srt6/*
 !artifacts/subjectivity/srt6/subjectivity_verification_matrix.json
 !artifacts/subjectivity/srt6/subjectivity_ecosystem_check.json
 !artifacts/subjectivity/srt6/subjectivity_stack_check.json
+!artifacts/phenomenal_bridge/
+artifacts/phenomenal_bridge/*
+!artifacts/phenomenal_bridge/bpf1/
+artifacts/phenomenal_bridge/bpf1/*
+!artifacts/phenomenal_bridge/bpf1/phenomenal_differentiation_report.json
+!artifacts/phenomenal_bridge/bpf1/valence_structure_report.json
+!artifacts/phenomenal_bridge/bpf1/world_richness_report.json
+!artifacts/phenomenal_bridge/bpf1/ambiguity_bearing_report.json
+!artifacts/phenomenal_bridge/bpf1/embodied_closure_report.json
+!artifacts/phenomenal_bridge/bpf1/temporal_lived_structure_report.json
 !artifacts/protocolized_evaluation/
 artifacts/protocolized_evaluation/*
 !artifacts/protocolized_evaluation/evaluation_protocol_manifest.json

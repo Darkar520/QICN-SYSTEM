@@ -12,13 +12,26 @@
 
 ## BPF-1
 
-- Objective: implement bridge predicate surfaces and normalized estimator design.
-- Modules: bridge predicate mappers and report builders.
-- Artifacts: world richness, valence structure, ambiguity bearing, embodied closure, temporal lived structure reports.
-- Verifiers: predicate-surface checks, normalization integrity checks, negative controls for fake richness.
-- Risks: decorative ontology, estimator circularity, report-only semantics.
-- Closes: bridge predicates become measurable.
-- Remains open: interventions, comparators, bridge gate.
+- Objective: implement first runtime-facing bridge predicate surfaces and provisional estimators.
+- Modules:
+  - `PhenomenalDifferentiationMapper.js`
+  - `ValenceStructureMapper.js`
+  - `WorldRichnessMapper.js`
+  - `AmbiguityBearingMapper.js`
+  - `EmbodiedClosureMapper.js`
+  - `TemporalLivedStructureMapper.js`
+  - `PhenomenalBridgeSurfaceBuilder.js`
+- Artifacts:
+  - `phenomenal_differentiation_report.json`
+  - `valence_structure_report.json`
+  - `world_richness_report.json`
+  - `ambiguity_bearing_report.json`
+  - `embodied_closure_report.json`
+  - `temporal_lived_structure_report.json`
+- Verifiers: `verify-phenomenal-bridge-scaffolding.cjs`, `verify-phenomenal-bridge-surfaces.cjs`
+- Risks: decorative ontology, estimator circularity, proxy inflation, SRT re-export under new names.
+- Closes: bridge predicates become provisionally measurable at run level.
+- Remains open: interventions, comparators, bridge gate, bridge roots, ecosystem integration.
 
 ## BPF-2
 
@@ -79,5 +92,6 @@
 
 ## Planning rule
 
-No later block may be treated as closed merely because its terminology exists in
-BPF-0. Runtime implementation begins only at BPF-1.
+No later block may be treated as closed merely because terminology exists in
+BPF-0 or provisional reports exist in BPF-1. Comparator closure, intervention
+closure, gate closure, and ecosystem bridge inclusion remain separate burdens.

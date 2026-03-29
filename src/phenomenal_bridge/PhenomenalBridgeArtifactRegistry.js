@@ -14,7 +14,17 @@ export const PHENOMENAL_BRIDGE_EXPECTED_ARTIFACTS = Object.freeze(
   Object.keys(PHENOMENAL_BRIDGE_ARTIFACT_SCHEMA.artifacts || {})
 );
 
+export const PHENOMENAL_BRIDGE_IMPLEMENTED_ARTIFACTS = Object.freeze(
+  Object.entries(PHENOMENAL_BRIDGE_ARTIFACT_SCHEMA.artifacts || {})
+    .filter(([, spec]) => spec.status === 'implemented_run_level_report')
+    .map(([artifactName]) => artifactName)
+);
+
 export const listPhenomenalBridgeArtifacts = () => [...PHENOMENAL_BRIDGE_EXPECTED_ARTIFACTS];
+
+export const listImplementedPhenomenalBridgeArtifacts = () => [
+  ...PHENOMENAL_BRIDGE_IMPLEMENTED_ARTIFACTS
+];
 
 export const getPhenomenalBridgeArtifactSpec = (artifactName) =>
   PHENOMENAL_BRIDGE_ARTIFACT_SCHEMA.artifacts?.[artifactName] || null;
@@ -25,7 +35,9 @@ export default {
   PHENOMENAL_BRIDGE_PROTOCOL,
   PHENOMENAL_BRIDGE_ARTIFACT_SCHEMA,
   PHENOMENAL_BRIDGE_EXPECTED_ARTIFACTS,
+  PHENOMENAL_BRIDGE_IMPLEMENTED_ARTIFACTS,
   listPhenomenalBridgeArtifacts,
+  listImplementedPhenomenalBridgeArtifacts,
   getPhenomenalBridgeArtifactSpec,
   getPhenomenalBridgeProtocolManifest
 };

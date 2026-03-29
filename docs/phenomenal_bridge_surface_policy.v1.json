@@ -1,8 +1,8 @@
 {
   "artifact_role": "phenomenal_bridge_surface_policy",
   "schema_version": "1.0.0",
-  "layer_id": "phenomenal_bridge_formal_layer.bpf0",
-  "layer_status": "scaffold_only_opening_layer",
+  "layer_id": "phenomenal_bridge_formal_layer.bpf1",
+  "layer_status": "provisional_bridge_surfaces_implemented",
   "governed_surfaces": {
     "developer_inspection_surface": {
       "requires_boundary": true,
@@ -41,10 +41,10 @@
     "manifest_root": {
       "allowed_surfaces": [
         "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface"
+        "local_artifact_surface"
       ],
       "blocked_surfaces": [
+        "local_report_surface",
         "internal_release_bundle_surface",
         "ecosystem_candidate_surface",
         "audit_facing_package_surface",
@@ -123,5 +123,5 @@
       ]
     }
   },
-  "default_interpretation_boundary": "BPF artifacts remain framework-internal only. BPF-0 opens bridge scaffolding only and does not license bridge support, phenomenality, external validation, human equivalence, or Paper 9 readiness by itself."
+  "default_interpretation_boundary": "BPF artifacts remain framework-internal only. BPF-1 emits provisional bridge coordinate reports locally, but it does not license bridge support, phenomenality, external validation, human equivalence, or Paper 9 authorization."
 }

@@ -23,6 +23,7 @@
     "verify:subjectivity-stack": "node scripts/verify-subjectivity-stack.cjs",
     "verify:subjectivity-consolidation": "node scripts/verify-subjectivity-consolidation.cjs",
     "verify:phenomenal-bridge-scaffolding": "node scripts/verify-phenomenal-bridge-scaffolding.cjs",
+    "verify:phenomenal-bridge-surfaces": "node scripts/verify-phenomenal-bridge-surfaces.cjs",
     "verify:descriptor-registry": "node scripts/validate-descriptor-registry.cjs",
     "verify:artifacts": "node scripts/verify-artifacts.cjs artifacts --scope=small_batch",
     "verify:policies": "node tests/output-support-labels.v65.test.js && node tests/output-consumption-policy.v66.test.js && node tests/output-surface-policy.v67.test.js && node tests/output-surface-enforcer.v68.test.js",

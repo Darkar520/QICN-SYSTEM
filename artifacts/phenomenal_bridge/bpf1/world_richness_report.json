@@ -1,0 +1,151 @@
+{
+  "artifact_role": "world_richness_report",
+  "artifact_name": "world_richness_report.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_version": "phenomenal_bridge_formal_layer.bpf1.surfaces.v1",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "preferred_source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex",
+    "lineage_status": "public_formal_source_of_truth_reference"
+  },
+  "runtime_status": "implemented_internal_provisional_bridge_surfaces_pre_comparator_pre_intervention_pre_gate",
+  "run_id": "bpf1_bridge_surfaces_baseline",
+  "predicate_id": "Pi_W",
+  "predicate_name": "world_richness",
+  "runtime_surface": "world_richness_surface",
+  "bridge_role": "Self-indexed world-organization richness derived from structured upstream anchoring, not from a standalone world-richness bridge model.",
+  "artifact_class": "primary_report",
+  "level": "run_level_report",
+  "authoritative_status": "authoritative_run_level_report_within_bpf1_scope",
+  "estimator_status": "provisional_runtime_bridge_estimator",
+  "provisional_estimate": 0.6259811261037022,
+  "component_scores": {
+    "indexed_anchor": 0.8731555555555556,
+    "world_organization": 0.8725,
+    "rival_separation": 0.7806666666666668,
+    "explanatory_resistance": 0.7410248246254999,
+    "explicit_world_model_penalty": 0.75
+  },
+  "transformation_logic": {
+    "normalization_rules": [
+      "self_index stability_margin normalized against provisional cap 0.60",
+      "continuity_margin normalized against provisional cap 0.75",
+      "first_person_gain normalized against provisional cap 0.35",
+      "irreducibility_margin normalized against provisional cap 0.25"
+    ],
+    "aggregation_rule": "0.35 indexed_anchor + 0.30 world_organization + 0.20 rival_separation + 0.15 explanatory_resistance, multiplied by explicit_world_model_penalty=0.75",
+    "penalties_applied": [
+      "world_richness_is_proxy_bound_to_subjectivity_surfaces"
+    ]
+  },
+  "upstream_dependencies": [
+    {
+      "artifact_name": "self_index_state.json",
+      "artifact_role": "self_index_state"
+    },
+    {
+      "artifact_name": "ownership_attribution_report.json",
+      "artifact_role": "ownership_attribution_report"
+    },
+    {
+      "artifact_name": "subjective_continuity_report.json",
+      "artifact_role": "subjective_continuity_report"
+    },
+    {
+      "artifact_name": "first_person_perspective_report.json",
+      "artifact_role": "first_person_perspective_report"
+    },
+    {
+      "artifact_name": "subjectivity_runtime_projection.json",
+      "artifact_role": "subjectivity_runtime_projection"
+    },
+    {
+      "artifact_name": "subjectivity_reducibility_report.json",
+      "artifact_role": "subjectivity_reducibility_report"
+    }
+  ],
+  "fields_used": [
+    "self_index_state.stability_margin",
+    "self_index_state.selected_index",
+    "ownership_attribution_report.ownership_coherence",
+    "subjective_continuity_report.continuity_margin",
+    "subjective_continuity_report.supporting_signals[*].supporting_signals",
+    "first_person_perspective_report.first_person_factorization_summary.first_person_score",
+    "first_person_perspective_report.first_person_gain",
+    "subjectivity_runtime_projection.coordinate_estimates.SelfIndex.estimate",
+    "subjectivity_runtime_projection.coordinate_estimates.IrreducibilityMargin.estimate",
+    "subjectivity_reducibility_report.irreducibility_margin"
+  ],
+  "bridge_specific_structure": {
+    "indexed_anchor_basis": "stable_self_index_plus_ownership_coherence",
+    "richness_basis": "privileged_worldlike_signal_density",
+    "separation_basis": "indexed_vs_neutral_and_privileged_vs_rival_gap",
+    "penalty_basis": "explicit_world_bridge_surfaces_not_yet_implemented"
+  },
+  "uncertainty_markers": [
+    "no_explicit_bridge_world_model_artifact"
+  ],
+  "warnings": [
+    "world_richness_is_proxy_bound_to_subjectivity_surfaces"
+  ],
+  "collapse_risks": [
+    "semantic_density_without_indexed_world_organization",
+    "perspective_gain_without_world_richness",
+    "narrative_density_without_world_structure"
+  ],
+  "collapse_status": "provisional_structure_detected",
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "provisional_bridge_estimator": true,
+    "not_bridge_support": true,
+    "not_phenomenality_evidence": true
+  },
+  "non_implications": [
+    "not_bridge_support",
+    "not_bridge_verdict",
+    "not_phenomenality",
+    "not_veridical_perception",
+    "not_phenomenal_world_presence"
+  ],
+  "allowed_surfaces": [
+    "developer_inspection_surface",
+    "local_artifact_surface"
+  ],
+  "blocked_surfaces": [
+    "local_report_surface",
+    "internal_release_bundle_surface",
+    "ecosystem_candidate_surface",
+    "audit_facing_package_surface",
+    "controlled_statement_surface",
+    "external_claim_facing_surface"
+  ],
+  "implementation_status": "bpf1_surface_only",
+  "interpretation_boundary": "Framework-internal only; BPF-1 emits provisional bridge coordinate reports derived from upstream subjectivity artifacts. These reports are not bridge support, not bridge admissibility, not comparator closure, not intervention closure, not gate closure, not phenomenality evidence, not human equivalence, and not Paper 9 authorization.",
+  "provenance": {
+    "generated_at": "2026-03-29T15:49:48.971Z",
+    "protocol_ref": "docs/phenomenal_bridge_protocol.v1.json",
+    "surface_policy_ref": "docs/phenomenal_bridge_surface_policy.v1.json",
+    "artifact_schema_ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
+    "upstream_refs": {
+      "self_index_state": "artifacts/subjectivity/srt1/self_index_state.json",
+      "ownership_attribution_report": "artifacts/subjectivity/srt1/ownership_attribution_report.json",
+      "subjective_continuity_report": "artifacts/subjectivity/srt2/subjective_continuity_report.json",
+      "first_person_perspective_report": "artifacts/subjectivity/srt2/first_person_perspective_report.json",
+      "subjective_valuation_report": "artifacts/subjectivity/srt3/subjective_valuation_report.json",
+      "subjectivity_intervention_profile": "artifacts/subjectivity/srt3/subjectivity_intervention_profile.json",
+      "subjectivity_reducibility_report": "artifacts/subjectivity/srt4/subjectivity_reducibility_report.json",
+      "subjectivity_runtime_projection": "artifacts/subjectivity/srt5/subjectivity_runtime_projection.json",
+      "subjectivity_gate_result": "artifacts/subjectivity/srt5/subjectivity_gate_result.json",
+      "subjectivity_manifest": "artifacts/subjectivity/srt5/subjectivity_manifest.json"
+    },
+    "input_profile": "bpf1_bridge_surface_baseline",
+    "source_trace_ref": "phenomenal_bridge_inputs/bpf1_bridge_surface_baseline",
+    "bridge_estimator_version": "phenomenal_bridge_surfaces.bpf1.v1",
+    "bridge_layer_version": "phenomenal_bridge_formal_layer.bpf1.surfaces.v1",
+    "emitted_artifact": "world_richness_report.json",
+    "run_id": "bpf1_bridge_surfaces_baseline"
+  },
+  "schema_ref": "src/phenomenal_bridge/schemas/world_richness_report.v1.json"
+}

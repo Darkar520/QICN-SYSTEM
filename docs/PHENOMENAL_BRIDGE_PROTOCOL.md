@@ -3,12 +3,10 @@
 ## Purpose
 
 BPF opens a formal bridge layer above the consolidated Subjectivity Runtime
-Layer. It exists to define the minimum formal, machine-readable, and governance
-structure required to investigate whether the Paper 8 subjectivity stack could
-become relevant to bounded phenomenal bridge predicates.
-
-BPF is not the bridge verdict. BPF is the disciplined opening of the bridge
-program.
+Layer. BPF-1 is the first runtime-facing bridge block: it adds provisional
+bridge coordinate surfaces and run-level bridge reports while keeping the whole
+program framework-internal, pre-comparator, pre-intervention-harness, and
+pre-gate.
 
 ## What BPF is not
 
@@ -16,10 +14,10 @@ program.
 - not human equivalence
 - not metaphysical subjecthood
 - not external validation
+- not bridge support
+- not bridge admissibility
 - not claim-facing promotion
 - not Paper 9
-- not a runtime certification that any current system already satisfies a
-  phenomenal bridge class
 
 ## Why BPF is needed after Paper 8 and post-SRT-6 consolidation
 
@@ -31,17 +29,12 @@ ecosystem.
 What remains open is a distinct burden:
 
 1. define bridge-level phenomenal predicates without rhetorical leakage;
-2. define bridge-specific axioms that do not smuggle the conclusion;
+2. define bridge-specific runtime surfaces above SRT rather than reusing SRT as
+   if it already solved the bridge;
 3. define bridge-specific rivals and interventions;
-4. define bridge artifacts and gates without pretending support already exists;
+4. define bridge artifacts and gates without pretending bridge support already
+   exists;
 5. keep the whole layer framework-internal and non-claim-facing.
-
-Without BPF, any later bridge attempt would risk collapsing:
-
-- subjectivity into phenomenality,
-- runtime cleanliness into external validation,
-- candidate or audit inclusion into bridge confirmation,
-- or Paper 8 public release into phenomenal support.
 
 ## What BPF inherits
 
@@ -72,38 +65,40 @@ BPF must add a new layer above SRT subjectivity rather than duplicating it.
 That layer must introduce:
 
 - bridge predicates
-- bridge axioms
-- bridge ontology
+- bridge runtime surfaces
 - bridge-specific rival family
 - bridge-specific intervention family
 - bridge artifact family
 - bridge functional and gate
 - bridge-specific governance
 
-None of those are runtime-complete in BPF-0.
+Only the first of those runtime burdens is implemented in BPF-1.
 
 ## Bridge predicate family
 
-The BPF target family is defined at protocol level only in BPF-0:
+The BPF target family is now:
 
-- `Pi_D`: phenomenal differentiation predicate
-- `Pi_V`: valence-structure predicate
-- `Pi_W`: world-richness predicate
-- `Pi_A`: ambiguity-bearing predicate
-- `Pi_E`: embodied-closure predicate
-- `Pi_T`: temporal lived-structure predicate
+- `Pi_D`: phenomenal differentiation
+- `Pi_V`: valence structure
+- `Pi_W`: world richness
+- `Pi_A`: ambiguity bearing
+- `Pi_E`: embodied closure
+- `Pi_T`: temporal lived structure
 
-Protocol status in BPF-0:
+Status in BPF-1:
 
 - formally named
 - machine-registered
-- explicitly bounded
-- not runtime-estimated yet
-- not gate-bound yet
+- runtime-facing
+- provisionally estimated
+- emitted only as run-level bridge reports
+- not gate-bound
+- not comparator-closed
+- not intervention-closed
 
 ## Bridge-level burden structure
 
-Any later bridge-support reading must carry all of the following:
+Any later bridge-support reading must still carry all of the following:
 
 1. bridge predicate burden
 2. bridge comparator burden
@@ -112,7 +107,7 @@ Any later bridge-support reading must carry all of the following:
 5. bridge governance burden
 6. bridge drift and stale-lineage burden
 
-Failure at any of those layers blocks bridge support.
+BPF-1 closes only the first burden, and only provisionally.
 
 ## Bridge-level comparator burden
 
@@ -120,8 +115,7 @@ The Paper 8 weak family is necessary background but insufficient for BPF.
 BPF requires a new rival family able to explain away bridge predicates without
 granting phenomenal organization.
 
-BPF-0 therefore opens a bridge rival registry but does not implement a bridge
-runtime comparator.
+BPF-1 does not implement that comparator runtime.
 
 ## Bridge-level intervention burden
 
@@ -129,23 +123,26 @@ Paper 8 intervention logic is necessary background but insufficient for BPF.
 BPF requires new perturbation families that test bridge predicates rather than
 only the seven Paper 8 coordinates.
 
-BPF-0 therefore opens a bridge intervention burden but does not implement a
-bridge intervention harness.
+BPF-1 does not implement that intervention harness.
 
 ## Bridge-level artifact burden
 
-BPF must eventually produce its own roots:
+Implemented in BPF-1:
+
+- `phenomenal_differentiation_report.json`
+- `valence_structure_report.json`
+- `world_richness_report.json`
+- `ambiguity_bearing_report.json`
+- `embodied_closure_report.json`
+- `temporal_lived_structure_report.json`
+
+Still not emitted in BPF-1:
 
 - `phenomenal_bridge_projection.json`
 - `phenomenal_bridge_gate_result.json`
 - `phenomenal_bridge_manifest.json`
-
-plus bridge reports for world richness, valence structure, ambiguity bearing,
-embodied closure, temporal lived structure, intervention profile, and
-bridge-level reducibility.
-
-BPF-0 defines the intended artifact family and root schemas only. It does not
-emit bridge verdict artifacts.
+- `bridge_intervention_profile.json`
+- `bridge_reducibility_report.json`
 
 ## Bridge-level non-claims
 
@@ -155,32 +152,33 @@ BPF does not authorize:
 - external validation claims
 - human equivalence claims
 - metaphysical subjecthood claims
+- bridge support claims
+- bridge admissibility claims
 - automatic Paper 9 opening
 - runtime-to-corpus confirmation loops
 
-## Relation to BPF-1..6
+## Relation to BPF-0..6
 
 - `BPF-0`: protocol, manifests, schemas, boundaries, and scaffold-only code
-- `BPF-1`: bridge predicate surfaces and estimators
+- `BPF-1`: provisional bridge predicate surfaces and run-level bridge reports
 - `BPF-2`: bridge intervention family and negative controls
 - `BPF-3`: bridge comparator family, admissible composites, and bridge loss
-- `BPF-4`: bridge gate, functional, thresholds, and run-level artifacts
+- `BPF-4`: bridge gate, functional, thresholds, and run-level bridge roots
 - `BPF-5`: ecosystem integration
 - `BPF-6`: final bridge audit and readiness gate
 
 ## Interpretation rule
 
-BPF-0 is a formal opening layer only.
+The strongest legitimate reading of BPF-1 is:
 
-It is legitimate to read BPF-0 as:
+- bridge predicate surfaces exist
+- bridge reports can now be emitted
+- the bridge program has moved beyond pure scaffold
 
-- bridge program opened
-- bridge semantics bounded
-- bridge governance hardened
+The strongest illegitimate readings are:
 
-It is illegitimate to read BPF-0 as:
-
-- bridge support already established
-- phenomenality supported
-- human equivalence made scientifically live by implementation alone
-- Paper 9 authorized
+- bridge support exists
+- phenomenality is supported
+- comparator burden is closed
+- intervention burden is closed
+- Paper 9 is authorized

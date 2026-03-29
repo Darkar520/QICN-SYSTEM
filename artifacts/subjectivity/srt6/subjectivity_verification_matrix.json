@@ -80,14 +80,14 @@
     "reward_aliasing_control:control_confounded"
   ],
   "baseline_refs": {
-    "qicn_system_head": "be0dc7c6cb252e1aedc3412feeaa939216bf9d71",
+    "qicn_system_head": "98f4059cb15ec20372f7d4baf659e4c9a429aa57",
     "qicn_release_head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
     "latest_execution_campaign_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z",
     "latest_execution_batch_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch"
   },
   "interpretation_boundary": "Framework-internal only; subjectivity ecosystem verification matrix is an internal hardening artifact, not externally validated, not claim-facing evidence, not phenomenality closure, and not human equivalence.",
   "provenance": {
-    "generated_at": "2026-03-29T05:32:05.952Z",
+    "generated_at": "2026-03-29T05:39:48.006Z",
     "current_lineage": {
       "layer_version": "subjectivity_runtime_layer.srt6.ecosystem.v1",
       "estimator_version": "subjectivity_ecosystem_integrator.srt6.v1",
@@ -129,13 +129,13 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "be0dc7c6cb252e1aedc3412feeaa939216bf9d71",
-        "upstream": "origin/main"
+        "head": "98f4059cb15ec20372f7d4baf659e4c9a429aa57",
+        "upstream": null
       },
       "qicn_release": {
         "branch": "main",
         "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
-        "upstream": "origin/main"
+        "upstream": null
       }
     },
     "candidate_projection_ref": "subjectivity_candidate_projection.json",

@@ -261,7 +261,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; partial reducibility comparator over SRT-4 available coordinates, not externally validated, not final proof of irreducibility, limited to SRT-4 available coordinates, not sufficient for final subjectivity closure.",
   "provenance": {
-    "generated_at": "2026-03-29T05:32:04.321Z",
+    "generated_at": "2026-03-29T05:39:47.719Z",
     "protocol_ref": "docs/subjectivity_protocol.v1.json",
     "rival_family_ref": "docs/subjectivity_rival_family.v1.json",
     "thresholds_ref": "docs/subjectivity_thresholds.v1.json",

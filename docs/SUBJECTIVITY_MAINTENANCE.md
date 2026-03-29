@@ -41,6 +41,15 @@ stack.
 6. `npm run release:ecosystem-candidate`
 7. `npm run release:external-audit-package`
 
+## Publication sequencing
+
+- Internal bundle, ecosystem candidate, and external audit package are
+  published sequentially under clean-and-pushed governance.
+- Their pinned `QICN-SYSTEM` heads may therefore form a monotonic publication
+  chain instead of a single identical commit.
+- Treat that as valid only when lineage is explicit, ordered, and verified by
+  `npm run verify:subjectivity-consolidation`.
+
 ## Consolidation references
 
 - `docs/SUBJECTIVITY_FINAL_INTERNAL_AUDIT.md`

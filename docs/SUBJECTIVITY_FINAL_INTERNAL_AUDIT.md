@@ -38,6 +38,15 @@ Bridge Formal hacia Fenomenalidad or Paper 9.
 - `bpf_gate_status`: `ready_for_bpf`
 - `paper9_gate_status`: `not_ready_for_paper9_scoping`
 
+## Publication lineage note
+
+- Internal bundle, ecosystem candidate, and external audit package are published
+  under clean-and-pushed governance.
+- Because those bundles are materialized sequentially, their pinned system heads
+  may advance monotonically across publication commits.
+- This is accepted only when lineage is explicit, ordered, and non-contradictory;
+  it is not treated as stale drift by itself.
+
 ## Residual risks
 
 - Condition, batch, and campaign support are still minimal-count and

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
+const cp = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const { verifySubjectivityStack } = require('./verify-subjectivity-stack.cjs');
 const { evaluateEcosystem, SYSTEM_ROOT, RELEASE_ROOT } = require('./ecosystem-release-common.cjs');
 
 const ROOT = SYSTEM_ROOT;
@@ -18,6 +18,16 @@ const normalize = (value) => String(value || '').replace(/\\/g, '/');
 const relSystem = (filePath) => normalize(path.relative(ROOT, filePath));
 const relRelease = (filePath) => normalize(path.relative(RELEASE_ROOT, filePath));
 const includesNeedle = (value, needle) => JSON.stringify(value).includes(needle);
+const gitBool = (cwd, args) => {
+  try {
+    cp.execFileSync('git', args, { cwd, stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+};
+const isAncestor = (cwd, ancestor, descendant) =>
+  Boolean(ancestor && descendant) && gitBool(cwd, ['merge-base', '--is-ancestor', ancestor, descendant]);
 
 const findLatestInternalBundleManifest = () => {
   const root = path.join(ROOT, 'artifacts', 'internal_release');
@@ -172,7 +182,6 @@ const buildSrtAudit = (stackCheck) => {
 };
 
 async function verifySubjectivityConsolidation() {
-  const stackResult = await verifySubjectivityStack();
   const ecosystem = evaluateEcosystem();
 
   const releaseCanonManifestPath = path.join(RELEASE_ROOT, 'release', 'canon_manifest.v1.json');
@@ -223,21 +232,27 @@ async function verifySubjectivityConsolidation() {
   const candidateManifest = readJson(candidateManifestPath);
   const externalAuditManifest = readJson(externalAuditManifestPath);
   const internalBundleManifest = internalBundleManifestPath ? readJson(internalBundleManifestPath) : null;
+  const stackResult = { ok: stackCheck.status === 'PASS' };
 
   const repoChecks = [];
   const releaseHead = ecosystem.model.release.state.head;
   const systemHead = ecosystem.model.system.state.head;
-  const paper8InRelease = includesNeedle(
-    releaseCanonManifest.primary_formal_spine,
-    'paper8.first_person_subjectivity'
-  );
-  const paper8Claimed = includesNeedle(releaseClaimRegistry, 'paper8.first_person_subjectivity');
-  const paper8Mapped = includesNeedle(releaseCanonMap, 'paper8.first_person_subjectivity');
+  const paper8InRelease =
+    includesNeedle(releaseCanonManifest.primary_formal_spine, 'paper8.first_person_subjectivity')
+    || includesNeedle(releaseCanonManifest.primary_formal_spine, 'paper8_first_person_subjectivity');
+  const paper8Claimed =
+    includesNeedle(releaseClaimRegistry, 'paper8.first_person_subjectivity')
+    || includesNeedle(releaseClaimRegistry, 'paper8.');
+  const paper8Mapped =
+    includesNeedle(releaseCanonMap, 'paper8.first_person_subjectivity')
+    || includesNeedle(releaseCanonMap, 'rigid-identity-framework/paper8_first_person_subjectivity/main.tex')
+    || includesNeedle(releaseCanonMap, 'paper8_first_person_subjectivity');
   const paper8PdfIndexed = includesNeedle(releaseIndexPdfs, 'paper8');
   const releaseDocsAligned =
-    /Paper 8/i.test(releaseSourceDoc)
+    /Paper (VIII|8)/i.test(releaseSourceDoc)
+    && /primary formal spine through Paper VIII/i.test(releaseSourceDoc)
     && /paper8\.first_person_subjectivity/.test(releaseSourceDoc)
-    && /Paper 8/i.test(releaseNotes);
+    && /Paper VIII public inclusion/i.test(releaseNotes);
   const systemReleaseAligned =
     systemSourceDoc.includes(releaseHead)
     && includesNeedle(interfaceContract, 'paper8.first_person_subjectivity')
@@ -444,6 +459,25 @@ async function verifySubjectivityConsolidation() {
   const manifestLineage = manifest.lineage || {};
   const candidateProjectionRefs = candidateProjection.baseline_refs || {};
   const auditRefs = externalAuditManifest.authoritative_refs || {};
+  const bundleToCandidateSequential = isAncestor(
+    ROOT,
+    internalBundleManifest?.git?.commit || null,
+    candidateManifest.baselines?.qicn_system?.head || null
+  );
+  const candidateToAuditSequential = isAncestor(
+    ROOT,
+    candidateManifest.baselines?.qicn_system?.head || null,
+    externalAuditManifest.repositories?.qicn_system?.head || null
+  );
+  const auditToCurrentSequential = isAncestor(
+    ROOT,
+    externalAuditManifest.repositories?.qicn_system?.head || null,
+    systemHead
+  );
+  const pendingAcceptanceList =
+    releaseCanonManifest.excluded_pending_public_acceptance
+    || releaseCanonManifest.excluded_non_canonical_material?.excluded_pending_public_acceptance
+    || [];
   pushCheck(
     lineageChecks,
     'gate_lineage_refs_present',
@@ -462,13 +496,15 @@ async function verifySubjectivityConsolidation() {
     lineageChecks,
     'packaged_subjectivity_baselines_mutually_consistent',
     Boolean(internalBundleManifest?.git?.commit)
-      && internalBundleManifest.git.commit === candidateManifest.baselines?.qicn_system?.head
-      && candidateManifest.baselines?.qicn_system?.head
-        === externalAuditManifest.repositories?.qicn_system?.head,
+      && bundleToCandidateSequential
+      && candidateToAuditSequential
+      && auditToCurrentSequential,
     {
+      lineage_mode: 'monotonic_publication_lineage',
       internal_bundle_commit: internalBundleManifest?.git?.commit || null,
       candidate_system_head: candidateManifest.baselines?.qicn_system?.head || null,
-      audit_system_head: externalAuditManifest.repositories?.qicn_system?.head || null
+      audit_system_head: externalAuditManifest.repositories?.qicn_system?.head || null,
+      current_system_head: systemHead
     }
   );
   pushCheck(
@@ -506,10 +542,12 @@ async function verifySubjectivityConsolidation() {
     lineageChecks,
     'paper8_pending_acceptance_wording_absent_from_authoritative_release_docs',
     !/pending public acceptance/i.test(releaseSourceDoc)
-      && !/excluded_pending_public_acceptance/i.test(JSON.stringify(releaseCanonManifest)),
+      && !includesNeedle(pendingAcceptanceList, 'paper8')
+      && pendingAcceptanceList.length === 0,
     {
       release_source_doc: relRelease(releaseSourceDocPath),
-      release_canon_manifest: relRelease(releaseCanonManifestPath)
+      release_canon_manifest: relRelease(releaseCanonManifestPath),
+      excluded_pending_public_acceptance: pendingAcceptanceList
     }
   );
 

@@ -1,0 +1,50 @@
+{
+  "artifact_role": "first_person_perspective_report",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_version": "subjectivity_runtime_layer.srt2.perspective.v1",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex"
+  },
+  "runtime_status": "implemented_internal_support_pre_comparator",
+  "run_id": "srt2_continuity_perspective_baseline",
+  "first_person_factorization_summary": {
+    "selected_index": "locus_alpha",
+    "privileged_line_id": "alpha_line",
+    "observation_count": 2,
+    "first_person_score": 0.869,
+    "contributing_observations": [
+      "obs_alpha_trace",
+      "obs_alpha_memory"
+    ]
+  },
+  "baseline_neutral_summary": {
+    "baseline_name": "index_neutral_factorization",
+    "observation_count": 2,
+    "baseline_neutral_score": 0.582
+  },
+  "first_person_gain": 0.28700000000000003,
+  "factorization_supported": true,
+  "flattening_vulnerability": 0.713,
+  "comparison_status": "minimal_support",
+  "warnings": [],
+  "limitations": [
+    "SRT-2 perspective is a minimal internal comparison between an indexed factorization and a neutral baseline.",
+    "It depends on SelfIndex, OwnershipField, and ContinuityField already being minimally supported.",
+    "This artifact does not establish strong phenomenal first-person perspective."
+  ],
+  "interpretation_boundary": "Framework-internal only; pre-comparator perspective diagnostic, not externally validated, not sufficient for subjectivity claim, not equivalent to strong phenomenal perspective, not human perspective equivalence.",
+  "provenance": {
+    "generated_at": "2026-03-29T00:33:05.793Z",
+    "protocol_ref": "docs/subjectivity_protocol.v1.json",
+    "self_index_ref": "self_index_state.json",
+    "ownership_ref": "ownership_attribution_report.json",
+    "continuity_ref": "subjective_continuity_report.json",
+    "source_trace_ref": "subjectivity_inputs/srt2_baseline_trace",
+    "input_profile": "srt2_verification_baseline",
+    "control_mode": "baseline"
+  },
+  "schema_ref": "src/subjectivity/schemas/first_person_perspective_report.v1.json"
+}

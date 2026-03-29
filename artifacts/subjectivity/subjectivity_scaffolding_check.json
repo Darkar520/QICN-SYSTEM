@@ -1,0 +1,28 @@
+{
+  "artifact_role": "subjectivity_scaffolding_check",
+  "schema_version": "1.0.0",
+  "layer_id": "subjectivity_runtime_layer.srt6",
+  "status": "PASS",
+  "missing_docs": [],
+  "missing_src_files": [],
+  "protocol_errors": [],
+  "threshold_errors": [],
+  "rival_errors": [],
+  "artifact_errors": [],
+  "surface_errors": [],
+  "doc_errors": [],
+  "local_path_leaks": [],
+  "import_sanity": {
+    "hasDescribe": true,
+    "hasSelfIndex": true,
+    "hasOwnership": true,
+    "hasContinuity": true,
+    "hasPerspective": true,
+    "hasValuation": true,
+    "hasIntervention": true,
+    "hasReducibility": true,
+    "hasGate": true,
+    "hasEcosystemIntegrator": true
+  },
+  "interpretation_boundary": "Subjectivity scaffolding verification only; structural consistency check for SRT-6 ecosystem hardening, not subjectivity support, not external validation."
+}

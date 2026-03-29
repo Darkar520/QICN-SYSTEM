@@ -1,0 +1,64 @@
+{
+  "artifact_role": "subjectivity_threshold_registry",
+  "schema_version": "1.0.0",
+  "layer_id": "subjectivity_runtime_layer.srt6",
+  "status": "provisional_srt6_internal_gate_thresholds_and_ecosystem_hardening_not_empirically_calibrated",
+  "coordinate_thresholds": {
+    "SelfIndex": 0.5,
+    "OwnershipField": 0.5,
+    "ContinuityField": 0.5,
+    "FirstPersonPerspective": 0.5,
+    "ValuationAsymmetry": 0.5,
+    "InterventionProfile": 0.5,
+    "IrreducibilityMargin": 0.5
+  },
+  "global_thresholds": {
+    "Gamma_subj": 0.5,
+    "Phi_subj": 0.55
+  },
+  "functional_weights": {
+    "SelfIndex": 0.15,
+    "OwnershipField": 0.15,
+    "ContinuityField": 0.12,
+    "FirstPersonPerspective": 0.12,
+    "ValuationAsymmetry": 0.14,
+    "InterventionProfile": 0.16,
+    "IrreducibilityMargin": 0.16
+  },
+  "support_class_thresholds": {
+    "subjectivity_internal_strong_support": {
+      "Gamma_subj": 0.7,
+      "Phi_subj": 0.68
+    }
+  },
+  "drift_tolerances": {
+    "SelfIndex": 0.05,
+    "OwnershipField": 0.05,
+    "ContinuityField": 0.05,
+    "FirstPersonPerspective": 0.05,
+    "ValuationAsymmetry": 0.05,
+    "InterventionProfile": 0.05,
+    "IrreducibilityMargin": 0.05
+  },
+  "calibration_boundary": {
+    "empirically_calibrated": false,
+    "usable_for_runtime_gate": true,
+    "usable_for_internal_subjectivity_gate": true,
+    "usable_for_external_claiming": false,
+    "usable_for_scaffold_consistency": true,
+    "usable_for_selfindex_local_heuristics": true,
+    "usable_for_ownership_local_heuristics": true,
+    "usable_for_continuity_local_heuristics": true,
+    "usable_for_perspective_local_heuristics": true,
+    "usable_for_valuation_local_heuristics": true,
+    "usable_for_intervention_local_heuristics": true,
+    "usable_for_reducibility_local_heuristics": true
+  },
+  "notes": [
+    "Thresholds remain provisional and are not empirically calibrated.",
+    "SRT-5 may use these thresholds for internal gate execution only.",
+    "SRT-6 additionally pins these thresholds into candidate, internal bundle, and audit-facing subjectivity artifacts.",
+    "No runtime claim may cite these thresholds as external evidence or validation."
+  ],
+  "interpretation_boundary": "Threshold registry only; provisional internal gate thresholds reused by SRT-6 ecosystem hardening, not empirical calibration, not external validation, not claim-facing evidence."
+}

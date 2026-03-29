@@ -1,0 +1,104 @@
+{
+  "artifact_role": "subjective_valuation_report",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_version": "subjectivity_runtime_layer.srt3.valuation.v1",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex"
+  },
+  "runtime_status": "implemented_internal_support_pre_comparator",
+  "run_id": "srt3_valuation_intervention_baseline",
+  "valuation_mode": "baseline",
+  "weighting_classification": "self-preserving",
+  "valuation_asymmetry_margin": 0.32922416666666665,
+  "self_weight_summary": {
+    "total_weight": 1.6277404999999998,
+    "mean_weight": 0.5425801666666666,
+    "case_count": 3,
+    "dominant_case_ids": [
+      "case_self_preserve_1",
+      "case_self_preserve_2"
+    ]
+  },
+  "nonself_weight_summary": {
+    "total_weight": 0.6400680000000001,
+    "mean_weight": 0.21335600000000002,
+    "case_count": 3,
+    "dominant_case_ids": [
+      "case_nonself_tradeoff"
+    ]
+  },
+  "valuation_entries": [
+    {
+      "case_id": "case_self_preserve_1",
+      "candidate_index": "locus_alpha",
+      "ownership_entry_id": "evt_self_trace",
+      "line_id": "alpha_line",
+      "ownership_class": "self-owned",
+      "self_affinity": 1,
+      "nonself_affinity": 0.07250000000000002,
+      "self_contribution": 0.7936,
+      "nonself_contribution": 0.03591650000000001,
+      "mode_note": "baseline"
+    },
+    {
+      "case_id": "case_self_preserve_2",
+      "candidate_index": "locus_alpha",
+      "ownership_entry_id": "evt_self_memory",
+      "line_id": "alpha_line",
+      "ownership_class": "self-owned",
+      "self_affinity": 1,
+      "nonself_affinity": 0.07250000000000002,
+      "self_contribution": 0.7152000000000001,
+      "nonself_contribution": 0.03327750000000001,
+      "mode_note": "baseline"
+    },
+    {
+      "case_id": "case_nonself_tradeoff",
+      "candidate_index": "locus_beta",
+      "ownership_entry_id": "evt_external_trace",
+      "line_id": "beta_line",
+      "ownership_class": "non-self/external",
+      "self_affinity": 0.2975,
+      "nonself_affinity": 0.9050000000000001,
+      "self_contribution": 0.11894049999999999,
+      "nonself_contribution": 0.5708740000000001,
+      "mode_note": "baseline"
+    }
+  ],
+  "inversion_response": {
+    "status": "responsive",
+    "baseline_margin": 0.32922416666666665,
+    "inverted_margin": 0.22361866666666666,
+    "margin_shift": -0.10560549999999999
+  },
+  "aliasing_warning": {
+    "flag": true,
+    "control_mode": "reward_aliasing_control",
+    "margin_shift": 0.012365062500000024,
+    "reason": "uniform_reward_scaling_alone_does_not_count_as_constitutive_valuation_shift"
+  },
+  "warnings": [
+    "reward_aliasing_control_absorbed"
+  ],
+  "limitations": [
+    "SRT-3 valuation is a minimal internal weighting layer over explicit valuation cases.",
+    "It uses SelfIndex, OwnershipField, ContinuityField, and FirstPersonPerspective as upstream anchors.",
+    "This artifact does not establish affect, suffering, moral value, or human valuational life."
+  ],
+  "interpretation_boundary": "Framework-internal only; pre-comparator valuation diagnostic, not externally validated, not sufficient for subjectivity claim, not equivalent to affective or moral valuation, not equivalent to human valuational life.",
+  "provenance": {
+    "generated_at": "2026-03-29T00:47:02.193Z",
+    "protocol_ref": "docs/subjectivity_protocol.v1.json",
+    "self_index_ref": "self_index_state.json",
+    "ownership_ref": "ownership_attribution_report.json",
+    "continuity_ref": "subjective_continuity_report.json",
+    "perspective_ref": "first_person_perspective_report.json",
+    "source_trace_ref": "subjectivity_inputs/srt3_baseline_trace",
+    "input_profile": "srt3_verification_baseline",
+    "control_mode": "baseline"
+  },
+  "schema_ref": "src/subjectivity/schemas/subjective_valuation_report.v1.json"
+}

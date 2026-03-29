@@ -1,0 +1,201 @@
+{
+  "artifact_role": "subjectivity_runtime_projection",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_version": "subjectivity_runtime_layer.srt5.gate.v1",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex"
+  },
+  "runtime_status": "implemented_internal_gate_closure_in_srt5",
+  "run_id": "srt5_gate_baseline",
+  "coordinate_estimates": {
+    "SelfIndex": {
+      "coordinate_id": "SelfIndex",
+      "symbol": "I",
+      "artifact_role": "self_index_state",
+      "artifact_ref": "self_index_state.json",
+      "fields_used": [
+        "selected_index",
+        "ambiguity_flag",
+        "stability_hint",
+        "stability_margin"
+      ],
+      "normalization_rule": "0.45*selected_index_presence + 0.25*stability_hint_score + 0.30*stability_margin, with ambiguity penalty multiplier 0.60.",
+      "estimate": 0.8428,
+      "warnings": [],
+      "limitations": [
+        "Depends on SRT-1 self-candidate selection and stability heuristics.",
+        "Does not establish metaphysical selfhood or final self-index closure."
+      ]
+    },
+    "OwnershipField": {
+      "coordinate_id": "OwnershipField",
+      "symbol": "O",
+      "artifact_role": "ownership_attribution_report",
+      "artifact_ref": "ownership_attribution_report.json",
+      "fields_used": [
+        "ownership_coherence",
+        "uncertain_fraction",
+        "relabeling_sensitivity",
+        "self_index_dependency.ambiguity_flag"
+      ],
+      "normalization_rule": "0.65*ownership_coherence + 0.20*(1-uncertain_fraction) + 0.15*(1-relabeling_sensitivity), with dependency-ambiguity penalty multiplier 0.72.",
+      "estimate": 1,
+      "warnings": [],
+      "limitations": [
+        "Tracks only minimal runtime ownership coherence over SRT-1 entries.",
+        "Does not establish phenomenal ownership or complete constitutive ownness."
+      ]
+    },
+    "ContinuityField": {
+      "coordinate_id": "ContinuityField",
+      "symbol": "C",
+      "artifact_role": "subjective_continuity_report",
+      "artifact_ref": "subjective_continuity_report.json",
+      "fields_used": [
+        "continuity_status",
+        "continuity_margin",
+        "privileged_line",
+        "rival_line_count",
+        "fracture_flag",
+        "fork_flag",
+        "ambiguity_flag"
+      ],
+      "normalization_rule": "0.50*continuity_margin + 0.25*status_score + 0.15*privileged_line_presence + 0.10*(1-rival_penalty), with fracture/fork/ambiguity penalties.",
+      "estimate": 0.7530000000000001,
+      "warnings": [],
+      "limitations": [
+        "Continuity is limited to explicit history-window lines already emitted by SRT-2.",
+        "Does not establish metaphysical persistence or human autobiographical continuity."
+      ]
+    },
+    "FirstPersonPerspective": {
+      "coordinate_id": "FirstPersonPerspective",
+      "symbol": "P",
+      "artifact_role": "first_person_perspective_report",
+      "artifact_ref": "first_person_perspective_report.json",
+      "fields_used": [
+        "first_person_gain",
+        "factorization_supported",
+        "flattening_vulnerability",
+        "comparison_status"
+      ],
+      "normalization_rule": "0.40*first_person_gain + 0.25*factorization_supported + 0.20*(1-flattening_vulnerability) + 0.15*comparison_status_score.",
+      "estimate": 0.5722,
+      "warnings": [],
+      "limitations": [
+        "Perspective estimate is only a minimal indexed-vs-neutral factorization comparison.",
+        "Does not establish strong phenomenal first-person perspective."
+      ]
+    },
+    "ValuationAsymmetry": {
+      "coordinate_id": "ValuationAsymmetry",
+      "symbol": "V",
+      "artifact_role": "subjective_valuation_report",
+      "artifact_ref": "subjective_valuation_report.json",
+      "fields_used": [
+        "valuation_asymmetry_margin",
+        "self_weight_summary.mean_weight",
+        "weighting_classification",
+        "inversion_response.status",
+        "aliasing_warning.flag"
+      ],
+      "normalization_rule": "0.40*valuation_margin + 0.20*self_weight_mean + 0.20*valuation_class_score + 0.20*inversion_response_score, with aliasing penalty multiplier 0.80.",
+      "estimate": 0.5121645600000001,
+      "warnings": [
+        "reward_aliasing_control_absorbed",
+        "valuation_aliasing_penalty_applied"
+      ],
+      "limitations": [
+        "Captures only SRT-3 valuation asymmetry over explicit tradeoff cases.",
+        "Does not establish affect, suffering, or moral valuation."
+      ]
+    },
+    "InterventionProfile": {
+      "coordinate_id": "InterventionProfile",
+      "symbol": "Delta",
+      "artifact_role": "subjectivity_intervention_profile",
+      "artifact_ref": "subjectivity_intervention_profile.json",
+      "fields_used": [
+        "intervention_runs[*].targeted_coordinate_drop",
+        "aggregate_profile.selective_drop_count",
+        "aggregate_profile.flat_damage_count",
+        "aggregate_profile.control_confounded_count"
+      ],
+      "normalization_rule": "0.40*selective_ratio + 0.35*targeted_drop_mean + 0.15*(1-flat_damage_ratio) + 0.10*(1-control_confound_ratio).",
+      "estimate": 0.59916088125,
+      "warnings": [
+        "reward_aliasing_control_absorbed",
+        "reward_aliasing_control:control_confounded"
+      ],
+      "limitations": [
+        "Intervention profile is limited to the minimal SRT-3 perturbation family.",
+        "Does not establish full interventional closure over all Paper 8 burdens."
+      ]
+    },
+    "IrreducibilityMargin": {
+      "coordinate_id": "IrreducibilityMargin",
+      "symbol": "R",
+      "artifact_role": "subjectivity_reducibility_report",
+      "artifact_ref": "subjectivity_reducibility_report.json",
+      "fields_used": [
+        "irreducibility_margin",
+        "comparison_supported",
+        "classification",
+        "best_weak_loss",
+        "best_hybrid_loss",
+        "strong_model_loss.total_loss"
+      ],
+      "normalization_rule": "If comparison_supported=true, 0.65*normalized_irreducibility_margin + 0.35*classification_score; otherwise 0.",
+      "estimate": 0.7535347103109999,
+      "warnings": [],
+      "limitations": [
+        "Irreducibility remains partial and limited to SRT-4 available coordinates and weak-family scope.",
+        "Does not establish final irreducibility proof."
+      ]
+    }
+  },
+  "functional_status": "executed_internal_multiplicative_noncompensatory",
+  "global_functional_result": {
+    "phi_subj": 0.7063836296642603,
+    "weights": {
+      "SelfIndex": 0.15,
+      "OwnershipField": 0.15,
+      "ContinuityField": 0.12,
+      "FirstPersonPerspective": 0.12,
+      "ValuationAsymmetry": 0.14,
+      "InterventionProfile": 0.16,
+      "IrreducibilityMargin": 0.16
+    },
+    "threshold": 0.55,
+    "pass": true
+  },
+  "warnings": [
+    "reward_aliasing_control_absorbed",
+    "valuation_aliasing_penalty_applied",
+    "reward_aliasing_control:control_confounded"
+  ],
+  "implementation_status": "partial_runtime_path",
+  "interpretation_boundary": "Framework-internal only; normalized subjectivity-coordinate projection over SRT-5 available artifacts, not externally validated, not human equivalence, not phenomenality closure, not claim-facing evidence.",
+  "provenance": {
+    "generated_at": "2026-03-29T00:45:55.680Z",
+    "protocol_ref": "docs/subjectivity_protocol.v1.json",
+    "thresholds_ref": "docs/subjectivity_thresholds.v1.json",
+    "rival_family_ref": "docs/subjectivity_rival_family.v1.json",
+    "source_artifacts": [
+      "self_index_state.json",
+      "ownership_attribution_report.json",
+      "subjective_continuity_report.json",
+      "first_person_perspective_report.json",
+      "subjective_valuation_report.json",
+      "subjectivity_intervention_profile.json",
+      "subjectivity_reducibility_report.json"
+    ],
+    "source_trace_ref": "subjectivity_inputs/srt5_gate_baseline",
+    "input_profile": "srt5_verification_baseline",
+    "estimator_version": "subjectivity_runtime_estimators.srt5.v1"
+  },
+  "schema_ref": "src/subjectivity/schemas/subjectivity_runtime_projection.v1.json"
+}

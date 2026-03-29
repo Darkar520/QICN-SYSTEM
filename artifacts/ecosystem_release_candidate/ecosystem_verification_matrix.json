@@ -1,7 +1,7 @@
 {
   "artifact_role": "ecosystem_verification_matrix",
   "schema_version": "1.0.0",
-  "checked_at": "2026-03-28T23:06:28.439Z",
+  "checked_at": "2026-03-29T00:46:33.075Z",
   "status": "PASS",
   "checks": [
     {
@@ -9,7 +9,7 @@
       "status": "PASS",
       "details": {
         "branch": "main",
-        "head": "f9910cb80cc16ae7bf678609701e4ad9da5de7a9",
+        "head": "737a005e280365e2deb6ed1a6a80160f1373bea0",
         "clean": true,
         "pushed": true,
         "upstream": "origin/main"
@@ -46,8 +46,9 @@
       "id": "system_internal_bundle",
       "status": "PASS",
       "details": {
-        "manifest": "artifacts/internal_release/internal_release_2026-03-28T20-57-25-417Z/release_bundle_manifest.json",
-        "git_commit": "60486d330d212255126aeb86f28688ed7e93c98b"
+        "manifest": "artifacts/internal_release/internal_release_2026-03-29T00-45-55-223Z/release_bundle_manifest.json",
+        "git_commit": "737a005e280365e2deb6ed1a6a80160f1373bea0",
+        "subjectivity_bundle_present": true
       }
     },
     {
@@ -133,6 +134,17 @@
       }
     },
     {
+      "id": "subjectivity_ecosystem_stack",
+      "status": "PASS",
+      "details": {
+        "docs_present": true,
+        "manifests_present": true,
+        "artifacts_present": true,
+        "readiness_class": "subjectivity_stack_audit_ready_internal",
+        "verification_status": "PASS"
+      }
+    },
+    {
       "id": "ecosystem_portability_targets",
       "status": "PASS",
       "details": {
@@ -176,6 +188,28 @@
           "artifacts/execution_campaign/execution_campaign_readout.json",
           "artifacts/execution_campaign/latest_campaign_pointer.json",
           "artifacts/execution_campaign/execution_campaign_audit_readout.json",
+          "docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md",
+          "docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md",
+          "docs/SUBJECTIVITY_ARTIFACT_SURFACE_POLICY.md",
+          "docs/SUBJECTIVITY_MAINTENANCE.md",
+          "docs/SUBJECTIVITY_CANDIDATE_INTEGRATION.md",
+          "docs/SUBJECTIVITY_AUDIT_HANDOFF.md",
+          "docs/subjectivity_protocol.v1.json",
+          "docs/subjectivity_thresholds.v1.json",
+          "docs/subjectivity_rival_family.v1.json",
+          "docs/subjectivity_artifact_schema.v1.json",
+          "docs/subjectivity_surface_policy.v1.json",
+          "artifacts/subjectivity/srt5/subjectivity_runtime_projection.json",
+          "artifacts/subjectivity/srt5/subjectivity_gate_result.json",
+          "artifacts/subjectivity/srt5/subjectivity_manifest.json",
+          "artifacts/subjectivity/srt6/subjectivity_condition_summary.json",
+          "artifacts/subjectivity/srt6/subjectivity_batch_summary.json",
+          "artifacts/subjectivity/srt6/subjectivity_campaign_summary.json",
+          "artifacts/subjectivity/srt6/subjectivity_candidate_projection.json",
+          "artifacts/subjectivity/srt6/subjectivity_audit_handoff_summary.json",
+          "artifacts/subjectivity/srt6/subjectivity_verification_matrix.json",
+          "artifacts/subjectivity/srt6/subjectivity_ecosystem_check.json",
+          "artifacts/subjectivity/srt6/subjectivity_stack_check.json",
           "docs/ecosystem_interface_contract.v1.json",
           "docs/ecosystem_candidate_governance.v1.json",
           "docs/OPERATIONAL_READINESS.md",
@@ -194,9 +228,9 @@
   ],
   "system_baseline": {
     "branch": "main",
-    "head": "f9910cb80cc16ae7bf678609701e4ad9da5de7a9",
+    "head": "737a005e280365e2deb6ed1a6a80160f1373bea0",
     "upstream": "origin/main",
-    "release_bundle_manifest": "artifacts/internal_release/internal_release_2026-03-28T20-57-25-417Z/release_bundle_manifest.json",
+    "release_bundle_manifest": "artifacts/internal_release/internal_release_2026-03-29T00-45-55-223Z/release_bundle_manifest.json",
     "evaluation_protocol_manifest": "artifacts/protocolized_evaluation/evaluation_protocol_manifest.json",
     "evaluation_batch_report": "artifacts/protocolized_evaluation/evaluation_batch_report.json"
   },

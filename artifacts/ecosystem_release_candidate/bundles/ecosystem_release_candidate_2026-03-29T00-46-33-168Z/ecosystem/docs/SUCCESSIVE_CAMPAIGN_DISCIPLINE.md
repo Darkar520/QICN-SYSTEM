@@ -1,0 +1,72 @@
+# Successive Campaign Discipline
+
+This note governs repeated execution campaigns after the authoritative campaign
+freeze.
+
+## successive_campaign_allowed
+
+- ecosystem candidate is still `PASS`
+- both repos are clean and pushed
+- the frozen evaluation architecture is unchanged
+- any post-freeze repo-head change is limited to governance, audit, or bundle
+  coordination layers and does not change runtime semantics
+- if the baseline linkage changed since the previous campaign, regenerate the
+  ecosystem candidate bundle before running the next comparable campaign
+- the campaign is runner-executed under an explicit plan
+- the six canonical conditions remain explicit
+- claim-facing block remains active
+- the new campaign records its own baseline linkage explicitly
+
+## successive_campaign_requires_fresh_verification
+
+- always rerun:
+  - `npm run verify:evaluation-protocol`
+  - `npm run verify:evaluation-metrics`
+  - `npm run verify:evaluation-comparisons`
+  - `npm run verify:evaluation-phase`
+  - `npm run verify:ecosystem-integrity`
+- rerun `npm run release:ecosystem-candidate` if the repo head changed after the
+  last authoritative comparable campaign or if the candidate manifest baseline
+  linkage would otherwise be stale
+- rerun full base checks if repo state, bundle builders, or candidate manifests
+  changed
+
+## successive_campaign_breaks_baseline
+
+- protocol, matrix, metrics registry, controls registry, or statistical policy
+  changed
+- runtime semantics changed in a way that changes condition meaning
+- frozen evaluation architecture or its frozen operational components changed
+- unsupported comparisons are emitted
+- claim-facing gating no longer blocks the evaluation/campaign artifacts
+
+## exploratory_campaign_not_comparable
+
+- uses added or substituted conditions
+- changes the seed policy or exclusion logic
+- changes the required artifacts
+- changes the minimal statistics policy
+- runs outside the frozen candidate baseline
+
+## Comparable vs exploratory vs invalid
+
+- comparable:
+  - same frozen architecture
+  - same condition set
+  - same exclusion policy
+  - same comparison matrix
+  - same or larger `n`
+- exploratory:
+  - internal-only campaign outside one or more frozen constraints
+  - may be useful, but it does not extend this baseline directly
+- invalid:
+  - manual stitching
+  - missing authoritative artifacts
+  - candidate not `PASS`
+  - claim-facing leak
+  - unsupported comparisons emitted
+
+## Interpretation boundary
+
+More campaigns do not authorize stronger language by themselves. Repetition may
+improve internal comparability only within the frozen protocol.

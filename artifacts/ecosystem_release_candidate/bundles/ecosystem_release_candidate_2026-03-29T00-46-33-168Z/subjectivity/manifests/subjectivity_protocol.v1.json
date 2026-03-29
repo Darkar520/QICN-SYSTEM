@@ -1,0 +1,155 @@
+{
+  "artifact_role": "subjectivity_runtime_protocol_definition",
+  "schema_version": "1.0.0",
+  "layer_name": "Subjectivity Runtime Layer",
+  "layer_id": "subjectivity_runtime_layer.srt6",
+  "implementation_status": "ecosystem_hardened_runtime_path",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "preferred_source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex",
+    "lineage_status": "external_theory_reference_only"
+  },
+  "coordinates": [
+    {
+      "id": "SelfIndex",
+      "symbol": "I",
+      "paper_name": "Self-index",
+      "status": "implemented_internal_support_pre_comparator"
+    },
+    {
+      "id": "OwnershipField",
+      "symbol": "O",
+      "paper_name": "Ownership field",
+      "status": "implemented_internal_support_pre_comparator"
+    },
+    {
+      "id": "ContinuityField",
+      "symbol": "C",
+      "paper_name": "Autobiographical continuity margin",
+      "status": "implemented_internal_support_pre_comparator"
+    },
+    {
+      "id": "FirstPersonPerspective",
+      "symbol": "P",
+      "paper_name": "First-person perspective organization",
+      "status": "implemented_internal_support_pre_comparator"
+    },
+    {
+      "id": "ValuationAsymmetry",
+      "symbol": "V",
+      "paper_name": "Asymmetric valuation profile",
+      "status": "implemented_internal_support_pre_comparator"
+    },
+    {
+      "id": "InterventionProfile",
+      "symbol": "Δ",
+      "paper_name": "Interventional sensitivity profile",
+      "status": "implemented_internal_support_pre_comparator"
+    },
+    {
+      "id": "IrreducibilityMargin",
+      "symbol": "R",
+      "paper_name": "Irreducibility margin",
+      "status": "implemented_internal_partial_comparator"
+    }
+  ],
+  "functional": {
+    "gate_name": "Gamma_subj",
+    "gate_form": "min(I,O,C,P,V,Delta,R)",
+    "scalar_name": "Phi_subj",
+    "scalar_form": "multiplicative_weighted_product",
+    "status": "implemented_internal_gate_closure_in_srt5",
+    "non_compensation": true
+  },
+  "required_artifacts": [
+    "self_index_state.json",
+    "ownership_attribution_report.json",
+    "subjective_continuity_report.json",
+    "first_person_perspective_report.json",
+    "subjective_valuation_report.json",
+    "subjectivity_intervention_profile.json",
+    "subjectivity_reducibility_report.json",
+    "subjectivity_runtime_projection.json",
+    "subjectivity_gate_result.json",
+    "subjectivity_manifest.json",
+    "subjectivity_condition_summary.json",
+    "subjectivity_batch_summary.json",
+    "subjectivity_campaign_summary.json",
+    "subjectivity_candidate_projection.json",
+    "subjectivity_audit_handoff_summary.json",
+    "subjectivity_verification_matrix.json"
+  ],
+  "minimum_conditions": [
+    "baseline_subjectivity_enabled",
+    "ownership_lesion",
+    "continuity_break",
+    "self_nonself_swap",
+    "perspective_flattening",
+    "valuation_inversion",
+    "risk_consequence_reassignment",
+    "weak_rival_reconstruction"
+  ],
+  "required_negative_controls": [
+    "label_only_swap_control",
+    "memory_rich_non_owning_control",
+    "policy_retuned_control",
+    "narrative_preserving_control",
+    "bookkeeping_control",
+    "nonselective_damage_control",
+    "memory_copy_without_continuity_control",
+    "perspective_neutral_factorization_control",
+    "reward_aliasing_control",
+    "unfair_loss_control",
+    "incomplete_comparator_control",
+    "gate_compensation_control",
+    "missing_coordinate_control",
+    "drift_invalidation_control",
+    "comparator_unsupported_control",
+    "stale_threshold_control",
+    "unsupported_gate_control",
+    "claim_surface_leak_control"
+  ],
+  "reducibility_status_classes": [
+    "comparison_unsupported",
+    "weak_model_sufficient",
+    "weak_hybrid_sufficient",
+    "irreducibility_not_yet_supported",
+    "partial_irreducibility_support"
+  ],
+  "runtime_status_classes": [
+    "subjectivity_evaluation_unsupported",
+    "drift_invalidated",
+    "weak_rival_reducible",
+    "interventionally_unstable",
+    "subjectivity_gate_fail",
+    "insufficient_subjectivity_support",
+    "subjectivity_admissible",
+    "subjectivity_internal_strong_support"
+  ],
+  "strongest_defensible_claims": [
+    "Internal run-level gate closure can be computed over the seven available SRT-5 coordinates.",
+    "Gamma_subj and Phi_subj can now be evaluated with explicit non-compensation and invalidation rules.",
+    "Any admissibility class remains framework-internal only and depends on comparator support, intervention stability, and drift cleanliness.",
+    "SRT-6 can aggregate the existing internal subjectivity stack into condition, batch, campaign, candidate, and audit-facing internal summaries without lifting the layer into claim-facing use."
+  ],
+  "forbidden_inferences": [
+    "subjectivity_gate_result_implies_external_validation",
+    "subjectivity_internal_strong_support_implies_human_equivalence",
+    "subjectivity_internal_strong_support_implies_phenomenality",
+    "subjectivity_admissible_implies_claim_facing_promotion",
+    "gate_execution_implies_final_weak_family_closure"
+  ],
+  "framework_internal_reading": [
+    "Read every SRT-6 status class as framework-internal only.",
+    "No SRT-6 artifact licenses phenomenality, human equivalence, metaphysical closure, or claim-facing promotion.",
+    "Comparator unsupported, intervention instability, missing artifacts, or drift invalidate or degrade the result."
+  ],
+  "notes": [
+    "SRT-5 closes the internal run-level stack without touching external validation or ecosystem promotion.",
+    "SRT-6 integrates the subjectivity layer into internal bundle, ecosystem candidate, and audit-facing package flows while preserving framework-internal-only boundaries.",
+    "Batch/campaign summaries remain governance and maintenance objects; they do not constitute external validation.",
+    "Thresholds remain provisional and not empirically calibrated."
+  ],
+  "interpretation_boundary": "Protocol definition only; SRT-6 keeps the seven-surface internal gate and adds ecosystem hardening over condition/batch/campaign/candidate/audit summaries, framework-internal only, not external validation, not phenomenality closure, not claim-facing evidence."
+}

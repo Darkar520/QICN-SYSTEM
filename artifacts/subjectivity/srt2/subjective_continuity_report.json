@@ -1,0 +1,86 @@
+{
+  "artifact_role": "subjective_continuity_report",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_version": "subjectivity_runtime_layer.srt2.continuity.v1",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex"
+  },
+  "runtime_status": "implemented_internal_support_pre_comparator",
+  "run_id": "srt2_continuity_perspective_baseline",
+  "continuity_status": "continuity_sufficient",
+  "continuity_margin": 0.556,
+  "privileged_line": {
+    "line_id": "alpha_line",
+    "candidate_index": "locus_alpha",
+    "history_window_id": "hist_alpha",
+    "history_length": 6,
+    "continuity_score": 1
+  },
+  "rival_line_count": 1,
+  "rival_lines_summary": [
+    {
+      "line_id": "beta_line",
+      "candidate_index": "locus_beta",
+      "history_length": 5,
+      "copied_memory_only": false,
+      "continuity_score": 0.44399999999999995
+    }
+  ],
+  "fracture_flag": false,
+  "fork_flag": false,
+  "ambiguity_flag": false,
+  "supporting_signals": [
+    {
+      "line_id": "alpha_line",
+      "candidate_index": "locus_alpha",
+      "history_length": 6,
+      "supporting_signals": {
+        "temporal_linkage": 0.92,
+        "ownership_alignment": 0.88,
+        "self_index_alignment": 0.91,
+        "remap_robustness": 0.85,
+        "memory_integrity": 0.82
+      },
+      "copied_memory_only": false,
+      "fracture_signal": 0.08,
+      "fork_overlap": 0.04,
+      "continuity_score": 1
+    },
+    {
+      "line_id": "beta_line",
+      "candidate_index": "locus_beta",
+      "history_length": 5,
+      "supporting_signals": {
+        "temporal_linkage": 0.46,
+        "ownership_alignment": 0.42,
+        "self_index_alignment": 0.31,
+        "remap_robustness": 0.38,
+        "memory_integrity": 0.45
+      },
+      "copied_memory_only": false,
+      "fracture_signal": 0.11,
+      "fork_overlap": 0.05,
+      "continuity_score": 0.44399999999999995
+    }
+  ],
+  "warnings": [],
+  "limitations": [
+    "SRT-2 continuity is a minimal internal gap-based ledger over explicit trajectory lines.",
+    "Copied memory without continuity-preserving linkage is penalized rather than treated as automatic continuity.",
+    "This artifact does not establish metaphysical persistence or human autobiographical continuity."
+  ],
+  "interpretation_boundary": "Framework-internal only; pre-comparator continuity diagnostic, not externally validated, not sufficient for subjectivity claim, not equivalent to metaphysical persistence, not equivalent to human autobiographical continuity.",
+  "provenance": {
+    "generated_at": "2026-03-29T00:33:05.792Z",
+    "protocol_ref": "docs/subjectivity_protocol.v1.json",
+    "self_index_ref": "self_index_state.json",
+    "ownership_ref": "ownership_attribution_report.json",
+    "source_trace_ref": "subjectivity_inputs/srt2_baseline_trace",
+    "input_profile": "srt2_verification_baseline",
+    "control_mode": "baseline"
+  },
+  "schema_ref": "src/subjectivity/schemas/subjective_continuity_report.v1.json"
+}

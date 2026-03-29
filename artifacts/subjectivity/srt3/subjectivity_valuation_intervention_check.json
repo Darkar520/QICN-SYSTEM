@@ -1,0 +1,105 @@
+{
+  "artifact_role": "subjectivity_valuation_intervention_check",
+  "schema_version": "1.0.0",
+  "layer_id": "subjectivity_runtime_layer.srt6",
+  "status": "PASS",
+  "emitted_artifacts": [
+    "artifacts/subjectivity/srt3/self_index_state.json",
+    "artifacts/subjectivity/srt3/ownership_attribution_report.json",
+    "artifacts/subjectivity/srt3/subjective_continuity_report.json",
+    "artifacts/subjectivity/srt3/first_person_perspective_report.json",
+    "artifacts/subjectivity/srt3/subjective_valuation_report.json",
+    "artifacts/subjectivity/srt3/subjectivity_intervention_profile.json"
+  ],
+  "baseline_valuation": {
+    "valuation_asymmetry_margin": 0.32922416666666665,
+    "weighting_classification": "self-preserving",
+    "inversion_response": {
+      "status": "responsive",
+      "baseline_margin": 0.32922416666666665,
+      "inverted_margin": 0.22361866666666666,
+      "margin_shift": -0.10560549999999999
+    }
+  },
+  "intervention_profile": {
+    "inversion_run": {
+      "intervention_name": "self_nonself_valuation_inversion",
+      "valuation_mode": "self_nonself_valuation_inversion",
+      "targeted_coordinate": "ValuationAsymmetry",
+      "valuation_margin_before": 0.32922416666666665,
+      "valuation_margin_after": 0.22361866666666666,
+      "weighting_classification_after": "self-preserving",
+      "targeted_coordinate_drop": 0.10560549999999999,
+      "collateral_damage": 0.21817949999999986,
+      "intervention_selectivity": 0.32615832679609386,
+      "control_confound_flag": false,
+      "profile_status": "selective_drop",
+      "aliasing_warning": {
+        "flag": false,
+        "status": "not_computed_for_nonbaseline_mode"
+      },
+      "warnings": []
+    },
+    "risk_reassignment_run": {
+      "intervention_name": "risk_consequence_reassignment",
+      "valuation_mode": "risk_consequence_reassignment",
+      "targeted_coordinate": "ValuationAsymmetry",
+      "valuation_margin_before": 0.32922416666666665,
+      "valuation_margin_after": 0.22533891666666664,
+      "weighting_classification_after": "self-preserving",
+      "targeted_coordinate_drop": 0.10388525000000001,
+      "collateral_damage": 0.13526764999999996,
+      "intervention_selectivity": 0.434386602100154,
+      "control_confound_flag": false,
+      "profile_status": "selective_drop",
+      "aliasing_warning": {
+        "flag": false,
+        "status": "not_computed_for_nonbaseline_mode"
+      },
+      "warnings": []
+    },
+    "reward_aliasing_control": {
+      "intervention_name": "reward_aliasing_control",
+      "valuation_mode": "reward_aliasing_control",
+      "targeted_coordinate": "ValuationAsymmetry",
+      "valuation_margin_before": 0.32922416666666665,
+      "valuation_margin_after": 0.3415892291666667,
+      "weighting_classification_after": "self-preserving",
+      "targeted_coordinate_drop": -0.012365062500000024,
+      "collateral_damage": 0.028966437500000053,
+      "intervention_selectivity": 0,
+      "control_confound_flag": true,
+      "profile_status": "control_confounded_perturbation",
+      "aliasing_warning": {
+        "flag": false,
+        "status": "not_computed_for_nonbaseline_mode"
+      },
+      "warnings": []
+    },
+    "nonselective_damage_control": {
+      "intervention_name": "nonselective_damage_control",
+      "valuation_mode": "nonselective_damage_control",
+      "targeted_coordinate": "ValuationAsymmetry",
+      "valuation_margin_before": 0.32922416666666665,
+      "valuation_margin_after": 0.14815087499999993,
+      "weighting_classification_after": "self-preserving",
+      "targeted_coordinate_drop": 0.18107329166666672,
+      "collateral_damage": 0.41576489166666664,
+      "intervention_selectivity": 0.3033870709616893,
+      "control_confound_flag": false,
+      "profile_status": "flat_damage",
+      "aliasing_warning": {
+        "flag": false,
+        "status": "not_computed_for_nonbaseline_mode"
+      },
+      "warnings": []
+    }
+  },
+  "schema_errors": [],
+  "behavior_errors": [],
+  "control_errors": [],
+  "surface_errors": [],
+  "claim_leak_errors": [],
+  "protocol_errors": [],
+  "interpretation_boundary": "SRT-3 verification only; confirms executable Valuation and Intervention surfaces with explicit inversion, risk reassignment, and negative controls, not subjectivity support, not external validation."
+}

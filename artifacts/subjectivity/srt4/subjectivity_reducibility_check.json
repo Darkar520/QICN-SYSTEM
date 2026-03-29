@@ -1,0 +1,85 @@
+{
+  "artifact_role": "subjectivity_reducibility_check",
+  "schema_version": "1.0.0",
+  "layer_id": "subjectivity_runtime_layer.srt6",
+  "status": "PASS",
+  "emitted_artifacts": [
+    "artifacts/subjectivity/srt4/subjectivity_reducibility_report.json"
+  ],
+  "reducibility_summary": {
+    "strong_model_loss": {
+      "total_loss": 0.08088000000000001,
+      "loss_breakdown": {
+        "baseline_fit_error": 0,
+        "intervention_response_error": 0,
+        "selectivity_error": 0,
+        "coordinate_matching_error": 0,
+        "complexity_penalty": 0.674
+      },
+      "status": "available_partial_runtime"
+    },
+    "best_weak_rival": {
+      "id": "pure_self_monitoring",
+      "label": "Pure self-monitoring",
+      "status": "minimally_executable",
+      "total_loss": 0.26300873473499997,
+      "loss_breakdown": {
+        "baseline_fit_error": 0.32208499999999995,
+        "intervention_response_error": 0.2631206849375,
+        "selectivity_error": 0.30916666666666665,
+        "coordinate_matching_error": 0.14058872416666668,
+        "complexity_penalty": 0.23933333333333334
+      },
+      "complexity_penalty": 0.23933333333333334,
+      "compared_components": [
+        "SelfIndex",
+        "FirstPersonPerspective"
+      ]
+    },
+    "best_weak_hybrid": {
+      "id": "pure_self_monitoring__latent_bookkeeping__w065",
+      "label": "Pure self-monitoring + Latent bookkeeping",
+      "members": [
+        "pure_self_monitoring",
+        "latent_bookkeeping"
+      ],
+      "status": "minimally_executable_hybrid",
+      "total_loss": 0.31969488082249997,
+      "loss_breakdown": {
+        "baseline_fit_error": 0.31470524999999994,
+        "intervention_response_error": 0.28520500867187504,
+        "selectivity_error": 0.32112500000000005,
+        "coordinate_matching_error": 0.2040317152291667,
+        "complexity_penalty": 0.5716666666666668
+      },
+      "complexity_penalty": 0.5716666666666668,
+      "compared_components": []
+    },
+    "irreducibility_margin": 0.18212873473499996,
+    "classification": "partial_irreducibility_support"
+  },
+  "unfair_loss_control": {
+    "comparison_supported": false,
+    "classification": "comparison_unsupported",
+    "warnings": [
+      "loss_family_not_shared",
+      "unfair_loss_control_triggered"
+    ]
+  },
+  "incomplete_comparator_control": {
+    "comparison_supported": false,
+    "classification": "comparison_unsupported",
+    "warnings": [
+      "rival_family_incomplete",
+      "hybrid_family_incomplete",
+      "incomplete_comparator_control_triggered"
+    ]
+  },
+  "schema_errors": [],
+  "behavior_errors": [],
+  "control_errors": [],
+  "surface_errors": [],
+  "claim_leak_errors": [],
+  "protocol_errors": [],
+  "interpretation_boundary": "SRT-4 verification only; confirms executable reducibility comparison with shared loss, complexity penalty, admissible weak hybrids, and comparator controls, not final irreducibility proof, not external validation."
+}

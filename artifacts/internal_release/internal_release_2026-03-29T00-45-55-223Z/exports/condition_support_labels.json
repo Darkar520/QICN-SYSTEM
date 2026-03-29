@@ -1,0 +1,26 @@
+{
+  "artifact_role": "condition_support_label_output",
+  "consumption_policy_ref": "condition_output_consumption_policy.json",
+  "surface_policy_ref": "condition_output_surface_policy.json",
+  "controlled_statements_ref": "condition_controlled_statements.json",
+  "source_artifacts": {
+    "condition_metrics_summary": "condition_metrics_summary.json",
+    "condition_comparison": "condition_comparison.json"
+  },
+  "baseline_present": false,
+  "conditions": {},
+  "comparison_count": 0,
+  "interpretation_allowed": "Descriptive internal comparison posture only.",
+  "interpretation_not_allowed": [
+    "Do not read these labels as causal confirmation.",
+    "Do not read these labels as theory validation.",
+    "Do not read these labels as external validation."
+  ],
+  "non_claim_boundaries": [
+    "No implica validacion externa.",
+    "No implica inferencia causal fuerte.",
+    "No implica confirmacion del marco.",
+    "No implica claim fuerte.",
+    "No reemplaza revision cientifica externa."
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "artifact_role": "self_index_state",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_version": "subjectivity_runtime_layer.srt1.selfindex.v1",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex"
+  },
+  "runtime_status": "implemented_internal_support_pre_comparator",
+  "run_id": "srt1_selfindex_ownership_baseline",
+  "selected_index": "locus_alpha",
+  "candidate_indices": [
+    "locus_alpha",
+    "locus_beta"
+  ],
+  "self_index_candidates": [
+    {
+      "candidate_index": "locus_alpha",
+      "display_label": "alpha",
+      "supporting_signals": {
+        "persistence_anchor": 0.86,
+        "continuity_support": 0.81,
+        "action_binding": 0.74,
+        "memory_binding": 0.77,
+        "label_anchor": 0.12
+      },
+      "substantive_signal_count": 4,
+      "weighted_score": 0.8055000000000001,
+      "label_only_candidate": false
+    },
+    {
+      "candidate_index": "locus_beta",
+      "display_label": "beta",
+      "supporting_signals": {
+        "persistence_anchor": 0.39,
+        "continuity_support": 0.34,
+        "action_binding": 0.29,
+        "memory_binding": 0.3,
+        "label_anchor": 0.12
+      },
+      "substantive_signal_count": 4,
+      "weighted_score": 0.33949999999999997,
+      "label_only_candidate": false
+    }
+  ],
+  "candidate_count": 2,
+  "ambiguity_flag": false,
+  "stability_hint": "stable",
+  "stability_margin": 0.46600000000000014,
+  "supporting_signals": [
+    {
+      "candidate_index": "locus_alpha",
+      "supporting_signals": {
+        "persistence_anchor": 0.86,
+        "continuity_support": 0.81,
+        "action_binding": 0.74,
+        "memory_binding": 0.77,
+        "label_anchor": 0.12
+      },
+      "substantive_signal_count": 4,
+      "weighted_score": 0.8055000000000001,
+      "label_only_candidate": false
+    },
+    {
+      "candidate_index": "locus_beta",
+      "supporting_signals": {
+        "persistence_anchor": 0.39,
+        "continuity_support": 0.34,
+        "action_binding": 0.29,
+        "memory_binding": 0.3,
+        "label_anchor": 0.12
+      },
+      "substantive_signal_count": 4,
+      "weighted_score": 0.33949999999999997,
+      "label_only_candidate": false
+    }
+  ],
+  "selection_rule": {
+    "threshold": 0.5,
+    "ambiguity_margin": 0.08,
+    "minimum_non_label_signals": 1,
+    "weighted_signals": {
+      "persistence_anchor": 0.35,
+      "continuity_support": 0.25,
+      "action_binding": 0.2,
+      "memory_binding": 0.2
+    }
+  },
+  "warnings": [],
+  "limitations": [
+    "SRT-1 self-index is a minimal internal heuristic over explicit candidate loci.",
+    "This artifact does not establish continuity, phenomenality, or subjectivity support.",
+    "Comparator defeat and intervention-selective support remain unimplemented in SRT-1."
+  ],
+  "interpretation_boundary": "Framework-internal only; pre-comparator self-index diagnostic, not externally validated, not sufficient for subjectivity claim, not human equivalence, not metaphysical closure.",
+  "provenance": {
+    "generated_at": "2026-03-29T00:33:05.737Z",
+    "source_trace_ref": "subjectivity_inputs/srt1_baseline_trace",
+    "input_profile": "srt1_verification_baseline",
+    "control_mode": "baseline",
+    "protocol_ref": "docs/subjectivity_protocol.v1.json",
+    "thresholds_ref": "docs/subjectivity_thresholds.v1.json",
+    "source_trace_version": null
+  },
+  "schema_ref": "src/subjectivity/schemas/self_index_state.v1.json"
+}

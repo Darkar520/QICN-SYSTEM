@@ -3,7 +3,7 @@
 ## Status
 
 - Candidate status: `PASS`
-- QICN-SYSTEM baseline: `main@f9910cb80cc16ae7bf678609701e4ad9da5de7a9`
+- QICN-SYSTEM baseline: `main@737a005e280365e2deb6ed1a6a80160f1373bea0`
 - QICN-RELEASE repo baseline: `main@e4ce7bae5d86ad256ea2b70407b18b2b81645f8b`
 - QICN-RELEASE canonical freeze: `release-2026-03-01@2d7504be95ca33af5941e30abf7059dc2774edca`
 - QICN-RELEASE upstream pin status: `resolved`
@@ -18,6 +18,7 @@
 - ecosystem interface contract
 - ecosystem candidate governance
 - ecosystem freeze baseline and maintenance checklist
+- subjectivity runtime protocol, maintenance docs, machine manifests, and SRT-6 ecosystem summaries
 - ecosystem verification matrix
 - ecosystem gap register
 
@@ -25,6 +26,7 @@
 
 - non-canonical corpus material under `release/_non_canonical/`
 - blocked claim-facing system outputs
+- primary SRT-1..4 subjectivity run artifacts that remain local-only
 - raw runtime outputs as theory-validation material
 - unclassified or non-baseline materials outside the two repository baselines
 

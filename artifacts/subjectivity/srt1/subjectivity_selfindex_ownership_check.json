@@ -1,0 +1,27 @@
+{
+  "artifact_role": "subjectivity_selfindex_ownership_check",
+  "schema_version": "1.0.0",
+  "layer_id": "subjectivity_runtime_layer.srt6",
+  "status": "PASS",
+  "emitted_artifacts": [
+    "artifacts/subjectivity/srt1/self_index_state.json",
+    "artifacts/subjectivity/srt1/ownership_attribution_report.json"
+  ],
+  "negative_controls": {
+    "label_only_swap_control": {
+      "expected_behavior": "selected_index must remain invariant under display-label swap",
+      "actual_selected_index": "locus_alpha",
+      "baseline_selected_index": "locus_alpha"
+    },
+    "bookkeeping_control": {
+      "expected_behavior": "bookkeeping-only ownership must remain uncertain",
+      "actual_classification": "uncertain"
+    }
+  },
+  "schema_errors": [],
+  "behavior_errors": [],
+  "surface_errors": [],
+  "claim_leak_errors": [],
+  "protocol_errors": [],
+  "interpretation_boundary": "SRT-1 verification only; confirms executable SelfIndex and Ownership artifacts with minimal negative controls inside the broader SRT-2 layer, not subjectivity support, not external validation."
+}

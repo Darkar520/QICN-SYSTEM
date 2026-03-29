@@ -1,14 +1,14 @@
 {
   "artifact_role": "ecosystem_release_candidate_manifest",
-  "generated_at": "2026-03-28T23:06:28.591Z",
-  "bundle_id": "ecosystem_release_candidate_2026-03-28T23-06-28-591Z",
+  "generated_at": "2026-03-29T00:46:33.168Z",
+  "bundle_id": "ecosystem_release_candidate_2026-03-29T00-46-33-168Z",
   "bundle_root": ".",
   "candidate_status": "PASS",
   "baselines": {
     "qicn_system": {
       "repository": "QICN-SYSTEM",
       "branch": "main",
-      "head": "f9910cb80cc16ae7bf678609701e4ad9da5de7a9",
+      "head": "737a005e280365e2deb6ed1a6a80160f1373bea0",
       "upstream": "origin/main",
       "operational_readiness_manifest": "system/manifests/operational_readiness_manifest.json",
       "artifact_manifest": "system/manifests/artifact_manifest.json",
@@ -85,6 +85,40 @@
   "candidate_governance": {
     "documentation": "ecosystem/docs/ECOSYSTEM_CANDIDATE_GOVERNANCE.md",
     "machine_readable": "ecosystem/manifests/ecosystem_candidate_governance.v1.json"
+  },
+  "subjectivity": {
+    "layer_id": "subjectivity_runtime_layer.srt6",
+    "documentation": {
+      "runtime_protocol": "subjectivity/docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md",
+      "interpretation_boundary": "subjectivity/docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md",
+      "surface_policy": "subjectivity/docs/SUBJECTIVITY_ARTIFACT_SURFACE_POLICY.md",
+      "candidate_integration": "subjectivity/docs/SUBJECTIVITY_CANDIDATE_INTEGRATION.md",
+      "maintenance": "subjectivity/docs/SUBJECTIVITY_MAINTENANCE.md"
+    },
+    "manifests": {
+      "protocol": "subjectivity/manifests/subjectivity_protocol.v1.json",
+      "thresholds": "subjectivity/manifests/subjectivity_thresholds.v1.json",
+      "rival_family": "subjectivity/manifests/subjectivity_rival_family.v1.json",
+      "surface_policy": "subjectivity/manifests/subjectivity_surface_policy.v1.json",
+      "artifact_schema": "subjectivity/manifests/subjectivity_artifact_schema.v1.json"
+    },
+    "authoritative_artifacts": {
+      "runtime_projection": "subjectivity/subjectivity_runtime_projection.json",
+      "gate_result": "subjectivity/subjectivity_gate_result.json",
+      "manifest": "subjectivity/subjectivity_manifest.json",
+      "condition_summary": "subjectivity/subjectivity_condition_summary.json",
+      "batch_summary": "subjectivity/subjectivity_batch_summary.json",
+      "campaign_summary": "subjectivity/subjectivity_campaign_summary.json",
+      "candidate_projection": "subjectivity/subjectivity_candidate_projection.json",
+      "verification_matrix": "subjectivity/subjectivity_verification_matrix.json"
+    },
+    "status": {
+      "implemented": true,
+      "internally_supported": true,
+      "framework_internal_only": true,
+      "not_externally_validated": true
+    },
+    "interpretation_boundary": "Framework-internal subjectivity integration only; candidate inclusion does not authorize claim closure, external validation, phenomenality, or human equivalence."
   },
   "freeze_baseline": {
     "documentation": "ecosystem/docs/ECOSYSTEM_FREEZE_BASELINE.md",

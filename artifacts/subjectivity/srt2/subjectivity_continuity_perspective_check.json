@@ -1,0 +1,38 @@
+{
+  "artifact_role": "subjectivity_continuity_perspective_check",
+  "schema_version": "1.0.0",
+  "layer_id": "subjectivity_runtime_layer.srt6",
+  "status": "PASS",
+  "emitted_artifacts": [
+    "artifacts/subjectivity/srt2/self_index_state.json",
+    "artifacts/subjectivity/srt2/ownership_attribution_report.json",
+    "artifacts/subjectivity/srt2/subjective_continuity_report.json",
+    "artifacts/subjectivity/srt2/first_person_perspective_report.json"
+  ],
+  "minimal_comparison": {
+    "baseline_name": "index_neutral_factorization",
+    "first_person_gain": 0.28700000000000003,
+    "comparison_status": "minimal_support"
+  },
+  "negative_controls": {
+    "memory_copy_without_continuity_control": {
+      "expected_behavior": "copied memory without temporal/autobiographical linkage must not pass as continuity_sufficient",
+      "actual_status": "fracture",
+      "fracture_flag": true,
+      "ambiguity_flag": false
+    },
+    "perspective_neutral_factorization_control": {
+      "expected_behavior": "index-neutral organization must not automatically support first-person factorization",
+      "actual_gain": -0.5655625,
+      "factorization_supported": false,
+      "comparison_status": "failure"
+    }
+  },
+  "schema_errors": [],
+  "behavior_errors": [],
+  "control_errors": [],
+  "surface_errors": [],
+  "claim_leak_errors": [],
+  "protocol_errors": [],
+  "interpretation_boundary": "SRT-2 verification only; confirms executable Continuity and Perspective artifacts with explicit 1p-vs-neutral comparison and minimal negative controls, not subjectivity support, not external validation."
+}

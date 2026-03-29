@@ -1,0 +1,279 @@
+{
+  "artifact_role": "subjectivity_reducibility_report",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_version": "subjectivity_runtime_layer.srt4.reducibility.v1",
+  "paper_source": {
+    "paper_id": "paper8_first_person_subjectivity",
+    "title": "First-Person Indexed Subjectivity: Self-Binding, Ownership, Continuity, Irreducibility, and Cross-Substrate Consequence in a Causally Rigid Framework",
+    "source_path": "rigid-identity-framework/paper8_first_person_subjectivity/main.tex"
+  },
+  "runtime_status": "implemented_internal_partial_comparator",
+  "run_id": "srt4_reducibility_baseline",
+  "compared_components": {
+    "available_coordinates": [
+      "SelfIndex",
+      "OwnershipField",
+      "ContinuityField",
+      "FirstPersonPerspective",
+      "ValuationAsymmetry",
+      "InterventionProfile"
+    ],
+    "compared_dimensions": [
+      "self_index_signal",
+      "ownership_signal",
+      "continuity_signal",
+      "perspective_signal",
+      "valuation_signal",
+      "ownership_certainty",
+      "intervention_signal",
+      "targeted_drop_mean",
+      "selective_ratio",
+      "flat_damage_ratio",
+      "control_confound_ratio"
+    ],
+    "control_mode": "baseline"
+  },
+  "rival_family_used": {
+    "family_id": "M_weak_runtime_minimal",
+    "members": [
+      {
+        "id": "pure_self_monitoring",
+        "label": "Pure self-monitoring",
+        "status": "minimally_executable",
+        "absorbs": [
+          "SelfIndex",
+          "FirstPersonPerspective"
+        ],
+        "does_not_attempt": [
+          "OwnershipField",
+          "InterventionProfile"
+        ],
+        "complexity": {
+          "mechanism_count": 2,
+          "auxiliary_flexibility": 0.28
+        }
+      },
+      {
+        "id": "memory_integration_only",
+        "label": "Memory integration only",
+        "status": "minimally_executable",
+        "absorbs": [
+          "ContinuityField"
+        ],
+        "does_not_attempt": [
+          "OwnershipField",
+          "InterventionProfile"
+        ],
+        "complexity": {
+          "mechanism_count": 2,
+          "auxiliary_flexibility": 0.26
+        }
+      },
+      {
+        "id": "policy_centered_agency",
+        "label": "Policy-centered agency",
+        "status": "minimally_executable",
+        "absorbs": [
+          "ValuationAsymmetry",
+          "InterventionProfile"
+        ],
+        "does_not_attempt": [
+          "OwnershipField",
+          "ContinuityField"
+        ],
+        "complexity": {
+          "mechanism_count": 3,
+          "auxiliary_flexibility": 0.34
+        }
+      },
+      {
+        "id": "narrative_self_model",
+        "label": "Narrative self-model",
+        "status": "minimally_executable",
+        "absorbs": [
+          "ContinuityField",
+          "FirstPersonPerspective"
+        ],
+        "does_not_attempt": [
+          "OwnershipField",
+          "InterventionProfile"
+        ],
+        "complexity": {
+          "mechanism_count": 3,
+          "auxiliary_flexibility": 0.31
+        }
+      },
+      {
+        "id": "global_workspace_without_ownership",
+        "label": "Global workspace without ownership",
+        "status": "minimally_executable",
+        "absorbs": [
+          "FirstPersonPerspective"
+        ],
+        "does_not_attempt": [
+          "OwnershipField",
+          "ValuationAsymmetry"
+        ],
+        "complexity": {
+          "mechanism_count": 3,
+          "auxiliary_flexibility": 0.29
+        }
+      },
+      {
+        "id": "latent_bookkeeping",
+        "label": "Latent bookkeeping",
+        "status": "minimally_executable",
+        "absorbs": [
+          "SelfIndex",
+          "OwnershipField"
+        ],
+        "does_not_attempt": [
+          "InterventionProfile",
+          "ValuationAsymmetry"
+        ],
+        "complexity": {
+          "mechanism_count": 2,
+          "auxiliary_flexibility": 0.22
+        }
+      }
+    ],
+    "comparator_implementation_status": "minimally_executable_partial_runtime"
+  },
+  "hybrid_family_used": {
+    "closure_id": "M_weak_runtime_closure_srt4",
+    "closure_rule": "pairwise_finite_admissible_composites",
+    "hybrid_count": 45,
+    "allowed_hybrid_size": 2,
+    "weight_grid": [
+      0.35,
+      0.5,
+      0.65
+    ]
+  },
+  "loss_family": {
+    "loss_family_id": "subjectivity_common_loss_family.srt4.v1",
+    "shared_loss_family": true,
+    "shared_weights": {
+      "baseline_fit_error": 0.28,
+      "intervention_response_error": 0.24,
+      "selectivity_error": 0.18,
+      "coordinate_matching_error": 0.18,
+      "complexity_penalty": 0.12
+    },
+    "strong_weights": {
+      "baseline_fit_error": 0.28,
+      "intervention_response_error": 0.24,
+      "selectivity_error": 0.18,
+      "coordinate_matching_error": 0.18,
+      "complexity_penalty": 0.12
+    },
+    "weak_weights": {
+      "baseline_fit_error": 0.28,
+      "intervention_response_error": 0.24,
+      "selectivity_error": 0.18,
+      "coordinate_matching_error": 0.18,
+      "complexity_penalty": 0.12
+    },
+    "included_terms": [
+      "baseline_fit_error",
+      "intervention_response_error",
+      "selectivity_error",
+      "coordinate_matching_error",
+      "complexity_penalty"
+    ],
+    "limitations": [
+      "SRT-4 compares only the six currently implemented surfaces.",
+      "Loss terms summarize available artifacts rather than full downstream tasks.",
+      "No claim about final weak-family completeness is licensed from this loss alone."
+    ]
+  },
+  "complexity_penalty": {
+    "penalty_id": "subjectivity_complexity_penalty.srt4.v1",
+    "measured_as": [
+      "mechanism_count",
+      "hybrid_size",
+      "auxiliary_flexibility"
+    ],
+    "notes": [
+      "Penalty is shared across strong, pure weak, and hybrid weak models.",
+      "Hybrid size increases penalty and cannot be added for free."
+    ]
+  },
+  "strong_model_loss": {
+    "total_loss": 0.08088000000000001,
+    "loss_breakdown": {
+      "baseline_fit_error": 0,
+      "intervention_response_error": 0,
+      "selectivity_error": 0,
+      "coordinate_matching_error": 0,
+      "complexity_penalty": 0.674
+    },
+    "status": "available_partial_runtime"
+  },
+  "best_weak_rival": {
+    "id": "pure_self_monitoring",
+    "label": "Pure self-monitoring",
+    "status": "minimally_executable",
+    "total_loss": 0.26300873473499997,
+    "loss_breakdown": {
+      "baseline_fit_error": 0.32208499999999995,
+      "intervention_response_error": 0.2631206849375,
+      "selectivity_error": 0.30916666666666665,
+      "coordinate_matching_error": 0.14058872416666668,
+      "complexity_penalty": 0.23933333333333334
+    },
+    "complexity_penalty": 0.23933333333333334,
+    "compared_components": [
+      "SelfIndex",
+      "FirstPersonPerspective"
+    ]
+  },
+  "best_weak_loss": 0.26300873473499997,
+  "best_weak_hybrid": {
+    "id": "pure_self_monitoring__latent_bookkeeping__w065",
+    "label": "Pure self-monitoring + Latent bookkeeping",
+    "members": [
+      "pure_self_monitoring",
+      "latent_bookkeeping"
+    ],
+    "status": "minimally_executable_hybrid",
+    "total_loss": 0.31969488082249997,
+    "loss_breakdown": {
+      "baseline_fit_error": 0.31470524999999994,
+      "intervention_response_error": 0.28520500867187504,
+      "selectivity_error": 0.32112500000000005,
+      "coordinate_matching_error": 0.2040317152291667,
+      "complexity_penalty": 0.5716666666666668
+    },
+    "complexity_penalty": 0.5716666666666668,
+    "compared_components": []
+  },
+  "best_hybrid_loss": 0.31969488082249997,
+  "irreducibility_margin": 0.18212873473499996,
+  "comparison_supported": true,
+  "classification": "partial_irreducibility_support",
+  "warnings": [],
+  "limitations": [
+    "SRT-4 irreducibility is limited to the currently available runtime coordinates and perturbation surface.",
+    "Comparator support is partial and does not constitute final irreducibility proof.",
+    "Human equivalence, phenomenality, and final subjectivity closure remain out of scope."
+  ],
+  "interpretation_boundary": "Framework-internal only; partial reducibility comparator over SRT-4 available coordinates, not externally validated, not final proof of irreducibility, limited to SRT-4 available coordinates, not sufficient for final subjectivity closure.",
+  "provenance": {
+    "generated_at": "2026-03-29T00:47:02.222Z",
+    "protocol_ref": "docs/subjectivity_protocol.v1.json",
+    "rival_family_ref": "docs/subjectivity_rival_family.v1.json",
+    "thresholds_ref": "docs/subjectivity_thresholds.v1.json",
+    "self_index_ref": "self_index_state.json",
+    "ownership_ref": "ownership_attribution_report.json",
+    "continuity_ref": "subjective_continuity_report.json",
+    "perspective_ref": "first_person_perspective_report.json",
+    "valuation_ref": "subjective_valuation_report.json",
+    "intervention_ref": "subjectivity_intervention_profile.json",
+    "source_trace_ref": "subjectivity_inputs/srt4_reducibility_baseline",
+    "input_profile": "srt4_verification_baseline",
+    "control_mode": "baseline"
+  },
+  "schema_ref": "src/subjectivity/schemas/subjectivity_reducibility_report.v1.json"
+}

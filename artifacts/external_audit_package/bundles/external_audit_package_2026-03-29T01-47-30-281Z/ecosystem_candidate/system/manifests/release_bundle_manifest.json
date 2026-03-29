@@ -1,0 +1,116 @@
+{
+  "artifact_role": "release_bundle_manifest",
+  "bundle_id": "internal_release_2026-03-29T01-40-25-537Z",
+  "bundle_root": ".",
+  "source_artifacts_root": "artifacts",
+  "git": {
+    "branch": "main",
+    "commit": "feee49846b316089f5b105dfd5a148d8ce44c595"
+  },
+  "included_outputs": [
+    {
+      "artifact": "condition_metrics_summary.json",
+      "path": "exports/condition_metrics_summary.json",
+      "mode": "descriptive_export_surface"
+    },
+    {
+      "artifact": "condition_support_labels.json",
+      "path": "exports/condition_support_labels.json",
+      "mode": "local_report_surface"
+    },
+    {
+      "artifact": "condition_local_report.json",
+      "path": "condition_local_report.json",
+      "mode": "local_report_surface"
+    },
+    {
+      "artifact": "condition_output_consumption_policy.json",
+      "path": "condition_output_consumption_policy.json",
+      "mode": "governance_metadata"
+    },
+    {
+      "artifact": "condition_output_surface_policy.json",
+      "path": "condition_output_surface_policy.json",
+      "mode": "governance_metadata"
+    },
+    {
+      "artifact": "condition_controlled_statements.json",
+      "path": "condition_controlled_statements.json",
+      "mode": "governance_metadata"
+    }
+  ],
+  "excluded_outputs": [
+    {
+      "artifact": "condition_comparison.json",
+      "reason_code": "blocked_claim_facing_output",
+      "decision_path": "exports/condition_comparison.json.export_decision.json"
+    }
+  ],
+  "subjectivity_bundle": {
+    "readiness_class": "subjectivity_stack_audit_ready_internal",
+    "verification_status": "PASS",
+    "included_outputs": [
+      {
+        "artifact": "subjectivity_runtime_projection.json",
+        "path": "subjectivity/subjectivity_runtime_projection.json",
+        "mode": "internal_release_bundle_surface"
+      },
+      {
+        "artifact": "subjectivity_gate_result.json",
+        "path": "subjectivity/subjectivity_gate_result.json",
+        "mode": "internal_release_bundle_surface"
+      },
+      {
+        "artifact": "subjectivity_manifest.json",
+        "path": "subjectivity/subjectivity_manifest.json",
+        "mode": "internal_release_bundle_surface"
+      },
+      {
+        "artifact": "subjectivity_condition_summary.json",
+        "path": "subjectivity/subjectivity_condition_summary.json",
+        "mode": "internal_release_bundle_surface"
+      },
+      {
+        "artifact": "subjectivity_batch_summary.json",
+        "path": "subjectivity/subjectivity_batch_summary.json",
+        "mode": "internal_release_bundle_surface"
+      },
+      {
+        "artifact": "subjectivity_campaign_summary.json",
+        "path": "subjectivity/subjectivity_campaign_summary.json",
+        "mode": "internal_release_bundle_surface"
+      },
+      {
+        "artifact": "subjectivity_candidate_projection.json",
+        "path": "subjectivity/subjectivity_candidate_projection.json",
+        "mode": "internal_release_bundle_surface"
+      },
+      {
+        "artifact": "subjectivity_verification_matrix.json",
+        "path": "subjectivity/subjectivity_verification_matrix.json",
+        "mode": "internal_release_bundle_surface"
+      }
+    ],
+    "interpretation_boundary": "Subjectivity bundle is framework-internal only; internal release packaging of gated and ecosystem-hardened artifacts, not external validation, not claim-facing evidence."
+  },
+  "copied_docs": [
+    "docs/REPRODUCIBILITY_CONTRACT.md",
+    "docs/OPERATIONAL_READINESS.md",
+    "docs/RELEASE_PROCESS.md",
+    "docs/SUBJECTIVITY_RUNTIME_PROTOCOL.md",
+    "docs/SUBJECTIVITY_INTERPRETATION_BOUNDARY.md",
+    "docs/SUBJECTIVITY_ARTIFACT_SURFACE_POLICY.md",
+    "docs/SUBJECTIVITY_MAINTENANCE.md",
+    "docs/SUBJECTIVITY_CANDIDATE_INTEGRATION.md",
+    "docs/SUBJECTIVITY_AUDIT_HANDOFF.md"
+  ],
+  "readiness_manifest": "operational_readiness_manifest.json",
+  "artifact_manifest": "artifact_manifest.json",
+  "interpretation_boundary": "Internal release bundle only; bounded local descriptive package, not public claim-safe release, not external validation, not scientific closure.",
+  "non_claim_restrictions": [
+    "Do not treat this bundle as external validation.",
+    "Do not treat this bundle as theory confirmation.",
+    "Do not promote excluded outputs into claim-facing material.",
+    "This bundle is internal operational packaging only."
+  ]
+}

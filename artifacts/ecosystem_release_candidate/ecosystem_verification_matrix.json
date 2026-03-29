@@ -1,16 +1,16 @@
 {
   "artifact_role": "ecosystem_verification_matrix",
   "schema_version": "1.0.0",
-  "checked_at": "2026-03-29T01:41:19.994Z",
-  "status": "FAIL",
+  "checked_at": "2026-03-29T01:47:31.017Z",
+  "status": "PASS",
   "checks": [
     {
       "id": "system_repo_state",
-      "status": "FAIL",
+      "status": "PASS",
       "details": {
         "branch": "main",
-        "head": "feee49846b316089f5b105dfd5a148d8ce44c595",
-        "clean": false,
+        "head": "b34a190e895a5d679f1c33ad2b6743fdd522c8a6",
+        "clean": true,
         "pushed": true,
         "upstream": "origin/main"
       }
@@ -228,7 +228,7 @@
   ],
   "system_baseline": {
     "branch": "main",
-    "head": "feee49846b316089f5b105dfd5a148d8ce44c595",
+    "head": "b34a190e895a5d679f1c33ad2b6743fdd522c8a6",
     "upstream": "origin/main",
     "release_bundle_manifest": "artifacts/internal_release/internal_release_2026-03-29T01-40-25-537Z/release_bundle_manifest.json",
     "evaluation_protocol_manifest": "artifacts/protocolized_evaluation/evaluation_protocol_manifest.json",
@@ -245,9 +245,7 @@
   },
   "interpretation_boundary": "Cross-repo verification matrix only; internal ecosystem readiness evidence, not external validation, not theory confirmation.",
   "warnings": [],
-  "failures": [
-    "system.repo_not_clean"
-  ],
+  "failures": [],
   "provenance_notes": [
     "release.historical_dirty_start"
   ]

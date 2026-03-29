@@ -1,0 +1,145 @@
+{
+  "artifact_role": "evaluation_batch_report",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-03-25T02:31:20.493Z",
+  "batch_id": "execution_campaign_primary_2026-03-25T02-15-00-000Z_primary_batch",
+  "status": "PASS",
+  "warnings": [],
+  "failures": [],
+  "run_count": 54,
+  "condition_count": 6,
+  "seed_schedule": [
+    17057,
+    17058,
+    17059,
+    17060,
+    17061,
+    17062,
+    17063,
+    17064,
+    17065
+  ],
+  "condition_statuses": {
+    "baseline": {
+      "requested_run_count": 9,
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "sample_size_status": "minimal_contrast_eligible",
+      "assertion_failures": []
+    },
+    "replay": {
+      "requested_run_count": 9,
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "sample_size_status": "minimal_contrast_eligible",
+      "assertion_failures": []
+    },
+    "shuffled": {
+      "requested_run_count": 9,
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "sample_size_status": "minimal_contrast_eligible",
+      "assertion_failures": []
+    },
+    "prng_only": {
+      "requested_run_count": 9,
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "sample_size_status": "minimal_contrast_eligible",
+      "assertion_failures": []
+    },
+    "delayed_entropy": {
+      "requested_run_count": 9,
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "sample_size_status": "minimal_contrast_eligible",
+      "assertion_failures": []
+    },
+    "dropout": {
+      "requested_run_count": 9,
+      "materialized_run_count": 9,
+      "included_run_count": 9,
+      "excluded_run_count": 0,
+      "sample_size_status": "minimal_contrast_eligible",
+      "assertion_failures": []
+    }
+  },
+  "comparison_statuses": [
+    {
+      "id": "baseline_vs_replay",
+      "declared_support_level": "description_only",
+      "realized_support_level": "description_only",
+      "blocking_conditions": []
+    },
+    {
+      "id": "baseline_vs_shuffled",
+      "declared_support_level": "description_only",
+      "realized_support_level": "description_only",
+      "blocking_conditions": []
+    },
+    {
+      "id": "baseline_vs_prng_only",
+      "declared_support_level": "description_only",
+      "realized_support_level": "description_only",
+      "blocking_conditions": []
+    },
+    {
+      "id": "baseline_vs_delayed_entropy",
+      "declared_support_level": "minimal_contrast",
+      "realized_support_level": "minimal_contrast",
+      "blocking_conditions": []
+    },
+    {
+      "id": "baseline_vs_dropout",
+      "declared_support_level": "minimal_contrast",
+      "realized_support_level": "minimal_contrast",
+      "blocking_conditions": []
+    },
+    {
+      "id": "baseline_replicate_dispersion",
+      "declared_support_level": "minimal_contrast",
+      "realized_support_level": "minimal_contrast",
+      "blocking_conditions": []
+    },
+    {
+      "id": "prng_only_replicate_dispersion",
+      "declared_support_level": "minimal_contrast",
+      "realized_support_level": "minimal_contrast",
+      "blocking_conditions": []
+    }
+  ],
+  "invalidates_batch_if": [
+    "required_condition_missing",
+    "included_run_count_below_minimum_runs_per_condition",
+    "aggregate_artifact_verification_failed",
+    "condition_assertion_failure"
+  ],
+  "authoritative_run_exclusion_rules": [
+    "exclude_run_if_run_verdict_not_admissible",
+    "exclude_run_if_entropy_diagnostics_invalidates_run",
+    "exclude_run_if_required_run_artifact_missing",
+    "no_automatic_outlier_drop"
+  ],
+  "source_artifacts": {
+    "condition_metrics_summary": "condition_metrics_summary.json",
+    "condition_comparison": "condition_comparison.json",
+    "condition_support_labels": "condition_support_labels.json",
+    "artifact_manifest": "artifact_manifest.json",
+    "condition_evaluation_summary": "condition_evaluation_summary.json",
+    "condition_comparison_report": "condition_comparison_report.json",
+    "condition_local_report": "condition_local_report.json"
+  },
+  "blocked_claim_facing_outputs": [
+    "run_evaluation_metrics.json",
+    "condition_evaluation_summary.json",
+    "condition_comparison_report.json",
+    "evaluation_protocol_manifest.json",
+    "evaluation_batch_report.json"
+  ],
+  "interpretation_boundary": "Batch report only; descriptive internal evaluation status, never claim closure, never corpus validation, never theory confirmation."
+}

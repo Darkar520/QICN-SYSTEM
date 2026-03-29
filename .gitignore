@@ -141,6 +141,8 @@ artifacts/external_audit_package/bundles/*
 !artifacts/external_audit_package/bundles/external_audit_package_2026-03-28T21-00-08-189Z/**
 !artifacts/external_audit_package/bundles/external_audit_package_2026-03-29T01-03-40-290Z/
 !artifacts/external_audit_package/bundles/external_audit_package_2026-03-29T01-03-40-290Z/**
+!artifacts/external_audit_package/bundles/external_audit_package_2026-03-29T01-47-30-281Z/
+!artifacts/external_audit_package/bundles/external_audit_package_2026-03-29T01-47-30-281Z/**
 archive/
 backups/
 /bundle.js

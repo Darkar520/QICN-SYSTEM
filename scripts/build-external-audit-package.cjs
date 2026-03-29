@@ -10,8 +10,6 @@ const {
   copyFile,
   evaluateEcosystem
 } = require('./ecosystem-release-common.cjs');
-const { buildSubjectivityEcosystem } = require('./build-subjectivity-ecosystem.cjs');
-const { buildPhenomenalBridgeEcosystem } = require('./build-phenomenal-bridge-ecosystem.cjs');
 
 const EXTERNAL_AUDIT_ARTIFACT_ROOT = path.join(SYSTEM_ROOT, 'artifacts', 'external_audit_package');
 const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
@@ -19,6 +17,12 @@ const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|\.\.[/
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const readText = (file) => fs.readFileSync(file, 'utf8');
 const exists = (file) => fs.existsSync(file);
+const assertFilesExist = (relativePaths, label) => {
+  const missing = relativePaths.filter((relativePath) => !exists(path.join(SYSTEM_ROOT, relativePath)));
+  if (missing.length > 0) {
+    throw new Error(`${label} missing required authoritative artifacts: ${missing.join(', ')}`);
+  }
+};
 
 const REQUIRED_SUBJECTIVITY_AUDIT_INPUTS = [
   'artifacts/subjectivity/srt5/subjectivity_gate_result.json',
@@ -104,13 +108,20 @@ const copyLabeledArtifacts = (label, refs, bundleRoot) => {
 };
 
 async function buildExternalAuditPackage() {
-const missingSubjectivityInputs = REQUIRED_SUBJECTIVITY_AUDIT_INPUTS.filter(
-  (relativePath) => !exists(path.join(SYSTEM_ROOT, relativePath))
+assertFilesExist(REQUIRED_SUBJECTIVITY_AUDIT_INPUTS, 'external audit package subjectivity layer');
+assertFilesExist(
+  [
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_gate_result.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_manifest.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_campaign_summary.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_candidate_projection.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_audit_handoff_summary.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_verification_matrix.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_readiness_gate.json'
+  ],
+  'external audit package phenomenal bridge layer'
 );
-if (missingSubjectivityInputs.length > 0) {
-  await buildSubjectivityEcosystem();
-}
-await buildPhenomenalBridgeEcosystem();
 const { model, verificationMatrix } = evaluateEcosystem();
 if (verificationMatrix.status !== 'PASS') {
   throw new Error(`external audit package requires ecosystem candidate PASS; got ${verificationMatrix.status}`);

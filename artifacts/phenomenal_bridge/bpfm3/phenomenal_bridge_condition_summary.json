@@ -30,7 +30,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; bridge condition summary is a bounded internal aggregation object, not external validation, not human equivalence, not phenomenality proof, and not claim-facing evidence.",
   "provenance": {
-    "generated_at": "2026-03-29T22:06:10.660Z",
+    "generated_at": "2026-03-29T22:27:14.560Z",
     "current_lineage": {
       "layer_version": "phenomenal_bridge_formal_layer.bpfm3.ecosystem.v1",
       "estimator_version": "phenomenal_bridge_ecosystem_integrator.bpfm3.v1",
@@ -70,7 +70,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
+        "head": "33203f82fde6863911fdbbc975255d9df88867fe",
         "upstream": "origin/main"
       },
       "qicn_release": {

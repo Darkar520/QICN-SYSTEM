@@ -90,17 +90,17 @@
     },
     "qicn_system": {
       "branch": "main",
-      "head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
-      "upstream": null
+      "head": "33203f82fde6863911fdbbc975255d9df88867fe",
+      "upstream": "origin/main"
     },
     "qicn_release": {
       "branch": "main",
       "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
-      "upstream": null
+      "upstream": "origin/main"
     }
   },
   "source_shas": {
-    "qicn_system_head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
+    "qicn_system_head": "33203f82fde6863911fdbbc975255d9df88867fe",
     "qicn_release_head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b"
   },
   "drift_sensitive_refs": {
@@ -156,7 +156,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; root bridge manifest for BPF-M3 lineage, thresholds, artifacts, and bounded classification, not external validation, not human equivalence, not phenomenality proof, and not claim-facing evidence.",
   "provenance": {
-    "generated_at": "2026-03-29T22:18:03.068Z",
+    "generated_at": "2026-03-29T22:27:13.167Z",
     "baseline_bundle_refs": {
       "self_index_state": "artifacts/subjectivity/srt1/self_index_state.json",
       "ownership_attribution_report": "artifacts/subjectivity/srt1/ownership_attribution_report.json",
@@ -208,13 +208,13 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
-        "upstream": null
+        "head": "33203f82fde6863911fdbbc975255d9df88867fe",
+        "upstream": "origin/main"
       },
       "qicn_release": {
         "branch": "main",
         "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
-        "upstream": null
+        "upstream": "origin/main"
       }
     }
   },

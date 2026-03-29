@@ -41,7 +41,7 @@
   "candidate_manifest_ref": "artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json",
   "interpretation_boundary": "Framework-internal only; subjectivity audit handoff summary is audit-facing package guidance, not externally validated, not claim closure, not phenomenality closure, and not human equivalence.",
   "provenance": {
-    "generated_at": "2026-03-29T22:06:05.419Z",
+    "generated_at": "2026-03-29T22:27:11.661Z",
     "current_lineage": {
       "layer_version": "subjectivity_runtime_layer.srt6.ecosystem.v1",
       "estimator_version": "subjectivity_ecosystem_integrator.srt6.v1",
@@ -83,7 +83,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
+        "head": "33203f82fde6863911fdbbc975255d9df88867fe",
         "upstream": "origin/main"
       },
       "qicn_release": {

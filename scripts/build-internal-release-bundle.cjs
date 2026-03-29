@@ -2,8 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const { verifyOperationalReadiness } = require('./verify-operational-readiness.cjs');
 const { verifyArtifacts } = require('./verify-artifacts.cjs');
-const { buildSubjectivityEcosystem } = require('./build-subjectivity-ecosystem.cjs');
-const { buildPhenomenalBridgeEcosystem } = require('./build-phenomenal-bridge-ecosystem.cjs');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
@@ -13,6 +11,16 @@ const parseArg = (name, fallback = null) => {
 };
 
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
+const assertFilesExist = (projectRoot, relativePaths, label) => {
+  const missing = relativePaths.filter((relativePath) =>
+    !fs.existsSync(path.join(projectRoot, relativePath))
+  );
+  if (missing.length > 0) {
+    throw new Error(
+      `${label} missing required authoritative artifacts: ${missing.join(', ')}`
+    );
+  }
+};
 
 const resolveGitDir = (projectRoot) => {
   const dotGitPath = path.join(projectRoot, '.git');
@@ -86,15 +94,6 @@ async function buildInternalReleaseBundle({
     throw new Error('Artifact verification failed before bundle build.');
   }
 
-  const subjectivityBuild = await buildSubjectivityEcosystem();
-  if (!subjectivityBuild.ok) {
-    throw new Error('Subjectivity ecosystem build failed before internal release bundle build.');
-  }
-  const bridgeBuild = await buildPhenomenalBridgeEcosystem();
-  if (!bridgeBuild.ok) {
-    throw new Error('Phenomenal bridge ecosystem build failed before internal release bundle build.');
-  }
-
   const { exportOutputForSurface, buildLocalReportForSurface } = await import('../src/experiments/OutputSurfaceEnforcer.js');
 
   const summaryExport = exportOutputForSurface({
@@ -161,6 +160,13 @@ async function buildInternalReleaseBundle({
     'artifacts/subjectivity/srt6/subjectivity_candidate_projection.json',
     'artifacts/subjectivity/srt6/subjectivity_verification_matrix.json'
   ];
+  assertFilesExist(repoRoot, subjectivityArtifacts, 'subjectivity bundle');
+  const subjectivityCandidateProjection = readJson(
+    path.join(repoRoot, 'artifacts/subjectivity/srt6/subjectivity_candidate_projection.json')
+  );
+  const subjectivityVerificationMatrix = readJson(
+    path.join(repoRoot, 'artifacts/subjectivity/srt6/subjectivity_verification_matrix.json')
+  );
   const subjectivityBundleDir = path.join(bundleRoot, 'subjectivity');
   fs.mkdirSync(subjectivityBundleDir, { recursive: true });
   for (const relPath of subjectivityArtifacts) {
@@ -199,6 +205,16 @@ async function buildInternalReleaseBundle({
     'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_final_internal_audit.json',
     'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_readiness_gate.json'
   ];
+  assertFilesExist(repoRoot, bridgeArtifacts, 'phenomenal bridge bundle');
+  const bridgeCandidateProjection = readJson(
+    path.join(repoRoot, 'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_candidate_projection.json')
+  );
+  const bridgeVerificationMatrix = readJson(
+    path.join(repoRoot, 'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_verification_matrix.json')
+  );
+  const bridgeReadinessGate = readJson(
+    path.join(repoRoot, 'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_readiness_gate.json')
+  );
   const bridgeBundleDir = path.join(bundleRoot, 'phenomenal_bridge');
   const bridgeDocsDir = path.join(bridgeBundleDir, 'docs');
   const bridgeManifestDir = path.join(bridgeBundleDir, 'manifests');
@@ -234,8 +250,8 @@ async function buildInternalReleaseBundle({
       }
     ].filter(Boolean),
     subjectivity_bundle: {
-      readiness_class: subjectivityBuild.readiness_class,
-      verification_status: subjectivityBuild.verification_status,
+      readiness_class: subjectivityCandidateProjection.readiness_class,
+      verification_status: subjectivityVerificationMatrix.status,
       included_outputs: subjectivityArtifacts.map((relPath) => ({
         artifact: path.basename(relPath),
         path: toBundleRelative(path.join(subjectivityBundleDir, path.basename(relPath))),
@@ -245,10 +261,10 @@ async function buildInternalReleaseBundle({
         'Subjectivity bundle is framework-internal only; internal release packaging of gated and ecosystem-hardened artifacts, not external validation, not claim-facing evidence.'
     },
     phenomenal_bridge_bundle: {
-      support_class: bridgeBuild.support_class,
-      readiness_state: bridgeBuild.readiness_state,
-      paper9_final_hardening_status: bridgeBuild.paper9_final_hardening_status,
-      verification_status: bridgeBuild.verification_status,
+      support_class: bridgeCandidateProjection.support_class,
+      readiness_state: bridgeCandidateProjection.readiness_class,
+      paper9_final_hardening_status: bridgeReadinessGate.paper9_final_hardening_status,
+      verification_status: bridgeVerificationMatrix.status,
       included_outputs: bridgeArtifacts.map((relPath) => ({
         artifact: path.basename(relPath),
         path: toBundleRelative(path.join(bridgeBundleDir, path.basename(relPath))),

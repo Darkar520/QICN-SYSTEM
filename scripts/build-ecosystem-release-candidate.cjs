@@ -10,14 +10,36 @@ const {
   copyFile,
   evaluateEcosystem
 } = require('./ecosystem-release-common.cjs');
-const { buildSubjectivityEcosystem } = require('./build-subjectivity-ecosystem.cjs');
-const { buildPhenomenalBridgeEcosystem } = require('./build-phenomenal-bridge-ecosystem.cjs');
 
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
+const assertFilesExist = (relativePaths, label) => {
+  const missing = relativePaths.filter((relativePath) => !fs.existsSync(path.join(SYSTEM_ROOT, relativePath)));
+  if (missing.length > 0) {
+    throw new Error(`${label} missing required authoritative artifacts: ${missing.join(', ')}`);
+  }
+};
 
 async function buildEcosystemReleaseCandidate() {
-await buildSubjectivityEcosystem();
-await buildPhenomenalBridgeEcosystem();
+assertFilesExist(
+  [
+    'artifacts/subjectivity/srt5/subjectivity_runtime_projection.json',
+    'artifacts/subjectivity/srt5/subjectivity_gate_result.json',
+    'artifacts/subjectivity/srt5/subjectivity_manifest.json',
+    'artifacts/subjectivity/srt6/subjectivity_condition_summary.json',
+    'artifacts/subjectivity/srt6/subjectivity_batch_summary.json',
+    'artifacts/subjectivity/srt6/subjectivity_campaign_summary.json',
+    'artifacts/subjectivity/srt6/subjectivity_candidate_projection.json',
+    'artifacts/subjectivity/srt6/subjectivity_verification_matrix.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_gate_result.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_manifest.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_campaign_summary.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_candidate_projection.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_verification_matrix.json',
+    'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_readiness_gate.json'
+  ],
+  'ecosystem candidate'
+);
 const { model, gapRegister, verificationMatrix } = evaluateEcosystem();
 const generatedAt = new Date().toISOString();
 const bundleId = `ecosystem_release_candidate_${generatedAt.replace(/[:.]/g, '-')}`;

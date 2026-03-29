@@ -48,7 +48,7 @@
     "No candidate-to-public-claim shortcut."
   ],
   "baseline_refs": {
-    "qicn_system_head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
+    "qicn_system_head": "33203f82fde6863911fdbbc975255d9df88867fe",
     "qicn_release_head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
     "protocol_ref": "docs/phenomenal_bridge_protocol.v1.json",
     "thresholds_ref": "docs/phenomenal_bridge_thresholds.v1.json",
@@ -57,7 +57,7 @@
   },
   "interpretation_boundary": "Framework-internal only; bridge candidate projection records bounded inclusion for the internal ecosystem candidate, not external validation, not public proof, not phenomenality proof, and not human equivalence.",
   "provenance": {
-    "generated_at": "2026-03-29T22:06:10.661Z",
+    "generated_at": "2026-03-29T22:27:14.561Z",
     "current_lineage": {
       "layer_version": "phenomenal_bridge_formal_layer.bpfm3.ecosystem.v1",
       "estimator_version": "phenomenal_bridge_ecosystem_integrator.bpfm3.v1",
@@ -97,7 +97,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "5da8d718eeeaa408d3f1c504029f9a0b31676afa",
+        "head": "33203f82fde6863911fdbbc975255d9df88867fe",
         "upstream": "origin/main"
       },
       "qicn_release": {

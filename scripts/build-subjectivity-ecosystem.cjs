@@ -9,9 +9,18 @@ const { verifySubjectivityGate } = require('./verify-subjectivity-gate.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const SRT5_DIR = path.join(ROOT, 'artifacts', 'subjectivity', 'srt5');
 const SRT6_DIR = path.join(ROOT, 'artifacts', 'subjectivity', 'srt6');
+const OUTPUT_FILES = {
+  condition_summary: 'subjectivity_condition_summary.json',
+  batch_summary: 'subjectivity_batch_summary.json',
+  campaign_summary: 'subjectivity_campaign_summary.json',
+  candidate_projection: 'subjectivity_candidate_projection.json',
+  audit_handoff_summary: 'subjectivity_audit_handoff_summary.json',
+  verification_matrix: 'subjectivity_verification_matrix.json'
+};
 
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
 const rel = (filePath) => path.relative(ROOT, filePath).replace(/\\/g, '/');
+const stable = (value) => JSON.stringify(value);
 
 async function buildSubjectivityEcosystem() {
   const gate = await verifySubjectivityGate();
@@ -40,6 +49,41 @@ async function buildSubjectivityEcosystem() {
     }
   };
 
+  const outputPaths = Object.fromEntries(
+    Object.entries(OUTPUT_FILES).map(([key, fileName]) => [key, path.join(SRT6_DIR, fileName)])
+  );
+  const existingOutputsPresent = Object.values(outputPaths).every((filePath) =>
+    fs.existsSync(filePath)
+  );
+
+  if (existingOutputsPresent) {
+    const currentLineage = integrator.captureCurrentLineage();
+    const existingCandidateProjection = readJson(outputPaths.candidate_projection);
+    const existingVerificationMatrix = readJson(outputPaths.verification_matrix);
+    const lineageMatches =
+      stable(existingCandidateProjection.provenance?.current_lineage || null) ===
+        stable(currentLineage)
+      && stable(existingVerificationMatrix.provenance?.current_lineage || null) ===
+        stable(currentLineage);
+
+    if (lineageMatches) {
+      const existingCampaignSummary = readJson(outputPaths.campaign_summary);
+      return {
+        ok: existingVerificationMatrix.status === 'PASS',
+        output_dir: rel(SRT6_DIR),
+        emitted_artifacts: Object.fromEntries(
+          Object.entries(outputPaths).map(([key, value]) => [key, rel(value)])
+        ),
+        readiness_class: existingCandidateProjection.readiness_class,
+        support_class: existingCampaignSummary.aggregate_support.support_classes
+          ? Object.keys(existingCampaignSummary.aggregate_support.support_classes)[0]
+          : runBundle.manifest.support_class,
+        verification_status: existingVerificationMatrix.status,
+        reused_existing_outputs: true
+      };
+    }
+  }
+
   const result = integrator.writeArtifacts(
     {
       run_bundle: runBundle,
@@ -65,7 +109,8 @@ async function buildSubjectivityEcosystem() {
     support_class: result.campaign_summary.aggregate_support.support_classes
       ? Object.keys(result.campaign_summary.aggregate_support.support_classes)[0]
       : runBundle.manifest.support_class,
-    verification_status: result.verification_matrix.status
+    verification_status: result.verification_matrix.status,
+    reused_existing_outputs: false
   };
 
   return payload;

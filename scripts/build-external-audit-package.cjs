@@ -19,6 +19,15 @@ const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const readText = (file) => fs.readFileSync(file, 'utf8');
 const exists = (file) => fs.existsSync(file);
 
+const REQUIRED_SUBJECTIVITY_AUDIT_INPUTS = [
+  'artifacts/subjectivity/srt5/subjectivity_gate_result.json',
+  'artifacts/subjectivity/srt5/subjectivity_manifest.json',
+  'artifacts/subjectivity/srt6/subjectivity_campaign_summary.json',
+  'artifacts/subjectivity/srt6/subjectivity_candidate_projection.json',
+  'artifacts/subjectivity/srt6/subjectivity_audit_handoff_summary.json',
+  'artifacts/subjectivity/srt6/subjectivity_verification_matrix.json'
+];
+
 const copyDir = (from, to) => {
   ensureDir(to);
   for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
@@ -94,7 +103,12 @@ const copyLabeledArtifacts = (label, refs, bundleRoot) => {
 };
 
 async function buildExternalAuditPackage() {
-await buildSubjectivityEcosystem();
+const missingSubjectivityInputs = REQUIRED_SUBJECTIVITY_AUDIT_INPUTS.filter(
+  (relativePath) => !exists(path.join(SYSTEM_ROOT, relativePath))
+);
+if (missingSubjectivityInputs.length > 0) {
+  await buildSubjectivityEcosystem();
+}
 const { model, verificationMatrix } = evaluateEcosystem();
 if (verificationMatrix.status !== 'PASS') {
   throw new Error(`external audit package requires ecosystem candidate PASS; got ${verificationMatrix.status}`);

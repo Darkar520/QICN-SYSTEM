@@ -1,9 +1,9 @@
 {
   "artifact_role": "cross_substrate_transport_protocol_definition",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage2_opening",
-  "implementation_status": "formal_comparative_opening_governance_only",
-  "runtime_status": "transport_protocol_defined_not_runtime_evaluated",
+  "layer_id": "comparative_expansion_layer.stage2_m2_runtime_opening",
+  "implementation_status": "runtime_comparative_opening_implemented",
+  "runtime_status": "transport_protocol_defined_runtime_evaluator_bound",
   "transition_definition": "A substrate transition is any formally specified remapping from one implementation substrate to another that purports to preserve some subset of the subjectivity-plus-bridge comparative burden stack.",
   "preservation_axes": [
     "self_index_integrity",
@@ -16,73 +16,111 @@
     {
       "id": "transport_not_open",
       "meaning": "No legitimate transport mapping or preservation burden has been specified.",
-      "required_future_burdens": ["transport_mapping_contract"],
-      "does_not_imply": ["transport_failure", "impossibility"],
-      "status": "defined_not_runtime_adjudicated"
+      "required_future_burdens": [
+        "transport_mapping_contract"
+      ],
+      "does_not_imply": [
+        "transport_failure",
+        "impossibility"
+      ],
+      "status": "defined_runtime_assessable"
     },
     {
       "id": "structurally_preserving_candidate",
       "meaning": "A substrate remap may preserve a bounded structural subset under explicit mapping and error budgets.",
-      "required_future_burdens": ["mapping_contract", "structural_error_budget"],
-      "does_not_imply": ["full_transport_preservation", "equivalence"],
-      "status": "defined_not_runtime_adjudicated"
+      "required_future_burdens": [
+        "mapping_contract",
+        "structural_error_budget"
+      ],
+      "does_not_imply": [
+        "full_transport_preservation",
+        "equivalence"
+      ],
+      "status": "defined_runtime_assessable"
     },
     {
       "id": "partially_preserving_candidate",
       "meaning": "Some preservation axes may survive transition while others remain open or degraded.",
-      "required_future_burdens": ["axis_specific_preservation_burden"],
-      "does_not_imply": ["strong_preservation", "identity_preservation"],
-      "status": "defined_not_runtime_adjudicated"
+      "required_future_burdens": [
+        "axis_specific_preservation_burden"
+      ],
+      "does_not_imply": [
+        "strong_preservation",
+        "identity_preservation"
+      ],
+      "status": "defined_runtime_assessable"
     },
     {
       "id": "fractured_transport",
       "meaning": "The remap introduces discontinuity large enough to violate at least one declared preservation burden.",
-      "required_future_burdens": ["fracture_detection_rule"],
-      "does_not_imply": ["metaphysical_death", "absolute_non_comparability"],
-      "status": "defined_not_runtime_adjudicated"
+      "required_future_burdens": [
+        "fracture_detection_rule"
+      ],
+      "does_not_imply": [
+        "metaphysical_death",
+        "absolute_non_comparability"
+      ],
+      "status": "defined_runtime_assessable"
     },
     {
       "id": "forked_transport",
       "meaning": "A remap yields multiple live descendants under one source lineage, making simple one-to-one preservation claims invalid.",
-      "required_future_burdens": ["fork_detection_rule", "lineage_branch_accounting"],
-      "does_not_imply": ["equivalence", "preservation_failure"],
-      "status": "defined_not_runtime_adjudicated"
+      "required_future_burdens": [
+        "fork_detection_rule",
+        "lineage_branch_accounting"
+      ],
+      "does_not_imply": [
+        "equivalence",
+        "preservation_failure"
+      ],
+      "status": "defined_runtime_assessable"
     },
     {
       "id": "unsupported_remap",
       "meaning": "The remap lacks enough invariance structure or artifact support to count as a transport candidate.",
-      "required_future_burdens": ["invariance_burden"],
-      "does_not_imply": ["impossibility", "machine_failure"],
-      "status": "defined_not_runtime_adjudicated"
+      "required_future_burdens": [
+        "invariance_burden"
+      ],
+      "does_not_imply": [
+        "impossibility",
+        "machine_failure"
+      ],
+      "status": "defined_runtime_assessable"
     },
     {
       "id": "comparator_underdetermined_transport",
       "meaning": "Transport language is open, but evidence and burden contracts remain too thin for adjudication.",
-      "required_future_burdens": ["error_budget_defined", "artifact_family_defined"],
-      "does_not_imply": ["preserved", "not_preserved"],
-      "status": "defined_not_runtime_adjudicated"
+      "required_future_burdens": [
+        "error_budget_defined",
+        "artifact_family_defined"
+      ],
+      "does_not_imply": [
+        "preserved",
+        "not_preserved"
+      ],
+      "status": "defined_runtime_assessable"
     }
   ],
   "error_budget_dimensions": [
     {
       "id": "self_index_drift_budget",
-      "role": "bound tolerated self-index distortion across remap",
-      "status": "future_requirement"
+      "role": "Bound tolerated self-index distortion across remap.",
+      "status": "runtime_declared_not_instantiated"
     },
     {
       "id": "bridge_coordinate_distortion_budget",
-      "role": "bound allowed coordinate deformation across remap",
-      "status": "future_requirement"
+      "role": "Bound allowed coordinate deformation across remap.",
+      "status": "runtime_declared_not_instantiated"
     },
     {
       "id": "intervention_signature_deviation_budget",
-      "role": "bound intervention-response mismatch across remap",
-      "status": "future_requirement"
+      "role": "Bound intervention-response mismatch across remap.",
+      "status": "runtime_declared_not_instantiated"
     },
     {
       "id": "lineage_break_budget",
-      "role": "bound tolerated provenance discontinuity before remap becomes unsupported",
-      "status": "future_requirement"
+      "role": "Bound tolerated provenance discontinuity before remap becomes unsupported.",
+      "status": "runtime_declared_not_instantiated"
     }
   ],
   "future_artifact_families": [
@@ -96,5 +134,12 @@
     "no_human_transport_claim",
     "no_external_adjudication_claim"
   ],
-  "interpretation_boundary": "Cross-substrate expansion is opened here only as a formal comparative program. No actual transport preservation, fracture, fork, or equivalence verdict is emitted in this block."
+  "runtime_resolution_rules": {
+    "transport_not_open_requires": [
+      "missing_transition_contract"
+    ],
+    "candidate_transport_classes_require_actual_source_target_pair": true,
+    "identity_preservation_output_forbidden": true
+  },
+  "interpretation_boundary": "Cross-substrate expansion is now runtime-loadable for bounded internal assessment. No actual transport preservation, fracture, fork, equivalence, or identity verdict is emitted in this block."
 }

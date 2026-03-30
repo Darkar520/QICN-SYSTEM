@@ -1,14 +1,20 @@
 # Comparative Program Non-Claims
 
-The Stage 2 opening does not authorize:
+`Stage 2-M2` does not create:
 
 - human-equivalence claims;
-- human phenomenal-match claims;
+- human phenomenal-equivalence claims;
 - superiority claims;
+- inferiority claims;
 - cross-substrate equivalence claims;
-- external validation claims;
-- external adjudication logic;
-- Paper 10 logic;
-- claim-facing comparator outputs.
+- identity-preservation claims;
+- external adjudication;
+- Paper 10 authorization.
 
-The Stage 2 opening defines governance only.
+It also does not permit:
+
+- fabricated human data;
+- simulated human measurements presented as evidence;
+- machine self-report relabelled as human evidence;
+- candidate or audit comparative integration;
+- public comparator outputs.

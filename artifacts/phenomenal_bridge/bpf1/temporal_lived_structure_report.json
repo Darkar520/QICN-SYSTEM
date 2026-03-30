@@ -115,7 +115,7 @@
   "implementation_status": "bpf1_surface_only",
   "interpretation_boundary": "Framework-internal only; BPF-1 emits provisional bridge coordinate reports derived from upstream subjectivity artifacts. These reports are not bridge support, not bridge admissibility, not comparator closure, not intervention closure, not gate closure, not phenomenality evidence, not human equivalence, and not Paper 9 authorization.",
   "provenance": {
-    "generated_at": "2026-03-29T22:44:40.425Z",
+    "generated_at": "2026-03-30T04:30:31.474Z",
     "protocol_ref": "docs/phenomenal_bridge_protocol.v1.json",
     "surface_policy_ref": "docs/phenomenal_bridge_surface_policy.v1.json",
     "artifact_schema_ref": "docs/phenomenal_bridge_artifact_schema.v1.json",

@@ -1,51 +1,156 @@
 {
   "artifact_role": "comparative_program_surface_policy",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage2_opening",
-  "implementation_status": "formal_comparative_opening_governance_only",
-  "default_interpretation_boundary": "Stage 2 comparative opening remains framework-internal only. In this block, only governance documents, manifests, schema definitions, and optional metadata registries are opened. No human comparator verdicts, no human equivalence verdicts, no cross-substrate verdicts, no external adjudication, and no Paper 10 outputs are authorized.",
-  "surfaces": {
+  "layer_id": "comparative_expansion_layer.stage2_m2_runtime_opening",
+  "implementation_status": "runtime_comparative_opening_implemented",
+  "default_interpretation_boundary": "Stage 2-M2 comparative runtime opening remains framework-internal only. Runtime comparative assessments may be emitted locally and in internal release contexts, but no human-equivalence verdicts, no superiority outputs, no candidate or audit integration, no external adjudication, and no Paper 10 outputs are authorized.",
+  "governed_surfaces": {
     "developer_inspection_surface": {
-      "status": "allowed",
-      "allowed_content": ["docs", "manifests", "schema_definitions", "metadata_registries"],
-      "blocked_content": ["verdict_artifacts", "claim_promotions"]
+      "requires_boundary": true,
+      "description": "Developer-facing internal inspection surface."
     },
     "local_artifact_surface": {
-      "status": "allowed",
-      "allowed_content": ["docs", "manifests", "schema_definitions", "metadata_registries"],
-      "blocked_content": ["runtime_comparator_artifacts", "equivalence_verdicts", "transport_verdicts"]
+      "requires_boundary": true,
+      "description": "Local repository artifact review surface."
     },
     "local_report_surface": {
-      "status": "allowed_for_scaffolding_only",
-      "allowed_content": ["interpretation_boundary", "non_claims", "implementation_plan"],
-      "blocked_content": ["equivalence_outputs", "superiority_outputs"]
+      "requires_boundary": true,
+      "description": "Local human-readable non-claim-facing report surface."
     },
     "internal_release_bundle_surface": {
-      "status": "allowed_for_scaffolding_only",
-      "allowed_content": ["docs", "manifests", "schema_definitions"],
-      "blocked_content": ["runtime_comparator_outputs", "equivalence_assessments", "transport_assessments"]
+      "requires_boundary": true,
+      "description": "Internal release bundle surface for internal-only comparative artifacts."
     },
     "ecosystem_candidate_surface": {
-      "status": "blocked",
-      "reason": "stage2_opening_has_no_bounded_candidate_projection"
+      "requires_boundary": true,
+      "description": "Comparative candidate surface. Still blocked in Stage 2-M2."
     },
     "audit_facing_package_surface": {
-      "status": "blocked",
-      "reason": "stage2_opening_has_no_bounded_audit_handoff_protocol"
+      "requires_boundary": true,
+      "description": "Comparative audit-facing surface. Still blocked in Stage 2-M2."
     },
     "controlled_statement_surface": {
-      "status": "blocked",
-      "reason": "no_claim_facing_comparative_language_is_authorized"
+      "requires_boundary": true,
+      "description": "Controlled statement surface."
     },
     "external_claim_facing_surface": {
-      "status": "blocked",
-      "reason": "no_public_human_equivalence_or_transport_claims_are_authorized"
+      "requires_boundary": true,
+      "description": "Public claim-facing or externally promotable surface."
+    }
+  },
+  "artifact_classes": {
+    "runtime_comparative_artifact": {
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ]
+    }
+  },
+  "outputs": {
+    "human_comparator_assessment.json": {
+      "artifact_class": "runtime_comparative_artifact",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ]
+    },
+    "human_equivalence_assessment.json": {
+      "artifact_class": "runtime_comparative_artifact",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ]
+    },
+    "cross_substrate_transport_assessment.json": {
+      "artifact_class": "runtime_comparative_artifact",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ]
+    },
+    "comparative_program_manifest.json": {
+      "artifact_class": "runtime_comparative_artifact",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ]
+    },
+    "comparative_program_verification_matrix.json": {
+      "artifact_class": "runtime_comparative_artifact",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ]
+    },
+    "comparative_program_readiness_gate.json": {
+      "artifact_class": "runtime_comparative_artifact",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ]
     }
   },
   "blocked_inferences": [
     "no_public_human_equivalence_inference",
     "no_superiority_inference",
     "no_cross_substrate_equivalence_inference",
+    "no_identity_preservation_inference",
     "no_external_adjudication_inference",
     "no_paper10_inference"
   ]

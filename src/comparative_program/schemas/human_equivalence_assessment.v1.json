@@ -1,21 +1,51 @@
 {
-  "artifact_name": "human_equivalence_assessment.json",
-  "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage2_opening",
-  "required_fields": [
-    "ladder_state",
-    "required_burdens",
-    "required_evidence_classes",
-    "disqualifying_failure_modes",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "human_equivalence_assessment.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "comparative_layer_id",
+    "layer_version",
+    "estimator_version",
+    "implementation_status",
+    "current_rung",
+    "assessment_state",
+    "rung_rationale",
+    "unmet_burdens",
+    "blocked_channels",
+    "disqualifying_failure_modes_present",
+    "next_rung_requirements",
     "warnings",
+    "boundary_flags",
+    "non_implications",
     "interpretation_boundary",
-    "boundary_flags"
+    "provenance",
+    "schema_ref"
   ],
-  "boundary_flags": [
-    "framework_internal_only",
-    "not_human_equivalence_support",
-    "not_external_adjudication",
-    "not_paper10_authorization"
-  ],
-  "status": "schema_defined_not_emitted"
+  "properties": {
+    "artifact_role": { "const": "human_equivalence_assessment" },
+    "artifact_name": { "const": "human_equivalence_assessment.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparative_layer_id": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "estimator_version": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "current_rung": { "type": "string" },
+    "assessment_state": { "type": "string" },
+    "rung_rationale": { "type": "string" },
+    "unmet_burdens": { "type": "array", "items": { "type": "string" } },
+    "blocked_channels": { "type": "array", "items": { "type": "string" } },
+    "disqualifying_failure_modes_present": { "type": "array", "items": { "type": "string" } },
+    "next_rung_requirements": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "boundary_flags": { "type": "object" },
+    "non_implications": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
 }

@@ -999,7 +999,7 @@
   ],
   "interpretation_boundary": "BPF-M2 intervention profiling is framework-internal and pre-gate. It reports selective or confounded perturbation structure only; it does not license bridge support, bridge admissibility, phenomenality, or any candidate or audit-facing bridge conclusion.",
   "provenance": {
-    "generated_at": "2026-03-29T22:42:43.663Z",
+    "generated_at": "2026-03-30T04:30:27.833Z",
     "protocol_ref": "docs/phenomenal_bridge_protocol.v1.json",
     "rival_family_ref": "docs/phenomenal_bridge_rival_family.v1.json",
     "surface_policy_ref": "docs/phenomenal_bridge_surface_policy.v1.json",

@@ -1,13 +1,43 @@
 {
-  "artifact_name": "comparative_program_verification_matrix.json",
-  "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage2_opening",
-  "required_fields": [
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "comparative_program_verification_matrix.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "comparative_layer_id",
+    "layer_version",
+    "estimator_version",
+    "implementation_status",
     "status",
     "checks",
     "warnings",
     "failures",
-    "interpretation_boundary"
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
   ],
-  "status": "schema_defined_not_emitted"
+  "properties": {
+    "artifact_role": { "const": "comparative_program_verification_matrix" },
+    "artifact_name": { "const": "comparative_program_verification_matrix.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparative_layer_id": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "estimator_version": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "status": { "type": "string" },
+    "checks": { "type": "array", "items": { "type": "object" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "failures": { "type": "array", "items": { "type": "string" } },
+    "boundary_flags": { "type": "object" },
+    "non_implications": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
 }

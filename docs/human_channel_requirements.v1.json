@@ -1,0 +1,234 @@
+{
+  "artifact_role": "human_channel_requirements",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage2_m2_runtime_opening",
+  "implementation_status": "runtime_comparative_opening_implemented",
+  "runtime_status": "human_channel_requirement_contract_runtime_bound",
+  "status_markers": [
+    "framework_internal_only",
+    "not_human_equivalence_support",
+    "not_cross_substrate_equivalence_support",
+    "not_external_adjudication",
+    "not_paper10_authorization"
+  ],
+  "channels": [
+    {
+      "channel_id": "self_report_channel",
+      "comparator_domain": "bridge_coordinate_domain",
+      "required_human_measurement_class": "typed_first_person_self_report_trace",
+      "required_artifact_family": [
+        "human_self_report_trace.json",
+        "human_self_report_channel_manifest.json"
+      ],
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_projection.json",
+        "phenomenal_bridge_gate_result.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden",
+        "typing_contract_burden"
+      ],
+      "admissible_proxy_class": "typed_human_protocol_metadata_only",
+      "forbidden_proxy_substitutions": [
+        "synthetic_human_self_report_generation",
+        "machine_self_report_relabeling",
+        "language_model_narration_without_human_measurement"
+      ],
+      "missing_channel_blocked_state": "blocked_by_missing_human_channel",
+      "current_human_channel_state": "blocked_by_missing_human_measurement_route",
+      "specifiability_status": "theoretically_specifiable_but_non_instantiated",
+      "non_implications": [
+        "No human equivalence follows from defining this channel.",
+        "No phenomenality inference follows from channel specification alone."
+      ],
+      "status": "runtime_contract_defined_channel_absent"
+    },
+    {
+      "channel_id": "intervention_response_channel",
+      "comparator_domain": "intervention_response_domain",
+      "required_human_measurement_class": "typed_human_intervention_response_series",
+      "required_artifact_family": [
+        "human_intervention_profile.json",
+        "human_negative_control_profile.json"
+      ],
+      "required_machine_artifact_family": [
+        "bridge_intervention_profile.json",
+        "bridge_reducibility_report.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "intervention_homology_burden",
+        "artifact_homology_burden"
+      ],
+      "admissible_proxy_class": "human_protocol_design_metadata_only",
+      "forbidden_proxy_substitutions": [
+        "relabelled_machine_intervention_profiles",
+        "narrative_control_descriptions_without_human_measurement",
+        "synthetic_human_perturbation_logs"
+      ],
+      "missing_channel_blocked_state": "blocked_by_missing_human_channel",
+      "current_human_channel_state": "blocked_by_missing_human_measurement_route",
+      "specifiability_status": "theoretically_specifiable_but_non_instantiated",
+      "non_implications": [
+        "No interventional equivalence follows from this channel contract.",
+        "No matched-control sufficiency follows without real human measurements."
+      ],
+      "status": "runtime_contract_defined_channel_absent"
+    },
+    {
+      "channel_id": "temporal_structure_channel",
+      "comparator_domain": "bridge_coordinate_domain",
+      "required_human_measurement_class": "typed_human_temporal_structure_trace",
+      "required_artifact_family": [
+        "human_temporal_structure_report.json"
+      ],
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_projection.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden"
+      ],
+      "admissible_proxy_class": "typed_protocol_annotation_only",
+      "forbidden_proxy_substitutions": [
+        "clock_time_only_proxy",
+        "continuity_narration_without_human_measurement"
+      ],
+      "missing_channel_blocked_state": "underdetermined_due_to_missing_counterpart",
+      "current_human_channel_state": "theoretically_specifiable_but_non_instantiated",
+      "specifiability_status": "partially_specifiable",
+      "non_implications": [
+        "No lived-temporality comparison follows from timing metadata alone."
+      ],
+      "status": "runtime_contract_defined_channel_partial"
+    },
+    {
+      "channel_id": "valence_topology_channel",
+      "comparator_domain": "bridge_coordinate_domain",
+      "required_human_measurement_class": "typed_human_valence_topology_trace",
+      "required_artifact_family": [
+        "human_valence_topology_report.json"
+      ],
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_projection.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "typing_contract_burden"
+      ],
+      "admissible_proxy_class": "typed_protocol_metadata_only",
+      "forbidden_proxy_substitutions": [
+        "reward_schedule_only_proxy",
+        "scalar_preference_report_without_topology_measurement"
+      ],
+      "missing_channel_blocked_state": "underdetermined_due_to_missing_counterpart",
+      "current_human_channel_state": "theoretically_specifiable_but_non_instantiated",
+      "specifiability_status": "partially_specifiable",
+      "non_implications": [
+        "No affective organization comparison follows from reward labels alone."
+      ],
+      "status": "runtime_contract_defined_channel_partial"
+    },
+    {
+      "channel_id": "embodiment_boundary_channel",
+      "comparator_domain": "bridge_coordinate_domain",
+      "required_human_measurement_class": "typed_human_embodiment_boundary_trace",
+      "required_artifact_family": [
+        "human_embodiment_boundary_report.json"
+      ],
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_projection.json",
+        "bridge_intervention_profile.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden",
+        "error_budget_burden"
+      ],
+      "admissible_proxy_class": "typed_hardware_protocol_metadata_only",
+      "forbidden_proxy_substitutions": [
+        "motor_competence_only_proxy",
+        "controller_performance_only_proxy"
+      ],
+      "missing_channel_blocked_state": "blocked_by_missing_human_channel",
+      "current_human_channel_state": "blocked_by_missing_human_measurement_route",
+      "specifiability_status": "blocked_by_missing_human_measurement_route",
+      "non_implications": [
+        "No embodied closure comparison follows from task success alone."
+      ],
+      "status": "runtime_contract_defined_channel_absent"
+    },
+    {
+      "channel_id": "ambiguity_load_channel",
+      "comparator_domain": "bridge_coordinate_domain",
+      "required_human_measurement_class": "typed_human_ambiguity_load_trace",
+      "required_artifact_family": [
+        "human_ambiguity_load_report.json"
+      ],
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_projection.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "artifact_homology_burden",
+        "typing_contract_burden"
+      ],
+      "admissible_proxy_class": "task_design_metadata_only",
+      "forbidden_proxy_substitutions": [
+        "semantic_density_only_proxy",
+        "error_rate_only_proxy"
+      ],
+      "missing_channel_blocked_state": "underdetermined_due_to_missing_counterpart",
+      "current_human_channel_state": "theoretically_specifiable_but_non_instantiated",
+      "specifiability_status": "partially_specifiable",
+      "non_implications": [
+        "No ambiguity-bearing comparison follows from bookkeeping load alone."
+      ],
+      "status": "runtime_contract_defined_channel_partial"
+    },
+    {
+      "channel_id": "transport_preservation_channel",
+      "comparator_domain": "transport_preservation_domain",
+      "required_human_measurement_class": "typed_cross_substrate_transport_trace",
+      "required_artifact_family": [
+        "cross_substrate_transport_contract.json",
+        "cross_substrate_lineage_map.json"
+      ],
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_manifest.json",
+        "cross_substrate_transport_assessment.json"
+      ],
+      "minimum_symmetry_burden": [
+        "transport_preservation_burden",
+        "error_budget_burden",
+        "artifact_homology_burden"
+      ],
+      "admissible_proxy_class": "transport_contract_metadata_only",
+      "forbidden_proxy_substitutions": [
+        "static_model_export_only",
+        "source_snapshot_without_target_counterpart"
+      ],
+      "missing_channel_blocked_state": "transport_not_open",
+      "current_human_channel_state": "transport_counterpart_not_instantiated",
+      "specifiability_status": "blocked_by_missing_transport_counterpart",
+      "non_implications": [
+        "No transport preservation follows from source-side bridge closure."
+      ],
+      "status": "runtime_contract_defined_transport_blocked"
+    }
+  ],
+  "blocked_inferences": [
+    "no_fabricated_human_measurement_inference",
+    "no_human_equivalence_inference",
+    "no_cross_substrate_equivalence_inference",
+    "no_identity_preservation_inference",
+    "no_external_adjudication_inference"
+  ],
+  "interpretation_boundary": "Framework-internal only; human-channel requirements define what a legitimate comparative runtime would need and how channel absence must be reported. They do not instantiate human measurements, do not authorize equivalence claims, and do not open external adjudication."
+}

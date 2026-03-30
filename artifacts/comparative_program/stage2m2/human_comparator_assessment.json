@@ -1,0 +1,508 @@
+{
+  "artifact_role": "human_comparator_assessment",
+  "artifact_name": "human_comparator_assessment.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "comparative_layer_id": "comparative_expansion_layer.stage2_m2_runtime_opening",
+  "layer_version": "comparative_expansion_layer.stage2_m2.comparator.v1",
+  "estimator_version": "human_comparator_assessment_builder.stage2_m2.v1",
+  "implementation_status": "stage2_m2_runtime_comparative_opening_implemented",
+  "current_comparator_state": "comparator_blocked",
+  "comparator_object_classes": {
+    "machine_side_available_class": "structurally_comparable",
+    "current_runtime_class": "comparator_blocked_by_missing_human_channel",
+    "all_defined_classes": [
+      "non_comparable",
+      "structurally_comparable",
+      "interventional_comparable",
+      "weakly_homologous",
+      "comparator_underdefined",
+      "comparator_blocked_by_missing_human_channel"
+    ]
+  },
+  "channel_statuses": [
+    {
+      "channel_id": "self_report_channel",
+      "comparator_domain": "bridge_coordinate_domain",
+      "required_human_measurement_class": "typed_first_person_self_report_trace",
+      "required_artifact_family": [
+        "human_self_report_trace.json",
+        "human_self_report_channel_manifest.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden",
+        "typing_contract_burden"
+      ],
+      "machine_artifact_availability": {
+        "phenomenal_bridge_projection.json": "available",
+        "phenomenal_bridge_gate_result.json": "available"
+      },
+      "human_channel_state": "blocked_by_missing_human_measurement_route",
+      "specifiability_status": "theoretically_specifiable_but_non_instantiated",
+      "runtime_state": "human_channel_absent",
+      "blocked_state": "blocked_by_missing_human_channel",
+      "forbidden_proxy_substitutions": [
+        "synthetic_human_self_report_generation",
+        "machine_self_report_relabeling",
+        "language_model_narration_without_human_measurement"
+      ],
+      "non_implications": [
+        "No human equivalence follows from defining this channel.",
+        "No phenomenality inference follows from channel specification alone."
+      ],
+      "status": "runtime_contract_defined_channel_absent"
+    },
+    {
+      "channel_id": "intervention_response_channel",
+      "comparator_domain": "intervention_response_domain",
+      "required_human_measurement_class": "typed_human_intervention_response_series",
+      "required_artifact_family": [
+        "human_intervention_profile.json",
+        "human_negative_control_profile.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "intervention_homology_burden",
+        "artifact_homology_burden"
+      ],
+      "machine_artifact_availability": {
+        "bridge_intervention_profile.json": "available",
+        "bridge_reducibility_report.json": "available"
+      },
+      "human_channel_state": "blocked_by_missing_human_measurement_route",
+      "specifiability_status": "theoretically_specifiable_but_non_instantiated",
+      "runtime_state": "human_channel_absent",
+      "blocked_state": "blocked_by_missing_human_channel",
+      "forbidden_proxy_substitutions": [
+        "relabelled_machine_intervention_profiles",
+        "narrative_control_descriptions_without_human_measurement",
+        "synthetic_human_perturbation_logs"
+      ],
+      "non_implications": [
+        "No interventional equivalence follows from this channel contract.",
+        "No matched-control sufficiency follows without real human measurements."
+      ],
+      "status": "runtime_contract_defined_channel_absent"
+    },
+    {
+      "channel_id": "temporal_structure_channel",
+      "comparator_domain": "bridge_coordinate_domain",
+      "required_human_measurement_class": "typed_human_temporal_structure_trace",
+      "required_artifact_family": [
+        "human_temporal_structure_report.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden"
+      ],
+      "machine_artifact_availability": {
+        "phenomenal_bridge_projection.json": "available"
+      },
+      "human_channel_state": "theoretically_specifiable_but_non_instantiated",
+      "specifiability_status": "partially_specifiable",
+      "runtime_state": "structurally_open_but_not_adjudicated",
+      "blocked_state": null,
+      "forbidden_proxy_substitutions": [
+        "clock_time_only_proxy",
+        "continuity_narration_without_human_measurement"
+      ],
+      "non_implications": [
+        "No lived-temporality comparison follows from timing metadata alone."
+      ],
+      "status": "runtime_contract_defined_channel_partial"
+    },
+    {
+      "channel_id": "valence_topology_channel",
+      "comparator_domain": "bridge_coordinate_domain",
+      "required_human_measurement_class": "typed_human_valence_topology_trace",
+      "required_artifact_family": [
+        "human_valence_topology_report.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "typing_contract_burden"
+      ],
+      "machine_artifact_availability": {
+        "phenomenal_bridge_projection.json": "available"
+      },
+      "human_channel_state": "theoretically_specifiable_but_non_instantiated",
+      "specifiability_status": "partially_specifiable",
+      "runtime_state": "structurally_open_but_not_adjudicated",
+      "blocked_state": null,
+      "forbidden_proxy_substitutions": [
+        "reward_schedule_only_proxy",
+        "scalar_preference_report_without_topology_measurement"
+      ],
+      "non_implications": [
+        "No affective organization comparison follows from reward labels alone."
+      ],
+      "status": "runtime_contract_defined_channel_partial"
+    },
+    {
+      "channel_id": "embodiment_boundary_channel",
+      "comparator_domain": "bridge_coordinate_domain",
+      "required_human_measurement_class": "typed_human_embodiment_boundary_trace",
+      "required_artifact_family": [
+        "human_embodiment_boundary_report.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden",
+        "error_budget_burden"
+      ],
+      "machine_artifact_availability": {
+        "phenomenal_bridge_projection.json": "available",
+        "bridge_intervention_profile.json": "available"
+      },
+      "human_channel_state": "blocked_by_missing_human_measurement_route",
+      "specifiability_status": "blocked_by_missing_human_measurement_route",
+      "runtime_state": "human_channel_absent",
+      "blocked_state": "blocked_by_missing_human_channel",
+      "forbidden_proxy_substitutions": [
+        "motor_competence_only_proxy",
+        "controller_performance_only_proxy"
+      ],
+      "non_implications": [
+        "No embodied closure comparison follows from task success alone."
+      ],
+      "status": "runtime_contract_defined_channel_absent"
+    },
+    {
+      "channel_id": "ambiguity_load_channel",
+      "comparator_domain": "bridge_coordinate_domain",
+      "required_human_measurement_class": "typed_human_ambiguity_load_trace",
+      "required_artifact_family": [
+        "human_ambiguity_load_report.json"
+      ],
+      "minimum_symmetry_burden": [
+        "human_channel_burden",
+        "artifact_homology_burden",
+        "typing_contract_burden"
+      ],
+      "machine_artifact_availability": {
+        "phenomenal_bridge_projection.json": "available"
+      },
+      "human_channel_state": "theoretically_specifiable_but_non_instantiated",
+      "specifiability_status": "partially_specifiable",
+      "runtime_state": "structurally_open_but_not_adjudicated",
+      "blocked_state": null,
+      "forbidden_proxy_substitutions": [
+        "semantic_density_only_proxy",
+        "error_rate_only_proxy"
+      ],
+      "non_implications": [
+        "No ambiguity-bearing comparison follows from bookkeeping load alone."
+      ],
+      "status": "runtime_contract_defined_channel_partial"
+    },
+    {
+      "channel_id": "transport_preservation_channel",
+      "comparator_domain": "transport_preservation_domain",
+      "required_human_measurement_class": "typed_cross_substrate_transport_trace",
+      "required_artifact_family": [
+        "cross_substrate_transport_contract.json",
+        "cross_substrate_lineage_map.json"
+      ],
+      "minimum_symmetry_burden": [
+        "transport_preservation_burden",
+        "error_budget_burden",
+        "artifact_homology_burden"
+      ],
+      "machine_artifact_availability": {
+        "phenomenal_bridge_manifest.json": "available",
+        "cross_substrate_transport_assessment.json": "missing"
+      },
+      "human_channel_state": "transport_counterpart_not_instantiated",
+      "specifiability_status": "blocked_by_missing_transport_counterpart",
+      "runtime_state": "structural_mapping_blocked",
+      "blocked_state": null,
+      "forbidden_proxy_substitutions": [
+        "static_model_export_only",
+        "source_snapshot_without_target_counterpart"
+      ],
+      "non_implications": [
+        "No transport preservation follows from source-side bridge closure."
+      ],
+      "status": "runtime_contract_defined_transport_blocked"
+    }
+  ],
+  "burden_statuses": {
+    "human_channel_burden": {
+      "status": "blocked_by_missing_human_channel",
+      "pass": false,
+      "blocked_reason": "missing_human_channel",
+      "required_channel_families": [
+        "self_report_channel",
+        "temporal_structure_channel",
+        "valence_topology_channel"
+      ],
+      "required_artifact_families": [
+        "human_channel_requirements.v1.json",
+        "human_comparator_assessment.json"
+      ],
+      "does_not_license": [
+        "human_equivalence",
+        "non_equivalence",
+        "superiority"
+      ]
+    },
+    "burden_symmetry": {
+      "status": "comparator_underdefined",
+      "pass": false,
+      "blocked_reason": "missing_human_channel_and_missing_error_model",
+      "required_channel_families": [
+        "self_report_channel",
+        "intervention_response_channel",
+        "embodiment_boundary_channel"
+      ],
+      "required_artifact_families": [
+        "human_channel_requirements.v1.json",
+        "human_comparator_assessment.json",
+        "human_equivalence_assessment.json"
+      ],
+      "does_not_license": [
+        "equivalence",
+        "superiority"
+      ]
+    },
+    "artifact_homology_burden": {
+      "status": "blocked_by_missing_human_channel",
+      "pass": false,
+      "blocked_reason": "human_artifact_family_absent",
+      "required_channel_families": [
+        "self_report_channel",
+        "temporal_structure_channel",
+        "valence_topology_channel"
+      ],
+      "required_artifact_families": [
+        "phenomenal_bridge_manifest.json",
+        "human_comparator_assessment.json",
+        "comparative_program_manifest.json"
+      ],
+      "does_not_license": [
+        "equivalence",
+        "transport_preservation"
+      ]
+    },
+    "intervention_homology_burden": {
+      "status": "blocked_by_missing_human_channel",
+      "pass": false,
+      "blocked_reason": "human_intervention_channel_absent",
+      "required_channel_families": [
+        "intervention_response_channel"
+      ],
+      "required_artifact_families": [
+        "bridge_intervention_profile.json",
+        "human_intervention_profile.json",
+        "human_negative_control_profile.json"
+      ],
+      "does_not_license": [
+        "interventional_equivalence",
+        "human_phenomenal_match"
+      ]
+    },
+    "typing_contract_burden": {
+      "status": "structurally_open_but_not_adjudicated",
+      "pass": false,
+      "blocked_reason": "human_counterpart_typed_contract_absent",
+      "required_channel_families": [
+        "self_report_channel",
+        "temporal_structure_channel",
+        "ambiguity_load_channel"
+      ],
+      "required_artifact_families": [
+        "human_comparator_protocol.v1.json",
+        "human_equivalence_ladder.v1.json",
+        "cross_substrate_transport_protocol.v1.json"
+      ],
+      "does_not_license": [
+        "equivalence",
+        "non_equivalence"
+      ]
+    },
+    "error_budget_burden": {
+      "status": "structurally_open_but_not_adjudicated",
+      "pass": false,
+      "blocked_reason": "runtime_error_budgets_not_instantiated",
+      "required_channel_families": [
+        "temporal_structure_channel",
+        "valence_topology_channel",
+        "transport_preservation_channel"
+      ],
+      "required_artifact_families": [
+        "human_channel_requirements.v1.json",
+        "cross_substrate_transport_protocol.v1.json",
+        "cross_substrate_transport_assessment.json"
+      ],
+      "does_not_license": [
+        "equivalence",
+        "transport_preservation"
+      ]
+    },
+    "transport_preservation_burden": {
+      "status": "comparator_underdefined",
+      "pass": false,
+      "blocked_reason": "transport_mapping_contract_absent",
+      "required_channel_families": [
+        "transport_preservation_channel"
+      ],
+      "required_artifact_families": [
+        "cross_substrate_transport_assessment.json",
+        "cross_substrate_transport_contract.json",
+        "cross_substrate_lineage_map.json"
+      ],
+      "does_not_license": [
+        "cross_substrate_equivalence",
+        "identity_preservation"
+      ]
+    },
+    "underdetermination_reporting_burden": {
+      "status": "satisfied_runtime_reporting_only",
+      "pass": true,
+      "blocked_reason": null,
+      "required_channel_families": [],
+      "required_artifact_families": [
+        "human_comparator_assessment.json",
+        "human_equivalence_assessment.json",
+        "cross_substrate_transport_assessment.json",
+        "comparative_program_readiness_gate.json"
+      ],
+      "does_not_license": [
+        "equivalence",
+        "non_equivalence",
+        "superiority"
+      ]
+    }
+  },
+  "comparator_domain_statuses": {
+    "bridge_coordinate_domain": {
+      "status": "structurally_open_but_not_adjudicated",
+      "rationale": "Machine-side bridge coordinates exist, but human-side homologous channels are not instantiated."
+    },
+    "intervention_response_domain": {
+      "status": "blocked_by_missing_human_channel",
+      "rationale": "Machine-side intervention artifacts exist, but no human-side intervention-response channel is instantiated."
+    },
+    "transport_preservation_domain": {
+      "status": "structural_mapping_blocked",
+      "rationale": "No source-target transport contract or counterpart exists for cross-substrate comparison."
+    },
+    "artifact_lineage_domain": {
+      "status": "structural_mapping_open",
+      "rationale": "Machine-side bridge lineage, schema typing, and provenance are available and can support future comparative artifact homology."
+    }
+  },
+  "blocked_states": [
+    "self_report_channel:human_channel_absent",
+    "intervention_response_channel:human_channel_absent",
+    "embodiment_boundary_channel:human_channel_absent"
+  ],
+  "underdetermination_states": [
+    "temporal_structure_channel:structurally_open_but_not_adjudicated",
+    "valence_topology_channel:structurally_open_but_not_adjudicated",
+    "ambiguity_load_channel:structurally_open_but_not_adjudicated"
+  ],
+  "warnings": [
+    "machine_side_structural_artifacts_available",
+    "human_channel_routes_absent_or_non_instantiated",
+    "no_human_data_instantiated",
+    "no_verdict_authorized"
+  ],
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "not_human_equivalence_support": true,
+    "not_superiority_support": true,
+    "not_external_adjudication": true,
+    "no_verdict_authorized": true
+  },
+  "non_implications": [
+    "No human equivalence follows from this assessment.",
+    "No non-equivalence follows from this assessment.",
+    "No superiority or inferiority follows from this assessment."
+  ],
+  "interpretation_boundary": "Framework-internal only; human comparator assessment records bounded comparative opening state, not human equivalence, not superiority, not external adjudication, and not claim-facing evidence.",
+  "provenance": {
+    "generated_at": "2026-03-30T04:25:45.091Z",
+    "bridge_refs": {
+      "projection": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json",
+      "gate_result": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_gate_result.json",
+      "manifest": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_manifest.json",
+      "readiness_gate": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_readiness_gate.json"
+    },
+    "current_lineage": {
+      "layer_version": "comparative_expansion_layer.stage2_m2.root.v1",
+      "estimator_version": "comparative_program_root_builder.stage2_m2.v1",
+      "comparator_protocol": {
+        "ref": "docs/human_comparator_protocol.v1.json",
+        "sha256": "6b71d69d114ce4662a45cce25f36148e8f8da1106f7cdba401b3dee2d3c1d0c6"
+      },
+      "equivalence_ladder": {
+        "ref": "docs/human_equivalence_ladder.v1.json",
+        "sha256": "6541ce52c03404562ddbf75b2ef275f2f0cef61ac33f2aa84d3910dea424670f"
+      },
+      "transport_protocol": {
+        "ref": "docs/cross_substrate_transport_protocol.v1.json",
+        "sha256": "ed099176336b3b4a3e139506a43c9f55053889239ffbee6b6769f6d14508b761"
+      },
+      "human_channel_requirements": {
+        "ref": "docs/human_channel_requirements.v1.json",
+        "sha256": "9b8e05fc033aca8806a93dd78d64bc84799534bf9530f7eae0ea52a18412be85"
+      },
+      "burden_matrix": {
+        "ref": "docs/comparator_burden_matrix.v1.json",
+        "sha256": "97ea0be5967d367ce6f015af079fbc6c8cd5816ee0a881076b0585fa77e7f7f3"
+      },
+      "artifact_schema": {
+        "ref": "docs/comparative_program_artifact_schema.v1.json",
+        "sha256": "80dadbc4da4301a15d39ef7cb6965034f4531cfd21bdf67d5af9ed2e35fd8705"
+      },
+      "surface_policy": {
+        "ref": "docs/comparative_program_surface_policy.v1.json",
+        "sha256": "d471e4d500268938c440abde4d6a105bb842ef671f383f8e1edd9abbb2ebc880"
+      },
+      "root_schema_hashes": {
+        "comparative_program_manifest.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_manifest.v1.json",
+          "sha256": "d99f84496b843e45519650d144bf1205b88b896887e4907f709830791cd0644d"
+        },
+        "human_comparator_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_comparator_assessment.v1.json",
+          "sha256": "0f349d5421a43701dbe25eaf7d414f7b34ff3480a9e1d19ad3f823f88fb73ef7"
+        },
+        "human_equivalence_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_equivalence_assessment.v1.json",
+          "sha256": "089674f38b35fc2587f02262db7e14276608b882f5e82e4ea3cf3cee4f5de823"
+        },
+        "cross_substrate_transport_assessment.json": {
+          "ref": "src/comparative_program/schemas/cross_substrate_transport_assessment.v1.json",
+          "sha256": "5b979a3ec6ebd4ebc6caa08b66dccf0863de9558ac7cf933b32eaf7ecffbd8de"
+        },
+        "comparative_program_verification_matrix.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
+          "sha256": "6cab7c9939a0615cdd857969f567fd51eb16187c7cbba9f36d802a9a02cae26a"
+        },
+        "comparative_program_readiness_gate.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json",
+          "sha256": "3ed99a108a467c01b51cb7215bec7f0d2e20dace5bc31deb967747aae871150f"
+        }
+      },
+      "qicn_system": {
+        "branch": "main",
+        "head": "10ecbfb5a3028b1489d9f73cd34cf9fb20221bf0",
+        "upstream": null
+      },
+      "qicn_release": {
+        "branch": "main",
+        "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+        "upstream": null
+      }
+    }
+  },
+  "schema_ref": "src/comparative_program/schemas/human_comparator_assessment.v1.json"
+}

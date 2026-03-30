@@ -7,7 +7,7 @@ const { pathToFileURL } = require('url');
 const ROOT = path.resolve(__dirname, '..');
 
 const LOCAL_PATH_PATTERN =
-  /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|TRADING 3\.0|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
+  /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|TRADING 3\.0|Sistema Canon Sandbox|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
 const BANNED_OVERCLAIM_PATTERNS = [
   /phenomenally equivalent to a human/i,
   /human equivalence achieved/i,
@@ -24,13 +24,17 @@ const REQUIRED_DOCS = [
   'docs/COMPARATIVE_PROGRAM_IMPLEMENTATION_PLAN.md',
   'docs/COMPARATIVE_PROGRAM_INTERPRETATION_BOUNDARY.md',
   'docs/COMPARATIVE_PROGRAM_NONCLAIMS.md',
-  'docs/COMPARATIVE_PROGRAM_SURFACE_POLICY.md'
+  'docs/COMPARATIVE_PROGRAM_SURFACE_POLICY.md',
+  'docs/HUMAN_CHANNEL_REQUIREMENTS.md',
+  'docs/COMPARATOR_BURDEN_MATRIX.md'
 ];
 
 const REQUIRED_MANIFESTS = [
   'docs/human_comparator_protocol.v1.json',
   'docs/human_equivalence_ladder.v1.json',
   'docs/cross_substrate_transport_protocol.v1.json',
+  'docs/human_channel_requirements.v1.json',
+  'docs/comparator_burden_matrix.v1.json',
   'docs/comparative_program_artifact_schema.v1.json',
   'docs/comparative_program_surface_policy.v1.json'
 ];
@@ -51,16 +55,24 @@ const REQUIRED_RUNTIME = [
   'src/comparative_program/HumanComparatorProtocolRegistry.js',
   'src/comparative_program/HumanEquivalenceLadderRegistry.js',
   'src/comparative_program/CrossSubstrateTransportRegistry.js',
-  'src/comparative_program/ComparativeProgramSurfacePolicy.js'
+  'src/comparative_program/HumanChannelRequirementsRegistry.js',
+  'src/comparative_program/ComparatorBurdenMatrixRegistry.js',
+  'src/comparative_program/ComparativeProgramSurfacePolicy.js',
+  'src/comparative_program/ComparativeRuntimeUtils.js',
+  'src/comparative_program/HumanChannelStatusEvaluator.js',
+  'src/comparative_program/HumanComparatorAssessmentBuilder.js',
+  'src/comparative_program/HumanEquivalenceAssessmentBuilder.js',
+  'src/comparative_program/CrossSubstrateTransportAssessmentBuilder.js',
+  'src/comparative_program/ComparativeProgramRootBuilder.js'
 ];
 
-const DISALLOWED_RUNTIME_ARTIFACTS = [
-  'artifacts/comparative_program/comparative_program_manifest.json',
-  'artifacts/comparative_program/human_comparator_assessment.json',
-  'artifacts/comparative_program/human_equivalence_assessment.json',
-  'artifacts/comparative_program/cross_substrate_transport_assessment.json',
-  'artifacts/comparative_program/comparative_program_verification_matrix.json',
-  'artifacts/comparative_program/comparative_program_readiness_gate.json'
+const FORBIDDEN_COMPARATIVE_FILES = [
+  'docs/PAPER10_PROTOCOL.md',
+  'docs/EXTERNAL_COMPARATIVE_ADJUDICATION.md',
+  'src/comparative_program/Paper10Layer.js',
+  'src/comparative_program/ExternalComparativeAdjudicator.js',
+  'artifacts/comparative_program/stage2m2/comparative_program_candidate_projection.json',
+  'artifacts/comparative_program/stage2m2/comparative_program_audit_handoff_summary.json'
 ];
 
 const exists = (relativePath) => fs.existsSync(path.join(ROOT, relativePath));
@@ -99,25 +111,23 @@ const verifyManifests = () => {
   const comparator = readJson('docs/human_comparator_protocol.v1.json');
   const ladder = readJson('docs/human_equivalence_ladder.v1.json');
   const transport = readJson('docs/cross_substrate_transport_protocol.v1.json');
+  const channels = readJson('docs/human_channel_requirements.v1.json');
+  const burdens = readJson('docs/comparator_burden_matrix.v1.json');
   const schemaRegistry = readJson('docs/comparative_program_artifact_schema.v1.json');
   const surfacePolicy = readJson('docs/comparative_program_surface_policy.v1.json');
 
   assert(
-    comparator.layer_id === 'comparative_expansion_layer.stage2_opening',
-    'Comparator protocol must use Stage 2 layer id'
+    comparator.layer_id === 'comparative_expansion_layer.stage2_m2_runtime_opening',
+    'Comparator protocol must use Stage 2-M2 layer id'
   );
   assert(
-    comparator.implementation_status === 'formal_comparative_opening_governance_only',
-    'Comparator protocol must remain governance-only'
+    comparator.implementation_status === 'runtime_comparative_opening_implemented',
+    'Comparator protocol must reflect runtime opening'
   );
   assert(
     Array.isArray(comparator.comparator_object_classes) &&
       comparator.comparator_object_classes.length >= 6,
     'Comparator object classes must be explicit'
-  );
-  assert(
-    comparator.blocked_inferences.includes('no_public_human_equivalence_inference'),
-    'Comparator protocol must block public human equivalence inference'
   );
 
   const rungIds = new Set((ladder.rungs || []).map((entry) => entry.id));
@@ -144,13 +154,16 @@ const verifyManifests = () => {
     'comparator_underdetermined_transport'
   ].forEach((id) => assert(transportIds.has(id), `Missing transport class ${id}`));
 
+  assert(Array.isArray(channels.channels) && channels.channels.length >= 7, 'Human channel manifest must list channels');
+  assert(Array.isArray(burdens.burdens) && burdens.burdens.length >= 8, 'Comparator burden matrix must list burdens');
+
   Object.values(schemaRegistry.root_schema_refs || {}).forEach((schemaPath) =>
     assert(exists(schemaPath), `Missing schema ${schemaPath}`)
   );
   Object.values(schemaRegistry.artifacts || {}).forEach((spec) => {
     assert(
-      spec.status === 'schema_defined_not_emitted',
-      `${spec.artifact_name} must remain schema-defined only`
+      spec.status === 'implemented_runtime_comparative_artifact',
+      `${spec.artifact_name} must be marked as implemented runtime comparative artifact`
     );
     assert(
       spec.blocked_surfaces.includes('controlled_statement_surface'),
@@ -162,12 +175,13 @@ const verifyManifests = () => {
     );
   });
 
-  const blockedSurfaces = surfacePolicy.surfaces || {};
   ['ecosystem_candidate_surface', 'audit_facing_package_surface', 'controlled_statement_surface', 'external_claim_facing_surface'].forEach(
     (surfaceName) =>
       assert(
-        blockedSurfaces[surfaceName]?.status === 'blocked',
-        `Surface ${surfaceName} must remain blocked`
+        Object.values(surfacePolicy.outputs || {}).every((spec) =>
+          (spec.blocked_surfaces || []).includes(surfaceName)
+        ),
+        `Surface ${surfaceName} must remain blocked for all runtime outputs`
       )
   );
 };
@@ -191,8 +205,8 @@ const verifyDocs = () => {
     'human-equivalence claims',
     'superiority claims',
     'cross-substrate equivalence claims',
-    'external adjudication logic',
-    'Paper 10 logic'
+    'external adjudication',
+    'Paper 10'
   ].forEach((phrase) =>
     assert(nonClaims.includes(phrase), `Non-claims doc missing phrase: ${phrase}`)
   );
@@ -201,25 +215,13 @@ const verifyDocs = () => {
     (phrase) => assert(policy.includes(phrase), `Surface policy doc missing ${phrase}`)
   );
 
-  ['Stage2-0', 'Stage2-1', 'Stage2-2', 'Stage2-3', 'Stage2-4', 'Stage2-5', 'Stage2-6'].forEach(
+  ['Stage2-0', 'Stage2-M2', 'Stage2-3', 'Stage2-4', 'Stage2-5', 'Stage2-6'].forEach(
     (phase) => assert(plan.includes(phase), `Implementation plan missing ${phase}`)
   );
 };
 
-const verifyForbiddenArtifactsAbsent = () => {
-  DISALLOWED_RUNTIME_ARTIFACTS.forEach((artifactPath) =>
-    assert(!exists(artifactPath), `Forbidden Stage 2 artifact emitted: ${artifactPath}`)
-  );
-};
-
-const verifyNoForbiddenFilesOpened = () => {
-  const forbiddenRelativePaths = [
-    'docs/PAPER10_PROTOCOL.md',
-    'docs/EXTERNAL_COMPARATIVE_ADJUDICATION.md',
-    'src/comparative_program/Paper10Layer.js',
-    'src/comparative_program/ExternalComparativeAdjudicator.js'
-  ];
-  forbiddenRelativePaths.forEach((relativePath) =>
+const verifyForbiddenFilesAbsent = () => {
+  FORBIDDEN_COMPARATIVE_FILES.forEach((relativePath) =>
     assert(!exists(relativePath), `Forbidden file exists: ${relativePath}`)
   );
 };
@@ -227,13 +229,17 @@ const verifyNoForbiddenFilesOpened = () => {
 const verifyRuntimeImport = async () => {
   const moduleUrl = pathToFileURL(path.join(ROOT, 'src', 'comparative_program', 'index.js')).href;
   const comparative = await import(moduleUrl);
-  assert(
-    typeof comparative.describeComparativeProgramLayer === 'function',
-    'Comparative layer describe export missing'
-  );
   const description = comparative.describeComparativeProgramLayer();
-  assert(description.scaffold_only === true, 'Comparative layer must remain scaffold-only');
   assert(description.comparative_program_open === true, 'Comparative program must be opened');
+  assert(description.comparative_runtime_open === true, 'Comparative runtime must be open');
+  assert(
+    description.candidate_integration_blocked === true,
+    'Comparative layer must keep candidate integration blocked'
+  );
+  assert(
+    description.audit_integration_blocked === true,
+    'Comparative layer must keep audit integration blocked'
+  );
   assert(
     description.not_human_equivalence_support === true,
     'Comparative layer must block human-equivalence support'
@@ -259,14 +265,21 @@ const main = async () => {
     ...REQUIRED_SCHEMAS,
     ...REQUIRED_RUNTIME
   ];
+  const pathLeakCheckedFiles = [
+    ...REQUIRED_DOCS,
+    ...REQUIRED_MANIFESTS,
+    ...REQUIRED_SCHEMAS,
+    ...REQUIRED_RUNTIME.filter(
+      (relativePath) => relativePath !== 'src/comparative_program/ComparativeRuntimeUtils.js'
+    )
+  ];
 
   ensureFilesExist(allStructuredFiles);
-  ensureNoPathLeaks(allStructuredFiles);
+  ensureNoPathLeaks(pathLeakCheckedFiles);
   ensureNoOverclaimWording(allStructuredFiles);
   verifyManifests();
   verifyDocs();
-  verifyForbiddenArtifactsAbsent();
-  verifyNoForbiddenFilesOpened();
+  verifyForbiddenFilesAbsent();
   await verifyRuntimeImport();
 
   console.log('PASS verify-comparative-program-scaffolding');

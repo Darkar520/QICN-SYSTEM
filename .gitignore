@@ -86,6 +86,16 @@ artifacts/phenomenal_bridge/bpfm3/*
 !artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_verification_matrix.json
 !artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_final_internal_audit.json
 !artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_readiness_gate.json
+!artifacts/comparative_program/
+artifacts/comparative_program/*
+!artifacts/comparative_program/stage2m2/
+artifacts/comparative_program/stage2m2/*
+!artifacts/comparative_program/stage2m2/human_comparator_assessment.json
+!artifacts/comparative_program/stage2m2/human_equivalence_assessment.json
+!artifacts/comparative_program/stage2m2/cross_substrate_transport_assessment.json
+!artifacts/comparative_program/stage2m2/comparative_program_manifest.json
+!artifacts/comparative_program/stage2m2/comparative_program_verification_matrix.json
+!artifacts/comparative_program/stage2m2/comparative_program_readiness_gate.json
 !artifacts/protocolized_evaluation/
 artifacts/protocolized_evaluation/*
 !artifacts/protocolized_evaluation/evaluation_protocol_manifest.json

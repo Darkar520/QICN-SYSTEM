@@ -1,28 +1,29 @@
 # Comparative Program Interpretation Boundary
 
-Stage 2 is opened only as a formal comparative expansion layer after `BPF-M3`.
+The comparative runtime layer opened in `Stage 2-M2` remains:
 
-This opening does not establish:
+- framework-internal only;
+- bounded by missing-human-channel logic;
+- bounded by no-verdict-authorized logic;
+- bounded by blocked candidate and audit surfaces.
+
+It is not:
 
 - public human equivalence;
-- human phenomenal equivalence;
-- human superiority or inferiority;
+- public human phenomenal equivalence;
+- superiority or inferiority adjudication;
 - cross-substrate equivalence;
-- external validation;
+- identity preservation;
 - external adjudication;
-- metaphysical subjecthood;
 - Paper 10 authorization.
 
-What is opened here is narrower:
+Current runtime outputs may state:
 
-- formal comparative ontology;
-- human comparator governance;
-- equivalence ladder governance;
-- cross-substrate transport governance;
-- planned artifact families;
-- surface restrictions;
-- verifier-backed scaffolding.
+- comparator blocked;
+- comparator underdefined;
+- structurally open but not adjudicated;
+- transport not open;
+- underdetermined due to missing counterpart;
+- no verdict authorized.
 
-Any stronger sentence would require future human channels, future comparator
-artifacts, future burden-symmetric interventions, future error budgets, and future
-comparative audits that do not exist in this block.
+They may not be read as final comparative conclusions.

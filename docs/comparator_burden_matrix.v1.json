@@ -1,0 +1,257 @@
+{
+  "artifact_role": "comparator_burden_matrix",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage2_m2_runtime_opening",
+  "implementation_status": "runtime_comparative_opening_implemented",
+  "runtime_status": "comparative_burden_matrix_runtime_bound",
+  "status_markers": [
+    "framework_internal_only",
+    "not_human_equivalence_support",
+    "not_cross_substrate_equivalence_support",
+    "not_external_adjudication",
+    "not_paper10_authorization"
+  ],
+  "burdens": [
+    {
+      "burden_id": "human_channel_burden",
+      "burden_description": "A comparative runtime cannot proceed without an explicit human-side channel definition, measurement class, and artifact contract.",
+      "required_artifact_families": [
+        "human_channel_requirements.v1.json",
+        "human_comparator_assessment.json"
+      ],
+      "required_channel_families": [
+        "self_report_channel",
+        "temporal_structure_channel",
+        "valence_topology_channel"
+      ],
+      "asymmetry_risk": "high",
+      "disqualifiers": [
+        "invented_human_data",
+        "missing_human_measurement_route"
+      ],
+      "licenses": [
+        "bounded_reporting_of_missing_human_channels"
+      ],
+      "does_not_license": [
+        "human_equivalence",
+        "non_equivalence",
+        "superiority"
+      ],
+      "currently_satisfiable": false,
+      "blocked_reason": "missing_human_channel",
+      "blocked_only_by_missing_human_channel": true,
+      "status": "runtime_assessable_blocked"
+    },
+    {
+      "burden_id": "burden_symmetry",
+      "burden_description": "Machine-side and human-side channels must be burden-symmetric rather than related only by descriptive convenience.",
+      "required_artifact_families": [
+        "human_channel_requirements.v1.json",
+        "human_comparator_assessment.json",
+        "human_equivalence_assessment.json"
+      ],
+      "required_channel_families": [
+        "self_report_channel",
+        "intervention_response_channel",
+        "embodiment_boundary_channel"
+      ],
+      "asymmetry_risk": "high",
+      "disqualifiers": [
+        "proxy_aliasing",
+        "one_sided_channel_definition"
+      ],
+      "licenses": [
+        "bounded_structural_mapping_reporting"
+      ],
+      "does_not_license": [
+        "equivalence",
+        "superiority"
+      ],
+      "currently_satisfiable": false,
+      "blocked_reason": "missing_human_channel_and_missing_error_model",
+      "blocked_only_by_missing_human_channel": false,
+      "status": "runtime_assessable_blocked"
+    },
+    {
+      "burden_id": "artifact_homology_burden",
+      "burden_description": "Comparator artifacts must be homologous in typing, provenance, and scope before any comparative state can be escalated.",
+      "required_artifact_families": [
+        "phenomenal_bridge_manifest.json",
+        "human_comparator_assessment.json",
+        "comparative_program_manifest.json"
+      ],
+      "required_channel_families": [
+        "self_report_channel",
+        "temporal_structure_channel",
+        "valence_topology_channel"
+      ],
+      "asymmetry_risk": "medium",
+      "disqualifiers": [
+        "artifact_family_mismatch",
+        "schema_type_mismatch"
+      ],
+      "licenses": [
+        "structural_mapping_open"
+      ],
+      "does_not_license": [
+        "equivalence",
+        "transport_preservation"
+      ],
+      "currently_satisfiable": false,
+      "blocked_reason": "human_artifact_family_absent",
+      "blocked_only_by_missing_human_channel": true,
+      "status": "runtime_assessable_structural_only"
+    },
+    {
+      "burden_id": "intervention_homology_burden",
+      "burden_description": "Interventional comparison requires matched perturbation families, matched controls, and bounded cross-channel safety and interpretability.",
+      "required_artifact_families": [
+        "bridge_intervention_profile.json",
+        "human_intervention_profile.json",
+        "human_negative_control_profile.json"
+      ],
+      "required_channel_families": [
+        "intervention_response_channel"
+      ],
+      "asymmetry_risk": "high",
+      "disqualifiers": [
+        "unmatched_interventions",
+        "control_mimicry",
+        "unsafe_or_non_homologous_perturbation"
+      ],
+      "licenses": [
+        "bounded_interventional_comparability_reporting"
+      ],
+      "does_not_license": [
+        "interventional_equivalence",
+        "human_phenomenal_match"
+      ],
+      "currently_satisfiable": false,
+      "blocked_reason": "human_intervention_channel_absent",
+      "blocked_only_by_missing_human_channel": true,
+      "status": "runtime_assessable_blocked"
+    },
+    {
+      "burden_id": "typing_contract_burden",
+      "burden_description": "A joint typed domain must exist before equivalence rungs above equivalence_not_open can be meaningfully considered.",
+      "required_artifact_families": [
+        "human_comparator_protocol.v1.json",
+        "human_equivalence_ladder.v1.json",
+        "cross_substrate_transport_protocol.v1.json"
+      ],
+      "required_channel_families": [
+        "self_report_channel",
+        "temporal_structure_channel",
+        "ambiguity_load_channel"
+      ],
+      "asymmetry_risk": "medium",
+      "disqualifiers": [
+        "domain_mismatch",
+        "type_mismatch"
+      ],
+      "licenses": [
+        "equivalence_formally_inexpressible_reporting",
+        "structural_mapping_open"
+      ],
+      "does_not_license": [
+        "equivalence",
+        "non_equivalence"
+      ],
+      "currently_satisfiable": false,
+      "blocked_reason": "human_counterpart_typed_contract_absent",
+      "blocked_only_by_missing_human_channel": false,
+      "status": "runtime_assessable_underdefined"
+    },
+    {
+      "burden_id": "error_budget_burden",
+      "burden_description": "Comparative runtime requires declared error budgets for human channels and future cross-substrate transport axes.",
+      "required_artifact_families": [
+        "human_channel_requirements.v1.json",
+        "cross_substrate_transport_protocol.v1.json",
+        "cross_substrate_transport_assessment.json"
+      ],
+      "required_channel_families": [
+        "temporal_structure_channel",
+        "valence_topology_channel",
+        "transport_preservation_channel"
+      ],
+      "asymmetry_risk": "medium",
+      "disqualifiers": [
+        "undeclared_error_model",
+        "silent_tolerance_expansion"
+      ],
+      "licenses": [
+        "underdetermination_reporting"
+      ],
+      "does_not_license": [
+        "equivalence",
+        "transport_preservation"
+      ],
+      "currently_satisfiable": false,
+      "blocked_reason": "runtime_error_budgets_not_instantiated",
+      "blocked_only_by_missing_human_channel": false,
+      "status": "runtime_assessable_underdefined"
+    },
+    {
+      "burden_id": "transport_preservation_burden",
+      "burden_description": "Transport comparison requires an explicit source-target remap contract, preservation axes, and fracture or fork accounting.",
+      "required_artifact_families": [
+        "cross_substrate_transport_assessment.json",
+        "cross_substrate_transport_contract.json",
+        "cross_substrate_lineage_map.json"
+      ],
+      "required_channel_families": [
+        "transport_preservation_channel"
+      ],
+      "asymmetry_risk": "high",
+      "disqualifiers": [
+        "missing_transition_contract",
+        "unsupported_remap",
+        "fork_without_branch_accounting"
+      ],
+      "licenses": [
+        "transport_not_open_reporting",
+        "comparator_underdetermined_transport_reporting"
+      ],
+      "does_not_license": [
+        "cross_substrate_equivalence",
+        "identity_preservation"
+      ],
+      "currently_satisfiable": false,
+      "blocked_reason": "transport_mapping_contract_absent",
+      "blocked_only_by_missing_human_channel": false,
+      "status": "runtime_assessable_blocked"
+    },
+    {
+      "burden_id": "underdetermination_reporting_burden",
+      "burden_description": "Comparative runtime must report missing counterparts, blocked states, and non-authorized verdict states explicitly.",
+      "required_artifact_families": [
+        "human_comparator_assessment.json",
+        "human_equivalence_assessment.json",
+        "cross_substrate_transport_assessment.json",
+        "comparative_program_readiness_gate.json"
+      ],
+      "required_channel_families": [],
+      "asymmetry_risk": "low",
+      "disqualifiers": [
+        "silent_verdict_promotion",
+        "suppressed_blocked_state"
+      ],
+      "licenses": [
+        "no_verdict_authorized",
+        "comparator_underdefined_reporting",
+        "comparative_runtime_open_but_human_blocked_reporting"
+      ],
+      "does_not_license": [
+        "equivalence",
+        "non_equivalence",
+        "superiority"
+      ],
+      "currently_satisfiable": true,
+      "blocked_reason": null,
+      "blocked_only_by_missing_human_channel": false,
+      "status": "runtime_assessable_satisfied"
+    }
+  ],
+  "interpretation_boundary": "Framework-internal only; the comparator burden matrix defines assessment logic and blocked states for runtime comparative opening. It does not instantiate human data, does not authorize equivalence or superiority claims, and does not open external adjudication."
+}

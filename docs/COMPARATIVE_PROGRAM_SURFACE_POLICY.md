@@ -1,38 +1,24 @@
 # Comparative Program Surface Policy
 
-## Default boundary
-
-Stage 2 comparative outputs remain framework-internal only.
-
-In this opening block, only the following are allowed:
-
-- governance documents;
-- machine-readable manifests;
-- future schema definitions;
-- optional metadata registries.
-
-## Allowed surfaces
+`Stage 2-M2` allows runtime comparative artifacts only on:
 
 - `developer_inspection_surface`
 - `local_artifact_surface`
 - `local_report_surface`
-- `internal_release_bundle_surface` for scaffolding docs and manifests only
+- `internal_release_bundle_surface`
 
-## Blocked surfaces
+It keeps the following blocked:
 
 - `ecosystem_candidate_surface`
 - `audit_facing_package_surface`
 - `controlled_statement_surface`
 - `external_claim_facing_surface`
 
-## Blocked inferences
+This means that the comparative runtime can now emit internal artifacts, but it
+still cannot:
 
-- no public human-equivalence inference
-- no superiority inference
-- no cross-substrate equivalence inference
-- no external adjudication inference
-- no Paper 10 inference
-
-## Current state
-
-No runtime comparator outputs are emitted in this block.
+- publish comparator outputs;
+- enter candidate projections;
+- enter audit handoff;
+- surface controlled comparative statements;
+- support public claims.

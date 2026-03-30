@@ -1,20 +1,51 @@
 {
-  "artifact_name": "cross_substrate_transport_assessment.json",
-  "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage2_opening",
-  "required_fields": [
-    "transport_class",
-    "preservation_axes",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cross_substrate_transport_assessment.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "comparative_layer_id",
+    "layer_version",
+    "estimator_version",
+    "implementation_status",
+    "current_transport_class",
+    "assessment_state",
+    "preservation_axis_statuses",
     "error_budget_status",
+    "required_missing_counterparts",
+    "unsupported_remap_conditions",
+    "fork_fracture_risk_notes",
     "warnings",
+    "boundary_flags",
+    "non_implications",
     "interpretation_boundary",
-    "boundary_flags"
+    "provenance",
+    "schema_ref"
   ],
-  "boundary_flags": [
-    "framework_internal_only",
-    "not_cross_substrate_equivalence_support",
-    "not_external_adjudication",
-    "not_paper10_authorization"
-  ],
-  "status": "schema_defined_not_emitted"
+  "properties": {
+    "artifact_role": { "const": "cross_substrate_transport_assessment" },
+    "artifact_name": { "const": "cross_substrate_transport_assessment.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparative_layer_id": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "estimator_version": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "current_transport_class": { "type": "string" },
+    "assessment_state": { "type": "string" },
+    "preservation_axis_statuses": { "type": "object" },
+    "error_budget_status": { "type": "object" },
+    "required_missing_counterparts": { "type": "array", "items": { "type": "string" } },
+    "unsupported_remap_conditions": { "type": "array", "items": { "type": "string" } },
+    "fork_fracture_risk_notes": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "boundary_flags": { "type": "object" },
+    "non_implications": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
 }

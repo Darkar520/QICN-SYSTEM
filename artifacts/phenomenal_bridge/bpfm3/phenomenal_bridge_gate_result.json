@@ -206,7 +206,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
+        "head": "10ecbfb5a3028b1489d9f73cd34cf9fb20221bf0",
         "upstream": null
       },
       "qicn_release": {
@@ -256,7 +256,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; root bridge gate result over implemented bridge reports, bridge intervention profile, and bridge reducibility report, not external validation, not human equivalence, not phenomenality proof, not metaphysical closure, and not sufficient for public claim promotion.",
   "provenance": {
-    "generated_at": "2026-03-29T22:44:40.541Z",
+    "generated_at": "2026-03-30T04:30:30.919Z",
     "projection_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json",
     "baseline_report_refs": {
       "phenomenal_differentiation_report": "artifacts/phenomenal_bridge/bpf1/phenomenal_differentiation_report.json",
@@ -307,7 +307,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "582ee76778ef2877b74d5b3319d199e8b82b4c82",
+        "head": "10ecbfb5a3028b1489d9f73cd34cf9fb20221bf0",
         "upstream": null
       },
       "qicn_release": {

@@ -1,0 +1,52 @@
+{
+  "artifact_role": "comparative_program_surface_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage2_opening",
+  "implementation_status": "formal_comparative_opening_governance_only",
+  "default_interpretation_boundary": "Stage 2 comparative opening remains framework-internal only. In this block, only governance documents, manifests, schema definitions, and optional metadata registries are opened. No human comparator verdicts, no human equivalence verdicts, no cross-substrate verdicts, no external adjudication, and no Paper 10 outputs are authorized.",
+  "surfaces": {
+    "developer_inspection_surface": {
+      "status": "allowed",
+      "allowed_content": ["docs", "manifests", "schema_definitions", "metadata_registries"],
+      "blocked_content": ["verdict_artifacts", "claim_promotions"]
+    },
+    "local_artifact_surface": {
+      "status": "allowed",
+      "allowed_content": ["docs", "manifests", "schema_definitions", "metadata_registries"],
+      "blocked_content": ["runtime_comparator_artifacts", "equivalence_verdicts", "transport_verdicts"]
+    },
+    "local_report_surface": {
+      "status": "allowed_for_scaffolding_only",
+      "allowed_content": ["interpretation_boundary", "non_claims", "implementation_plan"],
+      "blocked_content": ["equivalence_outputs", "superiority_outputs"]
+    },
+    "internal_release_bundle_surface": {
+      "status": "allowed_for_scaffolding_only",
+      "allowed_content": ["docs", "manifests", "schema_definitions"],
+      "blocked_content": ["runtime_comparator_outputs", "equivalence_assessments", "transport_assessments"]
+    },
+    "ecosystem_candidate_surface": {
+      "status": "blocked",
+      "reason": "stage2_opening_has_no_bounded_candidate_projection"
+    },
+    "audit_facing_package_surface": {
+      "status": "blocked",
+      "reason": "stage2_opening_has_no_bounded_audit_handoff_protocol"
+    },
+    "controlled_statement_surface": {
+      "status": "blocked",
+      "reason": "no_claim_facing_comparative_language_is_authorized"
+    },
+    "external_claim_facing_surface": {
+      "status": "blocked",
+      "reason": "no_public_human_equivalence_or_transport_claims_are_authorized"
+    }
+  },
+  "blocked_inferences": [
+    "no_public_human_equivalence_inference",
+    "no_superiority_inference",
+    "no_cross_substrate_equivalence_inference",
+    "no_external_adjudication_inference",
+    "no_paper10_inference"
+  ]
+}

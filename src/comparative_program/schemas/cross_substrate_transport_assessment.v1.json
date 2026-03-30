@@ -1,0 +1,20 @@
+{
+  "artifact_name": "cross_substrate_transport_assessment.json",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage2_opening",
+  "required_fields": [
+    "transport_class",
+    "preservation_axes",
+    "error_budget_status",
+    "warnings",
+    "interpretation_boundary",
+    "boundary_flags"
+  ],
+  "boundary_flags": [
+    "framework_internal_only",
+    "not_cross_substrate_equivalence_support",
+    "not_external_adjudication",
+    "not_paper10_authorization"
+  ],
+  "status": "schema_defined_not_emitted"
+}

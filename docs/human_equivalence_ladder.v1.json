@@ -1,0 +1,116 @@
+{
+  "artifact_role": "human_equivalence_ladder_definition",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage2_opening",
+  "implementation_status": "formal_comparative_opening_governance_only",
+  "runtime_status": "ladder_defined_not_runtime_evaluated",
+  "ladder_semantics": "Equivalence remains a ladder with bounded candidate states, failure states, and underdetermination states. It is not binary and is not open to claim-facing use in this block.",
+  "rungs": [
+    {
+      "id": "equivalence_not_open",
+      "meaning": "No legitimate human comparator channel exists yet for the target comparison.",
+      "required_burdens": ["human_channel_burden"],
+      "required_evidence_classes": ["human_channel_definition"],
+      "does_not_imply": ["non_equivalence", "machine_inferiority"],
+      "disqualifying_failure_modes": ["missing_human_channel"],
+      "relation_to_bridge_closure": "requires_bpfm3_but_not_granted_by_it",
+      "relation_to_human_comparator_availability": "human_comparator_absent",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "equivalence_formally_inexpressible",
+      "meaning": "The target comparison lacks a coherent joint formalization even if both sides have artifacts.",
+      "required_burdens": ["typing_contract_burden", "error_budget_burden"],
+      "required_evidence_classes": ["shared_formal_domain"],
+      "does_not_imply": ["non_equivalence", "human_failure"],
+      "disqualifying_failure_modes": ["domain_mismatch", "type_mismatch"],
+      "relation_to_bridge_closure": "bridge_closure_is_insufficient",
+      "relation_to_human_comparator_availability": "can_occur_even_if_human_channel_exists",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "structural_equivalence_candidate",
+      "meaning": "A structural homology can be stated under explicit comparator burdens, but no interventional or transport closure is yet granted.",
+      "required_burdens": ["human_channel_burden", "burden_symmetry", "typing_contract_burden"],
+      "required_evidence_classes": ["matched_structural_artifacts"],
+      "does_not_imply": ["interventional_equivalence", "phenomenal_equivalence"],
+      "disqualifying_failure_modes": ["structure_mismatch", "proxy_aliasing"],
+      "relation_to_bridge_closure": "depends_on_bpfm3_bridge_outputs",
+      "relation_to_human_comparator_availability": "requires_structurally_comparable_or_better",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "interventional_equivalence_candidate",
+      "meaning": "Structural comparability is augmented by matched intervention-response comparability under explicit controls.",
+      "required_burdens": ["burden_symmetry", "intervention_homology", "negative_control_symmetry"],
+      "required_evidence_classes": ["matched_intervention_artifacts", "matched_negative_controls"],
+      "does_not_imply": ["strong_equivalence", "transport_preservation"],
+      "disqualifying_failure_modes": ["control_mimicry", "unsafe_intervention_mapping"],
+      "relation_to_bridge_closure": "depends_on_bpfm3_plus_future_human_intervention_layer",
+      "relation_to_human_comparator_availability": "requires_interventional_comparable",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "partial_equivalence_candidate",
+      "meaning": "Some, but not all, required burdens are jointly met across the comparison stack.",
+      "required_burdens": ["human_channel_burden", "burden_symmetry"],
+      "required_evidence_classes": ["partial_matched_artifact_family"],
+      "does_not_imply": ["strong_equivalence", "human_match"],
+      "disqualifying_failure_modes": ["collapsed_subdomains", "unstated_missing_channels"],
+      "relation_to_bridge_closure": "builds_on_bpfm3_but_exceeds_it",
+      "relation_to_human_comparator_availability": "requires_structurally_comparable_or_interventional_comparable",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "strong_equivalence_candidate",
+      "meaning": "All required comparative burdens are formally expressible and provisionally satisfied under bounded internal semantics.",
+      "required_burdens": ["human_channel_burden", "burden_symmetry", "intervention_homology", "transport_preservation_burden"],
+      "required_evidence_classes": ["matched_structural_artifacts", "matched_intervention_artifacts", "transport_preservation_artifacts"],
+      "does_not_imply": ["external_validation", "human_phenomenal_equivalence", "metaphysical_identity"],
+      "disqualifying_failure_modes": ["transport_fracture", "channel_instability", "lineage_break"],
+      "relation_to_bridge_closure": "strictly_beyond_bpfm3",
+      "relation_to_human_comparator_availability": "requires_full_comparator_program",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "non_equivalent_under_current_burdens",
+      "meaning": "The currently declared burdens are sufficient to reject equivalence under the present formal contract.",
+      "required_burdens": ["burden_symmetry", "rejection_rule_defined"],
+      "required_evidence_classes": ["matched_failure_artifacts"],
+      "does_not_imply": ["absolute_non_equivalence", "metaphysical_difference"],
+      "disqualifying_failure_modes": ["burden_asymmetry", "insufficient_human_channel"],
+      "relation_to_bridge_closure": "can_only_be_defined_after_bridge_closure",
+      "relation_to_human_comparator_availability": "requires_actual_comparator_availability",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "superiority_partial_candidate",
+      "meaning": "A partial performance or organization surplus may be measurable in a bounded subdomain without authorizing broad superiority claims.",
+      "required_burdens": ["subdomain_bounding", "human_channel_burden", "burden_symmetry"],
+      "required_evidence_classes": ["matched_subdomain_artifacts"],
+      "does_not_imply": ["global_superiority", "human_inferiority", "phenomenal_superiority"],
+      "disqualifying_failure_modes": ["overgeneralization", "domain_leakage"],
+      "relation_to_bridge_closure": "strictly_post_bridge",
+      "relation_to_human_comparator_availability": "requires_actual_comparator_availability",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "comparator_underdetermined",
+      "meaning": "The comparison target is live, but the current evidence and burden table are too weak to adjudicate its status.",
+      "required_burdens": ["under_determination_reporting_burden"],
+      "required_evidence_classes": ["incomplete_or_conflicted_artifacts"],
+      "does_not_imply": ["equivalence", "non_equivalence"],
+      "disqualifying_failure_modes": ["hidden_assumptions", "silent_promotion"],
+      "relation_to_bridge_closure": "common_initial_state_after_bpfm3",
+      "relation_to_human_comparator_availability": "can_hold_even_if_human_channel_exists",
+      "status": "defined_not_runtime_adjudicated"
+    }
+  ],
+  "blocked_inferences": [
+    "no_public_human_equivalence_claim",
+    "no_human_phenomenal_match_claim",
+    "no_superiority_claim",
+    "no_external_validation_claim"
+  ],
+  "interpretation_boundary": "The ladder is a comparative governance structure only. No rung is awarded in this block, and no rung authorizes public claims, external adjudication, or Paper 10."
+}

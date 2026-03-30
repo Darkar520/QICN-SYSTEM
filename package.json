@@ -32,6 +32,7 @@
     "verify:phenomenal-bridge-gate": "node scripts/verify-phenomenal-bridge-gate.cjs",
     "verify:phenomenal-bridge-ecosystem": "node scripts/verify-phenomenal-bridge-ecosystem.cjs",
     "verify:phenomenal-bridge-final-audit": "node scripts/verify-phenomenal-bridge-final-audit.cjs",
+    "verify:comparative-program-scaffolding": "node scripts/verify-comparative-program-scaffolding.cjs",
     "verify:descriptor-registry": "node scripts/validate-descriptor-registry.cjs",
     "verify:artifacts": "node scripts/verify-artifacts.cjs artifacts --scope=small_batch",
     "verify:policies": "node tests/output-support-labels.v65.test.js && node tests/output-consumption-policy.v66.test.js && node tests/output-surface-policy.v67.test.js && node tests/output-surface-enforcer.v68.test.js",

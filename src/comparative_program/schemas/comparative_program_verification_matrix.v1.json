@@ -1,0 +1,13 @@
+{
+  "artifact_name": "comparative_program_verification_matrix.json",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage2_opening",
+  "required_fields": [
+    "status",
+    "checks",
+    "warnings",
+    "failures",
+    "interpretation_boundary"
+  ],
+  "status": "schema_defined_not_emitted"
+}

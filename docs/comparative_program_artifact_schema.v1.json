@@ -1,0 +1,94 @@
+{
+  "artifact_role": "comparative_program_artifact_schema_registry",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage2_opening",
+  "layer_status": "formal_comparative_opening_governance_only",
+  "root_schema_refs": {
+    "comparative_program_manifest.json": "src/comparative_program/schemas/comparative_program_manifest.v1.json",
+    "human_comparator_assessment.json": "src/comparative_program/schemas/human_comparator_assessment.v1.json",
+    "human_equivalence_assessment.json": "src/comparative_program/schemas/human_equivalence_assessment.v1.json",
+    "cross_substrate_transport_assessment.json": "src/comparative_program/schemas/cross_substrate_transport_assessment.v1.json",
+    "comparative_program_verification_matrix.json": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
+    "comparative_program_readiness_gate.json": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json"
+  },
+  "artifacts": {
+    "comparative_program_manifest.json": {
+      "id": "comparative_program_manifest",
+      "artifact_name": "comparative_program_manifest.json",
+      "role": "comparative_program_manifest",
+      "artifact_class": "comparative_program_root_artifact",
+      "level": "runtime_root",
+      "authoritative_status": "schema_defined_only",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "minimum_fields": ["program_status", "upstream_refs", "artifact_inventory", "interpretation_boundary"],
+      "non_implications": ["Not comparator support.", "Not human equivalence.", "Not cross-substrate equivalence.", "Not external validation."],
+      "status": "schema_defined_not_emitted"
+    },
+    "human_comparator_assessment.json": {
+      "id": "human_comparator_assessment",
+      "artifact_name": "human_comparator_assessment.json",
+      "role": "human_comparator_assessment",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "run_level_comparator",
+      "authoritative_status": "schema_defined_only",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "minimum_fields": ["comparator_object_class", "admissibility_preconditions", "burden_status", "warnings", "interpretation_boundary"],
+      "non_implications": ["Not human equivalence.", "Not superiority.", "Not external adjudication."],
+      "status": "schema_defined_not_emitted"
+    },
+    "human_equivalence_assessment.json": {
+      "id": "human_equivalence_assessment",
+      "artifact_name": "human_equivalence_assessment.json",
+      "role": "human_equivalence_assessment",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "run_level_equivalence",
+      "authoritative_status": "schema_defined_only",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "minimum_fields": ["ladder_state", "required_burdens", "missing_evidence_classes", "warnings", "interpretation_boundary"],
+      "non_implications": ["Not human phenomenal equivalence.", "Not public claim authorization.", "Not metaphysical closure."],
+      "status": "schema_defined_not_emitted"
+    },
+    "cross_substrate_transport_assessment.json": {
+      "id": "cross_substrate_transport_assessment",
+      "artifact_name": "cross_substrate_transport_assessment.json",
+      "role": "cross_substrate_transport_assessment",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "run_level_transport",
+      "authoritative_status": "schema_defined_only",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "minimum_fields": ["transport_class", "preservation_axes", "error_budget_status", "warnings", "interpretation_boundary"],
+      "non_implications": ["Not cross-substrate equivalence.", "Not identity preservation.", "Not external adjudication."],
+      "status": "schema_defined_not_emitted"
+    },
+    "comparative_program_verification_matrix.json": {
+      "id": "comparative_program_verification_matrix",
+      "artifact_name": "comparative_program_verification_matrix.json",
+      "role": "comparative_program_verification_matrix",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "verification",
+      "authoritative_status": "schema_defined_only",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "minimum_fields": ["status", "checks", "warnings", "failures", "interpretation_boundary"],
+      "non_implications": ["Not comparator support.", "Not external validation.", "Not claim-facing evidence."],
+      "status": "schema_defined_not_emitted"
+    },
+    "comparative_program_readiness_gate.json": {
+      "id": "comparative_program_readiness_gate",
+      "artifact_name": "comparative_program_readiness_gate.json",
+      "role": "comparative_program_readiness_gate",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "readiness_gate",
+      "authoritative_status": "schema_defined_only",
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["ecosystem_candidate_surface", "audit_facing_package_surface", "controlled_statement_surface", "external_claim_facing_surface"],
+      "minimum_fields": ["program_state", "human_comparator_state", "equivalence_state", "transport_state", "blocking_reasons", "interpretation_boundary"],
+      "non_implications": ["Not equivalence support.", "Not public claim authorization.", "Not Paper 10 authorization."],
+      "status": "schema_defined_not_emitted"
+    }
+  }
+}

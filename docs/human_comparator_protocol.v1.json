@@ -1,0 +1,158 @@
+{
+  "artifact_role": "human_comparator_program_definition",
+  "schema_version": "1.0.0",
+  "layer_name": "Comparative Expansion Layer",
+  "layer_id": "comparative_expansion_layer.stage2_opening",
+  "implementation_status": "formal_comparative_opening_governance_only",
+  "runtime_status": "scaffold_only_no_runtime_comparator_execution",
+  "depends_on": {
+    "formal_upstream": [
+      "paper8_first_person_subjectivity",
+      "paper9_phenomenal_bridge_organization"
+    ],
+    "runtime_upstream": [
+      "subjectivity_runtime_layer.srt6",
+      "phenomenal_bridge_formal_layer.bpfm3"
+    ]
+  },
+  "program_scope": "human_comparator_program_opened_not_runtime_adjudicated",
+  "comparator_object_classes": [
+    {
+      "id": "non_comparable",
+      "name": "non_comparable",
+      "meaning": "No stable human-channel mapping, no homologous measurement contract, or no defensible shared comparison domain.",
+      "required_upstream_state": ["bridge_internal_closure"],
+      "disqualifiers": ["no_human_channel", "no_shared_task_family", "no_metric_mapping"],
+      "does_not_imply": ["human_difference_proven", "human_superiority"],
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "structurally_comparable",
+      "name": "structurally_comparable",
+      "meaning": "A bounded structural mapping can be stated between machine-side bridge artifacts and future human-side comparator artifacts.",
+      "required_upstream_state": ["bridge_internal_closure", "structural_mapping_defined"],
+      "disqualifiers": ["missing_homology_rules", "missing_error_budget"],
+      "does_not_imply": ["equivalence", "interventional_match"],
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "interventional_comparable",
+      "name": "interventional_comparable",
+      "meaning": "A matched intervention family can be specified for both machine-side and human-side channels under explicit burden symmetry.",
+      "required_upstream_state": ["bridge_internal_closure", "intervention_homology_defined"],
+      "disqualifiers": ["human_intervention_channel_absent", "unsafe_or_unmatched_intervention"],
+      "does_not_imply": ["equivalence", "transport_preservation"],
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "weakly_homologous",
+      "name": "weakly_homologous",
+      "meaning": "Some descriptive overlap exists, but the overlap is too weak for strong comparator burdens.",
+      "required_upstream_state": ["bridge_internal_closure"],
+      "disqualifiers": ["proxy_only_overlap", "channel_aliasing"],
+      "does_not_imply": ["equivalence", "non_equivalence"],
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "comparator_underdefined",
+      "name": "comparator_underdefined",
+      "meaning": "Comparator language exists, but the object, channels, or burden tables are still underspecified.",
+      "required_upstream_state": ["bridge_internal_closure"],
+      "disqualifiers": ["missing_domain_contract", "missing_artifact_family", "missing_threshold_policy"],
+      "does_not_imply": ["equivalence_not_open", "non_equivalent_under_current_burdens"],
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "comparator_blocked_by_missing_human_channel",
+      "name": "comparator_blocked_by_missing_human_channel",
+      "meaning": "Machine-side bridge artifacts exist, but no legitimate human measurement channel has been opened for the target burden.",
+      "required_upstream_state": ["bridge_internal_closure"],
+      "disqualifiers": ["human_channel_absent"],
+      "does_not_imply": ["human_failure", "machine_advantage"],
+      "status": "defined_not_runtime_adjudicated"
+    }
+  ],
+  "comparator_domains": [
+    {
+      "id": "bridge_coordinate_domain",
+      "name": "bridge_coordinate_domain",
+      "role": "compare future human-side measurements to machine-side bridge coordinates under shared typing and normalization rules",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "intervention_response_domain",
+      "name": "intervention_response_domain",
+      "role": "compare response signatures under matched intervention and matched negative-control families",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "transport_preservation_domain",
+      "name": "transport_preservation_domain",
+      "role": "compare preservation or fracture across substrate transitions under explicit invariance burdens",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "artifact_lineage_domain",
+      "name": "artifact_lineage_domain",
+      "role": "compare only artifacts with traceable provenance, schema lineage, and version compatibility",
+      "status": "defined_not_runtime_adjudicated"
+    }
+  ],
+  "admissibility_preconditions": [
+    "bridge_internal_closure_present",
+    "human_channel_contract_defined",
+    "measurement_homology_defined",
+    "error_budget_defined",
+    "surface_policy_defined",
+    "non_claims_defined"
+  ],
+  "comparator_burdens": [
+    {
+      "id": "bc_h1",
+      "name": "human_channel_burden",
+      "statement": "No human comparator program may proceed without an explicit human-side channel definition, artifact contract, and measurement error model.",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "bc_h2",
+      "name": "burden_symmetry",
+      "statement": "Machine-side and human-side comparisons must use homologous burdens rather than asymmetric descriptive convenience.",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "bc_h3",
+      "name": "intervention_homology",
+      "statement": "Interventional comparisons require matched perturbations, matched controls, and explicit channel limitations.",
+      "status": "defined_not_runtime_adjudicated"
+    },
+    {
+      "id": "bc_h4",
+      "name": "traceability_burden",
+      "statement": "Comparator artifacts must remain lineage-traceable, schema-typed, and surface-restricted.",
+      "status": "defined_not_runtime_adjudicated"
+    }
+  ],
+  "disqualifiers": [
+    "invented_human_data",
+    "hidden_equivalence_assumption",
+    "missing_human_measurement_channel",
+    "claim_facing_surface_bypass",
+    "external_adjudication_shortcut"
+  ],
+  "future_artifact_families": [
+    "human_comparator_manifest.json",
+    "human_comparator_assessment.json",
+    "human_equivalence_assessment.json",
+    "cross_substrate_transport_assessment.json",
+    "comparative_program_verification_matrix.json",
+    "comparative_program_readiness_gate.json"
+  ],
+  "blocked_inferences": [
+    "no_public_human_equivalence_inference",
+    "no_human_superiority_inference",
+    "no_external_validation_inference",
+    "no_metaphysical_subjecthood_inference",
+    "no_paper10_authorization"
+  ],
+  "interpretation_boundary": "Stage 2 opens the comparative program formally after BPF-M3 internal bridge closure. It defines comparator objects, burdens, and blocked inferences, but it does not emit human comparator verdicts, human equivalence verdicts, cross-substrate verdicts, external adjudication logic, or Paper 10 logic."
+}

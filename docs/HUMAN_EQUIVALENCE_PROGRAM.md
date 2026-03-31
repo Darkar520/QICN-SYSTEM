@@ -7,6 +7,7 @@ The Human Equivalence Program remains a ladder rather than a binary.
 - `Stage 2-0` defined the ladder and its interpretation boundary.
 - `Stage 2-M2` made bounded ladder assignment runtime-loadable under missing-channel logic.
 - `Stage 2-M3` adds pathway and homologation-contract semantics that prepare future ladder progression without awarding any new rung.
+- `Stage 2-M4` audits the whole comparative stack and defines the opening criteria that would still have to be met before any later Stage 3 ladder movement could even be tested.
 
 ## Runtime ladder semantics
 
@@ -40,6 +41,14 @@ The ladder now has runtime-adjacent access to:
 
 These new M3 states still do not license rung promotion.
 
+## What Stage 2-M4 adds
+
+`Stage 2-M4` still does not move the runtime to any higher rung. It adds:
+
+- a final internal audit that verifies the current ladder is still bounded correctly;
+- human-channel instantiation readiness so the ladder can distinguish contract structure from admissible future channel opening;
+- explicit Stage 3 opening criteria so ladder promotion is not silently smuggled in through governance drift.
+
 ## Runtime rule
 
 The runtime ladder evaluator must not promote a candidate rung merely because
@@ -59,6 +68,7 @@ At this stage the ladder can honestly express only that:
 - equivalence may remain formally inexpressible under missing typed counterparts;
 - the comparator remains underdetermined;
 - future homologation structure is defined more explicitly than it was in `Stage 2-M2`, but no verdict is authorized.
+- the comparative layer may be internally closed while the ladder still remains `equivalence_not_open`.
 
 ## What still does not follow
 
@@ -70,3 +80,4 @@ No assigned rung in `Stage 2-M3` implies:
 - human superiority;
 - metaphysical identity;
 - external adjudication.
+- Paper 10 authorization.

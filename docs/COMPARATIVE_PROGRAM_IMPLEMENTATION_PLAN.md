@@ -77,8 +77,39 @@ Its three subprograms remain one stack:
   - real human channels
   - real human-side counterpart artifacts
   - matched human interventions and negative controls
+  - final internal comparative closure audit
+  - human-channel instantiation readiness
   - external comparative adjudication
   - Paper 10
+
+## Stage2-M4: comparative closure audit and opening gate
+
+- objective
+  - close Stage 2 internally by auditing Stage 2 governance, Stage 2-M2 runtime opening, and Stage 2-M3 contract operationalization, while defining explicit Stage 3 opening criteria and a bounded Paper 10 readiness gate.
+- modules
+  - `ExternalAdjudicationOpeningCriteriaRegistry`
+  - `HumanChannelInstantiationReadinessEvaluator`
+  - `ComparativeFinalInternalAuditor`
+  - `Paper10ComparativeReadinessGateBuilder`
+  - `ComparativeClosureBuilder`
+- artifacts
+  - `comparative_final_internal_audit.json`
+  - `human_channel_instantiation_readiness.json`
+  - `paper10_comparative_readiness_gate.json`
+  - `comparative_program_manifest.json`
+  - `comparative_program_verification_matrix.json`
+  - `comparative_program_readiness_gate.json`
+- closes
+  - final internal comparative closure for Stage 2.
+- remains open
+  - instantiated human channels
+  - instantiated counterpart artifacts
+  - matched human interventions and negative controls
+  - satisfied burden symmetry
+  - satisfied error-budget binding
+  - mature transition contracts with target counterparts
+  - external comparative adjudication
+  - Paper 10 manuscript work
 
 ## Stage2-3: human-channel instantiation
 
@@ -102,6 +133,8 @@ Its three subprograms remain one stack:
 
 ## Current state
 
-`Stage2-0`, `Stage2-M2`, and `Stage2-M3` are now implemented. Actual human-side measurement
-channels and counterpart artifacts remain absent, so the comparative program is
-contract-operationalized but still bounded and non-adjudicative.
+`Stage2-0`, `Stage2-M2`, `Stage2-M3`, and `Stage2-M4` are now implemented. Actual
+human-side measurement channels and counterpart artifacts remain absent, so the
+comparative program is now internally closed enough to decide that `Stage 3`
+still may not open yet. The layer remains non-adjudicative, non-equivalence-
+claiming, and non-Paper-10-authorizing.

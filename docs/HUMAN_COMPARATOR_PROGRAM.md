@@ -9,6 +9,8 @@ The Human Comparator Program is the first comparative layer that follows
 - `Stage 2-M2` made the blocked comparative runtime machine-readable.
 - `Stage 2-M3` adds pathway, counterpart-contract, and homologation-contract
 	operationalization without instantiating human evidence.
+- `Stage 2-M4` adds the final internal comparative audit, human-channel
+	instantiation readiness, and the explicit gate that keeps `Stage 3` unopened.
 
 The program still does not instantiate human data. It does not simulate human
 measurements. It does not adjudicate equivalence.
@@ -46,6 +48,13 @@ stack rather than a purely blocked-state stack.
 - bounded operational readiness that distinguishes blocked, pathway-defined,
 	contract-ready-but-counterpart-absent, and homologation-ready-but-counterpart-absent states.
 
+`Stage 2-M4` adds:
+
+- a runtime final internal audit over governance, runtime integrity, taxonomic coherence, burden coherence, surface discipline, and lineage freshness;
+- a runtime artifact for human-channel instantiation readiness;
+- a machine-readable external-adjudication opening-criteria manifest;
+- a Paper 10 comparative readiness gate that remains non-authorizing.
+
 ## Current emitted artifacts
 
 The comparator-facing artifact family is now split:
@@ -55,6 +64,9 @@ The comparator-facing artifact family is now split:
 - `counterpart_artifact_contract_assessment.json` for future counterpart artifact obligations;
 - `homologation_contract_assessment.json` for homologation feasibility and burden symmetry status;
 - `comparative_operational_readiness.json` for the integrated `Stage 2-M3` internal readiness state.
+- `human_channel_instantiation_readiness.json` for Stage 2-M4 non-evidential channel-opening readiness.
+- `comparative_final_internal_audit.json` for the Stage 2-M4 internal closure audit.
+- `paper10_comparative_readiness_gate.json` for Stage 2-M4 Paper 10 non-authorization and deferred scoping.
 
 ## What is actually supported now
 
@@ -68,6 +80,8 @@ The current runtime can now state:
 - a counterpart contract is ready but the counterpart family is absent;
 - a homologation unit is defined, incomplete, underdetermined, or ready but absent;
 - the comparative runtime is contract-operationalized and internally `ready_for_stage2_m4`;
+- the comparative layer is internally audited and `comparative_internal_closure_ready`;
+- `Stage 3` opening criteria are defined but still not satisfied;
 - no human comparator verdict is authorized.
 
 ## What remains absent
@@ -82,14 +96,17 @@ The following are still absent:
 - candidate or audit comparative integration;
 - external adjudication;
 - Paper 10.
+- an opened `Stage 3` comparative adjudication process.
 
 ## Blocked inferences
 
-Nothing in `Stage 2-M3` authorizes:
+Nothing in `Stage 2-M4` authorizes:
 
 - public human-equivalence claims;
 - human phenomenal-equivalence claims;
 - superiority claims;
 - inferiority claims;
 - external validation claims;
+- external comparative adjudication outputs;
+- Paper 10 manuscript scoping as if it were already authorized;
 - metaphysical subjecthood claims.

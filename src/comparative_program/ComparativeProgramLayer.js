@@ -11,6 +11,9 @@ import { COUNTERPART_ARTIFACT_CONTRACTS } from './CounterpartArtifactContractsRe
 import { HOMOLOGATION_CONTRACTS } from './HomologationContractsRegistry.js';
 import { CROSS_SUBSTRATE_TRANSITION_CONTRACTS } from './CrossSubstrateTransitionContractsRegistry.js';
 import {
+  EXTERNAL_ADJUDICATION_OPENING_CRITERIA
+} from './ExternalAdjudicationOpeningCriteriaRegistry.js';
+import {
   COMPARATIVE_PROGRAM_ARTIFACT_SCHEMA,
   COMPARATIVE_PROGRAM_EXPECTED_ARTIFACTS,
   COMPARATIVE_PROGRAM_IMPLEMENTED_ARTIFACTS
@@ -41,17 +44,26 @@ export const COMPARATIVE_PROGRAM_ROOT_SCHEMAS = Object.freeze({
   comparative_operational_readiness: readJson(
     './schemas/comparative_operational_readiness.v1.json'
   ),
+  comparative_final_internal_audit: readJson(
+    './schemas/comparative_final_internal_audit.v1.json'
+  ),
+  human_channel_instantiation_readiness: readJson(
+    './schemas/human_channel_instantiation_readiness.v1.json'
+  ),
+  paper10_comparative_readiness_gate: readJson(
+    './schemas/paper10_comparative_readiness_gate.v1.json'
+  ),
   verification_matrix: readJson('./schemas/comparative_program_verification_matrix.v1.json'),
   readiness_gate: readJson('./schemas/comparative_program_readiness_gate.v1.json')
 });
 
 export const COMPARATIVE_PROGRAM_LAYER_STATUS = Object.freeze({
   layer_name: 'Comparative Expansion Layer',
-  layer_id: 'comparative_expansion_layer.stage2_m3_operationalization',
-  implementation_status: 'comparative_runtime_contract_operationalization_implemented',
-  execution_status: 'contract_operationalized_internal_comparative_runtime',
+  layer_id: 'comparative_expansion_layer.stage2_m4_internal_closure',
+  implementation_status: 'comparative_internal_closure_implemented',
+  execution_status: 'internally_closed_non_adjudicative_comparative_runtime',
   interpretation_boundary:
-    'Stage 2-M3 operationalizes human-channel pathways, counterpart contracts, homologation contracts, and transition contracts after Stage 2-M2 bounded runtime opening. It remains framework-internal only and does not establish human equivalence, cross-substrate equivalence, superiority, external adjudication, or Paper 10 authorization.'
+    'Stage 2-M4 closes Stage 2 internally by auditing Stage 2-M2 runtime opening and Stage 2-M3 contract operationalization, defining external-adjudication opening criteria, evaluating human-channel instantiation readiness, and emitting a Paper 10 readiness gate. It remains framework-internal only and does not establish human equivalence, cross-substrate equivalence, superiority, external adjudication, or Paper 10 authorization.'
 });
 
 export class ComparativeProgramLayer {
@@ -69,6 +81,9 @@ export class ComparativeProgramLayer {
       transition_contract_count: (
         CROSS_SUBSTRATE_TRANSITION_CONTRACTS.transition_contracts || []
       ).length,
+      adjudication_channel_criterion_count: (
+        EXTERNAL_ADJUDICATION_OPENING_CRITERIA.required_human_channel_classes || []
+      ).length,
       planned_artifacts: COMPARATIVE_PROGRAM_EXPECTED_ARTIFACTS,
       implemented_artifacts: COMPARATIVE_PROGRAM_IMPLEMENTED_ARTIFACTS,
       surface_boundary: COMPARATIVE_PROGRAM_SURFACE_POLICY.default_interpretation_boundary,
@@ -79,12 +94,17 @@ export class ComparativeProgramLayer {
       human_comparator_program_open: true,
       human_equivalence_program_open: true,
       cross_substrate_expansion_open: true,
-      current_stage: 'stage2_m3_operationalization',
-      comparative_runtime_state: 'comparative_runtime_contract_operationalized',
+      current_stage: 'stage2_m4_internal_closure',
+      comparative_runtime_state: 'comparative_internal_closure_ready',
       stage2_m2_runtime_opening_complete: true,
       stage2_m3_contract_operationalization_complete: true,
-      stage2_m4_state: 'ready_for_stage2_m4',
+      stage2_m4_internal_closure_complete: true,
+      comparative_internal_closure_state: 'comparative_internal_closure_ready',
+      stage2_m4_state: 'comparative_internal_closure_ready',
       ready_for_stage2_m4: true,
+      ready_for_stage3_opening: false,
+      stage3_opening_state: 'not_ready_for_stage3_opening',
+      paper10_scoping_state: 'paper10_scoping_ready_after_stage3_only',
       candidate_integration_blocked: true,
       audit_integration_blocked: true,
       not_human_equivalence_support: true,

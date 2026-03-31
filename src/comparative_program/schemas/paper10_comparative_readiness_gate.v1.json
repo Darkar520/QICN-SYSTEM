@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "paper10_comparative_readiness_gate.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "comparative_layer_id",
+    "layer_version",
+    "estimator_version",
+    "implementation_status",
+    "paper10_readiness_status",
+    "paper10_authorization_state",
+    "blocking_reasons",
+    "warnings",
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "paper10_comparative_readiness_gate" },
+    "artifact_name": { "const": "paper10_comparative_readiness_gate.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparative_layer_id": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "estimator_version": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "paper10_readiness_status": { "type": "string" },
+    "paper10_authorization_state": { "type": "string" },
+    "blocking_reasons": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "boundary_flags": { "type": "object" },
+    "non_implications": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

@@ -1,0 +1,322 @@
+{
+  "artifact_role": "comparative_final_internal_audit",
+  "artifact_name": "comparative_final_internal_audit.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "comparative_layer_id": "comparative_expansion_layer.stage2_m4_internal_closure",
+  "layer_version": "comparative_expansion_layer.stage2_m4.final_internal_audit.v1",
+  "estimator_version": "comparative_final_internal_auditor.stage2_m4.v1",
+  "implementation_status": "comparative_internal_closure_implemented",
+  "audit_status": "comparative_audit_pass_with_warnings",
+  "current_comparative_support_class": "comparative_internal_support_only",
+  "current_comparative_readiness_class": "comparative_internal_closure_ready",
+  "adjudication_criteria_status": "adjudication_criteria_partially_satisfied",
+  "stage3_opening_state": "not_ready_for_stage3_opening",
+  "layer_integrity": {
+    "stage2_governance_integrity": true,
+    "stage2_m2_runtime_integrity": true,
+    "stage2_m3_contract_runtime_integrity": true,
+    "taxonomy_coherence": true,
+    "burden_coherence": true,
+    "homologation_coherence": true,
+    "transition_contract_coherence": true,
+    "readiness_coherence": true,
+    "surface_discipline": true,
+    "anti_overclaim_discipline": true,
+    "path_leak_discipline": true,
+    "cross_layer_lineage_schema_consistency": true
+  },
+  "current_states": {
+    "stage2_m2_runtime_state": "comparative_runtime_open_but_human_blocked",
+    "stage2_m3_operational_state": "comparative_runtime_homologation_ready_but_counterpart_absent",
+    "human_channel_instantiation_state": "channel_instantiation_not_ready_for_stage3",
+    "adjudication_criteria_status": "adjudication_criteria_partially_satisfied"
+  },
+  "failed_or_open_burdens": [
+    {
+      "burden_id": "human_channel_burden",
+      "status": "blocked_by_missing_human_channel",
+      "blocked_reason": "missing_human_channel",
+      "source": "stage2_m2_runtime"
+    },
+    {
+      "burden_id": "burden_symmetry",
+      "status": "comparator_underdefined",
+      "blocked_reason": "missing_human_channel_and_missing_error_model",
+      "source": "stage2_m2_runtime"
+    },
+    {
+      "burden_id": "artifact_homology_burden",
+      "status": "blocked_by_missing_human_channel",
+      "blocked_reason": "human_artifact_family_absent",
+      "source": "stage2_m2_runtime"
+    },
+    {
+      "burden_id": "intervention_homology_burden",
+      "status": "blocked_by_missing_human_channel",
+      "blocked_reason": "human_intervention_channel_absent",
+      "source": "stage2_m2_runtime"
+    },
+    {
+      "burden_id": "typing_contract_burden",
+      "status": "structurally_open_but_not_adjudicated",
+      "blocked_reason": "human_counterpart_typed_contract_absent",
+      "source": "stage2_m2_runtime"
+    },
+    {
+      "burden_id": "error_budget_burden",
+      "status": "structurally_open_but_not_adjudicated",
+      "blocked_reason": "runtime_error_budgets_not_instantiated",
+      "source": "stage2_m2_runtime"
+    },
+    {
+      "burden_id": "transport_preservation_burden",
+      "status": "comparator_underdefined",
+      "blocked_reason": "transport_mapping_contract_absent",
+      "source": "stage2_m2_runtime"
+    }
+  ],
+  "open_readiness_requirements": [
+    "stage3_channel.self_report",
+    "stage3_channel.intervention_response",
+    "stage3_channel.temporal_structure",
+    "stage3_channel.valence_topology",
+    "stage3_channel.embodiment_boundary",
+    "stage3_channel.ambiguity_load",
+    "stage3_channel.transport_preservation",
+    "counterpart_family.self_report",
+    "counterpart_family.intervention_response",
+    "counterpart_family.temporal_structure",
+    "counterpart_family.valence_topology",
+    "counterpart_family.embodiment_boundary",
+    "counterpart_family.ambiguity_load",
+    "counterpart_family.transport",
+    "homologation.self_report",
+    "homologation.intervention_response",
+    "homologation.temporal_structure",
+    "homologation.valence_topology",
+    "homologation.ambiguity_load",
+    "homologation.embodiment_boundary",
+    "homologation.transport_transition",
+    "intervention_symmetry.primary",
+    "human_channel_burden",
+    "burden_symmetry",
+    "artifact_homology_burden",
+    "intervention_homology_burden",
+    "typing_contract_burden",
+    "error_budget_burden",
+    "transport_preservation_burden",
+    "error_budget.embodiment_boundary",
+    "error_budget.transition_axes",
+    "transition_maturity.bridge_coordinate",
+    "transition_maturity.intervention_signature",
+    "transition_maturity.lineage_continuity",
+    "transition_maturity.embodiment_boundary",
+    "missing_legitimate_human_capture_route",
+    "missing_counterpart_artifact_family",
+    "counterpart_artifact_family_absent",
+    "missing_human_capture_route",
+    "forbidden_proxy_exposure",
+    "missing_legitimate_human_intervention_route",
+    "missing_human_intervention_route",
+    "missing_instantiated_temporal_trace_route",
+    "missing_temporal_capture_route",
+    "missing_instantiated_valence_topology_route",
+    "missing_valence_topology_route",
+    "missing_legitimate_embodiment_capture_route",
+    "embodiment_error_budget_not_instantiated",
+    "embodiment_error_budget_defined",
+    "missing_embodiment_capture_route",
+    "embodiment_error_budget_absent",
+    "embodiment_boundary_homologation:error_budget_not_instantiated",
+    "missing_instantiated_ambiguity_route",
+    "missing_ambiguity_capture_route",
+    "target_counterpart_absent",
+    "transition_lineage_map_absent",
+    "axis_specific_error_budgets_not_instantiated",
+    "missing_target_counterpart",
+    "missing_transition_lineage_map",
+    "axis_specific_error_budget_absent",
+    "transport_transition_homologation:error_budget_not_instantiated",
+    "source_projection_manifest",
+    "target_counterpart_transition_manifest",
+    "schema_compatibility_proof",
+    "target_counterpart_lineage",
+    "branch_accounting",
+    "human_self_report_trace.json",
+    "human_self_report_channel_manifest.json",
+    "human_intervention_profile.json",
+    "human_negative_control_profile.json",
+    "human_temporal_structure_report.json",
+    "human_valence_topology_report.json",
+    "human_embodiment_boundary_report.json",
+    "human_ambiguity_load_report.json",
+    "cross_substrate_transport_contract.json",
+    "cross_substrate_lineage_map.json",
+    "target_substrate_counterpart_manifest.json",
+    "source_intervention_profile",
+    "target_intervention_profile",
+    "target_negative_control_profile",
+    "target_intervention_protocol_version",
+    "runtime_error_budgets_not_instantiated",
+    "transition_error_budgets_not_instantiated",
+    "transition_lineage_map",
+    "target_artifact_provenance_chain",
+    "source_embodiment_boundary_trace",
+    "target_embodiment_boundary_trace",
+    "target_embodiment_environment_manifest"
+  ],
+  "warnings": [
+    "internal_closure_is_non_adjudicative",
+    "open_burdens_remain_explicit",
+    "stage3_opening_remains_gated",
+    "paper10_remains_non_authorized"
+  ],
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "not_human_equivalence_support": true,
+    "not_superiority_support": true,
+    "not_cross_substrate_equivalence_support": true,
+    "not_identity_preservation_support": true,
+    "not_external_adjudication": true,
+    "not_paper10_authorization": true,
+    "internal_audit_only": true,
+    "comparative_internal_closure_ready": true
+  },
+  "non_implications": [
+    "Audit pass is not human equivalence.",
+    "Audit pass is not superiority or inferiority.",
+    "Audit pass is not external adjudication.",
+    "Audit pass is not Paper 10 authorization."
+  ],
+  "interpretation_boundary": "Framework-internal only; the comparative final internal audit records internal integrity, closure readiness, adjudication-opening criteria status, and remaining burdens after Stage 2-M4. It does not open external adjudication, does not authorize equivalence or superiority, and does not authorize Paper 10.",
+  "provenance": {
+    "generated_at": "2026-03-31T21:55:08.538Z",
+    "stage2_m2_readiness_gate_ref": "artifacts/comparative_program/stage2m2/comparative_program_readiness_gate.json",
+    "stage2_m3_readiness_gate_ref": "artifacts/comparative_program/stage2m3/comparative_program_readiness_gate.json",
+    "stage2_m4_readiness_gate_ref": "artifacts/comparative_program/stage2m4/comparative_program_readiness_gate.json",
+    "current_lineage": {
+      "layer_version": "comparative_expansion_layer.stage2_m4.internal_closure.v1",
+      "estimator_version": "comparative_closure_builder.stage2_m4.v1",
+      "comparator_protocol": {
+        "ref": "docs/human_comparator_protocol.v1.json",
+        "sha256": "6b71d69d114ce4662a45cce25f36148e8f8da1106f7cdba401b3dee2d3c1d0c6"
+      },
+      "equivalence_ladder": {
+        "ref": "docs/human_equivalence_ladder.v1.json",
+        "sha256": "6541ce52c03404562ddbf75b2ef275f2f0cef61ac33f2aa84d3910dea424670f"
+      },
+      "transport_protocol": {
+        "ref": "docs/cross_substrate_transport_protocol.v1.json",
+        "sha256": "ed099176336b3b4a3e139506a43c9f55053889239ffbee6b6769f6d14508b761"
+      },
+      "human_channel_requirements": {
+        "ref": "docs/human_channel_requirements.v1.json",
+        "sha256": "9b8e05fc033aca8806a93dd78d64bc84799534bf9530f7eae0ea52a18412be85"
+      },
+      "burden_matrix": {
+        "ref": "docs/comparator_burden_matrix.v1.json",
+        "sha256": "97ea0be5967d367ce6f015af079fbc6c8cd5816ee0a881076b0585fa77e7f7f3"
+      },
+      "artifact_schema": {
+        "ref": "docs/comparative_program_artifact_schema.v1.json",
+        "sha256": "c9a43c27118ebe3e30b7ec9ea67cc64738f3d33a9193e4925b1a2e6cb70eb7d8"
+      },
+      "surface_policy": {
+        "ref": "docs/comparative_program_surface_policy.v1.json",
+        "sha256": "ca6a4bccfe0475773ebc8b2c5a77aae373460c01602e77a50d38a71108c35d04"
+      },
+      "root_schema_hashes": {
+        "comparative_program_manifest.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_manifest.v1.json",
+          "sha256": "d99f84496b843e45519650d144bf1205b88b896887e4907f709830791cd0644d"
+        },
+        "human_comparator_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_comparator_assessment.v1.json",
+          "sha256": "0f349d5421a43701dbe25eaf7d414f7b34ff3480a9e1d19ad3f823f88fb73ef7"
+        },
+        "human_equivalence_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_equivalence_assessment.v1.json",
+          "sha256": "089674f38b35fc2587f02262db7e14276608b882f5e82e4ea3cf3cee4f5de823"
+        },
+        "cross_substrate_transport_assessment.json": {
+          "ref": "src/comparative_program/schemas/cross_substrate_transport_assessment.v1.json",
+          "sha256": "5b979a3ec6ebd4ebc6caa08b66dccf0863de9558ac7cf933b32eaf7ecffbd8de"
+        },
+        "human_channel_pathway_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_channel_pathway_assessment.v1.json",
+          "sha256": "fccf0c3b8cfcd7395d2347a08a257ec3fbfeb8a0d76791f63024c9ac76714ec9"
+        },
+        "counterpart_artifact_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/counterpart_artifact_contract_assessment.v1.json",
+          "sha256": "b85e558e9d901c935971665c49c71d848c19ac57d9f1e09ea70a92543fdb42dc"
+        },
+        "homologation_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/homologation_contract_assessment.v1.json",
+          "sha256": "7701e94180fa24efa4a0b88394bcb9ae1580df5ede5ec3d49f701486ea2674f1"
+        },
+        "cross_substrate_transition_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/cross_substrate_transition_contract_assessment.v1.json",
+          "sha256": "9c3ba1a15e3f0ad83f9406fa1028cfcc0fa56058d093c07e442541fac95e5d22"
+        },
+        "comparative_operational_readiness.json": {
+          "ref": "src/comparative_program/schemas/comparative_operational_readiness.v1.json",
+          "sha256": "e943dd95f7d7fc8651fd119efb16074df630f11cc7e557fcd4540c1e8e230fa1"
+        },
+        "comparative_final_internal_audit.json": {
+          "ref": "src/comparative_program/schemas/comparative_final_internal_audit.v1.json",
+          "sha256": "1740d4e541252ed09f748f7b4a066fdfa2963be2dee0c944b01fe0b42e656b0d"
+        },
+        "human_channel_instantiation_readiness.json": {
+          "ref": "src/comparative_program/schemas/human_channel_instantiation_readiness.v1.json",
+          "sha256": "74e24208c862c627007bd512e36c7236d45af0a12ffceb124657e6471d0b2b86"
+        },
+        "paper10_comparative_readiness_gate.json": {
+          "ref": "src/comparative_program/schemas/paper10_comparative_readiness_gate.v1.json",
+          "sha256": "f5dbe1b18f43bac1f51419bf159862aae210a569ec30064352fa952a1c3c4c0f"
+        },
+        "comparative_program_verification_matrix.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
+          "sha256": "6cab7c9939a0615cdd857969f567fd51eb16187c7cbba9f36d802a9a02cae26a"
+        },
+        "comparative_program_readiness_gate.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json",
+          "sha256": "3ed99a108a467c01b51cb7215bec7f0d2e20dace5bc31deb967747aae871150f"
+        }
+      },
+      "qicn_system": {
+        "branch": "main",
+        "head": "44c2df36f76fadc292963c988d4550bad672c8df",
+        "upstream": "origin/main"
+      },
+      "qicn_release": {
+        "branch": "main",
+        "head": "4779eb1c78341185d03b14bbb300a673e255f407",
+        "upstream": "origin/main"
+      },
+      "human_channel_pathways": {
+        "ref": "docs/human_channel_pathways.v1.json",
+        "sha256": "1e81b784594648c962bd44f5c37fa651df9a6364ee64cb499b2738dc9c0c253a"
+      },
+      "counterpart_artifact_contracts": {
+        "ref": "docs/counterpart_artifact_contracts.v1.json",
+        "sha256": "acc60b4428b08b4fb25bff32d876883fc343512f71b514e83e0a287bf4f077ad"
+      },
+      "homologation_contracts": {
+        "ref": "docs/homologation_contracts.v1.json",
+        "sha256": "7d087d17e961122bfc9ae4cc959ca753c1bf1a502de5907c6002f98632c0faf3"
+      },
+      "cross_substrate_transition_contracts": {
+        "ref": "docs/cross_substrate_transition_contracts.v1.json",
+        "sha256": "39c83467b027aa89fdc73694cdad6a23be9d40d0520643576ada566f353efd6f"
+      },
+      "external_adjudication_opening_criteria": {
+        "ref": "docs/external_adjudication_opening_criteria.v1.json",
+        "sha256": "b41e504a6544c64eb85814216c34c11d558256e39082708799a36fb7f6c210d8"
+      },
+      "stage2_m2_readiness_state": "comparative_runtime_open_but_human_blocked",
+      "stage2_m3_operational_state": "comparative_runtime_homologation_ready_but_counterpart_absent"
+    }
+  },
+  "schema_ref": "src/comparative_program/schemas/comparative_final_internal_audit.v1.json"
+}

@@ -1,8 +1,8 @@
 {
   "artifact_role": "comparative_program_artifact_schema_registry",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage2_m3_operationalization",
-  "layer_status": "comparative_runtime_contract_operationalization_implemented",
+  "layer_id": "comparative_expansion_layer.stage2_m4_internal_closure",
+  "layer_status": "comparative_internal_closure_implemented",
   "root_schema_refs": {
     "comparative_program_manifest.json": "src/comparative_program/schemas/comparative_program_manifest.v1.json",
     "human_comparator_assessment.json": "src/comparative_program/schemas/human_comparator_assessment.v1.json",
@@ -13,6 +13,9 @@
     "homologation_contract_assessment.json": "src/comparative_program/schemas/homologation_contract_assessment.v1.json",
     "cross_substrate_transition_contract_assessment.json": "src/comparative_program/schemas/cross_substrate_transition_contract_assessment.v1.json",
     "comparative_operational_readiness.json": "src/comparative_program/schemas/comparative_operational_readiness.v1.json",
+    "comparative_final_internal_audit.json": "src/comparative_program/schemas/comparative_final_internal_audit.v1.json",
+    "human_channel_instantiation_readiness.json": "src/comparative_program/schemas/human_channel_instantiation_readiness.v1.json",
+    "paper10_comparative_readiness_gate.json": "src/comparative_program/schemas/paper10_comparative_readiness_gate.v1.json",
     "comparative_program_verification_matrix.json": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
     "comparative_program_readiness_gate.json": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json"
   },
@@ -337,6 +340,110 @@
         "Not human equivalence.",
         "Not transport preservation.",
         "Not external adjudication."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "comparative_final_internal_audit.json": {
+      "id": "comparative_final_internal_audit",
+      "artifact_name": "comparative_final_internal_audit.json",
+      "role": "comparative_final_internal_audit",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "final_internal_audit",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "audit_status",
+        "current_comparative_support_class",
+        "current_comparative_readiness_class",
+        "layer_integrity",
+        "failed_or_open_burdens",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not human equivalence.",
+        "Not external adjudication.",
+        "Not Paper 10 authorization."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "human_channel_instantiation_readiness.json": {
+      "id": "human_channel_instantiation_readiness",
+      "artifact_name": "human_channel_instantiation_readiness.json",
+      "role": "human_channel_instantiation_readiness",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "channel_instantiation_readiness",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "instantiation_layer_state",
+        "channel_instantiation_statuses",
+        "instantiation_summary",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not human evidence.",
+        "Not human equivalence.",
+        "Not external adjudication."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "paper10_comparative_readiness_gate.json": {
+      "id": "paper10_comparative_readiness_gate",
+      "artifact_name": "paper10_comparative_readiness_gate.json",
+      "role": "paper10_comparative_readiness_gate",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "paper10_readiness_gate",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "paper10_readiness_status",
+        "paper10_authorization_state",
+        "blocking_reasons",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not Paper 10 authorization.",
+        "Not external adjudication.",
+        "Not human equivalence."
       ],
       "status": "implemented_runtime_comparative_artifact"
     },

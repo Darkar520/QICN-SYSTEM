@@ -1,0 +1,490 @@
+{
+  "layer_id": "comparative_expansion_layer.stage2_m4_internal_closure",
+  "implementation_status": "comparative_internal_closure_implemented",
+  "audit_status_classes": [
+    {
+      "id": "comparative_audit_incomplete",
+      "definition": "Internal integrity or closure coherence is not yet sufficient for a closed Stage 2 audit."
+    },
+    {
+      "id": "comparative_audit_pass_with_warnings",
+      "definition": "Internal integrity passes while explicit burdens or opening criteria remain open."
+    },
+    {
+      "id": "comparative_audit_pass",
+      "definition": "Internal integrity and closure checks pass without open internal burdens."
+    }
+  ],
+  "closure_status_classes": [
+    {
+      "id": "comparative_internal_closure_not_ready",
+      "definition": "Stage 2 remains internally incomplete or internally inconsistent."
+    },
+    {
+      "id": "comparative_internal_closure_ready",
+      "definition": "Stage 2 is internally closed enough to decide whether Stage 3 may open later."
+    }
+  ],
+  "criteria_status_classes": [
+    {
+      "id": "adjudication_not_open",
+      "definition": "No admissible Stage 3 opening criteria have yet been defined."
+    },
+    {
+      "id": "adjudication_criteria_defined",
+      "definition": "Criteria exist, but current runtime evidence satisfies none of the material readiness groups."
+    },
+    {
+      "id": "adjudication_criteria_partially_satisfied",
+      "definition": "Some internal and governance conditions are satisfied, but Stage 3 cannot yet open."
+    },
+    {
+      "id": "adjudication_criteria_ready_but_uninstantiated",
+      "definition": "Internal comparative criteria are structurally ready, but Stage 3 opening would still begin from uninstantiated human channels rather than existing evidence."
+    }
+  ],
+  "stage3_opening_classes": [
+    {
+      "id": "ready_for_stage3_opening",
+      "definition": "Internal closure is complete and Stage 3 may open later under explicit non-claim boundaries."
+    },
+    {
+      "id": "not_ready_for_stage3_opening",
+      "definition": "Stage 3 may not open because material adjudication-opening criteria remain unsatisfied."
+    }
+  ],
+  "instantiation_status_classes": [
+    {
+      "id": "instantiation_not_open",
+      "definition": "No legitimate instantiation protocol can be opened under current structure."
+    },
+    {
+      "id": "instantiation_contract_incomplete",
+      "definition": "Instantiation remains blocked by incomplete pathway, homologation, or transition contracts."
+    },
+    {
+      "id": "instantiation_ready_but_no_counterpart",
+      "definition": "Contracts are materially prepared, but the required counterpart artifact family remains absent."
+    },
+    {
+      "id": "instantiation_ready_but_governance_blocked",
+      "definition": "Instantiation remains blocked because current substitutions are forbidden by governance and cannot be used as evidence."
+    },
+    {
+      "id": "instantiation_formally_open_but_uninstantiated",
+      "definition": "A legitimate instantiation protocol could open, but no human-side channel has yet been instantiated."
+    }
+  ],
+  "paper10_status_classes": [
+    {
+      "id": "not_paper10_authorized",
+      "definition": "Paper 10 remains closed and unauthorized."
+    },
+    {
+      "id": "paper10_scoping_not_open",
+      "definition": "Even Paper 10 scoping is not honest under current internal state."
+    },
+    {
+      "id": "paper10_scoping_conditionally_open",
+      "definition": "Paper 10 scoping could be discussed only after Stage 3 legitimately opens."
+    },
+    {
+      "id": "paper10_scoping_ready_after_stage3_only",
+      "definition": "Stage 2 is internally closed, but any Paper 10 scoping remains deferred until after Stage 3."
+    }
+  ],
+  "required_human_channel_classes": [
+    {
+      "criterion_id": "stage3_channel.self_report",
+      "channel_id": "self_report_channel",
+      "pathway_id": "self_report_structural_pathway",
+      "counterpart_contract_id": "self_report_counterpart_contract",
+      "homologation_unit_id": "self_report_structural_homologation",
+      "required_conditions": [
+        "legitimate_human_collection_route_open",
+        "forbidden_proxy_exclusion_preserved",
+        "typed_counterpart_family_instantiated",
+        "session_lineage_manifest_bound",
+        "homologation_preconditions_bound"
+      ],
+      "governance_disqualifiers": [
+        "synthetic_human_self_report_generation",
+        "machine_self_report_relabeling",
+        "language_model_narration_without_human_measurement"
+      ],
+      "non_implications": [
+        "A self-report criterion does not authorize equivalence by itself."
+      ]
+    },
+    {
+      "criterion_id": "stage3_channel.intervention_response",
+      "channel_id": "intervention_response_channel",
+      "pathway_id": "intervention_response_pathway",
+      "counterpart_contract_id": "intervention_response_counterpart_contract",
+      "homologation_unit_id": "intervention_response_homologation",
+      "required_conditions": [
+        "matched_human_intervention_route_open",
+        "matched_negative_control_route_open",
+        "typed_counterpart_family_instantiated",
+        "matched_protocol_version_bound",
+        "homologation_preconditions_bound"
+      ],
+      "governance_disqualifiers": [
+        "synthetic_human_intervention_profiles",
+        "control_free_proxy_interventions"
+      ],
+      "non_implications": [
+        "An intervention criterion does not authorize interventional equivalence by itself."
+      ]
+    },
+    {
+      "criterion_id": "stage3_channel.temporal_structure",
+      "channel_id": "temporal_structure_channel",
+      "pathway_id": "temporal_structure_pathway",
+      "counterpart_contract_id": "temporal_structure_counterpart_contract",
+      "homologation_unit_id": "temporal_structure_homologation",
+      "required_conditions": [
+        "typed_temporal_collection_route_open",
+        "typed_counterpart_family_instantiated",
+        "shared_temporal_segmentation_contract_bound"
+      ],
+      "governance_disqualifiers": [
+        "summary_only_temporal_proxy"
+      ],
+      "non_implications": [
+        "Temporal-structure readiness does not authorize continuity equivalence by itself."
+      ]
+    },
+    {
+      "criterion_id": "stage3_channel.valence_topology",
+      "channel_id": "valence_topology_channel",
+      "pathway_id": "valence_topology_pathway",
+      "counterpart_contract_id": "valence_topology_counterpart_contract",
+      "homologation_unit_id": "valence_topology_homologation",
+      "required_conditions": [
+        "typed_valence_topology_route_open",
+        "typed_counterpart_family_instantiated",
+        "shared_topology_contract_bound"
+      ],
+      "governance_disqualifiers": [
+        "scalar_reward_proxy_only"
+      ],
+      "non_implications": [
+        "Valence-topology readiness does not authorize affective equivalence by itself."
+      ]
+    },
+    {
+      "criterion_id": "stage3_channel.embodiment_boundary",
+      "channel_id": "embodiment_boundary_channel",
+      "pathway_id": "embodiment_boundary_pathway",
+      "counterpart_contract_id": "embodiment_boundary_counterpart_contract",
+      "homologation_unit_id": "embodiment_boundary_homologation",
+      "required_conditions": [
+        "typed_embodiment_boundary_route_open",
+        "typed_counterpart_family_instantiated",
+        "embodiment_error_budget_instantiated",
+        "embodiment_environment_manifest_bound"
+      ],
+      "governance_disqualifiers": [
+        "proxy_only_embodiment_signal"
+      ],
+      "non_implications": [
+        "Embodiment-boundary readiness does not authorize embodiment equivalence by itself."
+      ]
+    },
+    {
+      "criterion_id": "stage3_channel.ambiguity_load",
+      "channel_id": "ambiguity_load_channel",
+      "pathway_id": "ambiguity_load_pathway",
+      "counterpart_contract_id": "ambiguity_load_counterpart_contract",
+      "homologation_unit_id": "ambiguity_load_homologation",
+      "required_conditions": [
+        "typed_ambiguity_collection_route_open",
+        "typed_counterpart_family_instantiated",
+        "shared_ambiguity_annotation_contract_bound"
+      ],
+      "governance_disqualifiers": [
+        "machine_only_ambiguity_proxy"
+      ],
+      "non_implications": [
+        "Ambiguity-load readiness does not authorize comparator equivalence by itself."
+      ]
+    },
+    {
+      "criterion_id": "stage3_channel.transport_preservation",
+      "channel_id": "transport_preservation_channel",
+      "pathway_id": "transport_preservation_pathway",
+      "counterpart_contract_id": "transport_counterpart_contract",
+      "homologation_unit_id": "transport_transition_homologation",
+      "transition_contract_id": "bridge_coordinate_transition_contract",
+      "required_conditions": [
+        "target_counterpart_manifest_instantiated",
+        "transition_lineage_map_bound",
+        "axis_specific_error_budgets_instantiated",
+        "schema_compatibility_proof_bound"
+      ],
+      "governance_disqualifiers": [
+        "snapshot_copy_without_target_counterpart",
+        "source_only_lineage_snapshot"
+      ],
+      "non_implications": [
+        "Transport-preservation readiness does not authorize identity preservation by itself."
+      ]
+    }
+  ],
+  "required_counterpart_artifact_families": [
+    {
+      "criterion_id": "counterpart_family.self_report",
+      "contract_id": "self_report_counterpart_contract",
+      "required_artifacts": [
+        "human_self_report_trace.json",
+        "human_self_report_channel_manifest.json"
+      ]
+    },
+    {
+      "criterion_id": "counterpart_family.intervention_response",
+      "contract_id": "intervention_response_counterpart_contract",
+      "required_artifacts": [
+        "human_intervention_profile.json",
+        "human_negative_control_profile.json"
+      ]
+    },
+    {
+      "criterion_id": "counterpart_family.temporal_structure",
+      "contract_id": "temporal_structure_counterpart_contract",
+      "required_artifacts": [
+        "human_temporal_structure_report.json"
+      ]
+    },
+    {
+      "criterion_id": "counterpart_family.valence_topology",
+      "contract_id": "valence_topology_counterpart_contract",
+      "required_artifacts": [
+        "human_valence_topology_report.json"
+      ]
+    },
+    {
+      "criterion_id": "counterpart_family.embodiment_boundary",
+      "contract_id": "embodiment_boundary_counterpart_contract",
+      "required_artifacts": [
+        "human_embodiment_boundary_report.json"
+      ]
+    },
+    {
+      "criterion_id": "counterpart_family.ambiguity_load",
+      "contract_id": "ambiguity_load_counterpart_contract",
+      "required_artifacts": [
+        "human_ambiguity_load_report.json"
+      ]
+    },
+    {
+      "criterion_id": "counterpart_family.transport",
+      "contract_id": "transport_counterpart_contract",
+      "required_artifacts": [
+        "cross_substrate_transport_contract.json",
+        "cross_substrate_lineage_map.json",
+        "target_substrate_counterpart_manifest.json"
+      ]
+    }
+  ],
+  "required_homologation_conditions": [
+    {
+      "criterion_id": "homologation.self_report",
+      "homologation_unit_id": "self_report_structural_homologation",
+      "required_conditions": [
+        "typing_requirements_bound",
+        "lineage_compatibility_bound",
+        "burden_symmetry_bound"
+      ]
+    },
+    {
+      "criterion_id": "homologation.intervention_response",
+      "homologation_unit_id": "intervention_response_homologation",
+      "required_conditions": [
+        "intervention_comparability_bound",
+        "lineage_compatibility_bound",
+        "artifact_homology_bound"
+      ]
+    },
+    {
+      "criterion_id": "homologation.temporal_structure",
+      "homologation_unit_id": "temporal_structure_homologation",
+      "required_conditions": [
+        "shared_temporal_segmentation_bound",
+        "lineage_compatibility_bound"
+      ]
+    },
+    {
+      "criterion_id": "homologation.valence_topology",
+      "homologation_unit_id": "valence_topology_homologation",
+      "required_conditions": [
+        "topology_contract_bound",
+        "typing_contract_bound"
+      ]
+    },
+    {
+      "criterion_id": "homologation.ambiguity_load",
+      "homologation_unit_id": "ambiguity_load_homologation",
+      "required_conditions": [
+        "ambiguity_annotation_contract_bound",
+        "typing_contract_bound"
+      ]
+    },
+    {
+      "criterion_id": "homologation.embodiment_boundary",
+      "homologation_unit_id": "embodiment_boundary_homologation",
+      "required_conditions": [
+        "embodiment_error_budget_bound",
+        "intervention_comparability_bound",
+        "lineage_compatibility_bound"
+      ]
+    },
+    {
+      "criterion_id": "homologation.transport_transition",
+      "homologation_unit_id": "transport_transition_homologation",
+      "required_conditions": [
+        "transition_target_instantiated",
+        "axis_specific_error_budgets_bound",
+        "transition_lineage_map_bound"
+      ]
+    }
+  ],
+  "required_intervention_symmetry": [
+    {
+      "criterion_id": "intervention_symmetry.primary",
+      "required_conditions": [
+        "matched_human_intervention_profile_instantiated",
+        "matched_negative_control_profile_instantiated",
+        "shared_intervention_protocol_version",
+        "branch_accounting_bound"
+      ]
+    }
+  ],
+  "required_burden_symmetry": [
+    {
+      "burden_id": "human_channel_burden",
+      "required_state": "satisfied"
+    },
+    {
+      "burden_id": "burden_symmetry",
+      "required_state": "satisfied"
+    },
+    {
+      "burden_id": "artifact_homology_burden",
+      "required_state": "satisfied"
+    },
+    {
+      "burden_id": "intervention_homology_burden",
+      "required_state": "satisfied"
+    },
+    {
+      "burden_id": "typing_contract_burden",
+      "required_state": "satisfied"
+    },
+    {
+      "burden_id": "error_budget_burden",
+      "required_state": "satisfied"
+    },
+    {
+      "burden_id": "transport_preservation_burden",
+      "required_state": "satisfied"
+    }
+  ],
+  "required_error_budget_binding": [
+    {
+      "criterion_id": "error_budget.embodiment_boundary",
+      "required_conditions": [
+        "embodiment_error_budget_instantiated",
+        "embodiment_environment_manifest_bound"
+      ]
+    },
+    {
+      "criterion_id": "error_budget.transition_axes",
+      "required_conditions": [
+        "self_index_drift_budget_bound",
+        "bridge_coordinate_distortion_budget_bound",
+        "lineage_break_budget_bound",
+        "intervention_signature_deviation_budget_bound"
+      ]
+    }
+  ],
+  "required_transition_contract_maturity": [
+    {
+      "criterion_id": "transition_maturity.bridge_coordinate",
+      "contract_id": "bridge_coordinate_transition_contract",
+      "required_conditions": [
+        "target_counterpart_transition_manifest_bound",
+        "schema_compatibility_proof_bound",
+        "target_counterpart_lineage_bound",
+        "branch_accounting_bound"
+      ]
+    },
+    {
+      "criterion_id": "transition_maturity.intervention_signature",
+      "contract_id": "intervention_signature_transition_contract",
+      "required_conditions": [
+        "target_intervention_profile_bound",
+        "target_negative_control_profile_bound",
+        "target_intervention_protocol_version_bound",
+        "branch_accounting_bound"
+      ]
+    },
+    {
+      "criterion_id": "transition_maturity.lineage_continuity",
+      "contract_id": "lineage_continuity_transition_contract",
+      "required_conditions": [
+        "transition_lineage_map_bound",
+        "target_artifact_provenance_chain_bound",
+        "branch_accounting_bound"
+      ]
+    },
+    {
+      "criterion_id": "transition_maturity.embodiment_boundary",
+      "contract_id": "embodiment_boundary_transition_contract",
+      "required_conditions": [
+        "target_embodiment_boundary_trace_bound",
+        "target_embodiment_environment_manifest_bound",
+        "schema_compatibility_proof_bound",
+        "branch_accounting_bound"
+      ]
+    }
+  ],
+  "required_governance_and_surface_conditions": [
+    {
+      "criterion_id": "governance.surface_boundary",
+      "required_conditions": [
+        "internal_release_surface_allowed",
+        "ecosystem_candidate_surface_blocked",
+        "audit_facing_package_surface_blocked",
+        "controlled_statement_surface_blocked",
+        "external_claim_facing_surface_blocked"
+      ]
+    },
+    {
+      "criterion_id": "governance.audit_boundary",
+      "required_conditions": [
+        "anti_overclaim_discipline_passed",
+        "local_path_leak_absent",
+        "paper10_manuscript_absent",
+        "external_adjudication_outputs_absent"
+      ]
+    }
+  ],
+  "disqualifiers": [
+    "fabricated_human_data",
+    "simulated_human_measurements_presented_as_evidence",
+    "machine_self_report_relabeling_as_human_evidence",
+    "missing_counterpart_artifact_family",
+    "missing_human_intervention_or_negative_control_artifacts",
+    "missing_error_budget_binding",
+    "transition_target_absent",
+    "external_claim_surface_opened",
+    "paper10_manuscript_opened"
+  ],
+  "non_implications": [
+    "Defining Stage 3 opening criteria does not open Stage 3.",
+    "Defining Stage 3 opening criteria does not authorize human equivalence.",
+    "Defining Stage 3 opening criteria does not authorize superiority.",
+    "Defining Stage 3 opening criteria does not authorize Paper 10."
+  ]
+}

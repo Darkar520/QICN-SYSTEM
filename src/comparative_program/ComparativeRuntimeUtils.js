@@ -25,6 +25,11 @@ export const COMPARATIVE_OPERATIONAL_SYSTEM_FILES = Object.freeze({
   cross_substrate_transition_contracts: 'docs/cross_substrate_transition_contracts.v1.json'
 });
 
+export const COMPARATIVE_CLOSURE_SYSTEM_FILES = Object.freeze({
+  external_adjudication_opening_criteria:
+    'docs/external_adjudication_opening_criteria.v1.json'
+});
+
 export const ROOT_BRIDGE_ARTIFACT_REFS = Object.freeze({
   projection: 'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json',
   gate_result: 'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_gate_result.json',
@@ -64,6 +69,20 @@ export const COMPARATIVE_OPERATIONAL_ARTIFACT_REFS = Object.freeze({
     'artifacts/comparative_program/stage2m3/comparative_program_verification_matrix.json',
   readiness_gate:
     'artifacts/comparative_program/stage2m3/comparative_program_readiness_gate.json'
+});
+
+export const COMPARATIVE_CLOSURE_ARTIFACT_REFS = Object.freeze({
+  comparative_final_internal_audit:
+    'artifacts/comparative_program/stage2m4/comparative_final_internal_audit.json',
+  human_channel_instantiation_readiness:
+    'artifacts/comparative_program/stage2m4/human_channel_instantiation_readiness.json',
+  paper10_comparative_readiness_gate:
+    'artifacts/comparative_program/stage2m4/paper10_comparative_readiness_gate.json',
+  manifest: 'artifacts/comparative_program/stage2m4/comparative_program_manifest.json',
+  verification_matrix:
+    'artifacts/comparative_program/stage2m4/comparative_program_verification_matrix.json',
+  readiness_gate:
+    'artifacts/comparative_program/stage2m4/comparative_program_readiness_gate.json'
 });
 
 const buildLocalPathPattern = () => {
@@ -279,6 +298,31 @@ export const loadComparativeRuntimeBaseline = () => ({
   )
 });
 
+export const loadComparativeOperationalBaseline = () => ({
+  human_channel_pathway_assessment: readJsonRelative(
+    COMPARATIVE_OPERATIONAL_ARTIFACT_REFS.human_channel_pathway_assessment
+  ),
+  counterpart_artifact_contract_assessment: readJsonRelative(
+    COMPARATIVE_OPERATIONAL_ARTIFACT_REFS.counterpart_artifact_contract_assessment
+  ),
+  homologation_contract_assessment: readJsonRelative(
+    COMPARATIVE_OPERATIONAL_ARTIFACT_REFS.homologation_contract_assessment
+  ),
+  cross_substrate_transition_contract_assessment: readJsonRelative(
+    COMPARATIVE_OPERATIONAL_ARTIFACT_REFS.cross_substrate_transition_contract_assessment
+  ),
+  comparative_operational_readiness: readJsonRelative(
+    COMPARATIVE_OPERATIONAL_ARTIFACT_REFS.comparative_operational_readiness
+  ),
+  comparative_program_manifest: readJsonRelative(COMPARATIVE_OPERATIONAL_ARTIFACT_REFS.manifest),
+  comparative_program_verification_matrix: readJsonRelative(
+    COMPARATIVE_OPERATIONAL_ARTIFACT_REFS.verification_matrix
+  ),
+  comparative_program_readiness_gate: readJsonRelative(
+    COMPARATIVE_OPERATIONAL_ARTIFACT_REFS.readiness_gate
+  )
+});
+
 export const deriveComparativeMachineArtifactAvailability = ({
   bridgeBaseline,
   comparativeRuntimeBaseline
@@ -312,9 +356,11 @@ export const deriveComparativeMachineArtifactAvailability = ({
 export default {
   COMPARATIVE_SYSTEM_FILES,
   COMPARATIVE_OPERATIONAL_SYSTEM_FILES,
+  COMPARATIVE_CLOSURE_SYSTEM_FILES,
   ROOT_BRIDGE_ARTIFACT_REFS,
   COMPARATIVE_RUNTIME_ARTIFACT_REFS,
   COMPARATIVE_OPERATIONAL_ARTIFACT_REFS,
+  COMPARATIVE_CLOSURE_ARTIFACT_REFS,
   PROJECT_ROOT,
   RELEASE_ROOT,
   ensureDir,
@@ -332,5 +378,6 @@ export default {
   checkSurfaceEligibility,
   loadBridgeComparativeBaseline,
   loadComparativeRuntimeBaseline,
+  loadComparativeOperationalBaseline,
   deriveComparativeMachineArtifactAvailability
 };

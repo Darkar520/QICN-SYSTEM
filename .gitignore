@@ -106,6 +106,14 @@ artifacts/comparative_program/stage2m3/*
 !artifacts/comparative_program/stage2m3/comparative_program_manifest.json
 !artifacts/comparative_program/stage2m3/comparative_program_verification_matrix.json
 !artifacts/comparative_program/stage2m3/comparative_program_readiness_gate.json
+!artifacts/comparative_program/stage2m4/
+artifacts/comparative_program/stage2m4/*
+!artifacts/comparative_program/stage2m4/comparative_final_internal_audit.json
+!artifacts/comparative_program/stage2m4/human_channel_instantiation_readiness.json
+!artifacts/comparative_program/stage2m4/paper10_comparative_readiness_gate.json
+!artifacts/comparative_program/stage2m4/comparative_program_manifest.json
+!artifacts/comparative_program/stage2m4/comparative_program_verification_matrix.json
+!artifacts/comparative_program/stage2m4/comparative_program_readiness_gate.json
 !artifacts/protocolized_evaluation/
 artifacts/protocolized_evaluation/*
 !artifacts/protocolized_evaluation/evaluation_protocol_manifest.json

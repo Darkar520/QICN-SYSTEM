@@ -36,6 +36,12 @@ export {
   listCrossSubstrateTransitionContracts
 } from './CrossSubstrateTransitionContractsRegistry.js';
 export {
+  EXTERNAL_ADJUDICATION_OPENING_CRITERIA,
+  listAdjudicationChannelCriteria,
+  listAdjudicationCriteriaStatuses,
+  listInstantiationStatuses
+} from './ExternalAdjudicationOpeningCriteriaRegistry.js';
+export {
   COMPARATIVE_PROGRAM_ARTIFACT_SCHEMA,
   COMPARATIVE_PROGRAM_EXPECTED_ARTIFACTS,
   COMPARATIVE_PROGRAM_IMPLEMENTED_ARTIFACTS,
@@ -52,14 +58,17 @@ export {
 export {
   COMPARATIVE_SYSTEM_FILES,
   COMPARATIVE_OPERATIONAL_SYSTEM_FILES,
+  COMPARATIVE_CLOSURE_SYSTEM_FILES,
   ROOT_BRIDGE_ARTIFACT_REFS,
   COMPARATIVE_RUNTIME_ARTIFACT_REFS,
   COMPARATIVE_OPERATIONAL_ARTIFACT_REFS,
+  COMPARATIVE_CLOSURE_ARTIFACT_REFS,
   PROJECT_ROOT,
   RELEASE_ROOT,
   captureComparativeLineage,
   loadBridgeComparativeBaseline,
   loadComparativeRuntimeBaseline,
+  loadComparativeOperationalBaseline,
   deriveComparativeMachineArtifactAvailability
 } from './ComparativeRuntimeUtils.js';
 export {
@@ -102,3 +111,19 @@ export {
   ComparativeOperationalReadinessBuilder,
   createComparativeOperationalReadinessBuilder
 } from './ComparativeOperationalReadinessBuilder.js';
+export {
+  HumanChannelInstantiationReadinessEvaluator,
+  createHumanChannelInstantiationReadinessEvaluator
+} from './HumanChannelInstantiationReadinessEvaluator.js';
+export {
+  ComparativeFinalInternalAuditor,
+  createComparativeFinalInternalAuditor
+} from './ComparativeFinalInternalAuditor.js';
+export {
+  Paper10ComparativeReadinessGateBuilder,
+  createPaper10ComparativeReadinessGateBuilder
+} from './Paper10ComparativeReadinessGateBuilder.js';
+export {
+  ComparativeClosureBuilder,
+  createComparativeClosureBuilder
+} from './ComparativeClosureBuilder.js';

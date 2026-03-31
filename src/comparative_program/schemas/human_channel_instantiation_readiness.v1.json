@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "human_channel_instantiation_readiness.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "comparative_layer_id",
+    "layer_version",
+    "estimator_version",
+    "implementation_status",
+    "instantiation_layer_state",
+    "channel_instantiation_statuses",
+    "instantiation_summary",
+    "warnings",
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "human_channel_instantiation_readiness" },
+    "artifact_name": { "const": "human_channel_instantiation_readiness.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparative_layer_id": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "estimator_version": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "instantiation_layer_state": { "type": "string" },
+    "channel_instantiation_statuses": { "type": "array", "items": { "type": "object" } },
+    "instantiation_summary": { "type": "object" },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "boundary_flags": { "type": "object" },
+    "non_implications": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

@@ -96,12 +96,12 @@
   "source_shas": {
     "qicn_system": {
       "branch": "main",
-      "head": "8f83cd3b3d599092e956e55717af043a6d4d52c9",
+      "head": "44c2df36f76fadc292963c988d4550bad672c8df",
       "upstream": "origin/main"
     },
     "qicn_release": {
       "branch": "main",
-      "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+      "head": "4779eb1c78341185d03b14bbb300a673e255f407",
       "upstream": "origin/main"
     }
   },
@@ -130,11 +130,11 @@
     },
     "artifact_schema": {
       "ref": "docs/comparative_program_artifact_schema.v1.json",
-      "sha256": "1382000344ec75ea1842a452b99008b0c6b3336267b5202e4d5bb034a8372a4b"
+      "sha256": "c9a43c27118ebe3e30b7ec9ea67cc64738f3d33a9193e4925b1a2e6cb70eb7d8"
     },
     "surface_policy": {
       "ref": "docs/comparative_program_surface_policy.v1.json",
-      "sha256": "a1b38cb97e11c26ddf37c830020697a79ee4c943a96f5849c037353e705b8c88"
+      "sha256": "ca6a4bccfe0475773ebc8b2c5a77aae373460c01602e77a50d38a71108c35d04"
     },
     "root_schema_hashes": {
       "comparative_program_manifest.json": {
@@ -173,6 +173,18 @@
         "ref": "src/comparative_program/schemas/comparative_operational_readiness.v1.json",
         "sha256": "e943dd95f7d7fc8651fd119efb16074df630f11cc7e557fcd4540c1e8e230fa1"
       },
+      "comparative_final_internal_audit.json": {
+        "ref": "src/comparative_program/schemas/comparative_final_internal_audit.v1.json",
+        "sha256": "1740d4e541252ed09f748f7b4a066fdfa2963be2dee0c944b01fe0b42e656b0d"
+      },
+      "human_channel_instantiation_readiness.json": {
+        "ref": "src/comparative_program/schemas/human_channel_instantiation_readiness.v1.json",
+        "sha256": "74e24208c862c627007bd512e36c7236d45af0a12ffceb124657e6471d0b2b86"
+      },
+      "paper10_comparative_readiness_gate.json": {
+        "ref": "src/comparative_program/schemas/paper10_comparative_readiness_gate.v1.json",
+        "sha256": "f5dbe1b18f43bac1f51419bf159862aae210a569ec30064352fa952a1c3c4c0f"
+      },
       "comparative_program_verification_matrix.json": {
         "ref": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
         "sha256": "6cab7c9939a0615cdd857969f567fd51eb16187c7cbba9f36d802a9a02cae26a"
@@ -184,12 +196,12 @@
     },
     "qicn_system": {
       "branch": "main",
-      "head": "8f83cd3b3d599092e956e55717af043a6d4d52c9",
+      "head": "44c2df36f76fadc292963c988d4550bad672c8df",
       "upstream": "origin/main"
     },
     "qicn_release": {
       "branch": "main",
-      "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+      "head": "4779eb1c78341185d03b14bbb300a673e255f407",
       "upstream": "origin/main"
     },
     "human_channel_pathways": {
@@ -212,7 +224,7 @@
   },
   "interpretation_boundary": "Framework-internal only; the Stage 2-M3 comparative program manifest records pathway, contract, homologation, and transition-contract operationalization, not human equivalence, not transport preservation, not external adjudication, and not Paper 10 authorization.",
   "provenance": {
-    "generated_at": "2026-03-31T18:07:41.317Z",
+    "generated_at": "2026-03-31T21:55:08.088Z",
     "project_root": ".",
     "stage2_m2_manifest_ref": "artifacts/comparative_program/stage2m2/comparative_program_manifest.json",
     "comparative_operational_readiness_ref": "artifacts/comparative_program/stage2m3/comparative_operational_readiness.json"

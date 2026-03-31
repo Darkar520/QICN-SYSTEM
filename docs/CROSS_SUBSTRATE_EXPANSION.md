@@ -7,6 +7,7 @@ transport-preservation program.
 
 - `Stage 2-M2` made transport blockage runtime-loadable.
 - `Stage 2-M3` adds transition-contract operationalization, preservation-axis readiness tracking, and fork or fracture risk accounting.
+- `Stage 2-M4` audits that transition-contract layer, folds it into the final internal closure audit, and keeps Stage 3 unopened while target-side counterparts remain absent.
 
 Identity-preservation outputs remain forbidden.
 
@@ -45,6 +46,12 @@ The primary M3 transport-facing artifact is:
 
 - `cross_substrate_transition_contract_assessment.json`
 
+The primary M4 transport-facing additions are:
+
+- `comparative_final_internal_audit.json` for transition-contract coherence and lineage freshness checks;
+- `comparative_program_readiness_gate.json` for the explicit `not_ready_for_stage3_opening` decision;
+- `paper10_comparative_readiness_gate.json` for the continued non-authorization of any transport-facing Paper 10 scoping.
+
 ## What remains blocked
 
 This layer still does not authorize:
@@ -54,3 +61,4 @@ This layer still does not authorize:
 - fracture verdicts as metaphysical conclusions;
 - fork verdicts as identity conclusions;
 - external adjudication.
+- Paper 10 transport claims.

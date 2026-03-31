@@ -1,0 +1,346 @@
+{
+  "artifact_role": "homologation_contracts_definition",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage2_m3_operationalization",
+  "implementation_status": "comparative_runtime_contract_operationalization_implemented",
+  "runtime_status": "homologation_contract_layer_defined",
+  "status_markers": [
+    "framework_internal_only",
+    "not_human_equivalence_support",
+    "not_cross_substrate_equivalence_support",
+    "not_external_adjudication",
+    "not_paper10_authorization"
+  ],
+  "homologation_status_classes": [
+    {
+      "id": "homologation_not_open",
+      "meaning": "No legitimate source-target homologation unit can be treated as open under the current contract stack."
+    },
+    {
+      "id": "homologation_contract_defined",
+      "meaning": "The homologation unit is defined, but insufficiently specified for readiness classification."
+    },
+    {
+      "id": "homologation_contract_incomplete",
+      "meaning": "The homologation unit is missing one or more required typing, lineage, or error-budget commitments."
+    },
+    {
+      "id": "homologation_contract_ready_but_counterpart_absent",
+      "meaning": "The homologation contract is structurally ready, but no legitimate counterpart artifacts exist yet."
+    },
+    {
+      "id": "homologation_underdetermined",
+      "meaning": "The homologation unit is bounded and partially specified, but still too incomplete for readiness closure."
+    },
+    {
+      "id": "homologation_not_authorized_for_verdict",
+      "meaning": "The unit remains internal and non-adjudicative even if its contract structure is ready."
+    }
+  ],
+  "homologation_units": [
+    {
+      "homologation_unit_id": "self_report_structural_homologation",
+      "source_artifact_family": [
+        "phenomenal_bridge_projection.json",
+        "phenomenal_bridge_gate_result.json"
+      ],
+      "target_counterpart_family": [
+        "human_self_report_trace.json",
+        "human_self_report_channel_manifest.json"
+      ],
+      "counterpart_contract_id": "self_report_counterpart_contract",
+      "typing_requirements": [
+        "bridge_coordinate_index_alignment",
+        "typed_self_report_trace",
+        "session_lineage_harmonization"
+      ],
+      "burden_symmetry_requirements": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden",
+        "typing_contract_burden"
+      ],
+      "intervention_comparability_requirements": [],
+      "error_budget_requirements": [],
+      "lineage_compatibility_requirements": [
+        "shared_comparator_session_lineage",
+        "schema_version_compatibility"
+      ],
+      "homologation_status_classes": [
+        "homologation_contract_ready_but_counterpart_absent",
+        "homologation_not_authorized_for_verdict"
+      ],
+      "invalidation_routes": [
+        "synthetic_human_trace_detected",
+        "untyped_coordinate_projection",
+        "lineage_break"
+      ],
+      "non_implications": [
+        "No human equivalence follows from homologation readiness.",
+        "No self-report truth claim follows from this unit."
+      ]
+    },
+    {
+      "homologation_unit_id": "intervention_response_homologation",
+      "source_artifact_family": [
+        "bridge_intervention_profile.json",
+        "bridge_reducibility_report.json"
+      ],
+      "target_counterpart_family": [
+        "human_intervention_profile.json",
+        "human_negative_control_profile.json"
+      ],
+      "counterpart_contract_id": "intervention_response_counterpart_contract",
+      "typing_requirements": [
+        "matched_perturbation_family_id",
+        "matched_negative_control_family_id",
+        "typed_response_series"
+      ],
+      "burden_symmetry_requirements": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "intervention_homology_burden",
+        "artifact_homology_burden"
+      ],
+      "intervention_comparability_requirements": [
+        "matched_perturbation_family",
+        "matched_negative_control_family",
+        "shared_safety_boundary"
+      ],
+      "error_budget_requirements": [],
+      "lineage_compatibility_requirements": [
+        "shared_comparator_session_lineage",
+        "protocol_version_compatibility"
+      ],
+      "homologation_status_classes": [
+        "homologation_contract_ready_but_counterpart_absent",
+        "homologation_not_authorized_for_verdict"
+      ],
+      "invalidation_routes": [
+        "unmatched_intervention_family",
+        "control_mimicry",
+        "lineage_break"
+      ],
+      "non_implications": [
+        "No interventional equivalence follows from homologation readiness.",
+        "No matched-control verdict follows from this unit."
+      ]
+    },
+    {
+      "homologation_unit_id": "temporal_structure_homologation",
+      "source_artifact_family": [
+        "phenomenal_bridge_projection.json"
+      ],
+      "target_counterpart_family": [
+        "human_temporal_structure_report.json"
+      ],
+      "counterpart_contract_id": "temporal_structure_counterpart_contract",
+      "typing_requirements": [
+        "typed_temporal_segmentation",
+        "shared_temporal_window_normalization"
+      ],
+      "burden_symmetry_requirements": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden"
+      ],
+      "intervention_comparability_requirements": [],
+      "error_budget_requirements": [],
+      "lineage_compatibility_requirements": [
+        "annotation_schema_version_compatibility"
+      ],
+      "homologation_status_classes": [
+        "homologation_contract_defined",
+        "homologation_underdetermined",
+        "homologation_not_authorized_for_verdict"
+      ],
+      "invalidation_routes": [
+        "untyped_temporal_trace",
+        "window_normalization_mismatch",
+        "lineage_break"
+      ],
+      "non_implications": [
+        "No lived-temporality verdict follows from this unit.",
+        "No temporal equivalence follows from homologation definition alone."
+      ]
+    },
+    {
+      "homologation_unit_id": "valence_topology_homologation",
+      "source_artifact_family": [
+        "phenomenal_bridge_projection.json"
+      ],
+      "target_counterpart_family": [
+        "human_valence_topology_report.json"
+      ],
+      "counterpart_contract_id": "valence_topology_counterpart_contract",
+      "typing_requirements": [
+        "typed_valence_topology_trace",
+        "shared_topology_normalization"
+      ],
+      "burden_symmetry_requirements": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "typing_contract_burden"
+      ],
+      "intervention_comparability_requirements": [],
+      "error_budget_requirements": [],
+      "lineage_compatibility_requirements": [
+        "annotation_schema_version_compatibility"
+      ],
+      "homologation_status_classes": [
+        "homologation_contract_defined",
+        "homologation_underdetermined",
+        "homologation_not_authorized_for_verdict"
+      ],
+      "invalidation_routes": [
+        "topology_contract_mismatch",
+        "lineage_break"
+      ],
+      "non_implications": [
+        "No affective equivalence follows from this unit.",
+        "No value-topology verdict follows from homologation definition alone."
+      ]
+    },
+    {
+      "homologation_unit_id": "ambiguity_load_homologation",
+      "source_artifact_family": [
+        "phenomenal_bridge_projection.json"
+      ],
+      "target_counterpart_family": [
+        "human_ambiguity_load_report.json"
+      ],
+      "counterpart_contract_id": "ambiguity_load_counterpart_contract",
+      "typing_requirements": [
+        "typed_ambiguity_load_trace",
+        "shared_ambiguity_annotation_contract"
+      ],
+      "burden_symmetry_requirements": [
+        "human_channel_burden",
+        "artifact_homology_burden",
+        "typing_contract_burden"
+      ],
+      "intervention_comparability_requirements": [],
+      "error_budget_requirements": [],
+      "lineage_compatibility_requirements": [
+        "annotation_schema_version_compatibility"
+      ],
+      "homologation_status_classes": [
+        "homologation_contract_defined",
+        "homologation_underdetermined",
+        "homologation_not_authorized_for_verdict"
+      ],
+      "invalidation_routes": [
+        "ambiguity_contract_mismatch",
+        "lineage_break"
+      ],
+      "non_implications": [
+        "No ambiguity-bearing equivalence follows from this unit.",
+        "No comparator verdict follows from homologation definition alone."
+      ]
+    },
+    {
+      "homologation_unit_id": "embodiment_boundary_homologation",
+      "source_artifact_family": [
+        "phenomenal_bridge_projection.json",
+        "bridge_intervention_profile.json"
+      ],
+      "target_counterpart_family": [
+        "human_embodiment_boundary_report.json"
+      ],
+      "counterpart_contract_id": "embodiment_boundary_counterpart_contract",
+      "typing_requirements": [
+        "typed_embodiment_boundary_trace",
+        "shared_body_world_boundary_contract"
+      ],
+      "burden_symmetry_requirements": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden",
+        "error_budget_burden"
+      ],
+      "intervention_comparability_requirements": [
+        "shared_embodiment_perturbation_family"
+      ],
+      "error_budget_requirements": [
+        "self_index_drift_budget",
+        "bridge_coordinate_distortion_budget"
+      ],
+      "lineage_compatibility_requirements": [
+        "embodiment_environment_manifest",
+        "protocol_version_compatibility"
+      ],
+      "homologation_status_classes": [
+        "homologation_contract_incomplete",
+        "homologation_not_authorized_for_verdict"
+      ],
+      "invalidation_routes": [
+        "missing_embodiment_error_budget",
+        "proxy_only_embodiment_signal",
+        "lineage_break"
+      ],
+      "non_implications": [
+        "No embodied closure verdict follows from this unit.",
+        "No embodiment-preservation claim follows from homologation definition alone."
+      ]
+    },
+    {
+      "homologation_unit_id": "transport_transition_homologation",
+      "source_artifact_family": [
+        "phenomenal_bridge_manifest.json",
+        "cross_substrate_transport_assessment.json"
+      ],
+      "target_counterpart_family": [
+        "cross_substrate_transport_contract.json",
+        "cross_substrate_lineage_map.json",
+        "target_substrate_counterpart_manifest.json"
+      ],
+      "counterpart_contract_id": "transport_counterpart_contract",
+      "typing_requirements": [
+        "source_target_transition_typing",
+        "preservation_axis_map",
+        "axis_specific_error_budget_map"
+      ],
+      "burden_symmetry_requirements": [
+        "transport_preservation_burden",
+        "error_budget_burden",
+        "artifact_homology_burden"
+      ],
+      "intervention_comparability_requirements": [
+        "shared_transition_safety_boundary"
+      ],
+      "error_budget_requirements": [
+        "self_index_drift_budget",
+        "bridge_coordinate_distortion_budget",
+        "intervention_signature_deviation_budget",
+        "lineage_break_budget"
+      ],
+      "lineage_compatibility_requirements": [
+        "transition_lineage_map",
+        "fork_fracture_accounting",
+        "target_artifact_provenance_chain"
+      ],
+      "homologation_status_classes": [
+        "homologation_contract_incomplete",
+        "homologation_not_open",
+        "homologation_not_authorized_for_verdict"
+      ],
+      "invalidation_routes": [
+        "missing_target_counterpart",
+        "missing_transition_lineage_map",
+        "axis_specific_error_budget_absent"
+      ],
+      "non_implications": [
+        "No transport-preservation verdict follows from this unit.",
+        "No identity-preservation verdict follows from homologation definition alone."
+      ]
+    }
+  ],
+  "blocked_inferences": [
+    "no_human_equivalence_inference",
+    "no_non_equivalence_inference",
+    "no_cross_substrate_equivalence_inference",
+    "no_transport_preservation_inference",
+    "no_external_adjudication_inference"
+  ],
+  "interpretation_boundary": "Framework-internal only; homologation contracts specify how machine-side artifacts could become homologatable with future counterpart artifacts. They do not instantiate counterparts, do not authorize verdicts, and do not open external adjudication."
+}

@@ -1,0 +1,213 @@
+{
+  "artifact_role": "cross_substrate_transition_contracts_definition",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage2_m3_operationalization",
+  "implementation_status": "comparative_runtime_contract_operationalization_implemented",
+  "runtime_status": "cross_substrate_transition_contract_layer_defined",
+  "status_markers": [
+    "framework_internal_only",
+    "not_cross_substrate_equivalence_support",
+    "not_identity_preservation_support",
+    "not_external_adjudication",
+    "not_paper10_authorization"
+  ],
+  "transition_readiness_classes": [
+    {
+      "id": "transition_not_open",
+      "meaning": "No legitimate transition contract or source-target pair is currently open."
+    },
+    {
+      "id": "transition_contract_defined",
+      "meaning": "A transition contract exists as a bounded specification, but remains too weak for readiness classification."
+    },
+    {
+      "id": "transition_contract_incomplete",
+      "meaning": "The transition contract is missing required continuity, error-budget, or target-artifact commitments."
+    },
+    {
+      "id": "transition_contract_ready_but_target_absent",
+      "meaning": "The transition contract is structurally ready, but no legitimate target counterpart exists yet."
+    },
+    {
+      "id": "transition_contract_underdetermined",
+      "meaning": "The transition contract is bounded and partially specified, but still too weak for transport readiness closure."
+    },
+    {
+      "id": "transition_not_authorized_for_transport_verdict",
+      "meaning": "The transition contract remains internal and non-adjudicative even when structurally ready."
+    }
+  ],
+  "transition_contracts": [
+    {
+      "contract_id": "bridge_coordinate_transition_contract",
+      "source_substrate_class": "qicn_system_bridge_runtime_substrate",
+      "target_substrate_class": "future_counterpart_subjective_runtime_substrate",
+      "preservation_axes_required": [
+        "self_index_integrity",
+        "bridge_coordinate_distortion",
+        "artifact_lineage_continuity"
+      ],
+      "transition_lineage_requirements": [
+        "source_run_lineage",
+        "target_counterpart_lineage",
+        "branch_accounting"
+      ],
+      "artifact_continuity_requirements": [
+        "source_projection_manifest",
+        "target_counterpart_transition_manifest",
+        "schema_compatibility_proof"
+      ],
+      "error_budget_requirements": [
+        "self_index_drift_budget",
+        "bridge_coordinate_distortion_budget",
+        "lineage_break_budget"
+      ],
+      "fork_fracture_risk_factors": [
+        "target_duplication_without_branch_accounting",
+        "coordinate_collapse_across_remap",
+        "lineage_discontinuity"
+      ],
+      "invalid_substitutions": [
+        "static_model_export_only",
+        "snapshot_copy_without_target_counterpart"
+      ],
+      "transition_readiness_classes": [
+        "transition_contract_ready_but_target_absent",
+        "transition_contract_incomplete",
+        "transition_not_authorized_for_transport_verdict"
+      ],
+      "non_implications": [
+        "No transport-preservation verdict follows from this contract.",
+        "No identity-preservation claim follows from transition readiness."
+      ]
+    },
+    {
+      "contract_id": "intervention_signature_transition_contract",
+      "source_substrate_class": "qicn_system_intervention_runtime_substrate",
+      "target_substrate_class": "future_counterpart_subjective_runtime_substrate",
+      "preservation_axes_required": [
+        "intervention_response_stability",
+        "artifact_lineage_continuity"
+      ],
+      "transition_lineage_requirements": [
+        "source_intervention_protocol_version",
+        "target_intervention_protocol_version",
+        "branch_accounting"
+      ],
+      "artifact_continuity_requirements": [
+        "source_intervention_profile",
+        "target_intervention_profile",
+        "target_negative_control_profile"
+      ],
+      "error_budget_requirements": [
+        "intervention_signature_deviation_budget",
+        "lineage_break_budget"
+      ],
+      "fork_fracture_risk_factors": [
+        "unmatched_perturbation_transfer",
+        "control_free_remap",
+        "lineage_discontinuity"
+      ],
+      "invalid_substitutions": [
+        "replayed_machine_perturbation_trace_as_target_trace",
+        "control_free_transition_metadata"
+      ],
+      "transition_readiness_classes": [
+        "transition_contract_incomplete",
+        "transition_contract_underdetermined",
+        "transition_not_authorized_for_transport_verdict"
+      ],
+      "non_implications": [
+        "No intervention-preservation verdict follows from this contract.",
+        "No interventional equivalence follows from transition readiness."
+      ]
+    },
+    {
+      "contract_id": "lineage_continuity_transition_contract",
+      "source_substrate_class": "qicn_system_artifact_lineage_substrate",
+      "target_substrate_class": "future_counterpart_artifact_lineage_substrate",
+      "preservation_axes_required": [
+        "artifact_lineage_continuity"
+      ],
+      "transition_lineage_requirements": [
+        "source_artifact_provenance_chain",
+        "target_artifact_provenance_chain",
+        "branch_accounting"
+      ],
+      "artifact_continuity_requirements": [
+        "schema_compatibility_proof",
+        "transition_lineage_map"
+      ],
+      "error_budget_requirements": [
+        "lineage_break_budget"
+      ],
+      "fork_fracture_risk_factors": [
+        "fork_without_branch_accounting",
+        "fracture_without_lineage_marker"
+      ],
+      "invalid_substitutions": [
+        "source_only_lineage_snapshot",
+        "untracked_target_artifact_family"
+      ],
+      "transition_readiness_classes": [
+        "transition_contract_ready_but_target_absent",
+        "transition_contract_incomplete",
+        "transition_not_authorized_for_transport_verdict"
+      ],
+      "non_implications": [
+        "No preservation verdict follows from lineage continuity readiness.",
+        "No transport support follows from lineage accounting alone."
+      ]
+    },
+    {
+      "contract_id": "embodiment_boundary_transition_contract",
+      "source_substrate_class": "qicn_system_embodiment_proxy_substrate",
+      "target_substrate_class": "future_counterpart_embodied_substrate",
+      "preservation_axes_required": [
+        "self_index_integrity",
+        "bridge_coordinate_distortion",
+        "artifact_lineage_continuity"
+      ],
+      "transition_lineage_requirements": [
+        "source_embodiment_environment_manifest",
+        "target_embodiment_environment_manifest",
+        "branch_accounting"
+      ],
+      "artifact_continuity_requirements": [
+        "source_embodiment_boundary_trace",
+        "target_embodiment_boundary_trace",
+        "schema_compatibility_proof"
+      ],
+      "error_budget_requirements": [
+        "self_index_drift_budget",
+        "bridge_coordinate_distortion_budget",
+        "lineage_break_budget"
+      ],
+      "fork_fracture_risk_factors": [
+        "boundary_collapse_across_remap",
+        "proxy_only_embodiment_signal",
+        "lineage_discontinuity"
+      ],
+      "invalid_substitutions": [
+        "performance_only_embodiment_proxy",
+        "controller_performance_only_proxy"
+      ],
+      "transition_readiness_classes": [
+        "transition_contract_incomplete",
+        "transition_contract_underdetermined",
+        "transition_not_authorized_for_transport_verdict"
+      ],
+      "non_implications": [
+        "No embodiment-preservation verdict follows from this contract.",
+        "No body-world identity verdict follows from transition readiness."
+      ]
+    }
+  ],
+  "blocked_inferences": [
+    "no_cross_substrate_equivalence_claim",
+    "no_identity_preservation_claim",
+    "no_transport_verdict_claim",
+    "no_external_adjudication_claim"
+  ],
+  "interpretation_boundary": "Framework-internal only; cross-substrate transition contracts define what a future source-target remap would need in order to be evaluated under bounded internal semantics. They do not authorize transport verdicts, identity-preservation claims, or external adjudication."
+}

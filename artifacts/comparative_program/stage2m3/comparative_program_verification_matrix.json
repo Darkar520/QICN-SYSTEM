@@ -1,0 +1,309 @@
+{
+  "artifact_role": "comparative_program_verification_matrix",
+  "artifact_name": "comparative_program_verification_matrix.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "comparative_layer_id": "comparative_expansion_layer.stage2_m3_operationalization",
+  "layer_version": "comparative_expansion_layer.stage2_m3.operationalization.v1",
+  "estimator_version": "comparative_operational_readiness_builder.stage2_m3.v1",
+  "implementation_status": "comparative_runtime_contract_operationalization_implemented",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "stage2_m3_manifests_present",
+      "status": "PASS",
+      "details": {
+        "manifests": {
+          "human_channel_pathways": "docs/human_channel_pathways.v1.json",
+          "counterpart_artifact_contracts": "docs/counterpart_artifact_contracts.v1.json",
+          "homologation_contracts": "docs/homologation_contracts.v1.json",
+          "cross_substrate_transition_contracts": "docs/cross_substrate_transition_contracts.v1.json"
+        }
+      }
+    },
+    {
+      "id": "stage2_m3_evaluators_present",
+      "status": "PASS",
+      "details": {
+        "evaluators": [
+          "HumanChannelPathwayEvaluator",
+          "CounterpartArtifactContractEvaluator",
+          "HomologationContractEvaluator",
+          "CrossSubstrateTransitionContractEvaluator",
+          "ComparativeOperationalReadinessBuilder"
+        ]
+      }
+    },
+    {
+      "id": "pathway_statuses_bounded",
+      "status": "PASS",
+      "details": {
+        "statuses": [
+          "pathway_blocked_by_forbidden_proxy",
+          "pathway_contract_ready_but_counterpart_absent",
+          "pathway_theoretically_open",
+          "pathway_contract_incomplete",
+          "pathway_defined_but_uninstantiated"
+        ]
+      }
+    },
+    {
+      "id": "counterpart_statuses_bounded",
+      "status": "PASS",
+      "details": {
+        "statuses": [
+          "counterpart_contract_blocked_by_invalid_substitution",
+          "counterpart_contract_ready_but_counterpart_absent",
+          "counterpart_contract_defined_but_uninstantiated",
+          "counterpart_contract_theoretically_admissible",
+          "counterpart_contract_incomplete"
+        ]
+      }
+    },
+    {
+      "id": "homologation_statuses_bounded",
+      "status": "PASS",
+      "details": {
+        "statuses": [
+          "homologation_underdetermined",
+          "homologation_contract_ready_but_counterpart_absent",
+          "homologation_contract_incomplete",
+          "homologation_not_open"
+        ]
+      }
+    },
+    {
+      "id": "transition_statuses_bounded",
+      "status": "PASS",
+      "details": {
+        "statuses": [
+          "transition_contract_ready_but_target_absent",
+          "transition_contract_underdetermined",
+          "transition_contract_incomplete"
+        ]
+      }
+    },
+    {
+      "id": "equivalence_ladder_state_bounded",
+      "status": "PASS",
+      "details": {
+        "current_rung": "equivalence_not_open"
+      }
+    },
+    {
+      "id": "transport_state_bounded",
+      "status": "PASS",
+      "details": {
+        "comparator_object_class_count": 6,
+        "current_transport_class": "transport_not_open"
+      }
+    },
+    {
+      "id": "pathway_verdict_authorization_bounded",
+      "status": "PASS",
+      "details": {
+        "pathway_authorization_state": "no_verdict_authorized"
+      }
+    },
+    {
+      "id": "homologation_verdict_authorization_bounded",
+      "status": "PASS",
+      "details": {
+        "verdict_authorization_state": "homologation_not_authorized_for_verdict",
+        "unit_states": [
+          "homologation_not_authorized_for_verdict",
+          "homologation_not_authorized_for_verdict",
+          "homologation_not_authorized_for_verdict",
+          "homologation_not_authorized_for_verdict",
+          "homologation_not_authorized_for_verdict",
+          "homologation_not_authorized_for_verdict",
+          "homologation_not_authorized_for_verdict"
+        ]
+      }
+    },
+    {
+      "id": "transition_verdict_authorization_bounded",
+      "status": "PASS",
+      "details": {
+        "transport_verdict_authorization_state": "transition_not_authorized_for_transport_verdict",
+        "contract_states": [
+          "transition_not_authorized_for_transport_verdict",
+          "transition_not_authorized_for_transport_verdict",
+          "transition_not_authorized_for_transport_verdict",
+          "transition_not_authorized_for_transport_verdict"
+        ]
+      }
+    },
+    {
+      "id": "operational_readiness_bounded",
+      "status": "PASS",
+      "details": {
+        "program_state": "comparative_runtime_homologation_ready_but_counterpart_absent",
+        "stage2_m4_state": "ready_for_stage2_m4",
+        "transport_verdict_authorization_state": "transition_not_authorized_for_transport_verdict",
+        "superiority_state": "not_authorized_for_superiority_or_inferiority"
+      }
+    },
+    {
+      "id": "internal_release_surface_allowed",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "candidate_surface_blocked",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "audit_surface_blocked",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "controlled_statement_blocked",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "no_path_leaks",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "no_equivalence_or_transport_leakage",
+      "status": "PASS",
+      "details": {}
+    }
+  ],
+  "warnings": [
+    "candidate_and_audit_surfaces_remain_blocked",
+    "operational_readiness_remains_non_adjudicative",
+    "no_equivalence_or_transport_verdict_authorized"
+  ],
+  "failures": [],
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "not_human_equivalence_support": true,
+    "not_superiority_support": true,
+    "not_cross_substrate_equivalence_support": true,
+    "not_identity_preservation_support": true,
+    "not_external_adjudication": true,
+    "not_paper10_authorization": true,
+    "ready_for_stage2_m4": true
+  },
+  "non_implications": [
+    "Verification pass is not human equivalence support.",
+    "Verification pass is not transport-preservation support.",
+    "Verification pass is not public claim authorization."
+  ],
+  "interpretation_boundary": "Framework-internal only; the Stage 2-M3 comparative verification matrix records implementation and boundary checks for operationalized comparative contracts, not equivalence support, not superiority, and not external adjudication.",
+  "provenance": {
+    "generated_at": "2026-03-31T18:07:41.321Z",
+    "current_lineage": {
+      "layer_version": "comparative_expansion_layer.stage2_m3.operationalization.v1",
+      "estimator_version": "comparative_operational_readiness_builder.stage2_m3.v1",
+      "comparator_protocol": {
+        "ref": "docs/human_comparator_protocol.v1.json",
+        "sha256": "6b71d69d114ce4662a45cce25f36148e8f8da1106f7cdba401b3dee2d3c1d0c6"
+      },
+      "equivalence_ladder": {
+        "ref": "docs/human_equivalence_ladder.v1.json",
+        "sha256": "6541ce52c03404562ddbf75b2ef275f2f0cef61ac33f2aa84d3910dea424670f"
+      },
+      "transport_protocol": {
+        "ref": "docs/cross_substrate_transport_protocol.v1.json",
+        "sha256": "ed099176336b3b4a3e139506a43c9f55053889239ffbee6b6769f6d14508b761"
+      },
+      "human_channel_requirements": {
+        "ref": "docs/human_channel_requirements.v1.json",
+        "sha256": "9b8e05fc033aca8806a93dd78d64bc84799534bf9530f7eae0ea52a18412be85"
+      },
+      "burden_matrix": {
+        "ref": "docs/comparator_burden_matrix.v1.json",
+        "sha256": "97ea0be5967d367ce6f015af079fbc6c8cd5816ee0a881076b0585fa77e7f7f3"
+      },
+      "artifact_schema": {
+        "ref": "docs/comparative_program_artifact_schema.v1.json",
+        "sha256": "1382000344ec75ea1842a452b99008b0c6b3336267b5202e4d5bb034a8372a4b"
+      },
+      "surface_policy": {
+        "ref": "docs/comparative_program_surface_policy.v1.json",
+        "sha256": "a1b38cb97e11c26ddf37c830020697a79ee4c943a96f5849c037353e705b8c88"
+      },
+      "root_schema_hashes": {
+        "comparative_program_manifest.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_manifest.v1.json",
+          "sha256": "d99f84496b843e45519650d144bf1205b88b896887e4907f709830791cd0644d"
+        },
+        "human_comparator_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_comparator_assessment.v1.json",
+          "sha256": "0f349d5421a43701dbe25eaf7d414f7b34ff3480a9e1d19ad3f823f88fb73ef7"
+        },
+        "human_equivalence_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_equivalence_assessment.v1.json",
+          "sha256": "089674f38b35fc2587f02262db7e14276608b882f5e82e4ea3cf3cee4f5de823"
+        },
+        "cross_substrate_transport_assessment.json": {
+          "ref": "src/comparative_program/schemas/cross_substrate_transport_assessment.v1.json",
+          "sha256": "5b979a3ec6ebd4ebc6caa08b66dccf0863de9558ac7cf933b32eaf7ecffbd8de"
+        },
+        "human_channel_pathway_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_channel_pathway_assessment.v1.json",
+          "sha256": "fccf0c3b8cfcd7395d2347a08a257ec3fbfeb8a0d76791f63024c9ac76714ec9"
+        },
+        "counterpart_artifact_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/counterpart_artifact_contract_assessment.v1.json",
+          "sha256": "b85e558e9d901c935971665c49c71d848c19ac57d9f1e09ea70a92543fdb42dc"
+        },
+        "homologation_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/homologation_contract_assessment.v1.json",
+          "sha256": "7701e94180fa24efa4a0b88394bcb9ae1580df5ede5ec3d49f701486ea2674f1"
+        },
+        "cross_substrate_transition_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/cross_substrate_transition_contract_assessment.v1.json",
+          "sha256": "9c3ba1a15e3f0ad83f9406fa1028cfcc0fa56058d093c07e442541fac95e5d22"
+        },
+        "comparative_operational_readiness.json": {
+          "ref": "src/comparative_program/schemas/comparative_operational_readiness.v1.json",
+          "sha256": "e943dd95f7d7fc8651fd119efb16074df630f11cc7e557fcd4540c1e8e230fa1"
+        },
+        "comparative_program_verification_matrix.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
+          "sha256": "6cab7c9939a0615cdd857969f567fd51eb16187c7cbba9f36d802a9a02cae26a"
+        },
+        "comparative_program_readiness_gate.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json",
+          "sha256": "3ed99a108a467c01b51cb7215bec7f0d2e20dace5bc31deb967747aae871150f"
+        }
+      },
+      "qicn_system": {
+        "branch": "main",
+        "head": "8f83cd3b3d599092e956e55717af043a6d4d52c9",
+        "upstream": "origin/main"
+      },
+      "qicn_release": {
+        "branch": "main",
+        "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+        "upstream": "origin/main"
+      },
+      "human_channel_pathways": {
+        "ref": "docs/human_channel_pathways.v1.json",
+        "sha256": "1e81b784594648c962bd44f5c37fa651df9a6364ee64cb499b2738dc9c0c253a"
+      },
+      "counterpart_artifact_contracts": {
+        "ref": "docs/counterpart_artifact_contracts.v1.json",
+        "sha256": "acc60b4428b08b4fb25bff32d876883fc343512f71b514e83e0a287bf4f077ad"
+      },
+      "homologation_contracts": {
+        "ref": "docs/homologation_contracts.v1.json",
+        "sha256": "7d087d17e961122bfc9ae4cc959ca753c1bf1a502de5907c6002f98632c0faf3"
+      },
+      "cross_substrate_transition_contracts": {
+        "ref": "docs/cross_substrate_transition_contracts.v1.json",
+        "sha256": "39c83467b027aa89fdc73694cdad6a23be9d40d0520643576ada566f353efd6f"
+      },
+      "stage2_m2_human_equivalence_state": "equivalence_not_open"
+    }
+  },
+  "schema_ref": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json"
+}

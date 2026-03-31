@@ -1,0 +1,279 @@
+{
+  "artifact_role": "counterpart_artifact_contracts_definition",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage2_m3_operationalization",
+  "implementation_status": "comparative_runtime_contract_operationalization_implemented",
+  "runtime_status": "counterpart_artifact_contract_layer_defined",
+  "status_markers": [
+    "framework_internal_only",
+    "not_human_equivalence_support",
+    "not_cross_substrate_equivalence_support",
+    "not_external_adjudication",
+    "not_paper10_authorization"
+  ],
+  "contract_status_classes": [
+    {
+      "id": "counterpart_contract_defined_but_uninstantiated",
+      "meaning": "The contract shape exists, but the counterpart artifact family has not been instantiated."
+    },
+    {
+      "id": "counterpart_contract_ready_but_counterpart_absent",
+      "meaning": "Typing, lineage, and homologation targeting are defined, but the counterpart artifact family is absent."
+    },
+    {
+      "id": "counterpart_contract_incomplete",
+      "meaning": "The contract is missing one or more required typing, lineage, or error-budget bindings."
+    },
+    {
+      "id": "counterpart_contract_blocked_by_invalid_substitution",
+      "meaning": "A forbidden substitute would be required to populate the contract."
+    },
+    {
+      "id": "counterpart_contract_theoretically_admissible",
+      "meaning": "The contract is definable and bounded, but not strong enough yet to qualify as ready."
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "self_report_counterpart_contract",
+      "target_domain": "bridge_coordinate_domain",
+      "required_counterpart_artifact_class": [
+        "human_self_report_trace.json",
+        "human_self_report_channel_manifest.json"
+      ],
+      "homologation_target": "self_report_structural_homologation",
+      "structural_typing_requirements": [
+        "typed_first_person_self_report_trace",
+        "bridge_coordinate_index_alignment",
+        "session_scoped_subject_key"
+      ],
+      "artifact_lineage_requirements": [
+        "session_lineage_manifest",
+        "collection_protocol_version",
+        "comparator_session_id"
+      ],
+      "invalid_substitutions": [
+        "synthetic_human_self_report_generation",
+        "machine_self_report_relabeling",
+        "language_model_narration_without_human_measurement"
+      ],
+      "blocked_states": [
+        "missing_human_capture_route",
+        "missing_counterpart_artifact_family"
+      ],
+      "future_admissibility_notes": [
+        "Admissible only with real human capture under typed lineage.",
+        "Metadata-only pathway descriptions do not satisfy the artifact family."
+      ],
+      "non_implications": [
+        "No human equivalence follows from this contract.",
+        "No human evidence is created by defining this contract."
+      ]
+    },
+    {
+      "contract_id": "intervention_response_counterpart_contract",
+      "target_domain": "intervention_response_domain",
+      "required_counterpart_artifact_class": [
+        "human_intervention_profile.json",
+        "human_negative_control_profile.json"
+      ],
+      "homologation_target": "intervention_response_homologation",
+      "structural_typing_requirements": [
+        "matched_perturbation_family_id",
+        "matched_control_family_id",
+        "typed_response_series"
+      ],
+      "artifact_lineage_requirements": [
+        "intervention_protocol_version",
+        "negative_control_registration",
+        "comparator_session_id"
+      ],
+      "invalid_substitutions": [
+        "relabelled_machine_intervention_profiles",
+        "narrative_control_descriptions_without_human_measurement",
+        "synthetic_human_perturbation_logs"
+      ],
+      "blocked_states": [
+        "missing_human_intervention_route",
+        "missing_counterpart_artifact_family"
+      ],
+      "future_admissibility_notes": [
+        "Admissible only with matched perturbations and matched controls.",
+        "Human intervention artifacts must remain independently lineage-typed."
+      ],
+      "non_implications": [
+        "No interventional equivalence follows from this contract.",
+        "No control sufficiency follows from contract definition alone."
+      ]
+    },
+    {
+      "contract_id": "temporal_structure_counterpart_contract",
+      "target_domain": "bridge_coordinate_domain",
+      "required_counterpart_artifact_class": [
+        "human_temporal_structure_report.json"
+      ],
+      "homologation_target": "temporal_structure_homologation",
+      "structural_typing_requirements": [
+        "typed_temporal_segmentation",
+        "temporal_window_normalization",
+        "shared_session_boundary"
+      ],
+      "artifact_lineage_requirements": [
+        "collection_protocol_version",
+        "annotation_schema_version"
+      ],
+      "invalid_substitutions": [
+        "clock_time_only_proxy",
+        "continuity_narration_without_human_measurement"
+      ],
+      "blocked_states": [
+        "missing_temporal_capture_route",
+        "missing_counterpart_artifact_family"
+      ],
+      "future_admissibility_notes": [
+        "Temporal traces must be typed against a shared segmentation contract."
+      ],
+      "non_implications": [
+        "No continuity verdict follows from this contract.",
+        "No temporal-equivalence support follows from contract definition alone."
+      ]
+    },
+    {
+      "contract_id": "valence_topology_counterpart_contract",
+      "target_domain": "bridge_coordinate_domain",
+      "required_counterpart_artifact_class": [
+        "human_valence_topology_report.json"
+      ],
+      "homologation_target": "valence_topology_homologation",
+      "structural_typing_requirements": [
+        "typed_valence_topology_trace",
+        "topology_normalization_contract",
+        "shared_session_boundary"
+      ],
+      "artifact_lineage_requirements": [
+        "collection_protocol_version",
+        "annotation_schema_version"
+      ],
+      "invalid_substitutions": [
+        "reward_schedule_only_proxy",
+        "scalar_preference_report_without_topology_measurement"
+      ],
+      "blocked_states": [
+        "missing_valence_topology_route",
+        "missing_counterpart_artifact_family"
+      ],
+      "future_admissibility_notes": [
+        "Valence topology artifacts require typed topology capture, not scalar summaries."
+      ],
+      "non_implications": [
+        "No affective equivalence follows from this contract.",
+        "No reward-label comparison follows from defining this contract."
+      ]
+    },
+    {
+      "contract_id": "embodiment_boundary_counterpart_contract",
+      "target_domain": "bridge_coordinate_domain",
+      "required_counterpart_artifact_class": [
+        "human_embodiment_boundary_report.json"
+      ],
+      "homologation_target": "embodiment_boundary_homologation",
+      "structural_typing_requirements": [
+        "typed_embodiment_boundary_trace",
+        "body_world_boundary_annotation",
+        "embodiment_error_budget_reference"
+      ],
+      "artifact_lineage_requirements": [
+        "collection_protocol_version",
+        "annotation_schema_version",
+        "embodiment_environment_manifest"
+      ],
+      "invalid_substitutions": [
+        "motor_competence_only_proxy",
+        "controller_performance_only_proxy"
+      ],
+      "blocked_states": [
+        "missing_embodiment_capture_route",
+        "embodiment_error_budget_absent",
+        "missing_counterpart_artifact_family"
+      ],
+      "future_admissibility_notes": [
+        "Embodiment-boundary artifacts require explicit body-world boundary typing and bounded error budgets."
+      ],
+      "non_implications": [
+        "No embodied closure verdict follows from this contract.",
+        "No embodiment equivalence follows from contract definition alone."
+      ]
+    },
+    {
+      "contract_id": "ambiguity_load_counterpart_contract",
+      "target_domain": "bridge_coordinate_domain",
+      "required_counterpart_artifact_class": [
+        "human_ambiguity_load_report.json"
+      ],
+      "homologation_target": "ambiguity_load_homologation",
+      "structural_typing_requirements": [
+        "typed_ambiguity_load_trace",
+        "shared_ambiguity_annotation_contract",
+        "shared_session_boundary"
+      ],
+      "artifact_lineage_requirements": [
+        "collection_protocol_version",
+        "annotation_schema_version"
+      ],
+      "invalid_substitutions": [
+        "semantic_density_only_proxy",
+        "error_rate_only_proxy"
+      ],
+      "blocked_states": [
+        "missing_ambiguity_capture_route",
+        "missing_counterpart_artifact_family"
+      ],
+      "future_admissibility_notes": [
+        "Ambiguity-bearing artifacts must remain typed to the shared ambiguity contract."
+      ],
+      "non_implications": [
+        "No ambiguity-bearing verdict follows from this contract.",
+        "No comparator adjudication follows from ambiguity contract definition alone."
+      ]
+    },
+    {
+      "contract_id": "transport_counterpart_contract",
+      "target_domain": "transport_preservation_domain",
+      "required_counterpart_artifact_class": [
+        "cross_substrate_transport_contract.json",
+        "cross_substrate_lineage_map.json",
+        "target_substrate_counterpart_manifest.json"
+      ],
+      "homologation_target": "transport_transition_homologation",
+      "structural_typing_requirements": [
+        "source_substrate_class",
+        "target_substrate_class",
+        "preservation_axis_map",
+        "axis_specific_error_budget_map"
+      ],
+      "artifact_lineage_requirements": [
+        "transition_lineage_map",
+        "fork_fracture_accounting",
+        "target_artifact_provenance_chain"
+      ],
+      "invalid_substitutions": [
+        "static_model_export_only",
+        "source_snapshot_without_target_counterpart"
+      ],
+      "blocked_states": [
+        "missing_target_counterpart",
+        "missing_transition_lineage_map",
+        "axis_specific_error_budget_absent"
+      ],
+      "future_admissibility_notes": [
+        "Transport contracts require source-target pairing, lineage continuity, and axis-specific budgets.",
+        "Source-side artifacts alone do not satisfy the transport counterpart class."
+      ],
+      "non_implications": [
+        "No transport-preservation verdict follows from this contract.",
+        "No identity-preservation claim follows from defining this contract."
+      ]
+    }
+  ],
+  "interpretation_boundary": "Framework-internal only; counterpart artifact contracts define what future human-side and cross-substrate artifact families would have to look like. They do not fabricate those artifacts, do not authorize equivalence claims, and do not open external adjudication."
+}

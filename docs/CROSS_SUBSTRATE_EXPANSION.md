@@ -3,13 +3,12 @@
 ## Role
 
 Cross-substrate expansion remains a comparative transport program, not a solved
-transport-preservation program. In `Stage 2-M2` it becomes runtime-loadable in a
-bounded way:
+transport-preservation program.
 
-- transport openness can be assessed;
-- missing transition contracts can be surfaced explicitly;
-- preservation axes can be marked not evaluable;
-- identity-preservation outputs remain forbidden.
+- `Stage 2-M2` made transport blockage runtime-loadable.
+- `Stage 2-M3` adds transition-contract operationalization, preservation-axis readiness tracking, and fork or fracture risk accounting.
+
+Identity-preservation outputs remain forbidden.
 
 ## Runtime classes
 
@@ -23,18 +22,28 @@ The transport protocol still defines:
 - `unsupported_remap`
 - `comparator_underdetermined_transport`
 
-In `Stage 2-M2`, only bounded non-closing states may be awarded without a real
-source-target transport contract.
+The transition-contract layer introduced in `Stage 2-M3` now adds:
+
+- `transition_not_open`
+- `transition_contract_defined`
+- `transition_contract_incomplete`
+- `transition_contract_ready_but_target_absent`
+- `transition_contract_underdetermined`
+- `transition_not_authorized_for_transport_verdict`
 
 ## Current runtime meaning
 
 The cross-substrate runtime can now say:
 
-- no source-target transport contract exists;
-- no target counterpart exists;
-- preservation axes are not evaluable;
-- error budgets are declared but not instantiated;
-- transport remains not open or underdetermined.
+- no source-target transport contract exists in the adjudicative sense;
+- transition contracts are formally defined and machine-readable;
+- preservation axes can be classified for readiness rather than only for absence;
+- fork and fracture risks can be enumerated contract-by-contract;
+- transport remains not open, underdetermined, or target-absent rather than preserved.
+
+The primary M3 transport-facing artifact is:
+
+- `cross_substrate_transition_contract_assessment.json`
 
 ## What remains blocked
 

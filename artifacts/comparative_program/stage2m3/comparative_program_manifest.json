@@ -1,0 +1,221 @@
+{
+  "artifact_role": "comparative_program_manifest",
+  "artifact_name": "comparative_program_manifest.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "comparative_layer_id": "comparative_expansion_layer.stage2_m3_operationalization",
+  "layer_version": "comparative_expansion_layer.stage2_m3.operationalization.v1",
+  "estimator_version": "comparative_operational_readiness_builder.stage2_m3.v1",
+  "implementation_status": "comparative_runtime_contract_operationalization_implemented",
+  "program_status": "comparative_runtime_homologation_ready_but_counterpart_absent",
+  "authority_status": "framework_internal_only",
+  "upstream_refs": {
+    "bridge_projection": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json",
+    "bridge_gate_result": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_gate_result.json",
+    "bridge_manifest": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_manifest.json",
+    "bridge_final_internal_audit": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_final_internal_audit.json",
+    "bridge_readiness_gate": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_readiness_gate.json",
+    "stage2_m2_manifest": "artifacts/comparative_program/stage2m2/comparative_program_manifest.json",
+    "stage2_m2_readiness_gate": "artifacts/comparative_program/stage2m2/comparative_program_readiness_gate.json"
+  },
+  "governance_refs": {
+    "comparator_protocol": "docs/human_comparator_protocol.v1.json",
+    "equivalence_ladder": "docs/human_equivalence_ladder.v1.json",
+    "transport_protocol": "docs/cross_substrate_transport_protocol.v1.json",
+    "human_channel_requirements": "docs/human_channel_requirements.v1.json",
+    "burden_matrix": "docs/comparator_burden_matrix.v1.json",
+    "artifact_schema": "docs/comparative_program_artifact_schema.v1.json",
+    "surface_policy": "docs/comparative_program_surface_policy.v1.json",
+    "human_channel_pathways": "docs/human_channel_pathways.v1.json",
+    "counterpart_artifact_contracts": "docs/counterpart_artifact_contracts.v1.json",
+    "homologation_contracts": "docs/homologation_contracts.v1.json",
+    "cross_substrate_transition_contracts": "docs/cross_substrate_transition_contracts.v1.json"
+  },
+  "artifact_inventory": {
+    "stage2_m2_baseline": {
+      "manifest": "artifacts/comparative_program/stage2m2/comparative_program_manifest.json",
+      "human_comparator_assessment": "artifacts/comparative_program/stage2m2/human_comparator_assessment.json",
+      "human_equivalence_assessment": "artifacts/comparative_program/stage2m2/human_equivalence_assessment.json",
+      "cross_substrate_transport_assessment": "artifacts/comparative_program/stage2m2/cross_substrate_transport_assessment.json",
+      "verification_matrix": "artifacts/comparative_program/stage2m2/comparative_program_verification_matrix.json",
+      "readiness_gate": "artifacts/comparative_program/stage2m2/comparative_program_readiness_gate.json"
+    },
+    "stage2_m3_operationalization": {
+      "human_channel_pathway_assessment": "artifacts/comparative_program/stage2m3/human_channel_pathway_assessment.json",
+      "counterpart_artifact_contract_assessment": "artifacts/comparative_program/stage2m3/counterpart_artifact_contract_assessment.json",
+      "homologation_contract_assessment": "artifacts/comparative_program/stage2m3/homologation_contract_assessment.json",
+      "cross_substrate_transition_contract_assessment": "artifacts/comparative_program/stage2m3/cross_substrate_transition_contract_assessment.json",
+      "comparative_operational_readiness": "artifacts/comparative_program/stage2m3/comparative_operational_readiness.json",
+      "manifest": "artifacts/comparative_program/stage2m3/comparative_program_manifest.json",
+      "verification_matrix": "artifacts/comparative_program/stage2m3/comparative_program_verification_matrix.json",
+      "readiness_gate": "artifacts/comparative_program/stage2m3/comparative_program_readiness_gate.json"
+    }
+  },
+  "status_notes": [
+    "Stage 2-M2 bounded comparative baseline refreshed and preserved.",
+    "Human-channel pathways are now machine-readable and runtime-evaluated.",
+    "Counterpart, homologation, and transition contracts are now runtime-evaluated.",
+    "Comparative runtime is operationalized beyond pure blocked-state runtime.",
+    "No equivalence, superiority, transport-preservation, or external adjudication verdict is authorized."
+  ],
+  "blocked_surface_notes": [
+    "ecosystem_candidate_surface blocked",
+    "audit_facing_package_surface blocked",
+    "controlled_statement_surface blocked",
+    "external_claim_facing_surface blocked"
+  ],
+  "current_states": {
+    "baseline_state": "comparative_runtime_open_but_human_blocked",
+    "human_comparator_state": "comparator_blocked",
+    "human_equivalence_state": "equivalence_not_open",
+    "stage2_m2_transport_state": "transport_not_open",
+    "pathway_layer_state": "human_channel_pathway_contract_operationalized",
+    "counterpart_contract_state": "counterpart_contracts_operationalized_but_counterpart_absent",
+    "homologation_state": "comparative_runtime_homologation_ready_but_counterpart_absent",
+    "transition_state": "transition_contract_operationalized_but_target_absent",
+    "operational_state": "comparative_runtime_homologation_ready_but_counterpart_absent",
+    "stage2_m4_state": "ready_for_stage2_m4"
+  },
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "not_human_equivalence_support": true,
+    "not_superiority_support": true,
+    "not_cross_substrate_equivalence_support": true,
+    "not_identity_preservation_support": true,
+    "not_external_adjudication": true,
+    "not_paper10_authorization": true,
+    "ready_for_stage2_m4": true
+  },
+  "non_implications": [
+    "No human equivalence follows from this manifest.",
+    "No superiority or inferiority follows from this manifest.",
+    "No transport-preservation or identity-preservation verdict follows from this manifest.",
+    "No candidate or audit comparative integration is authorized.",
+    "No external adjudication follows from this manifest."
+  ],
+  "source_shas": {
+    "qicn_system": {
+      "branch": "main",
+      "head": "8f83cd3b3d599092e956e55717af043a6d4d52c9",
+      "upstream": "origin/main"
+    },
+    "qicn_release": {
+      "branch": "main",
+      "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+      "upstream": "origin/main"
+    }
+  },
+  "lineage": {
+    "layer_version": "comparative_expansion_layer.stage2_m3.operationalization.v1",
+    "estimator_version": "comparative_operational_readiness_builder.stage2_m3.v1",
+    "comparator_protocol": {
+      "ref": "docs/human_comparator_protocol.v1.json",
+      "sha256": "6b71d69d114ce4662a45cce25f36148e8f8da1106f7cdba401b3dee2d3c1d0c6"
+    },
+    "equivalence_ladder": {
+      "ref": "docs/human_equivalence_ladder.v1.json",
+      "sha256": "6541ce52c03404562ddbf75b2ef275f2f0cef61ac33f2aa84d3910dea424670f"
+    },
+    "transport_protocol": {
+      "ref": "docs/cross_substrate_transport_protocol.v1.json",
+      "sha256": "ed099176336b3b4a3e139506a43c9f55053889239ffbee6b6769f6d14508b761"
+    },
+    "human_channel_requirements": {
+      "ref": "docs/human_channel_requirements.v1.json",
+      "sha256": "9b8e05fc033aca8806a93dd78d64bc84799534bf9530f7eae0ea52a18412be85"
+    },
+    "burden_matrix": {
+      "ref": "docs/comparator_burden_matrix.v1.json",
+      "sha256": "97ea0be5967d367ce6f015af079fbc6c8cd5816ee0a881076b0585fa77e7f7f3"
+    },
+    "artifact_schema": {
+      "ref": "docs/comparative_program_artifact_schema.v1.json",
+      "sha256": "1382000344ec75ea1842a452b99008b0c6b3336267b5202e4d5bb034a8372a4b"
+    },
+    "surface_policy": {
+      "ref": "docs/comparative_program_surface_policy.v1.json",
+      "sha256": "a1b38cb97e11c26ddf37c830020697a79ee4c943a96f5849c037353e705b8c88"
+    },
+    "root_schema_hashes": {
+      "comparative_program_manifest.json": {
+        "ref": "src/comparative_program/schemas/comparative_program_manifest.v1.json",
+        "sha256": "d99f84496b843e45519650d144bf1205b88b896887e4907f709830791cd0644d"
+      },
+      "human_comparator_assessment.json": {
+        "ref": "src/comparative_program/schemas/human_comparator_assessment.v1.json",
+        "sha256": "0f349d5421a43701dbe25eaf7d414f7b34ff3480a9e1d19ad3f823f88fb73ef7"
+      },
+      "human_equivalence_assessment.json": {
+        "ref": "src/comparative_program/schemas/human_equivalence_assessment.v1.json",
+        "sha256": "089674f38b35fc2587f02262db7e14276608b882f5e82e4ea3cf3cee4f5de823"
+      },
+      "cross_substrate_transport_assessment.json": {
+        "ref": "src/comparative_program/schemas/cross_substrate_transport_assessment.v1.json",
+        "sha256": "5b979a3ec6ebd4ebc6caa08b66dccf0863de9558ac7cf933b32eaf7ecffbd8de"
+      },
+      "human_channel_pathway_assessment.json": {
+        "ref": "src/comparative_program/schemas/human_channel_pathway_assessment.v1.json",
+        "sha256": "fccf0c3b8cfcd7395d2347a08a257ec3fbfeb8a0d76791f63024c9ac76714ec9"
+      },
+      "counterpart_artifact_contract_assessment.json": {
+        "ref": "src/comparative_program/schemas/counterpart_artifact_contract_assessment.v1.json",
+        "sha256": "b85e558e9d901c935971665c49c71d848c19ac57d9f1e09ea70a92543fdb42dc"
+      },
+      "homologation_contract_assessment.json": {
+        "ref": "src/comparative_program/schemas/homologation_contract_assessment.v1.json",
+        "sha256": "7701e94180fa24efa4a0b88394bcb9ae1580df5ede5ec3d49f701486ea2674f1"
+      },
+      "cross_substrate_transition_contract_assessment.json": {
+        "ref": "src/comparative_program/schemas/cross_substrate_transition_contract_assessment.v1.json",
+        "sha256": "9c3ba1a15e3f0ad83f9406fa1028cfcc0fa56058d093c07e442541fac95e5d22"
+      },
+      "comparative_operational_readiness.json": {
+        "ref": "src/comparative_program/schemas/comparative_operational_readiness.v1.json",
+        "sha256": "e943dd95f7d7fc8651fd119efb16074df630f11cc7e557fcd4540c1e8e230fa1"
+      },
+      "comparative_program_verification_matrix.json": {
+        "ref": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
+        "sha256": "6cab7c9939a0615cdd857969f567fd51eb16187c7cbba9f36d802a9a02cae26a"
+      },
+      "comparative_program_readiness_gate.json": {
+        "ref": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json",
+        "sha256": "3ed99a108a467c01b51cb7215bec7f0d2e20dace5bc31deb967747aae871150f"
+      }
+    },
+    "qicn_system": {
+      "branch": "main",
+      "head": "8f83cd3b3d599092e956e55717af043a6d4d52c9",
+      "upstream": "origin/main"
+    },
+    "qicn_release": {
+      "branch": "main",
+      "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+      "upstream": "origin/main"
+    },
+    "human_channel_pathways": {
+      "ref": "docs/human_channel_pathways.v1.json",
+      "sha256": "1e81b784594648c962bd44f5c37fa651df9a6364ee64cb499b2738dc9c0c253a"
+    },
+    "counterpart_artifact_contracts": {
+      "ref": "docs/counterpart_artifact_contracts.v1.json",
+      "sha256": "acc60b4428b08b4fb25bff32d876883fc343512f71b514e83e0a287bf4f077ad"
+    },
+    "homologation_contracts": {
+      "ref": "docs/homologation_contracts.v1.json",
+      "sha256": "7d087d17e961122bfc9ae4cc959ca753c1bf1a502de5907c6002f98632c0faf3"
+    },
+    "cross_substrate_transition_contracts": {
+      "ref": "docs/cross_substrate_transition_contracts.v1.json",
+      "sha256": "39c83467b027aa89fdc73694cdad6a23be9d40d0520643576ada566f353efd6f"
+    },
+    "stage2_m2_human_equivalence_state": "equivalence_not_open"
+  },
+  "interpretation_boundary": "Framework-internal only; the Stage 2-M3 comparative program manifest records pathway, contract, homologation, and transition-contract operationalization, not human equivalence, not transport preservation, not external adjudication, and not Paper 10 authorization.",
+  "provenance": {
+    "generated_at": "2026-03-31T18:07:41.317Z",
+    "project_root": ".",
+    "stage2_m2_manifest_ref": "artifacts/comparative_program/stage2m2/comparative_program_manifest.json",
+    "comparative_operational_readiness_ref": "artifacts/comparative_program/stage2m3/comparative_operational_readiness.json"
+  },
+  "schema_ref": "src/comparative_program/schemas/comparative_program_manifest.v1.json"
+}

@@ -40,10 +40,44 @@ Its three subprograms remain one stack:
   - bounded comparative runtime opening with explicit blocked states and no-verdict states.
 - remains open
   - real human channels
+  - pathway instantiation contracts
+  - homologation contracts
+  - transition contracts
+  - operational readiness beyond pure blocked-state
   - interventional comparative layer
   - comparative ecosystem integration
   - comparative final audit
   - external adjudication
+  - Paper 10
+
+## Stage2-M3: comparative operationalization
+
+- objective
+  - operationalize human-channel pathways, counterpart artifact contracts,
+    homologation contracts, and cross-substrate transition contracts without
+    fabricating human evidence and without authorizing comparative verdicts.
+- modules
+  - `HumanChannelPathwayEvaluator`
+  - `CounterpartArtifactContractEvaluator`
+  - `HomologationContractEvaluator`
+  - `CrossSubstrateTransitionContractEvaluator`
+  - `ComparativeOperationalReadinessBuilder`
+- artifacts
+  - `human_channel_pathway_assessment.json`
+  - `counterpart_artifact_contract_assessment.json`
+  - `homologation_contract_assessment.json`
+  - `cross_substrate_transition_contract_assessment.json`
+  - `comparative_operational_readiness.json`
+  - `comparative_program_manifest.json`
+  - `comparative_program_verification_matrix.json`
+  - `comparative_program_readiness_gate.json`
+- closes
+  - bounded comparative operationalization beyond pure blocked-state runtime.
+- remains open
+  - real human channels
+  - real human-side counterpart artifacts
+  - matched human interventions and negative controls
+  - external comparative adjudication
   - Paper 10
 
 ## Stage2-3: human-channel instantiation
@@ -68,5 +102,6 @@ Its three subprograms remain one stack:
 
 ## Current state
 
-`Stage2-0` and `Stage2-M2` are now implemented. Actual human-side measurement
-channels remain absent, so the comparative runtime is open but blocked.
+`Stage2-0`, `Stage2-M2`, and `Stage2-M3` are now implemented. Actual human-side measurement
+channels and counterpart artifacts remain absent, so the comparative program is
+contract-operationalized but still bounded and non-adjudicative.

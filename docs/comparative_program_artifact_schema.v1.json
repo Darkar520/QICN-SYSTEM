@@ -1,13 +1,18 @@
 {
   "artifact_role": "comparative_program_artifact_schema_registry",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage2_m2_runtime_opening",
-  "layer_status": "runtime_comparative_opening_implemented",
+  "layer_id": "comparative_expansion_layer.stage2_m3_operationalization",
+  "layer_status": "comparative_runtime_contract_operationalization_implemented",
   "root_schema_refs": {
     "comparative_program_manifest.json": "src/comparative_program/schemas/comparative_program_manifest.v1.json",
     "human_comparator_assessment.json": "src/comparative_program/schemas/human_comparator_assessment.v1.json",
     "human_equivalence_assessment.json": "src/comparative_program/schemas/human_equivalence_assessment.v1.json",
     "cross_substrate_transport_assessment.json": "src/comparative_program/schemas/cross_substrate_transport_assessment.v1.json",
+    "human_channel_pathway_assessment.json": "src/comparative_program/schemas/human_channel_pathway_assessment.v1.json",
+    "counterpart_artifact_contract_assessment.json": "src/comparative_program/schemas/counterpart_artifact_contract_assessment.v1.json",
+    "homologation_contract_assessment.json": "src/comparative_program/schemas/homologation_contract_assessment.v1.json",
+    "cross_substrate_transition_contract_assessment.json": "src/comparative_program/schemas/cross_substrate_transition_contract_assessment.v1.json",
+    "comparative_operational_readiness.json": "src/comparative_program/schemas/comparative_operational_readiness.v1.json",
     "comparative_program_verification_matrix.json": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
     "comparative_program_readiness_gate.json": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json"
   },
@@ -42,7 +47,9 @@
       "non_implications": [
         "Not comparator support.",
         "Not human equivalence.",
+        "Not superiority or inferiority.",
         "Not cross-substrate equivalence.",
+        "Not identity preservation.",
         "Not external validation."
       ],
       "status": "implemented_runtime_comparative_artifact"
@@ -77,7 +84,7 @@
       ],
       "non_implications": [
         "Not human equivalence.",
-        "Not superiority.",
+        "Not superiority or inferiority.",
         "Not external adjudication."
       ],
       "status": "implemented_runtime_comparative_artifact"
@@ -145,6 +152,190 @@
       "non_implications": [
         "Not cross-substrate equivalence.",
         "Not identity preservation.",
+        "Not external adjudication."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "human_channel_pathway_assessment.json": {
+      "id": "human_channel_pathway_assessment",
+      "artifact_name": "human_channel_pathway_assessment.json",
+      "role": "human_channel_pathway_assessment",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "pathway_contract_readiness",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "pathway_layer_state",
+        "pathway_statuses",
+        "triggered_forbidden_substitutions",
+        "partial_openings",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not human evidence.",
+        "Not human equivalence.",
+        "Not external adjudication."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "counterpart_artifact_contract_assessment.json": {
+      "id": "counterpart_artifact_contract_assessment",
+      "artifact_name": "counterpart_artifact_contract_assessment.json",
+      "role": "counterpart_artifact_contract_assessment",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "counterpart_contract_readiness",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "contract_layer_state",
+        "contract_statuses",
+        "missing_artifact_families",
+        "typing_incompleteness",
+        "lineage_incompleteness",
+        "blocked_conditions",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not instantiated counterpart evidence.",
+        "Not homologation support.",
+        "Not external adjudication."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "homologation_contract_assessment.json": {
+      "id": "homologation_contract_assessment",
+      "artifact_name": "homologation_contract_assessment.json",
+      "role": "homologation_contract_assessment",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "homologation_contract_readiness",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "homologation_layer_state",
+        "homologation_units",
+        "contract_completeness_summary",
+        "burden_symmetry_summary",
+        "homologation_blockers",
+        "error_budget_summary",
+        "no_verdict_authorized",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not human equivalence.",
+        "Not transport preservation.",
+        "Not external adjudication."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "cross_substrate_transition_contract_assessment.json": {
+      "id": "cross_substrate_transition_contract_assessment",
+      "artifact_name": "cross_substrate_transition_contract_assessment.json",
+      "role": "cross_substrate_transition_contract_assessment",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "transition_contract_readiness",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "transition_layer_state",
+        "transition_contract_statuses",
+        "preservation_axis_readiness",
+        "fracture_fork_exposure",
+        "missing_transition_artifacts",
+        "no_transport_verdict_authorized",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not transport preservation.",
+        "Not identity preservation.",
+        "Not external adjudication."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "comparative_operational_readiness.json": {
+      "id": "comparative_operational_readiness",
+      "artifact_name": "comparative_operational_readiness.json",
+      "role": "comparative_operational_readiness",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "operational_readiness",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "program_state",
+        "baseline_state",
+        "homologation_state",
+        "stage2_m4_state",
+        "external_comparative_adjudication_state",
+        "blocking_reasons",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not human equivalence.",
+        "Not transport preservation.",
         "Not external adjudication."
       ],
       "status": "implemented_runtime_comparative_artifact"

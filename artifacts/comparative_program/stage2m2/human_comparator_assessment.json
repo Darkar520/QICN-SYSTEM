@@ -428,7 +428,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; human comparator assessment records bounded comparative opening state, not human equivalence, not superiority, not external adjudication, and not claim-facing evidence.",
   "provenance": {
-    "generated_at": "2026-03-30T04:25:45.091Z",
+    "generated_at": "2026-03-31T18:07:40.947Z",
     "bridge_refs": {
       "projection": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json",
       "gate_result": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_gate_result.json",
@@ -460,11 +460,11 @@
       },
       "artifact_schema": {
         "ref": "docs/comparative_program_artifact_schema.v1.json",
-        "sha256": "80dadbc4da4301a15d39ef7cb6965034f4531cfd21bdf67d5af9ed2e35fd8705"
+        "sha256": "1382000344ec75ea1842a452b99008b0c6b3336267b5202e4d5bb034a8372a4b"
       },
       "surface_policy": {
         "ref": "docs/comparative_program_surface_policy.v1.json",
-        "sha256": "d471e4d500268938c440abde4d6a105bb842ef671f383f8e1edd9abbb2ebc880"
+        "sha256": "a1b38cb97e11c26ddf37c830020697a79ee4c943a96f5849c037353e705b8c88"
       },
       "root_schema_hashes": {
         "comparative_program_manifest.json": {
@@ -483,6 +483,26 @@
           "ref": "src/comparative_program/schemas/cross_substrate_transport_assessment.v1.json",
           "sha256": "5b979a3ec6ebd4ebc6caa08b66dccf0863de9558ac7cf933b32eaf7ecffbd8de"
         },
+        "human_channel_pathway_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_channel_pathway_assessment.v1.json",
+          "sha256": "fccf0c3b8cfcd7395d2347a08a257ec3fbfeb8a0d76791f63024c9ac76714ec9"
+        },
+        "counterpart_artifact_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/counterpart_artifact_contract_assessment.v1.json",
+          "sha256": "b85e558e9d901c935971665c49c71d848c19ac57d9f1e09ea70a92543fdb42dc"
+        },
+        "homologation_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/homologation_contract_assessment.v1.json",
+          "sha256": "7701e94180fa24efa4a0b88394bcb9ae1580df5ede5ec3d49f701486ea2674f1"
+        },
+        "cross_substrate_transition_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/cross_substrate_transition_contract_assessment.v1.json",
+          "sha256": "9c3ba1a15e3f0ad83f9406fa1028cfcc0fa56058d093c07e442541fac95e5d22"
+        },
+        "comparative_operational_readiness.json": {
+          "ref": "src/comparative_program/schemas/comparative_operational_readiness.v1.json",
+          "sha256": "e943dd95f7d7fc8651fd119efb16074df630f11cc7e557fcd4540c1e8e230fa1"
+        },
         "comparative_program_verification_matrix.json": {
           "ref": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
           "sha256": "6cab7c9939a0615cdd857969f567fd51eb16187c7cbba9f36d802a9a02cae26a"
@@ -494,13 +514,13 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "10ecbfb5a3028b1489d9f73cd34cf9fb20221bf0",
-        "upstream": null
+        "head": "8f83cd3b3d599092e956e55717af043a6d4d52c9",
+        "upstream": "origin/main"
       },
       "qicn_release": {
         "branch": "main",
         "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
-        "upstream": null
+        "upstream": "origin/main"
       }
     }
   },

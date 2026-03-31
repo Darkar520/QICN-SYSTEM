@@ -18,6 +18,13 @@ export const COMPARATIVE_SYSTEM_FILES = Object.freeze({
   surface_policy: 'docs/comparative_program_surface_policy.v1.json'
 });
 
+export const COMPARATIVE_OPERATIONAL_SYSTEM_FILES = Object.freeze({
+  human_channel_pathways: 'docs/human_channel_pathways.v1.json',
+  counterpart_artifact_contracts: 'docs/counterpart_artifact_contracts.v1.json',
+  homologation_contracts: 'docs/homologation_contracts.v1.json',
+  cross_substrate_transition_contracts: 'docs/cross_substrate_transition_contracts.v1.json'
+});
+
 export const ROOT_BRIDGE_ARTIFACT_REFS = Object.freeze({
   projection: 'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json',
   gate_result: 'artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_gate_result.json',
@@ -39,6 +46,24 @@ export const COMPARATIVE_RUNTIME_ARTIFACT_REFS = Object.freeze({
     'artifacts/comparative_program/stage2m2/comparative_program_verification_matrix.json',
   readiness_gate:
     'artifacts/comparative_program/stage2m2/comparative_program_readiness_gate.json'
+});
+
+export const COMPARATIVE_OPERATIONAL_ARTIFACT_REFS = Object.freeze({
+  human_channel_pathway_assessment:
+    'artifacts/comparative_program/stage2m3/human_channel_pathway_assessment.json',
+  counterpart_artifact_contract_assessment:
+    'artifacts/comparative_program/stage2m3/counterpart_artifact_contract_assessment.json',
+  homologation_contract_assessment:
+    'artifacts/comparative_program/stage2m3/homologation_contract_assessment.json',
+  cross_substrate_transition_contract_assessment:
+    'artifacts/comparative_program/stage2m3/cross_substrate_transition_contract_assessment.json',
+  comparative_operational_readiness:
+    'artifacts/comparative_program/stage2m3/comparative_operational_readiness.json',
+  manifest: 'artifacts/comparative_program/stage2m3/comparative_program_manifest.json',
+  verification_matrix:
+    'artifacts/comparative_program/stage2m3/comparative_program_verification_matrix.json',
+  readiness_gate:
+    'artifacts/comparative_program/stage2m3/comparative_program_readiness_gate.json'
 });
 
 const buildLocalPathPattern = () => {
@@ -235,10 +260,61 @@ export const loadBridgeComparativeBaseline = () => ({
   readiness_gate: readJsonRelative(ROOT_BRIDGE_ARTIFACT_REFS.readiness_gate)
 });
 
+export const loadComparativeRuntimeBaseline = () => ({
+  human_comparator_assessment: readJsonRelative(
+    COMPARATIVE_RUNTIME_ARTIFACT_REFS.human_comparator_assessment
+  ),
+  human_equivalence_assessment: readJsonRelative(
+    COMPARATIVE_RUNTIME_ARTIFACT_REFS.human_equivalence_assessment
+  ),
+  cross_substrate_transport_assessment: readJsonRelative(
+    COMPARATIVE_RUNTIME_ARTIFACT_REFS.cross_substrate_transport_assessment
+  ),
+  comparative_program_manifest: readJsonRelative(COMPARATIVE_RUNTIME_ARTIFACT_REFS.manifest),
+  comparative_program_verification_matrix: readJsonRelative(
+    COMPARATIVE_RUNTIME_ARTIFACT_REFS.verification_matrix
+  ),
+  comparative_program_readiness_gate: readJsonRelative(
+    COMPARATIVE_RUNTIME_ARTIFACT_REFS.readiness_gate
+  )
+});
+
+export const deriveComparativeMachineArtifactAvailability = ({
+  bridgeBaseline,
+  comparativeRuntimeBaseline
+}) => ({
+  'phenomenal_bridge_projection.json': Boolean(bridgeBaseline?.projection),
+  'phenomenal_bridge_gate_result.json': Boolean(bridgeBaseline?.gate_result),
+  'phenomenal_bridge_manifest.json': Boolean(bridgeBaseline?.manifest),
+  'bridge_intervention_profile.json': Boolean(
+    bridgeBaseline?.projection?.bridge_intervention_status_summary
+  ),
+  'bridge_reducibility_report.json': Boolean(
+    bridgeBaseline?.projection?.bridge_reducibility_status_summary
+  ),
+  'human_comparator_assessment.json': Boolean(
+    comparativeRuntimeBaseline?.human_comparator_assessment
+  ),
+  'human_equivalence_assessment.json': Boolean(
+    comparativeRuntimeBaseline?.human_equivalence_assessment
+  ),
+  'cross_substrate_transport_assessment.json': Boolean(
+    comparativeRuntimeBaseline?.cross_substrate_transport_assessment
+  ),
+  'comparative_program_manifest.json': Boolean(
+    comparativeRuntimeBaseline?.comparative_program_manifest
+  ),
+  'comparative_program_readiness_gate.json': Boolean(
+    comparativeRuntimeBaseline?.comparative_program_readiness_gate
+  )
+});
+
 export default {
   COMPARATIVE_SYSTEM_FILES,
+  COMPARATIVE_OPERATIONAL_SYSTEM_FILES,
   ROOT_BRIDGE_ARTIFACT_REFS,
   COMPARATIVE_RUNTIME_ARTIFACT_REFS,
+  COMPARATIVE_OPERATIONAL_ARTIFACT_REFS,
   PROJECT_ROOT,
   RELEASE_ROOT,
   ensureDir,
@@ -254,5 +330,7 @@ export default {
   captureComparativeLineage,
   containsLocalPathLeak,
   checkSurfaceEligibility,
-  loadBridgeComparativeBaseline
+  loadBridgeComparativeBaseline,
+  loadComparativeRuntimeBaseline,
+  deriveComparativeMachineArtifactAvailability
 };

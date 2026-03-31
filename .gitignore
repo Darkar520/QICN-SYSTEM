@@ -96,6 +96,16 @@ artifacts/comparative_program/stage2m2/*
 !artifacts/comparative_program/stage2m2/comparative_program_manifest.json
 !artifacts/comparative_program/stage2m2/comparative_program_verification_matrix.json
 !artifacts/comparative_program/stage2m2/comparative_program_readiness_gate.json
+!artifacts/comparative_program/stage2m3/
+artifacts/comparative_program/stage2m3/*
+!artifacts/comparative_program/stage2m3/human_channel_pathway_assessment.json
+!artifacts/comparative_program/stage2m3/counterpart_artifact_contract_assessment.json
+!artifacts/comparative_program/stage2m3/homologation_contract_assessment.json
+!artifacts/comparative_program/stage2m3/cross_substrate_transition_contract_assessment.json
+!artifacts/comparative_program/stage2m3/comparative_operational_readiness.json
+!artifacts/comparative_program/stage2m3/comparative_program_manifest.json
+!artifacts/comparative_program/stage2m3/comparative_program_verification_matrix.json
+!artifacts/comparative_program/stage2m3/comparative_program_readiness_gate.json
 !artifacts/protocolized_evaluation/
 artifacts/protocolized_evaluation/*
 !artifacts/protocolized_evaluation/evaluation_protocol_manifest.json

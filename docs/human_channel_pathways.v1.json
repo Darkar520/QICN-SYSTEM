@@ -1,0 +1,382 @@
+{
+  "artifact_role": "human_channel_pathways_definition",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage2_m3_operationalization",
+  "implementation_status": "comparative_runtime_contract_operationalization_implemented",
+  "runtime_status": "human_channel_pathway_layer_defined",
+  "status_markers": [
+    "framework_internal_only",
+    "not_human_equivalence_support",
+    "not_cross_substrate_equivalence_support",
+    "not_external_adjudication",
+    "not_paper10_authorization"
+  ],
+  "pathway_status_classes": [
+    {
+      "id": "pathway_not_open",
+      "meaning": "Required machine-side structure or governing pathway contracts are absent, so the pathway cannot be treated as open even at the contract layer."
+    },
+    {
+      "id": "pathway_defined_but_uninstantiated",
+      "meaning": "The pathway is defined and bounded, but the future counterpart route or source-target pairing is still not instantiated."
+    },
+    {
+      "id": "pathway_contract_incomplete",
+      "meaning": "The pathway exists in outline, but one or more required contract families, lineage requirements, or error-budget bindings remain incomplete."
+    },
+    {
+      "id": "pathway_contract_ready_but_counterpart_absent",
+      "meaning": "Machine-side and governance-side pathway contracts are ready, but no legitimate human-side counterpart artifacts exist yet."
+    },
+    {
+      "id": "pathway_blocked_by_forbidden_proxy",
+      "meaning": "A forbidden substitution route has been detected or would be the only available substitute for the missing counterpart."
+    },
+    {
+      "id": "pathway_theoretically_open",
+      "meaning": "The pathway is partially specifiable and structurally bounded, but still too incomplete for counterpart instantiation or adjudication."
+    }
+  ],
+  "pathways": [
+    {
+      "pathway_id": "self_report_structural_pathway",
+      "channel_id": "self_report_channel",
+      "measurement_class": "typed_first_person_self_report_trace",
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_projection.json",
+        "phenomenal_bridge_gate_result.json"
+      ],
+      "required_counterpart_artifact_family": [
+        "human_self_report_trace.json",
+        "human_self_report_channel_manifest.json"
+      ],
+      "required_counterpart_contract_id": "self_report_counterpart_contract",
+      "homologation_unit": "self_report_structural_homologation",
+      "admissible_collection_mode": [
+        "protocol_bounded_human_self_report_capture",
+        "typed_session_lineage_manifest",
+        "timestamped_measurement_trace"
+      ],
+      "forbidden_substitution_modes": [
+        "synthetic_human_self_report_generation",
+        "machine_self_report_relabeling",
+        "language_model_narration_without_human_measurement"
+      ],
+      "minimum_symmetry_conditions": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden",
+        "typing_contract_burden"
+      ],
+      "pathway_completeness_criteria": [
+        "machine_artifact_family_available",
+        "counterpart_contract_defined",
+        "homologation_contract_defined",
+        "typed_collection_route_defined",
+        "lineage_contract_defined"
+      ],
+      "pathway_readiness_classes": [
+        "pathway_contract_ready_but_counterpart_absent",
+        "pathway_blocked_by_forbidden_proxy"
+      ],
+      "pathway_blockers": [
+        "missing_legitimate_human_capture_route",
+        "missing_counterpart_artifact_family"
+      ],
+      "pathway_non_implications": [
+        "No human equivalence follows from this pathway definition.",
+        "No human self-report evidence is created by pathway definition alone."
+      ]
+    },
+    {
+      "pathway_id": "intervention_response_pathway",
+      "channel_id": "intervention_response_channel",
+      "measurement_class": "typed_human_intervention_response_series",
+      "required_machine_artifact_family": [
+        "bridge_intervention_profile.json",
+        "bridge_reducibility_report.json"
+      ],
+      "required_counterpart_artifact_family": [
+        "human_intervention_profile.json",
+        "human_negative_control_profile.json"
+      ],
+      "required_counterpart_contract_id": "intervention_response_counterpart_contract",
+      "homologation_unit": "intervention_response_homologation",
+      "admissible_collection_mode": [
+        "protocol_bounded_human_intervention_capture",
+        "matched_negative_control_registration",
+        "typed_response_series_capture"
+      ],
+      "forbidden_substitution_modes": [
+        "relabelled_machine_intervention_profiles",
+        "narrative_control_descriptions_without_human_measurement",
+        "synthetic_human_perturbation_logs"
+      ],
+      "minimum_symmetry_conditions": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "intervention_homology_burden",
+        "artifact_homology_burden"
+      ],
+      "pathway_completeness_criteria": [
+        "machine_artifact_family_available",
+        "counterpart_contract_defined",
+        "homologation_contract_defined",
+        "matched_control_contract_defined",
+        "lineage_contract_defined"
+      ],
+      "pathway_readiness_classes": [
+        "pathway_contract_ready_but_counterpart_absent",
+        "pathway_blocked_by_forbidden_proxy"
+      ],
+      "pathway_blockers": [
+        "missing_legitimate_human_intervention_route",
+        "missing_counterpart_artifact_family"
+      ],
+      "pathway_non_implications": [
+        "No interventional equivalence follows from pathway definition alone.",
+        "No matched-control sufficiency follows without real human measurements."
+      ]
+    },
+    {
+      "pathway_id": "temporal_structure_pathway",
+      "channel_id": "temporal_structure_channel",
+      "measurement_class": "typed_human_temporal_structure_trace",
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_projection.json"
+      ],
+      "required_counterpart_artifact_family": [
+        "human_temporal_structure_report.json"
+      ],
+      "required_counterpart_contract_id": "temporal_structure_counterpart_contract",
+      "homologation_unit": "temporal_structure_homologation",
+      "admissible_collection_mode": [
+        "protocol_bounded_temporal_trace_capture",
+        "typed_temporal_segmentation_log"
+      ],
+      "forbidden_substitution_modes": [
+        "clock_time_only_proxy",
+        "continuity_narration_without_human_measurement"
+      ],
+      "minimum_symmetry_conditions": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden"
+      ],
+      "pathway_completeness_criteria": [
+        "machine_artifact_family_available",
+        "counterpart_contract_defined",
+        "homologation_contract_defined",
+        "typed_collection_route_defined"
+      ],
+      "pathway_readiness_classes": [
+        "pathway_theoretically_open",
+        "pathway_contract_ready_but_counterpart_absent"
+      ],
+      "pathway_blockers": [
+        "missing_instantiated_temporal_trace_route",
+        "missing_counterpart_artifact_family"
+      ],
+      "pathway_non_implications": [
+        "No lived-temporality comparison follows from pathway specification.",
+        "No continuity verdict follows from temporal pathway openness alone."
+      ]
+    },
+    {
+      "pathway_id": "valence_topology_pathway",
+      "channel_id": "valence_topology_channel",
+      "measurement_class": "typed_human_valence_topology_trace",
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_projection.json"
+      ],
+      "required_counterpart_artifact_family": [
+        "human_valence_topology_report.json"
+      ],
+      "required_counterpart_contract_id": "valence_topology_counterpart_contract",
+      "homologation_unit": "valence_topology_homologation",
+      "admissible_collection_mode": [
+        "protocol_bounded_valence_topology_capture",
+        "typed_affective_topology_annotation"
+      ],
+      "forbidden_substitution_modes": [
+        "reward_schedule_only_proxy",
+        "scalar_preference_report_without_topology_measurement"
+      ],
+      "minimum_symmetry_conditions": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "typing_contract_burden"
+      ],
+      "pathway_completeness_criteria": [
+        "machine_artifact_family_available",
+        "counterpart_contract_defined",
+        "homologation_contract_defined",
+        "typed_collection_route_defined"
+      ],
+      "pathway_readiness_classes": [
+        "pathway_theoretically_open",
+        "pathway_contract_ready_but_counterpart_absent"
+      ],
+      "pathway_blockers": [
+        "missing_instantiated_valence_topology_route",
+        "missing_counterpart_artifact_family"
+      ],
+      "pathway_non_implications": [
+        "No affective organization comparison follows from pathway specification.",
+        "No valence-topology verdict follows without real human-side capture."
+      ]
+    },
+    {
+      "pathway_id": "embodiment_boundary_pathway",
+      "channel_id": "embodiment_boundary_channel",
+      "measurement_class": "typed_human_embodiment_boundary_trace",
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_projection.json",
+        "bridge_intervention_profile.json"
+      ],
+      "required_counterpart_artifact_family": [
+        "human_embodiment_boundary_report.json"
+      ],
+      "required_counterpart_contract_id": "embodiment_boundary_counterpart_contract",
+      "homologation_unit": "embodiment_boundary_homologation",
+      "admissible_collection_mode": [
+        "protocol_bounded_embodiment_boundary_capture",
+        "typed_world-boundary annotation",
+        "embodiment error budget registration"
+      ],
+      "forbidden_substitution_modes": [
+        "motor_competence_only_proxy",
+        "controller_performance_only_proxy"
+      ],
+      "minimum_symmetry_conditions": [
+        "human_channel_burden",
+        "burden_symmetry",
+        "artifact_homology_burden",
+        "error_budget_burden"
+      ],
+      "pathway_completeness_criteria": [
+        "machine_artifact_family_available",
+        "counterpart_contract_defined",
+        "homologation_contract_defined",
+        "typed_collection_route_defined",
+        "embodiment_error_budget_defined"
+      ],
+      "pathway_readiness_classes": [
+        "pathway_contract_incomplete",
+        "pathway_blocked_by_forbidden_proxy"
+      ],
+      "pathway_blockers": [
+        "missing_legitimate_embodiment_capture_route",
+        "embodiment_error_budget_not_instantiated",
+        "missing_counterpart_artifact_family"
+      ],
+      "pathway_non_implications": [
+        "No embodied closure comparison follows from performance-only signals.",
+        "No body-world boundary verdict follows from pathway definition alone."
+      ]
+    },
+    {
+      "pathway_id": "ambiguity_load_pathway",
+      "channel_id": "ambiguity_load_channel",
+      "measurement_class": "typed_human_ambiguity_load_trace",
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_projection.json"
+      ],
+      "required_counterpart_artifact_family": [
+        "human_ambiguity_load_report.json"
+      ],
+      "required_counterpart_contract_id": "ambiguity_load_counterpart_contract",
+      "homologation_unit": "ambiguity_load_homologation",
+      "admissible_collection_mode": [
+        "protocol_bounded_ambiguity_load_capture",
+        "typed ambiguity-bearing annotation"
+      ],
+      "forbidden_substitution_modes": [
+        "semantic_density_only_proxy",
+        "error_rate_only_proxy"
+      ],
+      "minimum_symmetry_conditions": [
+        "human_channel_burden",
+        "artifact_homology_burden",
+        "typing_contract_burden"
+      ],
+      "pathway_completeness_criteria": [
+        "machine_artifact_family_available",
+        "counterpart_contract_defined",
+        "homologation_contract_defined",
+        "typed_collection_route_defined"
+      ],
+      "pathway_readiness_classes": [
+        "pathway_theoretically_open",
+        "pathway_contract_ready_but_counterpart_absent"
+      ],
+      "pathway_blockers": [
+        "missing_instantiated_ambiguity_route",
+        "missing_counterpart_artifact_family"
+      ],
+      "pathway_non_implications": [
+        "No ambiguity-bearing comparison follows from pathway definition alone.",
+        "No ambiguity-load verdict follows from bookkeeping metadata."
+      ]
+    },
+    {
+      "pathway_id": "transport_preservation_pathway",
+      "channel_id": "transport_preservation_channel",
+      "measurement_class": "typed_cross_substrate_transport_trace",
+      "required_machine_artifact_family": [
+        "phenomenal_bridge_manifest.json",
+        "cross_substrate_transport_assessment.json"
+      ],
+      "required_counterpart_artifact_family": [
+        "cross_substrate_transport_contract.json",
+        "cross_substrate_lineage_map.json",
+        "target_substrate_counterpart_manifest.json"
+      ],
+      "required_counterpart_contract_id": "transport_counterpart_contract",
+      "homologation_unit": "transport_transition_homologation",
+      "admissible_collection_mode": [
+        "source_target_transition_contract_registration",
+        "lineage-accounted target artifact capture",
+        "axis-specific error budget declaration"
+      ],
+      "forbidden_substitution_modes": [
+        "static_model_export_only",
+        "source_snapshot_without_target_counterpart"
+      ],
+      "minimum_symmetry_conditions": [
+        "transport_preservation_burden",
+        "error_budget_burden",
+        "artifact_homology_burden"
+      ],
+      "pathway_completeness_criteria": [
+        "machine_artifact_family_available",
+        "counterpart_contract_defined",
+        "homologation_contract_defined",
+        "transition_contract_defined",
+        "lineage_contract_defined",
+        "axis_specific_error_budgets_declared"
+      ],
+      "pathway_readiness_classes": [
+        "pathway_defined_but_uninstantiated",
+        "pathway_contract_incomplete"
+      ],
+      "pathway_blockers": [
+        "target_counterpart_absent",
+        "transition_lineage_map_absent",
+        "axis_specific_error_budgets_not_instantiated"
+      ],
+      "pathway_non_implications": [
+        "No transport-preservation verdict follows from pathway definition.",
+        "No identity-preservation claim follows from transport pathway readiness."
+      ]
+    }
+  ],
+  "blocked_inferences": [
+    "no_fabricated_human_measurement_inference",
+    "no_human_equivalence_inference",
+    "no_cross_substrate_equivalence_inference",
+    "no_identity_preservation_inference",
+    "no_external_adjudication_inference"
+  ],
+  "interpretation_boundary": "Framework-internal only; human-channel pathways operationalize how legitimate future comparator routes would have to be instantiated. They do not instantiate human measurements, do not authorize equivalence claims, and do not open external adjudication."
+}

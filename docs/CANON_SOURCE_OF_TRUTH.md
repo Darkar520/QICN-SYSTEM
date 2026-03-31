@@ -10,7 +10,7 @@ This implementation repository is not the canonical theory repository. It is the
 | --- | --- | --- |
 | Canonical theory lineage referenced by release materials | `rigid-identity-framework/*` as recorded inside `QICN-RELEASE` manifests | lineage_reference_only |
 | Verified frozen canonical corpus repo | `QICN-RELEASE/main` | verified_public_source_of_truth |
-| Verified frozen canonical corpus commit | `e4ce7bae5d86ad256ea2b70407b18b2b81645f8b` | verified_git_head |
+| Verified frozen canonical corpus commit | `4779eb1c78341185d03b14bbb300a673e255f407` | verified_git_head |
 | Frozen canonical corpus tag | `canonical-freeze-2026-03-01` -> `2d7504be95ca33af5941e30abf7059dc2774edca` | verified_from_release_freeze |
 | Direct upstream repo pin for the pre-freeze `rigid-identity-framework` working tree | not separately pinned in this repo | not_required_for_frozen_release_baseline |
 | Local runtime source of truth | `src/` | active |
@@ -61,7 +61,7 @@ This freeze package is the strongest currently verifiable external boundary avai
 
 ## Pinning Outcome
 
-- External canonical corpus baseline: available and verified at `QICN-RELEASE/main`, pinned for the current ecosystem baseline at `e4ce7bae5d86ad256ea2b70407b18b2b81645f8b`.
+- External canonical corpus baseline: available and verified at `QICN-RELEASE/main`, pinned for the current ecosystem baseline at `4779eb1c78341185d03b14bbb300a673e255f407`.
 - Canonical freeze authority: `canonical-freeze-2026-03-01` -> `2d7504be95ca33af5941e30abf7059dc2774edca`.
 - Separate direct upstream theory working-tree pin for `rigid-identity-framework/`: not established here and not required for the frozen release baseline.
 - Required discipline: do not present the canonical release freeze as equivalent to a direct upstream theory-repo pin for the original working tree.

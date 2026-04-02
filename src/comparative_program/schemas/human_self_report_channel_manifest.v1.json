@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "human_self_report_channel_manifest.v1",
+  "type": "object",
+  "required": ["artifact_role", "artifact_name", "artifact_version", "schema_version", "channel_id", "comparator_session_id", "collection_protocol_version", "typing_contract", "lineage_contract", "interpretation_boundary"],
+  "properties": {
+    "artifact_role": { "const": "human_self_report_channel_manifest" },
+    "artifact_name": { "const": "human_self_report_channel_manifest.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "channel_id": { "type": "string" },
+    "comparator_session_id": { "type": "string" },
+    "collection_protocol_version": { "type": "string" },
+    "typing_contract": { "type": "object" },
+    "lineage_contract": { "type": "object" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

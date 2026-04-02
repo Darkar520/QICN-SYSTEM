@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "human_valence_topology_report.v1",
+  "type": "object",
+  "required": ["artifact_role", "artifact_name", "artifact_version", "schema_version", "comparator_session_id", "topology_trace", "collection_protocol_version", "interpretation_boundary"],
+  "properties": {
+    "artifact_role": { "const": "human_valence_topology_report" },
+    "artifact_name": { "const": "human_valence_topology_report.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparator_session_id": { "type": "string" },
+    "topology_trace": { "type": "array", "items": { "type": "object" } },
+    "collection_protocol_version": { "type": "string" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

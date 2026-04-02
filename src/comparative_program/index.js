@@ -42,6 +42,21 @@ export {
   listInstantiationStatuses
 } from './ExternalAdjudicationOpeningCriteriaRegistry.js';
 export {
+  HUMAN_CHANNEL_INSTANTIATION_PROTOCOLS,
+  listHumanChannelInstantiationProtocols,
+  getHumanChannelInstantiationProtocol
+} from './HumanChannelInstantiationProtocolsRegistry.js';
+export {
+  COMPARATIVE_COUNTERPART_SCHEMA_REGISTRY,
+  listComparativeCounterpartSchemas,
+  getComparativeCounterpartSchemaBinding
+} from './ComparativeCounterpartSchemaRegistry.js';
+export {
+  COMPARATIVE_ERROR_BUDGET_BINDINGS,
+  listComparativeErrorBudgetBindings,
+  getComparativeErrorBudgetBinding
+} from './ComparativeErrorBudgetBindingsRegistry.js';
+export {
   COMPARATIVE_PROGRAM_ARTIFACT_SCHEMA,
   COMPARATIVE_PROGRAM_EXPECTED_ARTIFACTS,
   COMPARATIVE_PROGRAM_IMPLEMENTED_ARTIFACTS,
@@ -127,3 +142,15 @@ export {
   ComparativeClosureBuilder,
   createComparativeClosureBuilder
 } from './ComparativeClosureBuilder.js';
+export {
+  ComparativeBurdenFulfillmentEvaluator,
+  createComparativeBurdenFulfillmentEvaluator
+} from './ComparativeBurdenFulfillmentEvaluator.js';
+export {
+  Paper9HandoffAlignmentEvaluator,
+  createPaper9HandoffAlignmentEvaluator
+} from './Paper9HandoffAlignmentEvaluator.js';
+export {
+  Stage3ReadinessFulfillmentBuilder,
+  createStage3ReadinessFulfillmentBuilder
+} from './Stage3ReadinessFulfillmentBuilder.js';

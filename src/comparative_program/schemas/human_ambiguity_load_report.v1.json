@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "human_ambiguity_load_report.v1",
+  "type": "object",
+  "required": ["artifact_role", "artifact_name", "artifact_version", "schema_version", "comparator_session_id", "ambiguity_annotations", "collection_protocol_version", "interpretation_boundary"],
+  "properties": {
+    "artifact_role": { "const": "human_ambiguity_load_report" },
+    "artifact_name": { "const": "human_ambiguity_load_report.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparator_session_id": { "type": "string" },
+    "ambiguity_annotations": { "type": "array", "items": { "type": "object" } },
+    "collection_protocol_version": { "type": "string" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

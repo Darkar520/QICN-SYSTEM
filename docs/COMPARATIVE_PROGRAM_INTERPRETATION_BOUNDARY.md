@@ -1,13 +1,13 @@
 # Comparative Program Interpretation Boundary
 
-The comparative runtime layer now spans `Stage 2-M2`, `Stage 2-M3`, and `Stage 2-M4` and remains:
+The comparative runtime layer now spans `Stage 2-M2`, `Stage 2-M3`, `Stage 2-M4`,
+and `Stage3-RF` and remains:
 
 - framework-internal only;
-- bounded by missing-human-channel logic;
-- bounded by counterpart-absent logic;
-- bounded by no-verdict-authorized logic;
-- bounded by explicit Stage 3 opening criteria;
-- bounded by blocked candidate and audit surfaces.
+- bounded by non-evidential Stage 3 opening logic;
+- bounded by explicit non-adjudication rules;
+- bounded by blocked candidate and audit surfaces;
+- bounded by explicit Paper 10 blocking.
 
 It is not:
 
@@ -30,11 +30,17 @@ Current runtime outputs may state:
 - homologation contract ready but counterpart absent;
 - comparative runtime contract operationalized;
 - comparative runtime homologation ready but counterpart absent;
-- internally `ready_for_stage2_m4`;
-- `comparative_audit_pass_with_warnings` or `comparative_audit_pass`;
-- `comparative_internal_closure_ready` or `comparative_internal_closure_not_ready`;
-- `not_ready_for_stage3_opening` or `ready_for_stage3_opening`;
+- `comparative_internal_closure_ready`;
+- `burden_fulfillment_partial` or `burden_fulfillment_substantive_but_incomplete`;
+- `stage3_prerequisites_partially_satisfied` or `stage3_ready_but_uninstantiated`;
+- `ready_for_stage3_opening` or `not_ready_for_stage3_opening`;
+- `paper9_handoff_misaligned` or `paper9_handoff_ready_after_second_pass`;
 - `paper10_scoping_ready_after_stage3_only`;
-- no verdict authorized.
+- no external adjudication authorized.
 
-They may not be read as final comparative conclusions.
+If `ready_for_stage3_opening` is emitted, that means only that Stage 3 may now
+open as a bounded internal execution and instantiation program. It does not mean
+that Stage 3 has already run, that human evidence already exists, or that any
+comparative verdict has been achieved.
+
+These outputs may not be read as final comparative conclusions.

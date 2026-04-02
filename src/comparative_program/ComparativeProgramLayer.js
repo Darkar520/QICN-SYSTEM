@@ -26,44 +26,30 @@ export const COMPARATIVE_PROGRAM_ROOT_SCHEMAS = Object.freeze({
   manifest: readJson('./schemas/comparative_program_manifest.v1.json'),
   human_comparator_assessment: readJson('./schemas/human_comparator_assessment.v1.json'),
   human_equivalence_assessment: readJson('./schemas/human_equivalence_assessment.v1.json'),
-  cross_substrate_transport_assessment: readJson(
-    './schemas/cross_substrate_transport_assessment.v1.json'
-  ),
-  human_channel_pathway_assessment: readJson(
-    './schemas/human_channel_pathway_assessment.v1.json'
-  ),
-  counterpart_artifact_contract_assessment: readJson(
-    './schemas/counterpart_artifact_contract_assessment.v1.json'
-  ),
-  homologation_contract_assessment: readJson(
-    './schemas/homologation_contract_assessment.v1.json'
-  ),
-  cross_substrate_transition_contract_assessment: readJson(
-    './schemas/cross_substrate_transition_contract_assessment.v1.json'
-  ),
-  comparative_operational_readiness: readJson(
-    './schemas/comparative_operational_readiness.v1.json'
-  ),
-  comparative_final_internal_audit: readJson(
-    './schemas/comparative_final_internal_audit.v1.json'
-  ),
-  human_channel_instantiation_readiness: readJson(
-    './schemas/human_channel_instantiation_readiness.v1.json'
-  ),
-  paper10_comparative_readiness_gate: readJson(
-    './schemas/paper10_comparative_readiness_gate.v1.json'
-  ),
+  cross_substrate_transport_assessment: readJson('./schemas/cross_substrate_transport_assessment.v1.json'),
+  human_channel_pathway_assessment: readJson('./schemas/human_channel_pathway_assessment.v1.json'),
+  counterpart_artifact_contract_assessment: readJson('./schemas/counterpart_artifact_contract_assessment.v1.json'),
+  homologation_contract_assessment: readJson('./schemas/homologation_contract_assessment.v1.json'),
+  cross_substrate_transition_contract_assessment: readJson('./schemas/cross_substrate_transition_contract_assessment.v1.json'),
+  comparative_operational_readiness: readJson('./schemas/comparative_operational_readiness.v1.json'),
+  comparative_final_internal_audit: readJson('./schemas/comparative_final_internal_audit.v1.json'),
+  human_channel_instantiation_readiness: readJson('./schemas/human_channel_instantiation_readiness.v1.json'),
+  paper10_comparative_readiness_gate: readJson('./schemas/paper10_comparative_readiness_gate.v1.json'),
+  comparative_burden_fulfillment: readJson('./schemas/comparative_burden_fulfillment.v1.json'),
+  stage3_opening_readiness: readJson('./schemas/stage3_opening_readiness.v1.json'),
+  paper9_handoff_alignment: readJson('./schemas/paper9_handoff_alignment.v1.json'),
+  stage3_opening_gate: readJson('./schemas/stage3_opening_gate.v1.json'),
   verification_matrix: readJson('./schemas/comparative_program_verification_matrix.v1.json'),
   readiness_gate: readJson('./schemas/comparative_program_readiness_gate.v1.json')
 });
 
 export const COMPARATIVE_PROGRAM_LAYER_STATUS = Object.freeze({
   layer_name: 'Comparative Expansion Layer',
-  layer_id: 'comparative_expansion_layer.stage2_m4_internal_closure',
-  implementation_status: 'comparative_internal_closure_implemented',
-  execution_status: 'internally_closed_non_adjudicative_comparative_runtime',
+  layer_id: 'comparative_expansion_layer.stage3_readiness_fulfillment',
+  implementation_status: 'stage3_readiness_fulfillment_implemented',
+  execution_status: 'stage3_openable_but_non_adjudicative_comparative_runtime',
   interpretation_boundary:
-    'Stage 2-M4 closes Stage 2 internally by auditing Stage 2-M2 runtime opening and Stage 2-M3 contract operationalization, defining external-adjudication opening criteria, evaluating human-channel instantiation readiness, and emitting a Paper 10 readiness gate. It remains framework-internal only and does not establish human equivalence, cross-substrate equivalence, superiority, external adjudication, or Paper 10 authorization.'
+    'Stage 3 readiness fulfillment preserves Stage 2-M4 internal closure while adding structural burden fulfillment, human-channel instantiation protocols, counterpart schema bindings, comparative error-budget bindings, a Paper 9 handoff alignment layer, and a Stage 3 opening gate. It remains framework-internal only and does not establish human equivalence, superiority, external adjudication, transport-preservation verdicts, identity preservation, or Paper 10 authorization.'
 });
 
 export class ComparativeProgramLayer {
@@ -78,9 +64,7 @@ export class ComparativeProgramLayer {
       pathway_count: (HUMAN_CHANNEL_PATHWAYS.pathways || []).length,
       counterpart_contract_count: (COUNTERPART_ARTIFACT_CONTRACTS.contracts || []).length,
       homologation_unit_count: (HOMOLOGATION_CONTRACTS.homologation_units || []).length,
-      transition_contract_count: (
-        CROSS_SUBSTRATE_TRANSITION_CONTRACTS.transition_contracts || []
-      ).length,
+      transition_contract_count: (CROSS_SUBSTRATE_TRANSITION_CONTRACTS.transition_contracts || []).length,
       adjudication_channel_criterion_count: (
         EXTERNAL_ADJUDICATION_OPENING_CRITERIA.required_human_channel_classes || []
       ).length,
@@ -94,16 +78,19 @@ export class ComparativeProgramLayer {
       human_comparator_program_open: true,
       human_equivalence_program_open: true,
       cross_substrate_expansion_open: true,
-      current_stage: 'stage2_m4_internal_closure',
-      comparative_runtime_state: 'comparative_internal_closure_ready',
+      current_stage: 'stage3_readiness_fulfillment',
+      comparative_runtime_state: 'stage3_ready_but_uninstantiated',
       stage2_m2_runtime_opening_complete: true,
       stage2_m3_contract_operationalization_complete: true,
       stage2_m4_internal_closure_complete: true,
+      stage3_readiness_fulfillment_complete: true,
       comparative_internal_closure_state: 'comparative_internal_closure_ready',
       stage2_m4_state: 'comparative_internal_closure_ready',
+      stage3_readiness_state: 'stage3_ready_but_uninstantiated',
       ready_for_stage2_m4: true,
-      ready_for_stage3_opening: false,
-      stage3_opening_state: 'not_ready_for_stage3_opening',
+      ready_for_stage3_opening: true,
+      stage3_opening_state: 'ready_for_stage3_opening',
+      paper9_handoff_state: 'paper9_handoff_ready_after_second_pass',
       paper10_scoping_state: 'paper10_scoping_ready_after_stage3_only',
       candidate_integration_blocked: true,
       audit_integration_blocked: true,
@@ -120,7 +107,6 @@ export class ComparativeProgramLayer {
 }
 
 export const createComparativeProgramLayer = () => new ComparativeProgramLayer();
-
 export const describeComparativeProgramLayer = () => createComparativeProgramLayer().describe();
 
 export default {

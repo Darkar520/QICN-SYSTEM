@@ -1,6 +1,6 @@
 {
-  "layer_id": "comparative_expansion_layer.stage2_m4_internal_closure",
-  "implementation_status": "comparative_internal_closure_implemented",
+  "layer_id": "comparative_expansion_layer.stage3_readiness_fulfillment",
+  "implementation_status": "stage3_readiness_fulfillment_implemented",
   "audit_status_classes": [
     {
       "id": "comparative_audit_incomplete",
@@ -482,9 +482,40 @@
     "paper10_manuscript_opened"
   ],
   "non_implications": [
-    "Defining Stage 3 opening criteria does not open Stage 3.",
-    "Defining Stage 3 opening criteria does not authorize human equivalence.",
-    "Defining Stage 3 opening criteria does not authorize superiority.",
-    "Defining Stage 3 opening criteria does not authorize Paper 10."
+    "Defining or fulfilling Stage 3 opening criteria does not execute Stage 3.",
+    "Defining or fulfilling Stage 3 opening criteria does not authorize human equivalence.",
+    "Defining or fulfilling Stage 3 opening criteria does not authorize superiority.",
+    "Defining or fulfilling Stage 3 opening criteria does not authorize Paper 10.",
+    "Readiness fulfillment remains internal and non-adjudicative."
+  ],
+  "burden_fulfillment_status_classes": [
+    {
+      "id": "burden_fulfillment_partial",
+      "definition": "Some Stage 3 structural burdens remain open even after the readiness fulfillment pass."
+    },
+    {
+      "id": "burden_fulfillment_substantive_but_incomplete",
+      "definition": "All Stage 3 structural burdens are fulfilled for opening, but real human-side instantiation and external adjudication remain absent."
+    }
+  ],
+  "paper9_handoff_status_classes": [
+    {
+      "id": "paper9_handoff_misaligned",
+      "definition": "The local Paper 9-facing handoff substrate is stale, overclaiming, missing required boundary language, or otherwise misaligned with the current runtime layers."
+    },
+    {
+      "id": "paper9_handoff_ready_after_second_pass",
+      "definition": "The local Paper 9-facing handoff substrate is aligned with current subjectivity, bridge, and comparative readiness states after the second hardening pass."
+    }
+  ],
+  "stage3_readiness_classes": [
+    {
+      "id": "stage3_prerequisites_partially_satisfied",
+      "definition": "The readiness fulfillment pass has advanced Stage 3 prerequisites, but some structural burdens remain open."
+    },
+    {
+      "id": "stage3_ready_but_uninstantiated",
+      "definition": "Stage 3 prerequisites are structurally fulfilled for opening, but the program would still begin from uninstantiated human channels and counterpart artifacts."
+    }
   ]
 }

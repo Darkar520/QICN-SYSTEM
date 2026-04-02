@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "human_negative_control_profile.v1",
+  "type": "object",
+  "required": ["artifact_role", "artifact_name", "artifact_version", "schema_version", "comparator_session_id", "intervention_protocol_version", "control_family_id", "response_series", "interpretation_boundary"],
+  "properties": {
+    "artifact_role": { "const": "human_negative_control_profile" },
+    "artifact_name": { "const": "human_negative_control_profile.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparator_session_id": { "type": "string" },
+    "intervention_protocol_version": { "type": "string" },
+    "control_family_id": { "type": "string" },
+    "response_series": { "type": "array", "items": { "type": "object" } },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

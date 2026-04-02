@@ -1,0 +1,21 @@
+{
+  "artifact_role": "comparative_counterpart_schema_registry",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_readiness_fulfillment",
+  "implementation_status": "stage3_readiness_fulfillment_implemented",
+  "runtime_status": "counterpart_schema_registry_bound",
+  "artifact_families": [
+    { "artifact_name": "human_self_report_trace.json", "schema_ref": "src/comparative_program/schemas/human_self_report_trace.v1.json", "contract_id": "self_report_counterpart_contract" },
+    { "artifact_name": "human_self_report_channel_manifest.json", "schema_ref": "src/comparative_program/schemas/human_self_report_channel_manifest.v1.json", "contract_id": "self_report_counterpart_contract" },
+    { "artifact_name": "human_intervention_profile.json", "schema_ref": "src/comparative_program/schemas/human_intervention_profile.v1.json", "contract_id": "intervention_response_counterpart_contract" },
+    { "artifact_name": "human_negative_control_profile.json", "schema_ref": "src/comparative_program/schemas/human_negative_control_profile.v1.json", "contract_id": "intervention_response_counterpart_contract" },
+    { "artifact_name": "human_temporal_structure_report.json", "schema_ref": "src/comparative_program/schemas/human_temporal_structure_report.v1.json", "contract_id": "temporal_structure_counterpart_contract" },
+    { "artifact_name": "human_valence_topology_report.json", "schema_ref": "src/comparative_program/schemas/human_valence_topology_report.v1.json", "contract_id": "valence_topology_counterpart_contract" },
+    { "artifact_name": "human_embodiment_boundary_report.json", "schema_ref": "src/comparative_program/schemas/human_embodiment_boundary_report.v1.json", "contract_id": "embodiment_boundary_counterpart_contract" },
+    { "artifact_name": "human_ambiguity_load_report.json", "schema_ref": "src/comparative_program/schemas/human_ambiguity_load_report.v1.json", "contract_id": "ambiguity_load_counterpart_contract" },
+    { "artifact_name": "cross_substrate_transport_contract.json", "schema_ref": "src/comparative_program/schemas/cross_substrate_transport_contract.v1.json", "contract_id": "transport_counterpart_contract" },
+    { "artifact_name": "cross_substrate_lineage_map.json", "schema_ref": "src/comparative_program/schemas/cross_substrate_lineage_map.v1.json", "contract_id": "transport_counterpart_contract" },
+    { "artifact_name": "target_substrate_counterpart_manifest.json", "schema_ref": "src/comparative_program/schemas/target_substrate_counterpart_manifest.v1.json", "contract_id": "transport_counterpart_contract" }
+  ],
+  "interpretation_boundary": "Framework-internal only; the counterpart schema registry binds future human-side and transport-side artifact families to concrete typed schemas so Stage 3 may open without fabricating evidence or relaxing contract discipline."
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cross_substrate_lineage_map.v1",
+  "type": "object",
+  "required": ["artifact_role", "artifact_name", "artifact_version", "schema_version", "source_lineage_root", "target_lineage_root", "lineage_edges", "branch_accounting", "schema_compatibility_proof", "interpretation_boundary"],
+  "properties": {
+    "artifact_role": { "const": "cross_substrate_lineage_map" },
+    "artifact_name": { "const": "cross_substrate_lineage_map.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "source_lineage_root": { "type": "string" },
+    "target_lineage_root": { "type": "string" },
+    "lineage_edges": { "type": "array", "items": { "type": "object" } },
+    "branch_accounting": { "type": "object" },
+    "schema_compatibility_proof": { "type": "object" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

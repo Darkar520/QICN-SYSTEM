@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "human_embodiment_boundary_report.v1",
+  "type": "object",
+  "required": ["artifact_role", "artifact_name", "artifact_version", "schema_version", "comparator_session_id", "boundary_trace", "embodiment_environment_manifest", "error_budget_binding", "interpretation_boundary"],
+  "properties": {
+    "artifact_role": { "const": "human_embodiment_boundary_report" },
+    "artifact_name": { "const": "human_embodiment_boundary_report.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparator_session_id": { "type": "string" },
+    "boundary_trace": { "type": "array", "items": { "type": "object" } },
+    "embodiment_environment_manifest": { "type": "object" },
+    "error_budget_binding": { "type": "object" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

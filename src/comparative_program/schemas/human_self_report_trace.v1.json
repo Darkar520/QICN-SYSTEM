@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "human_self_report_trace.v1",
+  "type": "object",
+  "required": ["artifact_role", "artifact_name", "artifact_version", "schema_version", "comparator_session_id", "subject_key", "collection_protocol_version", "trace_segments", "session_lineage_manifest", "interpretation_boundary"],
+  "properties": {
+    "artifact_role": { "const": "human_self_report_trace" },
+    "artifact_name": { "const": "human_self_report_trace.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparator_session_id": { "type": "string" },
+    "subject_key": { "type": "string" },
+    "collection_protocol_version": { "type": "string" },
+    "trace_segments": { "type": "array", "items": { "type": "object" } },
+    "session_lineage_manifest": { "type": "object" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

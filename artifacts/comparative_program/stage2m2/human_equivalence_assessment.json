@@ -52,7 +52,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; human equivalence assessment records bounded ladder placement under missing-channel and underdetermination logic, not human equivalence, not non-equivalence, not superiority, and not external adjudication.",
   "provenance": {
-    "generated_at": "2026-04-02T20:44:47.558Z",
+    "generated_at": "2026-04-02T22:57:38.930Z",
     "human_comparator_assessment_ref": "artifacts/comparative_program/stage2m2/human_comparator_assessment.json",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage2_m2.root.v1",
@@ -79,11 +79,11 @@
       },
       "artifact_schema": {
         "ref": "docs/comparative_program_artifact_schema.v1.json",
-        "sha256": "c9a43c27118ebe3e30b7ec9ea67cc64738f3d33a9193e4925b1a2e6cb70eb7d8"
+        "sha256": "0c6b04c73620e8d774f6b08f39c3d1e6105409b1ffb682fc872dbb8065c3a734"
       },
       "surface_policy": {
         "ref": "docs/comparative_program_surface_policy.v1.json",
-        "sha256": "ca6a4bccfe0475773ebc8b2c5a77aae373460c01602e77a50d38a71108c35d04"
+        "sha256": "8e5da06b24f5f781a2f32e9a0c8091f74818becfbf240b6860ab05d32ed6c575"
       },
       "root_schema_hashes": {
         "comparative_program_manifest.json": {
@@ -141,17 +141,33 @@
         "comparative_program_readiness_gate.json": {
           "ref": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json",
           "sha256": "3ed99a108a467c01b51cb7215bec7f0d2e20dace5bc31deb967747aae871150f"
+        },
+        "comparative_burden_fulfillment.json": {
+          "ref": "src/comparative_program/schemas/comparative_burden_fulfillment.v1.json",
+          "sha256": "3227da16baed5d5205133bce35c1a770dbf0bf42170b5595a2b33c17250ff52c"
+        },
+        "stage3_opening_readiness.json": {
+          "ref": "src/comparative_program/schemas/stage3_opening_readiness.v1.json",
+          "sha256": "d680945e1e5bf59529fb722d33d6de19dee12bd9662ca050b620a0fbb99021ba"
+        },
+        "paper9_handoff_alignment.json": {
+          "ref": "src/comparative_program/schemas/paper9_handoff_alignment.v1.json",
+          "sha256": "a1b9a0ec8febc7ffe06cf600b0acee3fdef442f67976a56e9c74d62474639150"
+        },
+        "stage3_opening_gate.json": {
+          "ref": "src/comparative_program/schemas/stage3_opening_gate.v1.json",
+          "sha256": "c3715967e68f33cddc23b6e1fb5cfae5b6d03ba040f2f8870bc78bb70f1e8a46"
         }
       },
       "qicn_system": {
         "branch": "main",
-        "head": "60b0119bfdde20a86b04cd95ac28fb138aecd77a",
-        "upstream": "origin/main"
+        "head": "3fece3e0693c22128877b915abbd96f39f0ea330",
+        "upstream": null
       },
       "qicn_release": {
         "branch": "main",
         "head": "4779eb1c78341185d03b14bbb300a673e255f407",
-        "upstream": "origin/main"
+        "upstream": null
       }
     }
   },

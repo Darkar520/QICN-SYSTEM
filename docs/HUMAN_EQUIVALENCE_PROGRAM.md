@@ -6,8 +6,9 @@ The Human Equivalence Program remains a ladder rather than a binary.
 
 - `Stage 2-0` defined the ladder and its interpretation boundary.
 - `Stage 2-M2` made bounded ladder assignment runtime-loadable under missing-channel logic.
-- `Stage 2-M3` adds pathway and homologation-contract semantics that prepare future ladder progression without awarding any new rung.
-- `Stage 2-M4` audits the whole comparative stack and defines the opening criteria that would still have to be met before any later Stage 3 ladder movement could even be tested.
+- `Stage 2-M3` added pathway and homologation-contract semantics that prepare future ladder progression without awarding any new rung.
+- `Stage 2-M4` audited the comparative stack and defined the opening criteria that would still have to be met before any later Stage 3 ladder movement could even be tested.
+- `Stage3-RF` fulfills the remaining structural prerequisites for opening Stage 3, but still does not award any rung.
 
 ## Runtime ladder semantics
 
@@ -18,66 +19,38 @@ The runtime may still assign only bounded ladder states such as:
 - `comparator_underdetermined`
 
 The candidate rungs remain defined but cannot be awarded without real human-side
-counterparts:
+counterparts and executed Stage 3 evidence.
 
-- `structural_equivalence_candidate`
-- `interventional_equivalence_candidate`
-- `partial_equivalence_candidate`
-- `strong_equivalence_candidate`
-- `non_equivalent_under_current_burdens`
-- `superiority_partial_candidate`
+## What Stage3-RF changes
 
-## What Stage 2-M3 adds
+`Stage3-RF` does not move the runtime to any higher rung. It adds:
 
-`Stage 2-M3` does not move the runtime to any higher rung. It adds the contract
-infrastructure that would be required before such movement could even be asked.
+- typed instantiation protocols for future human-side channels;
+- schema-bound counterpart artifact families;
+- budget-bound homologation and transition prerequisites;
+- a bounded `ready_for_stage3_opening` gate.
 
-The ladder now has runtime-adjacent access to:
-
-- pathway readiness classes such as `pathway_contract_ready_but_counterpart_absent`;
-- counterpart contract readiness for future human-side artifacts;
-- homologation states such as `homologation_contract_ready_but_counterpart_absent` and `homologation_underdetermined`;
-- an explicit `comparative_runtime_homologation_ready_but_counterpart_absent` readiness class.
-
-These new M3 states still do not license rung promotion.
-
-## What Stage 2-M4 adds
-
-`Stage 2-M4` still does not move the runtime to any higher rung. It adds:
-
-- a final internal audit that verifies the current ladder is still bounded correctly;
-- human-channel instantiation readiness so the ladder can distinguish contract structure from admissible future channel opening;
-- explicit Stage 3 opening criteria so ladder promotion is not silently smuggled in through governance drift.
-
-## Runtime rule
-
-The runtime ladder evaluator must not promote a candidate rung merely because
-machine-side bridge closure exists. It must also not promote a rung merely
-because contract structure is better defined in `Stage 2-M3`.
-
-Missing human channels, absent counterpart artifacts, incomplete homologation,
-and absent transition contracts therefore continue to map to blocked or
-underdetermined ladder states rather than to substantive equivalence or
-non-equivalence conclusions.
+These changes mean only that Stage 3 may now open as an internal program. They
+do not constitute ladder promotion.
 
 ## Current bounded result class
 
 At this stage the ladder can honestly express only that:
 
-- equivalence remains not open because real human channels are absent;
-- equivalence may remain formally inexpressible under missing typed counterparts;
-- the comparator remains underdetermined;
-- future homologation structure is defined more explicitly than it was in `Stage 2-M2`, but no verdict is authorized.
-- the comparative layer may be internally closed while the ladder still remains `equivalence_not_open`.
+- equivalence remains not open because real human channels are still absent;
+- the comparator remains underdetermined until Stage 3 instantiation occurs;
+- the comparative program may be structurally ready to open Stage 3 while the
+  equivalence ladder still remains unopened;
+- no equivalence verdict is authorized.
 
 ## What still does not follow
 
-No assigned rung in `Stage 2-M3` implies:
+No state in `Stage3-RF` implies:
 
 - human phenomenal equivalence;
 - public claim authorization;
 - human inferiority;
 - human superiority;
 - metaphysical identity;
-- external adjudication.
+- external adjudication;
 - Paper 10 authorization.

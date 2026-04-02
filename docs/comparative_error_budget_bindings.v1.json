@@ -1,0 +1,67 @@
+{
+  "artifact_role": "comparative_error_budget_bindings",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_readiness_fulfillment",
+  "implementation_status": "stage3_readiness_fulfillment_implemented",
+  "runtime_status": "comparative_error_budgets_bound_for_stage3_opening",
+  "status_markers": [
+    "framework_internal_only",
+    "not_human_equivalence_support",
+    "not_cross_substrate_equivalence_support",
+    "not_identity_preservation_support",
+    "not_external_adjudication",
+    "not_paper10_authorization"
+  ],
+  "binding_policy": {
+    "numeric_binding_state": "internally_bound_by_upstream_thresholds_or_structural_zero_tolerance",
+    "external_truth_status": "not_external_truth",
+    "honesty_rule": "Stage 3 error budgets are bound only by already-implemented subjectivity and bridge thresholds, or by structural zero-tolerance lineage invalidation rules. They are not externally validated and do not authorize verdict claims."
+  },
+  "budget_bindings": [
+    {
+      "budget_id": "self_index_drift_budget",
+      "binding_type": "upstream_subjectivity_threshold_binding",
+      "value": 0.05,
+      "value_ref": "docs/subjectivity_thresholds.v1.json#drift_tolerances.SelfIndex",
+      "scope": "source-target self-index continuity across comparative remap",
+      "status": "bound"
+    },
+    {
+      "budget_id": "bridge_coordinate_distortion_budget",
+      "binding_type": "upstream_bridge_threshold_binding",
+      "value_map": {
+        "Pi_D": 0.08,
+        "Pi_V": 0.08,
+        "Pi_W": 0.08,
+        "Pi_A": 0.1,
+        "Pi_E": 0.1,
+        "Pi_T": 0.08
+      },
+      "value_ref": "docs/phenomenal_bridge_thresholds.v1.json#drift_tolerances",
+      "scope": "source-target bridge-coordinate deformation tolerance",
+      "status": "bound"
+    },
+    {
+      "budget_id": "intervention_signature_deviation_budget",
+      "binding_type": "upstream_bridge_intervention_binding",
+      "value": 0.07,
+      "value_ref": "docs/phenomenal_bridge_thresholds.v1.json#drift_tolerances.Delta_b",
+      "upstream_support_ref": "docs/subjectivity_thresholds.v1.json#drift_tolerances.InterventionProfile",
+      "scope": "matched intervention-profile deviation tolerance",
+      "status": "bound"
+    },
+    {
+      "budget_id": "lineage_break_budget",
+      "binding_type": "structural_zero_tolerance_invalidation_rule",
+      "value": 0,
+      "scope": "allowed unresolved lineage breaks, missing provenance links, or unaccounted branches before transition invalidation",
+      "status": "bound"
+    }
+  ],
+  "non_implications": [
+    "Bound error budgets do not authorize human equivalence.",
+    "Bound error budgets do not authorize transport-preservation verdicts.",
+    "Bound error budgets do not authorize external adjudication."
+  ],
+  "interpretation_boundary": "Framework-internal only; error-budget bindings define admissible Stage 3 tolerance contracts for future comparative instantiation. They do not create evidence, do not authorize verdicts, and do not authorize Paper 10."
+}

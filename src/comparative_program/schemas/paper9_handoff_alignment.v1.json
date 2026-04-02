@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "paper9_handoff_alignment.v1",
+  "type": "object",
+  "required": ["artifact_role", "artifact_name", "artifact_version", "schema_version", "comparative_layer_id", "layer_version", "estimator_version", "implementation_status", "paper9_handoff_state", "paper9_location", "alignment_summary", "required_revisions", "warnings", "boundary_flags", "non_implications", "interpretation_boundary", "provenance", "schema_ref"],
+  "properties": {
+    "artifact_role": { "const": "paper9_handoff_alignment" },
+    "artifact_name": { "const": "paper9_handoff_alignment.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparative_layer_id": { "type": "string" },
+    "layer_version": { "type": "string" },
+    "estimator_version": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "paper9_handoff_state": { "type": "string" },
+    "paper9_location": { "type": "object" },
+    "alignment_summary": { "type": "object" },
+    "required_revisions": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "boundary_flags": { "type": "object" },
+    "non_implications": { "type": "array", "items": { "type": "string" } },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

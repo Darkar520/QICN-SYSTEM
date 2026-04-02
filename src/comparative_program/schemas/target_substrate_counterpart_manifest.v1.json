@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "target_substrate_counterpart_manifest.v1",
+  "type": "object",
+  "required": ["artifact_role", "artifact_name", "artifact_version", "schema_version", "target_counterpart_class", "artifact_inventory", "artifact_provenance_chain", "schema_versions", "branch_accounting", "interpretation_boundary"],
+  "properties": {
+    "artifact_role": { "const": "target_substrate_counterpart_manifest" },
+    "artifact_name": { "const": "target_substrate_counterpart_manifest.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "target_counterpart_class": { "type": "string" },
+    "artifact_inventory": { "type": "object" },
+    "artifact_provenance_chain": { "type": "array", "items": { "type": "object" } },
+    "schema_versions": { "type": "object" },
+    "branch_accounting": { "type": "object" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

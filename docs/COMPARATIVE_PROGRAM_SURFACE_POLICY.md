@@ -1,26 +1,19 @@
 # Comparative Program Surface Policy
 
-`Stage 2-M4` still allows comparative runtime artifacts only on:
+`Stage3-RF` allows comparative runtime artifacts only on:
 
 - `developer_inspection_surface`
 - `local_artifact_surface`
 - `local_report_surface`
 - `internal_release_bundle_surface`
 
-This includes the `Stage 2-M2` baseline artifacts, the `Stage 2-M3`
-operational artifacts, and the `Stage 2-M4` closure artifacts:
+This includes the prior `Stage 2-M2`, `Stage 2-M3`, and `Stage 2-M4` artifact
+families plus the new `Stage3-RF` outputs:
 
-- `human_comparator_assessment.json`
-- `human_equivalence_assessment.json`
-- `cross_substrate_transport_assessment.json`
-- `human_channel_pathway_assessment.json`
-- `counterpart_artifact_contract_assessment.json`
-- `homologation_contract_assessment.json`
-- `cross_substrate_transition_contract_assessment.json`
-- `comparative_operational_readiness.json`
-- `comparative_final_internal_audit.json`
-- `human_channel_instantiation_readiness.json`
-- `paper10_comparative_readiness_gate.json`
+- `comparative_burden_fulfillment.json`
+- `stage3_opening_readiness.json`
+- `paper9_handoff_alignment.json`
+- `stage3_opening_gate.json`
 - `comparative_program_manifest.json`
 - `comparative_program_verification_matrix.json`
 - `comparative_program_readiness_gate.json`
@@ -32,12 +25,13 @@ It keeps the following blocked:
 - `controlled_statement_surface`
 - `external_claim_facing_surface`
 
-This means that the comparative runtime can emit richer internal artifacts, but it
-still cannot:
+This means that the comparative runtime can emit richer internal readiness and
+handoff artifacts, but it still cannot:
 
 - publish comparator outputs;
 - enter candidate projections;
 - enter audit handoff;
 - open external adjudication outputs;
 - surface controlled comparative statements;
-- support public claims.
+- support public claims;
+- open Paper 10 manuscript surfaces.

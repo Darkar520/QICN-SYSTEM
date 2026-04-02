@@ -71,7 +71,9 @@
     "release:ecosystem-candidate": "node scripts/run-ecosystem-node.cjs build-ecosystem-release-candidate.cjs",
     "sandbox:relaunch": "powershell -ExecutionPolicy Bypass -File ./scripts/sandbox-kill-build-start-health.ps1",
     "start": "node node_modules/serve/build/main.js -p 3000 --no-port-switching .",
-    "start:local": "node scripts/local-sandbox-server.mjs"
+    "start:local": "node scripts/local-sandbox-server.mjs",
+    "build:stage3-readiness-fulfillment": "node scripts/build-stage3-readiness-fulfillment.cjs",
+    "verify:stage3-opening-readiness": "node scripts/verify-stage3-opening-readiness.cjs"
   },
   "keywords": [],
   "author": "",

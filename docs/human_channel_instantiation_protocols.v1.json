@@ -1,0 +1,195 @@
+{
+  "artifact_role": "human_channel_instantiation_protocols_definition",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_readiness_fulfillment",
+  "implementation_status": "stage3_readiness_fulfillment_implemented",
+  "runtime_status": "human_channel_instantiation_protocols_defined",
+  "status_markers": [
+    "framework_internal_only",
+    "not_human_equivalence_support",
+    "not_cross_substrate_equivalence_support",
+    "not_external_adjudication",
+    "not_paper10_authorization"
+  ],
+  "protocol_status_classes": [
+    {
+      "id": "protocol_defined_and_openable",
+      "definition": "The collection route, governance guardrails, typing contract, and homologation entry conditions are explicitly defined, so Stage 3 may instantiate the channel without fabricating evidence."
+    },
+    {
+      "id": "protocol_defined_but_counterpart_uninstantiated",
+      "definition": "The protocol is defined and bounded, but no human-side artifacts have yet been collected."
+    },
+    {
+      "id": "protocol_defined_with_governance_guards",
+      "definition": "The protocol is defined together with explicit forbidden-proxy exclusions that must remain active during Stage 3 instantiation."
+    }
+  ],
+  "channel_protocols": [
+    {
+      "protocol_id": "self_report_instantiation_protocol",
+      "channel_id": "self_report_channel",
+      "counterpart_contract_id": "self_report_counterpart_contract",
+      "homologation_unit_id": "self_report_structural_homologation",
+      "collection_route": "protocol_bounded_human_self_report_capture",
+      "required_schema_refs": [
+        "src/comparative_program/schemas/human_self_report_trace.v1.json",
+        "src/comparative_program/schemas/human_self_report_channel_manifest.v1.json"
+      ],
+      "required_lineage_fields": [
+        "comparator_session_id",
+        "collection_protocol_version",
+        "session_lineage_manifest"
+      ],
+      "governance_guards": [
+        "synthetic_human_self_report_generation",
+        "machine_self_report_relabeling",
+        "language_model_narration_without_human_measurement"
+      ],
+      "protocol_state": "protocol_defined_and_openable",
+      "evidentiary_state": "protocol_defined_but_counterpart_uninstantiated"
+    },
+    {
+      "protocol_id": "intervention_response_instantiation_protocol",
+      "channel_id": "intervention_response_channel",
+      "counterpart_contract_id": "intervention_response_counterpart_contract",
+      "homologation_unit_id": "intervention_response_homologation",
+      "collection_route": "protocol_bounded_human_intervention_capture",
+      "required_schema_refs": [
+        "src/comparative_program/schemas/human_intervention_profile.v1.json",
+        "src/comparative_program/schemas/human_negative_control_profile.v1.json"
+      ],
+      "required_lineage_fields": [
+        "comparator_session_id",
+        "intervention_protocol_version",
+        "negative_control_registration"
+      ],
+      "governance_guards": [
+        "relabelled_machine_intervention_profiles",
+        "narrative_control_descriptions_without_human_measurement",
+        "synthetic_human_perturbation_logs"
+      ],
+      "protocol_state": "protocol_defined_and_openable",
+      "evidentiary_state": "protocol_defined_but_counterpart_uninstantiated"
+    },
+    {
+      "protocol_id": "temporal_structure_instantiation_protocol",
+      "channel_id": "temporal_structure_channel",
+      "counterpart_contract_id": "temporal_structure_counterpart_contract",
+      "homologation_unit_id": "temporal_structure_homologation",
+      "collection_route": "protocol_bounded_temporal_trace_capture",
+      "required_schema_refs": [
+        "src/comparative_program/schemas/human_temporal_structure_report.v1.json"
+      ],
+      "required_lineage_fields": [
+        "comparator_session_id",
+        "collection_protocol_version",
+        "annotation_schema_version"
+      ],
+      "governance_guards": [
+        "clock_time_only_proxy",
+        "continuity_narration_without_human_measurement"
+      ],
+      "protocol_state": "protocol_defined_and_openable",
+      "evidentiary_state": "protocol_defined_but_counterpart_uninstantiated"
+    },
+    {
+      "protocol_id": "valence_topology_instantiation_protocol",
+      "channel_id": "valence_topology_channel",
+      "counterpart_contract_id": "valence_topology_counterpart_contract",
+      "homologation_unit_id": "valence_topology_homologation",
+      "collection_route": "protocol_bounded_valence_topology_capture",
+      "required_schema_refs": [
+        "src/comparative_program/schemas/human_valence_topology_report.v1.json"
+      ],
+      "required_lineage_fields": [
+        "comparator_session_id",
+        "collection_protocol_version",
+        "annotation_schema_version"
+      ],
+      "governance_guards": [
+        "reward_schedule_only_proxy",
+        "scalar_preference_report_without_topology_measurement"
+      ],
+      "protocol_state": "protocol_defined_and_openable",
+      "evidentiary_state": "protocol_defined_but_counterpart_uninstantiated"
+    },
+    {
+      "protocol_id": "embodiment_boundary_instantiation_protocol",
+      "channel_id": "embodiment_boundary_channel",
+      "counterpart_contract_id": "embodiment_boundary_counterpart_contract",
+      "homologation_unit_id": "embodiment_boundary_homologation",
+      "collection_route": "protocol_bounded_embodiment_boundary_capture",
+      "required_schema_refs": [
+        "src/comparative_program/schemas/human_embodiment_boundary_report.v1.json"
+      ],
+      "required_lineage_fields": [
+        "comparator_session_id",
+        "collection_protocol_version",
+        "embodiment_environment_manifest"
+      ],
+      "governance_guards": [
+        "motor_competence_only_proxy",
+        "controller_performance_only_proxy"
+      ],
+      "required_budget_bindings": [
+        "self_index_drift_budget",
+        "bridge_coordinate_distortion_budget"
+      ],
+      "protocol_state": "protocol_defined_and_openable",
+      "evidentiary_state": "protocol_defined_but_counterpart_uninstantiated"
+    },
+    {
+      "protocol_id": "ambiguity_load_instantiation_protocol",
+      "channel_id": "ambiguity_load_channel",
+      "counterpart_contract_id": "ambiguity_load_counterpart_contract",
+      "homologation_unit_id": "ambiguity_load_homologation",
+      "collection_route": "protocol_bounded_ambiguity_load_capture",
+      "required_schema_refs": [
+        "src/comparative_program/schemas/human_ambiguity_load_report.v1.json"
+      ],
+      "required_lineage_fields": [
+        "comparator_session_id",
+        "collection_protocol_version",
+        "annotation_schema_version"
+      ],
+      "governance_guards": [
+        "semantic_density_only_proxy",
+        "error_rate_only_proxy"
+      ],
+      "protocol_state": "protocol_defined_and_openable",
+      "evidentiary_state": "protocol_defined_but_counterpart_uninstantiated"
+    },
+    {
+      "protocol_id": "transport_preservation_instantiation_protocol",
+      "channel_id": "transport_preservation_channel",
+      "counterpart_contract_id": "transport_counterpart_contract",
+      "homologation_unit_id": "transport_transition_homologation",
+      "transition_contract_id": "bridge_coordinate_transition_contract",
+      "collection_route": "source_target_transition_contract_registration",
+      "required_schema_refs": [
+        "src/comparative_program/schemas/cross_substrate_transport_contract.v1.json",
+        "src/comparative_program/schemas/cross_substrate_lineage_map.v1.json",
+        "src/comparative_program/schemas/target_substrate_counterpart_manifest.v1.json"
+      ],
+      "required_lineage_fields": [
+        "transition_lineage_map",
+        "target_artifact_provenance_chain",
+        "branch_accounting"
+      ],
+      "governance_guards": [
+        "static_model_export_only",
+        "source_snapshot_without_target_counterpart"
+      ],
+      "required_budget_bindings": [
+        "self_index_drift_budget",
+        "bridge_coordinate_distortion_budget",
+        "intervention_signature_deviation_budget",
+        "lineage_break_budget"
+      ],
+      "protocol_state": "protocol_defined_and_openable",
+      "evidentiary_state": "protocol_defined_but_counterpart_uninstantiated"
+    }
+  ],
+  "interpretation_boundary": "Framework-internal only; these protocols define how Stage 3 may legitimately instantiate human-side and transport-side comparative channels without fabricating evidence, without opening external adjudication, and without authorizing equivalence, superiority, or Paper 10."
+}

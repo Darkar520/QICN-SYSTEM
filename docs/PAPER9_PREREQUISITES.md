@@ -1,25 +1,32 @@
 # Paper 9 Prerequisites
 
-This file records what is still missing before opening Paper 9.
+This file records the local prerequisites for treating the Paper 9 handoff substrate as semantically aligned with the current runtime state.
 
-## Missing prerequisites
+## Already satisfied inside QICN-SYSTEM
 
-- the Bridge Formal hacia Fenomenalidad must exist and stabilize first
-- Paper 9 claim grammar, theorem table, and anti-overclaim registry
-- bridge-level comparators and interventions suitable for the Paper 9 scope
-- a Paper 9 artifact family, schemas, and verifier path
-- explicit protection against smuggling external validation into Paper 9
+- BPF-M3 bridge internal closure exists and is auditable.
+- Stage 2-M4 comparative internal closure exists and is auditable.
+- Stage 3 readiness fulfillment artifacts can now bind:
+  - the remaining comparative burdens,
+  - typed human-channel instantiation protocols,
+  - counterpart schema registries,
+  - comparative error-budget bindings,
+  - the Stage 3 opening gate.
+- anti-overclaim and anti-external-adjudication boundaries remain explicit.
 
-## What the current ecosystem can already support
+## What Paper 9 must reflect now
 
-- a closed internal audit of SRT-0..6
-- release/system alignment through public Paper 8
-- candidate-ready and audit-ready-internal subjectivity governance
-- disciplined non-claims about what the runtime does and does not support
+- Stage 2-M4 is complete as an internal comparative closure layer.
+- any future Stage 3 opening is bounded and internal at the moment it opens.
+- external adjudication has not yet happened.
+- human equivalence has not yet happened.
+- superiority and identity-preservation claims remain blocked.
+- Paper 10 is still blocked.
 
-## What it cannot support yet
+## What remains outside Paper 9
 
-- phenomenality claims
-- human comparator claims
-- subjectivity superiority claims
-- external validation narratives
+- real Stage 3 execution
+- real human counterpart instantiation
+- external comparative adjudication
+- Paper 10
+- metaphysical closure

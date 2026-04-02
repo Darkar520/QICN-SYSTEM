@@ -7,38 +7,20 @@ The Human Comparator Program is the first comparative layer that follows
 
 - `Stage 2-0` opened governance, ladders, boundaries, and surface restrictions.
 - `Stage 2-M2` made the blocked comparative runtime machine-readable.
-- `Stage 2-M3` adds pathway, counterpart-contract, and homologation-contract
-	operationalization without instantiating human evidence.
-- `Stage 2-M4` adds the final internal comparative audit, human-channel
-	instantiation readiness, and the explicit gate that keeps `Stage 3` unopened.
+- `Stage 2-M3` added pathway, counterpart-contract, and homologation-contract
+  operationalization without instantiating human evidence.
+- `Stage 2-M4` added the final internal comparative audit, human-channel
+  instantiation readiness, and the explicit gate that kept `Stage 3` unopened.
+- `Stage3-RF` fulfills the remaining structural Stage 3 burdens and emits the
+  bounded gate that may now allow Stage 3 to open as an internal instantiation
+  program.
 
-The program still does not instantiate human data. It does not simulate human
-measurements. It does not adjudicate equivalence.
-
-## Comparator object classes
-
-The object classes remain:
-
-- `non_comparable`
-- `structurally_comparable`
-- `interventional_comparable`
-- `weakly_homologous`
-- `comparator_underdefined`
-- `comparator_blocked_by_missing_human_channel`
-
-In `Stage 2-M2` they became runtime-loadable. In `Stage 2-M3` they are still
-bounded by missing-human-channel logic, but now sit inside a deeper contract
-stack rather than a purely blocked-state stack.
+The program still does not instantiate human data by itself. It does not
+simulate human measurements. It does not adjudicate equivalence.
 
 ## Runtime layers now in force
 
-`Stage 2-M2` runtime still evaluates:
-
-- machine-side bridge structural availability;
-- human-channel absence or non-instantiation;
-- burden blockage due to missing human channels;
-- domain-level openness versus blockage;
-- explicit `no_verdict_authorized` states.
+`Stage 2-M2` runtime still evaluates blocked comparator states.
 
 `Stage 2-M3` adds:
 
@@ -46,27 +28,22 @@ stack rather than a purely blocked-state stack.
 - counterpart artifact contracts for future human-side artifacts;
 - homologation units linking machine-side and future counterpart artifacts;
 - bounded operational readiness that distinguishes blocked, pathway-defined,
-	contract-ready-but-counterpart-absent, and homologation-ready-but-counterpart-absent states.
+  contract-ready-but-counterpart-absent, and homologation-ready-but-counterpart-absent states.
 
 `Stage 2-M4` adds:
 
-- a runtime final internal audit over governance, runtime integrity, taxonomic coherence, burden coherence, surface discipline, and lineage freshness;
+- a runtime final internal audit;
 - a runtime artifact for human-channel instantiation readiness;
 - a machine-readable external-adjudication opening-criteria manifest;
 - a Paper 10 comparative readiness gate that remains non-authorizing.
 
-## Current emitted artifacts
+`Stage3-RF` adds:
 
-The comparator-facing artifact family is now split:
-
-- `human_comparator_assessment.json` for the `Stage 2-M2` blocked runtime baseline;
-- `human_channel_pathway_assessment.json` for pathway readiness and forbidden-proxy exposure;
-- `counterpart_artifact_contract_assessment.json` for future counterpart artifact obligations;
-- `homologation_contract_assessment.json` for homologation feasibility and burden symmetry status;
-- `comparative_operational_readiness.json` for the integrated `Stage 2-M3` internal readiness state.
-- `human_channel_instantiation_readiness.json` for Stage 2-M4 non-evidential channel-opening readiness.
-- `comparative_final_internal_audit.json` for the Stage 2-M4 internal closure audit.
-- `paper10_comparative_readiness_gate.json` for Stage 2-M4 Paper 10 non-authorization and deferred scoping.
+- typed human-channel instantiation protocols;
+- counterpart schema bindings for Stage 3 artifact families;
+- comparative error-budget bindings;
+- comparative burden fulfillment synthesis;
+- a bounded Stage 3 opening gate.
 
 ## What is actually supported now
 
@@ -75,13 +52,11 @@ The current runtime can now state:
 - machine-side bridge artifacts are structurally available;
 - a given comparator domain is blocked by missing human channel;
 - a pathway is defined but uninstantiated;
-- a pathway contract is incomplete;
-- a pathway is blocked by forbidden proxy substitution;
 - a counterpart contract is ready but the counterpart family is absent;
 - a homologation unit is defined, incomplete, underdetermined, or ready but absent;
-- the comparative runtime is contract-operationalized and internally `ready_for_stage2_m4`;
-- the comparative layer is internally audited and `comparative_internal_closure_ready`;
-- `Stage 3` opening criteria are defined but still not satisfied;
+- the comparative layer is internally closed;
+- the remaining Stage 3 structural burdens are fulfilled for opening;
+- Stage 3 may now open as a bounded internal instantiation program;
 - no human comparator verdict is authorized.
 
 ## What remains absent
@@ -93,17 +68,15 @@ The following are still absent:
 - matched human intervention artifacts;
 - human negative-control artifacts;
 - admissible human-side lineage manifests;
-- candidate or audit comparative integration;
 - external adjudication;
-- Paper 10.
-- an opened `Stage 3` comparative adjudication process.
+- Paper 10;
+- a completed Stage 3 comparative execution program.
 
 ## Blocked inferences
 
-Nothing in `Stage 2-M4` authorizes:
+Nothing in `Stage3-RF` authorizes:
 
 - public human-equivalence claims;
-- human phenomenal-equivalence claims;
 - superiority claims;
 - inferiority claims;
 - external validation claims;

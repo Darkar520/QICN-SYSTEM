@@ -1,8 +1,8 @@
 {
   "artifact_role": "comparative_program_artifact_schema_registry",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage2_m4_internal_closure",
-  "layer_status": "comparative_internal_closure_implemented",
+  "layer_id": "comparative_expansion_layer.stage3_readiness_fulfillment",
+  "layer_status": "stage3_readiness_fulfillment_implemented",
   "root_schema_refs": {
     "comparative_program_manifest.json": "src/comparative_program/schemas/comparative_program_manifest.v1.json",
     "human_comparator_assessment.json": "src/comparative_program/schemas/human_comparator_assessment.v1.json",
@@ -17,7 +17,11 @@
     "human_channel_instantiation_readiness.json": "src/comparative_program/schemas/human_channel_instantiation_readiness.v1.json",
     "paper10_comparative_readiness_gate.json": "src/comparative_program/schemas/paper10_comparative_readiness_gate.v1.json",
     "comparative_program_verification_matrix.json": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
-    "comparative_program_readiness_gate.json": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json"
+    "comparative_program_readiness_gate.json": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json",
+    "comparative_burden_fulfillment.json": "src/comparative_program/schemas/comparative_burden_fulfillment.v1.json",
+    "stage3_opening_readiness.json": "src/comparative_program/schemas/stage3_opening_readiness.v1.json",
+    "paper9_handoff_alignment.json": "src/comparative_program/schemas/paper9_handoff_alignment.v1.json",
+    "stage3_opening_gate.json": "src/comparative_program/schemas/stage3_opening_gate.v1.json"
   },
   "artifacts": {
     "comparative_program_manifest.json": {
@@ -514,6 +518,149 @@
       "non_implications": [
         "Not equivalence support.",
         "Not public claim authorization.",
+        "Not Paper 10 authorization."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "comparative_burden_fulfillment.json": {
+      "id": "comparative_burden_fulfillment",
+      "artifact_name": "comparative_burden_fulfillment.json",
+      "role": "comparative_burden_fulfillment",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "stage3_burden_fulfillment",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "burden_fulfillment_state",
+        "burdens",
+        "burden_summary",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not human evidence.",
+        "Not human equivalence.",
+        "Not external adjudication.",
+        "Not transport-preservation support."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "stage3_opening_readiness.json": {
+      "id": "stage3_opening_readiness",
+      "artifact_name": "stage3_opening_readiness.json",
+      "role": "stage3_opening_readiness",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "stage3_opening_readiness",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "readiness_class",
+        "stage3_opening_state",
+        "exact_blocking_reasons",
+        "remaining_external_blockers",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not Stage 3 execution.",
+        "Not human equivalence.",
+        "Not external adjudication.",
+        "Not Paper 10 authorization."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "paper9_handoff_alignment.json": {
+      "id": "paper9_handoff_alignment",
+      "artifact_name": "paper9_handoff_alignment.json",
+      "role": "paper9_handoff_alignment",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "paper9_handoff_alignment",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "paper9_handoff_state",
+        "paper9_location",
+        "alignment_summary",
+        "required_revisions",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not a manuscript verdict.",
+        "Not external adjudication.",
+        "Not Paper 10 authorization."
+      ],
+      "status": "implemented_runtime_comparative_artifact"
+    },
+    "stage3_opening_gate.json": {
+      "id": "stage3_opening_gate",
+      "artifact_name": "stage3_opening_gate.json",
+      "role": "stage3_opening_gate",
+      "artifact_class": "comparative_program_runtime_artifact",
+      "level": "stage3_opening_gate",
+      "authoritative_status": "runtime_emitted_internal_only",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ],
+      "minimum_fields": [
+        "gate_status",
+        "stage3_gate_state",
+        "stage3_opening_state",
+        "paper9_handoff_state",
+        "paper10_authorization_state",
+        "warnings",
+        "boundary_flags",
+        "interpretation_boundary"
+      ],
+      "non_implications": [
+        "Not external adjudication.",
+        "Not human equivalence.",
+        "Not superiority.",
         "Not Paper 10 authorization."
       ],
       "status": "implemented_runtime_comparative_artifact"

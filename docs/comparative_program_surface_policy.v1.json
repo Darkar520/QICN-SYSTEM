@@ -1,9 +1,9 @@
 {
   "artifact_role": "comparative_program_surface_policy",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage2_m4_internal_closure",
-  "implementation_status": "comparative_internal_closure_implemented",
-  "default_interpretation_boundary": "Stage 2-M4 comparative closure remains framework-internal only. Comparative audit, Stage 3 opening criteria, channel-instantiation readiness, and Paper 10 gating artifacts may be emitted locally and in internal release contexts, but no human-equivalence verdicts, no superiority or inferiority outputs, no transport-preservation or identity-preservation outputs, no candidate or audit integration, no external adjudication, and no Paper 10 manuscript outputs are authorized.",
+  "layer_id": "comparative_expansion_layer.stage3_readiness_fulfillment",
+  "implementation_status": "stage3_readiness_fulfillment_implemented",
+  "default_interpretation_boundary": "Stage 3 readiness fulfillment remains framework-internal only. Comparative runtime, operationalization, closure, burden-fulfillment, Paper 9 handoff, and Stage 3 opening artifacts may be emitted locally and in internal release contexts, but no human-equivalence verdicts, no superiority or inferiority outputs, no transport-preservation or identity-preservation verdicts, no candidate or audit comparative integration, no external adjudication, and no Paper 10 manuscript outputs are authorized.",
   "governed_surfaces": {
     "developer_inspection_surface": {
       "requires_boundary": true,
@@ -264,6 +264,66 @@
         "controlled_statement_surface",
         "external_claim_facing_surface"
       ]
+    },
+    "comparative_burden_fulfillment.json": {
+      "artifact_class": "runtime_comparative_artifact",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ]
+    },
+    "stage3_opening_readiness.json": {
+      "artifact_class": "runtime_comparative_artifact",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ]
+    },
+    "paper9_handoff_alignment.json": {
+      "artifact_class": "runtime_comparative_artifact",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ]
+    },
+    "stage3_opening_gate.json": {
+      "artifact_class": "runtime_comparative_artifact",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "blocked_surfaces": [
+        "ecosystem_candidate_surface",
+        "audit_facing_package_surface",
+        "controlled_statement_surface",
+        "external_claim_facing_surface"
+      ]
     }
   },
   "blocked_inferences": [
@@ -274,6 +334,7 @@
     "no_identity_preservation_inference",
     "no_external_adjudication_inference",
     "no_candidate_or_audit_comparative_integration_inference",
+    "no_stage3_execution_completed_inference",
     "no_paper10_inference"
   ]
 }

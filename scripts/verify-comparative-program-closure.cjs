@@ -338,8 +338,9 @@ const verifyRuntimeImport = async () => {
   const comparative = await import(moduleUrl);
   const description = comparative.describeComparativeProgramLayer();
   assert(
-    description.current_stage === 'stage2_m4_internal_closure',
-    'Comparative layer must advertise Stage 2-M4 as current stage'
+    description.current_stage === 'stage2_m4_internal_closure'
+      || description.current_stage === 'stage3_readiness_fulfillment',
+    'Comparative layer must advertise Stage 2-M4 closure or its Stage3-RF bounded superset as current stage'
   );
   assert(
     typeof comparative.createComparativeClosureBuilder === 'function',

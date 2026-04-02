@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cross_substrate_transport_contract.v1",
+  "type": "object",
+  "required": ["artifact_role", "artifact_name", "artifact_version", "schema_version", "source_substrate_class", "target_substrate_class", "preservation_axis_map", "axis_specific_error_budget_map", "transition_protocol_version", "interpretation_boundary"],
+  "properties": {
+    "artifact_role": { "const": "cross_substrate_transport_contract" },
+    "artifact_name": { "const": "cross_substrate_transport_contract.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "source_substrate_class": { "type": "string" },
+    "target_substrate_class": { "type": "string" },
+    "preservation_axis_map": { "type": "object" },
+    "axis_specific_error_budget_map": { "type": "object" },
+    "transition_protocol_version": { "type": "string" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

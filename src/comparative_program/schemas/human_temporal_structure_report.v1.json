@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "human_temporal_structure_report.v1",
+  "type": "object",
+  "required": ["artifact_role", "artifact_name", "artifact_version", "schema_version", "comparator_session_id", "temporal_segmentation", "collection_protocol_version", "interpretation_boundary"],
+  "properties": {
+    "artifact_role": { "const": "human_temporal_structure_report" },
+    "artifact_name": { "const": "human_temporal_structure_report.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "comparator_session_id": { "type": "string" },
+    "temporal_segmentation": { "type": "array", "items": { "type": "object" } },
+    "collection_protocol_version": { "type": "string" },
+    "interpretation_boundary": { "type": "string" }
+  }
+}

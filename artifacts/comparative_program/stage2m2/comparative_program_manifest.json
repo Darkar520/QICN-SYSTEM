@@ -66,7 +66,7 @@
   "source_shas": {
     "qicn_system": {
       "branch": "main",
-      "head": "6561656f4c43eeb0b74dd67345a56fadfd068731",
+      "head": "60b0119bfdde20a86b04cd95ac28fb138aecd77a",
       "upstream": "origin/main"
     },
     "qicn_release": {
@@ -166,7 +166,7 @@
     },
     "qicn_system": {
       "branch": "main",
-      "head": "6561656f4c43eeb0b74dd67345a56fadfd068731",
+      "head": "60b0119bfdde20a86b04cd95ac28fb138aecd77a",
       "upstream": "origin/main"
     },
     "qicn_release": {
@@ -177,7 +177,7 @@
   },
   "interpretation_boundary": "Framework-internal only; comparative program manifest records bounded comparative runtime opening state, not human equivalence, not cross-substrate equivalence, not external adjudication, and not Paper 10 authorization.",
   "provenance": {
-    "generated_at": "2026-04-02T19:59:57.512Z",
+    "generated_at": "2026-04-02T20:44:47.558Z",
     "project_root": "."
   },
   "schema_ref": "src/comparative_program/schemas/comparative_program_manifest.v1.json"

@@ -191,7 +191,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; the comparative final internal audit records internal integrity, closure readiness, adjudication-opening criteria status, and remaining burdens after Stage 2-M4. It does not open external adjudication, does not authorize equivalence or superiority, and does not authorize Paper 10.",
   "provenance": {
-    "generated_at": "2026-04-02T19:59:59.119Z",
+    "generated_at": "2026-04-02T20:44:48.826Z",
     "stage2_m2_readiness_gate_ref": "artifacts/comparative_program/stage2m2/comparative_program_readiness_gate.json",
     "stage2_m3_readiness_gate_ref": "artifacts/comparative_program/stage2m3/comparative_program_readiness_gate.json",
     "stage2_m4_readiness_gate_ref": "artifacts/comparative_program/stage2m4/comparative_program_readiness_gate.json",
@@ -286,7 +286,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "6561656f4c43eeb0b74dd67345a56fadfd068731",
+        "head": "60b0119bfdde20a86b04cd95ac28fb138aecd77a",
         "upstream": "origin/main"
       },
       "qicn_release": {

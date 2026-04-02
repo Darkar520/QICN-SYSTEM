@@ -347,7 +347,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; counterpart artifact contract assessment records contract completeness, missing artifact families, and invalid-substitution exposure, not instantiated counterpart evidence, not homologation verdicts, and not external adjudication.",
   "provenance": {
-    "generated_at": "2026-04-02T22:57:38.968Z",
+    "generated_at": "2026-04-02T23:01:22.655Z",
     "pathway_assessment_ref": "artifacts/comparative_program/stage2m3/human_channel_pathway_assessment.json",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage2_m3.operationalization.v1",
@@ -456,7 +456,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "3fece3e0693c22128877b915abbd96f39f0ea330",
+        "head": "04508899839e96348b0d20ba207e9d5d99f107f2",
         "upstream": null
       },
       "qicn_release": {

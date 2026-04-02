@@ -40,7 +40,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; comparative readiness gate classifies the comparative runtime layer itself, not human equivalence, not transport preservation, not external adjudication, and not Paper 10 authorization.",
   "provenance": {
-    "generated_at": "2026-04-02T22:57:38.932Z",
+    "generated_at": "2026-04-02T23:01:22.631Z",
     "verification_matrix_ref": "artifacts/comparative_program/stage2m2/comparative_program_verification_matrix.json",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage2_m2.root.v1",
@@ -149,7 +149,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "3fece3e0693c22128877b915abbd96f39f0ea330",
+        "head": "04508899839e96348b0d20ba207e9d5d99f107f2",
         "upstream": null
       },
       "qicn_release": {

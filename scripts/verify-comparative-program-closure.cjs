@@ -80,6 +80,53 @@ const assert = (condition, message) => {
 };
 
 const gitHead = (cwd) => cp.execFileSync('git', ['rev-parse', 'HEAD'], { cwd, encoding: 'utf8' }).trim();
+const gitDiffNames = (cwd, fromRef, toRef) =>
+  cp
+    .execFileSync('git', ['diff', '--name-only', `${fromRef}..${toRef}`], {
+      cwd,
+      encoding: 'utf8'
+    })
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+const ARTIFACT_ONLY_FORWARD_PREFIXES = ['artifacts/'];
+
+const evaluateLineageCompatibility = (recordedHead, currentHead) => {
+  if (!recordedHead || !currentHead) {
+    return {
+      pass: false,
+      mode: 'missing_lineage',
+      changed_files: [],
+      disallowed_files: ['missing_lineage']
+    };
+  }
+
+  if (recordedHead === currentHead) {
+    return {
+      pass: true,
+      mode: 'exact_head_match',
+      changed_files: [],
+      disallowed_files: []
+    };
+  }
+
+  const changedFiles = gitDiffNames(ROOT, recordedHead, currentHead);
+  const disallowedFiles = changedFiles.filter(
+    (relativePath) =>
+      !ARTIFACT_ONLY_FORWARD_PREFIXES.some((prefix) => relativePath.startsWith(prefix))
+  );
+
+  return {
+    pass: disallowedFiles.length === 0,
+    mode:
+      disallowedFiles.length === 0
+        ? 'artifact_only_forward_compatible'
+        : 'source_lineage_drift',
+    changed_files: changedFiles,
+    disallowed_files: disallowedFiles
+  };
+};
 
 const ensureFilesExist = (relativePaths) => {
   relativePaths.forEach((relativePath) =>
@@ -197,6 +244,14 @@ const verifyArtifacts = () => {
   const instantiationStatusIds = statusIds(criteria.instantiation_status_classes);
   const paper10StatusIds = statusIds(criteria.paper10_status_classes);
   const currentHead = gitHead(ROOT);
+  const stage2m2LineageCompatibility = evaluateLineageCompatibility(
+    stage2m2.provenance.current_lineage.qicn_system.head,
+    currentHead
+  );
+  const stage2m3LineageCompatibility = evaluateLineageCompatibility(
+    stage2m3.provenance.current_lineage.qicn_system.head,
+    currentHead
+  );
 
   assert(auditStatusIds.has(finalAudit.audit_status), 'Final internal audit status is out of bounds');
   assert(
@@ -263,12 +318,12 @@ const verifyArtifacts = () => {
     'External comparative adjudication must remain blocked'
   );
   assert(
-    stage2m2.provenance.current_lineage.qicn_system.head === currentHead,
-    'Stage 2-M2 artifacts must be refreshed to current local HEAD'
+    stage2m2LineageCompatibility.pass,
+    `Stage 2-M2 artifacts must match current local HEAD or differ only by artifact-only forward commits: ${JSON.stringify(stage2m2LineageCompatibility)}`
   );
   assert(
-    stage2m3.provenance.current_lineage.qicn_system.head === currentHead,
-    'Stage 2-M3 artifacts must be refreshed to current local HEAD'
+    stage2m3LineageCompatibility.pass,
+    `Stage 2-M3 artifacts must match current local HEAD or differ only by artifact-only forward commits: ${JSON.stringify(stage2m3LineageCompatibility)}`
   );
 };
 

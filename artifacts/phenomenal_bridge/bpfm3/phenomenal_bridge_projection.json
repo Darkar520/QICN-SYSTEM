@@ -197,7 +197,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; root bridge projection over implemented bridge reports and adversarial artifacts, not external validation, not human equivalence, not phenomenality proof, not metaphysical closure, not claim-facing evidence.",
   "provenance": {
-    "generated_at": "2026-04-02T20:05:07.108Z",
+    "generated_at": "2026-04-02T20:46:37.475Z",
     "baseline_bundle_refs": {
       "self_index_state": "artifacts/subjectivity/srt1/self_index_state.json",
       "ownership_attribution_report": "artifacts/subjectivity/srt1/ownership_attribution_report.json",
@@ -259,7 +259,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "6561656f4c43eeb0b74dd67345a56fadfd068731",
+        "head": "4f7a7865adcb906cafc51d6cdc7c830871f355a1",
         "upstream": "origin/main"
       },
       "qicn_release": {

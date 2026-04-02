@@ -117,7 +117,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; comparative operational readiness summarizes pathway, contract, homologation, and transition readiness under explicit non-adjudicative boundaries. It does not instantiate human data, does not authorize equivalence or superiority, and does not authorize external adjudication.",
   "provenance": {
-    "generated_at": "2026-03-31T21:55:08.088Z",
+    "generated_at": "2026-04-02T19:59:58.403Z",
     "stage2_m2_readiness_ref": "artifacts/comparative_program/stage2m2/comparative_program_readiness_gate.json",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage2_m3.operationalization.v1",
@@ -210,7 +210,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "44c2df36f76fadc292963c988d4550bad672c8df",
+        "head": "6561656f4c43eeb0b74dd67345a56fadfd068731",
         "upstream": "origin/main"
       },
       "qicn_release": {

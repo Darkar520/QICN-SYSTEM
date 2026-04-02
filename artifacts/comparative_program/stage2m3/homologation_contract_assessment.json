@@ -378,7 +378,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; homologation contract assessment records whether homologation units are defined, incomplete, underdetermined, or ready-but-counterpart-absent under bounded internal semantics. It does not authorize equivalence verdicts, transport verdicts, or external adjudication.",
   "provenance": {
-    "generated_at": "2026-03-31T21:55:08.087Z",
+    "generated_at": "2026-04-02T19:59:58.402Z",
     "counterpart_contract_assessment_ref": "artifacts/comparative_program/stage2m3/counterpart_artifact_contract_assessment.json",
     "stage2_m2_equivalence_ref": "artifacts/comparative_program/stage2m2/human_equivalence_assessment.json",
     "current_lineage": {
@@ -472,7 +472,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "44c2df36f76fadc292963c988d4550bad672c8df",
+        "head": "6561656f4c43eeb0b74dd67345a56fadfd068731",
         "upstream": "origin/main"
       },
       "qicn_release": {

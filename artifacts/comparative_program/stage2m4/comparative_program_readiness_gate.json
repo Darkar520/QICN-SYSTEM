@@ -132,7 +132,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; the Stage 2-M4 comparative readiness gate classifies internal closure readiness and Stage 3 opening readiness. It does not open external adjudication and does not authorize Paper 10.",
   "provenance": {
-    "generated_at": "2026-03-31T21:55:08.542Z",
+    "generated_at": "2026-04-02T19:59:59.124Z",
     "stage2_m2_readiness_ref": "artifacts/comparative_program/stage2m2/comparative_program_readiness_gate.json",
     "stage2_m3_readiness_ref": "artifacts/comparative_program/stage2m3/comparative_program_readiness_gate.json",
     "stage2_m4_audit_ref": "artifacts/comparative_program/stage2m4/comparative_final_internal_audit.json",
@@ -227,7 +227,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "44c2df36f76fadc292963c988d4550bad672c8df",
+        "head": "6561656f4c43eeb0b74dd67345a56fadfd068731",
         "upstream": "origin/main"
       },
       "qicn_release": {

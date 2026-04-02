@@ -494,7 +494,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; human-channel pathway assessment records pathway readiness, contract completeness, and forbidden-substitution exposure, not human evidence, not human equivalence, not transport preservation, and not external adjudication.",
   "provenance": {
-    "generated_at": "2026-03-31T21:55:08.085Z",
+    "generated_at": "2026-04-02T19:59:58.398Z",
     "stage2_m2_comparator_ref": "artifacts/comparative_program/stage2m2/human_comparator_assessment.json",
     "bridge_projection_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json",
     "bridge_manifest_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_manifest.json",
@@ -589,7 +589,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "44c2df36f76fadc292963c988d4550bad672c8df",
+        "head": "6561656f4c43eeb0b74dd67345a56fadfd068731",
         "upstream": "origin/main"
       },
       "qicn_release": {

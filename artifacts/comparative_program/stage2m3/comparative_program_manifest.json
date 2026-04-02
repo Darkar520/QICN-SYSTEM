@@ -96,7 +96,7 @@
   "source_shas": {
     "qicn_system": {
       "branch": "main",
-      "head": "44c2df36f76fadc292963c988d4550bad672c8df",
+      "head": "6561656f4c43eeb0b74dd67345a56fadfd068731",
       "upstream": "origin/main"
     },
     "qicn_release": {
@@ -196,7 +196,7 @@
     },
     "qicn_system": {
       "branch": "main",
-      "head": "44c2df36f76fadc292963c988d4550bad672c8df",
+      "head": "6561656f4c43eeb0b74dd67345a56fadfd068731",
       "upstream": "origin/main"
     },
     "qicn_release": {
@@ -224,7 +224,7 @@
   },
   "interpretation_boundary": "Framework-internal only; the Stage 2-M3 comparative program manifest records pathway, contract, homologation, and transition-contract operationalization, not human equivalence, not transport preservation, not external adjudication, and not Paper 10 authorization.",
   "provenance": {
-    "generated_at": "2026-03-31T21:55:08.088Z",
+    "generated_at": "2026-04-02T19:59:58.404Z",
     "project_root": ".",
     "stage2_m2_manifest_ref": "artifacts/comparative_program/stage2m2/comparative_program_manifest.json",
     "comparative_operational_readiness_ref": "artifacts/comparative_program/stage2m3/comparative_operational_readiness.json"

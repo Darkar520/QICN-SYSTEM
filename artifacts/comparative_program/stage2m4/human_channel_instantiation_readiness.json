@@ -308,7 +308,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; human-channel instantiation readiness records whether legitimate human-channel protocols could be opened under current governance and contract structure. It does not instantiate human evidence, does not authorize equivalence, and does not open external adjudication.",
   "provenance": {
-    "generated_at": "2026-04-02T23:01:22.689Z",
+    "generated_at": "2026-04-03T02:25:39.146Z",
     "stage2_m2_comparator_ref": "artifacts/comparative_program/stage2m2/human_comparator_assessment.json",
     "stage2_m3_pathway_ref": "artifacts/comparative_program/stage2m3/human_channel_pathway_assessment.json",
     "stage2_m3_counterpart_ref": "artifacts/comparative_program/stage2m3/counterpart_artifact_contract_assessment.json",
@@ -420,13 +420,13 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "04508899839e96348b0d20ba207e9d5d99f107f2",
-        "upstream": null
+        "head": "15303850e91f9494570b6eee21325edb49ca84e6",
+        "upstream": "origin/main"
       },
       "qicn_release": {
         "branch": "main",
         "head": "4779eb1c78341185d03b14bbb300a673e255f407",
-        "upstream": null
+        "upstream": "origin/main"
       },
       "human_channel_pathways": {
         "ref": "docs/human_channel_pathways.v1.json",

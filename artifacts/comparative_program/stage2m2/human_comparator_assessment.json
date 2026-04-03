@@ -428,7 +428,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; human comparator assessment records bounded comparative opening state, not human equivalence, not superiority, not external adjudication, and not claim-facing evidence.",
   "provenance": {
-    "generated_at": "2026-04-02T23:01:22.628Z",
+    "generated_at": "2026-04-03T02:25:38.429Z",
     "bridge_refs": {
       "projection": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json",
       "gate_result": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_gate_result.json",
@@ -542,13 +542,13 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "04508899839e96348b0d20ba207e9d5d99f107f2",
-        "upstream": null
+        "head": "15303850e91f9494570b6eee21325edb49ca84e6",
+        "upstream": "origin/main"
       },
       "qicn_release": {
         "branch": "main",
         "head": "4779eb1c78341185d03b14bbb300a673e255f407",
-        "upstream": null
+        "upstream": "origin/main"
       }
     }
   },

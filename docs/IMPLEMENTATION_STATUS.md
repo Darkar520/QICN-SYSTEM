@@ -41,3 +41,11 @@ Normalized status values used below:
 | Legacy `js/api` compatibility | `legacy compatibility layer` | `compatibility_only` | `js/api/`, `services/` | none | `tests/test_multi_provider_commonjs.js`, `tests/test_multi_provider_integration.js` | `mixed` | `legacy_input` | Compatibility code is not source-of-truth and not claim evidence. | Retained because `services/` still depends on it. |
 | Canon pinning gap | `external dependency / traceability gap` | `not_recorded` | `docs/CANON_SOURCE_OF_TRUTH.md` | none | none | `external_frozen` | `frozen_canon` | Without a fixed canon pin, no document should imply frozen canon closure. | Manual pinning remains pending. |
 | External assets dependency | `external dependency / traceability gap` | `external_dependency` | `src/simulation/SensoryPerceptionEngine.js` | external model assets outside repo | `tests/speech-fsm.test.js`, `tests/sensory-sovereignty.v381.test.js` | `mixed` | `external_service` | Asset availability is runtime provisioning, not repo-local evidence. | Voice or model assets are not vendored in the clean baseline. |
+
+## Paper 9 manuscript handoff
+
+- Status: `implemented_internal_support`
+- Manuscript source: `paper9_phenomenal_bridge_organization/main.tex`
+- Compiled PDF: `paper9_phenomenal_bridge_organization/main.pdf`
+- Verification: `npm run verify:paper9-handoff-readiness`
+- Boundary: internal manuscript closure and Stage 3 handoff only; not external adjudication, not human equivalence, not superiority, not transport-preservation verdict support, and not Paper 10 authorization.

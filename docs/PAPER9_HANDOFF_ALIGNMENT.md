@@ -51,3 +51,12 @@ Any Paper 9-facing wording must preserve the following distinctions:
 - Stage 3 readiness is not Stage 3 execution already completed
 - release inclusion is not runtime confirmation
 - audit material is not adjudication
+
+## Manuscript substrate
+
+- manuscript source now lives in `paper9_phenomenal_bridge_organization/main.tex`
+- compiled local PDF now lives in `paper9_phenomenal_bridge_organization/main.pdf`
+- the manuscript is part of the allowed local QICN-SYSTEM working root
+- this manuscript presence upgrades the handoff layer from document-only alignment to manuscript-bearing alignment
+
+This still does not convert Paper 9 into external adjudication, Paper 10, or any public-claim surface. It only means that the handoff state is now anchored to a real local manuscript source.

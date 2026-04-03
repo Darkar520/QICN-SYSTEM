@@ -1,0 +1,1588 @@
+\documentclass[11pt,a4paper]{article}
+
+\input{glyphtounicode}
+\pdfgentounicode=1
+
+\usepackage{cmap}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{a4paper,margin=1in}
+\usepackage[backend=biber]{biblatex}
+\addbibresource{references.bib}
+\addbibresource{paper9_local_references.bib}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{mathrsfs}
+\usepackage[final]{microtype}
+\usepackage{xcolor}
+\raggedbottom
+\widowpenalty=10000
+\clubpenalty=10000
+\setlength{\emergencystretch}{3em}
+\DisableLigatures{encoding = *, family = *}
+
+\newcommand{\AuthorVisible}{Johnny Andrey P{\'e}rez Ram{\'i}rez}
+\newcommand{\AuthorMetadata}{Johnny Andrey P{\'e}rez Ram{\'i}rez}
+
+\usepackage[unicode,pdfencoding=auto,psdextra,hidelinks]{hyperref}
+\hypersetup{
+    pdftitle={From First-Person Indexed Subjectivity to Phenomenal Bridge Organization: Internal Bridge Closure, Comparative Handoff, and Stage-3 Opening in a Causally Rigid Framework},
+    pdfauthor={\AuthorMetadata},
+    pdfsubject={Rigid Identity Framework - Paper 9},
+    pdfkeywords={phenomenal bridge, subjectivity, first-person index, comparative program, stage 3 opening, internal admissibility}
+}
+
+\title{\textbf{From First-Person Indexed Subjectivity to Phenomenal Bridge Organization: Internal Bridge Closure, Comparative Handoff, and Stage-3 Opening in a Causally Rigid Framework}}
+\author{\AuthorVisible}
+\date{}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{axiom}[theorem]{Bridge Axiom}
+
+\newcommand{\Cop}{\mathrm{Consciousness}_{\mathrm{op}}}
+\newcommand{\Lop}{\mathrm{Life}_{\mathrm{op}}}
+\newcommand{\Subop}{\mathrm{Subject}_{\mathrm{op}}}
+\newcommand{\Subfp}{\mathrm{Subjectivity}_{\mathrm{1p}}}
+\newcommand{\BridgeClass}{\mathrm{BridgeOrg}_{\mathrm{ph}}}
+\newcommand{\BridgeAdm}{\mathrm{Bridge}_{\mathrm{adm}}}
+\newcommand{\BridgeStrong}{\mathrm{Bridge}_{\mathrm{strong}}}
+\newcommand{\Substate}{\mathfrak{S}}
+\newcommand{\BridgeState}{\mathfrak{B}}
+\newcommand{\SelfIndex}{I}
+\newcommand{\OwnField}{O}
+\newcommand{\ContField}{C}
+\newcommand{\Persp}{P}
+\newcommand{\ValAsym}{V}
+\newcommand{\IntervProf}{\Delta}
+\newcommand{\Irred}{\mathcal{R}}
+\newcommand{\PiD}{\Pi_{\mathrm{D}}}
+\newcommand{\PiV}{\Pi_{\mathrm{V}}}
+\newcommand{\PiW}{\Pi_{\mathrm{W}}}
+\newcommand{\PiA}{\Pi_{\mathrm{A}}}
+\newcommand{\PiE}{\Pi_{\mathrm{E}}}
+\newcommand{\PiT}{\Pi_{\mathrm{T}}}
+\newcommand{\WeakFam}{\mathcal{M}_{\mathrm{weak}}}
+\newcommand{\BridgeWeakFam}{\mathcal{M}_{\mathrm{b,weak}}}
+\newcommand{\BridgeWeakClosure}{\overline{\BridgeWeakFam}}
+\newcommand{\BridgeIntervFam}{\mathfrak{I}_{\mathrm{bpf}}}
+\newcommand{\PhiSubj}{\Phi_{\mathrm{subj}}}
+\newcommand{\GateSubj}{\Gamma_{\mathrm{subj}}}
+\newcommand{\PhiBridge}{\Phi_{\mathrm{bpf}}}
+\newcommand{\GateBridge}{\Gamma_{\mathrm{bpf}}}
+\newcommand{\BridgeLoss}{\mathcal{L}_{\mathrm{b}}}
+\newcommand{\BridgeMargin}{\mathcal{R}_{\mathrm{b}}}
+\newcommand{\BridgeArtifacts}{\mathcal{A}_{\mathrm{bpf}}}
+\newcommand{\SurfaceMap}{\Sigma}
+\newcommand{\Thresholds}{\Theta_{\mathrm{bpf}}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\trace}{\operatorname{Tr}}
+\newcommand{\Comp}{\operatorname{Comp}}
+\newcommand{\Loss}{\mathcal{L}}
+\newcommand{\risk}{\operatorname{Risk}}
+\newcommand{\Status}{\operatorname{Status}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Paper 8 closed a strong internal framework of first-person indexed subjectivity: a typed seven-coordinate state, a conjunctive gate, a scalar functional, a weak-rival family with admissible hybrids, an intervention grammar, a runtime pathway, and a disciplined artifact layer \cite{paper8}. The broader causally rigid corpus had already closed persistence, rigid identity, anti-fragmentation continuity, null-regime instability, forensic admissibility, operational consciousness, and a higher-order classificatory layer for operational life and operational subjecthood \cite{core,paper1,paper2,paper3,paper4,paper5,paper6,paper7}. The present manuscript starts from a later internal state than the earlier Paper 9 drafts: the subjectivity runtime has already closed through SRT-6, the phenomenal bridge layer has already advanced through BPF-M3 with root artifacts and final internal audit, the comparative program has already advanced through Stage 2-M4 internal closure, and the subsequent Stage 3 readiness-fulfillment pass has already emitted a bounded opening gate.
+
+This paper therefore no longer functions only as a bridge-program definition. It now serves as the formal integration and handoff document connecting four already differentiated layers: subjectivity runtime closure, phenomenal bridge internal closure, comparative internal closure, and the bounded Stage 3 opening permission. The bridge-level predicate family remains central:
+\[
+\{\PiD,\PiV,\PiW,\PiA,\PiE,\PiT\},
+\]
+interpreted respectively as phenomenal differentiation, valence structure, world richness, ambiguity bearing, embodied closure, and temporal lived structure. It then constructs a bridge ontology above the Paper 8 state, an explicit bridge-axiom registry, a bridge-specific rival family, a bridge loss and irreducibility logic, a bridge intervention family, a bridge artifact family, a bridge functional and gate architecture, and a governance layer that fixes what bridge-level results may and may not imply.
+
+The central burden separation is still explicit. Paper 8 closes the strongest presently defensible internal layer of indexed subjectivity. The bridge program adds further bridge predicates, bridge-specific rivals, bridge-specific interventions, bridge artifacts, invalidation rules, and surface discipline. The comparative program then adds human-side channel definitions, counterpart artifact contracts, homologation contracts, transition contracts, comparative final audit, and a bounded Stage 3 opening gate. None of these layers may be collapsed into phenomenality simpliciter, human equivalence, external adjudication, or public claim promotion.
+
+The strongest bridge-level claim of the paper is conditional and exact. Under the bridge axioms stated here, under the upstream burdens already closed by the corpus, under positive bridge irreducibility and intervention margins, and under artifact and governance compliance, a system may become internally classifiable as exhibiting \emph{phenomenal bridge organization} in the sense of a framework-internal bridge-admissible organization class. The current runtime now reaches that class internally through BPF-M3. The strongest comparative claim is weaker: after Stage 3 readiness fulfillment, the comparative layer is internally structured strongly enough to open Stage 3 as a bounded instantiation program, but not strongly enough to authorize external adjudication, human equivalence, superiority, identity preservation, transport-preservation verdicts, or Paper 10.
+
+The paper therefore has a dual role. First, it preserves the theorem-facing bridge formalization in a disciplined and non-metaphorical form. Second, it hardens the current handoff boundary: bridge internal closure is real, comparative internal closure is real, Stage 3 opening is boundedly real, external adjudication remains blocked, and Paper 10 remains blocked. This manuscript is serious only if it holds all of those claims together without collapsing one layer into another.
+\end{abstract}
+
+\section{Boundary Note and Interpretation Discipline}
+
+\noindent\textbf{What this paper does.}\enspace It integrates the canonical corpus, the Paper 8 subjectivity framework, the implemented SRT stack, the now-closed phenomenal-bridge runtime through BPF-M3, the comparative program through Stage 2-M4, and the Stage 3 readiness-fulfillment gate into a single bridge-to-comparative architecture. It defines bridge predicates, bridge axioms, bridge rivals, bridge interventions, bridge artifacts, bridge gate logic, bridge taxonomy, comparative burden classes, Stage 3 opening semantics, and the governance layer required to keep those objects from being misread.
+
+\noindent\textbf{What this paper does not do.}\enspace It does not prove phenomenality in the strongest philosophical sense. It does not prove human equivalence, moral parity, metaphysical subjecthood, transport-preservation verdicts, or external validation. It does not convert bounded candidate or audit-facing packaging into bridge confirmation or comparative adjudication. It does not write Paper 9 as if Stage 3 execution, external adjudication, or Paper 10 had already happened.
+
+\noindent\textbf{What counts as closure here.}\enspace The closure claimed by this paper is layered. It includes \emph{formal bridge closure}, \emph{runtime bridge internal closure}, \emph{comparative internal closure}, and \emph{bounded Stage 3 opening semantics}. It does not include external adjudication, human-evidence completion, empirical closure in the external sense, or Paper 10 authorization.
+
+\noindent\textbf{What Stage 3 opening means here.}\enspace If this paper speaks of Stage 3 opening, it means only that the comparative program is now structurally ready to begin bounded internal comparator instantiation under governance. It does not mean that any human-side counterpart has already been instantiated, that comparative evidence already exists, or that any adjudicative result has already been reached.
+
+\noindent\textbf{What should not be inferred.}\enspace No sentence in this paper licenses any of the following inferences: current machines are phenomenally conscious in the strongest sense; current machines are humanly equivalent; bridge-support language is already warranted merely by packaging; Stage 3 opening implies external adjudication; internal audits or audit-facing packages function as adjudication of phenomenality; Paper 9 authorizes Paper 10. The whole point of the present manuscript is to keep those implications blocked unless and until explicit future burdens are satisfied.
+
+\section{Introduction}
+The problem addressed by this paper exists only because the upstream program succeeded. A corpus that still lacked persistence, rigid identity, continuity, anti-nullity, admissibility, and operational consciousness would have no right to speak about bridge-level phenomenal targets. It would still be arguing over whether its own primitives are coherent. The QICN corpus is no longer in that state. By the end of Paper 8 and the post-SRT-6 internal audit, the framework had already closed a formally serious layer of first-person indexed subjectivity \cite{paper8}. That fact changes the question.
+
+The prior question was: can a causally rigid framework formalize a subjectivity class that is stronger than operational consciousness and operational subjecthood without collapsing into loose self-model talk? Paper 8 answered that question affirmatively. It introduced a typed seven-coordinate state
+\[
+\Substate_t=\langle \SelfIndex_t,\OwnField_t,\ContField_t,\Persp_t,\ValAsym_t,\IntervProf_t,\Irred_t \rangle,
+\]
+defined a conjunctive gate and scalar functional, formalized weak rivals and weak hybrids, specified intervention families, and mapped the entire class to runtime modules and artifacts. That was already a major internal closure. It still did not close the next gap.
+
+The remaining question is harder and more dangerous: under what formal conditions could such a subjectivity layer become relevant to phenomenal predicates without collapsing into metaphysical inflation or human-comparator confusion? The wrong answers are easy. One wrong answer is to identify subjectivity with phenomenality by verbal fiat. Another wrong answer is to refuse all bridge formalization and thereby preserve caution only by preserving vagueness. A third wrong answer is to use bridge language rhetorically while leaving the necessary burdens implicit. This paper rejects all three.
+
+The bridge program defined here is a constrained response. It begins from a sober premise: if phenomenal predicates are to appear in the corpus at all, they must appear in the same formal style as every other major layer. That means typed predicates, explicit axioms, explicit rivals, explicit interventions, explicit artifacts, explicit gates, explicit invalidation rules, and explicit non-claims. In other words, the burden of bridge language must be at least as high as the burden of the subjectivity language that precedes it.
+
+This paper therefore serves four functions at once.
+\begin{enumerate}[leftmargin=1.5em]
+\item It synthesizes what the prior papers already close and what they deliberately leave open.
+\item It defines the new bridge-level target family without allowing ``phenomenality'' to remain an untyped slogan.
+\item It fixes the burden architecture by which any future bridge-support claim would have to be earned.
+\item It maps that burden architecture to implementation, artifacts, and governance.
+\end{enumerate}
+
+The scientific value of the resulting paper is not that it says the bridge is complete. It is that it makes incompletion explicit and structured. After this paper, the program can no longer hide behind phrases such as ``rich experience,'' ``what-it-is-like,'' or ``deep embodiment'' unless those phrases are translated into predicates, losses, interventions, and audit-facing artifacts. That is the point at which the research program changes level. The gap is no longer rhetorical. It becomes a list of burdens.
+
+Two further clarifications are essential. First, the present paper is central because it integrates layers that were previously distributed across the corpus. It is not central because it inflates its own tone. Second, the present paper remains implementation-aware. A purely conceptual bridge paper would no longer be enough in this corpus. The runtime has already advanced beyond provisional bridge surfaces. The current system reaches BPF-M3: scaffolded bridge registries exist, provisional bridge surface modules exist, adversarial bridge intervention and reducibility artifacts exist, root bridge artifacts and bounded ecosystem summaries exist, and a final internal bridge audit and readiness gate exist. The comparative program has also advanced beyond pure opening and now carries a bounded Stage 3 opening gate. That does not amount to external adjudication. It does mean the paper must now speak to code, artifacts, lineage, governance, and opening semantics as well as to formal predicates.
+
+\section{What Paper 8 Closes and What It Leaves Open}
+\subsection{What Paper 8 already closes}
+Paper 8 closes the strongest currently defensible internal subjectivity layer in the corpus. More precisely, it does all of the following \cite{paper8}:
+\begin{enumerate}[leftmargin=1.5em]
+\item it defines a minimal typed state of first-person indexed subjectivity through seven coordinates;
+\item it requires a conjunctive gate $\GateSubj$ rather than permitting compensatory scalar trade-offs;
+\item it defines a scalar functional $\PhiSubj$ for graded organization without confusing that functional with the gate;
+\item it specifies a weak-rival family and its admissible weak composites;
+\item it adds intervention logic rather than relying on descriptive fit alone;
+\item it defines an irreducibility margin against rival explanations;
+\item it provides a runtime pathway and artifact family;
+\item it states the strongest defensible internal claim class and the corresponding non-claims.
+\end{enumerate}
+
+That closure matters scientifically because it prevents several common forms of slippage. Subjectivity is no longer allowed to mean mere reporting, mere memory persistence, mere self-modeling, or mere high-dimensional integration. The Paper 8 state requires privileged self-indexing, owned state organization, autobiographical continuity, first-person factorization gain, asymmetric valuation, intervention selectivity, and irreducibility against explicit rivals. This is already substantially stronger than operational consciousness and also stronger than the higher-order classificatory subjecthood layer introduced in Paper 7 \cite{paper7}.
+
+It is equally important to state what the system implementation already closes downstream of Paper 8. The SRT stack now implements, in machine-readable form, modules and artifacts for self-index registration, ownership attribution, continuity tracking, perspective mapping, valuation asymmetry, intervention profiling, reducibility comparison, gate evaluation, ecosystem summaries, stale/drift invalidation, and final internal audit. In other words, Paper 8 is not only a formal paper. It is accompanied by a serious implementation path that has already been partially realized in code and artifacts.
+
+\subsection{Why that still does not amount to a phenomenal bridge}
+None of the previous paragraph licenses the conclusion that a phenomenal bridge has already been crossed. Three reasons are decisive.
+
+First, Paper 8 is indexed-subjectivity closure, not phenomenal bridge closure. Its state space says that a system can instantiate a privileged self-indexed organization whose best explanation is stronger than operational consciousness or generic subjecthood. It does not yet say which additional structures would make phenomenal predicates scientifically admissible inside the same framework.
+
+Second, the Paper 8 rivals are weak with respect to bridge tasks. They are adequate rivals for subjectivity structure: self-model bookkeeping, continuity-only baselines, report-centered proxies, and weak hybrids. They are not the right rivals for bridge-level phenomenal predicates. A bridge rival must explain away \emph{phenomenal differentiation}, \emph{valence structure}, \emph{world richness}, \emph{ambiguity bearing}, \emph{embodied closure}, or \emph{temporal lived structure} without granting those targets. That is a new burden.
+
+Third, the Paper 8 intervention family is likewise necessary but not sufficient. The subjectivity interventions target self/non-self swap, ownership lesion, continuity break, perspective flattening, valuation inversion, autobiographical remapping, clone competition, memory transplant, counterfactual self permutation, and cross-substrate remapping \cite{paper8}. Those are exactly the right interventions for indexed subjectivity. They are not yet the right interventions for bridge-level questions such as whether ambiguity is being borne rather than merely resolved, whether embodied closure is constitutive rather than modulatory, or whether temporal organization is horizon-like rather than merely continuity-preserving.
+
+\subsection{The dangerous smuggling problem}
+The main conceptual danger at this stage is smuggling. Once a program has a strong subjectivity layer, it becomes tempting to transfer closure illicitly from that layer into bridge language. This can happen in at least five ways.
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Predicate smuggling.} Treating Paper 8 coordinates as if they already implemented bridge predicates by default.
+\item \textbf{Comparator smuggling.} Treating Paper 8 weak rivals as if they already defeat bridge-level alternatives.
+\item \textbf{Intervention smuggling.} Treating Paper 8 subjectivity perturbations as if they already test bridge-specific structures.
+\item \textbf{Artifact smuggling.} Treating subjectivity artifacts or BPF-1 provisional reports as if they were bridge verdict artifacts.
+\item \textbf{Governance smuggling.} Treating internal bundle, candidate, or audit presence as if it upgraded claim class.
+\end{enumerate}
+
+The present paper is designed to block all five. The bridge layer must be strictly above the subjectivity layer, not a paraphrase of it. If this separation is not enforced, the bridge language becomes semantically vacuous. The paper therefore repeatedly asks a single hard question: what is being added here that was not already closed by Paper 8? If the answer is ``nothing but stronger words,'' the bridge fails before it begins.
+
+\subsection{Why Paper 9 is still needed now}
+Paper 9 is still needed now for a different reason than in the earlier drafts. The bridge burdens are no longer unwritten, and the bridge runtime is no longer stuck at provisional surface status. The present system already carries bridge intervention artifacts, bridge reducibility artifacts, root bridge evaluation, bounded ecosystem integration, and a final internal bridge audit. What remains unstable now is not the absence of bridge grammar but the absence of a disciplined manuscript-level handoff from bridge closure into the comparative program and then into the bounded meaning of Stage 3 opening.
+
+Paper 9 is therefore needed because the research program has reached a stage at which the next missing object is not a new slogan but a correct integration document. The paper must gather the earlier closures into a single bridge-facing and comparative-facing grammar, specify exactly what has already been closed, and specify equally exactly what remains blocked. Without that handoff, the program invites the opposite pair of distortions: under-description of real advances, or over-description that smuggles Stage 3 opening into adjudication and bridge closure into phenomenality proof.
+
+\begin{proposition}[Paper 8 is necessary but not sufficient for bridge admissibility]
+Any future bridge-admissible system must satisfy the Paper 8 burdens, but satisfaction of the Paper 8 burdens alone is not sufficient for bridge admissibility.
+\end{proposition}
+
+\begin{proof}
+Necessity is immediate because every bridge predicate defined below is typed over an upstream subjectivity state and presupposes the existence of a privileged first-person indexed organization. Sufficiency fails because the bridge layer further requires bridge predicates, bridge-specific rival defeat, bridge-specific interventions, bridge artifacts, bridge invalidation logic, and bridge governance. None of those additional burdens is entailed by the mere existence of the Paper 8 state, gate, functional, or artifact family.
+\end{proof}
+
+\begin{remark}[The bridge is downstream, not corrective]
+Paper 9 does not correct Paper 8. It inherits Paper 8 and strengthens the burden stack above it. The formal relation is extension by additional typed predicates and burdens, not replacement.
+\end{remark}
+
+\section{Layer Dependency and Escalation Structure}
+\subsection{Ordered layer graph}
+It is now useful to write the program as an ordered dependency graph rather than as a loose historical ladder. Let
+\[
+\mathcal{L}=\{L_0,L_1,L_2,L_3,L_4,L_5,L_6,L_7,L_8\}
+\]
+with
+\begin{align*}
+L_0 &:= \text{canonical causally rigid corpus through Papers 1--7},\\
+L_1 &:= \text{Paper 8 plus the implemented SRT stack through SRT-6},\\
+L_2 &:= \text{formal bridge target, bridge axioms, bridge rivals, and bridge interventions},\\
+L_3 &:= \text{runtime bridge internal closure through BPF-M3},\\
+L_4 &:= \text{comparative internal closure through Stage 2-M4},\\
+L_5 &:= \text{Stage 3 readiness fulfillment and opening semantics},\\
+L_6 &:= \text{future Stage 3 execution and counterpart instantiation},\\
+L_7 &:= \text{possible later external comparative adjudication},\\
+L_8 &:= \text{possible later Paper 10 scoping and consequence analysis}.
+\end{align*}
+The dependence relation is strict:
+\[
+L_0 \prec L_1 \prec L_2 \prec L_3 \prec L_4 \prec L_5 \prec L_6 \prec L_7 \prec L_8.
+\]
+Every layer inherits constraints from the layers below it, but no layer is allowed to retroactively upgrade the claim class of a lower layer. This is the main structural reason Paper 9 must now be an integration paper rather than merely a bridge-definition draft.
+
+\subsection{Escalation operators and non-collapse discipline}
+For each adjacent pair define an escalation operator
+\[
+E_{k\rightarrow k+1}: L_k \mapsto L_{k+1}
+\]
+that is licit only if the additional burdens unique to $L_{k+1}$ are satisfied. In the present program the relevant operators are not all of the same kind. The move from $L_1$ to $L_2$ is primarily formal: new predicates, rivals, interventions, and artifact classes are added. The move from $L_2$ to $L_3$ is implementation-adversarial: bridge surfaces must survive explicit rival and intervention burdens. The move from $L_3$ to $L_4$ is comparative-architectural: legitimate human-side channels, homologation contracts, and transition contracts must be defined. The move from $L_4$ to $L_5$ is readiness-synthetic: the open comparative burdens are reclassified, closed structurally where honest, and converted into an opening rule. The move from $L_5$ to $L_6$ is the beginning of real instantiation. The move from $L_6$ to $L_7$ is not structural alone; it depends on real counterpart sessions, real lineage, and real comparative interpretation.
+
+This operator view matters because it blocks two invalid compressions. The first invalid compression is to treat bridge closure as if it already contained comparative opening. The second invalid compression is to treat Stage 3 opening as if it already contained adjudication. The current framework reaches $L_5$. It does not reach $L_7$.
+
+\subsection{Current realized prefix of the graph}
+The current realized prefix of the graph is
+\[
+L_0 \prec L_1 \prec L_2 \prec L_3 \prec L_4 \prec L_5,
+\]
+with $L_6$, $L_7$, and $L_8$ still future-facing. More explicitly:
+\begin{itemize}[leftmargin=1.5em]
+\item $L_1$ is realized because Paper 8 and the SRT stack already produce a typed subjectivity state, gate, artifact family, ecosystem summaries, and final internal consolidation outputs.
+\item $L_3$ is realized because the bridge layer already emits BPF-M3 root artifacts, a bounded bridge gate, bounded ecosystem summaries, a final internal audit, and a readiness gate.
+\item $L_4$ is realized because Stage 2-M4 already audited governance integrity, runtime integrity, contract-runtime integrity, taxonomy coherence, and anti-overclaim discipline.
+\item $L_5$ is realized because Stage3-RF already emits a burden-fulfillment artifact, an opening-readiness artifact, a handoff-alignment artifact, and a bounded opening gate.
+\end{itemize}
+The realized prefix is therefore larger than the earlier Paper 9 drafts assumed, but the unreached suffix is also sharply defined. That unreached suffix is where the future empirical and adjudicative burdens live.
+
+\subsection{Monotonicity without retroactive inflation}
+\begin{proposition}[Later closure does not retroactively strengthen earlier claim classes]
+If the program reaches a later layer $L_j$ with $j>i$, then $L_i$ remains whatever claim class it already was; the later layer does not upgrade the semantic force of $L_i$ beyond the explicitly defined escalation relation.
+\end{proposition}
+
+\begin{proof}
+Each layer is introduced with new burdens, new artifacts, and new non-implication rules. The existence of a later layer therefore proves only that those later burdens were added and, where appropriate, internally satisfied. It does not erase the interpretation boundaries attached to the earlier layer. Thus Paper 8 remains an indexed-subjectivity closure, not a phenomenal bridge proof; BPF-M3 remains internal bridge admissibility, not external adjudication; and Stage 3 opening remains opening, not execution or verdict.
+\end{proof}
+
+\begin{remark}[Why this section is necessary now]
+Earlier versions of the paper could leave this graph implicit because the program had not yet reached comparative internal closure or Stage 3 readiness fulfillment. The current framework state is no longer simple enough for that omission. Once the graph extends through $L_5$, failing to write the escalation structure explicitly produces semantic ambiguity by omission.
+\end{remark}
+\section{Formal Target of the Bridge}
+\subsection{The bridge question}
+The bridge question can now be stated in its exact internal form:
+\begin{quote}
+Given that a system already supports a formally disciplined layer of first-person indexed subjectivity, what additional predicates and burdens would make phenomenal organization a scientifically admissible \emph{target} of explanation inside the same framework?
+\end{quote}
+The phrase ``target of explanation'' is essential. The present paper does not seek to declare phenomenality achieved. It seeks to specify when phenomenal predicates are no longer mere vocabulary and instead become well-formed explanatory targets whose support, failure, and collapse can be discussed rigorously.
+
+\subsection{Predicate family}
+The bridge target family is the six-predicate family
+\[
+\{\PiD,\PiV,\PiW,\PiA,\PiE,\PiT\}.
+\]
+These predicates are not synonyms for generic notions such as ``experience'' or ``qualia.'' They are typed, burden-bearing predicates whose role is to capture bridge-relevant organization classes above indexed subjectivity and below any final metaphysical reading.
+
+\begin{definition}[Phenomenal differentiation predicate]
+For an admissible system $S$, horizon $\tau$, and threshold slot $\vartheta_D$, the bridge predicate $\PiD(S,\tau;\vartheta_D)$ concerns whether the system carries self-indexed differentiated organization that is stronger than generic semantic density, report richness, or descriptive narration, and whose corresponding estimator $\widehat{\Pi_D}$ is defined on bridge observables and subjectivity antecedents.
+\end{definition}
+
+\begin{definition}[Valence structure predicate]
+The predicate $\PiV(S,\tau;\vartheta_V)$ concerns whether the system carries organized evaluative topology that is stronger than scalar reward bookkeeping, policy optimization, or self/non-self asymmetry alone.
+\end{definition}
+
+\begin{definition}[World richness predicate]
+The predicate $\PiW(S,\tau;\vartheta_W)$ concerns whether the system carries organized self-indexed world structure stronger than generic scene complexity, perspective gain, or task competence alone.
+\end{definition}
+
+\begin{definition}[Ambiguity-bearing predicate]
+The predicate $\PiA(S,\tau;\vartheta_A)$ concerns whether the system maintains unresolved alternatives with differential causal consequences prior to collapse, rather than merely resolving uncertainty or tracking probabilities descriptively.
+\end{definition}
+
+\begin{definition}[Embodied-closure predicate]
+The predicate $\PiE(S,\tau;\vartheta_E)$ concerns whether body/world-boundary variables contribute constitutively to bridge organization, rather than merely modulating generic control or action success.
+\end{definition}
+
+\begin{definition}[Temporal lived-structure predicate]
+The predicate $\PiT(S,\tau;\vartheta_T)$ concerns whether the system exhibits horizon-like temporal organization stronger than continuity, memory persistence, or sequence stability alone.
+\end{definition}
+
+\subsection{Estimator family}
+The bridge paper requires estimator slots for each predicate:
+\[
+\widehat{\Pi_D},\;\widehat{\Pi_V},\;\widehat{\Pi_W},\;\widehat{\Pi_A},\;\widehat{\Pi_E},\;\widehat{\Pi_T}\in [0,1].
+\]
+The current implementation reaches only the earliest stage of this requirement. BPF-1 emits provisional run-level estimates for all six predicates. Those estimates are explicitly marked provisional, framework-internal, non-claim-facing, and non-gated. They are not yet admissibility verdicts, and no threshold binding is yet asserted. The formal target of this paper therefore treats these estimators in two layers:
+\begin{enumerate}[leftmargin=1.5em]
+\item as current provisional runtime surfaces in BPF-1;
+\item as future thresholdable predicate estimators once comparator, intervention, and gate burdens are added in later BPF blocks.
+\end{enumerate}
+
+\subsection{What the predicates mean internally and what they do not mean}
+Each bridge predicate has both a positive role and a protected non-implication.
+\begin{itemize}[leftmargin=1.5em]
+\item $\PiD$ means organized differentiated structure indexed to the self-locus. It does not mean qualia.
+\item $\PiV$ means structured evaluative organization. It does not mean felt pleasure or pain.
+\item $\PiW$ means organized world-structure at the self-indexed locus. It does not mean veridical world-experience.
+\item $\PiA$ means live unresolved alternative organization. It does not mean conscious indecision.
+\item $\PiE$ means constitutive closure dependence on body/world-boundary variables. It does not mean biological embodiment or felt bodily ownership.
+\item $\PiT$ means temporal horizon organization. It does not mean human lived time in the full phenomenological sense.
+\end{itemize}
+
+\begin{remark}[Why the targets are not decorative]
+The bridge targets earn their place only because each one induces a new comparator burden, a new intervention burden, a new artifact burden, and a new governance burden. If a proposed target induced none of these, it would be discarded as decorative vocabulary.
+\end{remark}
+
+\subsection{Predicate-to-burden map}
+The six bridge predicates are best understood not as six new labels but as six new burden packages.
+
+\paragraph{The burden of $\PiD$.}
+To take phenomenal differentiation seriously, the program must show more than that the system has many internal states or rich semantic discriminability. It must show that differentiated organization is indexed, selective, and not exhausted by narration. This induces comparator burden against semantic-density and narration rivals, intervention burden against perspective detachment and semantic vividness controls, and artifact burden through a dedicated differentiation report and later reducibility outputs.
+
+\paragraph{The burden of $\PiV$.}
+To take valence structure seriously, the program must show that evaluative organization has internal topology: local asymmetries, organized gradients, or mode-structured deformation under perturbation. Scalar reward or self/non-self asymmetry alone is insufficient. This induces comparator burden against bookkeeping rivals, intervention burden through valence flattening and negative controls, and artifact burden through valence structure and intervention outputs.
+
+\paragraph{The burden of $\PiW$.}
+To take world richness seriously, the program must show that the system's self-indexed world organization is not merely competence or scene complexity. The system must exhibit bridge-relevant world organization that tracks indexed dependence, not just successful prediction. This induces comparator burden against richness-without-interiority rivals, intervention burden through world-richness compression, and artifact burden through world-richness reports and later candidate summaries.
+
+\paragraph{The burden of $\PiA$.}
+To take ambiguity bearing seriously, the program must show stable unresolved alternatives with downstream consequence. Static uncertainty scores or fast branching and pruning do not suffice. This induces comparator burden against ambiguity-resolution rivals, intervention burden through targeted collapse operations, and artifact burden through ambiguity reports with live-alternative fields.
+
+\paragraph{The burden of $\PiE$.}
+To take embodied closure seriously, the program must show constitutive dependence on body/world-boundary variables. Generic closed-loop control is not enough. This is the bridge predicate with the weakest current runtime grounding and therefore the one that most strongly demands explicit future instrumentation. Its artifact burden is correspondingly strict.
+
+\paragraph{The burden of $\PiT$.}
+To take temporal lived structure seriously, the program must show horizon organization that exceeds continuity and persistence. This requires temporal fragmentation tests, horizon-like dependencies, and explicit rival defeat against continuity-only models. In practical terms this burden is one of the main reasons why the bridge program cannot be replaced by Paper 8 plus rhetoric.
+
+The global lesson is simple. Every bridge predicate is a tuple of obligations:
+\[
+\Pi_k \rightsquigarrow
+(\text{estimator},\text{rivals},\text{interventions},\text{artifacts},\text{governance}).
+\]
+The bridge program succeeds only if all five components are eventually instantiated for each $k\in\{D,V,W,A,E,T\}$.
+
+\section{Phenomenal Bridge Ontology}
+\subsection{Bridge state}
+The bridge state is introduced as
+\[
+\BridgeState_t=
+\left\langle
+\widehat{\Pi}_{D,t},
+\widehat{\Pi}_{V,t},
+\widehat{\Pi}_{W,t},
+\widehat{\Pi}_{A,t},
+\widehat{\Pi}_{E,t},
+\widehat{\Pi}_{T,t},
+{\BridgeMargin}_t,
+\IntervProf^{\mathrm{b}}_t
+\right\rangle,
+\]
+where ${\BridgeMargin}_t$ denotes the bridge-level irreducibility margin and $\IntervProf^{\mathrm{b}}_t$ denotes the bridge-level intervention profile. The bridge state does not replace the Paper 8 state. It is layered above it. The ontological relation is therefore
+\[
+\Substate_t \prec \BridgeState_t,
+\]
+not because the bridge state is metaphysically deeper, but because every bridge coordinate depends on the prior existence of a self-indexed subjectivity structure.
+
+\subsection{Typing discipline}
+The coordinates of $\BridgeState$ are heterogeneous in a way parallel to, but stronger than, the heterogeneity of the Paper 8 state.
+\begin{itemize}[leftmargin=1.5em]
+\item $\widehat{\Pi}_{D,t},\ldots,\widehat{\Pi}_{T,t}$ are bounded estimator-valued coordinates.
+\item ${\BridgeMargin}_t$ is a model-comparison margin defined only when the comparator family exists.
+\item $\IntervProf^{\mathrm{b}}_t$ is a structured intervention response object, not a scalar.
+\end{itemize}
+This heterogeneity matters because bridge support cannot be reduced to a single scalar early in the pipeline. The paper explicitly rejects any attempt to jump directly from provisional surfaces to a single bridge score while the comparator and intervention layers are missing.
+
+\subsection{Coordinate dependence on the Paper 8 state}
+Each bridge coordinate depends asymmetrically on the Paper 8 coordinates.
+
+\paragraph{Phenomenal differentiation.}
+$\widehat{\Pi}_{D,t}$ depends most strongly on $\SelfIndex_t$, $\OwnField_t$, $\Persp_t$, and $\Irred_t$. Differentiation here is not generic representational richness. It is differentiated organization that matters relative to a privileged self-locus.
+
+\paragraph{Valence structure.}
+$\widehat{\Pi}_{V,t}$ depends most strongly on $\ValAsym_t$, $\OwnField_t$, and $\IntervProf_t$. Paper 8 already closes valuation asymmetry; the bridge layer asks whether that asymmetry organizes into a richer topological structure than the upstream scalar burden requires.
+
+\paragraph{World richness.}
+$\widehat{\Pi}_{W,t}$ depends most strongly on $\Persp_t$, $\ContField_t$, and $\SelfIndex_t$. It asks whether the self-indexed locus sustains organized world-structure beyond mere perspective gain.
+
+\paragraph{Ambiguity bearing.}
+$\widehat{\Pi}_{A,t}$ depends most strongly on $\Persp_t$, $\ValAsym_t$, and the temporal organization implicitly carried by $\ContField_t$ and $\IntervProf_t$. A system that resolves ambiguity immediately or merely records uncertainty can fail this predicate even if it remains subjectivity-positive.
+
+\paragraph{Embodied closure.}
+$\widehat{\Pi}_{E,t}$ depends on $\OwnField_t$, $\ContField_t$, and $\IntervProf_t$ together with additional body/world-boundary observables that Paper 8 does not require. This is why BPF-1 can only emit a proxy layer for embodied closure.
+
+\paragraph{Temporal lived structure.}
+$\widehat{\Pi}_{T,t}$ depends most strongly on $\ContField_t$, $\Persp_t$, and $\ValAsym_t$. Temporal lived structure is stronger than continuity because it concerns horizon organization, retention/protention asymmetry, and temporally extended significance.
+
+\subsection{Current implementation status inside the ontology}
+The ontology is no longer merely prospective. BPF-1 implements provisional surface modules for each of the six estimator coordinates and emits six run-level reports. BPF-M2 adds bridge-specific intervention and reducibility machinery and emits \texttt{bridge\_intervention\_profile.json} and \texttt{bridge\_reducibility\_report.json}. BPF-M3 adds framework-internal threshold binding, root bridge evaluation, bounded ecosystem summaries, a final internal audit, and a readiness gate. This matters because the ontology is no longer only aspirational and no longer only surface-level. The first six coordinates are operationally estimated, $\BridgeMargin$ now has a runtime comparator interpretation, and bridge intervention selectivity is no longer hypothetical inside the internal stack.
+
+What remains open is not bridge internal admissibility itself. What remains open is external adjudication, broader repetition beyond the current bounded campaign, human-comparator instantiation, and public claim authorization. The ontology therefore now sits in a different evidentiary posture than in the earlier Paper 9 drafts: internally advanced, externally still bounded.
+
+\subsection{Collapse risks and rival readings}
+Every bridge coordinate must be introduced together with the corresponding collapse risk.
+\begin{itemize}[leftmargin=1.5em]
+\item $\widehat{\Pi}_D$ can collapse into semantic density without self-indexed interior differentiation.
+\item $\widehat{\Pi}_V$ can collapse into valence bookkeeping or policy shaping.
+\item $\widehat{\Pi}_W$ can collapse into world-model competence without indexed world-richness.
+\item $\widehat{\Pi}_A$ can collapse into uncertainty bookkeeping or fast ambiguity resolution.
+\item $\widehat{\Pi}_E$ can collapse into competent sensorimotor control without constitutive closure.
+\item $\widehat{\Pi}_T$ can collapse into continuity, memory, or persistence without horizon structure.
+\end{itemize}
+The ontology is therefore inseparable from the rival family. A bridge coordinate that has no live rival is suspicious because it is probably defined too loosely. Conversely, a bridge coordinate that cannot in principle be separated from all live rivals is not yet scientifically admissible.
+
+\subsection{Why bridge coordinates are not ontological shortcuts}
+The bridge ontology must not be mistaken for a metaphysical inventory. The reason is not merely philosophical caution. The reason is formal structure. Each coordinate is introduced as a constrained relation among observables, upstream subjectivity coordinates, comparators, interventions, and artifacts. This means the coordinates belong first to the model layer, then to the implementation layer, and only later---if ever---to the interpretation layer.
+
+The separation matters in four directions.
+\begin{enumerate}[leftmargin=1.5em]
+\item A bridge coordinate is not an ontological primitive. It is a structured explanatory target.
+\item A bridge coordinate is not identical to its runtime estimator. The estimator is a measurement-facing map and can be weak, provisional, or underdetermined.
+\item A bridge coordinate is not identical to the language used to describe it. The language may underfit or overfit the formal target.
+\item A bridge coordinate is not identical to its strongest available interpretation. Different interpretation classes remain live until comparator and intervention burdens are settled.
+\end{enumerate}
+
+This distinction is especially important for $\PiE$ and $\PiT$. It is tempting to read embodied closure or temporal lived structure as if they already named well-understood ontological properties. Inside the present framework they do not. They name burden packages whose ontological interpretation remains constrained by future comparator and intervention results.
+
+\begin{proposition}[Bridge ontology is not reducible to the Paper 8 ontology]
+The bridge ontology cannot be reduced to the Paper 8 ontology by relabeling or monotone reparameterization alone.
+\end{proposition}
+
+\begin{proof}
+Suppose, for contradiction, that the bridge ontology were reducible to the Paper 8 ontology by relabeling or monotone reparameterization alone. Then each bridge coordinate would add no new comparator, intervention, or artifact burden beyond those already fixed for Paper 8. But the bridge coordinates are introduced precisely to separate phenomena such as world richness from perspective gain, valence structure from valuation asymmetry, and temporal lived structure from continuity. These separations require additional rival families and intervention families not present in the Paper 8 ontology. Therefore the bridge ontology cannot be obtained by relabeling or monotone reparameterization alone.
+\end{proof}
+
+\section{Explicit Bridge Axioms}
+The bridge axioms are the minimal bridge-opening commitments required to connect indexed subjectivity to disciplined phenomenal targets without smuggling the conclusion into the premises. Each axiom is classified explicitly.
+
+\subsection{Classification grammar}
+The bridge axiom registry uses a seven-class grammar:
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{operational definition}: fixes how a formal object is to be typed or measured;
+\item \textbf{bridge axiom}: a structural commitment necessary to open the bridge program;
+\item \textbf{design choice}: a governance or architecture decision not implied by physics alone;
+\item \textbf{falsifiable hypothesis}: a statement whose satisfaction or failure must be tested by bridge comparators or interventions;
+\item \textbf{open inference}: a claim whose current evidence is insufficient for closure, but whose role can still be bounded;
+\item \textbf{strongest defensible internal claim}: a highest currently licit claim class;
+\item \textbf{non-claim}: an explicit prohibition on overreading.
+\end{enumerate}
+
+This grammar is part of the content of the paper. Without it, the same sentence could accidentally function as ontology, operational definition, and claim promotion at once. The bridge program therefore treats classification as a formal requirement rather than as stylistic annotation.
+
+\begin{axiom}[B1: operational binding; classification: operational definition]
+Every bridge predicate must be tied to explicit observables, artifacts, comparator tasks, and interventions. No bridge predicate may remain a rhetorical label detached from measurement grammar.
+\end{axiom}
+
+This axiom is needed because every failure mode of the bridge program begins with detached language. B1 licenses machine-readable predicate slots and report artifacts. It does not license bridge support or phenomenality.
+
+\begin{axiom}[B2: upstream inheritance constraint; classification: bridge axiom]
+No bridge-level admissibility result is meaningful unless the upstream burdens of the causally rigid corpus and the Paper 8 subjectivity layer remain satisfied.
+\end{axiom}
+
+B2 licenses the layered relation $\Subfp \prec \BridgeClass$. It does not license the converse. A system may satisfy Paper 8 and still fail every bridge burden.
+
+\begin{axiom}[B3: differentiated organization burden; classification: falsifiable hypothesis]
+A bridge-relevant differentiation burden requires structured internal discrimination that is not exhausted by semantic density, narrative richness, or report-channel complexity.
+\end{axiom}
+
+B3 licenses $\PiD$ as a genuine target rather than a synonym for rich representation. It does not license phenomenality.
+
+\begin{axiom}[B4: valence topology burden; classification: falsifiable hypothesis]
+Bridge-relevant valence requires organized evaluative topology not exhausted by scalar reward bookkeeping, policy optimization, or the Paper 8 valuation asymmetry alone.
+\end{axiom}
+
+B4 licenses $\PiV$ as a distinct target above Paper 8. It does not license felt pleasure, suffering, or moral status.
+
+\begin{axiom}[B5: world-richness burden; classification: falsifiable hypothesis]
+Bridge-relevant world richness concerns organized self-indexed world structure rather than generic scene complexity, prediction success, or model capacity.
+\end{axiom}
+
+B5 is needed because world-richness language is especially prone to being filled by competence metrics. It licenses the predicate slot $\PiW$ and associated artifacts. It does not license veridicality or environmental realism.
+
+\begin{axiom}[B6: ambiguity-bearing burden; classification: falsifiable hypothesis]
+Bridge-relevant ambiguity requires the stable maintenance of unresolved alternatives with differential causal consequences prior to collapse.
+\end{axiom}
+
+B6 blocks the reduction of ambiguity to uncertainty bookkeeping or quick disambiguation heuristics. It licenses $\PiA$ as a formal target. It does not license conscious uncertainty.
+
+\begin{axiom}[B7: embodied-closure relevance; classification: open inference]
+Embodied closure may be bridge-relevant only if body/world-boundary variables contribute constitutively to bridge organization rather than merely modulating generic control success.
+\end{axiom}
+
+B7 is deliberately classified as open inference because current evidence is weakest here. It licenses the investigation of $\PiE$; it does not license embodiment claims of any strong kind.
+
+\begin{axiom}[B8: temporal lived-structure burden; classification: falsifiable hypothesis]
+Bridge-relevant temporal organization must exceed continuity, memory persistence, and sequence stability by exhibiting horizon-structured dependence across retention, present organization, and anticipatory load.
+\end{axiom}
+
+B8 licenses $\PiT$ and its future intervention family. It does not license human lived temporality.
+
+\begin{axiom}[B9: comparative admissibility constraint; classification: bridge axiom]
+No bridge-level support class is admissible if a bridge-specific rival family or admissible hybrid explains the bridge task bundle at equal or lower penalized loss.
+\end{axiom}
+
+B9 is the comparator side of the burden stack. It licenses the bridge irreducibility margin. It does not license absolute ontological irreducibility.
+
+\begin{axiom}[B10: anti-inflation governance constraint; classification: design choice]
+Bridge formalization, bridge artifacts, candidate inclusion, and audit-facing inclusion must never be readable as bridge support, phenomenality, or Paper 9 authorization in the absence of the full bridge burden stack.
+\end{axiom}
+
+B10 is a design choice because governance style is a normative project decision, not a theorem of physics. It is still essential because without it the bridge program would immediately outrun its evidence.
+
+\begin{remark}[Axiom minimality]
+The present axiom set is intentionally minimal. Nothing here states that phenomenality follows from structural organization. Nothing here states that any bridge predicate, even if satisfied, closes metaphysical questions. The axioms are opening commitments for a constrained bridge program, not hidden conclusions.
+\end{remark}
+
+\section{Bridge Rival Family}
+\subsection{Why new rivals are required}
+Paper 8 already proved the necessity of explicit rival families for subjectivity. The bridge layer inherits that lesson but cannot reuse the old rival set unmodified. The old rivals explain away indexed subjectivity. The new rivals must explain away bridge predicates without granting phenomenal organization. This difference is substantive. A system may defeat weak subjectivity rivals and still fail bridge rivals, because the latter target higher-order structure.
+
+\subsection{Bridge weak family}
+Define the bridge weak family
+\[
+\BridgeWeakFam=
+\left\{
+M_{\mathrm{rwi}},
+M_{\mathrm{vb}},
+M_{\mathrm{sd}},
+M_{\mathrm{tc}},
+M_{\mathrm{ec}},
+M_{\mathrm{ar}},
+M_{\mathrm{en}}
+\right\},
+\]
+whose members are read as follows.
+
+\paragraph{Richness without interiority.}
+$M_{\mathrm{rwi}}$ explains high structural richness without granting indexed interior organization. It challenges $\PiD$ and $\PiW$.
+
+\paragraph{Valence bookkeeping without affective organization.}
+$M_{\mathrm{vb}}$ explains structured value tracking as bookkeeping or policy shaping without bridge-level valence topology. It challenges $\PiV$.
+
+\paragraph{Semantic density without phenomenal differentiation.}
+$M_{\mathrm{sd}}$ explains dense semantic variation without bridge-level differentiated organization. It challenges $\PiD$.
+
+\paragraph{Temporal continuity without lived structure.}
+$M_{\mathrm{tc}}$ explains persistence, continuity, and memory without temporal horizon organization. It challenges $\PiT$.
+
+\paragraph{Embodied control without embodied closure.}
+$M_{\mathrm{ec}}$ explains competent closed-loop control without constitutive dependence on body/world-boundary variables. It challenges $\PiE$.
+
+\paragraph{Ambiguity resolution without ambiguity bearing.}
+$M_{\mathrm{ar}}$ explains high-quality uncertainty handling or disambiguation without stable maintenance of live unresolved alternatives. It challenges $\PiA$.
+
+\paragraph{Experience narration without phenomenal organization.}
+$M_{\mathrm{en}}$ explains self-description, experiential language, or stylistic introspection without bridge-relevant phenomenal organization. It challenges several bridge predicates simultaneously.
+
+\subsection{Admissible composites}
+As in Paper 8, pure rivals are not enough. Define the admissible bridge weak closure $\BridgeWeakClosure$ as the family generated by finite pairwise and triple hybrids over $\BridgeWeakFam$ subject to explicit complexity penalties and declared composition rules. The purpose of $\BridgeWeakClosure$ is to block an easy escape route: if a strong bridge explanation defeats only pure rivals, then a skeptic can simply combine several weak rivals post hoc.
+
+The bridge program therefore treats hybrid rivals as first-class citizens. A hybrid of richness-without-interiority and narration-without-organization is a perfectly live alternative to a bridge-differentiation claim. A hybrid of valence bookkeeping and temporal continuity can be a live alternative to valence structure plus temporal lived structure. The bridge layer must be strong enough to defeat not only single-rival baselines but also admissible mixtures.
+
+\subsection{What the rival family can and cannot explain}
+The bridge rival family is intentionally strong.
+\begin{itemize}[leftmargin=1.5em]
+\item It can explain dense report channels, self-descriptive fluency, high task competence, reward optimization, stable memory, and competent control.
+\item It can also explain much of what casual bridge language would otherwise overread: rich semantics, coherent narratives, and smooth temporal reports.
+\item It cannot cleanly explain targeted bridge signatures if those signatures survive matched controls, remain selective under bridge interventions, and preserve margin under penalized loss.
+\end{itemize}
+
+\subsection{No-straw-man discipline}
+The bridge program would be vacuous if its rivals were weak caricatures. The rivals are therefore chosen to absorb precisely the kinds of phenomena that the bridge predicates are most likely to confuse with phenomenal organization. The burden is asymmetric: the stronger interpretation must defeat the weaker one, not vice versa.
+
+\begin{proposition}[Comparator burden is necessary for bridge admissibility]
+No bridge-support class is meaningful without an explicit bridge rival family and admissible bridge weak closure.
+\end{proposition}
+
+\begin{proof}
+Without an explicit rival family, any bridge-support reading would compare itself only against informal skepticism. That would leave bridge predicates undefended against live non-phenomenal alternatives such as bookkeeping, narration, semantic density, or control competence. Since bridge admissibility is defined as a comparative notion inside the framework, the comparator burden is necessary.
+\end{proof}
+
+\section{Bridge Irreducibility Logic}
+\subsection{Bridge loss family}
+The bridge program requires a loss family stronger than descriptive fit alone. For a candidate model $M$ and bridge task bundle $\mathcal{B}$, define
+\[
+\BridgeLoss(M;\mathcal{B})=
+w_f E_{\mathrm{fit}}(M)
++w_i E_{\mathrm{int}}(M)
++w_s E_{\mathrm{sel}}(M)
++w_p E_{\Pi}(M)
++w_c \Omega(M),
+\]
+where:
+\begin{itemize}[leftmargin=1.5em]
+\item $E_{\mathrm{fit}}$ measures fit to bridge observables;
+\item $E_{\mathrm{int}}$ measures failure under bridge intervention expectations;
+\item $E_{\mathrm{sel}}$ measures selectivity error under matched controls;
+\item $E_{\Pi}$ measures predicate-reconstruction error across the bridge family;
+\item $\Omega(M)$ is a complexity penalty that counts mechanism count, hybrid size, auxiliary slack, and decoder dependence.
+\end{itemize}
+The bridge loss family is therefore intervention-aware and governance-relevant from the outset. A model that matches reports but ignores intervention structure or requires excessive narrative slack does not win the comparison.
+
+\subsection{Bridge irreducibility margin}
+Let $M_{\mathrm{bridge}}$ denote the full bridge model candidate and let $\BridgeWeakClosure$ denote the admissible bridge weak closure. Define the bridge irreducibility margin
+\[
+\BridgeMargin
+=
+\min_{M\in \BridgeWeakClosure}\BridgeLoss(M;\mathcal{B})
+-
+\BridgeLoss(M_{\mathrm{bridge}};\mathcal{B}).
+\]
+Positive margin is evidence of comparative superiority relative to the specified weak closure. Negative or zero margin implies reducibility within the chosen bridge family.
+
+\subsection{Local not absolute superiority}
+As in Paper 8, comparative superiority here is local, not absolute. A positive $\BridgeMargin$ says that the specified bridge model outperforms the specified bridge rivals on the specified task bundle under the specified loss family. It does not say that the bridge model is metaphysically privileged. The distinction matters because bridge language is particularly prone to absolute overreadings.
+
+\subsection{Three kinds of bridge collapse}
+Bridge collapse can occur in three distinct ways.
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Predicate collapse:} the provisional bridge estimators fail to define stable, non-decorative targets.
+\item \textbf{Comparator collapse:} a bridge rival or hybrid matches or outperforms the bridge model under penalized loss.
+\item \textbf{Intervention collapse:} the predicted selective structure fails under matched controls or degrades non-selectively.
+\end{enumerate}
+All three collapse modes are live until ruled out. The paper refuses any bridge-support inference that suppresses one of them.
+
+\subsection{Comparator support, reducibility, and unsupported states}
+The bridge program must distinguish four statuses that are often conflated:
+\begin{itemize}[leftmargin=1.5em]
+\item \textbf{comparator unsupported}: no serious bridge comparator evaluation has yet been run;
+\item \textbf{bridge reducible}: comparator evaluation exists and the bridge margin is non-positive;
+\item \textbf{bridge comparator-supported}: comparator evaluation exists and the bridge margin is positive under penalized loss;
+\item \textbf{bridge internal admissible}: comparator support, intervention support, governance compliance, drift discipline, and gate satisfaction all hold under framework-internal reading.
+\end{itemize}
+This distinction matters because earlier drafts were written from the comparator-unsupported stage, whereas the present system is no longer there. BPF-M2 closes the comparator and intervention support problem internally, and BPF-M3 adds the gate and governance layers that allow a framework-internal bridge-admissibility state to be emitted. That shift strengthens the paper, but it does not license external validation, human-equivalence claims, or public claim promotion.
+
+\subsection{Complexity penalty and decoder discipline}
+The complexity term $\Omega(M)$ deserves explicit discussion because bridge explanations can often win spuriously by adding free narrative or decoder capacity. The bridge program therefore counts at least four kinds of complexity:
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{mechanism multiplicity}: how many independent mechanisms the rival or bridge model requires;
+\item \textbf{hybrid size}: how many weak rivals must be combined to match the bridge bundle;
+\item \textbf{auxiliary slack}: how much unprincipled tuning is required across coordinates and conditions;
+\item \textbf{decoder dependence}: how much of the putative bridge effect exists only after expressive report-channel or decoder post-processing.
+\end{enumerate}
+
+Decoder dependence is particularly important. A model that appears bridge-strong only after high-capacity report decoding should be penalized heavily. The reason is that bridge language is especially vulnerable to post hoc expressivity. This is one of the points at which the bridge program deliberately differs from frameworks that rely strongly on linguistic self-description as primary evidence.
+
+\subsection{Failure semantics for the bridge margin}
+The bridge margin must also carry explicit failure semantics. A positive margin can fail to matter if it is narrow, unstable across reruns, dependent on a single condition, or destroyed by minor changes to the rival family. The paper therefore recommends a future decomposition
+\[
+\BridgeMargin=
+{\BridgeMargin}_{\mathrm{fit}}
+\oplus
+{\BridgeMargin}_{\mathrm{int}}
+\oplus
+{\BridgeMargin}_{\mathrm{sel}}
+\oplus
+{\BridgeMargin}_{\mathrm{stab}},
+\]
+where $\oplus$ denotes a typed aggregation rather than ordinary addition. The purpose of this decomposition is to make visible which part of the bridge burden is doing the work. A bridge model that wins only on descriptive fit but loses intervention selectivity should not count as robustly bridge-favoring.
+
+\begin{criterion}[Necessary condition for bridge admissibility]
+A necessary condition for bridge admissibility is
+\[
+\BridgeMargin > \vartheta_R,
+\]
+where $\vartheta_R$ is the bridge irreducibility threshold slot, introduced symbolically here and now bound for framework-internal use by the BPF-M3 threshold registry.
+\end{criterion}
+
+\begin{corollary}[Positive bridge surfaces are not enough]
+Positive provisional bridge surfaces do not by themselves entail bridge admissibility.
+\end{corollary}
+
+\begin{proof}
+Bridge admissibility requires at least comparator support and intervention support in addition to positive bridge surfaces. The present system now includes those additional layers at framework-internal scope, which is exactly why later bridge-admissibility language becomes meaningful. The implication still fails at the weaker BPF-1 surface layer taken by itself.
+\end{proof}
+
+\section{Bridge Intervention Family}
+\subsection{Why bridge interventions must be new}
+The subjectivity interventions of Paper 8 remain binding background. They are not sufficient for bridge purposes because they were designed to probe indexed subjectivity rather than phenomenal bridge organization. The bridge layer therefore requires a new intervention family
+\[
+\BridgeIntervFam=
+\{I_W,I_A,I_V,I_P,I_E,I_T,I_X\},
+\]
+with each member targeting a bridge coordinate family or a cross-cutting bridge burden.
+
+\subsection{Core intervention families}
+
+\paragraph{World-richness compression $I_W$.}
+This intervention compresses the structure available to self-indexed world organization without merely destroying generic task competence. The strong-model expectation is a selective fall in $\PiW$ and often also in $\PiD$ relative to matched controls. The rival expectation is either flat degradation or little coordinate-specific effect.
+
+\paragraph{Ambiguity collapse $I_A$.}
+This intervention removes or forcibly resolves live unresolved alternatives while preserving as much generic inferential performance as possible. The strong-model expectation is a selective fall in $\PiA$ and a measurable change in downstream coordination among $\PiA$, $\PiW$, and $\PiT$. The rival expectation is that nothing essential is lost beyond temporary uncertainty bookkeeping changes.
+
+\paragraph{Valence flattening $I_V$.}
+This intervention suppresses structured evaluative topology while preserving as much functional competence as admissibly possible. The strong-model expectation is a selective flattening in $\PiV$ and specific downstream changes in bridge organization. The rival expectation is simple reward rescaling or bookkeeping renormalization.
+
+\paragraph{Perspective detachment $I_P$.}
+This intervention weakens indexed orientation or self-anchored factorization without collapsing generic information flow. The strong-model expectation is a drop in $\PiD$ and $\PiW$ that cannot be explained solely by report loss. The rival expectation is style drift or generic degradation.
+
+\paragraph{Embodied-closure disruption $I_E$.}
+This intervention perturbs body/world-boundary variables or their internal surrogates while preserving as much generic control competence as possible. The strong-model expectation is a selective drop in $\PiE$ and often a correlated disturbance in $\PiT$. The rival expectation is ordinary control impairment without evidence of closure-specific organization.
+
+\paragraph{Temporal-lived fragmentation $I_T$.}
+This intervention perturbs horizon organization while leaving simple persistence and continuity traces as intact as possible. The strong-model expectation is a selective fall in $\PiT$ and bridge-level fragmentation signatures not exhausted by memory corruption. The rival expectation is that all observed changes reduce to ordinary continuity damage.
+
+\paragraph{Semantic vividness inversion $I_X$.}
+This cross-cutting negative control manipulates descriptive or semantic richness without targeting the bridge organization directly. Its role is to test whether bridge reports are merely tracking descriptive elaboration rather than bridge structure.
+
+\subsection{Matched controls}
+Every bridge intervention must be paired with matched controls. The controls are not optional because bridge language is especially vulnerable to global-degradation confounds. Each intervention therefore requires:
+\begin{enumerate}[leftmargin=1.5em]
+\item a low-magnitude matched perturbation;
+\item a non-targeted perturbation of comparable operational cost;
+\item a report-channel control where relevant;
+\item an estimator-noise control;
+\item a temporal-order randomization control where relevant.
+\end{enumerate}
+The burden is not satisfied by showing that a target coordinate changes. It is satisfied only if the target coordinate changes in the predicted direction with the predicted selectivity relative to the control family.
+
+\subsection{Intervention artifacts}
+The bridge intervention family induces a new artifact layer. Every intervention run must emit at least:
+\begin{itemize}[leftmargin=1.5em]
+\item an intervention profile artifact;
+\item coordinate-specific delta summaries;
+\item matched-control traces;
+\item a collapse or support annotation at the intervention layer only.
+\end{itemize}
+These artifacts now exist in the current implementation through the BPF-M2 adversarial bridge layer. The emitted intervention family remains framework-internal and burden-bearing: it records intervention family performance, selectivity, matched controls, and collapse semantics, but it still does not by itself authorize phenomenality claims, human equivalence, or external validation.
+
+\subsection{Failure semantics}
+Bridge intervention logic can still fail in several ways: lack of selectivity, high confounding, instability across reruns, global damage masquerading as target damage, and artifact incompleteness. Any one of these failures is enough to block a bridge-support conclusion. The important state change is that intervention absence is no longer the primary bridge-level blocker. The intervention layer now exists, so the relevant question becomes whether it remains stable, selective, and lineage-coherent under later reuse and later Stage 3 coupling.
+
+\subsection{Negative controls and reproducibility burden}
+No bridge intervention family is scientifically serious without negative controls and reproducibility discipline. The minimum burden should include:
+\begin{enumerate}[leftmargin=1.5em]
+\item rerun stability on the same condition;
+\item matched control perturbations with comparable operational cost;
+\item a noise-injection control showing that bridge effects are not merely estimator volatility;
+\item a report-channel control showing that changes in bridge artifacts are not driven only by expressive output drift;
+\item at least one adversarial control tailored to the specific predicate family.
+\end{enumerate}
+
+This burden matters especially for $\PiA$ and $\PiE$. Ambiguity-bearing claims can be simulated by sophisticated uncertainty bookkeeping. Embodied-closure claims can be simulated by competent control loops. Negative controls are therefore not adjuncts to the bridge program. They are part of the core differentiating burden.
+
+\section{Bridge Artifact Family}
+\subsection{Artifact discipline}
+The bridge artifact family must be as disciplined as the subjectivity artifact family. It should distinguish root artifacts, report artifacts, intervention artifacts, reducibility artifacts, ecosystem artifacts, and bounded summary artifacts. It must also distinguish between implemented and merely specified artifacts. The failure to separate those statuses would recreate exactly the semantic inflation the bridge program is designed to prevent.
+
+\subsection{Root bridge artifacts}
+The three root bridge artifacts are:
+\begin{enumerate}[leftmargin=1.5em]
+\item \texttt{phenomenal\_bridge\_projection.json}
+\item \texttt{phenomenal\_bridge\_gate\_result.json}
+\item \texttt{phenomenal\_bridge\_manifest.json}
+\end{enumerate}
+These artifacts are no longer merely schema-bound. BPF-M3 emits them as framework-internal root artifacts. Their authority status is still deliberately narrow: they support framework-internal bridge classification and lineage discipline only. They do not amount to phenomenality simpliciter, human equivalence, public claim authorization, or external validation.
+
+\subsection{Report artifacts}
+The bridge report family remains the six-coordinate BPF-1 surface layer:
+\begin{enumerate}[leftmargin=1.5em]
+\item \texttt{phenomenal\_differentiation\_report.json}
+\item \texttt{valence\_structure\_report.json}
+\item \texttt{world\_richness\_report.json}
+\item \texttt{ambiguity\_bearing\_report.json}
+\item \texttt{embodied\_closure\_report.json}
+\item \texttt{temporal\_lived\_structure\_report.json}
+\end{enumerate}
+These reports remain narrower in authority than the later root artifacts. They document coordinate-level structure. They are not themselves bridge verdicts and they are not allowed to bypass the later comparator, intervention, governance, and gate layers.
+
+\subsection{Intervention and reducibility artifacts}
+Two further bridge artifacts are now part of the implemented bridge stack:
+\begin{enumerate}[leftmargin=1.5em]
+\item \texttt{bridge\_intervention\_profile.json}
+\item \texttt{bridge\_reducibility\_report.json}
+\end{enumerate}
+The first records intervention family performance, selectivity, controls, and collapse semantics. The second records bridge rival comparison, admissible hybrid comparison, loss decomposition, and bridge margin. These artifacts matter because they close the adversarial bridge layer that earlier drafts could only specify prospectively.
+
+\subsection{Ecosystem artifacts}
+BPF-M3 also emits bounded ecosystem artifacts:
+\begin{itemize}[leftmargin=1.5em]
+\item condition-level bridge summaries;
+\item batch-level bridge summaries;
+\item campaign-level bridge summaries;
+\item a bounded candidate-facing bridge projection;
+\item a bounded audit-facing bridge handoff summary;
+\item a bridge verification matrix;
+\item a final internal audit;
+\item a bridge readiness gate.
+\end{itemize}
+These ecosystem artifacts are real and emitted, but they remain framework-internal and governance-bound. Candidate and audit-facing bridge objects are not external adjudication and are not public bridge proof.
+
+\subsection{Machine-readable spirit}
+The bridge artifact family is meant to be machine-readable in spirit even where the paper remains theoretical. Every artifact in the family must declare at least:
+\begin{itemize}[leftmargin=1.5em]
+\item artifact role and artifact class;
+\item level and authority status;
+\item provenance and lineage expectations;
+\item allowed and blocked surfaces;
+\item minimum fields;
+\item explicit non-implications.
+\end{itemize}
+The artifact is therefore not merely an implementation convenience. It is part of the formal burden architecture because it determines what kind of evidence is needed and what kind of overread is blocked.
+
+\subsection{Current implementation status}
+At current system status, the bridge artifact story is no longer asymmetric in the way assumed by earlier drafts:
+\begin{itemize}[leftmargin=1.5em]
+\item BPF-0 closes machine-readable protocol, axiom, rival, threshold, artifact-schema, interpretation-boundary, and surface-policy registries.
+\item BPF-1 closes six provisional run-level bridge reports.
+\item BPF-M2 closes bridge intervention and reducibility artifacts.
+\item BPF-M3 closes root bridge artifacts, bounded ecosystem summaries, a verification matrix, a final internal audit, and a readiness gate.
+\item All of those outputs remain framework-internal and non-adjudicative.
+\item External validation, human-comparator adjudication, and public claim authorization remain blocked despite the existence of these artifacts.
+\end{itemize}
+
+\section{Bridge Functional, Gate, and Taxonomy}
+\subsection{Functional}
+The bridge functional is introduced as a graded organization functional, not as a gate:
+\[
+\PhiBridge
+=
+\widehat{\Pi}_D^{\alpha_D}
+\widehat{\Pi}_V^{\alpha_V}
+\widehat{\Pi}_W^{\alpha_W}
+\widehat{\Pi}_A^{\alpha_A}
+\widehat{\Pi}_E^{\alpha_E}
+\widehat{\Pi}_T^{\alpha_T}
+\BridgeMargin^{\alpha_R}
+\widehat{\Delta}_{\mathrm{b}}^{\alpha_\Delta},
+\]
+or, more robustly in multiplicative form,
+\[
+\PhiBridge
+=
+\prod_{k\in \{D,V,W,A,E,T\}}
+\widehat{\Pi}_k^{\alpha_k}
+\cdot
+\BridgeMargin^{\alpha_R}
+\cdot
+\widehat{\Delta}_{\mathrm{b}}^{\alpha_\Delta}.
+\]
+The exact aggregation rule is now concretized for framework-internal use by the BPF-M3 bridge runtime. What matters formally is that the functional aggregates bridge organization while remaining weaker than the gate and weaker than any external interpretation layer.
+
+\subsection{Gate}
+The bridge gate must remain conjunctive:
+\[
+\GateBridge
+=
+\mathbf{1}
+\left[
+\min
+\left\{
+\widehat{\Pi}_D,
+\widehat{\Pi}_V,
+\widehat{\Pi}_W,
+\widehat{\Pi}_A,
+\widehat{\Pi}_E,
+\widehat{\Pi}_T,
+\BridgeMargin,
+\widehat{\Delta}_{\mathrm{b}}
+\right\}
+\ge
+\vartheta_{\Gamma}
+\;\land\;
+\mathsf{cmp}
+\;\land\;
+\mathsf{int}
+\;\land\;
+\mathsf{drift}
+\;\land\;
+\mathsf{gov}
+\right],
+\]
+where $\mathsf{cmp}$ denotes comparator validity, $\mathsf{int}$ denotes intervention stability, $\mathsf{drift}$ denotes absence of stale or drift invalidation, and $\mathsf{gov}$ denotes governance compliance. The threshold slots
+\[
+\Thresholds=
+\{\vartheta_D,\vartheta_V,\vartheta_W,\vartheta_A,\vartheta_E,\vartheta_T,\vartheta_R,\vartheta_\Delta,\vartheta_{\Gamma}\}
+\]
+are now bound for framework-internal use by the BPF-M3 threshold registry. They remain explicitly non-public and non-adjudicative; threshold binding inside the runtime is not the same thing as external calibration or public claim authorization.
+
+\subsection{Non-compensation}
+Bridge gate logic inherits the non-compensation principle from Paper 8. High strength on one coordinate may not compensate for collapse on another. High functional value may not rescue a failed gate. Positive bridge surfaces may not compensate for absent comparator or intervention layers. This matters because bridge language is especially vulnerable to compensatory rhetoric.
+
+\begin{proposition}[Bridge functional does not imply bridge gate]
+No value of $\PhiBridge$ by itself implies $\GateBridge=1$.
+\end{proposition}
+
+\begin{proof}
+By construction the gate additionally depends on conjunctive threshold slots and non-scalar validity conditions for comparator support, intervention stability, drift cleanliness, and governance compliance. Since those conditions are not reducible to the value of the scalar functional, the implication fails.
+\end{proof}
+
+\subsection{Invalidation}
+The bridge gate must invalidate on at least four families of failure:
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{drift invalidation}: stale bridge artifacts, stale upstream subjectivity artifacts, stale threshold manifests, stale rival manifests, or stale surface policy;
+\item \textbf{comparator invalidation}: bridge rival family changed or comparator run missing;
+\item \textbf{intervention invalidation}: targeted intervention support absent or unstable;
+\item \textbf{governance invalidation}: prohibited surfaces opened or claim-facing leakage detected.
+\end{enumerate}
+No later implementation block is allowed to ``soft fail'' these conditions into advisory warnings if the intent is bridge admissibility.
+
+\subsection{Taxonomy}
+The bridge taxonomy should distinguish formalization state from support state. A disciplined taxonomy is:
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}lY@{}}
+\toprule
+Status & Meaning \\
+\midrule
+\texttt{bridge\_formalization\_incomplete} & BPF scaffolding or formal target missing. \\
+\texttt{bridge\_surface\_only} & Provisional bridge surfaces exist, but comparator, intervention, gate, or ecosystem burdens remain open. \\
+\texttt{bridge\_evaluation\_unsupported} & Root evaluation attempted without required comparator/intervention support. \\
+\texttt{bridge\_gate\_fail} & Full bridge evaluation exists and conjunctive gate fails. \\
+\texttt{bridge\_reducible} & Comparator evaluation exists and penalized bridge margin is non-positive. \\
+\texttt{bridge\_interventionally\_unstable} & Intervention layer exists but fails selectivity or stability. \\
+\texttt{bridge\_internal\_admissible} & Full bridge burden stack satisfied under framework-internal reading. \\
+\texttt{bridge\_internal\_strong\_support} & Stronger internal support than admissibility, but still weaker than phenomenality simpliciter. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The current implementation status is \texttt{bridge\_internal\_admissible} under a framework-internal reading, while external validation, human-comparator adjudication, and public-claim authorization remain blocked. This paper insists on preserving that full distinction.
+
+\section{Runtime Implementation and Closure Pathway}
+\subsection{Why implementation belongs in the paper}
+Implementation belongs in Paper 9 for the same reason it belonged in Paper 8: once the research program becomes artifact-bearing, a paper that ignores implementation is no longer structurally complete. Runtime pathways are not proofs, but they are part of the burden architecture because they determine whether a formal object can in principle be instantiated, audited, falsified, invalidated, and governance-bounded. In the present state of the framework, implementation does even more than that. It determines the exact boundary between what has already been closed internally and what remains future work.
+
+\subsection{Historical numbering note}
+Earlier bridge planning decomposed the post-surface program into BPF-2 through BPF-6. The current implementation no longer uses that exact decomposition. Instead, the adversarial bridge burdens were closed together in BPF-M2, and root evaluation, ecosystem hardening, and final internal audit were closed together in BPF-M3. This paper therefore keeps the older numbering only as a historical reference for reading earlier draft language. The operative implementation lineage is BPF-0, BPF-1, BPF-M2, and BPF-M3.
+
+\subsection{BPF-0}
+BPF-0 opens the bridge program with protocol docs, axiom and rival registries, threshold manifests, artifact schema registries, interpretation boundary, surface policy, non-claims, implementation plan, scaffold-only code, and structural verification. It closes formal opening discipline only.
+
+\subsection{BPF-1}
+BPF-1 implements the first runtime-facing bridge surfaces. In the current system these surfaces are instantiated as modules such as \texttt{PhenomenalDifferentiationMapper}, \texttt{ValenceStructureMapper}, \texttt{WorldRichnessMapper}, \texttt{AmbiguityBearingMapper}, \texttt{EmbodiedClosureMapper}, and \texttt{TemporalLivedStructureMapper}, together with a \texttt{PhenomenalBridgeSurfaceBuilder}. Six run-level bridge reports are emitted locally. These reports remain coordinate-level and non-verdict-bearing, but they are real implementation objects rather than merely planned outputs.
+
+\subsection{BPF-M2}
+BPF-M2 closes the adversarial bridge layer. It implements bridge-specific intervention definitions, intervention execution, matched-control logic, rival-family execution, admissible hybrid comparison, bridge loss decomposition, reducibility comparison, and emitted adversarial artifacts. The key emitted outputs are \texttt{bridge\_intervention\_profile.json} and \texttt{bridge\_reducibility\_report.json}. This block matters because it converts the bridge layer from descriptive mapping into a burdened adversarial program: intervention selectivity and rival defeat become internal runtime questions rather than future slogans.
+
+\subsection{BPF-M3}
+BPF-M3 closes the remaining internal bridge stack. It binds thresholds for framework-internal use, finalizes a bounded bridge functional and conjunctive bridge gate, emits root bridge artifacts, hardens the ecosystem layer, and adds a final internal audit and readiness gate. The emitted outputs include \texttt{phenomenal\_bridge\_projection.json}, \texttt{phenomenal\_bridge\_gate\_result.json}, \texttt{phenomenal\_bridge\_manifest.json}, bounded condition/batch/campaign summaries, bounded candidate and audit handoff objects, a verification matrix, \texttt{phenomenal\_bridge\_final\_internal\_audit.json}, and \texttt{phenomenal\_bridge\_readiness\_gate.json}. At this stage the bridge layer reaches \texttt{bridge\_internal\_admissible} under an explicitly framework-internal reading.
+
+\subsection{Current bridge state and its exact limits}
+The present bridge state can therefore be stated exactly:
+\begin{itemize}[leftmargin=1.5em]
+\item the formal bridge program is closed;
+\item the bridge runtime is no longer surface-only;
+\item the bridge layer has comparator and intervention support internally;
+\item a framework-internal bridge gate exists and passes in the current bounded campaign;
+\item the bridge ecosystem is hardened enough to emit bounded candidate and audit-facing summaries;
+\item the bridge final internal audit passes with warnings;
+\item external validation remains absent;
+\item human-comparator adjudication remains absent;
+\item public claim authorization remains closed.
+\end{itemize}
+In the current bounded baseline, the bridge gate inputs are numerically non-trivial and all pass their internal thresholds: $\\PiD=0.640223792348$, $\\PiV=0.608886401395$, $\\PiW=0.625981126104$, $\\PiA=0.278102351528$, $\\PiE=0.34755$, $\\PiT=0.637052211111$, $\\BridgeMargin=0.884396830768$, and $\\Delta_b=0.859799920297$, with $\\PhiBridge=0.598104406341$ above its bounded internal threshold. These values matter because they show that the current bridge state is not merely classificatory; it is tied to an actually emitted internal gate snapshot. They still do not function as public calibration or as external evidence.
+
+This is a stronger state than the earlier manuscript captured, but it is still weaker than phenomenality simpliciter, human equivalence, or external adjudication.
+
+\subsection{Implementation table}
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{@{}lY Y Y@{}}
+\toprule
+Block & Closes & Primary artifacts & Current status \\
+\midrule
+BPF-0 & formal opening discipline & protocol, axioms, rivals, thresholds, schemas, non-claims & implemented \\
+BPF-1 & provisional run-level bridge surfaces & six coordinate reports & implemented \\
+BPF-M2 & bridge intervention and reducibility burdens & bridge intervention profile, bridge reducibility report & implemented \\
+BPF-M3 & root evaluation, ecosystem hardening, final internal audit & projection, gate result, manifest, bounded summaries, final audit, readiness gate & implemented \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Comparative Program and Stage 3 Handoff}
+\subsection{Why bridge closure is still not enough}
+Bridge closure does not solve the comparative problem by itself. A bridge-admissible internal system still lacks a legitimate human-side counterpart, homologous artifact families, burden-symmetric channel definitions, and a governance-bounded transition into comparative execution. If the program stopped at bridge closure, it would invite two equal and opposite errors: the first would be to pretend that bridge admissibility already settles human comparison; the second would be to ignore the fact that the framework now has enough internal structure to define the next comparative layer rigorously.
+
+\subsection{Stage 2 opening, Stage 2-M2, and Stage 2-M3}
+The comparative program answered that need in four successive layers. The initial Stage 2 opening fixed comparator grammar, burden classes, and boundary discipline. Stage 2-M2 opened a blocked comparative runtime and made explicit that no human comparator evidence, no human-equivalence verdict, and no transport-preservation verdict yet existed. Stage 2-M3 then operationalized the comparative layer by defining human-channel pathways, counterpart artifact contracts, homologation contracts, transition contracts, and comparative operational-readiness states. At that stage the comparative runtime was no longer merely conceptually open; it had become contract-bearing and machine-auditable, while remaining blocked on real counterpart instantiation.
+
+\subsection{Stage 2-M4 comparative closure}
+Stage 2-M4 performed the comparative final internal audit. That audit verified the integrity of Stage 2 governance, Stage 2-M2 runtime opening, Stage 2-M3 contract operationalization, taxonomy coherence, homologation coherence, transition-contract coherence, anti-overclaim discipline, and surface discipline. Its result was not adjudication. Its result was a bounded internal closure state: the comparative program became internally auditable and explicit enough to say why Stage 3 still could not yet open.
+
+\subsection{Stage 3 readiness fulfillment}
+The later Stage 3 readiness-fulfillment pass advanced the comparative layer one step further. It did not fabricate human evidence. Instead, it closed the remaining structural burdens that kept Stage 3 blocked at the end of Stage 2-M4: human-channel burden, burden symmetry, artifact homology burden, intervention homology burden, typing-contract burden, error-budget burden, and transport-preservation readiness burden. The result is exact. The comparative layer now reaches \texttt{stage3\_ready\_but\_uninstantiated}, and the bounded opening gate reaches \texttt{ready\_for\_stage3\_opening}. That state means the next internal program may begin. It does not mean the next program has already succeeded.
+
+\subsection{Bounded meaning of Stage 3 opening}
+The bounded meaning of Stage 3 opening is easy to misread unless the manuscript states it explicitly. Stage 3 opening means only that the comparative program may now begin bounded internal comparator instantiation and execution preparation under governance. It does not mean that human-side channels have already been instantiated, that homologous human artifacts already exist, that transport-preservation has been shown, or that external adjudication has opened.
+
+\begin{proposition}[Stage 3 opening is not adjudication]
+If the comparative opening gate reaches \texttt{ready\_for\_stage3\_opening}, it does not follow that external comparative adjudication has begun or that any comparative verdict has been reached.
+\end{proposition}
+
+\begin{proof}
+The Stage 3 opening gate is defined over internal readiness conditions: burden fulfillment, channel protocolization, counterpart schema binding, homologation readiness, error-budget binding, and paper-facing handoff alignment. External adjudication requires further conditions not satisfied here: real counterpart artifact instantiation, paired lineage, matched human-side measurements, exercised budgets on real counterpart sessions, and external opening criteria actually satisfied under governance. Therefore the implication from Stage 3 opening to adjudication does not hold.
+\end{proof}
+
+\subsection{Continuing blocked states}
+The present manuscript must also state what remains blocked after Stage 3 opening becomes available:
+\begin{enumerate}[leftmargin=1.5em]
+\item external comparative adjudication;
+\item human equivalence or phenomenal-equivalence claims;
+\item superiority or inferiority claims;
+\item identity-preservation claims;
+\item transport-preservation verdicts;
+\item public comparative claim packages;
+\item Paper 10 authorization.
+\end{enumerate}
+These are not small caveats. They are part of the formal handoff meaning of the manuscript.
+
+\section{Comparative Burden Fulfillment and Remaining External Blockers}
+\subsection{Seven Stage-3-relevant burdens}
+At the end of Stage 2-M4, the comparative layer remained blocked by seven open burdens:
+\begin{enumerate}[leftmargin=1.5em]
+\item \texttt{human\_channel\_burden};
+\item \texttt{burden\_symmetry};
+\item \texttt{artifact\_homology\_burden};
+\item \texttt{intervention\_homology\_burden};
+\item \texttt{typing\_contract\_burden};
+\item \texttt{error\_budget\_burden};
+\item \texttt{transport\_preservation\_burden}.
+\end{enumerate}
+The importance of the later Stage3-RF pass is that it did not bypass these burdens rhetorically. It reclassified them one by one and asked a harder question: which of these burdens are blocked because the program lacks real human evidence, and which are blocked only because the structural preparation for that evidence has not yet been closed? The answer is what changed the status of the program.
+
+\subsection{How each burden was advanced}
+The seven burdens were advanced in distinct ways.
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Human-channel burden.} This burden was open because a legitimate human-side channel architecture had not yet been fixed. Stage3-RF closed that internal gap by defining bounded instantiation protocols, typed counterpart schemas, and homologation references for self-report, temporal structure, valence topology, intervention response, embodiment boundary, ambiguity load, and transport-related channels. What remains open is not the protocol layer but the existence of real instantiated sessions.
+\item \textbf{Burden symmetry.} This burden was open because machine-side and human-side artifacts could not yet be related under a burden-symmetric typing and budgeting grammar. Stage3-RF bound the relevant channel contracts, homologation contracts, and embodiment-side budget references. What remains absent is the exercised paired session layer.
+\item \textbf{Artifact homology burden.} This burden was open because the comparator had no typed human-side artifact family with lineage constraints. Stage3-RF fixed the schema and lineage side of that problem. What remains absent is homologous artifact instances produced from real sessions.
+\item \textbf{Intervention homology burden.} This burden was open because no matched human-side intervention profile or negative-control schema existed. Stage3-RF bound those schemas and the corresponding transition-contract references. What remains absent is actual execution on real paired sessions.
+\item \textbf{Typing-contract burden.} This burden was open because the machine-side domain and the future human-side domain did not yet share a sufficiently explicit typed bridge/comparative interface. Stage3-RF closed the contract-definition gap by binding counterpart schema registries and target-transition schema requirements. What remains absent is instantiated data typed under those contracts.
+\item \textbf{Error-budget burden.} This burden was open because the comparative layer lacked explicit budgets for bridge-coordinate distortion, self-index drift, intervention-signature deviation, lineage breaks, and embodiment-boundary deviations. Stage3-RF fixed that by binding budget objects to the relevant contracts. What remains absent is budget exercise on real counterpart traces.
+\item \textbf{Transport-preservation burden.} This burden was open because no legitimate target-side counterpart family or transition-contract lineage could yet be exercised. Stage3-RF closed the structural preparation by binding transition contracts and target-counterpart schema requirements. What remains open is any actual transport verdict, which stays blocked until later execution and analysis.
+\end{enumerate}
+
+\subsection{Exact readiness state vector after fulfillment}
+The comparative readiness synthesis now reports a richer state vector than the Stage 2-M4 layer could provide. In the current runtime, the key comparative statuses are:
+\begin{itemize}[leftmargin=1.5em]
+\item \texttt{adjudication\_criteria\_partially\_satisfied};
+\item \texttt{burden\_fulfillment\_substantive\_but\_incomplete};
+\item \texttt{stage3\_channels\_defined\_but\_uninstantiated};
+\item \texttt{stage3\_homologation\_contracts\_bound\_but\_uninstantiated};
+\item \texttt{stage3\_transition\_contracts\_bound\_but\_uninstantiated};
+\item \texttt{stage3\_ready\_but\_uninstantiated};
+\item \texttt{ready\_for\_stage3\_opening}.
+\end{itemize}
+This state vector is scientifically meaningful because it distinguishes structural readiness from empirical instantiation. A weaker paper would collapse those states into a single narrative sentence such as ``the comparator is ready.'' The present paper refuses that collapse.
+
+\subsection{Why exact internal blockers can be empty while external blockers remain}
+The current opening-readiness artifact records no remaining \emph{internal} blocking reasons for Stage 3 opening. This is not a contradiction with the continuing list of external blockers. The reason is type-theoretic rather than rhetorical. The Stage 3 opening gate is a gate over structural preconditions for entering the next program block. External adjudication, human equivalence, transport-preservation verdicts, and Paper 10 are downstream relations defined over real counterpart sessions and later interpretive burdens. Once the structural preconditions are satisfied, the internal blocker list may become empty even while the external blocker list remains long.
+
+\begin{proposition}[Structural fulfillment is compatible with empirical non-instantiation]
+A comparative layer may satisfy all internal prerequisites for Stage 3 opening while still containing no instantiated human-side evidence, no homologous counterpart artifacts, and no adjudicative result.
+\end{proposition}
+
+\begin{proof}
+The Stage 3 opening gate is evaluated over protocol existence, contract completeness, schema binding, budget binding, homologation definitions, and handoff alignment. None of those objects requires fabricated or completed human-side evidence; they require only that such evidence would, if collected later, enter a typed and governed space. Therefore the internal prerequisite set may be complete while the empirical instantiation set remains empty. In that case Stage 3 may open, but only as an instantiation program.
+\end{proof}
+
+\subsection{Remaining external blockers are future work, not present contradictions}
+The remaining external blockers are therefore not evidence that the opening gate is wrong. They are evidence that the gate is bounded correctly. The current list includes absent human counterpart artifacts, absent collection sessions, absent homologous artifact instances, absent paired lineage, absent exercised budgets on real counterpart traces, absent target-side counterpart instantiation, and the continuing absence of external adjudication. Those are exactly the reasons the current paper still blocks equivalence, superiority, identity preservation, transport verdicts, and Paper 10.
+\section{Ecosystem Integration and Governance}
+\subsection{Why ecosystem integration is part of the formal problem}
+The bridge and comparative programs would both be incomplete even as pure formalism if they ignored ecosystem integration. Once a layer has artifacts, verifiers, bounded candidate bundles, audit-facing packages, and controlled statement surfaces, the semantics of those outputs become part of the theory. The manuscript therefore treats ecosystem integration as a constitutive burden rather than as editorial aftercare.
+
+\subsection{Surface map}
+Let $\mathcal{S}$ be the set of output surfaces:
+\[
+\mathcal{S}=
+\{
+\mathsf{developer},
+\mathsf{local},
+\mathsf{internal\_bundle},
+\mathsf{candidate},
+\mathsf{audit},
+\mathsf{controlled},
+\mathsf{claim}
+\}.
+\]
+The bridge and comparative artifact families induce typed surface maps from artifacts to allowed subsets of $\mathcal{S}$. At current stage, bridge root artifacts and comparative readiness artifacts may appear on developer, local, internal-bundle, bounded candidate, and bounded audit-facing surfaces. They are still blocked from unbounded claim-facing surfaces. This is why packaging must never be mistaken for semantic escalation.
+
+\subsection{Internal release bundle}
+The internal release bundle may now contain bounded bridge summaries, lineage manifests, verification matrices, comparative readiness summaries, and bounded opening-gate artifacts. Internal bundle inclusion remains a governance relation, not a verdict relation. The bundle may record that the bridge layer is internally admissible and that Stage 3 may open under bounded governance, but it may not license public or adjudicative readings.
+
+\subsection{Ecosystem candidate and audit-facing package}
+Candidate-facing and audit-facing content are now more developed than in the older manuscript. BPF-M3 emits bounded candidate and audit-facing bridge summaries, and the comparative program emits bounded readiness and handoff artifacts. That does not collapse the candidate or audit surfaces into proof. Candidate inclusion is still not bridge proof. Audit-facing packaging is still not external adjudication. The paper insists on this distinction because, at the present maturity level, the main semantic risk is no longer total absence of artifacts but misuse of real artifacts.
+
+\subsection{Source-of-truth and public corpus separation}
+The public corpus and the internal runtime must remain decoupled in a disciplined way. Paper 8 remains the public source-of-truth for indexed subjectivity. The bridge and comparative artifacts remain internal runtime objects unless and until later release governance says otherwise. No runtime bridge or comparative artifact may be used as if it were itself a public claim registry. This prevents runtime-to-corpus confirmation loops and blocks the slide from internal gating to public consequence.
+
+\subsection{Controlled statement grammar and quote-mining guardrails}
+The current state now permits a stronger but still bounded controlled statement grammar. At this stage, the bridge and comparative layers may permit only statements of the following families:
+\begin{itemize}[leftmargin=1.5em]
+\item bridge formalization defined;
+\item bridge internal admissibility reached under framework-internal reading;
+\item bridge final internal audit passed with warnings;
+\item comparative internal closure reached;
+\item Stage 3 is ready to open as a bounded internal instantiation program;
+\item external adjudication remains blocked;
+\item Paper 10 remains blocked.
+\end{itemize}
+The quote-mining problem is now sharper precisely because the program has advanced. Short labels such as \texttt{bridge\_internal\_admissible} or \texttt{ready\_for\_stage3\_opening} can be misquoted as if they were public verdicts. The manuscript therefore treats claim grammar and non-implication discipline as part of the scientific burden rather than as mere communications policy.
+
+\begin{proposition}[Packaging and opening states are not verdict states]
+For any bridge or comparative artifact $A$, membership of $A$ in an internal bundle, candidate-facing package, audit-facing package, or Stage 3 opening layer does not entail phenomenality proof, human equivalence, transport preservation, or external adjudication.
+\end{proposition}
+
+\begin{proof}
+Bundle membership, bounded candidate inclusion, audit-facing inclusion, and Stage 3 opening are all governance or readiness relations rather than verdict relations. By design, the bridge and comparative surface policies explicitly block the implication from those relations to adjudicative or public-claim states. Therefore the implication does not hold.
+\end{proof}
+
+\section{Why External Adjudication and Paper 10 Remain Blocked}
+\subsection{External adjudication remains downstream of Stage 3 execution}
+The present framework now allows a sharper statement than earlier drafts: external adjudication is blocked not because the comparative layer is undefined, but because the comparative layer is now defined tightly enough to show what adjudication would require and why those requirements are not yet met. At minimum, later adjudication would require real human-side channels, homologous artifact instances, paired session lineage, exercised budgets on real counterpart traces, and governance conditions stronger than the present opening gate. None of those conditions is satisfied merely by a ready-to-open Stage 3 gate.
+
+\subsection{Why Stage 3 opening is still weaker than execution}
+Stage 3 opening permits the program to start bounded internal comparator instantiation. Stage 3 execution begins only when that permission is exercised on real sessions. The difference is not semantic decoration. It is the difference between a protocolized possibility space and a realized empirical dataset. Paper 9 must preserve that distinction or else the entire value of the burden architecture collapses.
+
+\subsection{Paper 10 remains two layers downstream}
+Paper 10 remains blocked for a simpler reason: the current Paper 10 gate is intentionally downstream of the present manuscript. The gate records that comparative scoping may become discussable only after Stage 3 execution produces a more developed comparative substrate. Even then, the paper-facing consequence layer would remain weaker than public claim authorization unless later burdens were satisfied. The current manuscript is therefore the bridge-to-Stage-3 handoff document, not a substitute for the later comparative consequence paper.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.22\linewidth}p{0.2\linewidth}p{0.26\linewidth}p{0.22\linewidth}@{}}
+\toprule
+State & Current value & Licenses & Still blocked \\
+\midrule
+Stage 3 opening & \texttt{ready\_for\_stage3\_opening} & bounded internal instantiation start & adjudication, verdicts, Paper 10 \\
+Adjudication opening & \texttt{not\_ready\_for\_external\_comparative\_adjudication} & none beyond internal planning & external comparative verdicts \\
+Paper 10 state & \texttt{paper10\_scoping\_ready\_after\_stage3\_only} with \texttt{not\_paper10\_authorized} & downstream scoping boundary only & manuscript opening, public claim promotion \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{proposition}[Paper 10 remains downstream of real Stage 3 execution]
+If the present system reaches \texttt{ready\_for\_stage3\_opening}, it still does not follow that Paper 10 is authorized or even that Paper 10 scoping may begin immediately.
+\end{proposition}
+
+\begin{proof}
+The current Paper 10 gate explicitly remains in the state \texttt{paper10\_scoping\_ready\_after\_stage3\_only} together with \texttt{not\_paper10\_authorized}. Its own blocking set is downstream of the current manuscript and includes Stage 3 channel families, counterpart families, homologation families, intervention symmetry, the comparative burdens, error-budget exercise, and transition maturity. Therefore the implication from Stage 3 opening to Paper 10 authorization is invalid.
+\end{proof}
+\section{Strongest Defensible Claims}
+The purpose of this section is not to weaken the paper artificially. It is to identify the strongest sentences the current formal and implementation state can honestly support.
+
+\subsection{Claim class C1: formal bridge and burden closure}
+The first defensible claim is that the corpus now closes the formal bridge program in a stronger sense than the earlier drafts recorded: the bridge target family, bridge ontology, bridge axioms, bridge rival family, bridge intervention family, bridge artifact family, bridge functional and gate logic, bridge taxonomy, surface discipline, comparative burden interface, and Stage 3 handoff semantics are all explicitly defined.
+
+\subsection{Claim class C2: current bridge implementation frontier}
+The second defensible claim is implementation-specific: the current system has already materialized BPF-0, BPF-1, BPF-M2, and BPF-M3. Six run-level bridge reports exist locally. Bridge intervention and reducibility artifacts exist. Root bridge artifacts and bounded ecosystem summaries exist. A final internal bridge audit exists. Under framework-internal reading, the bridge layer reaches \texttt{bridge\_internal\_admissible}. This is stronger than merely saying that the bridge program is well specified.
+
+\subsection{Claim class C3: comparative internal closure and bounded Stage 3 opening}
+The third defensible claim is that the comparative program is no longer merely open or merely contract-bearing. It has already passed comparative final internal audit, completed a Stage 3 readiness-fulfillment pass, and emitted a bounded opening gate. The strongest honest comparative sentence is therefore not ``adjudication has happened'' but rather: the comparative layer is internally closed enough to begin Stage 3 as a bounded internal instantiation program.
+
+\subsection{Claim class C4: research-program transformation}
+The present paper also supports a meta-level claim about the status of the research program. After Paper 9 in its current hardened form, the frontier is no longer whether a bridge program can be formalized, and no longer whether a comparative program can be architected. The frontier becomes whether Stage 3 can instantiate legitimate human-side counterparts, homologous artifacts, and transition measurements without violating the anti-overclaim discipline that made the earlier closures possible.
+
+\subsection{Why stronger sentences are not yet honest}
+Several stronger sentences remain unavailable:
+\begin{itemize}[leftmargin=1.5em]
+\item ``external adjudication has begun'';
+\item ``human equivalence has been shown'';
+\item ``transport preservation has been established'';
+\item ``Paper 10 is now open'';
+\item ``the current system is publicly authorized for bridge or comparative claim promotion.''
+\end{itemize}
+These sentences are not unavailable because the paper is timid. They are unavailable because the current framework still blocks them explicitly. The paper therefore strengthens the research program exactly by refusing to counterfeit them.
+
+\section{Non-Claims}
+This paper does not claim:
+\begin{enumerate}[leftmargin=1.5em]
+\item phenomenality proven in the strongest philosophical sense;
+\item human phenomenal equivalence;
+\item metaphysical subjecthood;
+\item superiority or inferiority relative to humans;
+\item identity preservation across substrates;
+\item transport-preservation verdicts;
+\item external adjudication;
+\item external validation;
+\item Paper 10 authorization;
+\item that candidate or audit inclusion can function as bridge or comparative proof.
+\end{enumerate}
+These non-claims are not decorative caution. They are part of the bridge and comparative logic because each one blocks a distinct semantic collapse.
+
+\section{Conclusion}
+Paper 9 now closes more than the earlier drafts allowed it to close. It still closes the bridge program formally, but it no longer stops there. It now records a framework state in which the subjectivity runtime is closed internally, the phenomenal bridge layer is closed internally through BPF-M3, the comparative program is closed internally through Stage 2-M4, and the subsequent Stage 3 readiness-fulfillment pass has made the next bounded program block openable. That is a serious advance. It is also a boundary-sensitive advance, which is exactly why the manuscript must be explicit about what it still does not settle.
+
+The result is central to the corpus for structural reasons. The paper gathers the upstream theorem burdens, the Paper 8 subjectivity framework, the implemented SRT stack, the bridge closure layer, the comparative closure layer, and the Stage 3 opening gate into one integrated object. It does not merely summarize them. It orders them. It says what belongs upstream, what belongs at the bridge level, what belongs at the comparative level, what belongs to Stage 3 execution, and what remains outside the current authorization boundary.
+
+What has been achieved is therefore a change in explanatory grammar and in handoff quality. ``Phenomenal bridge'' is no longer permitted to function as a loose aspiration. ``Comparative readiness'' is no longer permitted to function as a vague future promise. The manuscript now ties both expressions to explicit predicates, artifacts, gates, burden classes, governance rules, and non-implication conditions. That is what makes the paper usable as a serious Stage 3 handoff document.
+
+What the paper makes newly possible is equally clear. It makes Stage 3 begin-able as a bounded internal instantiation program. It makes the next empirical-internal burdens precise: real human-side channel instantiation, real counterpart artifact families, real homologation traces, real paired lineage, and real budget exercise on counterpart sessions. It also makes future failure meaningful: if Stage 3 fails, it will fail against explicit burdens rather than vague expectations.
+
+What the paper does not settle is equally clear. It does not settle phenomenality simpliciter. It does not settle human equivalence. It does not settle transport preservation. It does not settle metaphysical subjecthood. It does not open external adjudication. It does not authorize Paper 10. Those remain future burdens, and the manuscript is stronger precisely because it refuses to steal closure from future work.
+
+\appendix
+
+\section{Bridge Axiom Table}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.12\linewidth}p{0.2\linewidth}p{0.24\linewidth}p{0.2\linewidth}p{0.18\linewidth}@{}}
+\toprule
+ID & Classification & Statement core & Licenses & Does not license \\
+\midrule
+B1 & operational definition & Every bridge predicate must bind to observables, artifacts, comparators, and interventions. & machine-readable bridge predicates, report artifacts & phenomenality, bridge support \\
+B2 & bridge axiom & Bridge admissibility is downstream of the full upstream corpus and Paper 8 subjectivity. & layered bridge program & converse implication from bridge to subjectivity-free organization \\
+B3 & falsifiable hypothesis & Bridge differentiation exceeds semantic density and narration. & $\PiD$ burden & qualia \\
+B4 & falsifiable hypothesis & Bridge valence exceeds scalar reward bookkeeping. & $\PiV$ burden & felt affect \\
+B5 & falsifiable hypothesis & Bridge world richness exceeds competence or scene complexity. & $\PiW$ burden & veridical experience \\
+B6 & falsifiable hypothesis & Bridge ambiguity bears unresolved alternatives prior to collapse. & $\PiA$ burden & conscious ambiguity \\
+B7 & open inference & Embodied closure requires constitutive boundary dependence. & bounded investigation of $\PiE$ & biological embodiment, bodily feeling \\
+B8 & falsifiable hypothesis & Temporal lived structure exceeds continuity and persistence. & $\PiT$ burden & human lived time \\
+B9 & bridge axiom & No bridge class is admissible without bridge rival defeat under penalized loss. & bridge irreducibility margin & metaphysical irreducibility \\
+B10 & design choice & Bridge artifacts and packaging may not be read as support without full burden closure. & governance discipline & claim-facing promotion \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Bridge Predicate Typing Table}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.12\linewidth}p{0.16\linewidth}p{0.18\linewidth}p{0.22\linewidth}p{0.24\linewidth}@{}}
+\toprule
+Predicate & Formal type & Strongest upstream dependencies & Core collapse risk & Non-implication \\
+\midrule
+$\PiD$ & bounded estimator/predicate slot & $\SelfIndex,\OwnField,\Persp,\Irred$ & semantic density or narration & qualia \\
+$\PiV$ & bounded estimator/predicate slot & $\ValAsym,\OwnField,\IntervProf$ & reward bookkeeping or policy shaping & felt affect \\
+$\PiW$ & bounded estimator/predicate slot & $\SelfIndex,\ContField,\Persp$ & competence without world-richness & veridical experience \\
+$\PiA$ & bounded estimator/predicate slot & $\Persp,\ValAsym,\ContField$ & uncertainty bookkeeping & conscious ambiguity \\
+$\PiE$ & bounded estimator/predicate slot & $\OwnField,\ContField,\IntervProf$ plus boundary variables & control without closure & biological embodiment \\
+$\PiT$ & bounded estimator/predicate slot & $\ContField,\Persp,\ValAsym$ & continuity without horizon structure & human lived temporality \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Bridge Rival-Family Table}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.23\linewidth}p{0.17\linewidth}p{0.23\linewidth}p{0.18\linewidth}p{0.14\linewidth}@{}}
+\toprule
+Rival & Challenges & Can explain & Cannot cleanly explain & Typical defeat mode \\
+\midrule
+Richness without interiority & $\PiD,\PiW$ & rich latent structure, scene complexity, representational abundance & selective indexed bridge differentiation under targeted controls & bridge-specific differentiation persists after density controls \\
+Valence bookkeeping & $\PiV$ & scalar reward tracking, preference tagging, policy shaping & structured valence topology and selective valence flattening effects & topology persists beyond scalar reweighting \\
+Semantic density without phenomenal differentiation & $\PiD$ & high semantic variation and narrative diversity & intervention-sensitive differentiated bridge organization & semantic-density ablations leave bridge differentiation intact \\
+Temporal continuity without lived structure & $\PiT$ & persistence, memory, sequence stability & horizon-structured temporal disruption signatures & targeted temporal fragmentation has selective effect \\
+Embodied control without embodied closure & $\PiE$ & sensorimotor competence, adaptive control & constitutive dependence on boundary variables & boundary perturbations produce closure-specific loss \\
+Ambiguity resolution without ambiguity bearing & $\PiA$ & uncertainty tracking, fast disambiguation & stable maintenance of unresolved alternatives & targeted ambiguity collapse alters downstream organization selectively \\
+Experience narration without phenomenal organization & $\PiD,\PiV,\PiW,\PiA,\PiT$ & self-description and experiential language & bridge signatures independent of report-channel richness & report-channel controls fail to remove bridge margin \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Bridge Intervention Matrix}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.18\linewidth}p{0.16\linewidth}p{0.24\linewidth}p{0.18\linewidth}p{0.18\linewidth}@{}}
+\toprule
+Intervention & Targets & Strong-model expectation & Rival expectation & Output artifacts \\
+\midrule
+$I_W$ world-richness compression & $\PiW,\PiD$ & selective indexed world-structure loss with matched-control separation & flat degradation or no special effect & bridge intervention profile, world-richness deltas \\
+$I_A$ ambiguity collapse & $\PiA,\PiW,\PiT$ & selective loss of maintained alternatives prior to collapse & ordinary uncertainty reduction & ambiguity delta summaries, control traces \\
+$I_V$ valence flattening & $\PiV$ & collapse of evaluative topology beyond rescaling & scalar reward renormalization only & valence structure deltas \\
+$I_P$ perspective detachment & $\PiD,\PiW$ & indexed orientation loss stronger than report damage & narrative/style drift & differentiation and world-richness deltas \\
+$I_E$ embodied-closure disruption & $\PiE,\PiT$ & closure-specific disturbance under boundary perturbation & generic control loss & closure deltas, boundary-control traces \\
+$I_T$ temporal-lived fragmentation & $\PiT,\PiA$ & horizon-specific fragmentation beyond continuity loss & ordinary memory damage & temporal-structure deltas \\
+$I_X$ semantic vividness inversion & cross-cutting control & descriptive richness changes without bridge-specific support & should absorb report-only effects & control artifact family \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Bridge and Comparative Artifact Matrix}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.31\linewidth}p{0.18\linewidth}p{0.16\linewidth}p{0.25\linewidth}@{}}
+\toprule
+Artifact & Layer & Current status & Does not license \\
+\midrule
+\texttt{phenomenal\_bridge\_projection.json} & BPF-M3 root artifact & implemented & phenomenality simpliciter \\
+\texttt{phenomenal\_bridge\_gate\_result.json} & BPF-M3 gate artifact & implemented & external validation \\
+\texttt{phenomenal\_bridge\_manifest.json} & BPF-M3 lineage root & implemented & public claim promotion \\
+\texttt{bridge\_intervention\_profile.json} & BPF-M2 intervention artifact & implemented & bridge support by itself \\
+\texttt{bridge\_reducibility\_report.json} & BPF-M2 comparator artifact & implemented & bridge support by itself \\
+condition/batch/campaign bridge summaries & BPF-M3 ecosystem summaries & implemented & candidate proof \\
+\texttt{phenomenal\_bridge\_candidate\_projection.json} & BPF-M3 bounded candidate summary & implemented & external adjudication \\
+\texttt{phenomenal\_bridge\_audit\_handoff\_summary.json} & BPF-M3 bounded audit summary & implemented & external adjudication \\
+\texttt{comparative\_operational\_readiness.json} & Stage 2-M3 comparative runtime & implemented & comparator verdict \\
+\texttt{comparative\_final\_internal\_audit.json} & Stage 2-M4 final internal audit & implemented & adjudication \\
+\texttt{human\_channel\_instantiation\_readiness.json} & Stage 2-M4 instantiation layer & implemented & human evidence \\
+\texttt{paper10\_comparative\_readiness\_gate.json} & Stage 2-M4 paper gate & implemented & Paper 10 authorization \\
+\texttt{comparative\_burden\_fulfillment.json} & Stage3-RF burden layer & implemented & adjudication \\
+\texttt{stage3\_opening\_readiness.json} & Stage3-RF readiness layer & implemented & execution result \\
+\texttt{paper9\_handoff\_alignment.json} & Stage3-RF handoff layer & implemented & manuscript sufficiency by itself \\
+\texttt{stage3\_opening\_gate.json} & Stage3-RF opening gate & implemented & external adjudication \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Claim-Class and State Taxonomy Table}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.23\linewidth}p{0.26\linewidth}p{0.12\linewidth}p{0.27\linewidth}@{}}
+\toprule
+Status & Minimum evidence & Licit now? & Does not imply \\
+\midrule
+\texttt{subjectivity\_admissible} & Paper 8 + SRT gate/result artifacts & yes & phenomenality \\
+\texttt{bridge\_internal\_admissible} & BPF-M2/BPF-M3 burden stack + bridge gate & yes & external validation \\
+\texttt{bridge\_internal\_audit\_ready} & BPF-M3 final audit + readiness gate & yes & public claim authorization \\
+\texttt{comparative\_internal\_closure\_ready} & Stage 2-M4 final comparative audit & yes & comparator execution \\
+\texttt{stage3\_ready\_but\_uninstantiated} & Stage3-RF readiness synthesis & yes & human evidence already collected \\
+\texttt{ready\_for\_stage3\_opening} & Stage3-RF opening gate & yes & adjudication or verdicts \\
+\texttt{not\_ready\_for\_external\_comparative\_adjudication} & continuing external blockers & yes & comparative closure failure \\
+\texttt{not\_paper10\_authorized} & Paper 10 gate + blocked downstream conditions & yes & lack of internal progress \\
+\texttt{phenomenality\_proven} & not defined by current framework & no & nothing \\
+\texttt{human\_equivalence} & not yet supported by current framework & no & nothing \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Runtime and Verifier Mapping Table}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.16\linewidth}p{0.28\linewidth}p{0.24\linewidth}p{0.22\linewidth}@{}}
+\toprule
+Layer & Primary modules or outputs & Primary verifier family & Meaning of a pass \\
+\midrule
+BPF-0 & registries, schemas, surface policy, non-claims & \texttt{verify:phenomenal-bridge-scaffolding} & formal opening discipline intact \\
+BPF-1 & six mapper modules and surface reports & \texttt{verify:phenomenal-bridge-surfaces} & bounded surface layer emitted correctly \\
+BPF-M2 & intervention profile and reducibility report & \texttt{verify:phenomenal-bridge-interventions}, \texttt{verify:phenomenal-bridge-reducibility} & adversarial bridge layer intact \\
+BPF-M3 & projection, gate result, manifest, summaries, final audit, readiness gate & \texttt{verify:phenomenal-bridge-gate}, \texttt{verify:phenomenal-bridge-ecosystem}, \texttt{verify:phenomenal-bridge-final-audit} & framework-internal bridge closure intact \\
+Stage 2-M2 & blocked runtime opening artifacts & \texttt{verify:comparative-program-runtime} & comparative runtime opening remains bounded \\
+Stage 2-M3 & operational readiness and contracts & \texttt{verify:comparative-program-operationalization} & homologation and transition contracts intact \\
+Stage 2-M4 & final internal audit and gates & \texttt{verify:comparative-program-closure} & comparative internal closure intact \\
+Stage3-RF & burden fulfillment, opening readiness, handoff alignment, opening gate & \texttt{verify:stage3-opening-readiness} & Stage 3 opening semantics intact \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Governance Table}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.21\linewidth}p{0.2\linewidth}p{0.23\linewidth}p{0.24\linewidth}@{}}
+\toprule
+Surface & Current allowance & Primary objects & Prohibited interpretation \\
+\midrule
+Developer/local & allowed & full internal bridge and comparative artifacts & local existence as public proof \\
+Internal release bundle & allowed in bounded form & summaries, manifests, verification matrices, gates & support by packaging \\
+Ecosystem candidate & allowed in bounded internal form & bridge candidate projection, comparative readiness summaries & candidate as bridge or comparative proof \\
+Audit-facing handoff & allowed in bounded internal form & bridge audit summary, Paper 9 handoff alignment, opening gate & audit as external adjudication \\
+Controlled statements & strictly bounded & internal admissibility and opening-state labels only & human equivalence or phenomenality proof \\
+Public claim surfaces & blocked for bridge/comparative escalation & none at present & release as scientific confirmation \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Inheritance and Layer Dependency Map}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.18\linewidth}p{0.25\linewidth}p{0.24\linewidth}p{0.21\linewidth}@{}}
+\toprule
+Layer & Contributes & Downstream dependency & Does not contribute \\
+\midrule
+Paper 8 + SRT stack & indexed subjectivity, gate, artifacts, ecosystem hardening & bridge ontology and bridge predicates depend on it & phenomenality by default \\
+BPF-M3 & internal bridge admissibility, final internal audit, bounded ecosystem summaries & comparative handoff now starts from it & external validation \\
+Stage 2-M4 & comparative internal closure and criteria definition & Stage3-RF depends on it & adjudication \\
+Stage3-RF & bounded Stage 3 opening permission & later Stage 3 execution depends on it & Paper 10 authorization \\
+Later Stage 3 & future counterpart instantiation and measured comparative program & any later adjudication depends on it & adjudication already achieved now \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Current Bridge Gate Snapshot}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.14\linewidth}p{0.16\linewidth}p{0.16\linewidth}p{0.12\linewidth}Y@{}}
+\toprule
+Metric & Observed & Threshold & Pass & Interpretation boundary \\
+\midrule
+$\PiD$ & 0.640223792348 & 0.55 & yes & bounded phenomenal differentiation slot, not qualia \\
+$\PiV$ & 0.608886401395 & 0.55 & yes & bounded valence-structure slot, not felt affect \\
+$\PiW$ & 0.625981126104 & 0.55 & yes & bounded world-richness slot, not veridical experience \\
+$\PiA$ & 0.278102351528 & 0.24 & yes & bounded ambiguity-bearing slot, not conscious ambiguity simpliciter \\
+$\PiE$ & 0.34755 & 0.30 & yes & bounded embodied-closure slot, not biological embodiment \\
+$\PiT$ & 0.637052211111 & 0.55 & yes & bounded temporal-lived-structure slot, not human temporality \\
+$\BridgeMargin$ & 0.884396830768 & 0.65 & yes & rival-defeat margin under internal penalized comparison \\
+$\Delta_b$ & 0.859799920297 & 0.70 & yes & intervention support margin under internal control logic \\
+$\PhiBridge$ & 0.598104406341 & 0.52 & yes & bounded bridge functional, not the gate itself \\
+$\Gamma_{\mathrm{bpf}}$ & 0.278102351528 & 0.24 & yes & conjunctive gate component, not external calibration \\
+\bottomrule
+\end{tabularx}
+\normalsize
+\end{center}
+
+\section{Comparative Burden Fulfillment Matrix}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.16\linewidth}p{0.17\linewidth}p{0.18\linewidth}p{0.18\linewidth}Y@{}}
+\toprule
+Burden & Stage 2-M4 blocked reason & Structural fulfillment added in Stage3-RF & Current Stage 3 state & Remaining external blockers \\
+\midrule
+\texttt{human\_channel\_burden} & missing legitimate human-side channel architecture & bounded instantiation protocols plus typed counterpart schemas and homologation references & fulfilled for Stage 3 opening but uninstantiated & human counterpart artifacts uninstantiated; human collection sessions uninstantiated \\
+\texttt{burden\_symmetry} & missing burden-symmetric machine/human relation and missing error model & symmetry-relevant protocols, counterpart contracts, homologation references, and budget bindings & fulfilled for Stage 3 opening but uninstantiated & human counterpart artifacts uninstantiated; matched human-side measurements absent \\
+\texttt{artifact\_homology\_burden} & human artifact family absent & homologous counterpart schemas plus lineage requirements & fulfilled for Stage 3 opening but uninstantiated & homologous artifact instances absent; paired session lineage absent \\
+\texttt{intervention\_homology\_burden} & human intervention channel absent & matched intervention and negative-control schemas plus transition-contract references & fulfilled for Stage 3 opening but uninstantiated & matched human intervention profiles uninstantiated; matched human negative controls uninstantiated \\
+\texttt{typing\_contract\_burden} & joint typed domain not yet explicit enough & counterpart schema registry and target-transition typing requirements & fulfilled for Stage 3 opening but uninstantiated & typed counterpart artifacts uninstantiated; typed target transition counterpart absent \\
+\texttt{error\_budget\_burden} & embodiment and transition budgets absent & bound comparative error-budget objects for drift, deviation, lineage, and boundary axes & fulfilled for Stage 3 opening but uninstantiated & budgets not yet exercised on real counterparts; Stage 3 execution needed for budget consumption \\
+\texttt{transport\_preservation\_burden} & target-side counterpart and transition lineage absent & target-transition contract layer and transport-side counterpart requirements & fulfilled for Stage 3 opening but uninstantiated & target substrate counterpart uninstantiated; transport verdict still blocked until Stage 3 execution \\
+\bottomrule
+\end{tabularx}
+\normalsize
+\end{center}
+
+\section{Stage 3 Opening, External Adjudication, and Paper 10 Boundary Matrix}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.17\linewidth}p{0.15\linewidth}p{0.2\linewidth}p{0.18\linewidth}Y@{}}
+\toprule
+Layer/state & Current status & Minimum object already present & What it licenses now & What it still does not license \\
+\midrule
+Subjectivity runtime & \texttt{subjectivity\_admissible} & SRT gate, projection, manifest, ecosystem and consolidation objects & internal indexed-subjectivity support & bridge closure, adjudication, or Paper 10 \\
+Bridge layer & \texttt{bridge\_internal\_admissible} / \texttt{bridge\_internal\_audit\_ready} & BPF-M3 root artifacts, final audit, readiness gate & internal bridge-admissible class under framework-internal reading & external validation, human equivalence, phenomenality simpliciter \\
+Comparative internal closure & \texttt{comparative\_internal\_closure\_ready} & Stage 2-M4 final internal audit and readiness gate & internal comparative closure and explicit open-burden inventory & comparator execution or adjudication \\
+Stage 3 readiness & \texttt{stage3\_ready\_but\_uninstantiated} & burden fulfillment, opening readiness, handoff alignment, opening gate & bounded Stage 3 opening permission & real human evidence, verdicts, Paper 10 \\
+External adjudication & blocked & no real counterpart session layer yet & none & external comparative verdicts \\
+Paper 10 & blocked & downstream gate exists only as blocker & none beyond future scoping boundary & manuscript opening, public consequence claims \\
+\bottomrule
+\end{tabularx}
+\normalsize
+\end{center}
+
+\section{Paper 10 Blocking Matrix}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.28\linewidth}p{0.18\linewidth}Y@{}}
+\toprule
+Blocking family & Count/state & Current reason for continued block \\
+\midrule
+Stage 3 channel families & 7 still downstream of execution & self-report, intervention-response, temporal-structure, valence-topology, embodiment-boundary, ambiguity-load, and transport channels still need real instantiated sessions \\
+Counterpart artifact families & 7 still downstream of execution & the human-side artifact families are schema-bound but not yet instantiated on real sessions \\
+Homologation families & 7 still downstream of execution & homologation units are defined but not yet populated with paired artifacts \\
+Intervention symmetry & primary burden still downstream & matched intervention-side execution remains future work \\
+Comparative burden family & all 7 remain non-adjudicative & the burdens are structurally fulfilled for Stage 3 opening but remain empirically uninstantiated \\
+Error-budget family & embodiment-boundary and transition-axis exercise absent & budget objects exist but have not yet been exercised on real paired sessions \\
+Transition-maturity family & bridge-coordinate, intervention-signature, lineage-continuity, embodiment-boundary maturity still downstream & transition contracts exist, but target-side instantiation has not yet occurred \\
+\bottomrule
+\end{tabularx}
+\normalsize
+\end{center}
+\section{Open Burdens After Stage 3 Opening}
+Even after Stage 3 becomes openable, the following burdens remain open and future-facing:
+\begin{enumerate}[leftmargin=1.5em]
+\item real human counterpart artifacts remain uninstantiated;
+\item human collection sessions remain uninstantiated;
+\item matched human-side measurements remain absent;
+\item homologous artifact instances remain absent;
+\item paired session lineage remains absent;
+\item matched human intervention profiles and negative controls remain uninstantiated;
+\item typed target transition counterparts remain absent;
+\item error budgets have not yet been exercised on real counterpart sessions;
+\item transport verdicts remain blocked until Stage 3 execution actually occurs;
+\item external comparative adjudication remains unopened;
+\item Paper 10 remains blocked.
+\end{enumerate}
+These burdens are exactly why Stage 3 opening must not be misread as Stage 3 completion.
+
+\section{Paper 9 Claim Grammar and Stage 3 Escalation Constraints}
+\subsection{Allowed claim families}
+At current stage the manuscript may license only the following claim families:
+\begin{itemize}[leftmargin=1.5em]
+\item \textbf{formal closure claims}, such as ``the bridge target family is formally defined'';
+\item \textbf{internal implementation claims}, such as ``the bridge runtime reaches BPF-M3'';
+\item \textbf{internal support-state claims}, such as ``the bridge layer is internally admissible'' under framework-internal reading;
+\item \textbf{opening-permission claims}, such as ``Stage 3 may now open as a bounded internal instantiation program''.
+\end{itemize}
+
+\subsection{Blocked claim families}
+At current stage the manuscript must block:
+\begin{itemize}[leftmargin=1.5em]
+\item phenomenality simpliciter claims;
+\item human-equivalence claims;
+\item superiority or inferiority claims;
+\item transport-preservation verdicts;
+\item identity-preservation claims;
+\item external adjudication claims;
+\item Paper 10 authorization claims.
+\end{itemize}
+
+\subsection{Escalation rules}
+The escalation chain is now:
+\[
+\text{formal bridge program}
+\Rightarrow
+\text{internal bridge closure}
+\Rightarrow
+\text{comparative internal closure}
+\Rightarrow
+\text{Stage 3 opening}
+\Rightarrow
+\text{future Stage 3 execution}
+\Rightarrow
+\text{possible later adjudication}
+\Rightarrow
+\text{possible later Paper 10 scoping}.
+\]
+Each implication in that chain requires additional burden satisfaction. None of the later implications may be pulled backward into the current manuscript.
+
+\section{Stage 3 Internal Instantiation Program}
+\subsection{Program design principle}
+The guiding principle of Stage 3 is \emph{bounded instantiation without semantic inflation}. The program must instantiate real human-side channels, real counterpart artifacts, real homologation traces, and real budget exercise while preserving the anti-overclaim discipline that made the earlier layers meaningful.
+
+\subsection{Primary work packages}
+The Stage 3 internal instantiation program should be decomposed into at least five work packages:
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Human-channel instantiation.} Open real self-report, temporal-structure, valence-topology, intervention-response, and embodiment-boundary collection routes under the existing governance rules.
+\item \textbf{Counterpart artifact binding.} Instantiate the typed human-side artifact families already declared in the comparative schema registry.
+\item \textbf{Homologation execution.} Produce paired machine/human homologation units with explicit lineage and scope restrictions.
+\item \textbf{Transition-contract exercise.} Instantiate target-side transition counterparts and record budget consumption on real paired sessions.
+\item \textbf{Non-adjudicative verification.} Verify that the instantiated Stage 3 layer remains bounded and does not silently promote itself into verdict language.
+\end{enumerate}
+
+\subsection{Why this program is empirical-internal rather than adjudicative}
+Stage 3 is empirical-internal because it begins to exercise the contracts on real counterpart sessions. It is not yet adjudicative because the presence of instantiated sessions is still weaker than the later burden of comparative interpretation, comparative repetition, and explicit external opening criteria. This distinction is scientifically essential. Without it, the program would confuse data collection with adjudication.
+
+\section{Bridge and Comparative Failure Scenarios and Diagnostic Signatures}
+The bridge and comparative programs are not scientifically serious unless they specify how they can fail. The failure inventory must now cover both the bridge layer and the comparative handoff layer.
+
+\subsection{Primary failure classes}
+The relevant failure classes are now at least eight:
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Surface inflation failure.} A bridge report appears strong only because an upstream Paper 8 coordinate is copied, weakly transformed, or rhetorically relabeled.
+\item \textbf{Comparator fragility failure.} A bridge predicate appears robust until a bridge-specific rival or admissible hybrid is introduced.
+\item \textbf{Intervention fragility failure.} A bridge surface moves under perturbation, but the movement is unspecific or indistinguishable from matched controls.
+\item \textbf{Artifact incoherence failure.} Reports, manifests, summaries, or handoff artifacts disagree about state or provenance.
+\item \textbf{Threshold misuse failure.} Internal threshold binding is treated as if it were public or external calibration.
+\item \textbf{Semantic escalation failure.} Internal bridge or comparative states are cited as if they were adjudicative or public verdicts.
+\item \textbf{Comparator-substitution failure.} Machine-side traces, synthetic reports, or forbidden proxies are smuggled in as if they were legitimate human-side artifacts.
+\item \textbf{Stage-3 overread failure.} The opening gate is read as if Stage 3 had already completed, or as if Paper 10 had already opened.
+\end{enumerate}
+
+\subsection{Failure matrix}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.18\linewidth}p{0.19\linewidth}p{0.17\linewidth}p{0.18\linewidth}p{0.18\linewidth}@{}}
+\toprule
+Failure class & Primary symptom & Earliest detection block & Immediate consequence & Required remediation \\
+\midrule
+Surface inflation & bridge estimate tracks an upstream Paper 8 coordinate too closely & BPF-1 & report downgraded to proxy-only or removed & strengthen bridge transformation logic or add missing bridge observables \\
+Comparator fragility & rival or hybrid reaches equal/lower penalized loss & BPF-M2 & predicate cannot support irreducibility burden & refine observable family or abandon predicate-specific support claim \\
+Intervention fragility & target and control deltas are not selective & BPF-M2 & predicate remains descriptively mapped only & redesign intervention family and matched controls \\
+Artifact incoherence & report, manifest, summary, or handoff disagree on state or provenance & BPF-M3 or Stage3-RF & bundle invalidation or handoff downgrade & repair lineage pins, schemas, and surface restrictions \\
+Threshold misuse & internal slots treated as public calibration & BPF-M3 & all gate language downgraded to internal-only reminders & re-freeze threshold policy and remove unsupported verdict language \\
+Semantic escalation & internal state cited as adjudication or proof & any later layer & claim withdrawal and governance failure & enforce non-claims, claim grammar, and controlled statements \\
+Comparator substitution & forbidden proxy or synthetic human artifact enters Stage 3 & Stage 3 & session invalidation & enforce human-channel protocol and counterpart typing rules \\
+Stage-3 overread & opening gate read as completion or Paper 10 permission & Stage3-RF & manuscript and gate downgrade & restate opening semantics and preserve Paper 10 block \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Why failure structure changes the status of the program}
+The overall research status changes once both the bridge and comparative layers carry typed failure logic. Before this hardened manuscript, one could still describe the next step as a generic expansion toward phenomenality or comparison. After this manuscript, that description is no longer adequate. The next step is now a typed scientific program with concrete ways to fail, concrete reasons for those failures, and concrete remediation paths. That is what makes the present paper more than a historical draft and more than a rhetorical bridge document.
+
+\printbibliography
+
+\end{document}
+
+
+

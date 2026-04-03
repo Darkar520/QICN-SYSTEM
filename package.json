@@ -73,7 +73,8 @@
     "start": "node node_modules/serve/build/main.js -p 3000 --no-port-switching .",
     "start:local": "node scripts/local-sandbox-server.mjs",
     "build:stage3-readiness-fulfillment": "node scripts/build-stage3-readiness-fulfillment.cjs",
-    "verify:stage3-opening-readiness": "node scripts/verify-stage3-opening-readiness.cjs"
+    "verify:stage3-opening-readiness": "node scripts/verify-stage3-opening-readiness.cjs",
+    "verify:paper9-handoff-readiness": "node scripts/verify-paper9-handoff-readiness.cjs"
   },
   "keywords": [],
   "author": "",

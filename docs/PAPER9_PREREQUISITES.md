@@ -30,3 +30,12 @@ This file records the local prerequisites for treating the Paper 9 handoff subst
 - external comparative adjudication
 - Paper 10
 - metaphysical closure
+
+## Manuscript source now present inside QICN-SYSTEM
+
+- manuscript source: `paper9_phenomenal_bridge_organization/main.tex`
+- compiled local PDF: `paper9_phenomenal_bridge_organization/main.pdf`
+- shared bibliography copy for local compilation: `paper9_phenomenal_bridge_organization/references.bib`
+- manuscript-local bibliography: `paper9_phenomenal_bridge_organization/paper9_local_references.bib`
+
+This presence matters because Paper 9 closure is no longer only a handoff-substrate question. The allowed local roots now contain a real manuscript source tree that can be hardened, compiled, checked for bounded wording, and used as the formal Stage 3 handoff document.

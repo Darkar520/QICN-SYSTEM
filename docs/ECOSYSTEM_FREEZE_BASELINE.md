@@ -44,6 +44,8 @@ release candidate composed by `QICN-SYSTEM` and `QICN-RELEASE`.
   - explicit historical canonical tag retained as provenance:
     `canonical-freeze-2026-03-01`
   - active release-candidate branch authority: `main`
+  - exact public release SHA pinned by this repo:
+    `2104e63d44a7d963776c790ca7c24555aba2c2fb`
   - active mathematical base layer: `BaseCore`
   - public downstream packages: Papers I-IX
   - preserved legacy package: `canonical_core_legacy`

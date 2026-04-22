@@ -11,7 +11,7 @@ ecosystem alignment against the release package.
 | Item | Value | Status |
 | --- | --- | --- |
 | Canonical theory lineage referenced by release materials | `rigid-identity-framework/*` as recorded inside `QICN-RELEASE` manifests | lineage_reference_only |
-| Current release-candidate theory package tracked by this repo | `QICN-RELEASE` working tree with `rigid-identity-framework/basecore/`, `rigid-identity-framework/canonical_core_legacy/`, and downstream Papers I-IX | locally_aligned_sync_preparation_surface |
+| Current public release package pinned by this repo | `QICN-RELEASE/main@2104e63d44a7d963776c790ca7c24555aba2c2fb` with `rigid-identity-framework/basecore/`, `rigid-identity-framework/canonical_core_legacy/`, and downstream Papers I-IX | verified_public_release_sha_pinned |
 | Historical frozen public corpus baseline | `QICN-RELEASE/main` at the March 2026 freeze lineage | historical_public_freeze_provenance |
 | Historical canonical corpus tag | `canonical-freeze-2026-03-01` -> `2d7504be95ca33af5941e30abf7059dc2774edca` | retained_for_provenance |
 | Direct upstream repo pin for the original pre-freeze `rigid-identity-framework` working tree | not separately pinned in this repo | not_required_for_current_release_surface_alignment |
@@ -27,8 +27,8 @@ I-VIII` description. The current release-candidate source package now uses:
 - downstream public package set: Papers I-IX
 
 The historical March 2026 public freeze remains important provenance, but it
-is no longer the right description of the current release-candidate trunk
-surface being prepared for synchronization.
+is no longer the right description of the current public release trunk pinned
+above.
 
 ## Current Release-Candidate Boundary
 
@@ -66,17 +66,18 @@ Verified alignment facts from those release-candidate surfaces:
 
 ## Pinning Outcome
 
-- Current cross-repo alignment target: `QICN-RELEASE` working tree with
-  `BaseCore` as active base layer, `canonical_core_legacy` as preserved legacy,
-  and Papers I-IX as downstream public packages.
+- Current cross-repo alignment target:
+  `QICN-RELEASE/main@2104e63d44a7d963776c790ca7c24555aba2c2fb` with `BaseCore`
+  as active base layer, `canonical_core_legacy` as preserved legacy, and
+  Papers I-IX as downstream public packages.
 - Historical public freeze provenance retained:
   `canonical-freeze-2026-03-01` -> `2d7504be95ca33af5941e30abf7059dc2774edca`.
 - Separate direct upstream theory working-tree pin for the original private
   pre-freeze history: still not established here.
 - Required discipline: do not present the historical March 2026 freeze as if it
-  still described the current release-candidate trunk surface, and do not
-  present local alignment work as already synchronized public GitHub state until
-  sync actually occurs.
+  still described the current public trunk pinned above, and do not confuse a
+  public SHA pin with external validation, theory confirmation, or claim
+  closure.
 
 ## Inherited Claim Families
 
@@ -96,6 +97,6 @@ The following claim identifiers are inherited from `src/canon/claimMapping/canon
 - This repository does not certify external validation.
 - This repository does not replace the canonical theory corpus.
 - This repository does not, by itself, pin the upstream `rigid-identity-framework/` history.
-- The current release-candidate alignment is not identical to a completed public sync.
+- The current public SHA pin is not identical to external validation, theory confirmation, or claim closure.
 - The verified release-package freeze is not identical to a direct upstream theory-repo pin.
 - This repository does not, by itself, close claim-ledger status or publication claims.

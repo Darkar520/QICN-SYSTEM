@@ -37,17 +37,18 @@ release candidate composed by `QICN-SYSTEM` and `QICN-RELEASE`.
   - branch `main`
   - clean worktree
   - `HEAD == origin/main`
-- canonical freeze baseline:
-  - local freeze tag `release-2026-03-01`
-  - freeze commit `2d7504be95ca33af5941e30abf7059dc2774edca`
-  - explicit upstream canonical tag `canonical-freeze-2026-03-01`
-  - upstream pin status `resolved`
-  - live public trunk authority: `main`
-  - public primary formal spine: Canonical Core + Papers I-VIII
-  - public supporting lineages remain separately classified in release
-    manifests
-  - no explicit public exclusion for Paper VIII remains at the current trunk
-    authority
+- canonical release-candidate baseline:
+  - historical freeze tag retained as provenance: `release-2026-03-01`
+  - historical freeze commit retained as provenance:
+    `2d7504be95ca33af5941e30abf7059dc2774edca`
+  - explicit historical canonical tag retained as provenance:
+    `canonical-freeze-2026-03-01`
+  - active release-candidate branch authority: `main`
+  - active mathematical base layer: `BaseCore`
+  - public downstream packages: Papers I-IX
+  - preserved legacy package: `canonical_core_legacy`
+  - preserved supporting, mirror, reconstructed, and historical variants remain
+    separately classified in release manifests
 - source-of-truth artifacts:
   - `release/release_freeze_manifest.json`
   - `release/claim_registry.v1.json`

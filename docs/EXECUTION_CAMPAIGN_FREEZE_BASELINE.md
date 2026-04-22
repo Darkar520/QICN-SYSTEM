@@ -31,11 +31,12 @@ bundle regeneration.
   - `artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json`
   - `artifacts/ecosystem_release_candidate/ecosystem_verification_matrix.json`
 - the frozen campaign remains authoritative for campaign comparability
-- the current public release trunk now exposes:
-  - primary formal spine through Paper VIII
-  - supporting public lineages remain separately classified in the release
-    manifests
-  - no pending-public-acceptance exclusion for Paper VIII
+- the current release-candidate trunk now exposes:
+  - active mathematical base layer: BaseCore
+  - downstream public packages: Papers I-IX
+  - preserved legacy package: `canonical_core_legacy`
+  - preserved supporting, mirror, reconstructed, and historical variants remain
+    separately classified in the release manifests
 - this separation prevents silent rewriting of the historical campaign baseline
   while still keeping the current trunk pin explicit
 

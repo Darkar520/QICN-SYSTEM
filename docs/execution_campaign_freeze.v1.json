@@ -14,7 +14,7 @@
     "authoritative_current_system_release_ref": "artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json",
     "authoritative_current_verification_ref": "artifacts/ecosystem_release_candidate/ecosystem_verification_matrix.json",
     "interpretation_note": "Historical execution-campaign baselines remain fixed above. Current trunk authority for cross-repo coordination is emitted by the latest ecosystem candidate artifacts.",
-    "public_release_scope_note": "Pinned public release trunk is expected to expose the primary formal spine through Paper VIII, with any remaining supporting public lineages classified separately in release manifests and no pending-public-acceptance exclusion for Paper VIII."
+    "public_release_scope_note": "Current release-candidate trunk is expected to expose BaseCore as the active mathematical base layer, Papers I-IX as downstream public packages, canonical_core_legacy as a preserved legacy package, and supporting or mirror variants as explicitly classified preserved lineages."
   },
   "authoritative_artifacts": {
     "campaign_execution_plan": "artifacts/execution_campaign/campaigns/execution_campaign_primary_2026-03-25T02-15-00-000Z/campaign_execution_plan.json",

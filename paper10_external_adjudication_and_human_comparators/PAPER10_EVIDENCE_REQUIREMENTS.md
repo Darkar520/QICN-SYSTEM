@@ -1,17 +1,56 @@
 # Paper 10 Evidence Requirements
 
-Paper 10 cannot become result-bearing without at least:
+## Human comparator result insertion
 
-- a preregistration record;
-- typed human comparator execution plans bound to real collection routes;
-- admissible human comparator datasets;
-- matched intervention and negative-control datasets where required;
-- reviewer independence disclosures;
-- reproducibility package contents;
-- statistical analysis reports bound to declared estimators and thresholds;
-- explicit external failure and inconclusive handling.
+Requires all of:
 
-Internal runtime artifacts alone are insufficient.
-Paper 9 publication alone is insufficient.
-Release inclusion alone is insufficient.
-Synthetic human data is invalid.
+- frozen preregistration reference;
+- typed human comparator dataset;
+- channel-specific negative-control dataset;
+- declared statistical shell output;
+- dataset admissibility record;
+- reviewer independence bundle.
+
+## Matched intervention result insertion
+
+Requires all of:
+
+- matched intervention dataset;
+- matched negative-control dataset;
+- frozen intervention family declaration;
+- timing/branch accounting references;
+- effect-shell output;
+- failure and deviation log.
+
+## External adjudication result insertion
+
+Requires all of:
+
+- independent reviewer reports;
+- reviewer conflict disclosures;
+- blinding and unblinding log;
+- adjudicator decision record;
+- reproducibility package manifest;
+- external failure and inconclusive pathways resolved or explicitly reported.
+
+## Transport-sensitive comparison insertion
+
+Requires all of:
+
+- target counterpart manifest;
+- cross-substrate lineage map;
+- schema compatibility proof;
+- axis-specific error-budget package;
+- transport negative controls;
+- adjudicator layer.
+
+## Invalid substitutes
+
+- internal runtime artifacts alone;
+- Paper 9 publication alone;
+- release inclusion alone;
+- synthetic human data;
+- LLM-generated "human" reports;
+- undocumented manual judgments;
+- post-hoc threshold selection;
+- cherry-picked examples.

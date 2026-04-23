@@ -1,0 +1,25 @@
+{
+  "title": "reviewer_independence_assessment.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "layer_id",
+    "implementation_status",
+    "reviewer_layer_state",
+    "reviewer_selection_state",
+    "adjudicator_layer_state",
+    "adjudication_execution_state",
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "reviewer_independence_assessment" },
+    "artifact_name": { "const": "reviewer_independence_assessment.json" }
+  }
+}

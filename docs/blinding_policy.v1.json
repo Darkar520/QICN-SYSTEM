@@ -1,0 +1,21 @@
+{
+  "artifact_role": "blinding_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_2_external_adjudication_readiness",
+  "implementation_status": "stage3_2_blinding_policy_defined",
+  "blinding_classes": [
+    "fully_blinded_to_condition_labels",
+    "artifact_blinded_but_metadata_visible",
+    "authorized_unblinding_after_freeze"
+  ],
+  "unblinding_rules": [
+    "unblinding requires preregistered trigger",
+    "unblinding event must be logged with timestamp and authority class",
+    "no reviewer may self-authorize unblinding"
+  ],
+  "decision_boundaries": [
+    "blinding policy controls reviewer visibility only",
+    "blinding policy does not authorize claims or verdicts"
+  ],
+  "interpretation_boundary": "Blinding policy constrains future review execution. It does not imply adjudication has begun."
+}

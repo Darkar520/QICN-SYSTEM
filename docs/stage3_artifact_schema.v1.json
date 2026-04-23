@@ -1,14 +1,21 @@
 {
   "artifact_role": "stage3_artifact_schema_registry",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage3_0_external_adjudication_scaffold",
-  "implementation_status": "stage3_0_scaffold_governance_open",
+  "layer_id": "comparative_expansion_layer.stage3_0_to_stage3_2_external_adjudication_stack",
+  "implementation_status": "stage3_protocol_stack_defined",
   "root_schema_refs": {
     "external_adjudication_manifest.json": "src/comparative_program/schemas/external_adjudication_manifest.v1.json",
     "external_adjudication_readiness_gate.json": "src/comparative_program/schemas/external_adjudication_readiness_gate.v1.json",
     "external_evidence_admissibility_assessment.json": "src/comparative_program/schemas/external_evidence_admissibility_assessment.v1.json",
     "human_comparator_execution_plan.json": "src/comparative_program/schemas/human_comparator_execution_plan.v1.json",
+    "human_channel_instantiation_assessment.json": "src/comparative_program/schemas/human_channel_instantiation_assessment.v1.json",
+    "human_channel_preregistration_readiness.json": "src/comparative_program/schemas/human_channel_preregistration_readiness.v1.json",
+    "matched_intervention_dataset_contract_assessment.json": "src/comparative_program/schemas/matched_intervention_dataset_contract_assessment.v1.json",
+    "negative_control_dataset_contract_assessment.json": "src/comparative_program/schemas/negative_control_dataset_contract_assessment.v1.json",
+    "reviewer_independence_assessment.json": "src/comparative_program/schemas/reviewer_independence_assessment.v1.json",
+    "external_adjudication_execution_readiness.json": "src/comparative_program/schemas/external_adjudication_execution_readiness.v1.json",
     "paper10_scaffold_status.json": "src/comparative_program/schemas/paper10_scaffold_status.v1.json",
+    "paper10_protocol_hardening_status.json": "src/comparative_program/schemas/paper10_protocol_hardening_status.v1.json",
     "stage3_verification_matrix.json": "src/comparative_program/schemas/stage3_verification_matrix.v1.json"
   },
   "artifacts": {
@@ -91,6 +98,115 @@
         "Not human equivalence."
       ]
     },
+    "human_channel_instantiation_assessment.json": {
+      "role": "human_channel_instantiation_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "human_data_state",
+        "overall_state",
+        "channel_assessments",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a dataset.",
+        "Not external validation."
+      ]
+    },
+    "human_channel_preregistration_readiness.json": {
+      "role": "human_channel_preregistration_readiness",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "preregistration_state",
+        "execution_state",
+        "channel_preregistration_states",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a frozen preregistration record."
+      ]
+    },
+    "matched_intervention_dataset_contract_assessment.json": {
+      "role": "matched_intervention_dataset_contract_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "contract_state",
+        "bindings",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a dataset."
+      ]
+    },
+    "negative_control_dataset_contract_assessment.json": {
+      "role": "negative_control_dataset_contract_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "contract_state",
+        "families",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a negative-control dataset."
+      ]
+    },
+    "reviewer_independence_assessment.json": {
+      "role": "reviewer_independence_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "reviewer_layer_state",
+        "reviewer_selection_state",
+        "adjudication_execution_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not reviewer selection.",
+        "Not adjudication."
+      ]
+    },
+    "external_adjudication_execution_readiness.json": {
+      "role": "external_adjudication_execution_readiness",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "external_adjudication_state",
+        "execution_state",
+        "execution_readiness_state",
+        "remaining_blockers",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not execution."
+      ]
+    },
     "paper10_scaffold_status.json": {
       "role": "paper10_scaffold_status",
       "allowed_surfaces": [
@@ -108,6 +224,25 @@
       "non_implications": [
         "Not Paper 10 final authorization.",
         "Not a result-bearing manuscript."
+      ]
+    },
+    "paper10_protocol_hardening_status.json": {
+      "role": "paper10_protocol_hardening_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface"
+      ],
+      "minimum_fields": [
+        "paper10_state",
+        "paper10_result_state",
+        "paper10_authorization_state",
+        "paper10_evidence_insertion_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a final manuscript.",
+        "Not an adjudication verdict."
       ]
     },
     "stage3_verification_matrix.json": {

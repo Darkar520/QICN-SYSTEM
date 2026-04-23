@@ -1,0 +1,96 @@
+{
+  "artifact_role": "negative_control_dataset_contracts_definition",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_1_human_comparator_instantiation",
+  "implementation_status": "stage3_1_negative_control_dataset_contracts_defined",
+  "current_state": "instantiation_dataset_contract_ready",
+  "dataset_contract_states": [
+    "negative_control_contract_not_defined",
+    "negative_control_contract_defined",
+    "negative_control_contract_ready_but_uninstantiated",
+    "negative_control_contract_ready_for_collection",
+    "negative_control_contract_rejected"
+  ],
+  "negative_control_families": [
+    {
+      "channel_id": "self_report_channel",
+      "required_dataset_family": "self_report_blind_shuffle_control",
+      "required_metadata": [
+        "prompt_shuffle_policy",
+        "blind_assignment_rule"
+      ],
+      "invalid_substitutes": [
+        "undocumented manual prompt swap"
+      ]
+    },
+    {
+      "channel_id": "intervention_response_channel",
+      "required_dataset_family": "intervention_no_perturbation_and_sham_controls",
+      "required_metadata": [
+        "negative_control_protocol_version",
+        "timing_window_id",
+        "stop_rule_id"
+      ],
+      "invalid_substitutes": [
+        "retrospective baseline reconstruction"
+      ]
+    },
+    {
+      "channel_id": "temporal_structure_channel",
+      "required_dataset_family": "temporal_window_scramble_control",
+      "required_metadata": [
+        "window_scramble_policy",
+        "ordering_null_rule"
+      ],
+      "invalid_substitutes": [
+        "summary-only temporal baseline"
+      ]
+    },
+    {
+      "channel_id": "valence_topology_channel",
+      "required_dataset_family": "topology_label_shuffle_control",
+      "required_metadata": [
+        "label_shuffle_policy",
+        "topology_null_rule"
+      ],
+      "invalid_substitutes": [
+        "scalar reward baseline"
+      ]
+    },
+    {
+      "channel_id": "embodiment_boundary_channel",
+      "required_dataset_family": "environment_confound_and_proxy_exclusion_control",
+      "required_metadata": [
+        "environment_manifest_id",
+        "proxy_exclusion_rule"
+      ],
+      "invalid_substitutes": [
+        "motor-performance-only baseline"
+      ]
+    },
+    {
+      "channel_id": "ambiguity_load_channel",
+      "required_dataset_family": "stimulus_label_scramble_control",
+      "required_metadata": [
+        "stimulus_family_id",
+        "label_scramble_policy"
+      ],
+      "invalid_substitutes": [
+        "error-rate-only null baseline"
+      ]
+    },
+    {
+      "channel_id": "transport_preservation_channel",
+      "required_dataset_family": "target_counterpart_absence_and_source_snapshot_controls",
+      "required_metadata": [
+        "target_manifest_requirement_id",
+        "branch_accounting_id",
+        "source_snapshot_exclusion_rule"
+      ],
+      "invalid_substitutes": [
+        "source-only export treated as transport evidence"
+      ]
+    }
+  ],
+  "interpretation_boundary": "Negative-control dataset contracts define the null and exclusion structures required before future result-bearing interpretation. They are contract objects only, not datasets."
+}

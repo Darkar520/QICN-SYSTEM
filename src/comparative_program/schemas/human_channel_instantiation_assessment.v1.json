@@ -1,0 +1,24 @@
+{
+  "title": "human_channel_instantiation_assessment.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "layer_id",
+    "implementation_status",
+    "human_data_state",
+    "overall_state",
+    "channel_assessments",
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "human_channel_instantiation_assessment" },
+    "artifact_name": { "const": "human_channel_instantiation_assessment.json" }
+  }
+}

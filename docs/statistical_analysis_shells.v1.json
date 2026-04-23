@@ -1,0 +1,132 @@
+{
+  "artifact_role": "statistical_analysis_shell_registry",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_2_external_adjudication_readiness",
+  "implementation_status": "stage3_2_statistical_shells_defined",
+  "shells": [
+    {
+      "shell_id": "self_report_reliability_shell",
+      "channel_scope": [
+        "self_report_channel"
+      ],
+      "required_inputs": [
+        "typed self-report traces",
+        "negative control traces"
+      ],
+      "required_outputs": [
+        "reliability summary",
+        "uncertainty summary",
+        "control comparison summary"
+      ],
+      "non_implications": [
+        "Reliability shell output is not equivalence."
+      ]
+    },
+    {
+      "shell_id": "matched_intervention_effect_shell",
+      "channel_scope": [
+        "intervention_response_channel"
+      ],
+      "required_inputs": [
+        "matched intervention dataset",
+        "matched negative control dataset"
+      ],
+      "required_outputs": [
+        "effect family summary",
+        "control contrast summary",
+        "failure and deviation summary"
+      ],
+      "non_implications": [
+        "Effect shell output is not superiority or inferiority."
+      ]
+    },
+    {
+      "shell_id": "temporal_structure_alignment_shell",
+      "channel_scope": [
+        "temporal_structure_channel"
+      ],
+      "required_inputs": [
+        "typed temporal structure reports",
+        "temporal negative controls"
+      ],
+      "required_outputs": [
+        "ordering alignment summary",
+        "aggregation policy summary"
+      ],
+      "non_implications": [
+        "Temporal alignment is not continuity equivalence."
+      ]
+    },
+    {
+      "shell_id": "valence_topology_shell",
+      "channel_scope": [
+        "valence_topology_channel"
+      ],
+      "required_inputs": [
+        "typed valence-topology reports",
+        "label-shuffle negative controls"
+      ],
+      "required_outputs": [
+        "topology family summary",
+        "control comparison summary"
+      ],
+      "non_implications": [
+        "Topology shell output is not affective equivalence."
+      ]
+    },
+    {
+      "shell_id": "embodiment_boundary_shell",
+      "channel_scope": [
+        "embodiment_boundary_channel"
+      ],
+      "required_inputs": [
+        "typed embodiment-boundary reports",
+        "environment confound controls"
+      ],
+      "required_outputs": [
+        "error-budget summary",
+        "confound-adjusted comparison summary"
+      ],
+      "non_implications": [
+        "Embodiment shell output is not embodiment equivalence."
+      ]
+    },
+    {
+      "shell_id": "ambiguity_load_shell",
+      "channel_scope": [
+        "ambiguity_load_channel"
+      ],
+      "required_inputs": [
+        "typed ambiguity-load reports",
+        "stimulus-label scramble controls"
+      ],
+      "required_outputs": [
+        "annotation reliability summary",
+        "ambiguity-load comparison summary"
+      ],
+      "non_implications": [
+        "Ambiguity shell output is not comparator equivalence."
+      ]
+    },
+    {
+      "shell_id": "transport_preservation_shell",
+      "channel_scope": [
+        "transport_preservation_channel"
+      ],
+      "required_inputs": [
+        "transition contract package",
+        "target counterpart manifest",
+        "transport negative controls"
+      ],
+      "required_outputs": [
+        "axis-specific error-budget summary",
+        "transition lineage summary",
+        "control failure summary"
+      ],
+      "non_implications": [
+        "Transport shell output is not identity preservation."
+      ]
+    }
+  ],
+  "interpretation_boundary": "Statistical shells define declared analysis families only. They do not execute analysis and do not supply results."
+}

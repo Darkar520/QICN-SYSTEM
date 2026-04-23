@@ -47,6 +47,11 @@ export {
   listExternalAdjudicationStates
 } from './ExternalAdjudicationProtocolRegistry.js';
 export {
+  EXTERNAL_ADJUDICATION_PREREGISTRATION_TEMPLATE,
+  HUMAN_COMPARATOR_PREREGISTRATION_TEMPLATE,
+  listExternalPreregistrationObjectClasses
+} from './ExternalAdjudicationPreregistrationRegistry.js';
+export {
   EXTERNAL_EVIDENCE_ADMISSIBILITY,
   listExternalEvidenceClasses
 } from './ExternalEvidenceAdmissibilityRegistry.js';
@@ -60,6 +65,18 @@ export {
   listHumanChannelInstantiationProtocols,
   getHumanChannelInstantiationProtocol
 } from './HumanChannelInstantiationProtocolsRegistry.js';
+export {
+  HUMAN_CHANNEL_INSTANTIATION_CONTRACTS,
+  listHumanChannelInstantiationContracts,
+  getHumanChannelInstantiationContract,
+  listHumanChannelInstantiationStates
+} from './HumanChannelInstantiationContractRegistry.js';
+export {
+  HUMAN_CHANNEL_PREREGISTRATION_TEMPLATES,
+  listHumanChannelPreregistrationTemplates,
+  getHumanChannelPreregistrationTemplate,
+  listHumanChannelPreregistrationStates
+} from './HumanChannelPreregistrationRegistry.js';
 export {
   COMPARATIVE_COUNTERPART_SCHEMA_REGISTRY,
   listComparativeCounterpartSchemas,
@@ -83,6 +100,32 @@ export {
   STAGE3_EXPECTED_ARTIFACTS,
   getStage3ArtifactSpec
 } from './Stage3ArtifactRegistry.js';
+export {
+  MATCHED_INTERVENTION_DATASET_CONTRACTS,
+  listMatchedInterventionDatasetContracts,
+  getMatchedInterventionDatasetContractForChannel
+} from './MatchedInterventionDatasetContractRegistry.js';
+export {
+  NEGATIVE_CONTROL_DATASET_CONTRACTS,
+  listNegativeControlDatasetContracts,
+  getNegativeControlDatasetContractForChannel
+} from './NegativeControlDatasetContractRegistry.js';
+export {
+  REVIEWER_INDEPENDENCE_PROTOCOL,
+  REVIEWER_SELECTION_CRITERIA,
+  CONFLICT_OF_INTEREST_POLICY,
+  BLINDING_POLICY,
+  listReviewerRoles
+} from './ReviewerIndependenceRegistry.js';
+export {
+  ADJUDICATOR_INDEPENDENCE_CRITERIA,
+  listAdjudicatorStates
+} from './AdjudicatorIndependenceRegistry.js';
+export {
+  STATISTICAL_ANALYSIS_SHELLS,
+  listStatisticalAnalysisShells,
+  getStatisticalAnalysisShell
+} from './StatisticalAnalysisShellRegistry.js';
 export {
   PAPER10_SCAFFOLD_MANIFEST,
   listPaper10RequiredSections
@@ -162,6 +205,10 @@ export {
   createHumanChannelInstantiationReadinessEvaluator
 } from './HumanChannelInstantiationReadinessEvaluator.js';
 export {
+  HumanChannelInstantiationEvaluator,
+  createHumanChannelInstantiationEvaluator
+} from './HumanChannelInstantiationEvaluator.js';
+export {
   ComparativeFinalInternalAuditor,
   createComparativeFinalInternalAuditor
 } from './ComparativeFinalInternalAuditor.js';
@@ -185,3 +232,11 @@ export {
   Stage3ReadinessFulfillmentBuilder,
   createStage3ReadinessFulfillmentBuilder
 } from './Stage3ReadinessFulfillmentBuilder.js';
+export {
+  Paper10ProtocolHardeningBuilder,
+  createPaper10ProtocolHardeningBuilder
+} from './Paper10ProtocolHardeningBuilder.js';
+export {
+  Stage3ExecutionReadinessBuilder,
+  createStage3ExecutionReadinessBuilder
+} from './Stage3ExecutionReadinessBuilder.js';

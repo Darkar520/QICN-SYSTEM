@@ -34,16 +34,16 @@
       "id": "stage2_m2_lineage_refreshed",
       "status": "PASS",
       "details": {
-        "stage2_m2_head": "0eed4e917fcdaa9a19266ecd8459c32588f13001",
-        "currentHead": "0eed4e917fcdaa9a19266ecd8459c32588f13001"
+        "stage2_m2_head": "8c07da684c1d7ed4b357063bfbf0db0aadc7500d",
+        "currentHead": "8c07da684c1d7ed4b357063bfbf0db0aadc7500d"
       }
     },
     {
       "id": "stage2_m3_lineage_refreshed",
       "status": "PASS",
       "details": {
-        "stage2_m3_head": "0eed4e917fcdaa9a19266ecd8459c32588f13001",
-        "currentHead": "0eed4e917fcdaa9a19266ecd8459c32588f13001"
+        "stage2_m3_head": "8c07da684c1d7ed4b357063bfbf0db0aadc7500d",
+        "currentHead": "8c07da684c1d7ed4b357063bfbf0db0aadc7500d"
       }
     },
     {
@@ -134,7 +134,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; the Stage 2-M4 comparative verification matrix records closure-audit and opening-gate checks. It is not comparative evidence, not public claim authorization, and not external adjudication.",
   "provenance": {
-    "generated_at": "2026-04-23T01:52:14.861Z",
+    "generated_at": "2026-04-23T03:39:53.321Z",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage2_m4.internal_closure.v1",
       "estimator_version": "comparative_closure_builder.stage2_m4.v1",
@@ -242,7 +242,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "0eed4e917fcdaa9a19266ecd8459c32588f13001",
+        "head": "8c07da684c1d7ed4b357063bfbf0db0aadc7500d",
         "upstream": "origin/main"
       },
       "qicn_release": {

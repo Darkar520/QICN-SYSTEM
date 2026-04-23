@@ -1,0 +1,144 @@
+{
+  "artifact_role": "human_channel_preregistration_templates_definition",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_1_human_comparator_instantiation",
+  "implementation_status": "stage3_1_preregistration_templates_defined",
+  "current_state": "preregistration_template_defined",
+  "template_only": true,
+  "status_classes": [
+    "preregistration_not_open",
+    "preregistration_template_defined",
+    "preregistration_ready_for_freeze",
+    "preregistration_incomplete",
+    "preregistration_not_executed"
+  ],
+  "common_required_fields": [
+    "template_id",
+    "channel_id",
+    "protocol_version",
+    "primary_endpoint_family",
+    "collection_route",
+    "eligibility_rules",
+    "negative_control_plan",
+    "analysis_shell_id",
+    "blinding_plan_id",
+    "threshold_declaration_id",
+    "missingness_policy_id",
+    "failure_pathway_id",
+    "inconclusive_pathway_id"
+  ],
+  "channel_templates": [
+    {
+      "channel_id": "self_report_channel",
+      "required_fields": [
+        "prompt_schedule",
+        "response-encoding schema",
+        "narrative redaction policy"
+      ],
+      "freeze_requirements": [
+        "prompt_set_id frozen before collection",
+        "response coding rules frozen before collection"
+      ],
+      "invalid_retrospective_edits": [
+        "post-hoc prompt replacement",
+        "post-hoc narrative compression rule change"
+      ]
+    },
+    {
+      "channel_id": "intervention_response_channel",
+      "required_fields": [
+        "intervention_family",
+        "negative_control_family",
+        "dose_or_intensity_policy",
+        "stop_rule"
+      ],
+      "freeze_requirements": [
+        "intervention family frozen before collection",
+        "negative control family frozen before collection",
+        "stop rule frozen before collection"
+      ],
+      "invalid_retrospective_edits": [
+        "post-hoc intervention regrouping",
+        "post-hoc intensity threshold selection"
+      ]
+    },
+    {
+      "channel_id": "temporal_structure_channel",
+      "required_fields": [
+        "segmentation_schema_version",
+        "aggregation_policy"
+      ],
+      "freeze_requirements": [
+        "segmentation schema frozen before collection",
+        "aggregation policy frozen before collection"
+      ],
+      "invalid_retrospective_edits": [
+        "post-hoc resegmentation",
+        "post-hoc aggregation family swap"
+      ]
+    },
+    {
+      "channel_id": "valence_topology_channel",
+      "required_fields": [
+        "topology_schema_version",
+        "reliability_policy"
+      ],
+      "freeze_requirements": [
+        "topology schema frozen before collection"
+      ],
+      "invalid_retrospective_edits": [
+        "post-hoc topology simplification",
+        "post-hoc scalar collapse"
+      ]
+    },
+    {
+      "channel_id": "embodiment_boundary_channel",
+      "required_fields": [
+        "environment_manifest_schema",
+        "error_budget_policy",
+        "confound_family"
+      ],
+      "freeze_requirements": [
+        "environment manifest schema frozen before collection",
+        "error budget policy frozen before collection"
+      ],
+      "invalid_retrospective_edits": [
+        "post-hoc confound family removal",
+        "post-hoc error budget relaxation"
+      ]
+    },
+    {
+      "channel_id": "ambiguity_load_channel",
+      "required_fields": [
+        "task_family_id",
+        "annotation_schema_version",
+        "reliability_policy"
+      ],
+      "freeze_requirements": [
+        "task family frozen before collection",
+        "annotation schema frozen before collection"
+      ],
+      "invalid_retrospective_edits": [
+        "post-hoc task-family filtering",
+        "post-hoc annotation rule replacement"
+      ]
+    },
+    {
+      "channel_id": "transport_preservation_channel",
+      "required_fields": [
+        "transition_contract_family",
+        "target_manifest_requirements",
+        "axis_specific_error_budgets"
+      ],
+      "freeze_requirements": [
+        "transition contract family frozen before target-side collection",
+        "error budgets frozen before target-side collection"
+      ],
+      "invalid_retrospective_edits": [
+        "post-hoc target manifest substitution",
+        "post-hoc axis budget relaxation"
+      ]
+    }
+  ],
+  "interpretation_boundary": "These are local preregistration templates only. They do not constitute a completed preregistration record and do not count as external filing."
+}

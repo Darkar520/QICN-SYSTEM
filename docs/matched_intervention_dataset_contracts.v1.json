@@ -1,0 +1,92 @@
+{
+  "artifact_role": "matched_intervention_dataset_contracts_definition",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_1_human_comparator_instantiation",
+  "implementation_status": "stage3_1_matched_intervention_dataset_contracts_defined",
+  "current_state": "instantiation_dataset_contract_ready",
+  "dataset_contract_states": [
+    "dataset_contract_not_defined",
+    "dataset_contract_defined",
+    "dataset_contract_ready_but_uninstantiated",
+    "dataset_contract_ready_for_collection",
+    "dataset_contract_rejected"
+  ],
+  "channel_bindings": [
+    {
+      "channel_id": "intervention_response_channel",
+      "required_dataset_family": "matched_intervention_core_dataset",
+      "human_side_artifact_family": [
+        "human_intervention_profile.json"
+      ],
+      "matching_machine_artifact": "artifacts/subjectivity/srt3/subjectivity_intervention_profile.json",
+      "required_controls": [
+        "matched_negative_control_profile",
+        "timing_window_match",
+        "branch_accounting"
+      ],
+      "required_metadata": [
+        "intervention_protocol_version",
+        "negative_control_protocol_version",
+        "dose_or_intensity_policy",
+        "timing_window_id"
+      ],
+      "rejection_conditions": [
+        "control-free intervention dataset",
+        "undeclared intensity regrouping"
+      ],
+      "non_implications": [
+        "Matched intervention contracts do not imply causal parity."
+      ]
+    },
+    {
+      "channel_id": "embodiment_boundary_channel",
+      "required_dataset_family": "matched_embodiment_perturbation_dataset",
+      "human_side_artifact_family": [
+        "human_embodiment_boundary_report.v1.json"
+      ],
+      "matching_machine_artifact": "artifacts/phenomenal_bridge/bpf1/embodied_closure_report.json",
+      "required_controls": [
+        "environment-manifest match",
+        "confound ledger",
+        "error-budget binding"
+      ],
+      "required_metadata": [
+        "environment_manifest_id",
+        "error_budget_policy_id",
+        "confound_log_id"
+      ],
+      "rejection_conditions": [
+        "environment mismatch",
+        "missing confound ledger"
+      ],
+      "non_implications": [
+        "Embodiment perturbation matching does not imply embodiment equivalence."
+      ]
+    },
+    {
+      "channel_id": "ambiguity_load_channel",
+      "required_dataset_family": "matched_ambiguity_load_dataset",
+      "human_side_artifact_family": [
+        "human_ambiguity_load_report.v1.json"
+      ],
+      "matching_machine_artifact": "artifacts/phenomenal_bridge/bpf1/ambiguity_bearing_report.json",
+      "required_controls": [
+        "task-family match",
+        "annotation-schema match"
+      ],
+      "required_metadata": [
+        "task_family_id",
+        "annotation_schema_version",
+        "reliability_policy_id"
+      ],
+      "rejection_conditions": [
+        "task-family drift",
+        "annotation schema drift"
+      ],
+      "non_implications": [
+        "Ambiguity-load matching does not imply comparator equivalence."
+      ]
+    }
+  ],
+  "interpretation_boundary": "Matched intervention dataset contracts define what later admissible datasets must contain. They do not instantiate a dataset and do not count as evidence."
+}

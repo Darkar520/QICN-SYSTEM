@@ -1,0 +1,410 @@
+{
+  "artifact_role": "human_channel_instantiation_contracts_definition",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_1_human_comparator_instantiation",
+  "implementation_status": "stage3_1_instantiation_contracts_defined",
+  "current_state": "instantiation_contract_defined",
+  "instantiation_states": [
+    "instantiation_not_open",
+    "instantiation_contract_defined",
+    "instantiation_preregistration_ready",
+    "instantiation_dataset_contract_ready",
+    "instantiation_ready_for_collection",
+    "instantiation_incomplete",
+    "instantiation_blocked_by_missing_human_route",
+    "instantiation_not_authorized_for_result_claim"
+  ],
+  "channels": [
+    {
+      "channel_id": "self_report_channel",
+      "human_side_artifact_family": [
+        "human_self_report_trace.json",
+        "human_self_report_channel_manifest.json"
+      ],
+      "machine_side_homologous_artifact_family": [
+        "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json"
+      ],
+      "data_collection_mode": "structured human self-report collection under typed prompt/version control and lineage binding",
+      "measurement_route": "participant session -> typed response trace -> channel manifest -> homologation binding",
+      "admissibility_conditions": [
+        "legitimate human collection route",
+        "participant identity class declared without exposing raw identity",
+        "session lineage manifest bound",
+        "prompt protocol version frozen before collection",
+        "missingness policy declared before collection"
+      ],
+      "minimum_metadata": [
+        "comparator_session_id",
+        "protocol_version",
+        "participant_class",
+        "session_lineage_manifest",
+        "collection_timestamp_window",
+        "prompt_set_id",
+        "missingness_policy_id"
+      ],
+      "privacy_ethics_notes": [
+        "sensitive narrative minimization",
+        "participant-identifying content must remain outside claim-facing bundles",
+        "session export must be de-identified before reviewer packaging"
+      ],
+      "matched_controls_required": [
+        "prompt-version control",
+        "collector-role separation",
+        "repeatability window declaration"
+      ],
+      "negative_controls_required": [
+        "synthetic_human_self_report_exclusion",
+        "machine_self_report_relabeling_exclusion",
+        "blind_prompt_shuffle_control"
+      ],
+      "statistical_analysis_shell": "self_report_reliability_shell",
+      "preregistration_fields_required": [
+        "channel_id",
+        "primary_endpoint",
+        "prompt_schedule",
+        "exclusion_rules",
+        "missingness_policy",
+        "negative_control_plan",
+        "analysis_shell_id"
+      ],
+      "rejection_conditions": [
+        "untyped narrative summary only",
+        "collector also acts as adjudicator",
+        "prompt drift after preregistration freeze",
+        "undocumented translation or compression step"
+      ],
+      "non_implications": [
+        "Self-report-channel instantiation does not imply human equivalence.",
+        "Self-report-channel instantiation does not imply consciousness or phenomenality."
+      ]
+    },
+    {
+      "channel_id": "intervention_response_channel",
+      "human_side_artifact_family": [
+        "human_intervention_profile.json",
+        "human_negative_control_profile.json"
+      ],
+      "machine_side_homologous_artifact_family": [
+        "artifacts/subjectivity/srt3/subjectivity_intervention_profile.json"
+      ],
+      "data_collection_mode": "matched intervention and matched negative-control collection under declared perturbation family",
+      "measurement_route": "intervention registry -> participant trace -> negative control trace -> typed intervention package",
+      "admissibility_conditions": [
+        "matched intervention family declared before collection",
+        "negative control family declared before collection",
+        "unsafe or non-comparable perturbations excluded",
+        "intervention version and branch accounting frozen"
+      ],
+      "minimum_metadata": [
+        "comparator_session_id",
+        "intervention_protocol_version",
+        "negative_control_protocol_version",
+        "perturbation_family_id",
+        "collection_branch_id",
+        "timing_window_id"
+      ],
+      "privacy_ethics_notes": [
+        "participant burden disclosure required",
+        "intervention intensity and stop rules must be recorded",
+        "sensitive perturbation routes require explicit exclusion rules"
+      ],
+      "matched_controls_required": [
+        "matched negative-control profile",
+        "timing-matched baseline window",
+        "collector-role separation"
+      ],
+      "negative_controls_required": [
+        "no-perturbation control",
+        "sham-perturbation control where ethically valid",
+        "label-obscured reviewer condition"
+      ],
+      "statistical_analysis_shell": "matched_intervention_effect_shell",
+      "preregistration_fields_required": [
+        "intervention_family",
+        "primary_effect_endpoint",
+        "negative_control_family",
+        "dose_or_intensity_policy",
+        "stop_rule",
+        "branch_accounting_rule",
+        "analysis_shell_id"
+      ],
+      "rejection_conditions": [
+        "control-free intervention series",
+        "post-hoc intervention regrouping",
+        "synthetic human perturbation profile",
+        "undeclared stop-rule override"
+      ],
+      "non_implications": [
+        "Intervention-response instantiation does not imply superiority.",
+        "Intervention-response instantiation does not imply inferiority."
+      ]
+    },
+    {
+      "channel_id": "temporal_structure_channel",
+      "human_side_artifact_family": [
+        "human_temporal_structure_report.json"
+      ],
+      "machine_side_homologous_artifact_family": [
+        "artifacts/phenomenal_bridge/bpf1/temporal_lived_structure_report.json"
+      ],
+      "data_collection_mode": "typed temporal segmentation capture under declared segmentation schema",
+      "measurement_route": "session timeline -> segmentation annotation -> typed temporal report",
+      "admissibility_conditions": [
+        "shared temporal segmentation schema declared",
+        "ordering and aggregation rule declared",
+        "annotation version and reviewer blinding state recorded"
+      ],
+      "minimum_metadata": [
+        "comparator_session_id",
+        "segmentation_schema_version",
+        "annotation_protocol_version",
+        "time_window_id",
+        "aggregation_policy_id"
+      ],
+      "privacy_ethics_notes": [
+        "timeline data must be de-identified",
+        "raw timestamps must be coarsened when packaged externally"
+      ],
+      "matched_controls_required": [
+        "segmentation-version control",
+        "ordering-policy control"
+      ],
+      "negative_controls_required": [
+        "summary-only temporal proxy exclusion",
+        "window-scramble control"
+      ],
+      "statistical_analysis_shell": "temporal_structure_alignment_shell",
+      "preregistration_fields_required": [
+        "segmentation_schema_version",
+        "aggregation_policy",
+        "ordering_endpoint_family",
+        "negative_control_plan",
+        "analysis_shell_id"
+      ],
+      "rejection_conditions": [
+        "summary-only temporal narrative",
+        "undeclared segmentation drift",
+        "missing time-window provenance"
+      ],
+      "non_implications": [
+        "Temporal-structure instantiation does not imply continuity equivalence."
+      ]
+    },
+    {
+      "channel_id": "valence_topology_channel",
+      "human_side_artifact_family": [
+        "human_valence_topology_report.v1.json"
+      ],
+      "machine_side_homologous_artifact_family": [
+        "artifacts/phenomenal_bridge/bpf1/valence_structure_report.json"
+      ],
+      "data_collection_mode": "typed valence-topology elicitation under declared topology schema",
+      "measurement_route": "elicitation session -> topology encoding -> typed valence-topology report",
+      "admissibility_conditions": [
+        "shared topology schema declared",
+        "no scalar reward proxy substitution",
+        "annotation reliability policy declared"
+      ],
+      "minimum_metadata": [
+        "comparator_session_id",
+        "topology_schema_version",
+        "elicitation_protocol_version",
+        "annotation_policy_id",
+        "reliability_policy_id"
+      ],
+      "privacy_ethics_notes": [
+        "affective content minimization required in exported artifacts",
+        "high-sensitivity traces require restricted packaging"
+      ],
+      "matched_controls_required": [
+        "schema-version control",
+        "elicitation-order control"
+      ],
+      "negative_controls_required": [
+        "scalar-only proxy exclusion",
+        "topology-label shuffle control"
+      ],
+      "statistical_analysis_shell": "valence_topology_shell",
+      "preregistration_fields_required": [
+        "topology_schema_version",
+        "primary_topology_endpoint",
+        "reliability_policy",
+        "negative_control_plan",
+        "analysis_shell_id"
+      ],
+      "rejection_conditions": [
+        "scalar reward summary presented as topology",
+        "undeclared topology compression",
+        "missing annotation lineage"
+      ],
+      "non_implications": [
+        "Valence-topology instantiation does not imply affective equivalence."
+      ]
+    },
+    {
+      "channel_id": "embodiment_boundary_channel",
+      "human_side_artifact_family": [
+        "human_embodiment_boundary_report.v1.json"
+      ],
+      "machine_side_homologous_artifact_family": [
+        "artifacts/phenomenal_bridge/bpf1/embodied_closure_report.json"
+      ],
+      "data_collection_mode": "typed embodiment-boundary capture with environment manifest and error-budget binding",
+      "measurement_route": "session environment manifest -> embodiment trace -> typed embodiment-boundary report",
+      "admissibility_conditions": [
+        "environment manifest bound",
+        "error-budget policy declared",
+        "confound logging enabled",
+        "sensor or proxy substitutions explicitly declared"
+      ],
+      "minimum_metadata": [
+        "comparator_session_id",
+        "environment_manifest_id",
+        "embodiment_protocol_version",
+        "error_budget_policy_id",
+        "confound_log_id"
+      ],
+      "privacy_ethics_notes": [
+        "body-state minimization required",
+        "environment descriptors must be reduced to the least identifying form"
+      ],
+      "matched_controls_required": [
+        "environmental confound tracking",
+        "session-condition control"
+      ],
+      "negative_controls_required": [
+        "motor-competence-only proxy exclusion",
+        "controller-performance-only proxy exclusion"
+      ],
+      "statistical_analysis_shell": "embodiment_boundary_shell",
+      "preregistration_fields_required": [
+        "environment_manifest_schema",
+        "error_budget_policy",
+        "confound_family",
+        "negative_control_plan",
+        "analysis_shell_id"
+      ],
+      "rejection_conditions": [
+        "environment manifest missing",
+        "undeclared embodiment confounds",
+        "proxy-only embodiment trace"
+      ],
+      "non_implications": [
+        "Embodiment-boundary instantiation does not imply embodiment equivalence."
+      ]
+    },
+    {
+      "channel_id": "ambiguity_load_channel",
+      "human_side_artifact_family": [
+        "human_ambiguity_load_report.v1.json"
+      ],
+      "machine_side_homologous_artifact_family": [
+        "artifacts/phenomenal_bridge/bpf1/ambiguity_bearing_report.json"
+      ],
+      "data_collection_mode": "typed ambiguity-load collection under shared annotation contract",
+      "measurement_route": "ambiguity task session -> annotation trace -> typed ambiguity-load report",
+      "admissibility_conditions": [
+        "shared ambiguity annotation contract declared",
+        "annotation reliability route declared",
+        "machine-only ambiguity proxy excluded"
+      ],
+      "minimum_metadata": [
+        "comparator_session_id",
+        "annotation_schema_version",
+        "annotation_protocol_version",
+        "reliability_policy_id",
+        "task_family_id"
+      ],
+      "privacy_ethics_notes": [
+        "annotator burden disclosure required",
+        "task stimuli must be de-identified when possible"
+      ],
+      "matched_controls_required": [
+        "annotation-consistency control",
+        "task-family version control"
+      ],
+      "negative_controls_required": [
+        "machine-only ambiguity proxy exclusion",
+        "stimulus-label scramble control"
+      ],
+      "statistical_analysis_shell": "ambiguity_load_shell",
+      "preregistration_fields_required": [
+        "task_family_id",
+        "annotation_schema_version",
+        "reliability_policy",
+        "negative_control_plan",
+        "analysis_shell_id"
+      ],
+      "rejection_conditions": [
+        "annotation lineage absent",
+        "undeclared task-family substitution",
+        "error-rate-only summary used as ambiguity report"
+      ],
+      "non_implications": [
+        "Ambiguity-load instantiation does not imply comparator equivalence."
+      ]
+    },
+    {
+      "channel_id": "transport_preservation_channel",
+      "human_side_artifact_family": [
+        "target_substrate_counterpart_manifest.v1.json",
+        "cross_substrate_lineage_map.v1.json",
+        "cross_substrate_transport_contract.v1.json"
+      ],
+      "machine_side_homologous_artifact_family": [
+        "artifacts/comparative_program/stage2m3/cross_substrate_transition_contract_assessment.json"
+      ],
+      "data_collection_mode": "typed source-target transition contract registration before any transport-sensitive comparison",
+      "measurement_route": "transition contract -> target counterpart manifest -> lineage map -> typed transport package",
+      "admissibility_conditions": [
+        "target counterpart manifest bound",
+        "transition lineage map bound",
+        "schema compatibility proof declared",
+        "axis-specific error budgets declared",
+        "branch accounting declared"
+      ],
+      "minimum_metadata": [
+        "transition_contract_id",
+        "source_manifest_id",
+        "target_manifest_id",
+        "lineage_map_id",
+        "schema_compatibility_proof_id",
+        "error_budget_policy_id",
+        "branch_accounting_id"
+      ],
+      "privacy_ethics_notes": [
+        "transport-preservation channel does not authorize identity-preservation claims",
+        "target-side participant or system identifiers must remain masked in reviewer packages"
+      ],
+      "matched_controls_required": [
+        "target-side absence control",
+        "branch-accounting control",
+        "schema-compatibility control"
+      ],
+      "negative_controls_required": [
+        "source-only snapshot exclusion",
+        "static-export-only exclusion",
+        "target-counterpart-absent control"
+      ],
+      "statistical_analysis_shell": "transport_preservation_shell",
+      "preregistration_fields_required": [
+        "transition_contract_family",
+        "axis_specific_error_budgets",
+        "target_manifest_requirements",
+        "negative_control_plan",
+        "analysis_shell_id"
+      ],
+      "rejection_conditions": [
+        "target counterpart manifest missing",
+        "lineage map missing",
+        "source-only snapshot presented as transition evidence",
+        "identity-preservation wording introduced"
+      ],
+      "non_implications": [
+        "Transport-preservation instantiation does not imply identity preservation.",
+        "Transport-preservation instantiation does not imply cross-substrate equivalence."
+      ]
+    }
+  ],
+  "interpretation_boundary": "Stage3-1 defines instantiable human-channel execution contracts and their minimum metadata, control burdens, preregistration hooks, and rejection routes. It does not instantiate data, does not authorize result claims, and does not execute adjudication."
+}

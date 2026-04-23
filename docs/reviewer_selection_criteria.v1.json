@@ -1,0 +1,25 @@
+{
+  "artifact_role": "reviewer_selection_criteria",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_2_external_adjudication_readiness",
+  "implementation_status": "stage3_2_reviewer_selection_criteria_defined",
+  "current_state": "reviewer_selection_ready",
+  "selection_requirements": [
+    "method reviewer available",
+    "statistics reviewer available",
+    "artifact lineage reviewer available",
+    "control and admissibility reviewer available"
+  ],
+  "selection_disqualifiers": [
+    "direct authorship overlap",
+    "undeclared conflict",
+    "lack of relevant methodological competence",
+    "prior unblinded access"
+  ],
+  "minimum_selection_bundle": [
+    "conflict disclosure template",
+    "blinding policy acknowledgement",
+    "role-specific reviewer assignment"
+  ],
+  "interpretation_boundary": "Reviewer-selection readiness is not reviewer selection execution."
+}

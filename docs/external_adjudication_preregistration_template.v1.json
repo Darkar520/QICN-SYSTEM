@@ -1,0 +1,79 @@
+{
+  "artifact_role": "external_adjudication_preregistration_template",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_2_external_adjudication_readiness",
+  "implementation_status": "stage3_2_external_preregistration_template_defined",
+  "template_only": true,
+  "preregistration_object_classes": [
+    "external_adjudication_protocol_record",
+    "reviewer_selection_record",
+    "adjudicator_assignment_record",
+    "negative_control_declaration",
+    "analysis_family_declaration",
+    "failure_pathway_record",
+    "inconclusive_pathway_record"
+  ],
+  "required_fields": [
+    "template_id",
+    "protocol_version",
+    "upstream_dependency_refs",
+    "channel_scope",
+    "dataset_scope",
+    "negative_control_plan",
+    "analysis_family_plan",
+    "threshold_declarations",
+    "blinding_plan_id",
+    "reviewer_independence_requirements",
+    "adjudicator_independence_requirements",
+    "freeze_timestamp_placeholder",
+    "failure_pathway_id",
+    "inconclusive_pathway_id"
+  ],
+  "versioning_rules": [
+    "protocol_version must change on any methodological amendment",
+    "frozen preregistration identifiers must remain immutable after freeze"
+  ],
+  "amendment_rules": [
+    "amendments allowed only before freeze",
+    "post-freeze amendments require new amendment record and explicit rationale",
+    "post-freeze amendments cannot silently replace thresholds or endpoint families"
+  ],
+  "freezing_rules": [
+    "freeze must occur before reviewer selection finalization",
+    "freeze must occur before human data collection",
+    "freeze must bind threshold declarations and negative control families"
+  ],
+  "invalid_retrospective_edits": [
+    "post-hoc threshold change without amendment record",
+    "post-hoc primary endpoint replacement",
+    "post-hoc exclusion rule expansion",
+    "post-hoc control-family removal"
+  ],
+  "blinding_unblinding_rules": [
+    "reviewers remain blinded to condition labels until preregistered unblinding condition is met",
+    "unblinding must be logged with cause, timestamp, and authority class"
+  ],
+  "threshold_declaration_rules": [
+    "threshold family must be declared before freeze",
+    "no threshold may be selected from observed data"
+  ],
+  "analysis_family_declaration_rules": [
+    "analysis family must map to a declared statistical shell",
+    "analysis family changes after freeze require amendment record"
+  ],
+  "negative_control_declaration_rules": [
+    "negative control families must be enumerated before freeze",
+    "omitted negative controls must carry explicit rationale"
+  ],
+  "failure_report_pathway": [
+    "protocol deviation report",
+    "dataset rejection report",
+    "reviewer conflict escalation report"
+  ],
+  "inconclusive_report_pathway": [
+    "insufficient evidence report",
+    "control collapse report",
+    "replication mismatch report"
+  ],
+  "interpretation_boundary": "This is a local preregistration template. It is not an externally filed preregistration record."
+}

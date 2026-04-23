@@ -1,0 +1,44 @@
+{
+  "artifact_role": "adjudicator_independence_criteria",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_2_external_adjudication_readiness",
+  "implementation_status": "stage3_2_adjudicator_criteria_defined",
+  "states": [
+    "adjudicator_layer_defined",
+    "adjudication_not_authorized",
+    "adjudication_execution_not_open"
+  ],
+  "who_counts_as_adjudicator": [
+    "reviewer class independent from authors and dataset curators",
+    "authorized to synthesize reviewer outputs under declared governance",
+    "bound by blinding and conflict policy"
+  ],
+  "independence_requirements": [
+    "no authorship overlap",
+    "no dataset curation overlap",
+    "no hidden access to blinded labels",
+    "no undeclared financial or reputational conflict"
+  ],
+  "disqualifiers": [
+    "authorship overlap",
+    "dataset curation overlap",
+    "prior unblinded access",
+    "undeclared direct stake in outcome"
+  ],
+  "decision_authority_boundaries": [
+    "adjudicator may classify admissible evidence pathways",
+    "adjudicator may issue pass/fail/inconclusive only after admissible evidence exists",
+    "adjudicator may not authorize metaphysical or identity-preservation claims"
+  ],
+  "failure_pathways": [
+    "conflict discovered after assignment",
+    "blinding collapse",
+    "protocol deviation beyond amendment scope"
+  ],
+  "inconclusive_pathways": [
+    "reviewer disagreement unresolved",
+    "evidence insufficiency",
+    "negative controls collapse"
+  ],
+  "interpretation_boundary": "Adjudicator criteria define later governance only. They do not constitute an adjudication decision."
+}

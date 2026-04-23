@@ -14,6 +14,21 @@ import {
   EXTERNAL_ADJUDICATION_OPENING_CRITERIA
 } from './ExternalAdjudicationOpeningCriteriaRegistry.js';
 import {
+  HUMAN_CHANNEL_INSTANTIATION_CONTRACTS
+} from './HumanChannelInstantiationContractRegistry.js';
+import {
+  HUMAN_CHANNEL_PREREGISTRATION_TEMPLATES
+} from './HumanChannelPreregistrationRegistry.js';
+import {
+  REVIEWER_INDEPENDENCE_PROTOCOL
+} from './ReviewerIndependenceRegistry.js';
+import {
+  ADJUDICATOR_INDEPENDENCE_CRITERIA
+} from './AdjudicatorIndependenceRegistry.js';
+import {
+  STATISTICAL_ANALYSIS_SHELLS
+} from './StatisticalAnalysisShellRegistry.js';
+import {
   COMPARATIVE_PROGRAM_ARTIFACT_SCHEMA,
   COMPARATIVE_PROGRAM_EXPECTED_ARTIFACTS,
   COMPARATIVE_PROGRAM_IMPLEMENTED_ARTIFACTS
@@ -84,11 +99,30 @@ export class ComparativeProgramLayer {
       stage2_m3_contract_operationalization_complete: true,
       stage2_m4_internal_closure_complete: true,
       stage3_readiness_fulfillment_complete: true,
+      stage3_0_scaffold_present: true,
+      stage3_1_instantiation_layer_present: true,
+      stage3_2_execution_readiness_layer_present: true,
+      stage3_1_channel_contract_count: (
+        HUMAN_CHANNEL_INSTANTIATION_CONTRACTS.channels || []
+      ).length,
+      stage3_1_preregistration_template_count: (
+        HUMAN_CHANNEL_PREREGISTRATION_TEMPLATES.channel_templates || []
+      ).length,
+      stage3_2_reviewer_role_count: (
+        REVIEWER_INDEPENDENCE_PROTOCOL.reviewer_roles || []
+      ).length,
+      stage3_2_adjudicator_requirement_count: (
+        ADJUDICATOR_INDEPENDENCE_CRITERIA.independence_requirements || []
+      ).length,
+      stage3_2_statistical_shell_count: (STATISTICAL_ANALYSIS_SHELLS.shells || []).length,
       comparative_internal_closure_state: 'comparative_internal_closure_ready',
       stage2_m4_state: 'comparative_internal_closure_ready',
       stage3_readiness_state: 'stage3_ready_but_uninstantiated',
-      stage3_0_scaffold_only: true,
-      current_stage3_substage: 'stage3_0_external_adjudication_scaffold',
+      stage3_0_scaffold_only: false,
+      stage3_1_instantiation_state: 'instantiation_ready_or_partially_ready',
+      stage3_2_execution_readiness_state: 'execution_readiness_partially_satisfied',
+      paper10_protocol_state: 'paper10_protocol_grade_backbone',
+      current_stage3_substage: 'stage3_2_external_adjudication_execution_readiness',
       ready_for_stage2_m4: true,
       ready_for_stage3_opening: true,
       stage3_opening_state: 'ready_for_stage3_opening',

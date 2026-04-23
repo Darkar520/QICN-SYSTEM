@@ -1,0 +1,23 @@
+{
+  "artifact_role": "reviewer_conflict_disclosure_template",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_2_external_adjudication_readiness",
+  "implementation_status": "stage3_2_reviewer_conflict_template_defined",
+  "template_only": true,
+  "required_fields": [
+    "reviewer_id_placeholder",
+    "role_class",
+    "employment_or_supervision_overlap",
+    "financial_interest_disclosure",
+    "prior_access_to_artifacts",
+    "prior_access_to_blinded_labels",
+    "collaboration_history_with_authors",
+    "self-assessed-impartiality-statement"
+  ],
+  "conflict_classes": [
+    "none_declared",
+    "manageable_with_firewall",
+    "disqualifying"
+  ],
+  "interpretation_boundary": "Template only. This is not an actual reviewer disclosure record."
+}

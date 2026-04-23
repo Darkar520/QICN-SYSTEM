@@ -1,0 +1,41 @@
+{
+  "artifact_role": "human_comparator_preregistration_template",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_1_human_comparator_instantiation",
+  "implementation_status": "stage3_1_human_preregistration_template_defined",
+  "template_only": true,
+  "required_fields": [
+    "template_id",
+    "channel_id",
+    "eligibility_rules",
+    "collection_route",
+    "measurement_schema_id",
+    "negative_control_plan",
+    "analysis_shell_id",
+    "blinding_plan_id",
+    "privacy_redaction_policy",
+    "missingness_policy_id",
+    "freeze_timestamp_placeholder"
+  ],
+  "freezing_rules": [
+    "freeze before collection",
+    "freeze before dataset packaging",
+    "freeze before reviewer access"
+  ],
+  "invalid_retrospective_edits": [
+    "post-hoc participant exclusion expansion",
+    "post-hoc missingness policy rewrite",
+    "post-hoc control-family replacement"
+  ],
+  "failure_report_pathway": [
+    "collection route failure",
+    "dataset admissibility failure",
+    "privacy redaction failure"
+  ],
+  "inconclusive_report_pathway": [
+    "insufficient channel reliability",
+    "control ambiguity",
+    "protocol incompleteness"
+  ],
+  "interpretation_boundary": "This is a template-only preregistration structure for human comparator collection. It is not a completed preregistration."
+}

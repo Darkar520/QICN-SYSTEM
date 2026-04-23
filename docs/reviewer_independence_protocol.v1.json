@@ -1,0 +1,49 @@
+{
+  "artifact_role": "reviewer_independence_protocol",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_2_external_adjudication_readiness",
+  "implementation_status": "stage3_2_reviewer_independence_protocol_defined",
+  "states": [
+    "reviewer_layer_not_open",
+    "reviewer_criteria_defined",
+    "reviewer_selection_ready",
+    "reviewer_selection_incomplete",
+    "adjudication_not_authorized",
+    "adjudication_execution_not_open"
+  ],
+  "reviewer_roles": [
+    "method reviewer",
+    "statistics reviewer",
+    "artifact lineage reviewer",
+    "control and admissibility reviewer"
+  ],
+  "minimum_independence_requirements": [
+    "no authorship on evaluated package",
+    "no direct supervision chain with package authors",
+    "no financial or reputational stake in a particular adjudication outcome",
+    "no hidden access to unblinded condition labels before authorized unblinding"
+  ],
+  "disqualifiers": [
+    "direct authorship overlap",
+    "undeclared financial conflict",
+    "family or supervisory conflict",
+    "pre-exposure to blinded labels",
+    "dataset curation by the same reviewer"
+  ],
+  "decision_authority_boundaries": [
+    "reviewers may assess admissibility and methodology",
+    "reviewers may not convert protocol readiness into final claims",
+    "reviewers may not issue human-equivalence or metaphysical verdicts"
+  ],
+  "inconclusive_pathways": [
+    "reviewer disagreement unresolved",
+    "blinding broken before authorized unblinding",
+    "dataset admissibility contested"
+  ],
+  "failure_pathways": [
+    "conflict-of-interest violation",
+    "control collapse",
+    "preregistration deviation without amendment record"
+  ],
+  "interpretation_boundary": "Reviewer independence is a governance layer only. It does not generate results and does not authorize claims."
+}

@@ -18,6 +18,9 @@ This file records the local prerequisites for treating the Paper 9 handoff subst
 
 - Stage 2-M4 is complete as an internal comparative closure layer.
 - any future Stage 3 opening is bounded and internal at the moment it opens.
+- Stage3-1 and Stage3-2 may instantiate comparator contracts, preregistration
+  templates, reviewer-governance layers, and execution-readiness artifacts
+  without creating evidence.
 - external adjudication has not yet happened.
 - human equivalence has not yet happened.
 - superiority and identity-preservation claims remain blocked.
@@ -28,6 +31,8 @@ This file records the local prerequisites for treating the Paper 9 handoff subst
 
 - real Stage 3 execution
 - real human counterpart instantiation
+- real preregistration freeze
+- real reviewer selection and adjudicator assignment
 - external comparative adjudication
 - Paper 10 final conclusions
 - metaphysical closure

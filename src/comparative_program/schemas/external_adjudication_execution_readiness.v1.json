@@ -1,0 +1,29 @@
+{
+  "title": "external_adjudication_execution_readiness.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "layer_id",
+    "implementation_status",
+    "external_adjudication_state",
+    "execution_state",
+    "execution_readiness_state",
+    "preregistration_state",
+    "reviewer_layer_state",
+    "human_channel_state",
+    "human_data_state",
+    "remaining_blockers",
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "external_adjudication_execution_readiness" },
+    "artifact_name": { "const": "external_adjudication_execution_readiness.json" }
+  }
+}

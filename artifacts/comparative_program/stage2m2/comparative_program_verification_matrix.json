@@ -114,7 +114,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; comparative verification matrix records implementation and boundary checks, not equivalence support, not superiority, and not external adjudication.",
   "provenance": {
-    "generated_at": "2026-04-23T01:52:14.154Z",
+    "generated_at": "2026-04-23T03:39:52.628Z",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage2_m2.root.v1",
       "estimator_version": "comparative_program_root_builder.stage2_m2.v1",
@@ -222,7 +222,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "0eed4e917fcdaa9a19266ecd8459c32588f13001",
+        "head": "8c07da684c1d7ed4b357063bfbf0db0aadc7500d",
         "upstream": "origin/main"
       },
       "qicn_release": {

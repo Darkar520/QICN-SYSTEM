@@ -62,7 +62,7 @@ Verified alignment facts from those release-candidate surfaces:
 | Claim labels and inherited claim-family naming in `src/canon/claimMapping/canonicalClaimCatalog.js` | yes | yes | Labels are inherited from an external canon family even when mapping logic is local. |
 | Claim interpretation limits in `TRACEABILITY_MATRIX.md`, `DESCRIPTOR_REGISTRY.md`, and `ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md` | yes | yes | These documents depend on release-facing canon boundaries but still must not overstate theory closure or validation. |
 | Editorial or release-facing paper surfaces derived from this repo | yes | yes | Current alignment tracks the release-candidate working tree; historical freeze materials remain provenance rather than the only live description. |
-| Stage3-0 local governance docs, Stage3-0 internal artifacts, and the Paper 10 scaffold-only source tree | no | no | These are local engineering governance surfaces only and are explicitly excluded from the current public release canon. |
+| Stage3-0, Stage3-1, and Stage3-2 local governance docs, internal artifacts, and the Paper 10 local source tree | no | no | These are local engineering governance and protocol-readiness surfaces only and are explicitly excluded from the current public release canon. |
 | Source-of-truth enforcement, build authority, registry validation, and run/batch admissibility logic | no | no | These are local engineering and audit surfaces. |
 
 ## Pinning Outcome

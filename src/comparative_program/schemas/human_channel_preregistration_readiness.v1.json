@@ -1,0 +1,24 @@
+{
+  "title": "human_channel_preregistration_readiness.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "layer_id",
+    "implementation_status",
+    "preregistration_state",
+    "execution_state",
+    "channel_preregistration_states",
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "human_channel_preregistration_readiness" },
+    "artifact_name": { "const": "human_channel_preregistration_readiness.json" }
+  }
+}

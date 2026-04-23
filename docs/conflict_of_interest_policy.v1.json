@@ -1,0 +1,21 @@
+{
+  "artifact_role": "conflict_of_interest_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_2_external_adjudication_readiness",
+  "implementation_status": "stage3_2_conflict_policy_defined",
+  "conflict_classes": [
+    "authorship_conflict",
+    "supervision_conflict",
+    "financial_conflict",
+    "collaboration_history_conflict",
+    "dataset_access_conflict",
+    "blinding_break_conflict"
+  ],
+  "disposition_rules": [
+    "authorship conflict is always disqualifying",
+    "financial conflict is disqualifying unless explicitly zero and declared",
+    "dataset access conflict is disqualifying for blinded reviewers",
+    "blinding-break conflict escalates to adjudicator reassignment"
+  ],
+  "interpretation_boundary": "Conflict policy governs reviewer and adjudicator assignment only. It does not produce a result."
+}

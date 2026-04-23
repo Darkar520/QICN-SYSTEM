@@ -1,0 +1,25 @@
+{
+  "title": "paper10_protocol_hardening_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "layer_id",
+    "implementation_status",
+    "paper10_state",
+    "paper10_result_state",
+    "paper10_authorization_state",
+    "paper10_evidence_insertion_state",
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "paper10_protocol_hardening_status" },
+    "artifact_name": { "const": "paper10_protocol_hardening_status.json" }
+  }
+}

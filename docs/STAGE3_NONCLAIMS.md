@@ -1,6 +1,6 @@
 # Stage3 Non-Claims
 
-`Stage3-0` does not establish:
+`Stage3-0`, `Stage3-1`, and `Stage3-2` do not establish:
 
 - external adjudication;
 - human comparator evidence;
@@ -13,10 +13,13 @@
 - metaphysical closure;
 - Paper 10 finality.
 
-It also does not permit:
+They also do not permit:
 
 - synthetic human evidence;
 - internal artifacts relabelled as external evidence;
 - reviewer impressions without provenance and controls;
-- public release promotion of the scaffold-only Paper 10 source;
+- frozen preregistration to be implied without a real record;
+- reviewer selection to be implied from reviewer criteria alone;
+- adjudication execution to be implied from execution-readiness artifacts;
+- public release promotion of the scaffold-only or protocol-grade local Paper 10 source;
 - use of Paper 9 publication as a substitute for external adjudication.

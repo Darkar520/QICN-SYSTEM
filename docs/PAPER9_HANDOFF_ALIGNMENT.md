@@ -14,6 +14,8 @@ Paper 9 is positioned after:
 Paper 9 is positioned before:
 
 - Stage3-0 external adjudication architecture and scaffold-only Paper 10 source
+- Stage3-1 human comparator instantiation contracts and preregistration templates
+- Stage3-2 reviewer-governance and execution-readiness hardening
 - Stage 3 comparative execution
 - any external adjudication
 - any Paper 10 final authorization or result-bearing drafting
@@ -37,6 +39,10 @@ This file is not metaphysical closure.
 - Stage3-0 may now define the external adjudication architecture and open a
   scaffold-only Paper 10 source, but neither step authorizes final Paper 10
   claims.
+- Stage3-1 and Stage3-2 may now define channel instantiation contracts,
+  preregistration templates, reviewer/adjudicator independence rules,
+  execution-readiness assessments, and a protocol-grade Paper 10 backbone, but
+  none of those surfaces authorize result-bearing claims.
 
 ## Current handoff state
 
@@ -46,6 +52,8 @@ This file is not metaphysical closure.
 - Paper 10 final authorization remains blocked until after real Stage 3
   execution and later external evidence; only a scaffold-only local Stage3-0
   source may open here.
+- Stage3-1 and Stage3-2 may harden the local protocol layer, but that hardening
+  is still not execution, not adjudication, and not Paper 10 finalization.
 
 ## Interpretation discipline
 

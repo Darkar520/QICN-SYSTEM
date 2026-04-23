@@ -1,0 +1,23 @@
+{
+  "artifact_role": "adjudicator_candidate_schema",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_adjudicator_assignment",
+  "implementation_status": "stage3_3_adjudicator_candidate_schema_defined",
+  "candidate_classes": [
+    "adjudicator_candidate"
+  ],
+  "required_fields": [
+    "candidate_id",
+    "qualification_summary",
+    "independence_assertion",
+    "conflict_disclosure_ref",
+    "blinding_eligibility_class",
+    "assignment_state"
+  ],
+  "forbidden_fields_until_assignment": [
+    "decision_payload",
+    "verdict_family",
+    "result_authority_claim"
+  ],
+  "interpretation_boundary": "Schema only. No adjudicator is assigned by this file."
+}

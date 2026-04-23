@@ -1,0 +1,16 @@
+{
+  "artifact_role": "source_target_pairing_manifest_template",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_execution_pilot_packaging",
+  "implementation_status": "stage3_3_source_target_pairing_manifest_defined",
+  "template_only": true,
+  "required_fields": [
+    "pairing_id",
+    "source_manifest_ref",
+    "target_manifest_ref",
+    "transport_axis_budget_family",
+    "pairing_state"
+  ],
+  "default_state": "pairing_not_instantiated",
+  "interpretation_boundary": "Template only. No transport-sensitive source-target pair is instantiated by this file."
+}

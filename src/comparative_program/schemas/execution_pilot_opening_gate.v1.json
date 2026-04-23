@@ -1,0 +1,16 @@
+{
+  "title": "execution_pilot_opening_gate.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "execution_pilot_state",
+    "dry_run_requirements",
+    "boundary_flags",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "execution_pilot_opening_gate" },
+    "artifact_name": { "const": "execution_pilot_opening_gate.json" }
+  }
+}

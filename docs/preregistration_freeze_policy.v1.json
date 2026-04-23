@@ -1,0 +1,31 @@
+{
+  "artifact_role": "preregistration_freeze_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_preregistration_freeze",
+  "implementation_status": "stage3_3_preregistration_freeze_policy_defined",
+  "freeze_states": [
+    "freeze_not_open",
+    "freeze_schema_defined",
+    "local_freeze_ready",
+    "locally_frozen_not_externally_filed",
+    "external_filing_absent"
+  ],
+  "freeze_requirements": [
+    "schema conformant record object",
+    "lock manifest present",
+    "threshold declarations fixed",
+    "negative control declarations fixed",
+    "analysis shell identifiers fixed",
+    "blinding class fixed",
+    "lineage manifest fixed",
+    "external filing state declared explicitly"
+  ],
+  "illegal_freeze_shortcuts": [
+    "template treated as frozen record",
+    "draft treated as filing",
+    "omitted threshold declarations",
+    "omitted negative control declarations",
+    "omitted lineage chain"
+  ],
+  "interpretation_boundary": "Local freeze readiness is not external filing and not data collection."
+}

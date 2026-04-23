@@ -1,0 +1,21 @@
+{
+  "artifact_role": "collection_session_schema",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_execution_pilot_packaging",
+  "implementation_status": "stage3_3_collection_session_schema_defined",
+  "session_classes": [
+    "dry_run_validation_session",
+    "human_collection_session",
+    "control_collection_session",
+    "transport_sensitive_pairing_session"
+  ],
+  "required_fields": [
+    "session_id",
+    "session_class",
+    "session_state",
+    "operator_role_class",
+    "dataset_population_state",
+    "authorized_output_surface"
+  ],
+  "interpretation_boundary": "Schema only. It does not authorize any evidential collection by itself."
+}

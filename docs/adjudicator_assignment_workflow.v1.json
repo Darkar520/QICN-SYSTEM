@@ -1,0 +1,20 @@
+{
+  "artifact_role": "adjudicator_assignment_workflow",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_adjudicator_assignment",
+  "implementation_status": "stage3_3_adjudicator_assignment_workflow_defined",
+  "workflow_states": [
+    "adjudicator_assignment_not_open",
+    "adjudicator_assignment_package_ready",
+    "adjudicator_assignment_not_started",
+    "adjudicator_assignment_in_progress",
+    "adjudicator_assignment_complete"
+  ],
+  "assignment_requirements": [
+    "candidate schema",
+    "conflict disclosure template",
+    "blinding assignment template",
+    "reviewer package dependency"
+  ],
+  "interpretation_boundary": "Workflow definition only. Adjudicator assignment remains not started until an instantiated package exists."
+}

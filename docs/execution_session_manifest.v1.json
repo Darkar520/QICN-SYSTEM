@@ -1,0 +1,18 @@
+{
+  "artifact_role": "execution_session_manifest_template",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_execution_pilot_packaging",
+  "implementation_status": "stage3_3_execution_session_manifest_defined",
+  "template_only": true,
+  "required_fields": [
+    "session_id",
+    "session_family",
+    "protocol_version",
+    "session_state",
+    "dataset_population_state",
+    "blinding_binding_ref",
+    "freeze_binding_ref",
+    "lineage_binding_ref"
+  ],
+  "interpretation_boundary": "Template only. No session is started by this file."
+}

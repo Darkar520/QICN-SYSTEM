@@ -75,10 +75,14 @@
     "build:stage3-readiness-fulfillment": "node scripts/build-stage3-readiness-fulfillment.cjs",
     "build:stage3-scaffolding": "node scripts/build-stage3-scaffolding.cjs",
     "build:stage3-execution-readiness": "node scripts/build-stage3-execution-readiness.cjs",
+    "build:stage3-prereg-freeze": "node scripts/build-stage3-prereg-freeze.cjs",
+    "build:stage3-execution-pilot": "node scripts/build-stage3-execution-pilot.cjs",
     "verify:stage3-opening-readiness": "node scripts/verify-stage3-opening-readiness.cjs",
     "verify:paper9-handoff-readiness": "node scripts/verify-paper9-handoff-readiness.cjs",
     "verify:stage3-scaffolding": "node scripts/verify-stage3-scaffolding.cjs",
-    "verify:stage3-execution-readiness": "node scripts/verify-stage3-execution-readiness.cjs"
+    "verify:stage3-execution-readiness": "node scripts/verify-stage3-execution-readiness.cjs",
+    "verify:stage3-prereg-freeze": "node scripts/verify-stage3-prereg-freeze.cjs",
+    "verify:stage3-execution-pilot": "node scripts/verify-stage3-execution-pilot.cjs"
   },
   "keywords": [],
   "author": "",

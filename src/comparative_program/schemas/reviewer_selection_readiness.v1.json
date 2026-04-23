@@ -1,0 +1,16 @@
+{
+  "title": "reviewer_selection_readiness.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "reviewer_selection_state",
+    "execution_state",
+    "boundary_flags",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "reviewer_selection_readiness" },
+    "artifact_name": { "const": "reviewer_selection_readiness.json" }
+  }
+}

@@ -21,6 +21,11 @@ This file records the local prerequisites for treating the Paper 9 handoff subst
 - Stage3-1 and Stage3-2 may instantiate comparator contracts, preregistration
   templates, reviewer-governance layers, and execution-readiness artifacts
   without creating evidence.
+- Stage3-3 may define local preregistration-freeze, reviewer-selection,
+  adjudicator-assignment, and pilot-packaging layers without creating
+  evidence.
+- Stage3-4 may define a bounded dry-run opening layer without creating
+  evidence.
 - external adjudication has not yet happened.
 - human equivalence has not yet happened.
 - superiority and identity-preservation claims remain blocked.
@@ -31,8 +36,8 @@ This file records the local prerequisites for treating the Paper 9 handoff subst
 
 - real Stage 3 execution
 - real human counterpart instantiation
-- real preregistration freeze
-- real reviewer selection and adjudicator assignment
+- actual preregistration lock instantiation
+- actual reviewer selection and adjudicator assignment
 - external comparative adjudication
 - Paper 10 final conclusions
 - metaphysical closure

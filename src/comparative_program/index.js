@@ -122,10 +122,49 @@ export {
   listAdjudicatorStates
 } from './AdjudicatorIndependenceRegistry.js';
 export {
+  FROZEN_PREREGISTRATION_RECORD_SCHEMA,
+  PREREGISTRATION_FREEZE_POLICY,
+  PREREGISTRATION_AMENDMENT_POLICY,
+  PREREGISTRATION_LOCK_MANIFEST,
+  listFrozenPreregistrationRecordClasses,
+  listPreregistrationFreezeStates
+} from './FrozenPreregistrationRegistry.js';
+export {
+  REVIEWER_CANDIDATE_SCHEMA,
+  REVIEWER_REJECTION_REASONS,
+  listReviewerCandidateClasses
+} from './ReviewerCandidateRegistry.js';
+export {
+  ADJUDICATOR_CANDIDATE_SCHEMA,
+  listAdjudicatorCandidateClasses
+} from './AdjudicatorCandidateRegistry.js';
+export {
+  REVIEWER_SELECTION_WORKFLOW,
+  BLINDING_ASSIGNMENT_MANIFEST,
+  listReviewerSelectionStates
+} from './ReviewerSelectionWorkflowRegistry.js';
+export {
+  ADJUDICATOR_ASSIGNMENT_WORKFLOW,
+  listAdjudicatorAssignmentStates
+} from './AdjudicatorAssignmentWorkflowRegistry.js';
+export {
   STATISTICAL_ANALYSIS_SHELLS,
   listStatisticalAnalysisShells,
   getStatisticalAnalysisShell
 } from './StatisticalAnalysisShellRegistry.js';
+export {
+  EXECUTION_PILOT_PACKAGE_MANIFEST,
+  SOURCE_TARGET_PAIRING_MANIFEST
+} from './ExecutionPilotPackageRegistry.js';
+export {
+  EXECUTION_SESSION_MANIFEST,
+  COLLECTION_SESSION_SCHEMA
+} from './ExecutionSessionRegistry.js';
+export {
+  REPRODUCIBILITY_PACKAGE_SKELETON,
+  PILOT_NEGATIVE_CONTROL_BUNDLE,
+  PILOT_MATCHED_INTERVENTION_BUNDLE
+} from './ReproducibilityPackageRegistry.js';
 export {
   PAPER10_SCAFFOLD_MANIFEST,
   listPaper10RequiredSections
@@ -237,6 +276,30 @@ export {
   createPaper10ProtocolHardeningBuilder
 } from './Paper10ProtocolHardeningBuilder.js';
 export {
+  PreregistrationFreezeEvaluator,
+  createPreregistrationFreezeEvaluator
+} from './PreregistrationFreezeEvaluator.js';
+export {
+  ReviewerSelectionEvaluator,
+  createReviewerSelectionEvaluator
+} from './ReviewerSelectionEvaluator.js';
+export {
   Stage3ExecutionReadinessBuilder,
   createStage3ExecutionReadinessBuilder
 } from './Stage3ExecutionReadinessBuilder.js';
+export {
+  ExecutionPilotPackagingEvaluator,
+  createExecutionPilotPackagingEvaluator
+} from './ExecutionPilotPackagingEvaluator.js';
+export {
+  Stage3ExecutionPilotGateBuilder,
+  createStage3ExecutionPilotGateBuilder
+} from './Stage3ExecutionPilotGateBuilder.js';
+export {
+  ExecutionPilotDryRunEvaluator,
+  createExecutionPilotDryRunEvaluator
+} from './ExecutionPilotDryRunEvaluator.js';
+export {
+  Stage3PilotPreparationBuilder,
+  createStage3PilotPreparationBuilder
+} from './Stage3PilotPreparationBuilder.js';

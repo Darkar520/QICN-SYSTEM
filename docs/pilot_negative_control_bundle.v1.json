@@ -1,0 +1,17 @@
+{
+  "artifact_role": "pilot_negative_control_bundle",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_execution_pilot_packaging",
+  "implementation_status": "stage3_3_negative_control_bundle_defined",
+  "bundle_families": [
+    "self_report_negative_control_bundle",
+    "intervention_response_negative_control_bundle",
+    "temporal_structure_negative_control_bundle",
+    "valence_topology_negative_control_bundle",
+    "embodiment_boundary_negative_control_bundle",
+    "ambiguity_load_negative_control_bundle",
+    "transport_preservation_negative_control_bundle"
+  ],
+  "population_state": "bundle_defined_unpopulated",
+  "interpretation_boundary": "Bundle definition only. No negative-control dataset is present."
+}

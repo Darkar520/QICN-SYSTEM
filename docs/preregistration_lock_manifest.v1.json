@@ -1,0 +1,24 @@
+{
+  "artifact_role": "preregistration_lock_manifest_template",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_preregistration_freeze",
+  "implementation_status": "stage3_3_preregistration_lock_manifest_defined",
+  "template_only": true,
+  "lock_fields": [
+    "lock_id",
+    "record_id",
+    "record_class",
+    "local_only",
+    "external_filing_state",
+    "freeze_timestamp",
+    "lock_reason",
+    "immutable_field_hash",
+    "lineage_hash",
+    "operator_role_class"
+  ],
+  "default_template_values": {
+    "local_only": true,
+    "external_filing_state": "not_externally_filed"
+  },
+  "interpretation_boundary": "Template only. No actual frozen preregistration lock is claimed by this manifest."
+}

@@ -1,0 +1,26 @@
+{
+  "artifact_role": "execution_pilot_dry_run_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_4_execution_pilot_dry_run",
+  "implementation_status": "stage3_4_execution_pilot_dry_run_policy_defined",
+  "allowed_actions": [
+    "manifest validation",
+    "freeze-binding validation",
+    "blinding-route validation",
+    "empty-bundle validation",
+    "collection-schema validation"
+  ],
+  "blocked_actions": [
+    "human evidence collection",
+    "reviewer decision recording",
+    "adjudicator decision recording",
+    "result-bearing analysis output",
+    "external validation wording"
+  ],
+  "dry_run_states": [
+    "execution_pilot_not_open",
+    "execution_pilot_ready_for_dry_run",
+    "execution_pilot_dry_run_open"
+  ],
+  "interpretation_boundary": "Dry-run policy only. It does not authorize evidential or adjudicative execution."
+}

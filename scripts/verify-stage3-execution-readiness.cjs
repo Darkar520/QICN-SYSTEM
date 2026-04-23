@@ -168,8 +168,18 @@ const verifyRuntimeImport = async () => {
   const moduleUrl = pathToFileURL(path.join(ROOT, 'src', 'comparative_program', 'index.js')).href;
   const comparative = await import(moduleUrl);
   const description = comparative.describeComparativeProgramLayer();
-  assert(description.current_stage === 'stage3_readiness_fulfillment', 'Comparative layer must keep Stage3 readiness fulfillment as current stage family');
-  assert(description.current_stage3_substage === 'stage3_2_external_adjudication_execution_readiness', 'Comparative layer must advertise Stage3-2 substage');
+  assert(
+    ['stage3_readiness_fulfillment', 'stage3_execution_pilot_preparation'].includes(description.current_stage),
+    'Comparative layer must advertise a valid Stage 3 family'
+  );
+  assert(
+    [
+      'stage3_2_external_adjudication_execution_readiness',
+      'stage3_3_preregistration_freeze_and_pilot_packaging',
+      'stage3_4_execution_pilot_dry_run'
+    ].includes(description.current_stage3_substage),
+    'Comparative layer must advertise a valid Stage3 substage'
+  );
   assert(typeof comparative.createStage3ExecutionReadinessBuilder === 'function', 'Stage3 execution readiness builder export missing');
 };
 

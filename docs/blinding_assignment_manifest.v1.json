@@ -1,0 +1,22 @@
+{
+  "artifact_role": "blinding_assignment_manifest_template",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_reviewer_selection",
+  "implementation_status": "stage3_3_blinding_assignment_manifest_defined",
+  "template_only": true,
+  "blinding_classes": [
+    "fully_blinded",
+    "artifact_blinded",
+    "control_family_blinded",
+    "unblinding_not_authorized"
+  ],
+  "required_fields": [
+    "assignment_id",
+    "candidate_class",
+    "blinding_class",
+    "authorized_visibility_surface",
+    "unblinding_condition_family",
+    "assignment_state"
+  ],
+  "interpretation_boundary": "Template only. No real blinding assignment is instantiated by this manifest."
+}

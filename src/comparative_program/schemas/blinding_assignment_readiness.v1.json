@@ -1,0 +1,16 @@
+{
+  "title": "blinding_assignment_readiness.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "blinding_assignment_state",
+    "execution_state",
+    "boundary_flags",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "blinding_assignment_readiness" },
+    "artifact_name": { "const": "blinding_assignment_readiness.json" }
+  }
+}

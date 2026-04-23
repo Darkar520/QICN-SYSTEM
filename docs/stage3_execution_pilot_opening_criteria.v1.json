@@ -1,0 +1,21 @@
+{
+  "artifact_role": "stage3_execution_pilot_opening_criteria",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_4_execution_pilot_dry_run",
+  "implementation_status": "stage3_4_execution_pilot_opening_criteria_defined",
+  "opening_requirements": [
+    "frozen preregistration schema defined",
+    "local freeze ready",
+    "reviewer selection package ready",
+    "adjudicator assignment package ready",
+    "execution pilot package defined",
+    "dry-run policy defined"
+  ],
+  "opening_blockers": [
+    "missing freeze layer",
+    "missing reviewer package",
+    "missing adjudicator package",
+    "missing pilot packaging layer"
+  ],
+  "interpretation_boundary": "Criteria only. Meeting criteria may open a dry-run layer, not an evidential execution layer."
+}

@@ -1,0 +1,16 @@
+{
+  "artifact_role": "reviewer_rejection_reasons",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_reviewer_selection",
+  "implementation_status": "stage3_3_reviewer_rejection_reasons_defined",
+  "rejection_reasons": [
+    "qualification_mismatch",
+    "conflict_disclosed",
+    "conflict_undisclosed",
+    "prior_unblinded_access",
+    "methodological_scope_mismatch",
+    "insufficient_lineage_literacy",
+    "insufficient_control_admissibility_literacy"
+  ],
+  "interpretation_boundary": "Rejection logic is a governance control, not a reviewer decision."
+}

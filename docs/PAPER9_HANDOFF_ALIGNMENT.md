@@ -16,6 +16,8 @@ Paper 9 is positioned before:
 - Stage3-0 external adjudication architecture and scaffold-only Paper 10 source
 - Stage3-1 human comparator instantiation contracts and preregistration templates
 - Stage3-2 reviewer-governance and execution-readiness hardening
+- Stage3-3 preregistration-freeze, reviewer-selection, and pilot-packaging architecture
+- Stage3-4 bounded execution-pilot dry-run opening
 - Stage 3 comparative execution
 - any external adjudication
 - any Paper 10 final authorization or result-bearing drafting
@@ -43,6 +45,10 @@ This file is not metaphysical closure.
   preregistration templates, reviewer/adjudicator independence rules,
   execution-readiness assessments, and a protocol-grade Paper 10 backbone, but
   none of those surfaces authorize result-bearing claims.
+- Stage3-3 may now define local freeze semantics, reviewer/adjudicator package
+  readiness, and execution-pilot package readiness without creating evidence.
+- Stage3-4 may now open a bounded dry-run layer, but that dry-run still does
+  not authorize evidential or adjudicative statements.
 
 ## Current handoff state
 
@@ -54,6 +60,9 @@ This file is not metaphysical closure.
   source may open here.
 - Stage3-1 and Stage3-2 may harden the local protocol layer, but that hardening
   is still not execution, not adjudication, and not Paper 10 finalization.
+- Stage3-3 and Stage3-4 may harden local freeze, packaging, and dry-run
+  semantics, but that hardening is still not execution, not adjudication, and
+  not Paper 10 finalization.
 
 ## Interpretation discipline
 

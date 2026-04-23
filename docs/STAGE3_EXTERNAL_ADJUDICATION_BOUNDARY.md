@@ -1,6 +1,6 @@
 # Stage3 External Adjudication Boundary
 
-## Allowed Stage3-0 / Stage3-1 / Stage3-2 claims
+## Allowed Stage3-0 / Stage3-1 / Stage3-2 / Stage3-3 / Stage3-4 claims
 
 - the external adjudication protocol is defined;
 - the evidence admissibility grammar is defined;
@@ -9,6 +9,10 @@
 - preregistration templates are defined;
 - reviewer and adjudicator independence criteria are defined;
 - execution-readiness logic is defined;
+- frozen preregistration architecture is defined;
+- reviewer-selection and adjudicator-assignment packages are defined;
+- execution-pilot packaging is defined;
+- a bounded dry-run opening layer may exist;
 - the Paper 10 local source exists as a governed non-result surface and may be
   hardened into a protocol-grade backbone;
 - external adjudication is not executed;
@@ -29,13 +33,17 @@
 - metaphysical subjecthood;
 - moral status;
 - cross-substrate identity preservation;
-- Paper 10 final conclusions.
+- Paper 10 final conclusions;
+- dry-run opening as if it were evidence;
+- local freeze architecture as if it were external filing.
 
 ## Interpretation rule
 
 `Stage3-0` may add architecture and scaffolding. `Stage3-1` may add typed
 instantiation and preregistration contracts. `Stage3-2` may add typed
 reviewer-governance and execution-readiness structure plus protocol-grade
-Paper 10 hardening. None of these stages may borrow closure from execution,
-external adjudication, or later philosophical consequence layers that have not
-actually been instantiated.
+Paper 10 hardening. `Stage3-3` may add freeze, selection, assignment, and
+pilot-packaging architecture. `Stage3-4` may add bounded dry-run opening
+logic. None of these stages may borrow closure from execution, external
+adjudication, or later philosophical consequence layers that have not actually
+been instantiated.

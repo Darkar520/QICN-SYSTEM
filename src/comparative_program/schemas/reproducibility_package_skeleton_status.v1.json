@@ -1,0 +1,16 @@
+{
+  "title": "reproducibility_package_skeleton_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "reproducibility_state",
+    "population_state",
+    "boundary_flags",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "reproducibility_package_skeleton_status" },
+    "artifact_name": { "const": "reproducibility_package_skeleton_status.json" }
+  }
+}

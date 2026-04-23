@@ -1,0 +1,27 @@
+{
+  "artifact_role": "external_adjudication_results_unlock_map",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_to_stage3_4_unlock_map",
+  "implementation_status": "stage3_3_post_pilot_unlock_map_defined",
+  "required_before_external_results": [
+    "frozen preregistration record present",
+    "reviewer selection instantiated",
+    "adjudicator assignment instantiated",
+    "admissible populated datasets present",
+    "reproducibility package populated",
+    "decision record present"
+  ],
+  "required_before_paper10_finalization": [
+    "result-bearing evidence sections written against admissible evidence",
+    "decision grammar populated by real evidence",
+    "release-facing policy review complete"
+  ],
+  "still_forbidden_after_dry_run": [
+    "human equivalence claim",
+    "superiority claim",
+    "identity-preservation claim",
+    "metaphysical consequence claim",
+    "public claim-facing release promotion"
+  ],
+  "interpretation_boundary": "Unlock map only. No result or authorization is claimed by this file."
+}

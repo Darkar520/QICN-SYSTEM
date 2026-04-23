@@ -1,0 +1,16 @@
+{
+  "title": "preregistration_lock_assessment.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "lock_state",
+    "amendment_state",
+    "boundary_flags",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "preregistration_lock_assessment" },
+    "artifact_name": { "const": "preregistration_lock_assessment.json" }
+  }
+}

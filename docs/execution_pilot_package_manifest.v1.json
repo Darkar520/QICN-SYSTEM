@@ -1,0 +1,26 @@
+{
+  "artifact_role": "execution_pilot_package_manifest",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_execution_pilot_packaging",
+  "implementation_status": "stage3_3_execution_pilot_package_defined",
+  "package_states": [
+    "pilot_package_not_open",
+    "pilot_package_defined",
+    "pilot_package_ready_but_unexecuted"
+  ],
+  "required_components": [
+    "execution_session_manifest",
+    "collection_session_schema",
+    "reproducibility_package_skeleton",
+    "pilot_negative_control_bundle",
+    "pilot_matched_intervention_bundle",
+    "source_target_pairing_manifest"
+  ],
+  "required_logs": [
+    "session_lineage_log",
+    "protocol_version_log",
+    "freeze_binding_log",
+    "blinding_route_log"
+  ],
+  "interpretation_boundary": "Manifest only. No pilot execution is claimed by this file."
+}

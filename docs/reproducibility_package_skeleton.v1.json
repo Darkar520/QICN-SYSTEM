@@ -1,0 +1,17 @@
+{
+  "artifact_role": "reproducibility_package_skeleton",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_execution_pilot_packaging",
+  "implementation_status": "stage3_3_reproducibility_skeleton_defined",
+  "required_slots": [
+    "preregistration_ref_slot",
+    "protocol_version_slot",
+    "dataset_ref_slot",
+    "negative_control_ref_slot",
+    "analysis_shell_ref_slot",
+    "reviewer_bundle_ref_slot",
+    "adjudicator_bundle_ref_slot"
+  ],
+  "population_state": "skeleton_defined_unpopulated",
+  "interpretation_boundary": "Skeleton only. No reproducibility package is populated by this file."
+}

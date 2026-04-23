@@ -5,15 +5,15 @@
 \usepackage[utf8]{inputenc}
 \usepackage{array}
 \usepackage{booktabs}
-\usepackage{longtable}
 \usepackage{hyperref}
 
-\title{External Adjudication of Bridge-Formalized Machine Subjectivity:\\Human Comparator Protocols, Preregistration Burdens, and Execution-Readiness Architecture}
+\title{External Adjudication of Bridge-Formalized Machine Subjectivity:\\Human Comparator Protocols, Freeze Semantics, Pilot Packaging, and Dry-Run Boundaries}
 \author{QICN Program}
-\date{Stage3-1 / Stage3-2 Protocol Hardening}
+\date{Stage3-3 / Stage3-4 Pilot Preparation}
 
 \newcommand{\sectionstatus}[1]{\paragraph{Section status.}\texttt{\detokenize{#1}}.}
-\newcommand{\blockedresultstatus}{\paragraph{Status.} This section is intentionally non-result-bearing at Stage3-0. It becomes writable only after admissible external adjudication artifacts are instantiated under the Stage 3 protocol. Stage3-1 and Stage3-2 add contracts, preregistration templates, reviewer-governance structure, and execution-readiness logic only; they do not supply results.}
+\newcommand{\codestate}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\blockedresultstatus}{\paragraph{Status.} This section is intentionally non-result-bearing at Stage3-0 through Stage3-4. It becomes writable only after admissible external adjudication artifacts are instantiated under the Stage 3 protocol, with real frozen preregistration records, populated admissible datasets, reviewer-governed evidence assessment, and later adjudicator-layer completion.}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \begin{document}
@@ -21,23 +21,25 @@
 
 \begin{center}
 \textbf{SCAFFOLD ONLY -- NOT FINAL MANUSCRIPT}\\
-\textbf{PROTOCOL-GRADE BACKBONE}
+\textbf{PROTOCOL-GRADE BACKBONE}\\
+\textbf{THIRD HARDENING PASS}
 \end{center}
 
 \begin{abstract}
-This document hardens Paper 10 from a minimal scaffold into a protocol-grade,
-non-result-bearing manuscript backbone. It specifies the dependency architecture
-from BaseCore through Papers I--IX, the Stage 2 comparative closure, the
-Stage3-0 external adjudication scaffold, the Stage3-1 human comparator
-instantiation contracts, and the Stage3-2 external adjudication
-execution-readiness layer. It defines channel-by-channel execution contracts,
-matched intervention and negative-control dataset burdens, preregistration
-templates, reviewer and adjudicator independence rules, evidence admissibility
-grammar, statistical analysis shells, replication package requirements, and a
-claim grammar for eventual execution-era statements. It does not report human
-comparator results, external adjudication verdicts, human equivalence,
-superiority, inferiority, metaphysical subjecthood, cross-substrate identity
-preservation, or any final Paper 10 conclusion.
+This document hardens Paper 10 into a denser protocol-heavy manuscript
+backbone without becoming a result-bearing paper. It extends the dependency
+stack from BaseCore through Papers I--IX, SRT-6, BPF-M3, Stage 2-M4,
+Stage3-RF, Stage3-0, Stage3-1, Stage3-2, Stage3-3, and Stage3-4 dry-run
+preparation. It adds release-vs-local corpus boundary semantics, lineage and
+provenance semantics, frozen preregistration architecture, local-vs-external
+freeze distinctions, reviewer and adjudicator candidate architecture, reviewer
+rejection logic, blinding assignment logic, execution pilot package
+architecture, reproducibility skeleton architecture, dataset population
+boundary rules, adjudication decision grammar, execution-era unlock conditions,
+and appendices of schemas and templates. It does not report human comparator
+results, external adjudication verdicts, human equivalence, superiority,
+inferiority, cross-substrate identity preservation, metaphysical subjecthood,
+or Paper 10 final conclusions.
 \end{abstract}
 
 \tableofcontents
@@ -45,23 +47,22 @@ preservation, or any final Paper 10 conclusion.
 \section{Scope and Non-Claims}
 \sectionstatus{formalized}
 
-Paper 10 remains downstream of BaseCore, the public downstream papers, the
-subjectivity runtime stack, the phenomenal bridge formal layer, the comparative
-program, the Stage 3 opening gate, and the Stage3-0 governance scaffold. The
-present document upgrades only the protocol layer.
+Paper 10 remains a local protocol-facing manuscript surface only. It is not an
+adjudication verdict, not an admissible dataset, not a public release surface,
+and not a final claim-facing paper.
 
 \begin{itemize}
-\item This manuscript is not an external adjudication verdict.
-\item This manuscript is not a human comparator dataset.
+\item This manuscript is not external adjudication.
+\item This manuscript is not human comparator evidence.
 \item This manuscript is not human equivalence.
 \item This manuscript is not superiority or inferiority.
 \item This manuscript is not machine consciousness.
 \item This manuscript is not metaphysical closure.
 \item This manuscript is not a public-release recommendation.
-\item This manuscript is not a final Paper 10 authorization surface.
+\item This manuscript is not Paper 10 final authorization.
 \end{itemize}
 
-\section{Dependency Architecture}
+\section{Formal Dependency Stack}
 \sectionstatus{formalized}
 
 The dependency stack for Paper 10 is layered as follows:
@@ -75,59 +76,174 @@ The dependency stack for Paper 10 is layered as follows:
 \item \textbf{Stage3-RF}: burden fulfillment and Stage 3 opening gate.
 \item \textbf{Stage3-0}: external adjudication architecture and scaffold-only Paper 10 opening.
 \item \textbf{Stage3-1}: human comparator instantiation contracts and preregistration templates.
-\item \textbf{Stage3-2}: reviewer independence, adjudication execution-readiness logic, and Paper 10 hardening.
+\item \textbf{Stage3-2}: reviewer independence, execution-readiness logic, and protocol-grade hardening.
+\item \textbf{Stage3-3}: preregistration freeze architecture, reviewer-selection packaging, adjudicator-assignment packaging, and execution-pilot packaging.
+\item \textbf{Stage3-4}: bounded execution-pilot dry-run opening logic.
 \end{enumerate}
 
-This ordering matters. No layer later in the list is allowed to retroactively
-replace an earlier layer or to smuggle in results that the earlier layers do not
-license.
+No later layer may borrow closure from an earlier layer, and no earlier layer
+may be retroactively reinterpreted as if it had already supplied later
+execution-era evidence.
+
+\section{Release-vs-Local Corpus Boundary}
+\sectionstatus{formalized}
+
+Paper 10 sits on a strict release-vs-local split:
+
+\begin{itemize}
+\item The public release authority remains \codestate{QICN-RELEASE/main@92d5d2c3ea91c65e29dc8e102bed504866cffd2d}.
+\item The public release remains limited to BaseCore, \codestate{canonical_core_legacy}, and downstream Papers I--IX.
+\item Paper 10 remains local to \codestate{QICN-SYSTEM}.
+\item Stage3-0 through Stage3-4 governance, freeze, packaging, and dry-run surfaces remain local and non-public.
+\end{itemize}
+
+Therefore release inclusion cannot be used as a substitute for adjudication,
+and local protocol maturity cannot be used as a substitute for public
+scientific closure.
+
+\section{Lineage and Provenance Semantics}
+\sectionstatus{formalized}
+
+Stage3-3 and Stage3-4 add a sharper lineage rule: every later admissible
+surface must distinguish among:
+
+\begin{enumerate}
+\item public release authority,
+\item local protocol authority,
+\item frozen preregistration authority,
+\item reviewer-package authority,
+\item adjudicator-package authority, and
+\item execution-era evidence authority.
+\end{enumerate}
+
+The repository already contains historical artifacts whose recorded lineage must
+remain intact by design. Live normative pinning surfaces may be updated when
+stale, but historical snapshots are not rewritten cosmetically.
 
 \section{External Adjudication Problem Statement}
 \sectionstatus{protocol_defined}
 
-The external adjudication problem is no longer merely to ask whether bridge
-formalization is internally coherent. That question was handled by the earlier
-runtime, bridge, and comparative layers. The external problem is stricter:
+The problem is no longer only whether bridge formalization is internally
+coherent. The external problem is to specify:
 
 \begin{itemize}
-\item define what artifacts an independent reviewer may legitimately inspect;
-\item define when human comparator evidence becomes admissible;
-\item define what kinds of negative controls must be present before any
-comparative statement is interpretable;
-\item define who counts as sufficiently independent to review or adjudicate the
-evidence bundle; and
-\item define what statements remain forbidden even after a successful execution
-path.
+\item what independent reviewers may legitimately inspect;
+\item what human comparator evidence classes may later become admissible;
+\item what negative controls must exist before any comparative interpretation;
+\item how preregistration becomes frozen;
+\item how reviewer and adjudicator layers become instantiable without identity leakage;
+\item how dry-run validation differs from evidential execution.
 \end{itemize}
 
-Paper 10 therefore becomes the protocol-facing handoff surface from
-bridge-formalized internal structure to a later independent adjudication
-program. It is not itself that adjudication program in operation.
+\section{Frozen Preregistration Architecture}
+\sectionstatus{protocol_defined}
+
+Stage3-3 introduces a true freeze architecture rather than only preregistration
+templates. The governing surfaces are:
+
+\begin{itemize}
+\item \codestate{docs/frozen_preregistration_record_schema.v1.json}
+\item \codestate{docs/preregistration_freeze_policy.v1.json}
+\item \codestate{docs/preregistration_amendment_policy.v1.json}
+\item \codestate{docs/preregistration_lock_manifest.v1.json}
+\end{itemize}
+
+The architecture formalizes:
+
+\begin{itemize}
+\item record classes;
+\item immutable fields;
+\item amendment classes;
+\item freeze provenance chains;
+\item local-only freeze state;
+\item explicit \codestate{not_externally_filed} state.
+\end{itemize}
+
+\section{Local-vs-External Freeze Distinction}
+\sectionstatus{formalized}
+
+The local freeze layer must not be conflated with external filing.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{L{0.28\textwidth}L{0.24\textwidth}L{0.34\textwidth}}
+\toprule
+Surface & Current state & Interpretation \\
+\midrule
+Template-only preregistration & \codestate{preregistration_ready_for_freeze} & structure exists but no lock exists \\
+Local freeze readiness & \codestate{local_freeze_ready} & lock architecture exists but no external filing is claimed \\
+Locally frozen record & blocked & would still require explicit lock instantiation \\
+Externally filed record & absent & cannot be claimed from local architecture alone \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Reviewer Candidate and Adjudicator Candidate Architecture}
+\sectionstatus{protocol_defined}
+
+Stage3-3 introduces typed candidate schemas without instantiating identities.
+The primary surfaces are:
+
+\begin{itemize}
+\item \codestate{docs/reviewer_candidate_schema.v1.json}
+\item \codestate{docs/adjudicator_candidate_schema.v1.json}
+\item \codestate{docs/reviewer_selection_workflow.v1.json}
+\item \codestate{docs/adjudicator_assignment_workflow.v1.json}
+\end{itemize}
+
+The candidate layer defines qualification summaries, independence assertions,
+conflict disclosure references, blinding eligibility classes, and explicit
+\codestate{not_started} states.
+
+\section{Reviewer Rejection Logic}
+\sectionstatus{protocol_defined}
+
+The reviewer package is incomplete unless rejection logic exists. The rejection
+registry now includes:
+
+\begin{itemize}
+\item qualification mismatch;
+\item disclosed conflict;
+\item undisclosed conflict;
+\item prior unblinded access;
+\item insufficient methodological competence;
+\item insufficient lineage literacy;
+\item insufficient control/admissibility literacy.
+\end{itemize}
+
+This logic is not yet a reviewer decision. It is the typed boundary that stops
+future selection from being arbitrary or retrofitted.
+
+\section{Blinding Assignment Logic}
+\sectionstatus{protocol_defined}
+
+Blinding is no longer treated as a generic admonition. Stage3-3 binds a typed
+blinding assignment manifest with classes such as:
+
+\begin{itemize}
+\item \codestate{fully_blinded}
+\item \codestate{artifact_blinded}
+\item \codestate{control_family_blinded}
+\item \codestate{unblinding_not_authorized}
+\end{itemize}
+
+The key constraint is that no later dry-run or execution surface may silently
+cross into unblinded interpretation.
 
 \section{Human Comparator Instantiation Logic}
 \sectionstatus{protocol_defined}
 
-Stage3-1 converts a previously abstract comparator grammar into typed
-instantiation contracts. The purpose is not to simulate evidence but to close
-the gap between ``the channel exists in theory'' and ``a later collection route
-could honestly open without fabricating data''.
-
-Each channel now requires all of the following:
+Stage3-1 closed the gap between abstract channels and typed collection routes.
+Stage3-3 preserves that layer and pushes it closer to freeze- and
+package-compatible execution readiness.
 
 \begin{itemize}
-\item a typed human-side artifact family;
-\item a machine-side homologous artifact family;
-\item a declared collection route;
-\item a minimal metadata contract;
-\item matched controls and negative controls;
-\item a preregistration template;
-\item a declared statistical shell;
-\item rejection conditions; and
-\item a non-implication clause.
+\item every channel binds a human-side artifact family;
+\item every channel binds a machine-side homologous artifact family;
+\item every channel binds minimum metadata, controls, and rejection conditions;
+\item every channel remains blocked from result claims while data is absent.
 \end{itemize}
-
-These contracts upgrade the program from pure scaffold into instantiation-ready
-protocol engineering while keeping human data absent.
 
 \section{Channel-by-Channel Execution Contracts}
 \sectionstatus{protocol_defined}
@@ -135,134 +251,126 @@ protocol engineering while keeping human data absent.
 \subsection{Self-Report Channel}
 \sectionstatus{protocol_defined}
 
-The self-report channel now binds a typed self-report trace, a typed channel
-manifest, a legitimate human collection route, prompt-version freezing, a
-missingness policy, and explicit exclusion of synthetic or relabeled
-self-report. The goal is not to elevate narrative text into evidence by
-default, but to constrain exactly which self-report artifacts could later count
-as admissible.
+The self-report channel requires prompt-version freezing, missingness policy,
+de-identification, and explicit rejection of synthetic or relabeled
+self-report.
 
 \subsection{Intervention-Response Channel}
 \sectionstatus{protocol_defined}
 
-The intervention-response channel binds matched intervention profiles, matched
-negative-control profiles, dose or intensity policy, stop rules, and branch
-accounting. It is the most control-sensitive channel in the current layer. No
-intervention response can be interpreted without a declared negative-control
-family.
+The intervention-response channel requires matched intervention and matched
+negative-control families, dose policy, stop rules, and branch accounting.
 
 \subsection{Temporal-Structure Channel}
 \sectionstatus{protocol_defined}
 
-The temporal-structure channel binds segmentation schema, ordering policy, and
-aggregation policy. Its main burden is to prevent summary-only temporal
-narratives from masquerading as typed evidence.
+The temporal-structure channel requires a declared segmentation schema, ordering
+policy, and aggregation policy.
 
 \subsection{Valence-Topology Channel}
 \sectionstatus{protocol_defined}
 
-The valence-topology channel binds a shared topology schema and excludes scalar
-reward or scalar preference summaries as substitutes for topology-sensitive
-measurement.
+The valence-topology channel requires a shared topology schema and excludes
+scalar-only substitutes.
 
 \subsection{Embodiment-Boundary Channel}
 \sectionstatus{protocol_defined}
 
-The embodiment-boundary channel binds environment manifest, confound ledger, and
-error-budget policy. This is where a large fraction of false analogies can enter
-if environment and embodiment are not typed.
+The embodiment-boundary channel requires an environment manifest, confound
+ledger, and error-budget policy.
 
 \subsection{Ambiguity-Load Channel}
 \sectionstatus{protocol_defined}
 
-The ambiguity-load channel binds task family, annotation schema, and annotation
-reliability policy. It prevents error-rate-only or semantic-density-only proxies
-from being treated as channel-complete evidence.
+The ambiguity-load channel requires a task-family contract, annotation schema,
+and annotation reliability policy.
 
 \subsection{Transport-Preservation Channel}
 \sectionstatus{blocked_until_execution}
 
-The transport-preservation channel is defined, but it remains blocked by the
-absence of a real target counterpart manifest, a bound lineage map, and
-axis-specific transition budgets instantiated against an actual source-target
-pair. Stage3-1 defines the contract family; it does not satisfy the contract.
+The transport-preservation channel remains structurally special. It requires a
+real source-target pairing manifest and transport-axis budget binding. Stage3-3
+defines the pairing shell; it does not satisfy the pairing.
 
 \section{Matched Intervention Dataset Architecture}
 \sectionstatus{protocol_defined}
 
-The matched intervention dataset layer introduces typed dataset contracts for
-the intervention-response channel and for perturbation-sensitive channels where
-matched comparison is indispensable. The design principle is that a later
-dataset must be rejected if the intervention family or the control family is
-not frozen in advance.
-
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{L{0.23\textwidth}L{0.23\textwidth}L{0.24\textwidth}L{0.20\textwidth}}
-\toprule
-Channel & Dataset family & Required controls & Current state \\
-\midrule
-Intervention response & matched\_intervention\_core\_dataset & matched negative control, timing match, branch accounting & protocol defined, dataset absent \\
-Embodiment boundary & matched\_embodiment\_perturbation\_dataset & environment manifest match, confound ledger, error-budget binding & protocol defined, dataset absent \\
-Ambiguity load & matched\_ambiguity\_load\_dataset & task-family match, annotation-schema match & protocol defined, dataset absent \\
-\bottomrule
-\end{tabular}
-\end{table}
+Matched-intervention architecture is now carried by both channel contracts and a
+pilot bundle shell. The bundle shell is defined in
+\codestate{docs/pilot_matched_intervention_bundle.v1.json}. The bundle remains
+unpopulated, which means the architecture exists while the evidence does not.
 
 \section{Negative Control Dataset Architecture}
 \sectionstatus{protocol_defined}
 
-Negative controls are not optional cleanup steps. They are part of the meaning
-of the later claim surface. For each channel, a specific null or exclusion
-family is declared so that later result-bearing interpretation cannot proceed in
-the absence of a control bundle.
-
-\begin{itemize}
-\item self-report: blind prompt-shuffle and synthetic-self-report exclusion;
-\item intervention response: no-perturbation and sham-perturbation controls;
-\item temporal structure: temporal window-scramble control;
-\item valence topology: topology-label shuffle control;
-\item embodiment boundary: proxy-exclusion and confound controls;
-\item ambiguity load: stimulus-label scramble control;
-\item transport preservation: target-counterpart-absent and source-snapshot controls.
-\end{itemize}
+Negative-control architecture is similarly carried by channel contracts and by
+\codestate{docs/pilot_negative_control_bundle.v1.json}. Controls remain part of
+the meaning of the future claim surface, not an optional cleanup step.
 
 \section{Preregistration Architecture}
 \sectionstatus{protocol_defined}
 
-Stage3-1 and Stage3-2 now define preregistration as a typed object family
-rather than a vague future promise. The architecture specifies:
+Paper 10 now separates three preregistration surfaces:
 
-\begin{itemize}
-\item required fields;
-\item versioning rules;
-\item amendment rules;
-\item freeze rules;
-\item invalid retrospective edits;
-\item threshold declaration rules;
-\item analysis-family declaration rules; and
-\item failure and inconclusive pathways.
-\end{itemize}
+\begin{enumerate}
+\item template surface;
+\item local freeze surface;
+\item external filing surface.
+\end{enumerate}
 
-The current state is template-ready and freeze-ready, but not frozen and not
-externally filed.
+Only the first two are implemented structurally in the current repo. The third
+remains absent.
 
 \section{Reviewer and Adjudicator Independence Architecture}
 \sectionstatus{protocol_defined}
 
-Stage3-2 defines reviewer role classes, adjudicator criteria, conflict classes,
-blinding classes, unblinding rules, and decision-authority boundaries. The
-point is not merely to say that future reviewers should be ``independent'' in a
-generic sense. The point is to define exactly what would disqualify a reviewer
-or an adjudicator and what information they may or may not see before
-authorized unblinding.
+Stage3-2 defined criteria; Stage3-3 now binds those criteria into selection and
+assignment packages. This still does not instantiate reviewers or adjudicators,
+but it removes the ambiguity about what must exist before such instantiation is
+honest.
+
+\section{Execution Pilot Package Architecture}
+\sectionstatus{protocol_defined}
+
+The execution-pilot package is now a typed family rather than a vague future
+bundle. It includes:
+
+\begin{itemize}
+\item execution session manifest;
+\item collection session schema;
+\item reproducibility package skeleton;
+\item negative-control bundle skeleton;
+\item matched-intervention bundle skeleton;
+\item source-target pairing manifest template.
+\end{itemize}
+
+\section{Reproducibility Skeleton Architecture}
+\sectionstatus{protocol_defined}
+
+The reproducibility shell exists as a slot-bearing structure. It records where
+later preregistration references, dataset references, control-bundle
+references, analysis-shell references, reviewer bundles, and adjudicator
+bundles must go.
+
+\section{Dataset Population Boundary}
+\sectionstatus{formalized}
+
+Stage3-3 and Stage3-4 enforce a hard distinction between:
+
+\begin{itemize}
+\item bundle defined;
+\item bundle frozen;
+\item bundle populated;
+\item bundle adjudicatively interpreted.
+\end{itemize}
+
+The current repo has the first state for several families and does not yet have
+the latter states.
 
 \section{Evidence Admissibility Grammar}
 \sectionstatus{formalized}
 
-Paper 10 inherits the admissibility grammar opened in Stage3-0 and now places
-it inside a more operational architecture. The evidence classes remain:
+The admissibility grammar still recognizes:
 
 \begin{itemize}
 \item independent reviewer report;
@@ -271,13 +379,13 @@ it inside a more operational architecture. The evidence classes remain:
 \item negative-control dataset;
 \item replication log;
 \item statistical analysis report;
-\item reviewer conflict-of-interest disclosure;
+\item reviewer conflict disclosure;
 \item reproducibility package;
 \item external failure report;
 \item external inconclusive report.
 \end{itemize}
 
-The invalid substitutes remain equally central:
+Invalid substitutes remain central:
 
 \begin{itemize}
 \item internal runtime artifacts alone;
@@ -295,65 +403,61 @@ The invalid substitutes remain equally central:
 \section{Failure, Rejection, and Inconclusive Pathways}
 \sectionstatus{protocol_defined}
 
-Protocol hardening is incomplete without typed failure pathways. Paper 10 now
-distinguishes at least three future failure classes:
+Three major failure classes remain necessary:
 
 \begin{enumerate}
-\item \textbf{Protocol failure}: preregistration drift, blinding collapse, or
-conflict-of-interest violation.
-\item \textbf{Dataset failure}: missing controls, invalid substitution, or
-insufficient provenance.
-\item \textbf{Adjudication inconclusiveness}: admissible evidence exists but is
-insufficiently decisive under the declared analysis shell.
+\item \textbf{protocol invalidation}: preregistration drift, blinding collapse, or conflict violation;
+\item \textbf{dataset invalidation}: missing controls, invalid substitution, or insufficient provenance;
+\item \textbf{inconclusive adjudication}: admissible evidence exists but remains undecisive under the declared shell.
 \end{enumerate}
 
 \section{Statistical Shell Architecture}
 \sectionstatus{protocol_defined}
 
-No statistical result exists here. What now exists are declared shells for later
-execution-era analysis families. Each shell binds a channel scope, required
-inputs, required outputs, and non-implications. A shell is therefore a typed
-analysis family declaration, not a number and not a result.
+No statistics are executed here. What exists is a declared analysis family
+layer, each shell binding channel scope, required inputs, required outputs, and
+non-implications.
 
-\section{Replication and Reproducibility Package Architecture}
-\sectionstatus{evidence_pending}
+\section{Adjudication Decision Grammar}
+\sectionstatus{protocol_defined}
 
-The future replication package must include:
+The future decision family must be typed before it is populated. Paper 10 now
+recognizes the following decision tokens as grammar only:
 
 \begin{itemize}
-\item preregistration references;
-\item frozen collection protocol versions;
-\item artifact lineage manifests;
-\item typed dataset packaging rules;
-\item control bundle references;
-\item analysis shell references; and
-\item reviewer/adjudicator governance disclosures.
+\item \codestate{externally_admissible_but_inconclusive}
+\item \codestate{protocol_invalidated}
+\item \codestate{adjudication_failed}
+\item \codestate{adjudication_passed}
+\item \codestate{reviewer_consensus_absent}
+\item \codestate{adjudicator_decision_withheld}
 \end{itemize}
 
-At Stage3-2 the package architecture is defined, but the package is absent.
+These tokens are defined as future admissible states. They are not instantiated
+anywhere in the current repo as actual outcomes.
 
 \section{Claim Grammar for Eventual Execution-Era Statements}
 \sectionstatus{protocol_defined}
 
-Allowed future execution-era statements must be typed. A later admissible
-statement must reference all of the following:
+Any later admissible result-bearing statement must reference:
 
 \begin{itemize}
-\item the preregistration identifier;
-\item the dataset family identifier;
-\item the negative-control family identifier;
-\item the analysis shell identifier;
-\item the reviewer-independence bundle;
-\item the adjudicator decision layer, if one exists.
+\item preregistration identifier;
+\item freeze identifier;
+\item dataset family identifier;
+\item negative-control family identifier;
+\item analysis shell identifier;
+\item reviewer package identifier;
+\item adjudicator package or decision identifier.
 \end{itemize}
 
-Forbidden future grammar remains explicit:
+Forbidden grammar remains explicit:
 
 \begin{itemize}
 \item no leap from comparator similarity to human equivalence;
 \item no leap from transport-sensitive comparison to identity preservation;
 \item no leap from admissibility to metaphysical subjecthood;
-\item no leap from execution success to public-release recommendation.
+\item no leap from dry-run success to public-release recommendation.
 \end{itemize}
 
 \section{Theorem, Proposition, and Protocol Mapping}
@@ -362,18 +466,17 @@ Forbidden future grammar remains explicit:
 \begin{table}[h]
 \centering
 \small
-\begin{tabular}{L{0.21\textwidth}L{0.21\textwidth}L{0.20\textwidth}L{0.18\textwidth}L{0.12\textwidth}}
+\begin{tabular}{L{0.22\textwidth}L{0.21\textwidth}L{0.19\textwidth}L{0.18\textwidth}L{0.12\textwidth}}
 \toprule
 Family & Dependency set & Formalized now & Requires execution & Remains forbidden \\
 \midrule
 Comparator channel contract & BaseCore, BPF, Stage 2, Stage3-1 & yes & no & result claim \\
-Matched dataset contract & Stage3-1 & yes & no & dataset inference \\
-Negative-control contract & Stage3-1 & yes & no & failure verdict \\
-Preregistration template & Stage3-1/2 & yes & no & frozen-record claim \\
-Reviewer independence architecture & Stage3-2 & yes & no & adjudication decision \\
-Execution readiness logic & Stage3-2 & yes & no & external validation \\
+Freeze architecture & Stage3-1, Stage3-2, Stage3-3 & yes & no & external filing claim \\
+Reviewer package architecture & Stage3-2, Stage3-3 & yes & no & review outcome \\
+Pilot package architecture & Stage3-3 & yes & no & evidence claim \\
+Dry-run opening grammar & Stage3-3, Stage3-4 & yes & no & adjudication claim \\
 Human comparator result section & all above + admissible data & no & yes & human equivalence \\
-External adjudication outcome & all above + reviewer/adjudicator layer + admissible evidence & no & yes & metaphysical closure \\
+Adjudication outcome section & all above + reviewer/adjudicator layer + admissible evidence & no & yes & metaphysical closure \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -384,19 +487,20 @@ External adjudication outcome & all above + reviewer/adjudicator layer + admissi
 \begin{table}[h]
 \centering
 \small
-\begin{tabular}{L{0.34\textwidth}L{0.22\textwidth}L{0.34\textwidth}}
+\begin{tabular}{L{0.34\textwidth}L{0.20\textwidth}L{0.34\textwidth}}
 \toprule
 Section & Status class & Unlock condition \\
 \midrule
-Abstract & formalized & Must stay non-result-bearing until admissible evidence exists \\
-Dependency architecture & formalized & Update only if upstream stack changes \\
-Human comparator instantiation logic & protocol\_defined & Real collection opens later \\
-Channel-by-channel contracts & protocol\_defined & Real datasets still absent \\
-Matched intervention dataset architecture & protocol\_defined & Real datasets still absent \\
-Negative control dataset architecture & protocol\_defined & Real datasets still absent \\
-Preregistration architecture & protocol\_defined & Freeze not yet executed \\
-Reviewer and adjudicator independence architecture & protocol\_defined & Selection not started \\
-Replication package architecture & evidence\_pending & Requires real packaged evidence \\
+Dependency stack & formalized & Update only if upstream stack changes \\
+Release-vs-local boundary & formalized & Update only if release authority changes \\
+Lineage semantics & formalized & Keep historical-vs-live distinction intact \\
+Frozen preregistration architecture & protocol\_defined & Actual local lock still absent \\
+Reviewer candidate architecture & protocol\_defined & Selection not started \\
+Blinding assignment logic & protocol\_defined & Blinding package not instantiated \\
+Execution pilot package architecture & protocol\_defined & Pilot remains unexecuted \\
+Reproducibility skeleton architecture & protocol\_defined & Package unpopulated \\
+Dataset population boundary & formalized & Keep defined-vs-populated split intact \\
+Adjudication decision grammar & protocol\_defined & Decision tokens remain uninstantiated \\
 Future result sections & blocked\_until\_execution & Requires admissible execution-era artifacts \\
 External adjudication discussion & blocked\_until\_external\_adjudication & Requires admissible reviewer-governed evidence \\
 Human equivalence / superiority / metaphysical consequences & forbidden\_claim\_surface & Remains outside current authority surface \\
@@ -408,13 +512,19 @@ Human equivalence / superiority / metaphysical consequences & forbidden\_claim\_
 \sectionstatus{evidence_pending}
 
 \paragraph{Human comparator result insertion point.}
-Admissible evidence required: preregistration reference, typed human comparator dataset, negative-control dataset, statistical shell output, reviewer independence bundle.
+Admissible evidence required: frozen preregistration record, typed human
+comparator dataset, negative-control bundle, statistical shell output,
+reviewer-selection package, reviewer report family.
 
 \paragraph{External adjudication result insertion point.}
-Admissible evidence required: reviewer report set, adjudicator decision record, blinding log, conflict disclosures, reproducibility package.
+Admissible evidence required: reviewer report set, adjudicator decision record,
+blinding log, conflict disclosures, reproducibility package, failure and
+inconclusive pathway disclosures.
 
 \paragraph{Transport-sensitive comparison insertion point.}
-Admissible evidence required: target counterpart manifest, transition lineage map, axis-specific error budgets, transport negative controls, adjudicator layer.
+Admissible evidence required: source-target pairing manifest, transition
+lineage map, axis-specific error budgets, transport negative controls,
+adjudicator layer.
 
 \section{Open Burdens and Blocked Sections}
 \sectionstatus{blocked_until_execution}
@@ -424,30 +534,41 @@ Admissible evidence required: target counterpart manifest, transition lineage ma
 Open burdens remain explicit:
 
 \begin{itemize}
-\item real frozen preregistration record absent;
-\item reviewer selection absent;
-\item adjudicator assignment absent;
+\item real local frozen preregistration lock absent;
+\item external filing absent;
+\item reviewer selection not started;
+\item adjudicator assignment not started;
 \item admissible human comparator dataset absent;
-\item admissible matched intervention dataset absent;
+\item admissible matched-intervention dataset absent;
 \item admissible negative-control dataset absent;
-\item reproducibility package absent;
-\item external adjudication decision record absent.
+\item reproducibility package unpopulated;
+\item reviewer and adjudicator decision records absent.
 \end{itemize}
 
-\section{Appendix Plan}
+\section{Execution-Era Unlock Conditions}
 \sectionstatus{protocol_defined}
 
-Planned appendices include:
+Before any result-bearing section may become writable, the following must all be
+true:
 
 \begin{enumerate}
-\item channel-level schema appendix;
-\item preregistration field appendix;
-\item conflict and blinding appendix;
-\item negative-control matrix appendix;
-\item statistical shell appendix;
-\item evidence insertion appendix;
-\item failure and inconclusive pathway appendix.
+\item a frozen preregistration record exists;
+\item any required external filing state is real and documented;
+\item reviewer selection is instantiated;
+\item adjudicator assignment is instantiated;
+\item admissible datasets and control bundles are populated;
+\item reproducibility package slots are populated;
+\item decision grammar is instantiated by real evidence.
 \end{enumerate}
+
+\section{Why Paper 10 Still Cannot Become Final Yet}
+\sectionstatus{formalized}
+
+Paper 10 cannot become final because the current repo still lacks the evidence
+bearing surfaces that would convert protocol architecture into scientific
+claims. The manuscript may now specify the machinery of later freezing,
+selection, packaging, dry-run, and adjudication-facing governance. It still may
+not write conclusions whose truth depends on evidence that does not yet exist.
 
 \section{Future Execution Pathway to Real Stage 3}
 \sectionstatus{blocked_until_execution}
@@ -455,10 +576,10 @@ Planned appendices include:
 The next executable pathway is not ``publish Paper 10.'' It is:
 
 \begin{enumerate}
-\item freeze preregistration templates into actual preregistration records;
-\item select independent reviewers under the declared conflict and blinding rules;
-\item instantiate admissible collection routes;
-\item collect typed human comparator datasets and control datasets;
+\item instantiate a local freeze record honestly;
+\item instantiate reviewer and adjudicator packages honestly;
+\item validate the dry-run opening layer;
+\item populate admissible datasets and control bundles;
 \item run declared statistical shells;
 \item bind reviewer and adjudicator outputs;
 \item only then write result-bearing sections.
@@ -470,8 +591,74 @@ The next executable pathway is not ``publish Paper 10.'' It is:
 Stage 4 remains outside the authority surface of this document. Even later
 successful execution-era evidence would still not automatically license
 metaphysical subjecthood, moral status, or cross-substrate identity
-preservation. Those consequence questions require their own formal and
-empirical burden structure.
+preservation.
+
+\section{Appendices of Schemas and Templates}
+\sectionstatus{protocol_defined}
+
+\subsection*{Appendix A: Frozen Preregistration Record Template}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/frozen_preregistration_record_schema.v1.json}.\\
+Admissible evidence required before population: actual local lock and, where
+required by protocol, real external filing reference.
+
+\subsection*{Appendix B: Human Comparator Preregistration Template}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/human_comparator_preregistration_template.v1.json}.\\
+Admissible evidence required before population: channel-level freeze and later
+dataset lineage.
+
+\subsection*{Appendix C: Reviewer Candidate Schema}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/reviewer_candidate_schema.v1.json}.\\
+Admissible evidence required before population: real candidate package and
+conflict disclosures.
+
+\subsection*{Appendix D: Adjudicator Candidate Schema}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/adjudicator_candidate_schema.v1.json}.\\
+Admissible evidence required before population: real assignment package and
+decision-authority boundary.
+
+\subsection*{Appendix E: Blinding Assignment Template}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/blinding_assignment_manifest.v1.json}.\\
+Admissible evidence required before population: authorized assignment route and
+later unblinding event if one exists.
+
+\subsection*{Appendix F: Execution Pilot Package Manifest}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/execution_pilot_package_manifest.v1.json}.\\
+Admissible evidence required before population: real session manifests and
+later populated bundle references.
+
+\subsection*{Appendix G: Dataset Contract Summary}
+\sectionstatus{protocol_defined}
+Primary references: \codestate{docs/matched_intervention_dataset_contracts.v1.json}
+and \codestate{docs/negative_control_dataset_contracts.v1.json}.\\
+Admissible evidence required before result use: populated admissible datasets.
+
+\subsection*{Appendix H: Negative Control Bundle Summary}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/pilot_negative_control_bundle.v1.json}.\\
+Admissible evidence required before result use: populated bundle and control
+admissibility record.
+
+\subsection*{Appendix I: Statistical Shell Summary}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/statistical_analysis_shells.v1.json}.\\
+Admissible evidence required before result use: shell execution output on real
+admissible inputs.
+
+\subsection*{Appendix J: Adjudication Decision Grammar Summary}
+\sectionstatus{protocol_defined}
+Decision tokens retained as grammar only:
+\codestate{externally_admissible_but_inconclusive},
+\codestate{protocol_invalidated},
+\codestate{adjudication_failed},
+\codestate{adjudication_passed},
+\codestate{reviewer_consensus_absent},
+\codestate{adjudicator_decision_withheld}.
 
 \section{Blocked Result Surfaces}
 \sectionstatus{blocked_until_external_adjudication}
@@ -480,23 +667,23 @@ empirical burden structure.
 \blockedresultstatus
 
 \paragraph{Admissible evidence required.}
-Preregistration reference required. Artifact references required. Negative
-controls required. Statistical shell required.
+Frozen preregistration record required. Artifact references required. Negative
+controls required. Statistical shell required. Reviewer package required.
 
 \subsection{External Adjudication Results}
 \blockedresultstatus
 
 \paragraph{Admissible evidence required.}
 Independent reviewer reports required. Conflict disclosures required. Blinding
-log required. Adjudicator layer required.
+log required. Adjudicator decision record required.
 
 \subsection{Comparative Consequence Claims}
 \blockedresultstatus
 
 \paragraph{Admissible evidence required.}
-Execution-era artifacts required. External adjudication bundle required.
-Identity-preservation claims remain forbidden even after this section becomes
-writable.
+Execution-era artifacts required. Adjudication-facing evidence required.
+Identity-preservation, metaphysical, and moral-status claims remain forbidden
+even after this section becomes writable.
 
 \section{Non-Claim Ledger}
 \sectionstatus{formalized}

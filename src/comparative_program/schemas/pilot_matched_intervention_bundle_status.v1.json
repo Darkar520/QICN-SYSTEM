@@ -1,0 +1,15 @@
+{
+  "title": "pilot_matched_intervention_bundle_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "bundle_state",
+    "boundary_flags",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "pilot_matched_intervention_bundle_status" },
+    "artifact_name": { "const": "pilot_matched_intervention_bundle_status.json" }
+  }
+}

@@ -11,7 +11,7 @@ ecosystem alignment against the release package.
 | Item | Value | Status |
 | --- | --- | --- |
 | Canonical theory lineage referenced by release materials | `rigid-identity-framework/*` as recorded inside `QICN-RELEASE` manifests | lineage_reference_only |
-| Current public release package pinned by this repo | `QICN-RELEASE/main@2104e63d44a7d963776c790ca7c24555aba2c2fb` with `rigid-identity-framework/basecore/`, `rigid-identity-framework/canonical_core_legacy/`, and downstream Papers I-IX | verified_public_release_sha_pinned |
+| Current public release package pinned by this repo | `QICN-RELEASE/main@92d5d2c3ea91c65e29dc8e102bed504866cffd2d` with `rigid-identity-framework/basecore/`, `rigid-identity-framework/canonical_core_legacy/`, and downstream Papers I-IX | verified_public_release_sha_pinned |
 | Historical frozen public corpus baseline | `QICN-RELEASE/main` at the March 2026 freeze lineage | historical_public_freeze_provenance |
 | Historical canonical corpus tag | `canonical-freeze-2026-03-01` -> `2d7504be95ca33af5941e30abf7059dc2774edca` | retained_for_provenance |
 | Direct upstream repo pin for the original pre-freeze `rigid-identity-framework` working tree | not separately pinned in this repo | not_required_for_current_release_surface_alignment |
@@ -62,13 +62,13 @@ Verified alignment facts from those release-candidate surfaces:
 | Claim labels and inherited claim-family naming in `src/canon/claimMapping/canonicalClaimCatalog.js` | yes | yes | Labels are inherited from an external canon family even when mapping logic is local. |
 | Claim interpretation limits in `TRACEABILITY_MATRIX.md`, `DESCRIPTOR_REGISTRY.md`, and `ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md` | yes | yes | These documents depend on release-facing canon boundaries but still must not overstate theory closure or validation. |
 | Editorial or release-facing paper surfaces derived from this repo | yes | yes | Current alignment tracks the release-candidate working tree; historical freeze materials remain provenance rather than the only live description. |
-| Stage3-0, Stage3-1, and Stage3-2 local governance docs, internal artifacts, and the Paper 10 local source tree | no | no | These are local engineering governance and protocol-readiness surfaces only and are explicitly excluded from the current public release canon. |
+| Stage3-0, Stage3-1, Stage3-2, Stage3-3, and Stage3-4 local governance docs, internal artifacts, dry-run layers, and the Paper 10 local source tree | no | no | These are local engineering governance, freeze, packaging, dry-run, and protocol-readiness surfaces only and are explicitly excluded from the current public release canon. |
 | Source-of-truth enforcement, build authority, registry validation, and run/batch admissibility logic | no | no | These are local engineering and audit surfaces. |
 
 ## Pinning Outcome
 
 - Current cross-repo alignment target:
-  `QICN-RELEASE/main@2104e63d44a7d963776c790ca7c24555aba2c2fb` with `BaseCore`
+  `QICN-RELEASE/main@92d5d2c3ea91c65e29dc8e102bed504866cffd2d` with `BaseCore`
   as active base layer, `canonical_core_legacy` as preserved legacy, and
   Papers I-IX as downstream public packages.
 - Historical public freeze provenance retained:

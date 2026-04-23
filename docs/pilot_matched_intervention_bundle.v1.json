@@ -1,0 +1,13 @@
+{
+  "artifact_role": "pilot_matched_intervention_bundle",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_execution_pilot_packaging",
+  "implementation_status": "stage3_3_matched_intervention_bundle_defined",
+  "bundle_families": [
+    "intervention_response_matched_bundle",
+    "embodiment_boundary_matched_bundle",
+    "ambiguity_load_matched_bundle"
+  ],
+  "population_state": "bundle_defined_unpopulated",
+  "interpretation_boundary": "Bundle definition only. No matched-intervention dataset is present."
+}

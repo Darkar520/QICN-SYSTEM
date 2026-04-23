@@ -1,9 +1,9 @@
 {
   "artifact_role": "stage3_surface_policy",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage3_0_to_stage3_2_external_adjudication_stack",
-  "implementation_status": "stage3_protocol_stack_defined",
-  "default_interpretation_boundary": "Stage 3 surfaces remain local governance, instantiation, preregistration, readiness, and manuscript-hardening surfaces only. They do not authorize executed adjudication, human equivalence, superiority, public validation, or Paper 10 finality.",
+  "layer_id": "comparative_expansion_layer.stage3_0_to_stage3_4_external_adjudication_stack",
+  "implementation_status": "stage3_execution_stack_defined",
+  "default_interpretation_boundary": "Stage 3 surfaces remain local governance, instantiation, preregistration, freeze, reviewer packaging, pilot packaging, dry-run, and manuscript-hardening surfaces only. They do not authorize executed adjudication, human equivalence, superiority, public validation, or Paper 10 finality.",
   "allowed_surfaces": [
     "developer_inspection_surface",
     "local_artifact_surface",
@@ -21,203 +21,108 @@
   ],
   "outputs": {
     "external_adjudication_manifest.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface",
-        "external_adjudication_result_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
     },
     "external_adjudication_readiness_gate.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface",
-        "external_adjudication_result_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
     },
     "external_evidence_admissibility_assessment.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface"]
     },
     "human_comparator_execution_plan.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "human_equivalence_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "human_equivalence_surface"]
     },
     "human_channel_instantiation_assessment.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface",
-        "human_equivalence_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "human_equivalence_surface"]
     },
     "human_channel_preregistration_readiness.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface"]
     },
     "matched_intervention_dataset_contract_assessment.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface"]
     },
     "negative_control_dataset_contract_assessment.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface"]
     },
     "reviewer_independence_assessment.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface",
-        "external_adjudication_result_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
     },
     "external_adjudication_execution_readiness.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface",
-        "external_adjudication_result_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
     },
     "paper10_scaffold_status.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface",
-        "external_adjudication_result_surface",
-        "human_equivalence_surface",
-        "superiority_claim_surface",
-        "metaphysical_closure_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface", "human_equivalence_surface", "superiority_claim_surface", "metaphysical_closure_surface"]
     },
     "paper10_protocol_hardening_status.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface",
-        "external_adjudication_result_surface",
-        "human_equivalence_surface",
-        "superiority_claim_surface",
-        "metaphysical_closure_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface", "human_equivalence_surface", "superiority_claim_surface", "metaphysical_closure_surface"]
+    },
+    "frozen_preregistration_readiness.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface"]
+    },
+    "preregistration_lock_assessment.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface"]
+    },
+    "reviewer_selection_readiness.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
+    },
+    "adjudicator_assignment_readiness.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
+    },
+    "blinding_assignment_readiness.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
+    },
+    "execution_pilot_package_assessment.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
+    },
+    "reproducibility_package_skeleton_status.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
+    },
+    "pilot_negative_control_bundle_status.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
+    },
+    "pilot_matched_intervention_bundle_status.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
+    },
+    "execution_pilot_opening_gate.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface"]
+    },
+    "execution_pilot_dry_run_status.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface", "human_equivalence_surface", "superiority_claim_surface", "metaphysical_closure_surface"]
+    },
+    "execution_pilot_manifest.json": {
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface", "human_equivalence_surface", "superiority_claim_surface", "metaphysical_closure_surface"]
     },
     "stage3_verification_matrix.json": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface"]
     },
     "paper10_scaffold_package": {
-      "allowed_surfaces": [
-        "developer_inspection_surface",
-        "local_artifact_surface",
-        "local_report_surface",
-        "internal_release_bundle_surface"
-      ],
-      "blocked_surfaces": [
-        "external_claim_facing_surface",
-        "controlled_statement_surface",
-        "public_validation_surface",
-        "external_adjudication_result_surface",
-        "human_equivalence_surface",
-        "superiority_claim_surface",
-        "metaphysical_closure_surface"
-      ]
+      "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"],
+      "blocked_surfaces": ["external_claim_facing_surface", "controlled_statement_surface", "public_validation_surface", "external_adjudication_result_surface", "human_equivalence_surface", "superiority_claim_surface", "metaphysical_closure_surface"]
     }
   },
   "blocked_inferences": [
@@ -227,7 +132,9 @@
     "no_superiority_inference",
     "no_metaphysical_closure_inference",
     "no_paper10_final_inference",
-    "no_preregistration_freeze_inference",
-    "no_reviewer_selection_execution_inference"
+    "no_preregistration_freeze_equals_external_filing_inference",
+    "no_reviewer_selection_execution_inference",
+    "no_dry_run_equals_evidence_inference",
+    "no_dry_run_equals_adjudication_inference"
   ]
 }

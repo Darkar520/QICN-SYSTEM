@@ -1,0 +1,39 @@
+{
+  "artifact_role": "frozen_preregistration_record_schema",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_preregistration_freeze",
+  "implementation_status": "stage3_3_frozen_record_schema_defined",
+  "record_classes": [
+    "external_adjudication_preregistration_record",
+    "human_comparator_preregistration_record",
+    "local_freeze_record",
+    "local_amendment_record"
+  ],
+  "required_fields": [
+    "record_id",
+    "record_class",
+    "protocol_version",
+    "freeze_state",
+    "local_only",
+    "external_filing_state",
+    "endpoint_family",
+    "threshold_declarations",
+    "negative_control_declarations",
+    "analysis_shell_declarations",
+    "blinding_class",
+    "lineage_manifest",
+    "immutability_manifest"
+  ],
+  "immutable_after_freeze": [
+    "record_id",
+    "record_class",
+    "endpoint_family",
+    "threshold_declarations",
+    "negative_control_declarations",
+    "analysis_shell_declarations",
+    "blinding_class",
+    "core_inclusion_rules",
+    "core_exclusion_rules"
+  ],
+  "interpretation_boundary": "Schema only. No actual frozen preregistration record is claimed by this file."
+}

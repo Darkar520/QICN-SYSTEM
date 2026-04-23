@@ -1,0 +1,26 @@
+{
+  "artifact_role": "preregistration_amendment_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_preregistration_freeze",
+  "implementation_status": "stage3_3_preregistration_amendment_policy_defined",
+  "legal_amendments": [
+    "non-substantive clarification appendix",
+    "predeclared contingency branch activation",
+    "dry-run-only operational correction without endpoint or threshold drift"
+  ],
+  "illegal_amendments": [
+    "post-freeze threshold modification",
+    "post-freeze negative control modification",
+    "post-freeze analysis family modification",
+    "post-observation endpoint rewriting",
+    "backfilled external filing claim"
+  ],
+  "amendment_requirements": [
+    "parent frozen record id",
+    "amendment id",
+    "amendment reason",
+    "blinding impact statement",
+    "lineage delta manifest"
+  ],
+  "interpretation_boundary": "Amendment policy does not authorize retrospective evidence rewriting."
+}

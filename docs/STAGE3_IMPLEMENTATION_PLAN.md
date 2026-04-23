@@ -9,8 +9,13 @@
   negative-control dataset contracts, and preregistration templates.
 - `Stage3-2`: reviewer/adjudicator independence architecture,
   execution-readiness logic, and protocol-grade Paper 10 hardening.
-- `Stage3-3+`: real preregistration freeze, reviewer selection, data
-  collection, admissibility assessment, and adjudication workflows.
+- `Stage3-3`: preregistration freeze architecture, reviewer-selection
+  packaging, adjudicator-assignment packaging, and execution-pilot packaging.
+- `Stage3-4`: bounded execution-pilot dry-run opening under strict
+  non-evidential and non-adjudicative policy.
+- later execution-era work: real preregistration lock instantiation, reviewer
+  selection instantiation, data collection, admissibility assessment, and
+  adjudication workflows.
 
 ## What Stage3-0 implements
 
@@ -63,3 +68,35 @@
 - adjudication verdicts;
 - public release promotion of Paper 10;
 - any claim-bearing closure beyond protocol readiness.
+
+## What Stage3-3 implements
+
+- frozen preregistration schema and policy layers;
+- local lock-manifest architecture;
+- reviewer candidate and adjudicator candidate schemas;
+- reviewer-selection and adjudicator-assignment workflow packages;
+- blinding assignment package;
+- execution-pilot package, session, and reproducibility skeletons.
+
+## What Stage3-3 does not implement
+
+- actual frozen external filing;
+- actual reviewer selection;
+- actual adjudicator assignment;
+- populated datasets;
+- execution-era evidence;
+- adjudication verdicts.
+
+## What Stage3-4 implements
+
+- a bounded dry-run opening gate;
+- dry-run policy;
+- dry-run manifest and status artifacts.
+
+## What Stage3-4 does not implement
+
+- evidential collection;
+- reviewer decisions;
+- adjudicator decisions;
+- result-bearing statistics;
+- Paper 10 final authorization.

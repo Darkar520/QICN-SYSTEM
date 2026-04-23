@@ -1,0 +1,16 @@
+{
+  "title": "adjudicator_assignment_readiness.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "adjudicator_assignment_state",
+    "execution_state",
+    "boundary_flags",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "adjudicator_assignment_readiness" },
+    "artifact_name": { "const": "adjudicator_assignment_readiness.json" }
+  }
+}

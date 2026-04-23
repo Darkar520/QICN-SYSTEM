@@ -1,0 +1,27 @@
+{
+  "artifact_role": "reviewer_candidate_schema",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_reviewer_selection",
+  "implementation_status": "stage3_3_reviewer_candidate_schema_defined",
+  "candidate_classes": [
+    "method_reviewer_candidate",
+    "statistics_reviewer_candidate",
+    "artifact_lineage_reviewer_candidate",
+    "admissibility_control_reviewer_candidate"
+  ],
+  "required_fields": [
+    "candidate_id",
+    "candidate_class",
+    "qualification_summary",
+    "independence_assertion",
+    "conflict_disclosure_ref",
+    "blinding_eligibility_class",
+    "selection_state"
+  ],
+  "forbidden_fields_until_selection": [
+    "full_identity_payload",
+    "decision_payload",
+    "review_outcome"
+  ],
+  "interpretation_boundary": "Schema only. No reviewer is selected by this file."
+}

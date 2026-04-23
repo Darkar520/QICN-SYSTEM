@@ -1,0 +1,17 @@
+{
+  "title": "execution_pilot_package_assessment.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "package_state",
+    "collection_session_state",
+    "dataset_population_state",
+    "boundary_flags",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "execution_pilot_package_assessment" },
+    "artifact_name": { "const": "execution_pilot_package_assessment.json" }
+  }
+}

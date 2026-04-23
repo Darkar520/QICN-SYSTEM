@@ -4,12 +4,13 @@
 
 Requires all of:
 
-- frozen preregistration reference;
+- frozen preregistration record;
 - typed human comparator dataset;
-- channel-specific negative-control dataset;
+- channel-specific negative-control bundle;
 - declared statistical shell output;
 - dataset admissibility record;
-- reviewer independence bundle.
+- reviewer-selection package;
+- reviewer report family.
 
 ## Matched intervention result insertion
 
@@ -18,7 +19,7 @@ Requires all of:
 - matched intervention dataset;
 - matched negative-control dataset;
 - frozen intervention family declaration;
-- timing/branch accounting references;
+- timing and branch accounting references;
 - effect-shell output;
 - failure and deviation log.
 
@@ -37,12 +38,30 @@ Requires all of:
 
 Requires all of:
 
-- target counterpart manifest;
+- source-target pairing manifest;
 - cross-substrate lineage map;
 - schema compatibility proof;
 - axis-specific error-budget package;
 - transport negative controls;
 - adjudicator layer.
+
+## Dry-run boundary
+
+Dry-run opening is allowed to validate:
+
+- manifest structure;
+- freeze binding structure;
+- blinding route structure;
+- empty bundle structure;
+- collection session schema structure.
+
+Dry-run opening is not allowed to substitute for:
+
+- human data collection;
+- reviewer decision records;
+- adjudicator decision records;
+- result-bearing statistics;
+- external validation language.
 
 ## Invalid substitutes
 

@@ -1,0 +1,26 @@
+{
+  "artifact_role": "reviewer_selection_workflow",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_3_reviewer_selection",
+  "implementation_status": "stage3_3_reviewer_selection_workflow_defined",
+  "workflow_states": [
+    "reviewer_selection_not_open",
+    "reviewer_selection_package_ready",
+    "reviewer_selection_not_started",
+    "reviewer_selection_in_progress",
+    "reviewer_selection_complete"
+  ],
+  "required_role_classes": [
+    "method_reviewer",
+    "statistics_reviewer",
+    "artifact_lineage_reviewer",
+    "admissibility_control_reviewer"
+  ],
+  "minimum_bundle": [
+    "candidate schema",
+    "conflict disclosure template",
+    "rejection reasons registry",
+    "blinding assignment template"
+  ],
+  "interpretation_boundary": "Workflow definition only. Reviewer selection remains not started until an instantiated package exists."
+}

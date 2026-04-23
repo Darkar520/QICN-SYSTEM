@@ -1,0 +1,18 @@
+{
+  "title": "execution_pilot_manifest.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "execution_pilot_state",
+    "evidence_state",
+    "adjudication_state",
+    "paper10_authorization_state",
+    "boundary_flags",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "execution_pilot_manifest" },
+    "artifact_name": { "const": "execution_pilot_manifest.json" }
+  }
+}

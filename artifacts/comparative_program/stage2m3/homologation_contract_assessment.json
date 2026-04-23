@@ -378,7 +378,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; homologation contract assessment records whether homologation units are defined, incomplete, underdetermined, or ready-but-counterpart-absent under bounded internal semantics. It does not authorize equivalence verdicts, transport verdicts, or external adjudication.",
   "provenance": {
-    "generated_at": "2026-04-03T02:25:38.783Z",
+    "generated_at": "2026-04-23T01:52:14.510Z",
     "counterpart_contract_assessment_ref": "artifacts/comparative_program/stage2m3/counterpart_artifact_contract_assessment.json",
     "stage2_m2_equivalence_ref": "artifacts/comparative_program/stage2m2/human_equivalence_assessment.json",
     "current_lineage": {
@@ -410,7 +410,7 @@
       },
       "surface_policy": {
         "ref": "docs/comparative_program_surface_policy.v1.json",
-        "sha256": "8e5da06b24f5f781a2f32e9a0c8091f74818becfbf240b6860ab05d32ed6c575"
+        "sha256": "a7259dbd6094a113f9ef5b70376b533f8166b892911ea5daacc3f776cc4f9a66"
       },
       "root_schema_hashes": {
         "comparative_program_manifest.json": {
@@ -488,12 +488,12 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "15303850e91f9494570b6eee21325edb49ca84e6",
+        "head": "0eed4e917fcdaa9a19266ecd8459c32588f13001",
         "upstream": "origin/main"
       },
       "qicn_release": {
         "branch": "main",
-        "head": "4779eb1c78341185d03b14bbb300a673e255f407",
+        "head": "92d5d2c3ea91c65e29dc8e102bed504866cffd2d",
         "upstream": "origin/main"
       },
       "human_channel_pathways": {

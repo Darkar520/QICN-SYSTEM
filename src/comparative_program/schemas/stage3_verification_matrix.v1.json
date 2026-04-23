@@ -1,0 +1,32 @@
+{
+  "title": "stage3_verification_matrix.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "layer_id",
+    "implementation_status",
+    "status",
+    "checks",
+    "boundary_flags",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "stage3_verification_matrix" },
+    "artifact_name": { "const": "stage3_verification_matrix.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "layer_id": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "status": { "type": "string" },
+    "checks": { "type": "array" },
+    "boundary_flags": { "type": "object" },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

@@ -465,7 +465,8 @@
       "required_conditions": [
         "anti_overclaim_discipline_passed",
         "local_path_leak_absent",
-        "paper10_manuscript_absent",
+        "paper10_result_bearing_manuscript_absent",
+        "paper10_scaffold_only_boundary_preserved",
         "external_adjudication_outputs_absent"
       ]
     }
@@ -479,7 +480,7 @@
     "missing_error_budget_binding",
     "transition_target_absent",
     "external_claim_surface_opened",
-    "paper10_manuscript_opened"
+    "paper10_result_bearing_manuscript_opened"
   ],
   "non_implications": [
     "Defining or fulfilling Stage 3 opening criteria does not execute Stage 3.",

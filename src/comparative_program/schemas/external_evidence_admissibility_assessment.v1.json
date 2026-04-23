@@ -1,0 +1,36 @@
+{
+  "title": "external_evidence_admissibility_assessment.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "layer_id",
+    "implementation_status",
+    "assessment_state",
+    "evidence_class_states",
+    "invalid_substitutes",
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "external_evidence_admissibility_assessment" },
+    "artifact_name": { "const": "external_evidence_admissibility_assessment.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "layer_id": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "assessment_state": { "type": "string" },
+    "evidence_class_states": { "type": "array" },
+    "invalid_substitutes": { "type": "array" },
+    "boundary_flags": { "type": "object" },
+    "non_implications": { "type": "array" },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

@@ -18,7 +18,7 @@ const STANDARD_FLAGS = Object.freeze({
   not_identity_preservation_support: true,
   not_external_adjudication: true,
   not_paper10_authorization: true,
-  no_paper10_manuscript: true
+  no_paper10_final_manuscript: true
 });
 
 const STALE_PATTERNS = [

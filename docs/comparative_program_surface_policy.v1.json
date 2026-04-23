@@ -3,7 +3,7 @@
   "schema_version": "1.0.0",
   "layer_id": "comparative_expansion_layer.stage3_readiness_fulfillment",
   "implementation_status": "stage3_readiness_fulfillment_implemented",
-  "default_interpretation_boundary": "Stage 3 readiness fulfillment remains framework-internal only. Comparative runtime, operationalization, closure, burden-fulfillment, Paper 9 handoff, and Stage 3 opening artifacts may be emitted locally and in internal release contexts, but no human-equivalence verdicts, no superiority or inferiority outputs, no transport-preservation or identity-preservation verdicts, no candidate or audit comparative integration, no external adjudication, and no Paper 10 manuscript outputs are authorized.",
+  "default_interpretation_boundary": "Stage 3 readiness fulfillment remains framework-internal only. Comparative runtime, operationalization, closure, burden-fulfillment, Paper 9 handoff, and Stage 3 opening artifacts may be emitted locally and in internal release contexts, but no human-equivalence verdicts, no superiority or inferiority outputs, no transport-preservation or identity-preservation verdicts, no candidate or audit comparative integration, no external adjudication, and no Paper 10 final or result-bearing manuscript outputs are authorized. Scaffold-only Paper 10 sources are governed separately by Stage3-0.",
   "governed_surfaces": {
     "developer_inspection_surface": {
       "requires_boundary": true,

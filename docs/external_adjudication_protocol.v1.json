@@ -1,0 +1,98 @@
+{
+  "artifact_role": "external_adjudication_protocol_definition",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_0_external_adjudication_scaffold",
+  "implementation_status": "stage3_0_scaffold_governance_open",
+  "current_state": "external_adjudication_protocol_defined",
+  "execution_state": "external_adjudication_not_executed",
+  "paper10_state": "paper10_scaffold_open",
+  "paper10_authorization_state": "not_paper10_final_authorized",
+  "required_upstream_refs": {
+    "base_math_layer": "release_canon.basecore_active_source",
+    "paper9_handoff_alignment": "artifacts/comparative_program/stage3_readiness/paper9_handoff_alignment.json",
+    "stage3_opening_gate": "artifacts/comparative_program/stage3_readiness/stage3_opening_gate.json"
+  },
+  "object_classes": [
+    {
+      "id": "internal_artifact",
+      "definition": "A framework-internal artifact emitted by QICN-SYSTEM and not by itself admissible as external adjudication evidence."
+    },
+    {
+      "id": "externally_reviewable_artifact",
+      "definition": "A typed artifact family that may later be given to independent reviewers under explicit provenance and surface discipline."
+    },
+    {
+      "id": "admissible_external_evidence",
+      "definition": "A later evidence object satisfying provenance, independence, control, and statistical admissibility burdens."
+    },
+    {
+      "id": "inadmissible_external_evidence",
+      "definition": "A candidate evidence object that fails provenance, independence, control, or substitution constraints."
+    },
+    {
+      "id": "human_comparator_record",
+      "definition": "A future typed human-side artifact with legitimate collection lineage and channel attribution."
+    },
+    {
+      "id": "adjudicator_assessment",
+      "definition": "A later reviewer or adjudicator assessment produced under the external protocol."
+    },
+    {
+      "id": "adjudication_decision",
+      "definition": "A later typed decision object emitted only after admissible evidence has been evaluated."
+    },
+    {
+      "id": "replication_package",
+      "definition": "A later package sufficient for independent rerun and methodological scrutiny."
+    },
+    {
+      "id": "preregistration_record",
+      "definition": "A later preregistration object constraining protocol drift and threshold fishing."
+    }
+  ],
+  "adjudication_states": [
+    "external_adjudication_not_open",
+    "external_adjudication_protocol_defined",
+    "external_adjudication_ready_for_preregistration",
+    "external_adjudication_ready_for_reviewer_selection",
+    "external_adjudication_ready_for_execution",
+    "external_adjudication_in_progress",
+    "external_adjudication_passed",
+    "external_adjudication_failed",
+    "external_adjudication_inconclusive"
+  ],
+  "forbidden_transitions": [
+    {
+      "from": "bridge_internal_support",
+      "to": "external_adjudication_passed",
+      "reason": "Internal bridge support is not external validation."
+    },
+    {
+      "from": "paper9_bridge_publication",
+      "to": "external_adjudication_passed",
+      "reason": "Paper 9 does not substitute for external adjudication."
+    },
+    {
+      "from": "stage3_readiness_fulfillment",
+      "to": "external_adjudication_passed",
+      "reason": "Opening readiness is not adjudication execution."
+    },
+    {
+      "from": "paper10_scaffold_open",
+      "to": "paper10_final_authorized",
+      "reason": "Scaffold existence is not result-bearing authorization."
+    },
+    {
+      "from": "comparator_protocol_defined",
+      "to": "human_equivalence_claim",
+      "reason": "Protocol definition does not imply human equivalence."
+    }
+  ],
+  "non_claims": [
+    "No external adjudication verdict is emitted at Stage3-0.",
+    "No human comparator data is emitted at Stage3-0.",
+    "No public validation claim is emitted at Stage3-0.",
+    "No Paper 10 final authorization is emitted at Stage3-0."
+  ],
+  "interpretation_boundary": "Stage3-0 defines the external adjudication architecture only. It does not execute adjudication and does not authorize external claims."
+}

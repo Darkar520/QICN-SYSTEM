@@ -1,0 +1,38 @@
+{
+  "title": "paper10_scaffold_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "layer_id",
+    "implementation_status",
+    "paper10_state",
+    "paper10_authorization_state",
+    "scaffold_only_marker_present",
+    "result_sections_blocked",
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "paper10_scaffold_status" },
+    "artifact_name": { "const": "paper10_scaffold_status.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "layer_id": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "paper10_state": { "type": "string" },
+    "paper10_authorization_state": { "type": "string" },
+    "scaffold_only_marker_present": { "type": "boolean" },
+    "result_sections_blocked": { "type": "boolean" },
+    "boundary_flags": { "type": "object" },
+    "non_implications": { "type": "array" },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

@@ -45,6 +45,13 @@ simulate human measurements. It does not adjudicate equivalence.
 - comparative burden fulfillment synthesis;
 - a bounded Stage 3 opening gate.
 
+`Stage3-0` adds:
+
+- external adjudication architecture;
+- external evidence admissibility grammar;
+- a human comparator execution scaffold;
+- a scaffold-only Paper 10 source tree.
+
 ## What is actually supported now
 
 The current runtime can now state:
@@ -69,8 +76,11 @@ The following are still absent:
 - human negative-control artifacts;
 - admissible human-side lineage manifests;
 - external adjudication;
-- Paper 10;
+- Paper 10 final authorization;
 - a completed Stage 3 comparative execution program.
+
+A scaffold-only Paper 10 source may exist locally after `Stage3-0`, but it is
+not human data, not external evidence, and not a final result-bearing paper.
 
 ## Blocked inferences
 
@@ -81,5 +91,5 @@ Nothing in `Stage3-RF` authorizes:
 - inferiority claims;
 - external validation claims;
 - external comparative adjudication outputs;
-- Paper 10 manuscript scoping as if it were already authorized;
+- Paper 10 final authorization or result-bearing claims;
 - metaphysical subjecthood claims.

@@ -1,0 +1,344 @@
+{
+  "artifact_role": "external_evidence_admissibility_criteria",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_0_external_adjudication_scaffold",
+  "implementation_status": "stage3_0_scaffold_governance_open",
+  "criteria_state": "external_evidence_admissibility_defined_not_exercised",
+  "evidence_classes": [
+    {
+      "evidence_id": "independent_reviewer_report",
+      "admissibility_conditions": [
+        "registered reviewer identity",
+        "reviewer independence documented",
+        "review scope typed against artifact family",
+        "methodological limitations stated"
+      ],
+      "required_provenance": [
+        "review request identifier",
+        "artifact hash set",
+        "review timestamp"
+      ],
+      "required_independence_conditions": [
+        "no direct project authorship",
+        "no undeclared financial or institutional conflict"
+      ],
+      "required_statistical_properties": [
+        "none_if_qualitative_but_scope_must_be_explicit"
+      ],
+      "required_negative_controls": [
+        "blinding disclosure",
+        "selection-bias disclosure"
+      ],
+      "required_artifact_references": [
+        "replication_package",
+        "artifact manifest"
+      ],
+      "invalid_substitutes": [
+        "internal runtime artifacts",
+        "self-generated reviewer notes",
+        "undocumented manual judgments"
+      ],
+      "non_implications": [
+        "One reviewer report does not imply the state external_adjudication_passed."
+      ]
+    },
+    {
+      "evidence_id": "preregistered_human_comparator_dataset",
+      "admissibility_conditions": [
+        "preregistration completed before collection",
+        "typed channel family declared",
+        "collection protocol version bound"
+      ],
+      "required_provenance": [
+        "session lineage",
+        "collection timestamps",
+        "participant inclusion criteria"
+      ],
+      "required_independence_conditions": [
+        "collection governance declared",
+        "collector role separation declared"
+      ],
+      "required_statistical_properties": [
+        "sample accounting present",
+        "missingness policy present",
+        "analysis target declared"
+      ],
+      "required_negative_controls": [
+        "protocolized negative-control plan",
+        "failure-reporting plan"
+      ],
+      "required_artifact_references": [
+        "human comparator execution plan",
+        "preregistration record"
+      ],
+      "invalid_substitutes": [
+        "synthetic human data",
+        "LLM-generated human reports",
+        "release inclusion alone"
+      ],
+      "non_implications": [
+        "Dataset admissibility does not imply human equivalence."
+      ]
+    },
+    {
+      "evidence_id": "matched_intervention_dataset",
+      "admissibility_conditions": [
+        "matched intervention family declared",
+        "matched machine-side and human-side protocol identifiers",
+        "control allocation declared"
+      ],
+      "required_provenance": [
+        "intervention log",
+        "channel manifest",
+        "lineage map"
+      ],
+      "required_independence_conditions": [
+        "intervention design documented",
+        "collector and analyst role separation declared"
+      ],
+      "required_statistical_properties": [
+        "effect model declared",
+        "uncertainty accounting declared"
+      ],
+      "required_negative_controls": [
+        "matched negative-control dataset"
+      ],
+      "required_artifact_references": [
+        "machine intervention profile",
+        "human intervention profile"
+      ],
+      "invalid_substitutes": [
+        "post-hoc threshold selection",
+        "cherry-picked examples"
+      ],
+      "non_implications": [
+        "Matched interventions do not imply superiority or inferiority."
+      ]
+    },
+    {
+      "evidence_id": "negative_control_dataset",
+      "admissibility_conditions": [
+        "negative-control design declared",
+        "failure criterion declared"
+      ],
+      "required_provenance": [
+        "control protocol identifier",
+        "collection lineage"
+      ],
+      "required_independence_conditions": [
+        "control design disclosed"
+      ],
+      "required_statistical_properties": [
+        "control summary statistics declared"
+      ],
+      "required_negative_controls": [
+        "not_applicable_self_reference"
+      ],
+      "required_artifact_references": [
+        "control manifest"
+      ],
+      "invalid_substitutes": [
+        "unblinded reviewer impressions",
+        "Paper 9 publication alone"
+      ],
+      "non_implications": [
+        "Control success does not imply adjudication passed."
+      ]
+    },
+    {
+      "evidence_id": "replication_log",
+      "admissibility_conditions": [
+        "replication attempt typed",
+        "protocol version and hashes preserved"
+      ],
+      "required_provenance": [
+        "replicator identity",
+        "environment summary",
+        "timestamp"
+      ],
+      "required_independence_conditions": [
+        "replicator role separation disclosed"
+      ],
+      "required_statistical_properties": [
+        "result summary typed if numerical"
+      ],
+      "required_negative_controls": [
+        "deviation log"
+      ],
+      "required_artifact_references": [
+        "replication package"
+      ],
+      "invalid_substitutes": [
+        "internal rerun without protocol trace"
+      ],
+      "non_implications": [
+        "One replication log does not imply general external closure."
+      ]
+    },
+    {
+      "evidence_id": "statistical_analysis_report",
+      "admissibility_conditions": [
+        "analysis target declared",
+        "estimator declared",
+        "threshold policy declared"
+      ],
+      "required_provenance": [
+        "analysis code hash",
+        "input dataset hashes"
+      ],
+      "required_independence_conditions": [
+        "analysis role declared"
+      ],
+      "required_statistical_properties": [
+        "uncertainty accounting",
+        "multiple-comparison policy",
+        "sensitivity analysis plan"
+      ],
+      "required_negative_controls": [
+        "model-checking or control comparison"
+      ],
+      "required_artifact_references": [
+        "dataset manifest"
+      ],
+      "invalid_substitutes": [
+        "post-hoc threshold selection",
+        "cherry-picked examples"
+      ],
+      "non_implications": [
+        "A statistical report does not convert internal structure into metaphysical closure."
+      ]
+    },
+    {
+      "evidence_id": "reviewer_conflict_of_interest_statement",
+      "admissibility_conditions": [
+        "explicit statement filed"
+      ],
+      "required_provenance": [
+        "reviewer identity",
+        "date"
+      ],
+      "required_independence_conditions": [
+        "conflict disclosure present"
+      ],
+      "required_statistical_properties": [
+        "none"
+      ],
+      "required_negative_controls": [
+        "none"
+      ],
+      "required_artifact_references": [
+        "review package identifier"
+      ],
+      "invalid_substitutes": [
+        "undocumented reviewer relationship"
+      ],
+      "non_implications": [
+        "A conflict statement alone is not evidence for or against the target claim."
+      ]
+    },
+    {
+      "evidence_id": "reproducibility_package",
+      "admissibility_conditions": [
+        "artifact set typed",
+        "schema references present",
+        "lineage and environment notes present"
+      ],
+      "required_provenance": [
+        "artifact hashes",
+        "version map"
+      ],
+      "required_independence_conditions": [
+        "none_at_packaging_time_but_reviewer_separation_required_later"
+      ],
+      "required_statistical_properties": [
+        "analysis bundle present_if_statistics_claimed"
+      ],
+      "required_negative_controls": [
+        "failure-reporting instructions"
+      ],
+      "required_artifact_references": [
+        "manifest",
+        "protocol refs"
+      ],
+      "invalid_substitutes": [
+        "internal artifacts without typed bundle metadata"
+      ],
+      "non_implications": [
+        "A reproducibility package is not an adjudication decision."
+      ]
+    },
+    {
+      "evidence_id": "external_failure_report",
+      "admissibility_conditions": [
+        "failure mode typed",
+        "relevant protocol or artifact refs present"
+      ],
+      "required_provenance": [
+        "reporter identity",
+        "timestamp",
+        "artifact refs"
+      ],
+      "required_independence_conditions": [
+        "role disclosed"
+      ],
+      "required_statistical_properties": [
+        "none_if_failure_is_qualitative_but_scope_must_be_explicit"
+      ],
+      "required_negative_controls": [
+        "attempted control disclosure_if_relevant"
+      ],
+      "required_artifact_references": [
+        "manifest or dataset refs"
+      ],
+      "invalid_substitutes": [
+        "undocumented anecdote"
+      ],
+      "non_implications": [
+        "A failure report does not imply metaphysical impossibility; it implies a bounded protocol failure."
+      ]
+    },
+    {
+      "evidence_id": "external_inconclusive_report",
+      "admissibility_conditions": [
+        "inconclusive basis stated",
+        "missing burden class typed"
+      ],
+      "required_provenance": [
+        "reporter identity",
+        "timestamp",
+        "artifact refs"
+      ],
+      "required_independence_conditions": [
+        "role disclosed"
+      ],
+      "required_statistical_properties": [
+        "uncertainty basis if numerical"
+      ],
+      "required_negative_controls": [
+        "none_required_but_methodological_lack_must_be_stated"
+      ],
+      "required_artifact_references": [
+        "manifest or dataset refs"
+      ],
+      "invalid_substitutes": [
+        "silence presented as support"
+      ],
+      "non_implications": [
+        "Inconclusive evidence is not positive evidence."
+      ]
+    }
+  ],
+  "global_invalid_substitutes": [
+    "internal runtime artifacts",
+    "self-generated reviewer notes",
+    "synthetic human data",
+    "LLM-generated human reports",
+    "undocumented manual judgments",
+    "unblinded reviewer impressions",
+    "post-hoc threshold selection",
+    "cherry-picked examples",
+    "release inclusion alone",
+    "Paper 9 publication alone"
+  ],
+  "interpretation_boundary": "These criteria define what could later count as admissible external evidence. They do not create evidence and do not imply adjudication."
+}

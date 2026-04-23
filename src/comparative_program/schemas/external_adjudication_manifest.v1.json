@@ -1,0 +1,38 @@
+{
+  "title": "external_adjudication_manifest.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "layer_id",
+    "implementation_status",
+    "external_adjudication_state",
+    "execution_state",
+    "paper10_state",
+    "paper10_authorization_state",
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "external_adjudication_manifest" },
+    "artifact_name": { "const": "external_adjudication_manifest.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "layer_id": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "external_adjudication_state": { "type": "string" },
+    "execution_state": { "type": "string" },
+    "paper10_state": { "type": "string" },
+    "paper10_authorization_state": { "type": "string" },
+    "boundary_flags": { "type": "object" },
+    "non_implications": { "type": "array" },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

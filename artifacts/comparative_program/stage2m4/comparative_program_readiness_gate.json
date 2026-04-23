@@ -132,7 +132,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; the Stage 2-M4 comparative readiness gate classifies internal closure readiness and Stage 3 opening readiness. It does not open external adjudication and does not authorize Paper 10.",
   "provenance": {
-    "generated_at": "2026-04-03T02:25:39.166Z",
+    "generated_at": "2026-04-23T01:52:14.862Z",
     "stage2_m2_readiness_ref": "artifacts/comparative_program/stage2m2/comparative_program_readiness_gate.json",
     "stage2_m3_readiness_ref": "artifacts/comparative_program/stage2m3/comparative_program_readiness_gate.json",
     "stage2_m4_audit_ref": "artifacts/comparative_program/stage2m4/comparative_final_internal_audit.json",
@@ -165,7 +165,7 @@
       },
       "surface_policy": {
         "ref": "docs/comparative_program_surface_policy.v1.json",
-        "sha256": "8e5da06b24f5f781a2f32e9a0c8091f74818becfbf240b6860ab05d32ed6c575"
+        "sha256": "a7259dbd6094a113f9ef5b70376b533f8166b892911ea5daacc3f776cc4f9a66"
       },
       "root_schema_hashes": {
         "comparative_program_manifest.json": {
@@ -243,12 +243,12 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "15303850e91f9494570b6eee21325edb49ca84e6",
+        "head": "0eed4e917fcdaa9a19266ecd8459c32588f13001",
         "upstream": "origin/main"
       },
       "qicn_release": {
         "branch": "main",
-        "head": "4779eb1c78341185d03b14bbb300a673e255f407",
+        "head": "92d5d2c3ea91c65e29dc8e102bed504866cffd2d",
         "upstream": "origin/main"
       },
       "human_channel_pathways": {
@@ -269,7 +269,7 @@
       },
       "external_adjudication_opening_criteria": {
         "ref": "docs/external_adjudication_opening_criteria.v1.json",
-        "sha256": "314b6cd7e6edb51d8bcb288fd5ba887686dfdcc25c563af85678667403947f96"
+        "sha256": "1cf0d442259181de78924044a5dc00fc59297815a9b93699d9cefdb6cdc86cb2"
       },
       "stage2_m2_readiness_state": "comparative_runtime_open_but_human_blocked",
       "stage2_m3_operational_state": "comparative_runtime_homologation_ready_but_counterpart_absent"

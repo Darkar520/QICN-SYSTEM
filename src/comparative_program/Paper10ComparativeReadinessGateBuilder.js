@@ -12,7 +12,7 @@ const STANDARD_FLAGS = Object.freeze({
   not_identity_preservation_support: true,
   not_external_adjudication: true,
   not_paper10_authorization: true,
-  no_paper10_manuscript: true
+  no_paper10_final_manuscript: true
 });
 
 export class Paper10ComparativeReadinessGateBuilder {
@@ -49,7 +49,7 @@ export class Paper10ComparativeReadinessGateBuilder {
       warnings: [
         'paper10_authorization_remains_blocked',
         'paper10_scoping_depends_on_stage3',
-        'no_paper10_manuscript_or_public_claim_is_open'
+        'no_paper10_final_or_public_claim_surface_is_open'
       ],
       boundary_flags: {
         ...STANDARD_FLAGS

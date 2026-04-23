@@ -1,0 +1,38 @@
+{
+  "title": "human_comparator_execution_plan.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_version",
+    "schema_version",
+    "layer_id",
+    "implementation_status",
+    "comparator_state",
+    "execution_state",
+    "human_data_state",
+    "channel_states",
+    "boundary_flags",
+    "non_implications",
+    "interpretation_boundary",
+    "provenance",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "human_comparator_execution_plan" },
+    "artifact_name": { "const": "human_comparator_execution_plan.json" },
+    "artifact_version": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "layer_id": { "type": "string" },
+    "implementation_status": { "type": "string" },
+    "comparator_state": { "type": "string" },
+    "execution_state": { "type": "string" },
+    "human_data_state": { "type": "string" },
+    "channel_states": { "type": "array" },
+    "boundary_flags": { "type": "object" },
+    "non_implications": { "type": "array" },
+    "interpretation_boundary": { "type": "string" },
+    "provenance": { "type": "object" },
+    "schema_ref": { "type": "string" }
+  }
+}

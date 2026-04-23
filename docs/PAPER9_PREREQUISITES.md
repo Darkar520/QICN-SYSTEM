@@ -21,14 +21,15 @@ This file records the local prerequisites for treating the Paper 9 handoff subst
 - external adjudication has not yet happened.
 - human equivalence has not yet happened.
 - superiority and identity-preservation claims remain blocked.
-- Paper 10 is still blocked.
+- Paper 10 final authorization is still blocked; only a later scaffold-only
+  Stage3-0 source may open under explicit non-claims.
 
 ## What remains outside Paper 9
 
 - real Stage 3 execution
 - real human counterpart instantiation
 - external comparative adjudication
-- Paper 10
+- Paper 10 final conclusions
 - metaphysical closure
 
 ## Manuscript source now present inside QICN-SYSTEM

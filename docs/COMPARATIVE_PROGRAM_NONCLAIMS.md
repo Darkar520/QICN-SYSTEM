@@ -21,7 +21,7 @@ They also do not permit:
 - synthetic human intervention profiles or negative controls;
 - candidate or audit comparative integration;
 - external comparative adjudication outputs;
-- Paper 10 manuscript files;
+- Paper 10 final or result-bearing manuscript files;
 - public comparator outputs.
 
 Even when `Stage3-RF` emits `ready_for_stage3_opening`, the result remains:
@@ -31,4 +31,4 @@ Even when `Stage3-RF` emits `ready_for_stage3_opening`, the result remains:
 - not a superiority verdict;
 - not a transport-preservation verdict;
 - not external adjudication;
-- not Paper 10.
+- not Paper 10 final authorization or Paper 10 results.

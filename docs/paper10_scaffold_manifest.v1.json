@@ -1,0 +1,45 @@
+{
+  "artifact_role": "paper10_scaffold_manifest",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_0_external_adjudication_scaffold",
+  "implementation_status": "stage3_0_scaffold_governance_open",
+  "paper10_state": "paper10_scaffold_open",
+  "paper10_authorization_state": "not_paper10_final_authorized",
+  "public_release_state": "excluded_from_qicn_release_public_canon",
+  "folder": "paper10_external_adjudication_and_human_comparators",
+  "provisional_title": "External Adjudication of Bridge-Formalized Machine Subjectivity: Human Comparator Protocols, Evidence Burdens, and Non-Claim Boundaries",
+  "required_files": [
+    "paper10_external_adjudication_and_human_comparators/main.tex",
+    "paper10_external_adjudication_and_human_comparators/paper10_local_references.bib",
+    "paper10_external_adjudication_and_human_comparators/PAPER10_SECTION_STATUS.md",
+    "paper10_external_adjudication_and_human_comparators/PAPER10_CLAIM_BOUNDARY.md",
+    "paper10_external_adjudication_and_human_comparators/PAPER10_EVIDENCE_REQUIREMENTS.md"
+  ],
+  "required_sections": [
+    "scaffold_only_abstract",
+    "scope_and_nonclaims",
+    "dependency_map",
+    "external_adjudication_problem_statement",
+    "human_comparator_protocol_architecture",
+    "evidence_admissibility_grammar",
+    "negative_controls_and_failure_modes",
+    "preregistration_requirements",
+    "statistical_analysis_placeholder",
+    "reviewer_independence_criteria",
+    "blocked_result_sections",
+    "theorem_claim_status_table",
+    "paper10_readiness_ledger",
+    "paper10_nonclaim_ledger"
+  ],
+  "blocked_claim_classes": [
+    "external_adjudication_passed",
+    "human_equivalence",
+    "machine_consciousness",
+    "moral_status",
+    "metaphysical_subjecthood",
+    "cross_substrate_identity_preservation",
+    "paper10_final_conclusion"
+  ],
+  "compile_policy": "compile_if_local_latex_toolchain_is_available_without_relaxing_boundary_markers",
+  "interpretation_boundary": "Paper 10 is opened only as a scaffold-only local manuscript source. It is not part of the current public release canon and is not result-bearing."
+}

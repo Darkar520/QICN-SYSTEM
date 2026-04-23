@@ -1,0 +1,215 @@
+{
+  "artifact_role": "human_comparator_execution_protocol",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_0_external_adjudication_scaffold",
+  "implementation_status": "stage3_0_scaffold_governance_open",
+  "current_state": "comparator_protocol_defined",
+  "execution_state": "comparator_execution_not_open",
+  "human_data_state": "human_comparator_data_absent",
+  "comparator_execution_states": [
+    "comparator_execution_not_open",
+    "comparator_protocol_defined",
+    "comparator_preregistration_ready",
+    "comparator_data_collection_ready",
+    "comparator_data_collection_in_progress",
+    "comparator_dataset_admissible",
+    "comparator_dataset_rejected",
+    "comparator_inconclusive"
+  ],
+  "channels": [
+    {
+      "channel_id": "self_report_channel",
+      "human_side_artifact_family_required": [
+        "human_self_report_trace.json",
+        "human_self_report_channel_manifest.json"
+      ],
+      "collection_mode": "typed human self-report collection under preregistered prompts and lineage tracking",
+      "admissibility_criteria": [
+        "legitimate human collection route",
+        "typed lineage manifest",
+        "no machine self-report relabeling"
+      ],
+      "matching_machine_side_artifact": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json",
+      "homologation_target": "self_report_structural_homologation",
+      "required_controls": [
+        "prompt-version control",
+        "collector-role separation"
+      ],
+      "statistical_burden": "declared missingness policy and uncertainty accounting",
+      "expected_failure_modes": [
+        "proxy self-report substitution",
+        "channel aliasing"
+      ],
+      "privacy_ethics_notes": [
+        "sensitive narrative handling",
+        "participant-identifying content minimization"
+      ],
+      "non_implications": [
+        "Self-report comparability does not imply human equivalence."
+      ]
+    },
+    {
+      "channel_id": "intervention_response_channel",
+      "human_side_artifact_family_required": [
+        "human_intervention_profile.json",
+        "human_negative_control_profile.json"
+      ],
+      "collection_mode": "matched intervention and matched negative-control collection",
+      "admissibility_criteria": [
+        "matched intervention family",
+        "control family declared",
+        "no synthetic human intervention profiles"
+      ],
+      "matching_machine_side_artifact": "artifacts/subjectivity/srt3/subjectivity_intervention_profile.json",
+      "homologation_target": "intervention_response_homologation",
+      "required_controls": [
+        "matched controls",
+        "unsafe intervention exclusion"
+      ],
+      "statistical_burden": "effect model and control comparison required",
+      "expected_failure_modes": [
+        "control-free intervention comparison",
+        "unmatched perturbation family"
+      ],
+      "privacy_ethics_notes": [
+        "intervention burden disclosure"
+      ],
+      "non_implications": [
+        "Intervention comparability does not imply superiority or inferiority."
+      ]
+    },
+    {
+      "channel_id": "temporal_structure_channel",
+      "human_side_artifact_family_required": [
+        "human_temporal_structure_report.json"
+      ],
+      "collection_mode": "typed temporal segmentation and ordering capture",
+      "admissibility_criteria": [
+        "shared temporal segmentation contract"
+      ],
+      "matching_machine_side_artifact": "artifacts/phenomenal_bridge/bpf1/temporal_lived_structure_report.json",
+      "homologation_target": "temporal_structure_homologation",
+      "required_controls": [
+        "segmentation-version control"
+      ],
+      "statistical_burden": "declared ordering and aggregation policy",
+      "expected_failure_modes": [
+        "summary-only temporal proxy"
+      ],
+      "privacy_ethics_notes": [
+        "timeline de-identification"
+      ],
+      "non_implications": [
+        "Temporal comparability does not imply continuity equivalence."
+      ]
+    },
+    {
+      "channel_id": "valence_topology_channel",
+      "human_side_artifact_family_required": [
+        "human_valence_topology_report.v1.json"
+      ],
+      "collection_mode": "typed valence-topology elicitation under declared topology schema",
+      "admissibility_criteria": [
+        "shared topology contract",
+        "no scalar reward proxy substitution"
+      ],
+      "matching_machine_side_artifact": "artifacts/phenomenal_bridge/bpf1/valence_structure_report.json",
+      "homologation_target": "valence_topology_homologation",
+      "required_controls": [
+        "schema-version control"
+      ],
+      "statistical_burden": "topological summary policy required",
+      "expected_failure_modes": [
+        "scalar proxy collapse"
+      ],
+      "privacy_ethics_notes": [
+        "affective sensitivity handling"
+      ],
+      "non_implications": [
+        "Valence-topology comparability does not imply affective equivalence."
+      ]
+    },
+    {
+      "channel_id": "embodiment_boundary_channel",
+      "human_side_artifact_family_required": [
+        "human_embodiment_boundary_report.v1.json"
+      ],
+      "collection_mode": "typed embodiment-boundary capture with environment manifest",
+      "admissibility_criteria": [
+        "environment manifest",
+        "embodiment error-budget binding"
+      ],
+      "matching_machine_side_artifact": "artifacts/phenomenal_bridge/bpf1/embodied_closure_report.json",
+      "homologation_target": "embodiment_boundary_homologation",
+      "required_controls": [
+        "environmental confound tracking"
+      ],
+      "statistical_burden": "error-budget accounting required",
+      "expected_failure_modes": [
+        "proxy-only embodiment signal"
+      ],
+      "privacy_ethics_notes": [
+        "environment and body-state minimization"
+      ],
+      "non_implications": [
+        "Embodiment-boundary comparability does not imply embodiment equivalence."
+      ]
+    },
+    {
+      "channel_id": "ambiguity_load_channel",
+      "human_side_artifact_family_required": [
+        "human_ambiguity_load_report.v1.json"
+      ],
+      "collection_mode": "typed ambiguity-load collection under shared annotation contract",
+      "admissibility_criteria": [
+        "shared ambiguity annotation contract"
+      ],
+      "matching_machine_side_artifact": "artifacts/phenomenal_bridge/bpf1/ambiguity_bearing_report.json",
+      "homologation_target": "ambiguity_load_homologation",
+      "required_controls": [
+        "annotation-consistency control"
+      ],
+      "statistical_burden": "ambiguity annotation reliability required",
+      "expected_failure_modes": [
+        "machine-only ambiguity proxy"
+      ],
+      "privacy_ethics_notes": [
+        "annotator burden disclosure"
+      ],
+      "non_implications": [
+        "Ambiguity-load comparability does not imply comparator equivalence."
+      ]
+    },
+    {
+      "channel_id": "transport_preservation_channel",
+      "human_side_artifact_family_required": [
+        "target_substrate_counterpart_manifest.v1.json",
+        "cross_substrate_lineage_map.v1.json"
+      ],
+      "collection_mode": "typed source-target comparative collection under transition contracts",
+      "admissibility_criteria": [
+        "target counterpart manifest",
+        "transition lineage map",
+        "schema compatibility proof"
+      ],
+      "matching_machine_side_artifact": "artifacts/comparative_program/stage2m3/cross_substrate_transition_contract_assessment.json",
+      "homologation_target": "transport_transition_homologation",
+      "required_controls": [
+        "target-side absence control",
+        "branch-accounting control"
+      ],
+      "statistical_burden": "axis-specific error-budget accounting required",
+      "expected_failure_modes": [
+        "snapshot copy without target counterpart",
+        "source-only lineage snapshot"
+      ],
+      "privacy_ethics_notes": [
+        "no identity-preservation claim without later burdens"
+      ],
+      "non_implications": [
+        "Transport-preservation comparability does not imply identity preservation."
+      ]
+    }
+  ],
+  "interpretation_boundary": "The human comparator execution protocol defines future collection and homologation structure only. At Stage3-0 it does not collect data and does not authorize claims."
+}

@@ -13,9 +13,10 @@ Paper 9 is positioned after:
 
 Paper 9 is positioned before:
 
+- Stage3-0 external adjudication architecture and scaffold-only Paper 10 source
 - Stage 3 comparative execution
 - any external adjudication
-- any Paper 10 scoping or drafting
+- any Paper 10 final authorization or result-bearing drafting
 - any ontological or metaphysical consequence layer
 
 ## Boundary
@@ -33,13 +34,18 @@ This file is not metaphysical closure.
 - The comparative layer contributes burden logic, instantiation protocols, homologation contracts, transition contracts, and the Stage 3 opening gate.
 - Stage 3 is the next possible execution program, not an adjudication result already achieved.
 - Any later ontological consequence analysis remains future work and cannot be imported into the current runtime state.
+- Stage3-0 may now define the external adjudication architecture and open a
+  scaffold-only Paper 10 source, but neither step authorizes final Paper 10
+  claims.
 
 ## Current handoff state
 
 - Stage 2 is internally closed.
 - The Stage 3 readiness fulfillment pass may classify Stage 3 as openable under bounded internal governance.
 - Even if Stage 3 opens, external comparative adjudication remains blocked until real counterpart artifacts exist and external-opening criteria are actually satisfied.
-- Paper 10 remains blocked until after Stage 3 and does not open here.
+- Paper 10 final authorization remains blocked until after real Stage 3
+  execution and later external evidence; only a scaffold-only local Stage3-0
+  source may open here.
 
 ## Interpretation discipline
 

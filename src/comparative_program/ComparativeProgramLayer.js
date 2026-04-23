@@ -87,11 +87,15 @@ export class ComparativeProgramLayer {
       comparative_internal_closure_state: 'comparative_internal_closure_ready',
       stage2_m4_state: 'comparative_internal_closure_ready',
       stage3_readiness_state: 'stage3_ready_but_uninstantiated',
+      stage3_0_scaffold_only: true,
+      current_stage3_substage: 'stage3_0_external_adjudication_scaffold',
       ready_for_stage2_m4: true,
       ready_for_stage3_opening: true,
       stage3_opening_state: 'ready_for_stage3_opening',
       paper9_handoff_state: 'paper9_handoff_ready_after_second_pass',
       paper10_scoping_state: 'paper10_scoping_ready_after_stage3_only',
+      paper10_scaffold_state: 'paper10_scaffold_open',
+      paper10_final_authorized: false,
       candidate_integration_blocked: true,
       audit_integration_blocked: true,
       not_human_equivalence_support: true,
@@ -101,6 +105,8 @@ export class ComparativeProgramLayer {
       not_external_adjudication: true,
       external_comparative_adjudication_state: 'not_ready_for_external_comparative_adjudication',
       not_paper10_authorization: true,
+      no_external_validation: true,
+      no_metaphysical_closure: true,
       framework_internal_only: true
     };
   }

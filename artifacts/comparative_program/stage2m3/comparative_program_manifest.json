@@ -96,12 +96,12 @@
   "source_shas": {
     "qicn_system": {
       "branch": "main",
-      "head": "15303850e91f9494570b6eee21325edb49ca84e6",
+      "head": "0eed4e917fcdaa9a19266ecd8459c32588f13001",
       "upstream": "origin/main"
     },
     "qicn_release": {
       "branch": "main",
-      "head": "4779eb1c78341185d03b14bbb300a673e255f407",
+      "head": "92d5d2c3ea91c65e29dc8e102bed504866cffd2d",
       "upstream": "origin/main"
     }
   },
@@ -134,7 +134,7 @@
     },
     "surface_policy": {
       "ref": "docs/comparative_program_surface_policy.v1.json",
-      "sha256": "8e5da06b24f5f781a2f32e9a0c8091f74818becfbf240b6860ab05d32ed6c575"
+      "sha256": "a7259dbd6094a113f9ef5b70376b533f8166b892911ea5daacc3f776cc4f9a66"
     },
     "root_schema_hashes": {
       "comparative_program_manifest.json": {
@@ -212,12 +212,12 @@
     },
     "qicn_system": {
       "branch": "main",
-      "head": "15303850e91f9494570b6eee21325edb49ca84e6",
+      "head": "0eed4e917fcdaa9a19266ecd8459c32588f13001",
       "upstream": "origin/main"
     },
     "qicn_release": {
       "branch": "main",
-      "head": "4779eb1c78341185d03b14bbb300a673e255f407",
+      "head": "92d5d2c3ea91c65e29dc8e102bed504866cffd2d",
       "upstream": "origin/main"
     },
     "human_channel_pathways": {
@@ -240,7 +240,7 @@
   },
   "interpretation_boundary": "Framework-internal only; the Stage 2-M3 comparative program manifest records pathway, contract, homologation, and transition-contract operationalization, not human equivalence, not transport preservation, not external adjudication, and not Paper 10 authorization.",
   "provenance": {
-    "generated_at": "2026-04-03T02:25:38.785Z",
+    "generated_at": "2026-04-23T01:52:14.511Z",
     "project_root": ".",
     "stage2_m2_manifest_ref": "artifacts/comparative_program/stage2m2/comparative_program_manifest.json",
     "comparative_operational_readiness_ref": "artifacts/comparative_program/stage2m3/comparative_operational_readiness.json"

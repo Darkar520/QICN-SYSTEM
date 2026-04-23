@@ -42,6 +42,20 @@ export {
   listInstantiationStatuses
 } from './ExternalAdjudicationOpeningCriteriaRegistry.js';
 export {
+  EXTERNAL_ADJUDICATION_PROTOCOL,
+  listExternalAdjudicationObjectClasses,
+  listExternalAdjudicationStates
+} from './ExternalAdjudicationProtocolRegistry.js';
+export {
+  EXTERNAL_EVIDENCE_ADMISSIBILITY,
+  listExternalEvidenceClasses
+} from './ExternalEvidenceAdmissibilityRegistry.js';
+export {
+  HUMAN_COMPARATOR_EXECUTION_PROTOCOL,
+  listHumanComparatorExecutionChannels,
+  listHumanComparatorExecutionStates
+} from './HumanComparatorExecutionProtocolRegistry.js';
+export {
   HUMAN_CHANNEL_INSTANTIATION_PROTOCOLS,
   listHumanChannelInstantiationProtocols,
   getHumanChannelInstantiationProtocol
@@ -63,6 +77,16 @@ export {
   getComparativeArtifactSpec
 } from './ComparativeProgramArtifactRegistry.js';
 export { COMPARATIVE_PROGRAM_SURFACE_POLICY } from './ComparativeProgramSurfacePolicy.js';
+export { STAGE3_SURFACE_POLICY } from './Stage3SurfacePolicy.js';
+export {
+  STAGE3_ARTIFACT_SCHEMA,
+  STAGE3_EXPECTED_ARTIFACTS,
+  getStage3ArtifactSpec
+} from './Stage3ArtifactRegistry.js';
+export {
+  PAPER10_SCAFFOLD_MANIFEST,
+  listPaper10RequiredSections
+} from './Paper10ScaffoldRegistry.js';
 export {
   COMPARATIVE_PROGRAM_LAYER_STATUS,
   COMPARATIVE_PROGRAM_ROOT_SCHEMAS,
@@ -70,6 +94,13 @@ export {
   createComparativeProgramLayer,
   describeComparativeProgramLayer
 } from './ComparativeProgramLayer.js';
+export {
+  STAGE3_ROOT_SCHEMAS,
+  STAGE3_LAYER_STATUS,
+  Stage3Layer,
+  createStage3Layer,
+  describeStage3Layer
+} from './Stage3Layer.js';
 export {
   COMPARATIVE_SYSTEM_FILES,
   COMPARATIVE_OPERATIONAL_SYSTEM_FILES,

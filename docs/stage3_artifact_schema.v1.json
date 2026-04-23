@@ -1,0 +1,131 @@
+{
+  "artifact_role": "stage3_artifact_schema_registry",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_0_external_adjudication_scaffold",
+  "implementation_status": "stage3_0_scaffold_governance_open",
+  "root_schema_refs": {
+    "external_adjudication_manifest.json": "src/comparative_program/schemas/external_adjudication_manifest.v1.json",
+    "external_adjudication_readiness_gate.json": "src/comparative_program/schemas/external_adjudication_readiness_gate.v1.json",
+    "external_evidence_admissibility_assessment.json": "src/comparative_program/schemas/external_evidence_admissibility_assessment.v1.json",
+    "human_comparator_execution_plan.json": "src/comparative_program/schemas/human_comparator_execution_plan.v1.json",
+    "paper10_scaffold_status.json": "src/comparative_program/schemas/paper10_scaffold_status.v1.json",
+    "stage3_verification_matrix.json": "src/comparative_program/schemas/stage3_verification_matrix.v1.json"
+  },
+  "artifacts": {
+    "external_adjudication_manifest.json": {
+      "role": "external_adjudication_manifest",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "external_adjudication_state",
+        "execution_state",
+        "paper10_state",
+        "paper10_authorization_state",
+        "boundary_flags",
+        "non_implications"
+      ],
+      "non_implications": [
+        "Not an adjudication verdict.",
+        "Not external validation."
+      ]
+    },
+    "external_adjudication_readiness_gate.json": {
+      "role": "external_adjudication_readiness_gate",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "stage3_readiness_state",
+        "external_adjudication_state",
+        "execution_state",
+        "remaining_blockers",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not execution.",
+        "Not reviewer selection.",
+        "Not an adjudication result."
+      ]
+    },
+    "external_evidence_admissibility_assessment.json": {
+      "role": "external_evidence_admissibility_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface"
+      ],
+      "minimum_fields": [
+        "assessment_state",
+        "evidence_class_states",
+        "invalid_substitutes",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not evidence.",
+        "Not external validation."
+      ]
+    },
+    "human_comparator_execution_plan.json": {
+      "role": "human_comparator_execution_plan",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface"
+      ],
+      "minimum_fields": [
+        "comparator_state",
+        "execution_state",
+        "human_data_state",
+        "channel_states",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a dataset.",
+        "Not human equivalence."
+      ]
+    },
+    "paper10_scaffold_status.json": {
+      "role": "paper10_scaffold_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface"
+      ],
+      "minimum_fields": [
+        "paper10_state",
+        "paper10_authorization_state",
+        "scaffold_only_marker_present",
+        "result_sections_blocked",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not Paper 10 final authorization.",
+        "Not a result-bearing manuscript."
+      ]
+    },
+    "stage3_verification_matrix.json": {
+      "role": "stage3_verification_matrix",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "status",
+        "checks",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Verification pass is not external adjudication."
+      ]
+    }
+  }
+}

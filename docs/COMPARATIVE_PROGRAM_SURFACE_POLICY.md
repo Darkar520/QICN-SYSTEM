@@ -34,4 +34,8 @@ handoff artifacts, but it still cannot:
 - open external adjudication outputs;
 - surface controlled comparative statements;
 - support public claims;
-- open Paper 10 manuscript surfaces.
+- open Paper 10 final or claim-bearing manuscript surfaces.
+
+Scaffold-only Paper 10 manuscript surfaces are now governed separately by the
+Stage3-0 surface policy and remain blocked from all public and adjudicative
+surfaces.

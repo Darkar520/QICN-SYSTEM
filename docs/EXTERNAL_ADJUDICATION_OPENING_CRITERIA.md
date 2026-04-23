@@ -18,4 +18,7 @@ The criteria require at least:
 - preserved surface discipline and anti-overclaim discipline.
 
 This manifest is criteria-only. It does not authorize Stage 3 by itself, does
-not instantiate human evidence, and does not authorize any public claim.
+not instantiate human evidence, and does not authorize any public claim. A
+scaffold-only Paper 10 source may now exist under `Stage3-0`, but this criteria
+layer still forbids treating that scaffold as final adjudication, final Paper
+10 authorization, or a public claim surface.

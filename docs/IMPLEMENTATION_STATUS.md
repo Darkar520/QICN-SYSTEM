@@ -49,3 +49,14 @@ Normalized status values used below:
 - Compiled PDF: `paper9_phenomenal_bridge_organization/main.pdf`
 - Verification: `npm run verify:paper9-handoff-readiness`
 - Boundary: internal manuscript closure and Stage 3 handoff only; not external adjudication, not human equivalence, not superiority, not transport-preservation verdict support, and not Paper 10 authorization.
+
+## Stage3-0 external adjudication scaffold
+
+- Status: `implemented_internal_support`
+- Governance docs: `docs/EXTERNAL_ADJUDICATION_PROGRAM.md`, `docs/EXTERNAL_EVIDENCE_ADMISSIBILITY.md`, `docs/HUMAN_COMPARATOR_EXECUTION_PROGRAM.md`, `docs/STAGE3_EXTERNAL_ADJUDICATION_BOUNDARY.md`, `docs/STAGE3_NONCLAIMS.md`, `docs/STAGE3_SURFACE_POLICY.md`, `docs/PAPER10_SCAFFOLD_PLAN.md`
+- Machine-readable manifests: `docs/external_adjudication_protocol.v1.json`, `docs/external_evidence_admissibility_criteria.v1.json`, `docs/human_comparator_execution_protocol.v1.json`, `docs/stage3_surface_policy.v1.json`, `docs/stage3_artifact_schema.v1.json`, `docs/paper10_scaffold_manifest.v1.json`
+- Runtime layer: `src/comparative_program/ExternalAdjudicationProtocolRegistry.js`, `src/comparative_program/ExternalEvidenceAdmissibilityRegistry.js`, `src/comparative_program/HumanComparatorExecutionProtocolRegistry.js`, `src/comparative_program/Stage3SurfacePolicy.js`, `src/comparative_program/Stage3ArtifactRegistry.js`, `src/comparative_program/Paper10ScaffoldRegistry.js`, `src/comparative_program/Stage3Layer.js`
+- Internal artifacts: `artifacts/external_adjudication/stage3_0/external_adjudication_manifest.json`, `artifacts/external_adjudication/stage3_0/external_adjudication_readiness_gate.json`, `artifacts/external_adjudication/stage3_0/external_evidence_admissibility_assessment.json`, `artifacts/external_adjudication/stage3_0/human_comparator_execution_plan.json`, `artifacts/external_adjudication/stage3_0/paper10_scaffold_status.json`, `artifacts/external_adjudication/stage3_0/stage3_verification_matrix.json`
+- Manuscript scaffold: `paper10_external_adjudication_and_human_comparators/main.tex`
+- Verification: `npm run build:stage3-scaffolding`, `npm run verify:stage3-scaffolding`
+- Boundary: protocol-defined only; not executed, no external validation, no human comparator data, scaffold-only Paper 10, and not Paper 10 final authorization.

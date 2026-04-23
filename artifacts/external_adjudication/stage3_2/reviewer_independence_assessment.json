@@ -24,7 +24,7 @@
   ],
   "interpretation_boundary": "This artifact records reviewer and adjudicator independence architecture only. No reviewer selection or adjudication execution has started.",
   "provenance": {
-    "generated_at": "2026-04-23T05:28:46.663Z",
+    "generated_at": "2026-04-23T19:56:44.758Z",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage3_2_external_adjudication_readiness.v1",
       "estimator_version": "stage3_execution_readiness_builder.v1",
@@ -132,7 +132,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "66337262f8e34fbbbcdd0e87ba327a31297b3f8f",
+        "head": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
         "upstream": "origin/main"
       },
       "qicn_release": {
@@ -194,11 +194,11 @@
       },
       "paper10_main_tex": {
         "ref": "paper10_external_adjudication_and_human_comparators/main.tex",
-        "sha256": "a64cc2878fd2cfadb154fedddfd9aabcf2952e1ea4b570af587a88379471cdf2"
+        "sha256": "a063b1c0dbe453eece24ecc1b9b589eb0ca3c14b751d4ced4a11b75b1a804a4b"
       },
       "paper10_section_status": {
         "ref": "paper10_external_adjudication_and_human_comparators/PAPER10_SECTION_STATUS.md",
-        "sha256": "96ae19f7bbe4c441743fc4f75130b73eeced2c8c9c97a2c3c7b132f24a9eeaaf"
+        "sha256": "da7d351594dacdb6e9f12e95bbde70f4c5734ba7598f74724eddbf7fd10db811"
       },
       "stage2_m4_readiness_state": "comparative_internal_closure_ready",
       "stage3_opening_state": "ready_for_stage3_opening"

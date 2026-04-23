@@ -1,0 +1,30 @@
+{
+  "template_role": "reviewer_candidate_pool",
+  "schema_version": "1.0.0",
+  "pool_state": "instantiated_empty",
+  "candidate_slots": [
+    {
+      "slot_id": "reviewer_slot_01",
+      "candidate_id": null,
+      "qualification_summary": null,
+      "independence_assertion": null,
+      "conflict_disclosure_ref": null,
+      "blinding_eligibility": null,
+      "selection_state": "not_started"
+    },
+    {
+      "slot_id": "reviewer_slot_02",
+      "candidate_id": null,
+      "qualification_summary": null,
+      "independence_assertion": null,
+      "conflict_disclosure_ref": null,
+      "blinding_eligibility": null,
+      "selection_state": "not_started"
+    }
+  ],
+  "placeholder_policy": "empty_slots_only_no_real_identity_until_selection_begins",
+  "non_implications": [
+    "Not reviewer selection.",
+    "Not reviewer action."
+  ]
+}

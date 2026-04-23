@@ -1,0 +1,16 @@
+{
+  "title": "candidate_pool_template_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "pool_template_state",
+    "reviewer_candidate_pool_state",
+    "adjudicator_candidate_pool_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "candidate_pool_template_status" },
+    "artifact_name": { "const": "candidate_pool_template_status.json" }
+  }
+}

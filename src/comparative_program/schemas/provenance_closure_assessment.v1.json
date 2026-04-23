@@ -1,0 +1,18 @@
+{
+  "title": "provenance_closure_assessment.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "preexisting_alignment_state",
+    "post_regeneration_alignment_state",
+    "committed_alignment_state",
+    "release_pinning_state",
+    "historical_snapshot_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "provenance_closure_assessment" },
+    "artifact_name": { "const": "provenance_closure_assessment.json" }
+  }
+}

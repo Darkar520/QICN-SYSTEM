@@ -104,7 +104,7 @@
   "source_shas": {
     "qicn_system": {
       "branch": "main",
-      "head": "66337262f8e34fbbbcdd0e87ba327a31297b3f8f",
+      "head": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
       "upstream": "origin/main"
     },
     "qicn_release": {
@@ -220,7 +220,7 @@
     },
     "qicn_system": {
       "branch": "main",
-      "head": "66337262f8e34fbbbcdd0e87ba327a31297b3f8f",
+      "head": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
       "upstream": "origin/main"
     },
     "qicn_release": {
@@ -253,7 +253,7 @@
   },
   "interpretation_boundary": "Framework-internal only; the Stage 2-M4 comparative manifest records internal closure, adjudication-opening criteria status, human-channel instantiation readiness, and Paper 10 gating. It does not authorize external adjudication, does not authorize human equivalence, and does not open Paper 10.",
   "provenance": {
-    "generated_at": "2026-04-23T05:28:45.790Z",
+    "generated_at": "2026-04-23T19:56:43.211Z",
     "project_root": ".",
     "comparative_final_internal_audit_ref": "artifacts/comparative_program/stage2m4/comparative_final_internal_audit.json",
     "human_channel_instantiation_ref": "artifacts/comparative_program/stage2m4/human_channel_instantiation_readiness.json",

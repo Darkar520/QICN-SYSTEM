@@ -1,0 +1,15 @@
+{
+  "template_role": "execution_session_template",
+  "schema_version": "1.0.0",
+  "session_state": "instantiated_empty",
+  "session_id": null,
+  "session_kind": "dry_run_or_future_collection",
+  "source_target_pairing_ref": "docs/source_target_pairing_manifest.v1.json",
+  "collection_log_ref": "docs/collection_log_schema.v1.json",
+  "dataset_population_state": "absent",
+  "decision_record_ref": "docs/decision_record_template.v1.json",
+  "non_implications": [
+    "Not a started collection session.",
+    "Not evidential execution."
+  ]
+}

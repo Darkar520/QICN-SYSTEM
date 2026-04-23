@@ -1,0 +1,14 @@
+{
+  "artifact_role": "dry_run_sequence_plan",
+  "schema_version": "1.0.0",
+  "sequence_steps": [
+    "validate_local_freeze_record_stub",
+    "validate_candidate_pool_templates",
+    "validate_assignment_stubs",
+    "validate_execution_session_template",
+    "validate_collection_log_schema",
+    "validate_rehearsal_event_log_schema",
+    "validate_reset_policy"
+  ],
+  "required_state_before_open": "execution_pilot_dry_run_open"
+}

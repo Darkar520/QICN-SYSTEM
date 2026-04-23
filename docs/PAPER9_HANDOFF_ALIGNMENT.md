@@ -18,6 +18,8 @@ Paper 9 is positioned before:
 - Stage3-2 reviewer-governance and execution-readiness hardening
 - Stage3-3 preregistration-freeze, reviewer-selection, and pilot-packaging architecture
 - Stage3-4 bounded execution-pilot dry-run opening
+- Stage3-4B provenance closure and instantiated-empty record instantiation
+- Stage3-5 rehearsal-kit and rehearsal-ready gating
 - Stage 3 comparative execution
 - any external adjudication
 - any Paper 10 final authorization or result-bearing drafting
@@ -49,6 +51,12 @@ This file is not metaphysical closure.
   readiness, and execution-pilot package readiness without creating evidence.
 - Stage3-4 may now open a bounded dry-run layer, but that dry-run still does
   not authorize evidential or adjudicative statements.
+- Stage3-4B may now instantiate empty record shells and reconcile live
+  provenance without creating filed preregistration, evidence, reviewer action,
+  or adjudicator action.
+- Stage3-5 may now define rehearsal grammar and readiness gates, but rehearsal
+  readiness still does not authorize data collection, adjudication, or Paper 10
+  finalization.
 
 ## Current handoff state
 
@@ -60,9 +68,10 @@ This file is not metaphysical closure.
   source may open here.
 - Stage3-1 and Stage3-2 may harden the local protocol layer, but that hardening
   is still not execution, not adjudication, and not Paper 10 finalization.
-- Stage3-3 and Stage3-4 may harden local freeze, packaging, and dry-run
-  semantics, but that hardening is still not execution, not adjudication, and
-  not Paper 10 finalization.
+- Stage3-3, Stage3-4, Stage3-4B, and Stage3-5 may harden local freeze,
+  packaging, dry-run, provenance, instantiated-empty, and rehearsal semantics,
+  but that hardening is still not execution, not adjudication, and not Paper 10
+  finalization.
 
 ## Interpretation discipline
 

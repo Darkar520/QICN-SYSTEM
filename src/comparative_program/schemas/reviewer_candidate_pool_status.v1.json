@@ -1,0 +1,15 @@
+{
+  "title": "reviewer_candidate_pool_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "candidate_pool_state",
+    "reviewer_selection_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "reviewer_candidate_pool_status" },
+    "artifact_name": { "const": "reviewer_candidate_pool_status.json" }
+  }
+}

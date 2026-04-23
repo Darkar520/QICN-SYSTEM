@@ -1,0 +1,15 @@
+{
+  "title": "adjudicator_candidate_pool_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "candidate_pool_state",
+    "adjudicator_assignment_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "adjudicator_candidate_pool_status" },
+    "artifact_name": { "const": "adjudicator_candidate_pool_status.json" }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "title": "adjudicator_assignment_stub_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "assignment_stub_state",
+    "adjudicator_assignment_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "adjudicator_assignment_stub_status" },
+    "artifact_name": { "const": "adjudicator_assignment_stub_status.json" }
+  }
+}

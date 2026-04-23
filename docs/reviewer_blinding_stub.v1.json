@@ -1,0 +1,9 @@
+{
+  "template_role": "reviewer_blinding_stub",
+  "schema_version": "1.0.0",
+  "stub_state": "instantiated_empty",
+  "reviewer_assignment_ref": "docs/reviewer_assignment_stub.v1.json",
+  "blinding_assignment_ref": "docs/blinding_assignment_stub.v1.json",
+  "blinding_state": "not_started",
+  "unblinding_state": "not_authorized"
+}

@@ -1,0 +1,20 @@
+{
+  "template_role": "adjudicator_candidate_pool",
+  "schema_version": "1.0.0",
+  "pool_state": "instantiated_empty",
+  "candidate_slots": [
+    {
+      "slot_id": "adjudicator_slot_01",
+      "candidate_id": null,
+      "qualification_summary": null,
+      "independence_assertion": null,
+      "conflict_disclosure_ref": null,
+      "assignment_state": "not_started"
+    }
+  ],
+  "placeholder_policy": "empty_slots_only_no_real_identity_until_assignment_begins",
+  "non_implications": [
+    "Not adjudicator assignment.",
+    "Not adjudicator action."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "title": "local_frozen_record_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "local_frozen_record_state",
+    "external_filing_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "local_frozen_record_status" },
+    "artifact_name": { "const": "local_frozen_record_status.json" }
+  }
+}

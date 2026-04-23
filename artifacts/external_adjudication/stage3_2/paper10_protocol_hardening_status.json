@@ -3,10 +3,10 @@
   "artifact_name": "paper10_protocol_hardening_status.json",
   "artifact_version": "1.0.0",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage3_2_external_adjudication_readiness",
-  "layer_version": "comparative_expansion_layer.stage3_2.paper10_protocol_backbone.v1",
-  "estimator_version": "paper10_protocol_hardening_builder.stage3_2.v1",
-  "implementation_status": "stage3_2_paper10_protocol_backbone_defined",
+  "layer_id": "comparative_expansion_layer.stage3_5_rehearsal_preparation",
+  "layer_version": "comparative_expansion_layer.stage3_5.paper10_protocol_backbone.v1",
+  "estimator_version": "paper10_protocol_hardening_builder.stage3_5.v1",
+  "implementation_status": "stage3_5_paper10_protocol_backbone_defined",
   "paper10_state": "paper10_protocol_grade_backbone",
   "paper10_result_state": "paper10_result_sections_blocked",
   "paper10_authorization_state": "paper10_not_final_authorized",
@@ -21,28 +21,35 @@
     "dependency_architecture": false,
     "release_vs_local_boundary": true,
     "lineage_semantics": true,
+    "provenance_closure": true,
     "frozen_preregistration_architecture": true,
+    "instantiated_empty_record_layer": true,
     "reviewer_candidate_architecture": true,
+    "candidate_pool_stub_architecture": true,
     "blinding_assignment_logic": true,
     "instantiation_logic": true,
     "execution_contracts": true,
     "preregistration_architecture": true,
     "reviewer_architecture": true,
     "execution_pilot_package_architecture": true,
+    "rehearsal_kit_architecture": true,
     "reproducibility_skeleton_architecture": true,
     "dataset_population_boundary": true,
+    "dry_run_event_log_grammar": true,
     "adjudication_decision_grammar": true,
+    "state_grammar": true,
     "evidence_insertion_map": true,
     "appendices": true,
     "unlock_conditions": true,
+    "transition_map": true,
     "stage4_boundary": true
   },
   "blocked_result_marker_present": true,
   "protocol_table_present": true,
-  "evidence_placeholder_count": 15,
-  "section_status_marker_count": 37,
-  "claim_boundary_block_count": 40,
-  "evidence_requirement_block_count": 6,
+  "evidence_placeholder_count": 26,
+  "section_status_marker_count": 44,
+  "claim_boundary_block_count": 50,
+  "evidence_requirement_block_count": 7,
   "boundary_flags": {
     "framework_internal_only": true,
     "non_result_bearing": true,
@@ -55,9 +62,9 @@
     "Protocol-grade backbone is not an adjudication verdict.",
     "Protocol-grade backbone is not human equivalence."
   ],
-  "interpretation_boundary": "Paper 10 is hardened into a protocol-grade, non-result-bearing manuscript backbone only. It remains blocked from final claims until later admissible execution-era evidence exists.",
+  "interpretation_boundary": "Paper 10 is hardened into a protocol-grade, non-result-bearing manuscript backbone only. It remains blocked from final claims until later admissible execution-era evidence exists, later reviewer and adjudicator action exists, and later result-bearing sections are written honestly from those records.",
   "provenance": {
-    "generated_at": "2026-04-23T05:28:46.666Z",
+    "generated_at": "2026-04-23T19:56:44.762Z",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage3_2_external_adjudication_readiness.v1",
       "estimator_version": "stage3_execution_readiness_builder.v1",
@@ -165,7 +172,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "66337262f8e34fbbbcdd0e87ba327a31297b3f8f",
+        "head": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
         "upstream": "origin/main"
       },
       "qicn_release": {
@@ -227,11 +234,11 @@
       },
       "paper10_main_tex": {
         "ref": "paper10_external_adjudication_and_human_comparators/main.tex",
-        "sha256": "a64cc2878fd2cfadb154fedddfd9aabcf2952e1ea4b570af587a88379471cdf2"
+        "sha256": "a063b1c0dbe453eece24ecc1b9b589eb0ca3c14b751d4ced4a11b75b1a804a4b"
       },
       "paper10_section_status": {
         "ref": "paper10_external_adjudication_and_human_comparators/PAPER10_SECTION_STATUS.md",
-        "sha256": "96ae19f7bbe4c441743fc4f75130b73eeced2c8c9c97a2c3c7b132f24a9eeaaf"
+        "sha256": "da7d351594dacdb6e9f12e95bbde70f4c5734ba7598f74724eddbf7fd10db811"
       },
       "stage2_m4_readiness_state": "comparative_internal_closure_ready",
       "stage3_opening_state": "ready_for_stage3_opening"

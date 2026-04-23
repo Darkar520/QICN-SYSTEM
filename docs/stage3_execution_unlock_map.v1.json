@@ -1,0 +1,21 @@
+{
+  "artifact_role": "stage3_execution_unlock_map",
+  "schema_version": "1.0.0",
+  "after_stage3_5_missing_prerequisites": [
+    "populated_admissible_human_dataset",
+    "populated_admissible_matched_intervention_dataset",
+    "populated_admissible_negative_control_dataset",
+    "actual_reviewer_selection",
+    "actual_adjudicator_assignment",
+    "actual_blinding_assignment",
+    "actual_collection_sessions",
+    "populated_reproducibility_package",
+    "admissible_decision_record",
+    "external_review_completion",
+    "release_facing_policy_review"
+  ],
+  "non_implications": [
+    "Rehearsal readiness is not execution.",
+    "Instantiated-empty records are not evidence."
+  ]
+}

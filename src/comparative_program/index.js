@@ -303,3 +303,58 @@ export {
   Stage3PilotPreparationBuilder,
   createStage3PilotPreparationBuilder
 } from './Stage3PilotPreparationBuilder.js';
+export {
+  LOCAL_FROZEN_PREREGISTRATION_RECORD_TEMPLATE,
+  REVIEWER_CANDIDATE_POOL_TEMPLATE,
+  ADJUDICATOR_CANDIDATE_POOL_TEMPLATE,
+  BLINDING_ASSIGNMENT_STUB,
+  EXECUTION_SESSION_TEMPLATE,
+  DECISION_RECORD_TEMPLATE,
+  REPRODUCIBILITY_PACKAGE_MANIFEST_EMPTY,
+  COLLECTION_LOG_SCHEMA,
+  EVIDENCE_INSERTION_MANIFEST,
+  listInstantiatedEmptyRecordRoles
+} from './InstantiatedEmptyRecordRegistry.js';
+export {
+  REVIEWER_CANDIDATE_POOL_FIELDS,
+  ADJUDICATOR_CANDIDATE_POOL_FIELDS,
+  listCandidatePoolSlots
+} from './CandidatePoolRegistry.js';
+export {
+  REVIEWER_ASSIGNMENT_STUB,
+  ADJUDICATOR_ASSIGNMENT_STUB,
+  REVIEWER_BLINDING_STUB
+} from './AssignmentStubRegistry.js';
+export {
+  EXECUTION_PILOT_REHEARSAL_KIT,
+  REHEARSAL_FAILURE_MODES,
+  REHEARSAL_RESET_POLICY
+} from './ExecutionPilotRehearsalRegistry.js';
+export {
+  DRY_RUN_SEQUENCE_PLAN,
+  REHEARSAL_EVENT_LOG_SCHEMA
+} from './DryRunSequenceRegistry.js';
+export {
+  ProvenanceClosureEvaluator,
+  createProvenanceClosureEvaluator
+} from './ProvenanceClosureEvaluator.js';
+export {
+  InstantiatedEmptyRecordEvaluator,
+  createInstantiatedEmptyRecordEvaluator
+} from './InstantiatedEmptyRecordEvaluator.js';
+export {
+  CandidatePoolEvaluator,
+  createCandidatePoolEvaluator
+} from './CandidatePoolEvaluator.js';
+export {
+  RehearsalKitEvaluator,
+  createRehearsalKitEvaluator
+} from './RehearsalKitEvaluator.js';
+export {
+  Stage3_5ReadinessGateBuilder,
+  createStage3_5ReadinessGateBuilder
+} from './Stage3_5ReadinessGateBuilder.js';
+export {
+  Stage3RehearsalPreparationBuilder,
+  createStage3RehearsalPreparationBuilder
+} from './Stage3RehearsalPreparationBuilder.js';

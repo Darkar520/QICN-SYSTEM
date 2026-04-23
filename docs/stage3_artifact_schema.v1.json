@@ -1,8 +1,8 @@
 {
   "artifact_role": "stage3_artifact_schema_registry",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage3_0_to_stage3_4_external_adjudication_stack",
-  "implementation_status": "stage3_execution_stack_defined",
+  "layer_id": "comparative_expansion_layer.stage3_0_to_stage3_5_external_adjudication_stack",
+  "implementation_status": "stage3_execution_and_rehearsal_stack_defined",
   "root_schema_refs": {
     "external_adjudication_manifest.json": "src/comparative_program/schemas/external_adjudication_manifest.v1.json",
     "external_adjudication_readiness_gate.json": "src/comparative_program/schemas/external_adjudication_readiness_gate.v1.json",
@@ -28,7 +28,21 @@
     "pilot_matched_intervention_bundle_status.json": "src/comparative_program/schemas/pilot_matched_intervention_bundle_status.v1.json",
     "execution_pilot_opening_gate.json": "src/comparative_program/schemas/execution_pilot_opening_gate.v1.json",
     "execution_pilot_dry_run_status.json": "src/comparative_program/schemas/execution_pilot_dry_run_status.v1.json",
-    "execution_pilot_manifest.json": "src/comparative_program/schemas/execution_pilot_manifest.v1.json"
+    "execution_pilot_manifest.json": "src/comparative_program/schemas/execution_pilot_manifest.v1.json",
+    "provenance_closure_assessment.json": "src/comparative_program/schemas/provenance_closure_assessment.v1.json",
+    "instantiated_empty_record_assessment.json": "src/comparative_program/schemas/instantiated_empty_record_assessment.v1.json",
+    "local_frozen_record_status.json": "src/comparative_program/schemas/local_frozen_record_status.v1.json",
+    "candidate_pool_template_status.json": "src/comparative_program/schemas/candidate_pool_template_status.v1.json",
+    "decision_record_template_status.json": "src/comparative_program/schemas/decision_record_template_status.v1.json",
+    "reviewer_candidate_pool_status.json": "src/comparative_program/schemas/reviewer_candidate_pool_status.v1.json",
+    "adjudicator_candidate_pool_status.json": "src/comparative_program/schemas/adjudicator_candidate_pool_status.v1.json",
+    "reviewer_assignment_stub_status.json": "src/comparative_program/schemas/reviewer_assignment_stub_status.v1.json",
+    "adjudicator_assignment_stub_status.json": "src/comparative_program/schemas/adjudicator_assignment_stub_status.v1.json",
+    "execution_pilot_rehearsal_kit_status.json": "src/comparative_program/schemas/execution_pilot_rehearsal_kit_status.v1.json",
+    "dry_run_sequence_readiness.json": "src/comparative_program/schemas/dry_run_sequence_readiness.v1.json",
+    "rehearsal_event_log_status.json": "src/comparative_program/schemas/rehearsal_event_log_status.v1.json",
+    "stage3_5_rehearsal_ready_gate.json": "src/comparative_program/schemas/stage3_5_rehearsal_ready_gate.v1.json",
+    "stage3_5_manifest.json": "src/comparative_program/schemas/stage3_5_manifest.v1.json"
   },
   "artifacts": {
     "external_adjudication_manifest.json": { "role": "external_adjudication_manifest", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["external_adjudication_state", "execution_state", "paper10_state", "paper10_authorization_state", "boundary_flags"], "non_implications": ["Not an adjudication verdict.", "Not external validation."] },
@@ -55,6 +69,20 @@
     "execution_pilot_opening_gate.json": { "role": "execution_pilot_opening_gate", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["execution_pilot_state", "dry_run_requirements", "boundary_flags"], "non_implications": ["Not evidential execution.", "Not adjudication."] },
     "execution_pilot_dry_run_status.json": { "role": "execution_pilot_dry_run_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["execution_pilot_state", "evidence_state", "adjudication_state", "boundary_flags"], "non_implications": ["Not evidence.", "Not adjudication."] },
     "execution_pilot_manifest.json": { "role": "execution_pilot_manifest", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["execution_pilot_state", "evidence_state", "adjudication_state", "paper10_authorization_state", "boundary_flags"], "non_implications": ["Not a result package.", "Not Paper 10 final authorization."] },
+    "provenance_closure_assessment.json": { "role": "provenance_closure_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["preexisting_alignment_state", "post_regeneration_alignment_state", "committed_alignment_state", "release_pinning_state", "historical_snapshot_state"], "non_implications": ["Not external validation.", "Not an evidential rewrite."] },
+    "instantiated_empty_record_assessment.json": { "role": "instantiated_empty_record_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["instantiated_empty_layer_state", "local_frozen_record_state", "reviewer_candidate_pool_state", "decision_record_template_state", "boundary_flags"], "non_implications": ["Not populated evidence.", "Not external filing."] },
+    "local_frozen_record_status.json": { "role": "local_frozen_record_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["local_frozen_record_state", "external_filing_state", "evidence_state", "boundary_flags"], "non_implications": ["Not an externally filed preregistration.", "Not evidential population."] },
+    "candidate_pool_template_status.json": { "role": "candidate_pool_template_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["reviewer_candidate_pool_state", "adjudicator_candidate_pool_state", "boundary_flags"], "non_implications": ["Not reviewer selection.", "Not adjudicator assignment."] },
+    "decision_record_template_status.json": { "role": "decision_record_template_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["decision_record_template_state", "evidence_state", "boundary_flags"], "non_implications": ["Not a decision.", "Not adjudication."] },
+    "reviewer_candidate_pool_status.json": { "role": "reviewer_candidate_pool_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["candidate_pool_state", "selection_state", "boundary_flags"], "non_implications": ["Not reviewer selection.", "Not reviewer action."] },
+    "adjudicator_candidate_pool_status.json": { "role": "adjudicator_candidate_pool_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["candidate_pool_state", "assignment_state", "boundary_flags"], "non_implications": ["Not adjudicator assignment.", "Not adjudicator action."] },
+    "reviewer_assignment_stub_status.json": { "role": "reviewer_assignment_stub_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["assignment_stub_state", "selection_state", "boundary_flags"], "non_implications": ["Not reviewer assignment.", "Not reviewer action."] },
+    "adjudicator_assignment_stub_status.json": { "role": "adjudicator_assignment_stub_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["assignment_stub_state", "assignment_state", "boundary_flags"], "non_implications": ["Not adjudicator assignment.", "Not adjudication."] },
+    "execution_pilot_rehearsal_kit_status.json": { "role": "execution_pilot_rehearsal_kit_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["rehearsal_kit_state", "rehearsal_state", "evidence_state", "adjudication_state", "boundary_flags"], "non_implications": ["Not evidence.", "Not adjudication."] },
+    "dry_run_sequence_readiness.json": { "role": "dry_run_sequence_readiness", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["dry_run_sequence_state", "rehearsal_state", "boundary_flags"], "non_implications": ["Not dry-run evidence.", "Not collection execution."] },
+    "rehearsal_event_log_status.json": { "role": "rehearsal_event_log_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["event_log_state", "rehearsal_state", "boundary_flags"], "non_implications": ["Not a populated event log.", "Not evidential execution."] },
+    "stage3_5_rehearsal_ready_gate.json": { "role": "stage3_5_rehearsal_ready_gate", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["stage3_5_state", "non_evidential_state", "adjudication_state", "ready_requirements", "boundary_flags"], "non_implications": ["Not execution.", "Not adjudication."] },
+    "stage3_5_manifest.json": { "role": "stage3_5_manifest", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["stage3_5_state", "provenance_state", "instantiated_empty_state", "rehearsal_kit_state", "boundary_flags"], "non_implications": ["Not a result package.", "Not Paper 10 final authorization."] },
     "stage3_verification_matrix.json": { "role": "stage3_verification_matrix", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["status", "checks", "boundary_flags"], "non_implications": ["Not external adjudication.", "Not human equivalence."] }
   }
 }

@@ -1,0 +1,15 @@
+{
+  "title": "dry_run_sequence_readiness.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "dry_run_sequence_state",
+    "rehearsal_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "dry_run_sequence_readiness" },
+    "artifact_name": { "const": "dry_run_sequence_readiness.json" }
+  }
+}

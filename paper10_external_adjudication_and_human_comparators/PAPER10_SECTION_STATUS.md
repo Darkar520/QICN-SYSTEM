@@ -7,8 +7,10 @@
 | Formal dependency stack | formalized | Update only if upstream architecture changes |
 | Release-vs-local corpus boundary | formalized | Update only if release authority changes |
 | Lineage and provenance semantics | formalized | Preserve live-vs-historical distinction |
+| Provenance closure and live head reconciliation | formalized | Preserve exact-vs-forward-compatible distinction |
 | Frozen preregistration architecture | protocol_defined | Requires actual local lock to move beyond structure |
 | Local-vs-external freeze distinction | formalized | External filing remains absent |
+| Instantiated-empty record layer | protocol_defined | Requires real population before any evidential use |
 | Reviewer candidate and adjudicator candidate architecture | protocol_defined | Selection remains not started |
 | Reviewer rejection logic | protocol_defined | Remains governance-only until selection exists |
 | Blinding assignment logic | protocol_defined | Package remains uninstantiated |
@@ -18,19 +20,24 @@
 | Negative control dataset architecture | protocol_defined | Requires real control datasets later |
 | Preregistration architecture | protocol_defined | Freeze not instantiated |
 | Reviewer and adjudicator independence architecture | protocol_defined | Assignment not started |
+| Reviewer candidate pool and assignment stub architecture | protocol_defined | Candidate pools and stubs remain empty |
 | Execution pilot package architecture | protocol_defined | Pilot remains unexecuted |
+| Execution pilot rehearsal kit architecture | protocol_defined | Rehearsal remains not started |
 | Reproducibility skeleton architecture | protocol_defined | Package remains unpopulated |
 | Dataset population boundary | formalized | Defined-vs-populated split must remain explicit |
+| Dry-run event log grammar | protocol_defined | Event classes remain rehearsal-only |
 | Evidence admissibility grammar | formalized | Evidence still absent |
 | Failure / rejection / inconclusive pathways | protocol_defined | Execution still absent |
 | Statistical shell architecture | protocol_defined | Analysis not executed |
 | Adjudication decision grammar | protocol_defined | Tokens remain uninstantiated |
+| State grammar for execution readiness | formalized | State transitions must remain explicit |
 | Claim grammar for execution-era statements | protocol_defined | Must preserve non-claim boundaries |
 | Theorem / proposition / protocol mapping | formalized | Must preserve blocked rows |
 | Section-status ledger | formalized | Update as stages advance |
 | Evidence insertion protocol | evidence_pending | Requires admissible execution-era artifacts |
 | Open burdens and blocked sections | blocked_until_execution | Requires real frozen preregistration, datasets, and selection layers |
 | Execution-era unlock conditions | protocol_defined | Requires later instantiated evidence-bearing surfaces |
+| Stronger execution-to-result transition map | blocked_until_execution | Requires population, admissibility, and decision layers |
 | Why Paper 10 still cannot become final yet | formalized | Must remain explicit |
 | Future execution pathway to real Stage 3 | blocked_until_execution | Requires actual execution opening |
 | Boundary to Stage 4 metaphysical consequence analysis | forbidden_claim_surface | Remains outside current authority surface |

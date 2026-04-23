@@ -1,0 +1,24 @@
+{
+  "artifact_role": "collection_log_schema",
+  "schema_version": "1.0.0",
+  "log_entry_classes": [
+    "session_created",
+    "session_frozen",
+    "rehearsal_step_entered",
+    "rehearsal_step_exited",
+    "collection_not_started",
+    "population_absent"
+  ],
+  "required_fields": [
+    "log_id",
+    "session_id",
+    "entry_class",
+    "timestamp",
+    "actor_class",
+    "payload"
+  ],
+  "non_implications": [
+    "Schema only.",
+    "Not a populated collection log."
+  ]
+}

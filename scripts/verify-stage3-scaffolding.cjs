@@ -140,7 +140,15 @@ const verifyRuntimeImport = async () => {
   const comparative = await import(moduleUrl);
   assert(typeof comparative.describeStage3Layer === 'function', 'Stage3 layer export missing');
   const stage3 = comparative.describeStage3Layer();
-  assert(stage3.stage3_0_scaffold_only === true, 'Stage3 layer must advertise scaffold-only state');
+  assert(stage3.stage3_open === true, 'Stage3 layer must remain open');
+  assert(
+    ['paper10_scaffold_open', 'paper10_protocol_grade_backbone'].includes(stage3.paper10_state),
+    'Stage3 layer must advertise a bounded Paper 10 state'
+  );
+  assert(
+    ['stage3_execution_pilot_preparation', 'stage3_rehearsal_preparation'].includes(stage3.current_stage),
+    'Stage3 layer must advertise a valid later-bounded Stage 3 state'
+  );
   assert(stage3.external_adjudication_executed === false, 'Stage3 layer must keep adjudication unexecuted');
   assert(stage3.paper10_scaffold_created === true, 'Stage3 layer must advertise Paper 10 scaffold creation');
   assert(stage3.paper10_final_authorized === false, 'Stage3 layer must keep Paper 10 final blocked');

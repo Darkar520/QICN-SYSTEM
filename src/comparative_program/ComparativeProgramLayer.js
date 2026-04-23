@@ -57,6 +57,26 @@ import {
   PILOT_MATCHED_INTERVENTION_BUNDLE
 } from './ReproducibilityPackageRegistry.js';
 import {
+  listInstantiatedEmptyRecordRoles
+} from './InstantiatedEmptyRecordRegistry.js';
+import {
+  listCandidatePoolSlots
+} from './CandidatePoolRegistry.js';
+import {
+  REVIEWER_ASSIGNMENT_STUB,
+  ADJUDICATOR_ASSIGNMENT_STUB,
+  REVIEWER_BLINDING_STUB
+} from './AssignmentStubRegistry.js';
+import {
+  EXECUTION_PILOT_REHEARSAL_KIT,
+  REHEARSAL_FAILURE_MODES,
+  REHEARSAL_RESET_POLICY
+} from './ExecutionPilotRehearsalRegistry.js';
+import {
+  DRY_RUN_SEQUENCE_PLAN,
+  REHEARSAL_EVENT_LOG_SCHEMA
+} from './DryRunSequenceRegistry.js';
+import {
   COMPARATIVE_PROGRAM_ARTIFACT_SCHEMA,
   COMPARATIVE_PROGRAM_EXPECTED_ARTIFACTS,
   COMPARATIVE_PROGRAM_IMPLEMENTED_ARTIFACTS
@@ -88,11 +108,11 @@ export const COMPARATIVE_PROGRAM_ROOT_SCHEMAS = Object.freeze({
 
 export const COMPARATIVE_PROGRAM_LAYER_STATUS = Object.freeze({
   layer_name: 'Comparative Expansion Layer',
-  layer_id: 'comparative_expansion_layer.stage3_execution_pilot_preparation',
-  implementation_status: 'stage3_4_execution_pilot_dry_run_defined',
-  execution_status: 'stage3_openable_but_non_adjudicative_comparative_runtime',
+  layer_id: 'comparative_expansion_layer.stage3_rehearsal_preparation',
+  implementation_status: 'stage3_5_rehearsal_ready_defined',
+  execution_status: 'stage3_rehearsal_ready_but_non_adjudicative_comparative_runtime',
   interpretation_boundary:
-    'The comparative layer now preserves Stage 2-M4 internal closure and Stage3 readiness while extending the local stack through Stage3-0, Stage3-1, Stage3-2, Stage3-3, and Stage3-4 dry-run preparation. It remains framework-internal only and does not establish human equivalence, superiority, external adjudication results, transport-preservation verdicts, identity preservation, or Paper 10 authorization.'
+    'The comparative layer now preserves Stage 2-M4 internal closure and Stage3 readiness while extending the local stack through Stage3-0, Stage3-1, Stage3-2, Stage3-3, Stage3-4, Stage3-4B, and Stage3-5 rehearsal preparation. It remains framework-internal only and does not establish human equivalence, superiority, external adjudication results, transport-preservation verdicts, identity preservation, or Paper 10 authorization.'
 });
 
 export class ComparativeProgramLayer {
@@ -121,8 +141,8 @@ export class ComparativeProgramLayer {
       human_comparator_program_open: true,
       human_equivalence_program_open: true,
       cross_substrate_expansion_open: true,
-      current_stage: 'stage3_execution_pilot_preparation',
-      comparative_runtime_state: 'stage3_4_dry_run_openable_non_evidential',
+      current_stage: 'stage3_rehearsal_preparation',
+      comparative_runtime_state: 'stage3_5_rehearsal_ready_non_evidential',
       stage2_m2_runtime_opening_complete: true,
       stage2_m3_contract_operationalization_complete: true,
       stage2_m4_internal_closure_complete: true,
@@ -132,6 +152,8 @@ export class ComparativeProgramLayer {
       stage3_2_execution_readiness_layer_present: true,
       stage3_3_freeze_layer_present: true,
       stage3_4_dry_run_layer_present: true,
+      stage3_4b_instantiated_empty_layer_present: true,
+      stage3_5_rehearsal_layer_present: true,
       stage3_1_channel_contract_count: (
         HUMAN_CHANNEL_INSTANTIATION_CONTRACTS.channels || []
       ).length,
@@ -179,6 +201,20 @@ export class ComparativeProgramLayer {
       stage3_3_matched_bundle_family_count: (
         PILOT_MATCHED_INTERVENTION_BUNDLE.bundle_families || []
       ).length,
+      stage3_4b_instantiated_empty_role_count: listInstantiatedEmptyRecordRoles().length,
+      stage3_4b_candidate_pool_slot_count: listCandidatePoolSlots().length,
+      stage3_4b_reviewer_assignment_stub_present: Boolean(REVIEWER_ASSIGNMENT_STUB.template_role),
+      stage3_4b_adjudicator_assignment_stub_present: Boolean(ADJUDICATOR_ASSIGNMENT_STUB.template_role),
+      stage3_4b_blinding_stub_present: Boolean(REVIEWER_BLINDING_STUB.template_role),
+      stage3_5_rehearsal_component_count: (
+        EXECUTION_PILOT_REHEARSAL_KIT.required_components || []
+      ).length,
+      stage3_5_failure_mode_count: (REHEARSAL_FAILURE_MODES.failure_modes || []).length,
+      stage3_5_reset_rule_count: (REHEARSAL_RESET_POLICY.reset_rules || []).length,
+      stage3_5_sequence_step_count: (DRY_RUN_SEQUENCE_PLAN.sequence_steps || []).length,
+      stage3_5_rehearsal_event_field_count: (
+        REHEARSAL_EVENT_LOG_SCHEMA.required_fields || []
+      ).length,
       comparative_internal_closure_state: 'comparative_internal_closure_ready',
       stage2_m4_state: 'comparative_internal_closure_ready',
       stage3_readiness_state: 'stage3_ready_but_uninstantiated',
@@ -190,8 +226,11 @@ export class ComparativeProgramLayer {
       stage3_3_adjudicator_package_state: 'adjudicator_assignment_package_ready',
       stage3_3_pilot_package_state: 'pilot_package_ready_but_unexecuted',
       stage3_4_execution_pilot_state: 'execution_pilot_dry_run_open',
+      stage3_4b_provenance_state: 'artifact_forward_compatible',
+      stage3_4b_instantiated_empty_state: 'instantiated_empty_layer_defined',
+      stage3_5_rehearsal_state: 'stage3_5_rehearsal_ready',
       paper10_protocol_state: 'paper10_protocol_grade_backbone',
-      current_stage3_substage: 'stage3_4_execution_pilot_dry_run',
+      current_stage3_substage: 'stage3_5_rehearsal_ready',
       ready_for_stage2_m4: true,
       ready_for_stage3_opening: true,
       stage3_opening_state: 'ready_for_stage3_opening',
@@ -206,7 +245,7 @@ export class ComparativeProgramLayer {
       not_cross_substrate_equivalence_support: true,
       not_identity_preservation_support: true,
       not_external_adjudication: true,
-      external_comparative_adjudication_state: 'execution_pilot_dry_run_only',
+      external_comparative_adjudication_state: 'rehearsal_ready_non_evidential_only',
       not_paper10_authorization: true,
       no_external_validation: true,
       no_metaphysical_closure: true,

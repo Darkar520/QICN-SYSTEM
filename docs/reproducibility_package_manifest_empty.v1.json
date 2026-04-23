@@ -1,0 +1,20 @@
+{
+  "template_role": "reproducibility_package_manifest_empty",
+  "schema_version": "1.0.0",
+  "manifest_state": "instantiated_empty",
+  "package_id": null,
+  "required_slots": [
+    "preregistration_record_ref",
+    "dataset_bundle_refs",
+    "negative_control_bundle_refs",
+    "analysis_shell_output_refs",
+    "reviewer_package_ref",
+    "adjudicator_package_ref",
+    "decision_record_ref"
+  ],
+  "populated_slots": [],
+  "population_state": "absent",
+  "non_implications": [
+    "Not a populated reproducibility package."
+  ]
+}

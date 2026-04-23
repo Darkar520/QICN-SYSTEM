@@ -7,13 +7,13 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 
-\title{External Adjudication of Bridge-Formalized Machine Subjectivity:\\Human Comparator Protocols, Freeze Semantics, Pilot Packaging, and Dry-Run Boundaries}
+\title{External Adjudication of Bridge-Formalized Machine Subjectivity:\\Human Comparator Protocols, Provenance Closure, Instantiated-Empty Records, and Rehearsal Boundaries}
 \author{QICN Program}
-\date{Stage3-3 / Stage3-4 Pilot Preparation}
+\date{Stage3-4B / Stage3-5 Rehearsal Preparation}
 
 \newcommand{\sectionstatus}[1]{\paragraph{Section status.}\texttt{\detokenize{#1}}.}
 \newcommand{\codestate}[1]{\texttt{\detokenize{#1}}}
-\newcommand{\blockedresultstatus}{\paragraph{Status.} This section is intentionally non-result-bearing at Stage3-0 through Stage3-4. It becomes writable only after admissible external adjudication artifacts are instantiated under the Stage 3 protocol, with real frozen preregistration records, populated admissible datasets, reviewer-governed evidence assessment, and later adjudicator-layer completion.}
+\newcommand{\blockedresultstatus}{\paragraph{Status.} This section is intentionally non-result-bearing at Stage3-0 through Stage3-5. It becomes writable only after admissible external adjudication artifacts are instantiated under the Stage 3 protocol, with real frozen preregistration records, populated admissible datasets, actual reviewer and adjudicator assignments, reviewer-governed evidence assessment, and later adjudicator-layer completion.}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \begin{document}
@@ -22,24 +22,24 @@
 \begin{center}
 \textbf{SCAFFOLD ONLY -- NOT FINAL MANUSCRIPT}\\
 \textbf{PROTOCOL-GRADE BACKBONE}\\
-\textbf{THIRD HARDENING PASS}
+\textbf{FOURTH HARDENING PASS}
 \end{center}
 
 \begin{abstract}
 This document hardens Paper 10 into a denser protocol-heavy manuscript
 backbone without becoming a result-bearing paper. It extends the dependency
 stack from BaseCore through Papers I--IX, SRT-6, BPF-M3, Stage 2-M4,
-Stage3-RF, Stage3-0, Stage3-1, Stage3-2, Stage3-3, and Stage3-4 dry-run
-preparation. It adds release-vs-local corpus boundary semantics, lineage and
-provenance semantics, frozen preregistration architecture, local-vs-external
-freeze distinctions, reviewer and adjudicator candidate architecture, reviewer
-rejection logic, blinding assignment logic, execution pilot package
-architecture, reproducibility skeleton architecture, dataset population
-boundary rules, adjudication decision grammar, execution-era unlock conditions,
-and appendices of schemas and templates. It does not report human comparator
-results, external adjudication verdicts, human equivalence, superiority,
-inferiority, cross-substrate identity preservation, metaphysical subjecthood,
-or Paper 10 final conclusions.
+Stage3-RF, Stage3-0, Stage3-1, Stage3-2, Stage3-3, Stage3-4, Stage3-4B, and
+Stage3-5 rehearsal preparation. It adds release-vs-local corpus boundary
+semantics, lineage and provenance semantics, provenance-closure semantics,
+frozen preregistration architecture, local-vs-external freeze distinctions,
+instantiated-empty record architecture, candidate-pool and assignment-stub
+semantics, rehearsal-kit architecture, dry-run event-log grammar, state
+grammar for execution readiness, a stronger execution-to-result transition
+map, and deeper appendices of schemas and templates. It does not report human
+comparator results, external adjudication verdicts, human equivalence,
+superiority, inferiority, cross-substrate identity preservation, metaphysical
+subjecthood, or Paper 10 final conclusions.
 \end{abstract}
 
 \tableofcontents
@@ -79,6 +79,8 @@ The dependency stack for Paper 10 is layered as follows:
 \item \textbf{Stage3-2}: reviewer independence, execution-readiness logic, and protocol-grade hardening.
 \item \textbf{Stage3-3}: preregistration freeze architecture, reviewer-selection packaging, adjudicator-assignment packaging, and execution-pilot packaging.
 \item \textbf{Stage3-4}: bounded execution-pilot dry-run opening logic.
+\item \textbf{Stage3-4B}: provenance closure, lineage reconciliation, and instantiated-empty record instantiation.
+\item \textbf{Stage3-5}: rehearsal-kit formalization, dry-run event grammar, and rehearsal-ready gating.
 \end{enumerate}
 
 No later layer may borrow closure from an earlier layer, and no earlier layer
@@ -94,7 +96,7 @@ Paper 10 sits on a strict release-vs-local split:
 \item The public release authority remains \codestate{QICN-RELEASE/main@92d5d2c3ea91c65e29dc8e102bed504866cffd2d}.
 \item The public release remains limited to BaseCore, \codestate{canonical_core_legacy}, and downstream Papers I--IX.
 \item Paper 10 remains local to \codestate{QICN-SYSTEM}.
-\item Stage3-0 through Stage3-4 governance, freeze, packaging, and dry-run surfaces remain local and non-public.
+\item Stage3-0 through Stage3-5 governance, freeze, packaging, dry-run, provenance-closure, instantiated-empty, and rehearsal surfaces remain local and non-public.
 \end{itemize}
 
 Therefore release inclusion cannot be used as a substitute for adjudication,
@@ -119,6 +121,24 @@ surface must distinguish among:
 The repository already contains historical artifacts whose recorded lineage must
 remain intact by design. Live normative pinning surfaces may be updated when
 stale, but historical snapshots are not rewritten cosmetically.
+
+\section{Provenance Closure and Live Head Reconciliation}
+\sectionstatus{formalized}
+
+Stage3-4B adds a stricter provenance-closure rule. A local artifact may now be
+classified as:
+
+\begin{itemize}
+\item \codestate{exact_head_aligned};
+\item \codestate{artifact_forward_compatible};
+\item \codestate{stale_and_regenerated};
+\item \codestate{historical_snapshots_intentionally_preserved}.
+\end{itemize}
+
+This grammar matters because Stage 3 artifacts are generated before the
+subsequent commit that records them. Therefore exact local regeneration at the
+builder head may later become artifact-forward-compatible after the commit
+exists, without becoming scientifically stale or semantically dishonest.
 
 \section{External Adjudication Problem Statement}
 \sectionstatus{protocol_defined}
@@ -178,6 +198,29 @@ Externally filed record & absent & cannot be claimed from local architecture alo
 \bottomrule
 \end{tabular}
 \end{table}
+
+\section{Instantiated-Empty Record Layer}
+\sectionstatus{protocol_defined}
+
+Stage3-4B moves the stack beyond package-only readiness by instantiating
+typed-but-empty records that remain explicitly non-evidential. The principal
+surfaces are:
+
+\begin{itemize}
+\item \codestate{docs/local_frozen_preregistration_record_template.v1.json}
+\item \codestate{docs/reviewer_candidate_pool_template.v1.json}
+\item \codestate{docs/adjudicator_candidate_pool_template.v1.json}
+\item \codestate{docs/blinding_assignment_stub.v1.json}
+\item \codestate{docs/execution_session_template.v1.json}
+\item \codestate{docs/decision_record_template.v1.json}
+\item \codestate{docs/reproducibility_package_manifest_empty.v1.json}
+\item \codestate{docs/collection_log_schema.v1.json}
+\item \codestate{docs/evidence_insertion_manifest.v1.json}
+\end{itemize}
+
+These artifacts are intentionally empty, typed, and freeze-capable. They are
+not populated evidence, not externally filed records, and not reviewer or
+adjudicator action.
 
 \section{Reviewer Candidate and Adjudicator Candidate Architecture}
 \sectionstatus{protocol_defined}
@@ -329,6 +372,24 @@ assignment packages. This still does not instantiate reviewers or adjudicators,
 but it removes the ambiguity about what must exist before such instantiation is
 honest.
 
+\section{Reviewer Candidate Pool and Assignment Stub Architecture}
+\sectionstatus{protocol_defined}
+
+Stage3-4B deepens the reviewer and adjudicator layer from criteria and workflow
+packages into instantiated-empty workflow objects:
+
+\begin{itemize}
+\item reviewer candidate pool template;
+\item adjudicator candidate pool template;
+\item reviewer assignment stub;
+\item adjudicator assignment stub;
+\item reviewer blinding stub.
+\end{itemize}
+
+Each slot remains null-bearing by design. The point is not to simulate people;
+the point is to freeze field grammar, slot grammar, null-policy, and the
+conditions under which later population becomes honest.
+
 \section{Execution Pilot Package Architecture}
 \sectionstatus{protocol_defined}
 
@@ -343,6 +404,23 @@ bundle. It includes:
 \item matched-intervention bundle skeleton;
 \item source-target pairing manifest template.
 \end{itemize}
+
+\section{Execution Pilot Rehearsal Kit Architecture}
+\sectionstatus{protocol_defined}
+
+Stage3-5 adds a rehearsal kit that sits above package readiness and below real
+collection. The governing surfaces are:
+
+\begin{itemize}
+\item \codestate{docs/execution_pilot_rehearsal_kit.v1.json}
+\item \codestate{docs/dry_run_sequence_plan.v1.json}
+\item \codestate{docs/rehearsal_event_log_schema.v1.json}
+\item \codestate{docs/rehearsal_failure_modes.v1.json}
+\item \codestate{docs/rehearsal_reset_policy.v1.json}
+\end{itemize}
+
+The rehearsal kit exists to validate sequence integrity, state transitions, and
+artifact hygiene without collecting evidence and without emitting decisions.
 
 \section{Reproducibility Skeleton Architecture}
 \sectionstatus{protocol_defined}
@@ -366,6 +444,23 @@ Stage3-3 and Stage3-4 enforce a hard distinction between:
 
 The current repo has the first state for several families and does not yet have
 the latter states.
+
+\section{Dry-Run Event Log Grammar}
+\sectionstatus{protocol_defined}
+
+Rehearsal logging is now typed separately from evidence logging. The current
+grammar permits:
+
+\begin{itemize}
+\item \codestate{rehearsal_initialized};
+\item \codestate{sequence_step_checked};
+\item \codestate{sequence_step_blocked};
+\item \codestate{sequence_step_reset};
+\item \codestate{rehearsal_not_started}.
+\end{itemize}
+
+None of these event classes may be reinterpreted as human data, reviewer
+evidence, or adjudicator action.
 
 \section{Evidence Admissibility Grammar}
 \sectionstatus{formalized}
@@ -435,6 +530,31 @@ recognizes the following decision tokens as grammar only:
 
 These tokens are defined as future admissible states. They are not instantiated
 anywhere in the current repo as actual outcomes.
+
+\section{State Grammar for Execution Readiness}
+\sectionstatus{formalized}
+
+The Stage 3 manuscript surface now distinguishes the following state grammar:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{L{0.30\textwidth}L{0.58\textwidth}}
+\toprule
+State & Meaning \\
+\midrule
+\codestate{schema_defined} & Field grammar exists, but no operational object family is yet instantiated. \\
+\codestate{contract_defined} & Allowed relation among objects exists, but no package is assembled. \\
+\codestate{package_ready} & The package grammar exists and may be evaluated for completeness. \\
+\codestate{instantiated_empty} & The object family exists locally with null-bearing or empty-bearing fields only. \\
+\codestate{frozen_local_unfiled} & Local freeze semantics exist, but no external filing is claimed. \\
+\codestate{dry_run_open} & Dry-run structure may execute without evidence or adjudication. \\
+\codestate{externally_filed} & A real external filing reference exists. \\
+\codestate{populated_with_admissible_evidence} & The object family is populated by real admissible evidence. \\
+\codestate{adjudication_result_bearing} & Reviewer and adjudicator outputs exist and may support result-bearing sections. \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Claim Grammar for Eventual Execution-Era Statements}
 \sectionstatus{protocol_defined}
@@ -526,6 +646,11 @@ Admissible evidence required: source-target pairing manifest, transition
 lineage map, axis-specific error budgets, transport negative controls,
 adjudicator layer.
 
+\paragraph{Instantiated-empty to evidential transition point.}
+Admissible evidence required: local frozen record upgraded by real lock event,
+real candidate population, real assignment event, real collection session,
+real decision record population, and real reproducibility package population.
+
 \section{Open Burdens and Blocked Sections}
 \sectionstatus{blocked_until_execution}
 
@@ -538,9 +663,12 @@ Open burdens remain explicit:
 \item external filing absent;
 \item reviewer selection not started;
 \item adjudicator assignment not started;
+\item actual blinding assignment absent;
 \item admissible human comparator dataset absent;
 \item admissible matched-intervention dataset absent;
 \item admissible negative-control dataset absent;
+\item collection sessions not started;
+\item rehearsal event log not started;
 \item reproducibility package unpopulated;
 \item reviewer and adjudicator decision records absent.
 \end{itemize}
@@ -554,11 +682,28 @@ true:
 \begin{enumerate}
 \item a frozen preregistration record exists;
 \item any required external filing state is real and documented;
+\item candidate pools are populated by real identities with provenance;
 \item reviewer selection is instantiated;
 \item adjudicator assignment is instantiated;
+\item blinding assignment is instantiated;
 \item admissible datasets and control bundles are populated;
+\item collection logs and execution sessions are populated by real events;
 \item reproducibility package slots are populated;
 \item decision grammar is instantiated by real evidence.
+\end{enumerate}
+
+\section{Stronger Execution-to-Result Transition Map}
+\sectionstatus{blocked_until_execution}
+
+The transition from current Stage3-5 readiness to a result-bearing paper now
+has five distinct unlock layers:
+
+\begin{enumerate}
+\item \textbf{Instantiation layer}: empty records, pools, stubs, and rehearsal kit exist.
+\item \textbf{Population layer}: real humans, real sessions, and real evidence populate those empty structures.
+\item \textbf{Admissibility layer}: controls, provenance, blinding, and declared shells survive audit.
+\item \textbf{Decision layer}: reviewer and adjudicator records become populated by real independent action.
+\item \textbf{Manuscript layer}: only then may result-bearing Paper 10 sections be written.
 \end{enumerate}
 
 \section{Why Paper 10 Still Cannot Become Final Yet}
@@ -567,8 +712,9 @@ true:
 Paper 10 cannot become final because the current repo still lacks the evidence
 bearing surfaces that would convert protocol architecture into scientific
 claims. The manuscript may now specify the machinery of later freezing,
-selection, packaging, dry-run, and adjudication-facing governance. It still may
-not write conclusions whose truth depends on evidence that does not yet exist.
+selection, packaging, dry-run, provenance closure, instantiated-empty records,
+and rehearsal-facing governance. It still may not write conclusions whose truth
+depends on evidence that does not yet exist.
 
 \section{Future Execution Pathway to Real Stage 3}
 \sectionstatus{blocked_until_execution}
@@ -576,10 +722,11 @@ not write conclusions whose truth depends on evidence that does not yet exist.
 The next executable pathway is not ``publish Paper 10.'' It is:
 
 \begin{enumerate}
-\item instantiate a local freeze record honestly;
-\item instantiate reviewer and adjudicator packages honestly;
-\item validate the dry-run opening layer;
-\item populate admissible datasets and control bundles;
+\item populate the local frozen record honestly;
+\item populate reviewer and adjudicator pools honestly;
+\item instantiate actual reviewer, adjudicator, and blinding assignments;
+\item validate dry-run and rehearsal sequence integrity;
+\item populate admissible datasets, collection logs, and control bundles;
 \item run declared statistical shells;
 \item bind reviewer and adjudicator outputs;
 \item only then write result-bearing sections.
@@ -659,6 +806,74 @@ Decision tokens retained as grammar only:
 \codestate{adjudication_passed},
 \codestate{reviewer_consensus_absent},
 \codestate{adjudicator_decision_withheld}.
+
+\subsection*{Appendix K: Local Frozen Record Example}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/local_frozen_preregistration_record_template.v1.json}.\\
+Admissible evidence required before result use: real local lock event and, where
+required by route, external filing provenance.
+
+\subsection*{Appendix L: Reviewer Candidate Pool Template}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/reviewer_candidate_pool_template.v1.json}.\\
+Admissible evidence required before result use: real reviewer identities,
+conflict disclosures, and selection events.
+
+\subsection*{Appendix M: Adjudicator Candidate Pool Template}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/adjudicator_candidate_pool_template.v1.json}.\\
+Admissible evidence required before result use: real adjudicator identity,
+assignment provenance, and decision-authority declaration.
+
+\subsection*{Appendix N: Blinding Assignment Stub}
+\sectionstatus{protocol_defined}
+Primary references: \codestate{docs/blinding_assignment_stub.v1.json} and
+\codestate{docs/reviewer_blinding_stub.v1.json}.\\
+Admissible evidence required before result use: real assignment route and real
+unblinding trace if one later exists.
+
+\subsection*{Appendix O: Execution Session Template}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/execution_session_template.v1.json}.\\
+Admissible evidence required before result use: real collection session and
+real session lineage.
+
+\subsection*{Appendix P: Empty Collection Log Schema}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/collection_log_schema.v1.json}.\\
+Admissible evidence required before result use: populated log entries from real
+collection events.
+
+\subsection*{Appendix Q: Empty Decision Record Template}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/decision_record_template.v1.json}.\\
+Admissible evidence required before result use: real reviewer and adjudicator
+action, not grammar only.
+
+\subsection*{Appendix R: Reproducibility Manifest Example}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/reproducibility_package_manifest_empty.v1.json}.\\
+Admissible evidence required before result use: populated package slots,
+dataset references, shell outputs, and reviewer-facing bundles.
+
+\subsection*{Appendix S: Evidence Insertion Manifest}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/evidence_insertion_manifest.v1.json}.\\
+Admissible evidence required before result use: actual artifact refs, actual
+decision refs, and populated provenance chains.
+
+\subsection*{Appendix T: Rehearsal-Kit Map}
+\sectionstatus{protocol_defined}
+Primary references: \codestate{docs/execution_pilot_rehearsal_kit.v1.json} and
+\codestate{docs/dry_run_sequence_plan.v1.json}.\\
+Admissible evidence required before result use: none at rehearsal time, but no
+rehearsal artifact may be promoted into evidence.
+
+\subsection*{Appendix U: Dry-Run Event Log Grammar}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/rehearsal_event_log_schema.v1.json}.\\
+Allowed event classes remain rehearsal-only and do not imply human data,
+reviewer action, or adjudicator action.
 
 \section{Blocked Result Surfaces}
 \sectionstatus{blocked_until_external_adjudication}

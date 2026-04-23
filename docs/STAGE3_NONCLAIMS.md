@@ -1,6 +1,6 @@
 # Stage3 Non-Claims
 
-`Stage3-0`, `Stage3-1`, `Stage3-2`, `Stage3-3`, and `Stage3-4` do not establish:
+`Stage3-0`, `Stage3-1`, `Stage3-2`, `Stage3-3`, `Stage3-4`, `Stage3-4B`, and `Stage3-5` do not establish:
 
 - external adjudication;
 - human comparator evidence;
@@ -24,5 +24,7 @@ They also do not permit:
 - adjudicator assignment to be implied from assignment architecture alone;
 - adjudication execution to be implied from execution-readiness artifacts;
 - evidential support to be implied from a dry-run opening;
+- evidential support to be implied from instantiated-empty records;
+- adjudication execution to be implied from rehearsal readiness;
 - public release promotion of the scaffold-only or protocol-grade local Paper 10 source;
 - use of Paper 9 publication as a substitute for external adjudication.

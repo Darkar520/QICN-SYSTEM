@@ -1,0 +1,17 @@
+{
+  "title": "execution_pilot_rehearsal_kit_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "rehearsal_kit_state",
+    "rehearsal_state",
+    "evidence_state",
+    "adjudication_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "execution_pilot_rehearsal_kit_status" },
+    "artifact_name": { "const": "execution_pilot_rehearsal_kit_status.json" }
+  }
+}

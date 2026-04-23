@@ -1,0 +1,15 @@
+{
+  "artifact_role": "rehearsal_reset_policy",
+  "schema_version": "1.0.0",
+  "reset_rules": [
+    "no_population_persistence",
+    "no_decision_token_persistence",
+    "reset_event_log_allowed",
+    "rehearsal_state_returns_to_not_started"
+  ],
+  "invalid_reset_rules": [
+    "retain_fake_data",
+    "retain_fake_decision",
+    "promote_rehearsal_to_evidence"
+  ]
+}

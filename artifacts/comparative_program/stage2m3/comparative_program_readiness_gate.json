@@ -75,7 +75,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; the Stage 2-M3 comparative readiness gate classifies contract-operationalized readiness, not human equivalence, not transport preservation, not external adjudication, and not Paper 10 authorization.",
   "provenance": {
-    "generated_at": "2026-04-23T05:28:45.448Z",
+    "generated_at": "2026-04-23T19:56:42.652Z",
     "verification_matrix_ref": "artifacts/comparative_program/stage2m3/comparative_program_verification_matrix.json",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage2_m3.operationalization.v1",
@@ -184,7 +184,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "66337262f8e34fbbbcdd0e87ba327a31297b3f8f",
+        "head": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
         "upstream": "origin/main"
       },
       "qicn_release": {

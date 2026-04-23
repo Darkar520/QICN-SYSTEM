@@ -51,9 +51,12 @@ Dry-run opening is allowed to validate:
 
 - manifest structure;
 - freeze binding structure;
+- instantiated-empty record structure;
+- candidate-pool and assignment-stub structure;
 - blinding route structure;
 - empty bundle structure;
-- collection session schema structure.
+- collection session schema structure;
+- rehearsal event-log schema structure.
 
 Dry-run opening is not allowed to substitute for:
 
@@ -62,6 +65,24 @@ Dry-run opening is not allowed to substitute for:
 - adjudicator decision records;
 - result-bearing statistics;
 - external validation language.
+
+## Instantiated-empty boundary
+
+Instantiated-empty records are allowed to validate:
+
+- field grammar;
+- null and empty placeholder policy;
+- provenance slot presence;
+- freeze-capable local structure;
+- evidence insertion routes.
+
+Instantiated-empty records are not allowed to substitute for:
+
+- external filing;
+- real reviewer or adjudicator identity;
+- collection events;
+- evidence-bearing logs;
+- populated decision records.
 
 ## Invalid substitutes
 

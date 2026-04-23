@@ -5,12 +5,18 @@
 - dependency architecture;
 - release-vs-local corpus boundary semantics;
 - lineage and provenance semantics;
+- provenance closure semantics;
 - instantiation contracts;
 - preregistration freeze architecture;
+- instantiated-empty record semantics;
 - reviewer and adjudicator candidate architecture;
+- candidate-pool and assignment-stub grammar;
 - reviewer rejection logic;
 - blinding assignment logic;
 - execution pilot package architecture;
+- rehearsal-kit architecture;
+- dry-run event-log grammar;
+- execution state grammar;
 - reproducibility skeleton architecture;
 - evidence admissibility grammar;
 - statistical shells;
@@ -25,7 +31,10 @@
 - dataset-sensitive comparative statements;
 - execution-era effect descriptions;
 - any statement that depends on actual frozen preregistration locks;
+- any statement that depends on actual candidate-pool population;
 - any statement that depends on actual reviewer selection or adjudicator assignment;
+- any statement that depends on actual blinding assignment;
+- any statement that depends on actual collection sessions or populated logs;
 - any statement that depends on populated pilot bundles.
 
 ## Blocked until external adjudication
@@ -34,6 +43,7 @@
 - evidence-weighting statements attributed to independent reviewers;
 - any statement that requires conflict disclosure packets or blinding logs;
 - any statement that requires an adjudicator decision record.
+- any statement that requires instantiated-empty grammar to be treated as evidence.
 
 ## Forbidden now
 

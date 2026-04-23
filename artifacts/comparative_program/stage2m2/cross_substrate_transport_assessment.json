@@ -72,7 +72,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; cross-substrate transport assessment records bounded transport openness and blocked-state logic, not transport preservation, not cross-substrate equivalence, not identity preservation, and not external adjudication.",
   "provenance": {
-    "generated_at": "2026-04-23T05:28:45.106Z",
+    "generated_at": "2026-04-23T19:56:42.100Z",
     "human_comparator_assessment_ref": "artifacts/comparative_program/stage2m2/human_comparator_assessment.json",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage2_m2.root.v1",
@@ -181,7 +181,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "66337262f8e34fbbbcdd0e87ba327a31297b3f8f",
+        "head": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
         "upstream": "origin/main"
       },
       "qicn_release": {

@@ -91,3 +91,23 @@ Normalized status values used below:
 - Internal artifacts: `artifacts/external_adjudication/stage3_4/execution_pilot_opening_gate.json`, `artifacts/external_adjudication/stage3_4/execution_pilot_dry_run_status.json`, `artifacts/external_adjudication/stage3_4/execution_pilot_manifest.json`
 - Verification: `npm run build:stage3-execution-pilot`, `npm run verify:stage3-execution-pilot`
 - Boundary: dry-run only; not evidential, not adjudicative, no human collection result, no reviewer decision, no adjudicator decision, no external validation, and no final Paper 10 authorization.
+
+## Stage3-4B provenance closure and instantiated-empty record layer
+
+- Status: `implemented_internal_support`
+- Governance docs: `docs/INSTANTIATED_EMPTY_RECORDS_POLICY.md`, `docs/LOCAL_FROZEN_RECORD_BOUNDARY.md`, `docs/DECISION_RECORD_TEMPLATE_POLICY.md`, `docs/REVIEWER_CANDIDATE_POOL_POLICY.md`, `docs/ASSIGNMENT_STUB_POLICY.md`
+- Machine-readable manifests: `docs/local_frozen_preregistration_record_template.v1.json`, `docs/reviewer_candidate_pool_template.v1.json`, `docs/adjudicator_candidate_pool_template.v1.json`, `docs/blinding_assignment_stub.v1.json`, `docs/execution_session_template.v1.json`, `docs/decision_record_template.v1.json`, `docs/reproducibility_package_manifest_empty.v1.json`, `docs/collection_log_schema.v1.json`, `docs/evidence_insertion_manifest.v1.json`, `docs/reviewer_candidate_pool_fields.v1.json`, `docs/adjudicator_candidate_pool_fields.v1.json`, `docs/reviewer_assignment_stub.v1.json`, `docs/adjudicator_assignment_stub.v1.json`, `docs/reviewer_blinding_stub.v1.json`
+- Runtime layer: `src/comparative_program/ProvenanceClosureEvaluator.js`, `src/comparative_program/InstantiatedEmptyRecordRegistry.js`, `src/comparative_program/InstantiatedEmptyRecordEvaluator.js`, `src/comparative_program/CandidatePoolRegistry.js`, `src/comparative_program/AssignmentStubRegistry.js`, `src/comparative_program/CandidatePoolEvaluator.js`, `src/comparative_program/Stage3RehearsalPreparationBuilder.js`
+- Internal artifacts: `artifacts/external_adjudication/stage3_4/provenance_closure_assessment.json`, `artifacts/external_adjudication/stage3_4b/instantiated_empty_record_assessment.json`, `artifacts/external_adjudication/stage3_4b/local_frozen_record_status.json`, `artifacts/external_adjudication/stage3_4b/candidate_pool_template_status.json`, `artifacts/external_adjudication/stage3_4b/decision_record_template_status.json`, `artifacts/external_adjudication/stage3_4b/reviewer_candidate_pool_status.json`, `artifacts/external_adjudication/stage3_4b/adjudicator_candidate_pool_status.json`, `artifacts/external_adjudication/stage3_4b/reviewer_assignment_stub_status.json`, `artifacts/external_adjudication/stage3_4b/adjudicator_assignment_stub_status.json`
+- Verification: `npm run build:stage3-instantiated-empty`, `npm run verify:stage3-instantiated-empty`
+- Boundary: instantiated-empty and frozen-local-unfiled only; no external filing, no reviewer identity instantiated, no adjudicator identity instantiated, no evidence population, and no adjudication execution.
+
+## Stage3-5 rehearsal-ready and protocol-deepening layer
+
+- Status: `implemented_internal_support`
+- Governance docs: `docs/EXECUTION_PILOT_REHEARSAL_KIT.md`, `docs/DRY_RUN_SEQUENCE_PLAN.md`, `docs/stage3_5_boundary.md`, `docs/PAPER10_FINALIZATION_UNLOCK_MAP.md`
+- Machine-readable manifests: `docs/execution_pilot_rehearsal_kit.v1.json`, `docs/dry_run_sequence_plan.v1.json`, `docs/rehearsal_event_log_schema.v1.json`, `docs/rehearsal_failure_modes.v1.json`, `docs/rehearsal_reset_policy.v1.json`, `docs/stage3_5_rehearsal_ready_criteria.v1.json`, `docs/stage3_execution_unlock_map.v1.json`
+- Runtime layer: `src/comparative_program/ExecutionPilotRehearsalRegistry.js`, `src/comparative_program/DryRunSequenceRegistry.js`, `src/comparative_program/RehearsalKitEvaluator.js`, `src/comparative_program/Stage3_5ReadinessGateBuilder.js`, `src/comparative_program/Stage3RehearsalPreparationBuilder.js`
+- Internal artifacts: `artifacts/external_adjudication/stage3_5/execution_pilot_rehearsal_kit_status.json`, `artifacts/external_adjudication/stage3_5/dry_run_sequence_readiness.json`, `artifacts/external_adjudication/stage3_5/rehearsal_event_log_status.json`, `artifacts/external_adjudication/stage3_5/stage3_5_rehearsal_ready_gate.json`, `artifacts/external_adjudication/stage3_5/stage3_5_manifest.json`
+- Verification: `npm run build:stage3-rehearsal-kit`, `npm run verify:stage3-rehearsal-kit`, `npm run build:stage3-5-readiness`, `npm run verify:stage3-5-readiness`
+- Boundary: rehearsal-ready only; dry-run remains non-evidential, non-adjudicative, and non-result-bearing, and Paper 10 remains local, blocked, and not final-authorized.

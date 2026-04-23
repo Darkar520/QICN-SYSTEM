@@ -1,0 +1,15 @@
+{
+  "title": "rehearsal_event_log_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "event_log_state",
+    "rehearsal_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "rehearsal_event_log_status" },
+    "artifact_name": { "const": "rehearsal_event_log_status.json" }
+  }
+}

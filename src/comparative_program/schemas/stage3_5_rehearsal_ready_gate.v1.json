@@ -1,0 +1,16 @@
+{
+  "title": "stage3_5_rehearsal_ready_gate.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "stage3_5_state",
+    "non_evidential_state",
+    "adjudication_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "stage3_5_rehearsal_ready_gate" },
+    "artifact_name": { "const": "stage3_5_rehearsal_ready_gate.json" }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "template_role": "blinding_assignment_stub",
+  "schema_version": "1.0.0",
+  "stub_state": "instantiated_empty",
+  "blinding_class": "artifact_blinded",
+  "assigned_slots": [],
+  "unblinding_authority": null,
+  "unblinding_state": "not_authorized",
+  "non_implications": [
+    "Not a completed blinding assignment.",
+    "Not unblinding authorization."
+  ]
+}

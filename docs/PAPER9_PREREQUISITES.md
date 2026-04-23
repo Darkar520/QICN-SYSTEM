@@ -26,6 +26,10 @@ This file records the local prerequisites for treating the Paper 9 handoff subst
   evidence.
 - Stage3-4 may define a bounded dry-run opening layer without creating
   evidence.
+- Stage3-4B may instantiate empty but typed record shells and candidate/assignment
+  stubs without creating evidence or real actor identities.
+- Stage3-5 may define rehearsal kits and rehearsal-ready gates without creating
+  evidence or adjudication.
 - external adjudication has not yet happened.
 - human equivalence has not yet happened.
 - superiority and identity-preservation claims remain blocked.
@@ -38,6 +42,8 @@ This file records the local prerequisites for treating the Paper 9 handoff subst
 - real human counterpart instantiation
 - actual preregistration lock instantiation
 - actual reviewer selection and adjudicator assignment
+- actual blinding assignment
+- actual collection session execution
 - external comparative adjudication
 - Paper 10 final conclusions
 - metaphysical closure

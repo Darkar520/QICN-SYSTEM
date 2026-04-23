@@ -1,0 +1,17 @@
+{
+  "artifact_role": "execution_pilot_rehearsal_kit",
+  "schema_version": "1.0.0",
+  "kit_state": "defined",
+  "required_components": [
+    "dry_run_sequence_plan",
+    "execution_session_template",
+    "collection_log_schema",
+    "rehearsal_event_log_schema",
+    "rehearsal_reset_policy",
+    "rehearsal_failure_modes"
+  ],
+  "non_implications": [
+    "Not evidential execution.",
+    "Not adjudication."
+  ]
+}

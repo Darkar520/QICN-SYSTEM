@@ -3,8 +3,8 @@ import path from 'path';
 
 import { PROJECT_ROOT } from './ComparativeRuntimeUtils.js';
 
-const LAYER_VERSION = 'comparative_expansion_layer.stage3_2.paper10_protocol_backbone.v1';
-const ESTIMATOR_VERSION = 'paper10_protocol_hardening_builder.stage3_2.v1';
+const LAYER_VERSION = 'comparative_expansion_layer.stage3_5.paper10_protocol_backbone.v1';
+const ESTIMATOR_VERSION = 'paper10_protocol_hardening_builder.stage3_5.v1';
 
 const PAPER10_DIR = path.join(PROJECT_ROOT, 'paper10_external_adjudication_and_human_comparators');
 const PAPER10_FILES = Object.freeze({
@@ -22,20 +22,27 @@ const REQUIRED_SECTION_PATTERNS = Object.freeze({
   dependency_architecture: /Dependency Architecture/i,
   release_vs_local_boundary: /Release-vs-Local Corpus Boundary|Release vs Local Corpus Boundary/i,
   lineage_semantics: /Lineage and Provenance Semantics/i,
+  provenance_closure: /Provenance Closure and Live Head Reconciliation/i,
   frozen_preregistration_architecture: /Frozen Preregistration Architecture/i,
+  instantiated_empty_record_layer: /Instantiated-Empty Record Layer/i,
   reviewer_candidate_architecture: /Reviewer Candidate and Adjudicator Candidate Architecture/i,
+  candidate_pool_stub_architecture: /Reviewer Candidate Pool and Assignment Stub Architecture/i,
   blinding_assignment_logic: /Blinding Assignment Logic/i,
   instantiation_logic: /Human Comparator Instantiation Logic/i,
   execution_contracts: /Channel-by-Channel Execution Contracts/i,
   preregistration_architecture: /Preregistration Architecture/i,
   reviewer_architecture: /Reviewer and Adjudicator Independence Architecture/i,
   execution_pilot_package_architecture: /Execution Pilot Package Architecture/i,
+  rehearsal_kit_architecture: /Execution Pilot Rehearsal Kit Architecture/i,
   reproducibility_skeleton_architecture: /Reproducibility Skeleton Architecture/i,
   dataset_population_boundary: /Dataset Population Boundary/i,
+  dry_run_event_log_grammar: /Dry-Run Event Log Grammar/i,
   adjudication_decision_grammar: /Adjudication Decision Grammar/i,
+  state_grammar: /State Grammar for Execution Readiness/i,
   evidence_insertion_map: /Evidence Insertion Map/i,
   appendices: /Appendix A|Appendices of Schemas and Templates/i,
   unlock_conditions: /Execution-Era Unlock Conditions/i,
+  transition_map: /Stronger Execution-to-Result Transition Map/i,
   stage4_boundary: /Boundary to Stage 4/i
 });
 
@@ -60,10 +67,10 @@ export class Paper10ProtocolHardeningBuilder {
       artifact_name: 'paper10_protocol_hardening_status.json',
       artifact_version: '1.0.0',
       schema_version: '1.0.0',
-      layer_id: 'comparative_expansion_layer.stage3_2_external_adjudication_readiness',
+      layer_id: 'comparative_expansion_layer.stage3_5_rehearsal_preparation',
       layer_version: LAYER_VERSION,
       estimator_version: ESTIMATOR_VERSION,
-      implementation_status: 'stage3_2_paper10_protocol_backbone_defined',
+      implementation_status: 'stage3_5_paper10_protocol_backbone_defined',
       paper10_state: 'paper10_protocol_grade_backbone',
       paper10_result_state: 'paper10_result_sections_blocked',
       paper10_authorization_state: 'paper10_not_final_authorized',
@@ -91,7 +98,7 @@ export class Paper10ProtocolHardeningBuilder {
         'Protocol-grade backbone is not human equivalence.'
       ],
       interpretation_boundary:
-        'Paper 10 is hardened into a protocol-grade, non-result-bearing manuscript backbone only. It remains blocked from final claims until later admissible execution-era evidence exists.',
+        'Paper 10 is hardened into a protocol-grade, non-result-bearing manuscript backbone only. It remains blocked from final claims until later admissible execution-era evidence exists, later reviewer and adjudicator action exists, and later result-bearing sections are written honestly from those records.',
       provenance: {
         generated_at: new Date().toISOString(),
         current_lineage: currentLineage

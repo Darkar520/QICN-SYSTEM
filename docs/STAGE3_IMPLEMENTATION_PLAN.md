@@ -13,6 +13,10 @@
   packaging, adjudicator-assignment packaging, and execution-pilot packaging.
 - `Stage3-4`: bounded execution-pilot dry-run opening under strict
   non-evidential and non-adjudicative policy.
+- `Stage3-4B`: provenance closure, lineage reconciliation, and instantiated-empty
+  record instantiation without evidence population.
+- `Stage3-5`: rehearsal-kit formalization, dry-run sequence grammar, and
+  rehearsal-ready gating.
 - later execution-era work: real preregistration lock instantiation, reviewer
   selection instantiation, data collection, admissibility assessment, and
   adjudication workflows.
@@ -100,3 +104,36 @@
 - adjudicator decisions;
 - result-bearing statistics;
 - Paper 10 final authorization.
+
+## What Stage3-4B implements
+
+- provenance closure assessment and lineage reconciliation;
+- instantiated-empty local frozen preregistration records;
+- instantiated-empty reviewer/adjudicator candidate pool templates;
+- instantiated-empty assignment and blinding stubs;
+- empty execution-session, collection-log, decision-record, reproducibility, and evidence-insertion surfaces.
+
+## What Stage3-4B does not implement
+
+- externally filed preregistration;
+- populated datasets;
+- real reviewer or adjudicator identities;
+- real assignment events;
+- evidential or adjudicative artifacts.
+
+## What Stage3-5 implements
+
+- execution-pilot rehearsal kit;
+- dry-run sequence plan;
+- rehearsal event log grammar;
+- rehearsal failure and reset policy;
+- rehearsal-ready gating and unlock-map semantics.
+
+## What Stage3-5 does not implement
+
+- real collection sessions;
+- populated evidence bundles;
+- reviewer decisions;
+- adjudicator decisions;
+- result-bearing Paper 10 sections;
+- public-release promotion.

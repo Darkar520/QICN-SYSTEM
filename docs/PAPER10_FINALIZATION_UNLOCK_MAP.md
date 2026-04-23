@@ -1,6 +1,6 @@
 # Paper 10 Finalization Unlock Map
 
-Paper 10 cannot become final merely because Stage3-3 or Stage3-4 exists.
+Paper 10 cannot become final merely because Stage3-3, Stage3-4, Stage3-4B, or Stage3-5 exists.
 
 ## Still required before result-bearing finalization
 
@@ -10,6 +10,8 @@ Paper 10 cannot become final merely because Stage3-3 or Stage3-4 exists.
 - adjudicator assignment instantiated
 - admissible populated human comparator datasets
 - admissible populated matched-intervention and negative-control bundles
+- actual blinding assignment
+- actual collection sessions
 - reproducibility package populated
 - reviewer and adjudicator decision surfaces populated by real evidence
 - decision grammar instantiated by real evidence rather than placeholders

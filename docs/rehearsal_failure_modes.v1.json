@@ -1,0 +1,17 @@
+{
+  "artifact_role": "rehearsal_failure_modes",
+  "schema_version": "1.0.0",
+  "failure_modes": [
+    "missing_template_ref",
+    "illegal_non_empty_population",
+    "blinding_state_incoherent",
+    "session_schema_missing",
+    "event_log_schema_missing",
+    "reset_policy_missing"
+  ],
+  "inconclusive_modes": [
+    "template_set_incomplete",
+    "assignment_stub_not_instantiated",
+    "dry_run_open_but_rehearsal_kit_incomplete"
+  ]
+}

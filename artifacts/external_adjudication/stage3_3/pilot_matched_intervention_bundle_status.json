@@ -19,7 +19,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; Stage3-3 pilot packaging artifacts record package definition and dry-run readiness only. They do not populate datasets or execute adjudication.",
   "provenance": {
-    "generated_at": "2026-04-23T05:28:47.000Z",
+    "generated_at": "2026-04-23T19:56:45.342Z",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage3_3_to_stage3_4_pilot_preparation.v1",
       "estimator_version": "stage3_pilot_preparation_builder.stage3_3_to_stage3_4.v1",
@@ -127,7 +127,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "66337262f8e34fbbbcdd0e87ba327a31297b3f8f",
+        "head": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
         "upstream": "origin/main"
       },
       "qicn_release": {
@@ -217,7 +217,7 @@
       },
       "paper10_main_tex": {
         "ref": "paper10_external_adjudication_and_human_comparators/main.tex",
-        "sha256": "a64cc2878fd2cfadb154fedddfd9aabcf2952e1ea4b570af587a88379471cdf2"
+        "sha256": "a063b1c0dbe453eece24ecc1b9b589eb0ca3c14b751d4ced4a11b75b1a804a4b"
       },
       "stage3_2_execution_readiness_state": "execution_readiness_partially_satisfied"
     }

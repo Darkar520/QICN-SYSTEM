@@ -1,0 +1,22 @@
+{
+  "artifact_role": "stage3_5_rehearsal_ready_criteria",
+  "schema_version": "1.0.0",
+  "ready_requirements": [
+    "provenance_closure_exact_or_forward_compatible",
+    "instantiated_empty_layer_defined",
+    "local_frozen_record_instantiated_but_unfiled",
+    "reviewer_candidate_pool_instantiated_empty",
+    "adjudicator_candidate_pool_instantiated_empty",
+    "assignment_stubs_instantiated_empty",
+    "rehearsal_kit_defined",
+    "dry_run_sequence_ready",
+    "execution_pilot_dry_run_open"
+  ],
+  "blocked_requirements_for_real_execution": [
+    "real_human_data",
+    "real_reviewer_selection",
+    "real_adjudicator_assignment",
+    "real_collection_session",
+    "real_decision_record"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "artifact_role": "evidence_insertion_manifest",
+  "schema_version": "1.0.0",
+  "manifest_state": "defined",
+  "insertion_points": [
+    {
+      "section_id": "human_comparator_results",
+      "required_refs": [
+        "local_frozen_preregistration_record",
+        "human_comparator_dataset",
+        "negative_control_bundle",
+        "statistical_shell_output",
+        "reviewer_package"
+      ]
+    },
+    {
+      "section_id": "external_adjudication_results",
+      "required_refs": [
+        "reviewer_report_bundle",
+        "blinding_assignment_record",
+        "conflict_disclosure_bundle",
+        "adjudicator_decision_record"
+      ]
+    }
+  ],
+  "non_implications": [
+    "Not evidence by itself.",
+    "Not a decision record."
+  ]
+}

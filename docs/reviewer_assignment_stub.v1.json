@@ -1,0 +1,14 @@
+{
+  "template_role": "reviewer_assignment_stub",
+  "schema_version": "1.0.0",
+  "stub_state": "instantiated_empty",
+  "reviewer_slot_ref": "docs/reviewer_candidate_pool_template.v1.json#reviewer_slot_01",
+  "candidate_id": null,
+  "assignment_state": "not_started",
+  "eligibility_checks": [
+    "qualification_present",
+    "independence_asserted",
+    "conflict_disclosure_present",
+    "blinding_eligibility_present"
+  ]
+}

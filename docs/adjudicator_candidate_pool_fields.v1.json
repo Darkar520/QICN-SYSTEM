@@ -1,0 +1,23 @@
+{
+  "artifact_role": "adjudicator_candidate_pool_fields",
+  "schema_version": "1.0.0",
+  "required_fields": [
+    "slot_id",
+    "candidate_id",
+    "qualification_summary",
+    "independence_assertion",
+    "conflict_disclosure_ref",
+    "assignment_state"
+  ],
+  "editable_until_freeze": [
+    "candidate_id",
+    "qualification_summary",
+    "independence_assertion",
+    "conflict_disclosure_ref"
+  ],
+  "frozen_after_instantiation": [
+    "slot_id",
+    "assignment_state"
+  ],
+  "null_value_policy": "null_allowed_until_real_assignment_begins"
+}

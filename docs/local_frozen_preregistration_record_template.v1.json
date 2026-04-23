@@ -1,0 +1,36 @@
+{
+  "template_role": "local_frozen_preregistration_record",
+  "schema_version": "1.0.0",
+  "record_state": "instantiated_empty",
+  "freeze_state": "frozen_local_unfiled",
+  "filing_state": "not_externally_filed",
+  "record_fields": {
+    "record_id": null,
+    "record_version": "template_only",
+    "freeze_timestamp": null,
+    "template_parent_ref": "docs/frozen_preregistration_record_schema.v1.json",
+    "lock_manifest_ref": "docs/preregistration_lock_manifest.v1.json",
+    "analysis_shell_refs": [],
+    "negative_control_refs": [],
+    "threshold_freeze_refs": [],
+    "blinding_policy_ref": "docs/blinding_policy.v1.json",
+    "external_filing_reference": null
+  },
+  "immutable_after_local_freeze": [
+    "record_id",
+    "record_version",
+    "freeze_timestamp",
+    "template_parent_ref",
+    "lock_manifest_ref",
+    "analysis_shell_refs",
+    "negative_control_refs",
+    "threshold_freeze_refs",
+    "blinding_policy_ref"
+  ],
+  "empty_value_policy": "null_or_empty_only_until_real_local_lock_instantiation",
+  "non_implications": [
+    "Not externally filed.",
+    "Not populated with evidence.",
+    "Not an adjudication input by itself."
+  ]
+}

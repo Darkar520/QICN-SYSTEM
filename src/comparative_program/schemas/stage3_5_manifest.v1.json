@@ -1,0 +1,18 @@
+{
+  "title": "stage3_5_manifest.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "stage3_5_state",
+    "provenance_state",
+    "instantiated_empty_state",
+    "rehearsal_kit_state",
+    "dry_run_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "stage3_5_manifest" },
+    "artifact_name": { "const": "stage3_5_manifest.json" }
+  }
+}

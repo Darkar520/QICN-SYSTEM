@@ -1,0 +1,22 @@
+{
+  "template_role": "decision_record_template",
+  "schema_version": "1.0.0",
+  "decision_record_state": "instantiated_empty",
+  "decision_id": null,
+  "decision_family": null,
+  "allowed_decision_grammar": [
+    "externally_admissible_but_inconclusive",
+    "protocol_invalidated",
+    "adjudication_failed",
+    "adjudication_passed",
+    "reviewer_consensus_absent",
+    "adjudicator_decision_withheld"
+  ],
+  "evidence_refs": [],
+  "reviewer_bundle_ref": null,
+  "adjudicator_bundle_ref": null,
+  "non_implications": [
+    "Not a populated decision record.",
+    "Not a real adjudicator output."
+  ]
+}

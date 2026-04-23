@@ -1,0 +1,18 @@
+{
+  "artifact_role": "rehearsal_event_log_schema",
+  "schema_version": "1.0.0",
+  "event_classes": [
+    "rehearsal_initialized",
+    "sequence_step_checked",
+    "sequence_step_blocked",
+    "sequence_step_reset",
+    "rehearsal_not_started"
+  ],
+  "required_fields": [
+    "event_id",
+    "event_class",
+    "timestamp",
+    "sequence_step",
+    "payload"
+  ]
+}

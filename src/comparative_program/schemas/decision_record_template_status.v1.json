@@ -1,0 +1,14 @@
+{
+  "title": "decision_record_template_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "decision_record_template_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "decision_record_template_status" },
+    "artifact_name": { "const": "decision_record_template_status.json" }
+  }
+}

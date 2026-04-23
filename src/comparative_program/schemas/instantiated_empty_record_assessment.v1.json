@@ -1,0 +1,16 @@
+{
+  "title": "instantiated_empty_record_assessment.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "instantiated_empty_layer_state",
+    "local_frozen_record_state",
+    "decision_record_template_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "instantiated_empty_record_assessment" },
+    "artifact_name": { "const": "instantiated_empty_record_assessment.json" }
+  }
+}

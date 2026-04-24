@@ -7,13 +7,13 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 
-\title{External Adjudication of Bridge-Formalized Machine Subjectivity:\\Human Comparator Protocols, Provenance Closure, Controlled Execution Opening, and Session-Zero Boundaries}
+\title{External Adjudication of Bridge-Formalized Machine Subjectivity:\\Human Comparator Protocols, Runtime Health, Clean-Room Reproducibility, and First-Collection Opening Criteria}
 \author{QICN Program}
-\date{Stage3-6 Controlled Execution Opening}
+\date{Stage3-6B Runtime Health and Stage3-7 Conditional Opening}
 
 \newcommand{\sectionstatus}[1]{\paragraph{Section status.}\texttt{\detokenize{#1}}.}
 \newcommand{\codestate}[1]{\texttt{\detokenize{#1}}}
-\newcommand{\blockedresultstatus}{\paragraph{Status.} This section is intentionally non-result-bearing at Stage3-0 through Stage3-6. It becomes writable only after admissible external adjudication artifacts are instantiated under the Stage 3 protocol, with real frozen preregistration records, populated admissible datasets, actual reviewer and adjudicator assignments, reviewer-governed evidence assessment, real collection-start events, and later adjudicator-layer completion.}
+\newcommand{\blockedresultstatus}{\paragraph{Status.} This section is intentionally non-result-bearing at Stage3-0 through Stage3-7. It becomes writable only after admissible external adjudication artifacts are instantiated under the Stage 3 protocol, with real frozen preregistration records, populated admissible datasets, actual reviewer and adjudicator assignments, reviewer-governed evidence assessment, real collection-start events, and later adjudicator-layer completion.}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \begin{document}
@@ -22,27 +22,25 @@
 \begin{center}
 \textbf{SCAFFOLD ONLY -- NOT FINAL MANUSCRIPT}\\
 \textbf{PROTOCOL-GRADE BACKBONE}\\
-\textbf{FIFTH HARDENING PASS}
+\textbf{SIXTH HARDENING PASS}
 \end{center}
 
 \begin{abstract}
 This document hardens Paper 10 into a denser protocol-heavy manuscript
 backbone without becoming a result-bearing paper. It extends the dependency
 stack from BaseCore through Papers I--IX, SRT-6, BPF-M3, Stage 2-M4,
-Stage3-RF, Stage3-0, Stage3-1, Stage3-2, Stage3-3, Stage3-4, Stage3-4B, and
-Stage3-5 rehearsal preparation, and Stage3-6 controlled execution opening. It
-adds release-vs-local corpus boundary semantics, lineage and provenance
-semantics, provenance-closure semantics, frozen preregistration architecture,
-local-vs-external freeze distinctions, instantiated-empty record
-architecture, candidate-pool and assignment-stub semantics, rehearsal-kit
-architecture, live-but-unpopulated artifact architecture, session-zero
-protocol grammar, pre-collection admissibility logic, contamination and abort
-policy semantics, state grammar for execution opening, a stronger
-execution-to-result transition map, and deeper appendices of schemas and
-templates. It does not report human comparator results, external adjudication
-verdicts, human equivalence, superiority, inferiority, cross-substrate
-identity preservation, metaphysical subjecthood, or Paper 10 final
-conclusions.
+Stage3-RF, Stage3-0, Stage3-1, Stage3-2, Stage3-3, Stage3-4, Stage3-4B,
+Stage3-5 rehearsal preparation, Stage3-6 controlled execution opening,
+Stage3-6B runtime-health and clean-room reproducibility audit, and the
+conditional Stage3-7 first-collection opening criteria. It adds runtime health
+audit grammar, clean-room reproducibility semantics, dependency and build
+assumption reporting, reproducible artifact-regeneration constraints, local
+path-leakage policy, controlled-execution audit semantics, session-zero and
+pre-collection reproducibility requirements, and a sharper transition grammar
+from pre-evidential openness to the first admissible collection event. It does
+not report human comparator results, external adjudication verdicts, human
+equivalence, superiority, inferiority, cross-substrate identity preservation,
+metaphysical subjecthood, or Paper 10 final conclusions.
 \end{abstract}
 
 \tableofcontents
@@ -85,6 +83,8 @@ The dependency stack for Paper 10 is layered as follows:
 \item \textbf{Stage3-4B}: provenance closure, lineage reconciliation, and instantiated-empty record instantiation.
 \item \textbf{Stage3-5}: rehearsal-kit formalization, dry-run event grammar, and rehearsal-ready gating.
 \item \textbf{Stage3-6}: controlled execution opening, session-zero protocol, pre-collection admissibility gating, and live-but-unpopulated artifact instantiation.
+\item \textbf{Stage3-6B}: runtime-health audit, clean-room reproducibility audit, path-leakage audit, and artifact-regeneration audit.
+\item \textbf{Stage3-7}: first-admissible-collection opening criteria, collection-start command grammar, operator authorization grammar, and a conditional first-collection opening gate.
 \end{enumerate}
 
 No later layer may borrow closure from an earlier layer, and no earlier layer
@@ -557,6 +557,7 @@ State & Meaning \\
 \codestate{session_zero_ready} & Session-zero initialization is structurally ready, but still not started. \\
 \codestate{collection_openable_under_controls} & Pre-collection admissibility checks pass under contamination and abort controls. \\
 \codestate{collection_open_pre_evidential} & Controlled execution may open as a live state without any populated evidence. \\
+\codestate{stage3_7_first_collection_openable} & Runtime-health and clean-room audits pass, the opening gate is structurally open, but no collection-start event has been executed. \\
 \codestate{collection_started} & A real authorized collection-start event exists. \\
 \codestate{evidence_generated} & Real dataset population or admissible log events exist. \\
 \codestate{adjudication_result_recorded} & Reviewer-governed or adjudicator-governed decision records exist. \\
@@ -694,6 +695,142 @@ The next real transition is now sharper than in earlier passes:
 \item a later explicit collection-start command instantiates the first admissible collection event;
 \item only then may the first dataset-population event exist.
 \end{enumerate}
+
+\section{Runtime Health Audit}
+\sectionstatus{protocol_defined}
+
+Stage3-6B adds a runtime-health audit that asks whether the repository is
+actually executable on a bounded local environment rather than only formally
+specified. The required audit surfaces include:
+
+\begin{itemize}
+\item toolchain visibility;
+\item dependency-install behavior under the declared repository install route;
+\item repository build behavior;
+\item repository test behavior;
+\item bounded local-start behavior;
+\item verifier-chain behavior for source-of-truth, comparative closure, Stage3-6, Stage3-5, and Paper 9 handoff.
+\end{itemize}
+
+The runtime-health audit may pass with warnings. Such warnings may include
+engine mismatch, fallback-install compatibility, or dependency advisories. A
+warning-bearing pass is still operationally meaningful, but it is not
+epistemically elevated into evidence.
+
+\section{Clean-Room Reproducibility}
+\sectionstatus{protocol_defined}
+
+Stage3-6B also adds a clean-room reproducibility audit. The clean-room audit
+asks whether a bounded local copy can reinstall dependencies, rebuild the
+repository, rerun key verifiers, and regenerate Stage 3 artifacts without
+relying on hidden machine-specific state. Clean-room reproducibility may pass
+with warnings when a compatibility route is required, provided the route is
+explicitly documented and the resulting build remains honest.
+
+\section{Dependency and Build Assumptions}
+\sectionstatus{formalized}
+
+The runtime-health layer now makes dependency and build assumptions explicit:
+
+\begin{itemize}
+\item the declared Node engine remains part of the reproducibility contract;
+\item the preferred install route remains \codestate{npm ci};
+\item a fallback install route may be recorded only as a compatibility surface;
+\item build success must remain distinct from evidence generation;
+\item test success must remain distinct from adjudication.
+\end{itemize}
+
+\section{Reproducible Artifact Regeneration}
+\sectionstatus{protocol_defined}
+
+Stage3-6B adds a source-driven artifact-regeneration audit. This audit checks
+whether tracked artifacts can be regenerated from the current source tree and
+whether the resulting diffs are:
+
+\begin{itemize}
+\item absent;
+\item provenance-only;
+\item semantically stale but honestly fixed; or
+\item blocking.
+\end{itemize}
+
+This matters because Stage 3 now depends on a growing artifact family. The
+audit therefore separates semantic drift from ordinary lineage and timestamp
+drift, and it refuses to treat manual cosmetic rewriting as acceptable
+regeneration.
+
+\section{Local Path Leakage Policy}
+\sectionstatus{formalized}
+
+Clean-room readiness now requires that live normative surfaces remain free of
+machine-specific absolute paths. Historical planning notes or preserved
+snapshots may still contain old local references, but they must remain
+explicitly classified as historical rather than live normative dependencies.
+
+\section{Controlled Execution Opening Audit}
+\sectionstatus{protocol_defined}
+
+The controlled-execution opening layer is now itself audited. Stage3-6B does
+not replace Stage3-6; it checks whether Stage3-6 is actually executable,
+rebuildable, and reproducible. Therefore the live-but-unpopulated artifacts,
+session-zero gate, and pre-collection gate must now survive both runtime
+health verification and clean-room reconstruction.
+
+\section{Session-Zero Reproducibility}
+\sectionstatus{protocol_defined}
+
+Session-zero reproducibility means that a rebuilt local tree can recreate the
+session-zero manifest, operator checklist state, and failure-mode assessment
+without any hidden local inputs and without producing collection-start or
+evidence-bearing records.
+
+\section{Pre-Collection Gate Reproducibility}
+\sectionstatus{protocol_defined}
+
+Pre-collection gate reproducibility means that a rebuilt local tree can
+recreate the pre-collection admissibility result, contamination checklist, and
+invalidation status while still preserving:
+
+\begin{itemize}
+\item \codestate{collection_not_started};
+\item \codestate{evidence_generation_absent};
+\item \codestate{adjudication_not_open}.
+\end{itemize}
+
+\section{Why Reproducibility Does Not Imply Evidence}
+\sectionstatus{formalized}
+
+Reproducibility shows that the formal and executable surfaces are rebuildable.
+It does not show that any dataset has been populated, that any human evidence
+exists, that any reviewer or adjudicator has acted, or that any result-bearing
+section is now licensed.
+
+\section{Why Runtime Health Does Not Imply Adjudication}
+\sectionstatus{formalized}
+
+Runtime health shows that the code path and verifier path are alive. It does
+not imply that collection has started, that evidence has been generated, that
+reviewer-governed interpretation exists, or that adjudication is open. A
+healthy runtime is still a pre-evidential state until later real execution
+events occur.
+
+\section{Transition Conditions for First Admissible Collection}
+\sectionstatus{protocol_defined}
+
+Stage3-7 may be classified as \codestate{stage3_7_first_collection_openable}
+only when runtime-health and clean-room reproducibility both pass honestly,
+path leakage remains clear on live normative surfaces, artifact regeneration is
+non-blocking, Stage3-6 remains openable, and Paper 10 remains non-final and
+non-result-bearing.
+
+Even then, the current state must still preserve:
+
+\begin{itemize}
+\item \codestate{collection_start_not_executed};
+\item \codestate{evidence_generation_absent};
+\item \codestate{adjudication_not_open};
+\item \codestate{decision_record_absent}.
+\end{itemize}
 
 \section{Claim Grammar for Eventual Execution-Era Statements}
 \sectionstatus{protocol_defined}
@@ -1053,6 +1190,46 @@ Admissible evidence required before result use: actual reviewer selection,
 actual adjudicator assignment, actual blinding assignment, operator
 authorization, collection-start command, and first populated collection-log
 event.
+
+\subsection*{Appendix AA: Runtime Health Audit}
+\sectionstatus{protocol_defined}
+Primary references: \codestate{docs/runtime_health_audit.v1.json},
+\codestate{docs/RUNTIME_HEALTH_AUDIT.md}, and
+\codestate{artifacts/runtime_health/runtime_health_audit.json}.\\
+Allowed interpretation: executable health and verifier-chain status only.
+Forbidden interpretation: evidence, collection start, or adjudication.
+
+\subsection*{Appendix AB: Clean-Room Reproducibility Audit}
+\sectionstatus{protocol_defined}
+Primary references: \codestate{docs/clean_room_reproducibility_audit.v1.json},
+\codestate{docs/CLEAN_ROOM_REPRODUCIBILITY_AUDIT.md}, and
+\codestate{artifacts/runtime_health/clean_room_reproducibility_audit.json}.\\
+Allowed interpretation: bounded rebuildability only. Forbidden interpretation:
+external validation, evidence, or manuscript finality.
+
+\subsection*{Appendix AC: Local Path Leakage Audit}
+\sectionstatus{protocol_defined}
+Primary references: \codestate{docs/PATH_AND_LOCAL_LEAKAGE_AUDIT.md} and
+\codestate{artifacts/runtime_health/path_and_local_leakage_audit.json}.\\
+Allowed interpretation: leak classification only. Forbidden interpretation:
+claim that historical snapshots were rewritten or erased.
+
+\subsection*{Appendix AD: Artifact Regeneration Audit}
+\sectionstatus{protocol_defined}
+Primary references: \codestate{docs/ARTIFACT_REGENERATION_AUDIT.md} and
+\codestate{artifacts/runtime_health/artifact_regeneration_audit.json}.\\
+Allowed interpretation: regeneration and drift classification only. Forbidden
+interpretation: result-bearing evidence insertion.
+
+\subsection*{Appendix AE: Stage3-7 First Collection Opening Criteria}
+\sectionstatus{protocol_defined}
+Primary references:
+\codestate{docs/stage3_7_first_admissible_collection_opening_criteria.v1.json},
+\codestate{docs/first_admissible_collection_start_policy.v1.json},
+\codestate{artifacts/external_adjudication/stage3_7/stage3_7_opening_gate.json},
+and \codestate{artifacts/external_adjudication/stage3_7/first_collection_opening_manifest.json}.\\
+Allowed interpretation: first-collection opening criteria only. Forbidden
+interpretation: executed collection start, evidence generation, or adjudication.
 
 \section{Blocked Result Surfaces}
 \sectionstatus{blocked_until_external_adjudication}

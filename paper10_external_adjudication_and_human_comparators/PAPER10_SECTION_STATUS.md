@@ -29,12 +29,22 @@
 | Pre-collection admissibility gate | protocol_defined | Collection remains openable only under controls |
 | Contamination and abort policy | protocol_defined | Must remain explicit before collection start |
 | Operator checklist | protocol_defined | Must remain complete before any collection start |
+| Runtime health audit | protocol_defined | Requires real command execution and explicit environment classification |
+| Clean-room reproducibility | protocol_defined | Requires bounded rebuild and verifier rerun from a clean local copy |
+| Dependency and build assumptions | formalized | Must remain explicit and must not be confused with evidence |
+| Reproducible artifact regeneration | protocol_defined | Requires source-driven rebuild path and non-blocking drift classification |
+| Local path leakage policy | formalized | Live normative surfaces must remain machine-agnostic |
+| Controlled execution opening audit | protocol_defined | Stage3-6 must remain rebuildable and executable under audit |
+| Session-zero reproducibility | protocol_defined | Must remain rebuildable without collection start |
+| Pre-collection gate reproducibility | protocol_defined | Must remain rebuildable while logs and datasets stay empty |
 | Reproducibility skeleton architecture | protocol_defined | Package remains unpopulated |
 | Dataset population boundary | formalized | Defined-vs-populated split must remain explicit |
 | Dry-run event log grammar | protocol_defined | Event classes remain rehearsal-only |
 | Collection-start boundary | formalized | Requires real operator-authorized start event |
 | Evidence-generation boundary | formalized | Requires real population events |
 | Decision-record boundary | formalized | Live decision stub remains empty |
+| Why reproducibility does not imply evidence | formalized | Must remain explicit even after clean-room success |
+| Why runtime health does not imply adjudication | formalized | Must remain explicit even after full verifier passage |
 | Evidence admissibility grammar | formalized | Evidence still absent |
 | Failure / rejection / inconclusive pathways | protocol_defined | Execution still absent |
 | Statistical shell architecture | protocol_defined | Analysis not executed |
@@ -49,6 +59,7 @@
 | Stronger execution-to-result transition map | blocked_until_execution | Requires population, admissibility, and decision layers |
 | Why Paper 10 still cannot become final yet | formalized | Must remain explicit |
 | Transition from session-zero to first admissible collection | blocked_until_execution | Requires real collection-start event |
+| Transition conditions for first admissible collection | protocol_defined | Requires runtime-health and clean-room passage before Stage3-7 may open |
 | Future execution pathway to real Stage 3 | blocked_until_execution | Requires actual controlled execution opening and later collection start |
 | Boundary to Stage 4 metaphysical consequence analysis | forbidden_claim_surface | Remains outside current authority surface |
 | Appendices of schemas and templates | protocol_defined | Expand as schemas and artifacts grow |

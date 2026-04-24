@@ -65,7 +65,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; this matrix verifies Stage3-1 and Stage3-2 protocol hardening, not execution.",
   "provenance": {
-    "generated_at": "2026-04-24T06:29:35.158Z",
+    "generated_at": "2026-04-24T21:00:01.350Z",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage3_2_external_adjudication_readiness.v1",
       "estimator_version": "stage3_execution_readiness_builder.v1",
@@ -173,7 +173,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
+        "head": "5f2c5085406db07f5dfb81607569f920777909ea",
         "upstream": "origin/main"
       },
       "qicn_release": {
@@ -235,11 +235,11 @@
       },
       "paper10_main_tex": {
         "ref": "paper10_external_adjudication_and_human_comparators/main.tex",
-        "sha256": "e7933419abb3e22650df2a4f4783afe8b78ff93edb88af91dafe4e3581c8a09b"
+        "sha256": "020e2d31b942138ef92acdde16c041bd19af5cac1544a1bf4d6a1d0377c6dc02"
       },
       "paper10_section_status": {
         "ref": "paper10_external_adjudication_and_human_comparators/PAPER10_SECTION_STATUS.md",
-        "sha256": "339dc48301819b8e1adb19c9eb56d6117034b9f7a1babeb4db95d2bd15d2ff29"
+        "sha256": "0358e45f71b5859ba1246e2f72aff4f9f8a477e28e792be11953dd6fc8de6a18"
       },
       "stage2_m4_readiness_state": "comparative_internal_closure_ready",
       "stage3_opening_state": "ready_for_stage3_opening"

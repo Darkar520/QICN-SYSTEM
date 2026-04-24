@@ -193,6 +193,19 @@ artifacts/external_adjudication/stage3_6/*
 !artifacts/external_adjudication/stage3_6/pre_collection_invalidation_status.json
 !artifacts/external_adjudication/stage3_6/stage3_6_controlled_execution_gate.json
 !artifacts/external_adjudication/stage3_6/stage3_6_manifest.json
+!artifacts/external_adjudication/stage3_7/
+artifacts/external_adjudication/stage3_7/*
+!artifacts/external_adjudication/stage3_7/stage3_7_opening_gate.json
+!artifacts/external_adjudication/stage3_7/first_collection_opening_manifest.json
+!artifacts/runtime_health/
+artifacts/runtime_health/*
+!artifacts/runtime_health/runtime_health_audit.json
+!artifacts/runtime_health/clean_room_reproducibility_audit.json
+!artifacts/runtime_health/path_and_local_leakage_audit.json
+!artifacts/runtime_health/artifact_regeneration_audit.json
+!artifacts/runtime_health/stage3_6b_runtime_reproducibility_gate.json
+!artifacts/runtime_health/clean_room/
+artifacts/runtime_health/clean_room/*
 !artifacts/protocolized_evaluation/
 artifacts/protocolized_evaluation/*
 !artifacts/protocolized_evaluation/evaluation_protocol_manifest.json
@@ -285,6 +298,7 @@ artifacts/external_audit_package/bundles/*
 !artifacts/external_audit_package/bundles/external_audit_package_2026-03-29T22-49-32-362Z/**
 archive/
 backups/
+.stage3_clean_room/
 /bundle.js
 /tailwind.css
 /network_canvas_worker.js

@@ -1,0 +1,35 @@
+{
+  "artifact_role": "stage3_7_first_admissible_collection_opening_criteria",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_7_first_admissible_collection_opening",
+  "implementation_status": "stage3_7_opening_criteria_defined",
+  "opening_requirements": [
+    "runtime_health_pass_or_runtime_health_pass_with_warnings",
+    "clean_room_reproducible_or_clean_room_reproducible_with_warnings",
+    "no_live_normative_path_leak",
+    "artifact_regeneration_not_blocking",
+    "stage3_6_controlled_execution_openable",
+    "session_zero_ready",
+    "pre_collection_gate_open_under_controls",
+    "collection_not_started",
+    "evidence_generation_absent",
+    "adjudication_not_open",
+    "decision_record_absent",
+    "paper10_not_final_authorized",
+    "collection_start_command_schema_present",
+    "operator_authorization_schema_present"
+  ],
+  "allowed_current_states": [
+    "stage3_7_not_open",
+    "stage3_7_opening_blocked_by_runtime_health",
+    "stage3_7_opening_blocked_by_clean_room",
+    "stage3_7_first_collection_openable",
+    "collection_start_not_executed",
+    "evidence_generation_absent"
+  ],
+  "non_implications": [
+    "Stage3-7 openable is not collection start.",
+    "Stage3-7 openable is not evidence.",
+    "Stage3-7 openable is not adjudication."
+  ]
+}

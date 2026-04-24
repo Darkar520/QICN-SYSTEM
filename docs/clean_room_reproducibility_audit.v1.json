@@ -1,0 +1,40 @@
+{
+  "artifact_role": "clean_room_reproducibility_audit_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6b_clean_room_reproducibility",
+  "implementation_status": "clean_room_reproducibility_policy_defined",
+  "clean_room_methods": [
+    "bounded_local_copy",
+    "bounded_local_clone",
+    "bounded_local_worktree"
+  ],
+  "required_checks": [
+    "dependency_install",
+    "repository_build",
+    "repository_test_if_available",
+    "source_of_truth_verification",
+    "comparative_program_closure_verification",
+    "stage3_controlled_execution_opening_verification",
+    "paper10_compile_attempt_if_toolchain_available",
+    "local_path_leakage_scan"
+  ],
+  "reproducibility_states": [
+    "clean_room_not_attempted",
+    "clean_room_reproducible",
+    "clean_room_reproducible_with_warnings",
+    "clean_room_failed",
+    "clean_room_blocked_by_environment"
+  ],
+  "blocking_conditions": [
+    "dependency_install_failed",
+    "repository_build_failed",
+    "repository_test_failed",
+    "stage3_verifier_failed",
+    "path_leakage_requires_local_machine_specific_root"
+  ],
+  "non_implications": [
+    "Clean-room success is not evidence.",
+    "Clean-room success is not adjudication.",
+    "Clean-room success is not Paper 10 final authorization."
+  ]
+}

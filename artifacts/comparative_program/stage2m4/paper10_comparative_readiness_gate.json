@@ -72,7 +72,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; the Paper 10 comparative readiness gate records whether comparative scoping could be discussed later and under what future conditions. It does not authorize Paper 10, does not open a manuscript, and does not open external adjudication.",
   "provenance": {
-    "generated_at": "2026-04-24T06:29:34.298Z",
+    "generated_at": "2026-04-24T21:00:00.415Z",
     "comparative_final_internal_audit_ref": "artifacts/comparative_program/stage2m4/comparative_final_internal_audit.json",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage2_m4.internal_closure.v1",
@@ -181,7 +181,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
+        "head": "5f2c5085406db07f5dfb81607569f920777909ea",
         "upstream": "origin/main"
       },
       "qicn_release": {

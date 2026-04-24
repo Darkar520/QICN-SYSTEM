@@ -158,3 +158,38 @@
 - evidential or adjudicative artifacts;
 - result-bearing Paper 10 sections;
 - public-release promotion.
+
+## What Stage3-6B implements
+
+- runtime-health audit semantics;
+- clean-room reproducibility audit semantics;
+- local path-leakage audit semantics;
+- artifact-regeneration audit semantics;
+- conditional Stage3-7 follow-on gating.
+
+## What Stage3-6B does not implement
+
+- collection-start execution;
+- populated datasets;
+- evidence generation;
+- reviewer or adjudicator decisions;
+- adjudication results;
+- result-bearing Paper 10 sections.
+
+## What Stage3-7 implements
+
+- first-admissible-collection opening criteria;
+- collection-start command grammar;
+- operator-authorization grammar;
+- criteria-only Stage3-7 opening gate and manifest.
+
+## What Stage3-7 does not implement
+
+- executed collection start;
+- populated collection logs;
+- populated datasets;
+- evidence generation;
+- reviewer or adjudicator decisions;
+- adjudication results;
+- result-bearing Paper 10 sections;
+- public-release promotion.

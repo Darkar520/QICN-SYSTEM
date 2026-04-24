@@ -6,7 +6,9 @@ const cp = require('child_process');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const RELEASE_ROOT = path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
+const RELEASE_ROOT = process.env.ECO_RELEASE_ROOT
+  ? path.resolve(process.env.ECO_RELEASE_ROOT)
+  : path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
 const LOCAL_PATH_PATTERN =
   /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|QICN-FRAMEWORK|Sistema Canon Sandbox|rigid-identity-framework/i;
 const BANNED_PATTERNS = [
@@ -146,7 +148,13 @@ const verifyRuntimeImport = async () => {
     'Stage3 layer must advertise a bounded Paper 10 state'
   );
   assert(
-    ['stage3_execution_pilot_preparation', 'stage3_rehearsal_preparation', 'stage3_controlled_execution_opening'].includes(stage3.current_stage),
+    [
+      'stage3_execution_pilot_preparation',
+      'stage3_rehearsal_preparation',
+      'stage3_controlled_execution_opening',
+      'stage3_runtime_health_and_reproducibility_audit',
+      'stage3_first_admissible_collection_opening'
+    ].includes(stage3.current_stage),
     'Stage3 layer must advertise a valid later-bounded Stage 3 state'
   );
   assert(stage3.external_adjudication_executed === false, 'Stage3 layer must keep adjudication unexecuted');

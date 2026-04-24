@@ -1,0 +1,52 @@
+{
+  "artifact_role": "runtime_health_audit_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6b_runtime_health_audit",
+  "implementation_status": "runtime_health_audit_policy_defined",
+  "canonical_engine_contract": {
+    "package_manager": "npm",
+    "preferred_install_command": "npm ci",
+    "compatibility_install_fallback": "npm install",
+    "declared_node_engine": "20.x"
+  },
+  "required_commands": [
+    { "id": "node_version", "command": "node -v" },
+    { "id": "npm_version", "command": "npm -v" },
+    { "id": "dependency_install_preferred", "command": "npm ci" },
+    { "id": "repository_build", "command": "npm run build" },
+    { "id": "repository_test", "command": "npm test" },
+    { "id": "local_start_probe", "command": "npm run start:local" },
+    { "id": "verify_source_of_truth", "command": "npm run verify:source-of-truth" },
+    { "id": "verify_comparative_program_closure", "command": "npm run verify:comparative-program-closure" },
+    { "id": "verify_stage3_controlled_execution_opening", "command": "npm run verify:stage3-controlled-execution-opening" },
+    { "id": "verify_stage3_5_readiness", "command": "npm run verify:stage3-5-readiness" },
+    { "id": "verify_paper9_handoff_readiness", "command": "npm run verify:paper9-handoff-readiness" }
+  ],
+  "health_states": [
+    "runtime_health_not_checked",
+    "runtime_health_pass",
+    "runtime_health_pass_with_warnings",
+    "runtime_health_fail",
+    "runtime_health_blocked_by_environment"
+  ],
+  "warning_classes": [
+    "engine_mismatch",
+    "preferred_install_failed_but_fallback_passed",
+    "dependency_advisories_present",
+    "local_start_probe_warning",
+    "toolchain_compatibility_surface"
+  ],
+  "blocking_classes": [
+    "dependency_install_failed",
+    "build_failed",
+    "tests_failed",
+    "verifier_failed",
+    "local_start_probe_failed"
+  ],
+  "non_implications": [
+    "Runtime health is not evidence generation.",
+    "Runtime health is not collection start.",
+    "Runtime health is not adjudication.",
+    "Runtime health is not Paper 10 authorization."
+  ]
+}

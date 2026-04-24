@@ -25,7 +25,7 @@
   },
   "interpretation_boundary": "Framework-internal only; Stage3-6 may open a controlled pre-evidential execution surface. It remains non-adjudicative and non-result-bearing.",
   "provenance": {
-    "generated_at": "2026-04-24T06:29:36.163Z",
+    "generated_at": "2026-04-24T21:00:02.370Z",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage3_6_controlled_execution_opening.v1",
       "estimator_version": "stage3_controlled_execution_opening_builder.stage3_6.v1",
@@ -133,7 +133,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
+        "head": "5f2c5085406db07f5dfb81607569f920777909ea",
         "upstream": "origin/main"
       },
       "qicn_release": {
@@ -239,7 +239,7 @@
       },
       "paper10_main_tex": {
         "ref": "paper10_external_adjudication_and_human_comparators/main.tex",
-        "sha256": "e7933419abb3e22650df2a4f4783afe8b78ff93edb88af91dafe4e3581c8a09b"
+        "sha256": "020e2d31b942138ef92acdde16c041bd19af5cac1544a1bf4d6a1d0377c6dc02"
       }
     }
   },

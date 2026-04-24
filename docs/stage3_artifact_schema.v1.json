@@ -1,8 +1,8 @@
 {
   "artifact_role": "stage3_artifact_schema_registry",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage3_0_to_stage3_6_external_adjudication_stack",
-  "implementation_status": "stage3_execution_rehearsal_and_controlled_opening_stack_defined",
+  "layer_id": "comparative_expansion_layer.stage3_0_to_stage3_7_external_adjudication_stack",
+  "implementation_status": "stage3_runtime_reproducibility_and_first_collection_opening_stack_defined",
   "root_schema_refs": {
     "external_adjudication_manifest.json": "src/comparative_program/schemas/external_adjudication_manifest.v1.json",
     "external_adjudication_readiness_gate.json": "src/comparative_program/schemas/external_adjudication_readiness_gate.v1.json",
@@ -59,64 +59,1208 @@
     "pre_collection_admissibility_gate_result.json": "src/comparative_program/schemas/pre_collection_admissibility_gate_result.v1.json",
     "pre_collection_invalidation_status.json": "src/comparative_program/schemas/pre_collection_invalidation_status.v1.json",
     "stage3_6_controlled_execution_gate.json": "src/comparative_program/schemas/stage3_6_controlled_execution_gate.v1.json",
-    "stage3_6_manifest.json": "src/comparative_program/schemas/stage3_6_manifest.v1.json"
+    "stage3_6_manifest.json": "src/comparative_program/schemas/stage3_6_manifest.v1.json",
+    "runtime_health_audit.json": "src/comparative_program/schemas/runtime_health_audit.v1.json",
+    "clean_room_reproducibility_audit.json": "src/comparative_program/schemas/clean_room_reproducibility_audit.v1.json",
+    "path_and_local_leakage_audit.json": "src/comparative_program/schemas/path_and_local_leakage_audit.v1.json",
+    "artifact_regeneration_audit.json": "src/comparative_program/schemas/artifact_regeneration_audit.v1.json",
+    "stage3_6b_runtime_reproducibility_gate.json": "src/comparative_program/schemas/stage3_6b_runtime_reproducibility_gate.v1.json",
+    "stage3_7_opening_gate.json": "src/comparative_program/schemas/stage3_7_opening_gate.v1.json",
+    "first_collection_opening_manifest.json": "src/comparative_program/schemas/first_collection_opening_manifest.v1.json"
   },
   "artifacts": {
-    "external_adjudication_manifest.json": { "role": "external_adjudication_manifest", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["external_adjudication_state", "execution_state", "paper10_state", "paper10_authorization_state", "boundary_flags"], "non_implications": ["Not an adjudication verdict.", "Not external validation."] },
-    "external_adjudication_readiness_gate.json": { "role": "external_adjudication_readiness_gate", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["stage3_readiness_state", "external_adjudication_state", "execution_state", "remaining_blockers", "boundary_flags"], "non_implications": ["Not execution.", "Not an adjudication result."] },
-    "external_evidence_admissibility_assessment.json": { "role": "external_evidence_admissibility_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface"], "minimum_fields": ["assessment_state", "evidence_class_states", "invalid_substitutes", "boundary_flags"], "non_implications": ["Not evidence.", "Not external validation."] },
-    "human_comparator_execution_plan.json": { "role": "human_comparator_execution_plan", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface"], "minimum_fields": ["comparator_state", "execution_state", "human_data_state", "channel_states", "boundary_flags"], "non_implications": ["Not a dataset.", "Not human equivalence."] },
-    "human_channel_instantiation_assessment.json": { "role": "human_channel_instantiation_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["human_data_state", "overall_state", "channel_assessments", "boundary_flags"], "non_implications": ["Not a dataset.", "Not external validation."] },
-    "human_channel_preregistration_readiness.json": { "role": "human_channel_preregistration_readiness", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["preregistration_state", "execution_state", "channel_preregistration_states", "boundary_flags"], "non_implications": ["Not a frozen preregistration record."] },
-    "matched_intervention_dataset_contract_assessment.json": { "role": "matched_intervention_dataset_contract_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["contract_state", "bindings", "boundary_flags"], "non_implications": ["Not a dataset."] },
-    "negative_control_dataset_contract_assessment.json": { "role": "negative_control_dataset_contract_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["contract_state", "families", "boundary_flags"], "non_implications": ["Not a negative-control dataset."] },
-    "reviewer_independence_assessment.json": { "role": "reviewer_independence_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["reviewer_layer_state", "reviewer_selection_state", "adjudication_execution_state", "boundary_flags"], "non_implications": ["Not reviewer selection.", "Not adjudication."] },
-    "external_adjudication_execution_readiness.json": { "role": "external_adjudication_execution_readiness", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["external_adjudication_state", "execution_state", "execution_readiness_state", "remaining_blockers", "boundary_flags"], "non_implications": ["Not execution."] },
-    "paper10_scaffold_status.json": { "role": "paper10_scaffold_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface"], "minimum_fields": ["paper10_state", "paper10_authorization_state", "scaffold_only_marker_present", "result_sections_blocked", "boundary_flags"], "non_implications": ["Not Paper 10 final authorization.", "Not a result-bearing manuscript."] },
-    "paper10_protocol_hardening_status.json": { "role": "paper10_protocol_hardening_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface"], "minimum_fields": ["paper10_state", "paper10_result_state", "paper10_authorization_state", "paper10_evidence_insertion_state", "boundary_flags"], "non_implications": ["Not a final manuscript.", "Not an adjudication verdict."] },
-    "frozen_preregistration_readiness.json": { "role": "frozen_preregistration_readiness", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["freeze_state", "external_filing_state", "preregistration_state", "boundary_flags"], "non_implications": ["Not an externally filed preregistration."] },
-    "preregistration_lock_assessment.json": { "role": "preregistration_lock_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["lock_state", "amendment_state", "boundary_flags"], "non_implications": ["Not a frozen record.", "Not an evidence rewrite authorization."] },
-    "reviewer_selection_readiness.json": { "role": "reviewer_selection_readiness", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["reviewer_selection_state", "execution_state", "boundary_flags"], "non_implications": ["Not reviewer selection.", "Not review output."] },
-    "adjudicator_assignment_readiness.json": { "role": "adjudicator_assignment_readiness", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["adjudicator_assignment_state", "execution_state", "boundary_flags"], "non_implications": ["Not adjudicator assignment.", "Not adjudication."] },
-    "blinding_assignment_readiness.json": { "role": "blinding_assignment_readiness", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["blinding_assignment_state", "execution_state", "boundary_flags"], "non_implications": ["Not blinding assignment execution.", "Not unblinding."] },
-    "execution_pilot_package_assessment.json": { "role": "execution_pilot_package_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["package_state", "collection_session_state", "dataset_population_state", "boundary_flags"], "non_implications": ["Not evidence.", "Not adjudication."] },
-    "reproducibility_package_skeleton_status.json": { "role": "reproducibility_package_skeleton_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["reproducibility_state", "population_state", "boundary_flags"], "non_implications": ["Not a populated reproducibility package."] },
-    "pilot_negative_control_bundle_status.json": { "role": "pilot_negative_control_bundle_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["bundle_state", "boundary_flags"], "non_implications": ["Not a dataset."] },
-    "pilot_matched_intervention_bundle_status.json": { "role": "pilot_matched_intervention_bundle_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["bundle_state", "boundary_flags"], "non_implications": ["Not a dataset."] },
-    "execution_pilot_opening_gate.json": { "role": "execution_pilot_opening_gate", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["execution_pilot_state", "dry_run_requirements", "boundary_flags"], "non_implications": ["Not evidential execution.", "Not adjudication."] },
-    "execution_pilot_dry_run_status.json": { "role": "execution_pilot_dry_run_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["execution_pilot_state", "evidence_state", "adjudication_state", "boundary_flags"], "non_implications": ["Not evidence.", "Not adjudication."] },
-    "execution_pilot_manifest.json": { "role": "execution_pilot_manifest", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["execution_pilot_state", "evidence_state", "adjudication_state", "paper10_authorization_state", "boundary_flags"], "non_implications": ["Not a result package.", "Not Paper 10 final authorization."] },
-    "provenance_closure_assessment.json": { "role": "provenance_closure_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["preexisting_alignment_state", "post_regeneration_alignment_state", "committed_alignment_state", "release_pinning_state", "historical_snapshot_state"], "non_implications": ["Not external validation.", "Not an evidential rewrite."] },
-    "instantiated_empty_record_assessment.json": { "role": "instantiated_empty_record_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["instantiated_empty_layer_state", "local_frozen_record_state", "reviewer_candidate_pool_state", "decision_record_template_state", "boundary_flags"], "non_implications": ["Not populated evidence.", "Not external filing."] },
-    "local_frozen_record_status.json": { "role": "local_frozen_record_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["local_frozen_record_state", "external_filing_state", "evidence_state", "boundary_flags"], "non_implications": ["Not an externally filed preregistration.", "Not evidential population."] },
-    "candidate_pool_template_status.json": { "role": "candidate_pool_template_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["reviewer_candidate_pool_state", "adjudicator_candidate_pool_state", "boundary_flags"], "non_implications": ["Not reviewer selection.", "Not adjudicator assignment."] },
-    "decision_record_template_status.json": { "role": "decision_record_template_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["decision_record_template_state", "evidence_state", "boundary_flags"], "non_implications": ["Not a decision.", "Not adjudication."] },
-    "reviewer_candidate_pool_status.json": { "role": "reviewer_candidate_pool_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["candidate_pool_state", "selection_state", "boundary_flags"], "non_implications": ["Not reviewer selection.", "Not reviewer action."] },
-    "adjudicator_candidate_pool_status.json": { "role": "adjudicator_candidate_pool_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["candidate_pool_state", "assignment_state", "boundary_flags"], "non_implications": ["Not adjudicator assignment.", "Not adjudicator action."] },
-    "reviewer_assignment_stub_status.json": { "role": "reviewer_assignment_stub_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["assignment_stub_state", "selection_state", "boundary_flags"], "non_implications": ["Not reviewer assignment.", "Not reviewer action."] },
-    "adjudicator_assignment_stub_status.json": { "role": "adjudicator_assignment_stub_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["assignment_stub_state", "assignment_state", "boundary_flags"], "non_implications": ["Not adjudicator assignment.", "Not adjudication."] },
-    "execution_pilot_rehearsal_kit_status.json": { "role": "execution_pilot_rehearsal_kit_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["rehearsal_kit_state", "rehearsal_state", "evidence_state", "adjudication_state", "boundary_flags"], "non_implications": ["Not evidence.", "Not adjudication."] },
-    "dry_run_sequence_readiness.json": { "role": "dry_run_sequence_readiness", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["dry_run_sequence_state", "rehearsal_state", "boundary_flags"], "non_implications": ["Not dry-run evidence.", "Not collection execution."] },
-    "rehearsal_event_log_status.json": { "role": "rehearsal_event_log_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["event_log_state", "rehearsal_state", "boundary_flags"], "non_implications": ["Not a populated event log.", "Not evidential execution."] },
-    "stage3_5_rehearsal_ready_gate.json": { "role": "stage3_5_rehearsal_ready_gate", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["stage3_5_state", "non_evidential_state", "adjudication_state", "ready_requirements", "boundary_flags"], "non_implications": ["Not execution.", "Not adjudication."] },
-    "stage3_5_manifest.json": { "role": "stage3_5_manifest", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["stage3_5_state", "provenance_state", "instantiated_empty_state", "rehearsal_kit_state", "boundary_flags"], "non_implications": ["Not a result package.", "Not Paper 10 final authorization."] },
-    "live_artifact_instantiation_status.json": { "role": "live_artifact_instantiation_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["live_artifact_state", "collection_state", "evidence_state", "adjudication_state", "boundary_flags"], "non_implications": ["Not evidence.", "Not collection start."] },
-    "session_zero_manifest.json": { "role": "session_zero_manifest", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["session_zero_readiness_state", "session_zero_lifecycle_state", "collection_state", "evidence_state", "boundary_flags"], "non_implications": ["Not collection start.", "Not evidence."] },
-    "live_collection_manifest.json": { "role": "live_collection_manifest", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["live_artifact_state", "execution_opening_state", "collection_state", "evidence_state", "boundary_flags"], "non_implications": ["Not a populated collection manifest.", "Not evidence."] },
-    "live_collection_log.ndjson": { "role": "live_collection_log_record", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["record_type", "collection_state", "evidence_state", "boundary_flags"], "non_implications": ["Not a populated log.", "Not collection evidence."] },
-    "live_dataset_manifest.json": { "role": "live_dataset_manifest", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["dataset_state", "empty_dataset", "population_event_count", "collection_state", "boundary_flags"], "non_implications": ["Not a populated dataset.", "Not evidence."] },
-    "live_reproducibility_package_manifest.json": { "role": "live_reproducibility_package_manifest", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["live_artifact_state", "population_state", "collection_state", "evidence_state", "boundary_flags"], "non_implications": ["Not a populated reproducibility package.", "Not evidence."] },
-    "live_decision_record_stub.json": { "role": "live_decision_record_stub", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["decision_record_state", "empty_decision_record", "decision_event_count", "adjudication_state", "boundary_flags"], "non_implications": ["Not a decision.", "Not adjudication."] },
-    "live_evidence_insertion_register.json": { "role": "live_evidence_insertion_register", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["register_state", "insertion_event_count", "collection_state", "evidence_state", "boundary_flags"], "non_implications": ["Not a populated evidence register.", "Not evidence."] },
-    "session_zero_gate_result.json": { "role": "session_zero_gate_result", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["session_zero_state", "session_zero_lifecycle_state", "evidence_state", "adjudication_state", "boundary_flags"], "non_implications": ["Not collection start.", "Not evidence."] },
-    "session_zero_operator_checklist_status.json": { "role": "session_zero_operator_checklist_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["operator_checklist_state", "collection_state", "evidence_state", "boundary_flags"], "non_implications": ["Not an operator action.", "Not evidence."] },
-    "session_zero_failure_mode_assessment.json": { "role": "session_zero_failure_mode_assessment", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["failure_mode_state", "abort_state", "invalidation_state", "boundary_flags"], "non_implications": ["Not an abort event.", "Not invalidation by itself."] },
-    "contamination_checklist_status.json": { "role": "contamination_checklist_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["contamination_state", "collection_state", "evidence_state", "boundary_flags"], "non_implications": ["Not contamination evidence by itself.", "Not adjudication."] },
-    "pre_collection_gate_result.json": { "role": "pre_collection_admissibility_gate_result", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["pre_collection_state", "collection_state", "evidence_state", "adjudication_state", "boundary_flags"], "non_implications": ["Not collection start.", "Not evidence."] },
-    "pre_collection_admissibility_gate_result.json": { "role": "pre_collection_admissibility_gate_result", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["pre_collection_state", "collection_state", "evidence_state", "adjudication_state", "boundary_flags"], "non_implications": ["Not collection start.", "Not evidence."] },
-    "pre_collection_invalidation_status.json": { "role": "pre_collection_invalidation_status", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["invalidation_state", "collection_state", "evidence_state", "boundary_flags"], "non_implications": ["Not a populated invalidation record.", "Not evidence."] },
-    "stage3_6_controlled_execution_gate.json": { "role": "stage3_6_controlled_execution_gate", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["stage3_6_state", "openability_state", "collection_state", "evidence_state", "boundary_flags"], "non_implications": ["Not collection completion.", "Not adjudication."] },
-    "stage3_6_manifest.json": { "role": "stage3_6_manifest", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["stage3_6_state", "live_artifact_state", "session_zero_state", "pre_collection_state", "boundary_flags"], "non_implications": ["Not a result package.", "Not Paper 10 final authorization."] },
-    "stage3_verification_matrix.json": { "role": "stage3_verification_matrix", "allowed_surfaces": ["developer_inspection_surface", "local_artifact_surface", "local_report_surface", "internal_release_bundle_surface"], "minimum_fields": ["status", "checks", "boundary_flags"], "non_implications": ["Not external adjudication.", "Not human equivalence."] }
+    "external_adjudication_manifest.json": {
+      "role": "external_adjudication_manifest",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "external_adjudication_state",
+        "execution_state",
+        "paper10_state",
+        "paper10_authorization_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not an adjudication verdict.",
+        "Not external validation."
+      ]
+    },
+    "external_adjudication_readiness_gate.json": {
+      "role": "external_adjudication_readiness_gate",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "stage3_readiness_state",
+        "external_adjudication_state",
+        "execution_state",
+        "remaining_blockers",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not execution.",
+        "Not an adjudication result."
+      ]
+    },
+    "external_evidence_admissibility_assessment.json": {
+      "role": "external_evidence_admissibility_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface"
+      ],
+      "minimum_fields": [
+        "assessment_state",
+        "evidence_class_states",
+        "invalid_substitutes",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not evidence.",
+        "Not external validation."
+      ]
+    },
+    "human_comparator_execution_plan.json": {
+      "role": "human_comparator_execution_plan",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface"
+      ],
+      "minimum_fields": [
+        "comparator_state",
+        "execution_state",
+        "human_data_state",
+        "channel_states",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a dataset.",
+        "Not human equivalence."
+      ]
+    },
+    "human_channel_instantiation_assessment.json": {
+      "role": "human_channel_instantiation_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "human_data_state",
+        "overall_state",
+        "channel_assessments",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a dataset.",
+        "Not external validation."
+      ]
+    },
+    "human_channel_preregistration_readiness.json": {
+      "role": "human_channel_preregistration_readiness",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "preregistration_state",
+        "execution_state",
+        "channel_preregistration_states",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a frozen preregistration record."
+      ]
+    },
+    "matched_intervention_dataset_contract_assessment.json": {
+      "role": "matched_intervention_dataset_contract_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "contract_state",
+        "bindings",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a dataset."
+      ]
+    },
+    "negative_control_dataset_contract_assessment.json": {
+      "role": "negative_control_dataset_contract_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "contract_state",
+        "families",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a negative-control dataset."
+      ]
+    },
+    "reviewer_independence_assessment.json": {
+      "role": "reviewer_independence_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "reviewer_layer_state",
+        "reviewer_selection_state",
+        "adjudication_execution_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not reviewer selection.",
+        "Not adjudication."
+      ]
+    },
+    "external_adjudication_execution_readiness.json": {
+      "role": "external_adjudication_execution_readiness",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "external_adjudication_state",
+        "execution_state",
+        "execution_readiness_state",
+        "remaining_blockers",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not execution."
+      ]
+    },
+    "paper10_scaffold_status.json": {
+      "role": "paper10_scaffold_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface"
+      ],
+      "minimum_fields": [
+        "paper10_state",
+        "paper10_authorization_state",
+        "scaffold_only_marker_present",
+        "result_sections_blocked",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not Paper 10 final authorization.",
+        "Not a result-bearing manuscript."
+      ]
+    },
+    "paper10_protocol_hardening_status.json": {
+      "role": "paper10_protocol_hardening_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface"
+      ],
+      "minimum_fields": [
+        "paper10_state",
+        "paper10_result_state",
+        "paper10_authorization_state",
+        "paper10_evidence_insertion_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a final manuscript.",
+        "Not an adjudication verdict."
+      ]
+    },
+    "frozen_preregistration_readiness.json": {
+      "role": "frozen_preregistration_readiness",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "freeze_state",
+        "external_filing_state",
+        "preregistration_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not an externally filed preregistration."
+      ]
+    },
+    "preregistration_lock_assessment.json": {
+      "role": "preregistration_lock_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "lock_state",
+        "amendment_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a frozen record.",
+        "Not an evidence rewrite authorization."
+      ]
+    },
+    "reviewer_selection_readiness.json": {
+      "role": "reviewer_selection_readiness",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "reviewer_selection_state",
+        "execution_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not reviewer selection.",
+        "Not review output."
+      ]
+    },
+    "adjudicator_assignment_readiness.json": {
+      "role": "adjudicator_assignment_readiness",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "adjudicator_assignment_state",
+        "execution_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not adjudicator assignment.",
+        "Not adjudication."
+      ]
+    },
+    "blinding_assignment_readiness.json": {
+      "role": "blinding_assignment_readiness",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "blinding_assignment_state",
+        "execution_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not blinding assignment execution.",
+        "Not unblinding."
+      ]
+    },
+    "execution_pilot_package_assessment.json": {
+      "role": "execution_pilot_package_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "package_state",
+        "collection_session_state",
+        "dataset_population_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not evidence.",
+        "Not adjudication."
+      ]
+    },
+    "reproducibility_package_skeleton_status.json": {
+      "role": "reproducibility_package_skeleton_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "reproducibility_state",
+        "population_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a populated reproducibility package."
+      ]
+    },
+    "pilot_negative_control_bundle_status.json": {
+      "role": "pilot_negative_control_bundle_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "bundle_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a dataset."
+      ]
+    },
+    "pilot_matched_intervention_bundle_status.json": {
+      "role": "pilot_matched_intervention_bundle_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "bundle_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a dataset."
+      ]
+    },
+    "execution_pilot_opening_gate.json": {
+      "role": "execution_pilot_opening_gate",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "execution_pilot_state",
+        "dry_run_requirements",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not evidential execution.",
+        "Not adjudication."
+      ]
+    },
+    "execution_pilot_dry_run_status.json": {
+      "role": "execution_pilot_dry_run_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "execution_pilot_state",
+        "evidence_state",
+        "adjudication_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not evidence.",
+        "Not adjudication."
+      ]
+    },
+    "execution_pilot_manifest.json": {
+      "role": "execution_pilot_manifest",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "execution_pilot_state",
+        "evidence_state",
+        "adjudication_state",
+        "paper10_authorization_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a result package.",
+        "Not Paper 10 final authorization."
+      ]
+    },
+    "provenance_closure_assessment.json": {
+      "role": "provenance_closure_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "preexisting_alignment_state",
+        "post_regeneration_alignment_state",
+        "committed_alignment_state",
+        "release_pinning_state",
+        "historical_snapshot_state"
+      ],
+      "non_implications": [
+        "Not external validation.",
+        "Not an evidential rewrite."
+      ]
+    },
+    "instantiated_empty_record_assessment.json": {
+      "role": "instantiated_empty_record_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "instantiated_empty_layer_state",
+        "local_frozen_record_state",
+        "reviewer_candidate_pool_state",
+        "decision_record_template_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not populated evidence.",
+        "Not external filing."
+      ]
+    },
+    "local_frozen_record_status.json": {
+      "role": "local_frozen_record_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "local_frozen_record_state",
+        "external_filing_state",
+        "evidence_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not an externally filed preregistration.",
+        "Not evidential population."
+      ]
+    },
+    "candidate_pool_template_status.json": {
+      "role": "candidate_pool_template_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "reviewer_candidate_pool_state",
+        "adjudicator_candidate_pool_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not reviewer selection.",
+        "Not adjudicator assignment."
+      ]
+    },
+    "decision_record_template_status.json": {
+      "role": "decision_record_template_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "decision_record_template_state",
+        "evidence_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a decision.",
+        "Not adjudication."
+      ]
+    },
+    "reviewer_candidate_pool_status.json": {
+      "role": "reviewer_candidate_pool_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "candidate_pool_state",
+        "selection_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not reviewer selection.",
+        "Not reviewer action."
+      ]
+    },
+    "adjudicator_candidate_pool_status.json": {
+      "role": "adjudicator_candidate_pool_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "candidate_pool_state",
+        "assignment_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not adjudicator assignment.",
+        "Not adjudicator action."
+      ]
+    },
+    "reviewer_assignment_stub_status.json": {
+      "role": "reviewer_assignment_stub_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "assignment_stub_state",
+        "selection_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not reviewer assignment.",
+        "Not reviewer action."
+      ]
+    },
+    "adjudicator_assignment_stub_status.json": {
+      "role": "adjudicator_assignment_stub_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "assignment_stub_state",
+        "assignment_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not adjudicator assignment.",
+        "Not adjudication."
+      ]
+    },
+    "execution_pilot_rehearsal_kit_status.json": {
+      "role": "execution_pilot_rehearsal_kit_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "rehearsal_kit_state",
+        "rehearsal_state",
+        "evidence_state",
+        "adjudication_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not evidence.",
+        "Not adjudication."
+      ]
+    },
+    "dry_run_sequence_readiness.json": {
+      "role": "dry_run_sequence_readiness",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "dry_run_sequence_state",
+        "rehearsal_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not dry-run evidence.",
+        "Not collection execution."
+      ]
+    },
+    "rehearsal_event_log_status.json": {
+      "role": "rehearsal_event_log_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "event_log_state",
+        "rehearsal_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a populated event log.",
+        "Not evidential execution."
+      ]
+    },
+    "stage3_5_rehearsal_ready_gate.json": {
+      "role": "stage3_5_rehearsal_ready_gate",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "stage3_5_state",
+        "non_evidential_state",
+        "adjudication_state",
+        "ready_requirements",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not execution.",
+        "Not adjudication."
+      ]
+    },
+    "stage3_5_manifest.json": {
+      "role": "stage3_5_manifest",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "stage3_5_state",
+        "provenance_state",
+        "instantiated_empty_state",
+        "rehearsal_kit_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a result package.",
+        "Not Paper 10 final authorization."
+      ]
+    },
+    "live_artifact_instantiation_status.json": {
+      "role": "live_artifact_instantiation_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "live_artifact_state",
+        "collection_state",
+        "evidence_state",
+        "adjudication_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not evidence.",
+        "Not collection start."
+      ]
+    },
+    "session_zero_manifest.json": {
+      "role": "session_zero_manifest",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "session_zero_readiness_state",
+        "session_zero_lifecycle_state",
+        "collection_state",
+        "evidence_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not collection start.",
+        "Not evidence."
+      ]
+    },
+    "live_collection_manifest.json": {
+      "role": "live_collection_manifest",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "live_artifact_state",
+        "execution_opening_state",
+        "collection_state",
+        "evidence_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a populated collection manifest.",
+        "Not evidence."
+      ]
+    },
+    "live_collection_log.ndjson": {
+      "role": "live_collection_log_record",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "record_type",
+        "collection_state",
+        "evidence_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a populated log.",
+        "Not collection evidence."
+      ]
+    },
+    "live_dataset_manifest.json": {
+      "role": "live_dataset_manifest",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "dataset_state",
+        "empty_dataset",
+        "population_event_count",
+        "collection_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a populated dataset.",
+        "Not evidence."
+      ]
+    },
+    "live_reproducibility_package_manifest.json": {
+      "role": "live_reproducibility_package_manifest",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "live_artifact_state",
+        "population_state",
+        "collection_state",
+        "evidence_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a populated reproducibility package.",
+        "Not evidence."
+      ]
+    },
+    "live_decision_record_stub.json": {
+      "role": "live_decision_record_stub",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "decision_record_state",
+        "empty_decision_record",
+        "decision_event_count",
+        "adjudication_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a decision.",
+        "Not adjudication."
+      ]
+    },
+    "live_evidence_insertion_register.json": {
+      "role": "live_evidence_insertion_register",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "register_state",
+        "insertion_event_count",
+        "collection_state",
+        "evidence_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a populated evidence register.",
+        "Not evidence."
+      ]
+    },
+    "session_zero_gate_result.json": {
+      "role": "session_zero_gate_result",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "session_zero_state",
+        "session_zero_lifecycle_state",
+        "evidence_state",
+        "adjudication_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not collection start.",
+        "Not evidence."
+      ]
+    },
+    "session_zero_operator_checklist_status.json": {
+      "role": "session_zero_operator_checklist_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "operator_checklist_state",
+        "collection_state",
+        "evidence_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not an operator action.",
+        "Not evidence."
+      ]
+    },
+    "session_zero_failure_mode_assessment.json": {
+      "role": "session_zero_failure_mode_assessment",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "failure_mode_state",
+        "abort_state",
+        "invalidation_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not an abort event.",
+        "Not invalidation by itself."
+      ]
+    },
+    "contamination_checklist_status.json": {
+      "role": "contamination_checklist_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "contamination_state",
+        "collection_state",
+        "evidence_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not contamination evidence by itself.",
+        "Not adjudication."
+      ]
+    },
+    "pre_collection_gate_result.json": {
+      "role": "pre_collection_admissibility_gate_result",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "pre_collection_state",
+        "collection_state",
+        "evidence_state",
+        "adjudication_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not collection start.",
+        "Not evidence."
+      ]
+    },
+    "pre_collection_admissibility_gate_result.json": {
+      "role": "pre_collection_admissibility_gate_result",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "pre_collection_state",
+        "collection_state",
+        "evidence_state",
+        "adjudication_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not collection start.",
+        "Not evidence."
+      ]
+    },
+    "pre_collection_invalidation_status.json": {
+      "role": "pre_collection_invalidation_status",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "invalidation_state",
+        "collection_state",
+        "evidence_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a populated invalidation record.",
+        "Not evidence."
+      ]
+    },
+    "stage3_6_controlled_execution_gate.json": {
+      "role": "stage3_6_controlled_execution_gate",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "stage3_6_state",
+        "openability_state",
+        "collection_state",
+        "evidence_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not collection completion.",
+        "Not adjudication."
+      ]
+    },
+    "stage3_6_manifest.json": {
+      "role": "stage3_6_manifest",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "stage3_6_state",
+        "live_artifact_state",
+        "session_zero_state",
+        "pre_collection_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a result package.",
+        "Not Paper 10 final authorization."
+      ]
+    },
+    "stage3_verification_matrix.json": {
+      "role": "stage3_verification_matrix",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "status",
+        "checks",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not external adjudication.",
+        "Not human equivalence."
+      ]
+    },
+    "runtime_health_audit.json": {
+      "role": "runtime_health_audit",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "runtime_health_state",
+        "environment",
+        "dependency_install",
+        "command_results",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not evidence.",
+        "Not collection start."
+      ]
+    },
+    "clean_room_reproducibility_audit.json": {
+      "role": "clean_room_reproducibility_audit",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "clean_room_state",
+        "clean_room_method",
+        "command_results",
+        "warnings",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not evidence.",
+        "Not adjudication."
+      ]
+    },
+    "path_and_local_leakage_audit.json": {
+      "role": "path_and_local_leakage_audit",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "path_leakage_state",
+        "findings",
+        "live_normative_leak_count",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not evidence.",
+        "Not adjudication."
+      ]
+    },
+    "artifact_regeneration_audit.json": {
+      "role": "artifact_regeneration_audit",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "artifact_regeneration_state",
+        "changed_artifacts",
+        "paper10_status_coherence",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not evidence.",
+        "Not adjudication."
+      ]
+    },
+    "stage3_6b_runtime_reproducibility_gate.json": {
+      "role": "stage3_6b_runtime_reproducibility_gate",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "stage3_6b_state",
+        "runtime_health_state",
+        "clean_room_state",
+        "stage3_7_follow_on_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not collection start.",
+        "Not evidence."
+      ]
+    },
+    "stage3_7_opening_gate.json": {
+      "role": "stage3_7_opening_gate",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "stage3_7_state",
+        "collection_state",
+        "evidence_state",
+        "decision_record_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not collection start.",
+        "Not evidence."
+      ]
+    },
+    "first_collection_opening_manifest.json": {
+      "role": "first_collection_opening_manifest",
+      "allowed_surfaces": [
+        "developer_inspection_surface",
+        "local_artifact_surface",
+        "local_report_surface",
+        "internal_release_bundle_surface"
+      ],
+      "minimum_fields": [
+        "stage3_7_state",
+        "runtime_health_state",
+        "clean_room_state",
+        "collection_state",
+        "boundary_flags"
+      ],
+      "non_implications": [
+        "Not a populated collection manifest.",
+        "Not adjudication."
+      ]
+    }
   }
 }

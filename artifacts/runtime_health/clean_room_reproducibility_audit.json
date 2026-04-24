@@ -1,0 +1,206 @@
+{
+  "artifact_role": "clean_room_reproducibility_audit",
+  "artifact_name": "clean_room_reproducibility_audit.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6b_clean_room_reproducibility",
+  "layer_version": "comparative_expansion_layer.stage3_6b_clean_room_reproducibility.v1",
+  "estimator_version": "clean_room_reproducibility_audit_builder.v1",
+  "implementation_status": "clean_room_reproducibility_audit_defined",
+  "clean_room_state": "clean_room_reproducible_with_warnings",
+  "clean_room_method": "bounded_local_copy_with_clean_git_snapshot_and_explicit_release_root",
+  "source_sha": "5f2c5085406db07f5dfb81607569f920777909ea",
+  "target_clean_room_sha": "28217822201f07fb2819ff9a83ac4401419612a0",
+  "clean_room_root": ".stage3_clean_room/qicn_system_cleanroom",
+  "paper10_compile_status": "compiled",
+  "command_results": [
+    {
+      "id": "clean_room_git_init",
+      "command": "git.exe init -b main",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 127,
+      "stdout_excerpt": "Initialized empty Git repository in <workspace-root>/.stage3_clean_room/qicn_system_cleanroom/.git/",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "clean_room_git_config_longpaths",
+      "command": "git.exe config core.longpaths true",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 70,
+      "stdout_excerpt": "",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "clean_room_git_add",
+      "command": "git.exe add --all .",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 5349,
+      "stdout_excerpt": "",
+      "stderr_excerpt": "warning: in the working copy of 'tests/runtime-hygiene.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/runtime-parameter-functional.v400.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/runtime-parameter-registry.v400.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/self-code-phase2-guardrails.v44.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/selfpatch-codeowners-enforcement.v415.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/selfpatch-generate-engine.v416.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/selfpatch-killswitch-quorum.v415.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/selfpatch-policy-check.v415.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/selfpatch-rate-limit.v415.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/selfpatch-rollback-mode.v415.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/selfpatch-token-budget.v415.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/sensor-capabilities.v46.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/sensory-dynamics-coupling.v52.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/sensory-sovereignty.v381.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/sno.v1.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/speech-fsm.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/stasis-break-criteria.v411.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/tab-quick-help-tour.v47.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/ui-mojibake-guard.v410.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/ui-mojibake-guard.v47.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/ui-navigation-top5-more.v47.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/verifiable-report-shape.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/worldmodel-planner-ablation.v54.test.js', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/worldmodel-realtime-integration.v55.test.js', LF will be replaced by CRLF the next time Git touches it",
+      "error": null
+    },
+    {
+      "id": "clean_room_git_commit",
+      "command": "git.exe -c user.name=QICN Clean Room -c user.email=cleanroom@example.invalid commit -m clean-room snapshot",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 1402,
+      "stdout_excerpt": " create mode 100644 tests/selfpatch-killswitch-quorum.v415.test.js\n create mode 100644 tests/selfpatch-policy-check.v415.test.js\n create mode 100644 tests/selfpatch-rate-limit.v415.test.js\n create mode 100644 tests/selfpatch-rollback-mode.v415.test.js\n create mode 100644 tests/selfpatch-token-budget.v415.test.js\n create mode 100644 tests/sensor-capabilities.v46.test.js\n create mode 100644 tests/sensory-dynamics-coupling.v52.test.js\n create mode 100644 tests/sensory-sovereignty.v381.test.js\n create mode 100644 tests/sno.v1.test.js\n create mode 100644 tests/speech-fsm.test.js\n create mode 100644 tests/stasis-break-criteria.v411.test.js\n create mode 100644 tests/tab-quick-help-tour.v47.test.js\n create mode 100644 tests/test_config_updated.js\n create mode 100644 tests/test_multi_provider_commonjs.js\n create mode 100644 tests/test_multi_provider_integration.js\n create mode 100644 tests/test_qicn_fixes.html\n create mode 100644 tests/test_qicn_fixes.js\n create mode 100644 tests/ui-mojibake-guard.v410.test.js\n create mode 100644 tests/ui-mojibake-guard.v47.test.js\n create mode 100644 tests/ui-navigation-top5-more.v47.test.js\n create mode 100644 tests/verifiable-report-shape.test.js\n create mode 100644 tests/verify_live_fixes.js\n create mode 100644 tests/worldmodel-planner-ablation.v54.test.js\n create mode 100644 tests/worldmodel-realtime-integration.v55.test.js",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "clean_room_git_rev_parse",
+      "command": "git.exe rev-parse HEAD",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 54,
+      "stdout_excerpt": "28217822201f07fb2819ff9a83ac4401419612a0",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "clean_room_node_version",
+      "command": "node -v",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 35,
+      "stdout_excerpt": "v24.6.0",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "clean_room_npm_version",
+      "command": "npm -v",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 214,
+      "stdout_excerpt": "11.5.1",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "clean_room_npm_ci",
+      "command": "npm ci",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 3710,
+      "stdout_excerpt": "added 189 packages, and audited 190 packages in 4s\n44 packages are looking for funding\n  run `npm fund` for details\n7 vulnerabilities (3 moderate, 4 high)\nTo address all issues, run:\n  npm audit fix\nRun `npm audit` for details.",
+      "stderr_excerpt": "npm warn EBADENGINE Unsupported engine {\nnpm warn EBADENGINE   package: 'versiones-de-interfaz@1.0.0',\nnpm warn EBADENGINE   required: { node: '20.x' },\nnpm warn EBADENGINE   current: { node: 'v24.6.0', npm: '11.5.1' }\nnpm warn EBADENGINE }",
+      "error": null
+    },
+    {
+      "id": "clean_room_build",
+      "command": "npm run build",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 6121,
+      "stdout_excerpt": "   ├ src/simulation/NodalProcessingLayer.js                       1.6kb    0.2%\n   ├ config/interventions/preregister.v1.json                     1.6kb    0.2%\n   ├ src/components/AccessGate.jsx                                1.5kb    0.2%\n   ├ src/simulation/InformationalEntanglementField.js             1.2kb    0.1%\n   ├ src/canon/provenance/CanonicalProvenance.js                  1.1kb    0.1%\n   ├ src/canon/sourceOfTruth.js                                   881b     0.1%\n   ├ src/hooks/useDeviceCapabilities.js                           511b     0.1%\n   ├ src/hooks/useBreakpoint.js                                   480b     0.1%\n   ├ src/utils/determinism.js                                     350b     0.0%\n   ├ src/utils/pinhole.js                                         335b     0.0%\n   ├ src/utils/tick_invariants.js                                 300b     0.0%\n   ├ node_modules/react-dom/client.js                             253b     0.0%\n   ├ node_modules/react-dom/index.js                              253b     0.0%\n   ├ node_modules/react/index.js                                   51b     0.0%\n   └ node_modules/scheduler/index.js                               51b     0.0%\n> versiones-de-interfaz@1.0.0 build:css\n> tailwindcss -c tailwind.config.cjs -i ./src/styles/tailwind.input.css -o ./dist/tailwind.css --minify\n> versiones-de-interfaz@1.0.0 build:sync\n> node scripts/sync-netlify-assets.cjs\n[QICN] Sync deploy assets OK\n[QICN] Dist static synced: index.html, manifest.webmanifest, sw.js, favicon.svg\n[QICN] Root runtime synced: bundle.js, tailwind.css, network_canvas_worker.js\n[QICN] _redirects generado en root y dist\n[encoding-check] OK: UTF-8 integrity validated for dist artifacts.",
+      "stderr_excerpt": "  dist\\bundle.js      857.4kb\n  dist\\bundle.js.map    2.7mb\nDone in 447ms\nBrowserslist: caniuse-lite is outdated. Please run:\n  npx update-browserslist-db@latest\n  Why you should do it regularly: https://github.com/browserslist/update-db#readme\nRebuilding...\nDone in 2294ms.",
+      "error": null
+    },
+    {
+      "id": "clean_room_test",
+      "command": "npm test",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 20895,
+      "stdout_excerpt": "🔄 Reintentando reconocimiento de voz en 1s... (intento 1/2)\n🔇 Speech Recognition terminó\n🎤 Speech Recognition: ESCUCHANDO\n🔄 Reconocimiento de voz (Web Speech) reiniciado\n🔌 Percepción sensorial desactivada\nOK: speech FSM test passed\n[tests] Running tests\\stasis-break-criteria.v411.test.js\nok stasis-break-criteria.v411\n[tests] Running tests\\tab-quick-help-tour.v47.test.js\nok tab-quick-help-tour.v47\n[tests] Running tests\\ui-mojibake-guard.v410.test.js\nok ui-mojibake-guard.v410\n[tests] Running tests\\ui-mojibake-guard.v47.test.js\nok ui-mojibake-guard.v47\n[tests] Running tests\\ui-navigation-top5-more.v47.test.js\nok ui-navigation-top5-more.v47\n[tests] Running tests\\verifiable-report-shape.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\nOK: verifiable report shape test passed\n[tests] Running tests\\worldmodel-planner-ablation.v54.test.js\nok worldmodel-planner-ablation.v54\n[tests] Running tests\\worldmodel-realtime-integration.v55.test.js\nok worldmodel-realtime-integration.v55\n[tests] OK: 102/102 passed",
+      "stderr_excerpt": "[QICN][QUANTUM_ENTROPY] {\"ts\":1060,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":66050,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":65050}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1060,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":66050,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":65050}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064724422,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":5000}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064724424,\"type\":\"provider_error\",\"level\":\"warn\",\"reason\":\"quality_rejected\",\"bufferOccupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064724424,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064728535,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":4023}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064724536,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064724651,\"type\":\"provider_error\",\"level\":\"warn\",\"reason\":\"quality_below_threshold\",\"bufferOccupancyChunks\":0}\n[SYNTHETIC-IMAGINATION] Activado. reason=sensor-blackout\n⚠️ Error cargando rostros conocidos: ReferenceError: localStorage is not defined\n    at SensoryPerceptionEngine.loadKnownFaces (file:///<local-user-root>/<clean-room-root>/src/simulation/SensoryPerceptionEngine.js:258:28)\n    at new SensoryPerceptionEngine (file:///<local-user-root>/<clean-room-root>/src/simulation/SensoryPerceptionEngine.js:131:32)\n    at SensoryPerceptionEngine.getInstance (file:///<local-user-root>/<clean-room-root>/src/simulation/SensoryPerceptionEngine.js:21:34)\n    at file:///<local-user-root>/<clean-room-root>/tests/speech-fsm.test.js:75:42\n⚠️ Error cargando memoria experiencial: ReferenceError: localStorage is not defined\n    at SensoryPerceptionEngine.loadExperientialMemory (file:///<local-user-root>/<clean-room-root>/src/simulation/SensoryPerceptionEngine.js:327:28)\n    at new SensoryPerceptionEngine (file:///<local-user-root>/<clean-room-root>/src/simulation/SensoryPerceptionEngine.js:169:26)\n    at SensoryPerceptionEngine.getInstance (file:///<local-user-root>/<clean-room-root>/src/simulation/SensoryPerceptionEngine.js:21:34)\n    at file:///<local-user-root>/<clean-room-root>/tests/speech-fsm.test.js:75:42\n⚠️ Speech recognition error: network\n🌐 Error de red en reconocimiento de voz",
+      "error": null
+    },
+    {
+      "id": "clean_room_stage3_6_build",
+      "command": "npm run build:stage3-controlled-execution-opening",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 10422,
+      "stdout_excerpt": "> versiones-de-interfaz@1.0.0 build:stage3-controlled-execution-opening\n> node scripts/build-stage3-controlled-execution-opening.cjs\nPASS build-stage3-controlled-execution-opening\n  stage3_6_state: stage3_6_collection_open_pre_evidential\n  openability_state: stage3_6_controlled_execution_openable\n  collection_state: collection_not_started\n  evidence_state: evidence_generation_absent\n  adjudication_state: stage3_6_non_adjudicative\n  session_zero_state: session_zero_ready\n  pre_collection_state: collection_openable_under_controls\n  paper10_compile_status: compiled",
+      "stderr_excerpt": "fatal: no upstream configured for branch 'main'\nfatal: no upstream configured for branch 'main'\nfatal: no upstream configured for branch 'main'\nfatal: no upstream configured for branch 'main'\nfatal: no upstream configured for branch 'main'\nfatal: no upstream configured for branch 'main'\nfatal: no upstream configured for branch 'main'\nfatal: no upstream configured for branch 'main'",
+      "error": null
+    },
+    {
+      "id": "clean_room_verify_source_of_truth",
+      "command": "npm run verify:source-of-truth",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 714,
+      "stdout_excerpt": "> versiones-de-interfaz@1.0.0 verify:source-of-truth\n> node scripts/verify-source-of-truth.cjs\n[QICN] Source-of-truth verification passed.",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "clean_room_verify_comparative_closure",
+      "command": "npm run verify:comparative-program-closure",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 901,
+      "stdout_excerpt": "> versiones-de-interfaz@1.0.0 verify:comparative-program-closure\n> node scripts/verify-comparative-program-closure.cjs\nPASS verify-comparative-program-closure",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "clean_room_verify_stage3_6",
+      "command": "npm run verify:stage3-controlled-execution-opening",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 127100,
+      "stdout_excerpt": "> versiones-de-interfaz@1.0.0 verify:stage3-controlled-execution-opening\n> node scripts/verify-stage3-controlled-execution-opening.cjs\nPASS verify-stage3-controlled-execution-opening",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "clean_room_verify_paper9_handoff",
+      "command": "npm run verify:paper9-handoff-readiness",
+      "cwd": ".stage3_clean_room/qicn_system_cleanroom",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 359,
+      "stdout_excerpt": "> versiones-de-interfaz@1.0.0 verify:paper9-handoff-readiness\n> node scripts/verify-paper9-handoff-readiness.cjs\nPASS verify-paper9-handoff-readiness (49 pages)",
+      "stderr_excerpt": "",
+      "error": null
+    }
+  ],
+  "warnings": [
+    "engine_mismatch",
+    "bounded_dual_repo_dependency",
+    "clean_room_excludes_generated_release_candidate_bundle"
+  ],
+  "blockers": [],
+  "boundary_flags": {
+    "clean_room_is_local_only": true,
+    "collection_not_started": true,
+    "evidence_generation_absent": true
+  },
+  "non_implications": [
+    "Clean-room reproducibility is not evidence generation.",
+    "Clean-room reproducibility is not adjudication.",
+    "Clean-room reproducibility is not Paper 10 final authorization."
+  ],
+  "provenance": {
+    "generated_at": "2026-04-24T21:07:49.864Z",
+    "current_lineage": {
+      "qicn_system_head": "5f2c5085406db07f5dfb81607569f920777909ea"
+    }
+  },
+  "schema_ref": "src/comparative_program/schemas/clean_room_reproducibility_audit.v1.json"
+}

@@ -1,0 +1,18 @@
+{
+  "title": "stage3_7_opening_gate.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "stage3_7_state",
+    "collection_state",
+    "evidence_state",
+    "adjudication_state",
+    "decision_record_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "stage3_7_opening_gate" },
+    "artifact_name": { "const": "stage3_7_opening_gate.json" }
+  }
+}

@@ -1,6 +1,6 @@
 # Stage3 External Adjudication Boundary
 
-## Allowed Stage3-0 / Stage3-1 / Stage3-2 / Stage3-3 / Stage3-4 / Stage3-4B / Stage3-5 / Stage3-6 claims
+## Allowed Stage3-0 / Stage3-1 / Stage3-2 / Stage3-3 / Stage3-4 / Stage3-4B / Stage3-5 / Stage3-6 / Stage3-6B / Stage3-7 claims
 
 - the external adjudication protocol is defined;
 - the evidence admissibility grammar is defined;
@@ -20,13 +20,15 @@
 - live-but-unpopulated artifacts may exist;
 - session-zero and pre-collection gates may exist;
 - controlled pre-evidential collection opening may exist;
+- runtime-health and clean-room reproducibility audits may exist;
+- a first-admissible-collection opening gate may exist as a criteria-only surface;
 - the Paper 10 local source exists as a governed non-result surface and may be
   hardened into a protocol-grade backbone;
 - external adjudication is not executed;
 - human comparator data is absent;
 - Paper 10 final authorization is absent.
 
-## Forbidden Stage3-0 / Stage3-1 / Stage3-2 / Stage3-3 / Stage3-4 / Stage3-4B / Stage3-5 / Stage3-6 claims
+## Forbidden Stage3-0 / Stage3-1 / Stage3-2 / Stage3-3 / Stage3-4 / Stage3-4B / Stage3-5 / Stage3-6 / Stage3-6B / Stage3-7 claims
 
 - the state `external_adjudication_passed`;
 - the state `external_adjudication_failed` on real evidence;
@@ -47,7 +49,10 @@
 - rehearsal readiness as if it were real execution;
 - live-but-unpopulated artifacts as if they were populated datasets;
 - session-zero as if it were collection start;
-- controlled execution opening as if it were adjudication.
+- controlled execution opening as if it were adjudication;
+- runtime-health passage as if it were evidence;
+- clean-room reproducibility as if it were evidence;
+- Stage3-7 openability as if it were collection start.
 
 ## Interpretation rule
 
@@ -59,6 +64,9 @@ pilot-packaging architecture. `Stage3-4` may add bounded dry-run opening
 logic. `Stage3-4B` may add provenance closure and instantiated-empty record
 semantics. `Stage3-5` may add rehearsal grammar and rehearsal-ready gates.
 `Stage3-6` may add controlled execution opening, session-zero, and
-pre-collection gate semantics. None of these stages may borrow closure from execution, external
+pre-collection gate semantics. `Stage3-6B` may add runtime-health and
+clean-room reproducibility audit semantics. `Stage3-7` may add first
+collection opening criteria, operator authorization grammar, and
+collection-start command grammar only. None of these stages may borrow closure from execution, external
 adjudication, or later philosophical consequence layers that have not actually
 been instantiated.

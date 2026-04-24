@@ -53,9 +53,50 @@ import {
 import {
   listLiveArtifactRoles
 } from './LiveArtifactRegistry.js';
+import {
+  listRuntimeHealthRequiredCommands,
+  listCleanRoomRequiredChecks
+} from './RuntimeHealthAuditRegistry.js';
+import {
+  FIRST_ADMISSIBLE_COLLECTION_START_POLICY,
+  COLLECTION_START_COMMAND_SCHEMA,
+  OPERATOR_AUTHORIZATION_SCHEMA,
+  listStage3_7OpeningRequirements
+} from './FirstCollectionOpeningCriteriaRegistry.js';
 
 const readJson = (relativePath) =>
   JSON.parse(fs.readFileSync(new URL(relativePath, import.meta.url), 'utf8'));
+const readArtifactJson = (relativePath) => {
+  try {
+    return JSON.parse(fs.readFileSync(new URL(relativePath, import.meta.url), 'utf8'));
+  } catch {
+    return null;
+  }
+};
+
+const deriveCurrentStageState = () => {
+  const stage36b = readArtifactJson('../../artifacts/runtime_health/stage3_6b_runtime_reproducibility_gate.json');
+  const stage37 = readArtifactJson('../../artifacts/external_adjudication/stage3_7/stage3_7_opening_gate.json');
+
+  if (stage37?.stage3_7_state === 'stage3_7_first_collection_openable') {
+    return {
+      current_stage: 'stage3_first_admissible_collection_opening',
+      current_stage3_substage: 'stage3_7_first_collection_openable'
+    };
+  }
+
+  if (stage36b?.stage3_6b_state) {
+    return {
+      current_stage: 'stage3_runtime_health_and_reproducibility_audit',
+      current_stage3_substage: stage36b.stage3_6b_state
+    };
+  }
+
+  return {
+    current_stage: 'stage3_controlled_execution_opening',
+    current_stage3_substage: 'stage3_6_collection_open_pre_evidential'
+  };
+};
 
 export const STAGE3_ROOT_SCHEMAS = Object.freeze({
   external_adjudication_manifest: readJson('./schemas/external_adjudication_manifest.v1.json'),
@@ -105,19 +146,29 @@ export const STAGE3_ROOT_SCHEMAS = Object.freeze({
   pre_collection_admissibility_gate_result: readJson('./schemas/pre_collection_admissibility_gate_result.v1.json'),
   pre_collection_invalidation_status: readJson('./schemas/pre_collection_invalidation_status.v1.json'),
   stage3_6_controlled_execution_gate: readJson('./schemas/stage3_6_controlled_execution_gate.v1.json'),
-  stage3_6_manifest: readJson('./schemas/stage3_6_manifest.v1.json')
+  stage3_6_manifest: readJson('./schemas/stage3_6_manifest.v1.json'),
+  runtime_health_audit: readJson('./schemas/runtime_health_audit.v1.json'),
+  clean_room_reproducibility_audit: readJson('./schemas/clean_room_reproducibility_audit.v1.json'),
+  path_and_local_leakage_audit: readJson('./schemas/path_and_local_leakage_audit.v1.json'),
+  artifact_regeneration_audit: readJson('./schemas/artifact_regeneration_audit.v1.json'),
+  stage3_6b_runtime_reproducibility_gate: readJson('./schemas/stage3_6b_runtime_reproducibility_gate.v1.json'),
+  stage3_7_opening_gate: readJson('./schemas/stage3_7_opening_gate.v1.json'),
+  first_collection_opening_manifest: readJson('./schemas/first_collection_opening_manifest.v1.json')
 });
 
 export const STAGE3_LAYER_STATUS = Object.freeze({
   layer_name: 'Stage3 External Adjudication Stack',
-  layer_id: 'comparative_expansion_layer.stage3_0_to_stage3_6_external_adjudication_stack',
-  implementation_status: 'stage3_6_controlled_execution_opening_defined',
+  layer_id: 'comparative_expansion_layer.stage3_0_to_stage3_7_external_adjudication_stack',
+  implementation_status: 'stage3_6b_runtime_reproducibility_and_stage3_7_opening_defined',
   interpretation_boundary:
-    'Stage 3 now spans the local scaffold, contract, readiness, freeze, packaging, dry-run, provenance-closure, instantiated-empty, rehearsal, and controlled-execution-opening layers from Stage3-0 through Stage3-6. The stack remains framework-internal only and does not execute external adjudication, instantiate admissible human data, or authorize Paper 10 finality.'
+    'Stage 3 now spans the local scaffold, contract, readiness, freeze, packaging, dry-run, provenance-closure, instantiated-empty, rehearsal, controlled-execution-opening, runtime-health audit, clean-room reproducibility audit, and first-admissible-collection opening criteria layers from Stage3-0 through Stage3-7. The stack remains framework-internal only and does not execute external adjudication, instantiate admissible human data, or authorize Paper 10 finality.'
 });
 
 export class Stage3Layer {
   describe() {
+    const latestStageState = deriveCurrentStageState();
+    const stage36bGate = readArtifactJson('../../artifacts/runtime_health/stage3_6b_runtime_reproducibility_gate.json');
+    const stage37Gate = readArtifactJson('../../artifacts/external_adjudication/stage3_7/stage3_7_opening_gate.json');
     return {
       ...STAGE3_LAYER_STATUS,
       stage3_open: true,
@@ -170,6 +221,18 @@ export class Stage3Layer {
         PRE_COLLECTION_ADMISSIBILITY_GATE.ready_requirements || []
       ).length,
       stage3_6_live_artifact_family_count: listLiveArtifactRoles().length,
+      stage3_6b_runtime_command_count: listRuntimeHealthRequiredCommands().length,
+      stage3_6b_clean_room_requirement_count: listCleanRoomRequiredChecks().length,
+      stage3_7_opening_requirement_count: listStage3_7OpeningRequirements().length,
+      stage3_7_start_prerequisite_count: (
+        FIRST_ADMISSIBLE_COLLECTION_START_POLICY.start_prerequisites || []
+      ).length,
+      stage3_7_collection_start_field_count: (
+        COLLECTION_START_COMMAND_SCHEMA.required_fields || []
+      ).length,
+      stage3_7_operator_authorization_field_count: (
+        OPERATOR_AUTHORIZATION_SCHEMA.required_fields || []
+      ).length,
       adjudication_object_class_count: listExternalAdjudicationObjectClasses().length,
       adjudication_state_count: listExternalAdjudicationStates().length,
       evidence_class_count: listExternalEvidenceClasses().length,
@@ -182,13 +245,19 @@ export class Stage3Layer {
       stage3_artifact_schema_status: STAGE3_ARTIFACT_SCHEMA.implementation_status,
       blocked_surfaces: STAGE3_SURFACE_POLICY.blocked_surfaces || [],
       scaffold_only: false,
-      current_stage: 'stage3_controlled_execution_opening',
-      current_stage3_substage: 'stage3_6_collection_open_pre_evidential',
+      current_stage: latestStageState.current_stage,
+      current_stage3_substage: latestStageState.current_stage3_substage,
+      stage3_6_execution_opening_state: 'collection_openable_under_controls',
+      stage3_6_collection_state: 'stage3_6_collection_open_pre_evidential',
+      stage3_6b_runtime_state: stage36bGate?.stage3_6b_state || 'stage3_6b_runtime_not_built',
+      stage3_7_opening_state: stage37Gate?.stage3_7_state || 'stage3_7_not_open',
       stage3_3_freeze_layer_present: true,
       stage3_4_dry_run_layer_present: true,
       stage3_4b_instantiated_empty_layer_present: true,
       stage3_5_rehearsal_layer_present: true,
-      stage3_6_controlled_execution_layer_present: true
+      stage3_6_controlled_execution_layer_present: true,
+      stage3_6b_runtime_audit_layer_present: Boolean(stage36bGate),
+      stage3_7_first_collection_layer_present: Boolean(stage37Gate)
     };
   }
 }

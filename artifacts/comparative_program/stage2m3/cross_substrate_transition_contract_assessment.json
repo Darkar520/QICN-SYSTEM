@@ -234,7 +234,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; cross-substrate transition contract assessment records transition-contract readiness, preservation-axis readiness, and fork or fracture exposure, not transport preservation, not identity preservation, and not external adjudication.",
   "provenance": {
-    "generated_at": "2026-04-24T06:29:33.974Z",
+    "generated_at": "2026-04-24T21:00:00.071Z",
     "stage2_m2_transport_ref": "artifacts/comparative_program/stage2m2/cross_substrate_transport_assessment.json",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage2_m3.operationalization.v1",
@@ -343,7 +343,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
+        "head": "5f2c5085406db07f5dfb81607569f920777909ea",
         "upstream": "origin/main"
       },
       "qicn_release": {

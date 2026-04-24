@@ -1,0 +1,15 @@
+{
+  "title": "artifact_regeneration_audit.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "artifact_regeneration_state",
+    "changed_artifact_count",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "artifact_regeneration_audit" },
+    "artifact_name": { "const": "artifact_regeneration_audit.json" }
+  }
+}

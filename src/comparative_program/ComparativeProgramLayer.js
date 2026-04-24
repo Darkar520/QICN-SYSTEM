@@ -85,6 +85,16 @@ import {
   listLiveArtifactRoles
 } from './LiveArtifactRegistry.js';
 import {
+  listRuntimeHealthRequiredCommands,
+  listCleanRoomRequiredChecks
+} from './RuntimeHealthAuditRegistry.js';
+import {
+  FIRST_ADMISSIBLE_COLLECTION_START_POLICY,
+  COLLECTION_START_COMMAND_SCHEMA,
+  OPERATOR_AUTHORIZATION_SCHEMA,
+  listStage3_7OpeningRequirements
+} from './FirstCollectionOpeningCriteriaRegistry.js';
+import {
   COMPARATIVE_PROGRAM_ARTIFACT_SCHEMA,
   COMPARATIVE_PROGRAM_EXPECTED_ARTIFACTS,
   COMPARATIVE_PROGRAM_IMPLEMENTED_ARTIFACTS
@@ -92,6 +102,37 @@ import {
 import { COMPARATIVE_PROGRAM_SURFACE_POLICY } from './ComparativeProgramSurfacePolicy.js';
 
 const readJson = (relativePath) => JSON.parse(fs.readFileSync(new URL(relativePath, import.meta.url), 'utf8'));
+const readArtifactJson = (relativePath) => {
+  try {
+    return JSON.parse(fs.readFileSync(new URL(relativePath, import.meta.url), 'utf8'));
+  } catch {
+    return null;
+  }
+};
+
+const deriveCurrentStageState = () => {
+  const stage36b = readArtifactJson('../../artifacts/runtime_health/stage3_6b_runtime_reproducibility_gate.json');
+  const stage37 = readArtifactJson('../../artifacts/external_adjudication/stage3_7/stage3_7_opening_gate.json');
+
+  if (stage37?.stage3_7_state === 'stage3_7_first_collection_openable') {
+    return {
+      current_stage: 'stage3_first_admissible_collection_opening',
+      current_stage3_substage: 'stage3_7_first_collection_openable'
+    };
+  }
+
+  if (stage36b?.stage3_6b_state) {
+    return {
+      current_stage: 'stage3_runtime_health_and_reproducibility_audit',
+      current_stage3_substage: stage36b.stage3_6b_state
+    };
+  }
+
+  return {
+    current_stage: 'stage3_controlled_execution_opening',
+    current_stage3_substage: 'stage3_6_collection_open_pre_evidential'
+  };
+};
 
 export const COMPARATIVE_PROGRAM_ROOT_SCHEMAS = Object.freeze({
   manifest: readJson('./schemas/comparative_program_manifest.v1.json'),
@@ -116,15 +157,18 @@ export const COMPARATIVE_PROGRAM_ROOT_SCHEMAS = Object.freeze({
 
 export const COMPARATIVE_PROGRAM_LAYER_STATUS = Object.freeze({
   layer_name: 'Comparative Expansion Layer',
-  layer_id: 'comparative_expansion_layer.stage3_6_controlled_execution_opening',
-  implementation_status: 'stage3_6_controlled_execution_opening_defined',
-  execution_status: 'stage3_6_controlled_execution_open_pre_evidential_comparative_runtime',
+  layer_id: 'comparative_expansion_layer.stage3_6b_runtime_health_and_stage3_7_first_collection_opening',
+  implementation_status: 'stage3_6b_runtime_health_and_stage3_7_opening_defined',
+  execution_status: 'stage3_7_first_collection_opening_prepared_or_runtime_audited',
   interpretation_boundary:
-    'The comparative layer now preserves Stage 2-M4 internal closure and Stage3 readiness while extending the local stack through Stage3-0, Stage3-1, Stage3-2, Stage3-3, Stage3-4, Stage3-4B, Stage3-5, and Stage3-6 controlled execution opening. It remains framework-internal only and does not establish human equivalence, superiority, external adjudication results, transport-preservation verdicts, identity preservation, or Paper 10 authorization.'
+    'The comparative layer now preserves Stage 2-M4 internal closure and Stage3 readiness while extending the local stack through Stage3-0, Stage3-1, Stage3-2, Stage3-3, Stage3-4, Stage3-4B, Stage3-5, Stage3-6 controlled execution opening, Stage3-6B runtime-health and clean-room reproducibility auditing, and Stage3-7 first-admissible-collection opening criteria. It remains framework-internal only and does not establish human equivalence, superiority, external adjudication results, transport-preservation verdicts, identity preservation, or Paper 10 authorization.'
 });
 
 export class ComparativeProgramLayer {
   describe() {
+    const latestStageState = deriveCurrentStageState();
+    const stage36bGate = readArtifactJson('../../artifacts/runtime_health/stage3_6b_runtime_reproducibility_gate.json');
+    const stage37Gate = readArtifactJson('../../artifacts/external_adjudication/stage3_7/stage3_7_opening_gate.json');
     return {
       ...COMPARATIVE_PROGRAM_LAYER_STATUS,
       comparator_object_class_count: (HUMAN_COMPARATOR_PROTOCOL.comparator_object_classes || []).length,
@@ -149,8 +193,11 @@ export class ComparativeProgramLayer {
       human_comparator_program_open: true,
       human_equivalence_program_open: true,
       cross_substrate_expansion_open: true,
-      current_stage: 'stage3_controlled_execution_opening',
-      comparative_runtime_state: 'stage3_6_collection_open_pre_evidential_non_adjudicative',
+      current_stage: latestStageState.current_stage,
+      comparative_runtime_state:
+        latestStageState.current_stage3_substage === 'stage3_7_first_collection_openable'
+          ? 'stage3_7_first_collection_openable_non_evidential_non_adjudicative'
+          : latestStageState.current_stage3_substage,
       stage2_m2_runtime_opening_complete: true,
       stage2_m3_contract_operationalization_complete: true,
       stage2_m4_internal_closure_complete: true,
@@ -234,6 +281,18 @@ export class ComparativeProgramLayer {
         PRE_COLLECTION_ADMISSIBILITY_GATE.ready_requirements || []
       ).length,
       stage3_6_live_artifact_family_count: listLiveArtifactRoles().length,
+      stage3_6b_runtime_command_count: listRuntimeHealthRequiredCommands().length,
+      stage3_6b_clean_room_requirement_count: listCleanRoomRequiredChecks().length,
+      stage3_7_opening_requirement_count: listStage3_7OpeningRequirements().length,
+      stage3_7_start_prerequisite_count: (
+        FIRST_ADMISSIBLE_COLLECTION_START_POLICY.start_prerequisites || []
+      ).length,
+      stage3_7_collection_start_field_count: (
+        COLLECTION_START_COMMAND_SCHEMA.required_fields || []
+      ).length,
+      stage3_7_operator_authorization_field_count: (
+        OPERATOR_AUTHORIZATION_SCHEMA.required_fields || []
+      ).length,
       comparative_internal_closure_state: 'comparative_internal_closure_ready',
       stage2_m4_state: 'comparative_internal_closure_ready',
       stage3_readiness_state: 'stage3_ready_but_uninstantiated',
@@ -250,8 +309,10 @@ export class ComparativeProgramLayer {
       stage3_5_rehearsal_state: 'stage3_5_rehearsal_ready',
       stage3_6_execution_opening_state: 'collection_openable_under_controls',
       stage3_6_collection_state: 'stage3_6_collection_open_pre_evidential',
+      stage3_6b_runtime_state: stage36bGate?.stage3_6b_state || 'stage3_6b_runtime_not_built',
+      stage3_7_opening_state: stage37Gate?.stage3_7_state || 'stage3_7_not_open',
       paper10_protocol_state: 'paper10_protocol_grade_backbone',
-      current_stage3_substage: 'stage3_6_collection_open_pre_evidential',
+      current_stage3_substage: latestStageState.current_stage3_substage,
       ready_for_stage2_m4: true,
       ready_for_stage3_opening: true,
       stage3_opening_state: 'ready_for_stage3_opening',
@@ -266,7 +327,20 @@ export class ComparativeProgramLayer {
       not_cross_substrate_equivalence_support: true,
       not_identity_preservation_support: true,
       not_external_adjudication: true,
-      external_comparative_adjudication_state: 'controlled_execution_open_pre_evidential_only',
+      external_comparative_adjudication_state:
+        latestStageState.current_stage3_substage === 'stage3_7_first_collection_openable'
+          ? 'first_collection_openable_pre_evidential_only'
+          : latestStageState.current_stage3_substage === 'stage3_7_opening_blocked_by_runtime_health'
+            || latestStageState.current_stage3_substage === 'stage3_7_opening_blocked_by_clean_room'
+            ? 'first_collection_opening_blocked_pre_evidential_only'
+            : latestStageState.current_stage3_substage === 'stage3_6b_runtime_blocked'
+              ? 'runtime_audit_blocked_pre_evidential_only'
+          : latestStageState.current_stage3_substage === 'stage3_6b_runtime_ready'
+            || latestStageState.current_stage3_substage === 'stage3_6b_runtime_ready_with_warnings'
+            ? 'runtime_audited_pre_evidential_only'
+            : 'controlled_execution_open_pre_evidential_only',
+      stage3_6b_runtime_audit_layer_present: Boolean(stage36bGate),
+      stage3_7_first_collection_layer_present: Boolean(stage37Gate),
       not_paper10_authorization: true,
       no_external_validation: true,
       no_metaphysical_closure: true,

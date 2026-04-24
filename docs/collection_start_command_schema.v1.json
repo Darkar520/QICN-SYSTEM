@@ -1,0 +1,23 @@
+{
+  "artifact_role": "collection_start_command_schema",
+  "schema_version": "1.0.0",
+  "required_fields": [
+    "command_id",
+    "authorized_by_operator_id",
+    "session_id",
+    "dataset_family",
+    "contamination_free_start_attestation",
+    "issued_at"
+  ],
+  "optional_fields": [
+    "notes",
+    "linked_local_frozen_record_id",
+    "linked_pre_collection_gate_id"
+  ],
+  "forbidden_fields_until_execution": [
+    "population_payload",
+    "evidence_payload",
+    "reviewer_decision_payload",
+    "adjudicator_decision_payload"
+  ]
+}

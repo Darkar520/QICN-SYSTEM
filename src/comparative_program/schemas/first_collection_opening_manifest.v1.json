@@ -1,0 +1,18 @@
+{
+  "title": "first_collection_opening_manifest.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "stage3_7_state",
+    "runtime_health_state",
+    "clean_room_state",
+    "collection_state",
+    "evidence_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "first_collection_opening_manifest" },
+    "artifact_name": { "const": "first_collection_opening_manifest.json" }
+  }
+}

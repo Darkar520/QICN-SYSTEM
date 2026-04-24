@@ -3,8 +3,8 @@ import path from 'path';
 
 import { PROJECT_ROOT } from './ComparativeRuntimeUtils.js';
 
-const LAYER_VERSION = 'comparative_expansion_layer.stage3_6.paper10_protocol_backbone.v1';
-const ESTIMATOR_VERSION = 'paper10_protocol_hardening_builder.stage3_6.v1';
+const LAYER_VERSION = 'comparative_expansion_layer.stage3_6b_runtime_health_and_stage3_7.paper10_protocol_backbone.v1';
+const ESTIMATOR_VERSION = 'paper10_protocol_hardening_builder.stage3_6b_runtime_health_and_stage3_7.v1';
 
 const PAPER10_DIR = path.join(PROJECT_ROOT, 'paper10_external_adjudication_and_human_comparators');
 const PAPER10_FILES = Object.freeze({
@@ -44,6 +44,17 @@ const REQUIRED_SECTION_PATTERNS = Object.freeze({
   evidence_generation_boundary: /Evidence-Generation Boundary/i,
   decision_record_boundary: /Decision-Record Boundary/i,
   first_collection_transition: /Transition from Session-Zero to First Admissible Collection/i,
+  runtime_health_audit: /Runtime Health Audit/i,
+  clean_room_reproducibility: /Clean-Room Reproducibility/i,
+  dependency_build_assumptions: /Dependency and Build Assumptions/i,
+  reproducible_artifact_regeneration: /Reproducible Artifact Regeneration/i,
+  local_path_leakage_policy: /Local Path Leakage Policy/i,
+  controlled_execution_opening_audit: /Controlled Execution Opening Audit/i,
+  session_zero_reproducibility: /Session-Zero Reproducibility/i,
+  pre_collection_gate_reproducibility: /Pre-Collection Gate Reproducibility/i,
+  reproducibility_not_evidence: /Why Reproducibility Does Not Imply Evidence/i,
+  runtime_health_not_adjudication: /Why Runtime Health Does Not Imply Adjudication/i,
+  first_collection_opening_conditions: /Transition Conditions for First Admissible Collection/i,
   reproducibility_skeleton_architecture: /Reproducibility Skeleton Architecture/i,
   dataset_population_boundary: /Dataset Population Boundary/i,
   dry_run_event_log_grammar: /Dry-Run Event Log Grammar/i,
@@ -77,10 +88,10 @@ export class Paper10ProtocolHardeningBuilder {
       artifact_name: 'paper10_protocol_hardening_status.json',
       artifact_version: '1.0.0',
       schema_version: '1.0.0',
-      layer_id: 'comparative_expansion_layer.stage3_6_controlled_execution_opening',
+      layer_id: 'comparative_expansion_layer.stage3_6b_runtime_health_and_stage3_7_first_collection_opening',
       layer_version: LAYER_VERSION,
       estimator_version: ESTIMATOR_VERSION,
-      implementation_status: 'stage3_6_paper10_protocol_backbone_defined',
+      implementation_status: 'stage3_6b_runtime_health_and_stage3_7_paper10_protocol_backbone_defined',
       paper10_state: 'paper10_protocol_grade_backbone',
       paper10_result_state: 'paper10_result_sections_blocked',
       paper10_authorization_state: 'paper10_not_final_authorized',

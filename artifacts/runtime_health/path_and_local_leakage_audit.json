@@ -1,0 +1,213 @@
+{
+  "artifact_role": "path_and_local_leakage_audit",
+  "artifact_name": "path_and_local_leakage_audit.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6b_path_and_local_leakage_audit",
+  "layer_version": "comparative_expansion_layer.stage3_6b_path_and_local_leakage_audit.v1",
+  "estimator_version": "path_and_local_leakage_audit_builder.v1",
+  "implementation_status": "path_and_local_leakage_audit_defined",
+  "path_leakage_state": "path_leakage_clear_with_historical_examples",
+  "finding_count": 37,
+  "live_normative_leak_count": 0,
+  "blocker_count": 0,
+  "findings": [
+    {
+      "file": "docs/superpowers/plans/2026-04-22-stage3-0-external-adjudication-scaffold.md",
+      "classification": "allowed_historical_snapshot",
+      "note": "Historical planning surface preserved as evidence of prior execution."
+    },
+    {
+      "file": "docs/superpowers/plans/2026-04-22-stage3-1-stage3-2-protocol-hardening.md",
+      "classification": "allowed_historical_snapshot",
+      "note": "Historical planning surface preserved as evidence of prior execution."
+    },
+    {
+      "file": "scripts/audit-execution-campaign.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/build-external-audit-package.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/ecosystem-release-common.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/evaluation-phase-common.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/run-execution-campaign.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-comparative-program-closure.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-comparative-program-operationalization.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-comparative-program-runtime.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-comparative-program-scaffolding.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-paper9-handoff-readiness.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-phenomenal-bridge-ecosystem.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-phenomenal-bridge-gate.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-phenomenal-bridge-interventions.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-phenomenal-bridge-reducibility.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-phenomenal-bridge-scaffolding.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-phenomenal-bridge-surfaces.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-stage3-5-readiness.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-stage3-controlled-execution-opening.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-stage3-execution-pilot.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-stage3-execution-readiness.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-stage3-instantiated-empty.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-stage3-opening-readiness.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-stage3-prereg-freeze.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-stage3-rehearsal-kit.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-stage3-scaffolding.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-subjectivity-continuity-perspective.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-subjectivity-ecosystem.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-subjectivity-gate.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-subjectivity-reducibility.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-subjectivity-scaffolding.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-subjectivity-selfindex-ownership.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "scripts/verify-subjectivity-valuation-intervention.cjs",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "src/comparative_program/ComparativeRuntimeUtils.js",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "src/phenomenal_bridge/PhenomenalBridgeRuntimeUtils.js",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    },
+    {
+      "file": "src/subjectivity/SubjectivityEcosystemIntegrator.js",
+      "classification": "allowed_detector_pattern",
+      "note": "Detector or sibling-root resolution logic, not a leaked absolute path."
+    }
+  ],
+  "boundary_flags": {
+    "historical_snapshots_preserved": true,
+    "live_normative_leaks_absent_after_fix": true,
+    "blocker_absent": true
+  },
+  "provenance": {
+    "generated_at": "2026-04-24T21:07:50.030Z",
+    "current_lineage": {
+      "qicn_system_head": "5f2c5085406db07f5dfb81607569f920777909ea"
+    }
+  },
+  "schema_ref": "src/comparative_program/schemas/path_and_local_leakage_audit.v1.json"
+}

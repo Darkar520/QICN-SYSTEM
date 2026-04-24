@@ -113,7 +113,14 @@ const verifyRuntimeImport = async () => {
   const comparative = await import(moduleUrl);
   const description = comparative.describeComparativeProgramLayer();
   assert(
-    ['stage3_readiness_fulfillment', 'stage3_execution_pilot_preparation', 'stage3_rehearsal_preparation', 'stage3_controlled_execution_opening'].includes(description.current_stage),
+    [
+      'stage3_readiness_fulfillment',
+      'stage3_execution_pilot_preparation',
+      'stage3_rehearsal_preparation',
+      'stage3_controlled_execution_opening',
+      'stage3_runtime_health_and_reproducibility_audit',
+      'stage3_first_admissible_collection_opening'
+    ].includes(description.current_stage),
     'Comparative layer must advertise a valid Stage 3 current stage'
   );
   assert(typeof comparative.createStage3ReadinessFulfillmentBuilder === 'function', 'Stage3 readiness fulfillment builder export missing');

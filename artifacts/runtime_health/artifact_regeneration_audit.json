@@ -1,0 +1,322 @@
+{
+  "artifact_role": "artifact_regeneration_audit",
+  "artifact_name": "artifact_regeneration_audit.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6b_artifact_regeneration_audit",
+  "layer_version": "comparative_expansion_layer.stage3_6b_artifact_regeneration_audit.v1",
+  "estimator_version": "artifact_regeneration_audit_builder.v1",
+  "implementation_status": "artifact_regeneration_audit_defined",
+  "artifact_regeneration_state": "artifacts_regenerated_with_expected_provenance_drift",
+  "changed_artifact_count": 74,
+  "changed_artifacts": [
+    {
+      "artifact": "artifacts/comparative_program/stage2m2/comparative_program_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m2/comparative_program_readiness_gate.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m2/comparative_program_verification_matrix.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m2/cross_substrate_transport_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m2/human_comparator_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m2/human_equivalence_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m3/comparative_operational_readiness.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m3/comparative_program_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m3/comparative_program_readiness_gate.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m3/comparative_program_verification_matrix.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m3/counterpart_artifact_contract_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m3/cross_substrate_transition_contract_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m3/homologation_contract_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m3/human_channel_pathway_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m4/comparative_final_internal_audit.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m4/comparative_program_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m4/comparative_program_readiness_gate.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m4/comparative_program_verification_matrix.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m4/human_channel_instantiation_readiness.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/comparative_program/stage2m4/paper10_comparative_readiness_gate.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_1/human_channel_instantiation_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_1/human_channel_preregistration_readiness.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_1/matched_intervention_dataset_contract_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_1/negative_control_dataset_contract_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_2/external_adjudication_execution_readiness.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_2/external_adjudication_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_2/external_adjudication_readiness_gate.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_2/paper10_protocol_hardening_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_2/reviewer_independence_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_2/stage3_verification_matrix.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_3/adjudicator_assignment_readiness.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_3/blinding_assignment_readiness.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_3/execution_pilot_package_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_3/frozen_preregistration_readiness.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_3/pilot_matched_intervention_bundle_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_3/pilot_negative_control_bundle_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_3/preregistration_lock_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_3/reproducibility_package_skeleton_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_3/reviewer_selection_readiness.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4/execution_pilot_dry_run_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4/execution_pilot_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4/execution_pilot_opening_gate.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4/provenance_closure_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4b/adjudicator_assignment_stub_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4b/adjudicator_candidate_pool_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4b/candidate_pool_template_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4b/decision_record_template_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4b/instantiated_empty_record_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4b/local_frozen_record_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4b/reviewer_assignment_stub_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_4b/reviewer_candidate_pool_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_5/dry_run_sequence_readiness.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_5/execution_pilot_rehearsal_kit_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_5/rehearsal_event_log_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_5/stage3_5_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_5/stage3_5_rehearsal_ready_gate.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/contamination_checklist_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/live_artifact_instantiation_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/live_collection_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/live_decision_record_stub.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/live_evidence_insertion_register.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/live_human_comparator_dataset_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/live_matched_intervention_dataset_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/live_negative_control_dataset_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/live_reproducibility_package_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/pre_collection_admissibility_gate_result.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/pre_collection_gate_result.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/pre_collection_invalidation_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/session_zero_failure_mode_assessment.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/session_zero_gate_result.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/session_zero_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/session_zero_operator_checklist_status.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/stage3_6_controlled_execution_gate.json",
+      "drift_classification": "expected_provenance_drift"
+    },
+    {
+      "artifact": "artifacts/external_adjudication/stage3_6/stage3_6_manifest.json",
+      "drift_classification": "expected_provenance_drift"
+    }
+  ],
+  "paper10_status_coherence": true,
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "no_manual_backfill_claimed": true
+  },
+  "provenance": {
+    "generated_at": "2026-04-24T21:07:50.068Z",
+    "current_lineage": {
+      "qicn_system_head": "5f2c5085406db07f5dfb81607569f920777909ea"
+    }
+  },
+  "schema_ref": "src/comparative_program/schemas/artifact_regeneration_audit.v1.json"
+}

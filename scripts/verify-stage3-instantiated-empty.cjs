@@ -6,7 +6,9 @@ const cp = require('child_process');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const RELEASE_ROOT = path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
+const RELEASE_ROOT = process.env.ECO_RELEASE_ROOT
+  ? path.resolve(process.env.ECO_RELEASE_ROOT)
+  : path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
 const LOCAL_PATH_PATTERN =
   /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|QICN-FRAMEWORK|Sistema Canon Sandbox|rigid-identity-framework/i;
 const BANNED_PATTERNS = [

@@ -52,7 +52,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; human equivalence assessment records bounded ladder placement under missing-channel and underdetermination logic, not human equivalence, not non-equivalence, not superiority, and not external adjudication.",
   "provenance": {
-    "generated_at": "2026-04-24T06:29:33.653Z",
+    "generated_at": "2026-04-24T20:59:59.713Z",
     "human_comparator_assessment_ref": "artifacts/comparative_program/stage2m2/human_comparator_assessment.json",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage2_m2.root.v1",
@@ -161,7 +161,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
+        "head": "5f2c5085406db07f5dfb81607569f920777909ea",
         "upstream": "origin/main"
       },
       "qicn_release": {

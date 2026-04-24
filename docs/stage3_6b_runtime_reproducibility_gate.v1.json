@@ -1,0 +1,28 @@
+{
+  "artifact_role": "stage3_6b_runtime_reproducibility_gate_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6b_runtime_reproducibility_gate",
+  "implementation_status": "stage3_6b_runtime_reproducibility_gate_defined",
+  "required_inputs": [
+    "runtime_health_audit",
+    "clean_room_reproducibility_audit",
+    "path_and_local_leakage_audit",
+    "artifact_regeneration_audit",
+    "paper10_protocol_hardening_status",
+    "stage3_7_opening_gate"
+  ],
+  "stage3_6b_states": [
+    "stage3_6b_runtime_ready",
+    "stage3_6b_runtime_ready_with_warnings",
+    "stage3_6b_runtime_blocked"
+  ],
+  "stage3_7_follow_on_states": [
+    "stage3_7_openable_after_runtime_audit",
+    "stage3_7_blocked_after_runtime_audit"
+  ],
+  "non_implications": [
+    "Runtime reproducibility readiness is not collection start.",
+    "Runtime reproducibility readiness is not evidence.",
+    "Runtime reproducibility readiness is not adjudication."
+  ]
+}

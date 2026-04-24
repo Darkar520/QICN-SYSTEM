@@ -103,6 +103,40 @@ Live-but-unpopulated artifacts are not allowed to substitute for:
 - decision records;
 - adjudication output.
 
+## Runtime-health boundary
+
+Runtime-health audit is allowed to validate:
+
+- dependency-install behavior;
+- build behavior;
+- test behavior;
+- bounded local-start behavior;
+- verifier-chain behavior.
+
+Runtime-health audit is not allowed to substitute for:
+
+- collection-start events;
+- populated datasets;
+- reviewer action;
+- adjudication;
+- result-bearing evidence.
+
+## Clean-room reproducibility boundary
+
+Clean-room reproducibility is allowed to validate:
+
+- bounded rebuildability;
+- reinstallability;
+- source-driven artifact regeneration;
+- reproducibility of Stage3-6 gates.
+
+Clean-room reproducibility is not allowed to substitute for:
+
+- admissible evidence;
+- human comparator data;
+- reviewer or adjudicator decisions;
+- Paper 10 final authorization.
+
 ## Collection-start boundary
 
 Collection-start is not implied by:
@@ -118,6 +152,23 @@ Collection-start requires:
 - an authorized collection-start event;
 - contamination-free session start;
 - the first populated collection-log event.
+
+## First admissible collection opening boundary
+
+Stage3-7 first-collection opening is allowed to validate:
+
+- collection-start command grammar;
+- operator-authorization grammar;
+- runtime-health passage;
+- clean-room reproducibility passage;
+- preservation of pre-evidential state.
+
+Stage3-7 first-collection opening is not allowed to substitute for:
+
+- executed collection start;
+- dataset population;
+- evidence generation;
+- adjudication output.
 
 ## Decision-record boundary
 

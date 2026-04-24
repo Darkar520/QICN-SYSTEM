@@ -407,3 +407,25 @@ export {
   Stage3ControlledExecutionOpeningBuilder,
   createStage3ControlledExecutionOpeningBuilder
 } from './Stage3ControlledExecutionOpeningBuilder.js';
+export {
+  RUNTIME_HEALTH_AUDIT_POLICY,
+  CLEAN_ROOM_REPRODUCIBILITY_AUDIT_POLICY,
+  STAGE3_6B_RUNTIME_REPRODUCIBILITY_GATE_POLICY,
+  listRuntimeHealthRequiredCommands,
+  listCleanRoomRequiredChecks
+} from './RuntimeHealthAuditRegistry.js';
+export {
+  STAGE3_7_FIRST_ADMISSIBLE_COLLECTION_OPENING_CRITERIA,
+  FIRST_ADMISSIBLE_COLLECTION_START_POLICY,
+  COLLECTION_START_COMMAND_SCHEMA,
+  OPERATOR_AUTHORIZATION_SCHEMA,
+  listStage3_7OpeningRequirements
+} from './FirstCollectionOpeningCriteriaRegistry.js';
+export {
+  Stage3_6BRuntimeReproducibilityGateBuilder,
+  createStage3_6BRuntimeReproducibilityGateBuilder
+} from './Stage3_6BRuntimeReproducibilityGateBuilder.js';
+export {
+  Stage3_7FirstAdmissibleCollectionGateBuilder,
+  createStage3_7FirstAdmissibleCollectionGateBuilder
+} from './Stage3_7FirstAdmissibleCollectionGateBuilder.js';

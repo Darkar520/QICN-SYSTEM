@@ -1,0 +1,15 @@
+{
+  "title": "path_and_local_leakage_audit.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "path_leakage_state",
+    "finding_count",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "path_and_local_leakage_audit" },
+    "artifact_name": { "const": "path_and_local_leakage_audit.json" }
+  }
+}

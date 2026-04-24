@@ -1,6 +1,6 @@
 # Stage3 Non-Claims
 
-`Stage3-0`, `Stage3-1`, `Stage3-2`, `Stage3-3`, `Stage3-4`, `Stage3-4B`, `Stage3-5`, and `Stage3-6` do not establish:
+`Stage3-0`, `Stage3-1`, `Stage3-2`, `Stage3-3`, `Stage3-4`, `Stage3-4B`, `Stage3-5`, `Stage3-6`, `Stage3-6B`, and `Stage3-7` do not establish:
 
 - external adjudication;
 - human comparator evidence;
@@ -29,5 +29,8 @@ They also do not permit:
 - collection start to be implied from live-but-unpopulated artifacts;
 - collection start to be implied from session-zero readiness;
 - evidence generation to be implied from controlled execution opening;
+- evidence generation to be implied from runtime-health passage;
+- evidence generation to be implied from clean-room reproducibility;
+- collection start to be implied from Stage3-7 opening criteria;
 - public release promotion of the scaffold-only or protocol-grade local Paper 10 source;
 - use of Paper 9 publication as a substitute for external adjudication.

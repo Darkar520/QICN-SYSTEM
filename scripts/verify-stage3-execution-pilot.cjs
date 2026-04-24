@@ -6,7 +6,9 @@ const cp = require('child_process');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const RELEASE_ROOT = path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
+const RELEASE_ROOT = process.env.ECO_RELEASE_ROOT
+  ? path.resolve(process.env.ECO_RELEASE_ROOT)
+  : path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
 const LOCAL_PATH_PATTERN =
   /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|QICN-FRAMEWORK|Sistema Canon Sandbox|rigid-identity-framework/i;
 
@@ -89,8 +91,18 @@ const verifyRuntimeImport = async () => {
   assert(description.stage3_4_dry_run_layer_present === true, 'Comparative layer must advertise Stage3-4 presence');
   assert(description.stage3_4_execution_pilot_state === 'execution_pilot_dry_run_open', 'Comparative layer must advertise dry-run open state');
   assert(
-    ['stage3_4_execution_pilot_dry_run', 'stage3_5_rehearsal_ready', 'stage3_6_collection_open_pre_evidential'].includes(description.current_stage3_substage),
-    'Comparative layer must advertise Stage3-4 dry-run or a later bounded rehearsal or controlled-execution substage'
+    [
+      'stage3_4_execution_pilot_dry_run',
+      'stage3_5_rehearsal_ready',
+      'stage3_6_collection_open_pre_evidential',
+      'stage3_6b_runtime_blocked',
+      'stage3_6b_runtime_ready',
+      'stage3_6b_runtime_ready_with_warnings',
+      'stage3_7_opening_blocked_by_runtime_health',
+      'stage3_7_opening_blocked_by_clean_room',
+      'stage3_7_first_collection_openable'
+    ].includes(description.current_stage3_substage),
+    'Comparative layer must advertise Stage3-4 dry-run or a later bounded rehearsal, controlled-execution, runtime-audit, or Stage3-7 substage'
   );
 };
 

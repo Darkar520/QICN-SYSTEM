@@ -6,7 +6,9 @@ const cp = require('child_process');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const RELEASE_ROOT = path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
+const RELEASE_ROOT = process.env.ECO_RELEASE_ROOT
+  ? path.resolve(process.env.ECO_RELEASE_ROOT)
+  : path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
 const LOCAL_PATH_PATTERN =
   /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|QICN-FRAMEWORK|Sistema Canon Sandbox|rigid-identity-framework/i;
 const BANNED_PATTERNS = [
@@ -169,7 +171,14 @@ const verifyRuntimeImport = async () => {
   const comparative = await import(moduleUrl);
   const description = comparative.describeComparativeProgramLayer();
   assert(
-    ['stage3_readiness_fulfillment', 'stage3_execution_pilot_preparation', 'stage3_rehearsal_preparation', 'stage3_controlled_execution_opening'].includes(description.current_stage),
+    [
+      'stage3_readiness_fulfillment',
+      'stage3_execution_pilot_preparation',
+      'stage3_rehearsal_preparation',
+      'stage3_controlled_execution_opening',
+      'stage3_runtime_health_and_reproducibility_audit',
+      'stage3_first_admissible_collection_opening'
+    ].includes(description.current_stage),
     'Comparative layer must advertise a valid Stage 3 family'
   );
   assert(
@@ -178,7 +187,13 @@ const verifyRuntimeImport = async () => {
       'stage3_3_preregistration_freeze_and_pilot_packaging',
       'stage3_4_execution_pilot_dry_run',
       'stage3_5_rehearsal_ready',
-      'stage3_6_collection_open_pre_evidential'
+      'stage3_6_collection_open_pre_evidential',
+      'stage3_6b_runtime_blocked',
+      'stage3_6b_runtime_ready',
+      'stage3_6b_runtime_ready_with_warnings',
+      'stage3_7_opening_blocked_by_runtime_health',
+      'stage3_7_opening_blocked_by_clean_room',
+      'stage3_7_first_collection_openable'
     ].includes(description.current_stage3_substage),
     'Comparative layer must advertise a valid Stage3 substage'
   );

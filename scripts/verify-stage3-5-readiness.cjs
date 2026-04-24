@@ -6,7 +6,9 @@ const cp = require('child_process');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const RELEASE_ROOT = path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
+const RELEASE_ROOT = process.env.ECO_RELEASE_ROOT
+  ? path.resolve(process.env.ECO_RELEASE_ROOT)
+  : path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
 const LOCAL_PATH_PATTERN =
   /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|QICN-FRAMEWORK|Sistema Canon Sandbox|rigid-identity-framework/i;
 const BANNED_PATTERNS = [
@@ -105,7 +107,7 @@ const verifyArtifacts = () => {
 
 const verifyPaper10 = () => {
   const mainTex = readText('paper10_external_adjudication_and_human_comparators/main.tex');
-  assert(/(FOURTH|FIFTH) HARDENING PASS/i.test(mainTex), 'Paper 10 fourth-or-fifth hardening banner missing');
+  assert(/(FOURTH|FIFTH|SIXTH) HARDENING PASS/i.test(mainTex), 'Paper 10 fourth-, fifth-, or sixth-hardening banner missing');
   assert(/Instantiated-Empty Record Layer/i.test(mainTex), 'Paper 10 instantiated-empty section missing');
   assert(/Execution Pilot Rehearsal Kit Architecture/i.test(mainTex), 'Paper 10 rehearsal-kit section missing');
   assert(/State Grammar for Execution Readiness/i.test(mainTex), 'Paper 10 state-grammar section missing');
@@ -118,12 +120,26 @@ const verifyRuntimeImport = async () => {
   const comparative = await import(moduleUrl);
   const description = comparative.describeComparativeProgramLayer();
   assert(
-    ['stage3_rehearsal_preparation', 'stage3_controlled_execution_opening'].includes(description.current_stage),
-    'Comparative layer must advertise the Stage3 rehearsal or later controlled-execution family'
+    [
+      'stage3_rehearsal_preparation',
+      'stage3_controlled_execution_opening',
+      'stage3_runtime_health_and_reproducibility_audit',
+      'stage3_first_admissible_collection_opening'
+    ].includes(description.current_stage),
+    'Comparative layer must advertise the Stage3 rehearsal family or a later bounded Stage3-6/6B/7 stage'
   );
   assert(
-    ['stage3_5_rehearsal_ready', 'stage3_6_collection_open_pre_evidential'].includes(description.current_stage3_substage),
-    'Comparative layer must advertise the Stage3-5 rehearsal-ready or later Stage3-6 pre-evidential substage'
+    [
+      'stage3_5_rehearsal_ready',
+      'stage3_6_collection_open_pre_evidential',
+      'stage3_6b_runtime_blocked',
+      'stage3_6b_runtime_ready',
+      'stage3_6b_runtime_ready_with_warnings',
+      'stage3_7_opening_blocked_by_runtime_health',
+      'stage3_7_opening_blocked_by_clean_room',
+      'stage3_7_first_collection_openable'
+    ].includes(description.current_stage3_substage),
+    'Comparative layer must advertise the Stage3-5 rehearsal-ready or a later bounded Stage3-6/6B/7 substage'
   );
   assert(description.stage3_4b_instantiated_empty_layer_present === true, 'Comparative layer must advertise Stage3-4B presence');
   assert(description.stage3_5_rehearsal_layer_present === true, 'Comparative layer must advertise Stage3-5 presence');

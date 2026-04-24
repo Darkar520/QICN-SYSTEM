@@ -6,9 +6,11 @@ const cp = require('child_process');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const RELEASE_ROOT = path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
+const RELEASE_ROOT = process.env.ECO_RELEASE_ROOT
+  ? path.resolve(process.env.ECO_RELEASE_ROOT)
+  : path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
 const LOCAL_PATH_PATTERN =
-  /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|QICN-FRAMEWORK|Sistema Canon Sandbox|rigid-identity-framework/i;
+  /\/c:\/|[A-Za-z]:[\\/](?:Users|users)[\\/]|OneDrive|Escritorio|QICN-FRAMEWORK|Sistema Canon Sandbox|rigid-identity-framework/i;
 const BANNED_PATTERNS = [
   /human equivalence (achieved|demonstrated|supported|established)/i,
   /superiority (achieved|demonstrated|supported|established)/i,
@@ -233,7 +235,7 @@ const verifyArtifacts = () => {
 
 const verifyPaper10 = () => {
   const mainTex = readText('paper10_external_adjudication_and_human_comparators/main.tex');
-  assert(/FIFTH HARDENING PASS/i.test(mainTex), 'Paper 10 fifth hardening banner missing');
+  assert(/(FIFTH|SIXTH) HARDENING PASS/i.test(mainTex), 'Paper 10 fifth-or-sixth hardening banner missing');
   assert(/Controlled Execution Opening/i.test(mainTex), 'Paper 10 controlled execution opening section missing');
   assert(/Session-Zero Protocol/i.test(mainTex), 'Paper 10 session-zero section missing');
   assert(/Pre-Collection Admissibility Gate/i.test(mainTex), 'Paper 10 pre-collection section missing');
@@ -248,13 +250,49 @@ const verifyRuntimeImport = async () => {
   const description = comparative.describeComparativeProgramLayer();
   const stage3 = comparative.describeStage3Layer();
 
-  assert(description.current_stage === 'stage3_controlled_execution_opening', 'Comparative layer must advertise Stage3-6 as the current stage');
-  assert(description.current_stage3_substage === 'stage3_6_collection_open_pre_evidential', 'Comparative layer must advertise the Stage3-6 current substage');
+  assert(
+    [
+      'stage3_controlled_execution_opening',
+      'stage3_runtime_health_and_reproducibility_audit',
+      'stage3_first_admissible_collection_opening'
+    ].includes(description.current_stage),
+    'Comparative layer must advertise Stage3-6 or a later bounded Stage3-6B/7 stage'
+  );
+  assert(
+    [
+      'stage3_6_collection_open_pre_evidential',
+      'stage3_6b_runtime_blocked',
+      'stage3_6b_runtime_ready',
+      'stage3_6b_runtime_ready_with_warnings',
+      'stage3_7_opening_blocked_by_runtime_health',
+      'stage3_7_opening_blocked_by_clean_room',
+      'stage3_7_first_collection_openable'
+    ].includes(description.current_stage3_substage),
+    'Comparative layer must advertise the Stage3-6 or later bounded Stage3-6B/7 substage'
+  );
   assert(description.stage3_6_controlled_execution_layer_present === true, 'Comparative layer must advertise Stage3-6 presence');
   assert(description.stage3_6_execution_opening_state === 'collection_openable_under_controls', 'Comparative layer must advertise controlled execution openability');
   assert(description.stage3_6_collection_state === 'stage3_6_collection_open_pre_evidential', 'Comparative layer must advertise pre-evidential Stage3-6 state');
-  assert(stage3.current_stage === 'stage3_controlled_execution_opening', 'Stage3 layer must advertise Stage3-6 as the current stage');
-  assert(stage3.current_stage3_substage === 'stage3_6_collection_open_pre_evidential', 'Stage3 layer must advertise Stage3-6 substage');
+  assert(
+    [
+      'stage3_controlled_execution_opening',
+      'stage3_runtime_health_and_reproducibility_audit',
+      'stage3_first_admissible_collection_opening'
+    ].includes(stage3.current_stage),
+    'Stage3 layer must advertise Stage3-6 or a later bounded Stage3-6B/7 stage'
+  );
+  assert(
+    [
+      'stage3_6_collection_open_pre_evidential',
+      'stage3_6b_runtime_blocked',
+      'stage3_6b_runtime_ready',
+      'stage3_6b_runtime_ready_with_warnings',
+      'stage3_7_opening_blocked_by_runtime_health',
+      'stage3_7_opening_blocked_by_clean_room',
+      'stage3_7_first_collection_openable'
+    ].includes(stage3.current_stage3_substage),
+    'Stage3 layer must advertise the Stage3-6 or later bounded Stage3-6B/7 substage'
+  );
   assert(stage3.stage3_6_controlled_execution_layer_present === true, 'Stage3 layer must advertise Stage3-6 presence');
   assert(typeof comparative.createStage3ControlledExecutionOpeningBuilder === 'function', 'Stage3 controlled execution opening builder export missing');
 };

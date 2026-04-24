@@ -121,3 +121,23 @@ Normalized status values used below:
 - Internal artifacts: `artifacts/external_adjudication/stage3_6/live_artifact_instantiation_status.json`, `artifacts/external_adjudication/stage3_6/session_zero_manifest.json`, `artifacts/external_adjudication/stage3_6/live_collection_manifest.json`, `artifacts/external_adjudication/stage3_6/live_collection_log.ndjson`, `artifacts/external_adjudication/stage3_6/live_human_comparator_dataset_manifest.json`, `artifacts/external_adjudication/stage3_6/live_matched_intervention_dataset_manifest.json`, `artifacts/external_adjudication/stage3_6/live_negative_control_dataset_manifest.json`, `artifacts/external_adjudication/stage3_6/live_reproducibility_package_manifest.json`, `artifacts/external_adjudication/stage3_6/live_decision_record_stub.json`, `artifacts/external_adjudication/stage3_6/live_evidence_insertion_register.json`, `artifacts/external_adjudication/stage3_6/session_zero_gate_result.json`, `artifacts/external_adjudication/stage3_6/session_zero_operator_checklist_status.json`, `artifacts/external_adjudication/stage3_6/session_zero_failure_mode_assessment.json`, `artifacts/external_adjudication/stage3_6/pre_collection_gate_result.json`, `artifacts/external_adjudication/stage3_6/pre_collection_admissibility_gate_result.json`, `artifacts/external_adjudication/stage3_6/contamination_checklist_status.json`, `artifacts/external_adjudication/stage3_6/pre_collection_invalidation_status.json`, `artifacts/external_adjudication/stage3_6/stage3_6_controlled_execution_gate.json`, `artifacts/external_adjudication/stage3_6/stage3_6_manifest.json`
 - Verification: `npm run build:stage3-controlled-execution-opening`, `npm run verify:stage3-controlled-execution-opening`
 - Boundary: controlled-execution-openable only; collection remains not started, datasets remain empty, evidence remains absent, adjudication remains closed, and Paper 10 remains local, non-result-bearing, and not final-authorized.
+
+## Stage3-6B runtime health and clean-room reproducibility layer
+
+- Status: `implemented_internal_support`
+- Governance docs: `docs/RUNTIME_HEALTH_AUDIT.md`, `docs/CLEAN_ROOM_REPRODUCIBILITY_AUDIT.md`, `docs/PATH_AND_LOCAL_LEAKAGE_AUDIT.md`, `docs/ARTIFACT_REGENERATION_AUDIT.md`
+- Machine-readable manifests: `docs/runtime_health_audit.v1.json`, `docs/clean_room_reproducibility_audit.v1.json`, `docs/stage3_6b_runtime_reproducibility_gate.v1.json`
+- Runtime layer: `src/comparative_program/RuntimeHealthAuditRegistry.js`, `src/comparative_program/Stage3_6BRuntimeReproducibilityGateBuilder.js`
+- Internal artifacts: `artifacts/runtime_health/runtime_health_audit.json`, `artifacts/runtime_health/clean_room_reproducibility_audit.json`, `artifacts/runtime_health/path_and_local_leakage_audit.json`, `artifacts/runtime_health/artifact_regeneration_audit.json`, `artifacts/runtime_health/stage3_6b_runtime_reproducibility_gate.json`
+- Verification: `npm run build:stage3-runtime-health`, `npm run verify:stage3-runtime-health`
+- Boundary: runtime-support and reproducibility only; not collection start, not evidence generation, not adjudication, and not Paper 10 final authorization.
+
+## Stage3-7 first admissible collection opening criteria layer
+
+- Status: `implemented_internal_support`
+- Governance docs: `docs/STAGE3_7_FIRST_ADMISSIBLE_COLLECTION_BOUNDARY.md`, `docs/FIRST_ADMISSIBLE_COLLECTION_UNLOCK_MAP.md`
+- Machine-readable manifests: `docs/stage3_7_first_admissible_collection_opening_criteria.v1.json`, `docs/first_admissible_collection_start_policy.v1.json`, `docs/collection_start_command_schema.v1.json`, `docs/operator_authorization_schema.v1.json`
+- Runtime layer: `src/comparative_program/FirstCollectionOpeningCriteriaRegistry.js`, `src/comparative_program/Stage3_7FirstAdmissibleCollectionGateBuilder.js`
+- Internal artifacts: `artifacts/external_adjudication/stage3_7/stage3_7_opening_gate.json`, `artifacts/external_adjudication/stage3_7/first_collection_opening_manifest.json`
+- Verification: `npm run build:stage3-first-collection-opening`, `npm run verify:stage3-first-collection-opening`
+- Boundary: criteria-only opening state; collection start remains unexecuted, evidence remains absent, adjudication remains closed, decision records remain absent, and Paper 10 remains local, non-result-bearing, and not final-authorized.

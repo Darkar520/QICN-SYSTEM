@@ -13,6 +13,7 @@ import { PhenomenologyCore } from './PhenomenologyCore.js';
 import { MetaSovereigntyCheck } from './MetaSovereigntyCheck.js';
 import { WorldModelEngine } from './WorldModelEngine.js';
 import { CognitiveEmergencePlanner } from './CognitiveEmergencePlanner.js';
+import { createRng } from '../utils/determinism.js';
 
 export class OntologicalSingularityCore {
     constructor() {
@@ -378,6 +379,27 @@ export class OntologicalSingularityCore {
         return Number.isFinite(numeric) ? numeric : fallback;
     }
 
+    _mixSeed(seed, value) {
+        const numeric = Math.floor(this._toFinite(value, 0));
+        let mixed = (seed ^ (numeric >>> 0)) >>> 0;
+        mixed = Math.imul(mixed, 16777619) >>> 0;
+        return mixed || 1;
+    }
+
+    _buildPlannerSeed(planningState = {}, horizonTicks = 0, quantumEpsilon = 0) {
+        let seed = (Math.floor(this._toFinite(this.seed, QICNConfig.CORE_SEED || 0)) >>> 0) || 1;
+        seed = this._mixSeed(seed, Math.round(this._toFinite(planningState.ccc, 0) * 1e6));
+        seed = this._mixSeed(seed, Math.round(this._toFinite(planningState.pmia, 0) * 1e6));
+        seed = this._mixSeed(seed, Math.round(this._toFinite(planningState.sensorySignal, 0) * 1e6));
+        seed = this._mixSeed(seed, Math.round(this._toFinite(planningState.sensorDelta, 0) * 1e6));
+        seed = this._mixSeed(seed, Math.round(this._toFinite(planningState.stasisIndex, 0) * 1e6));
+        seed = this._mixSeed(seed, Math.round(this._toFinite(planningState.entropyExcitation, 0) * 1e6));
+        seed = this._mixSeed(seed, Math.round(this._toFinite(planningState.energyDispersion, 0) * 1e6));
+        seed = this._mixSeed(seed, Math.round(this._toFinite(quantumEpsilon, 0) * 1e6));
+        seed = this._mixSeed(seed, horizonTicks);
+        return seed || 1;
+    }
+
     setQuantumBridgeRef(bridge) {
         this._quantumBridgeRef = bridge || null;
     }
@@ -504,11 +526,15 @@ export class OntologicalSingularityCore {
             this.worldModelEngine.observeTick(planningState);
         }
         if (this.cognitivePlanner?.planAction) {
+            const plannerRandom = createRng(
+                this._buildPlannerSeed(planningState, horizonTicks, quantumEpsilon)
+            );
             plannerResult = this.cognitivePlanner.planAction({
                 initialState: planningState,
                 worldModel: this.worldModelEngine,
                 plannerEnabled: true,
                 worldModelEnabled: true,
+                randomFn: plannerRandom,
                 objectiveFn: ({ currentState, nextState, action, step }) => {
                     const c = currentState?.ccc ?? 0;
                     const n = nextState?.ccc ?? c;

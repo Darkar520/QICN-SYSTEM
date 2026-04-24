@@ -1,0 +1,23 @@
+{
+  "artifact_role": "first_admissible_collection_start_policy",
+  "schema_version": "1.0.0",
+  "policy_version": "1.0.0",
+  "start_prerequisites": [
+    "operator_authorization_recorded",
+    "collection_start_command_recorded",
+    "contamination_free_start_confirmed",
+    "session_zero_ready",
+    "pre_collection_gate_open_under_controls",
+    "live_artifacts_still_unpopulated_at_start_boundary"
+  ],
+  "abort_conditions": [
+    "unauthorized_dataset_population",
+    "evidential_log_entry_before_authorized_start",
+    "decision_stub_population_before_authorized_start",
+    "contamination_detected_at_start_boundary"
+  ],
+  "non_implications": [
+    "Start policy is not a start event.",
+    "Start policy is not evidence."
+  ]
+}

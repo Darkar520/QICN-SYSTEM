@@ -1,0 +1,22 @@
+{
+  "artifact_role": "operator_authorization_schema",
+  "schema_version": "1.0.0",
+  "required_fields": [
+    "authorization_id",
+    "operator_role",
+    "authorized_scope",
+    "authorized_collection_family",
+    "attests_session_zero_ready",
+    "attests_pre_collection_gate_open",
+    "issued_at"
+  ],
+  "optional_fields": [
+    "notes",
+    "linked_command_id"
+  ],
+  "forbidden_fields_until_execution": [
+    "dataset_population_payload",
+    "reviewer_identity_payload",
+    "adjudicator_identity_payload"
+  ]
+}

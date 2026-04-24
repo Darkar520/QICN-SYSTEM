@@ -21,6 +21,15 @@
 - pre-collection admissibility grammar;
 - contamination, abort, and invalidation grammar;
 - operator-checklist grammar;
+- runtime-health audit grammar;
+- clean-room reproducibility grammar;
+- dependency and build assumptions;
+- reproducible artifact-regeneration grammar;
+- local path-leakage policy;
+- controlled-execution opening audit grammar;
+- session-zero reproducibility grammar;
+- pre-collection gate reproducibility grammar;
+- Stage3-7 first-collection opening criteria as criteria only;
 - dry-run event-log grammar;
 - execution state grammar;
 - reproducibility skeleton architecture;
@@ -45,6 +54,9 @@
 - any statement that depends on collection-start events;
 - any statement that depends on live artifact population;
 - any statement that depends on decision-record population.
+- any statement that depends on runtime-health success being treated as evidence;
+- any statement that depends on clean-room success being treated as evidence;
+- any statement that depends on Stage3-7 openability being treated as collection start.
 
 ## Blocked until external adjudication
 
@@ -82,3 +94,6 @@ reviewer-governed adjudication exists, and the later result-bearing sections are
 honestly written from those artifacts.
 Controlled execution opening remains a pre-evidential state only; it is not a
 license to speak as if collection had already started.
+Runtime health and clean-room reproducibility remain executable-support states
+only; they are not evidence, not adjudication, and not authority to write
+result-bearing prose.

@@ -3,10 +3,10 @@
   "artifact_name": "paper10_protocol_hardening_status.json",
   "artifact_version": "1.0.0",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage3_6_controlled_execution_opening",
-  "layer_version": "comparative_expansion_layer.stage3_6.paper10_protocol_backbone.v1",
-  "estimator_version": "paper10_protocol_hardening_builder.stage3_6.v1",
-  "implementation_status": "stage3_6_paper10_protocol_backbone_defined",
+  "layer_id": "comparative_expansion_layer.stage3_6b_runtime_health_and_stage3_7_first_collection_opening",
+  "layer_version": "comparative_expansion_layer.stage3_6b_runtime_health_and_stage3_7.paper10_protocol_backbone.v1",
+  "estimator_version": "paper10_protocol_hardening_builder.stage3_6b_runtime_health_and_stage3_7.v1",
+  "implementation_status": "stage3_6b_runtime_health_and_stage3_7_paper10_protocol_backbone_defined",
   "paper10_state": "paper10_protocol_grade_backbone",
   "paper10_result_state": "paper10_result_sections_blocked",
   "paper10_authorization_state": "paper10_not_final_authorized",
@@ -43,6 +43,17 @@
     "evidence_generation_boundary": true,
     "decision_record_boundary": true,
     "first_collection_transition": true,
+    "runtime_health_audit": true,
+    "clean_room_reproducibility": true,
+    "dependency_build_assumptions": true,
+    "reproducible_artifact_regeneration": true,
+    "local_path_leakage_policy": true,
+    "controlled_execution_opening_audit": true,
+    "session_zero_reproducibility": true,
+    "pre_collection_gate_reproducibility": true,
+    "reproducibility_not_evidence": true,
+    "runtime_health_not_adjudication": true,
+    "first_collection_opening_conditions": true,
     "reproducibility_skeleton_architecture": true,
     "dataset_population_boundary": true,
     "dry_run_event_log_grammar": true,
@@ -57,9 +68,9 @@
   "blocked_result_marker_present": true,
   "protocol_table_present": true,
   "evidence_placeholder_count": 30,
-  "section_status_marker_count": 54,
-  "claim_boundary_block_count": 59,
-  "evidence_requirement_block_count": 10,
+  "section_status_marker_count": 65,
+  "claim_boundary_block_count": 71,
+  "evidence_requirement_block_count": 13,
   "boundary_flags": {
     "framework_internal_only": true,
     "non_result_bearing": true,
@@ -74,7 +85,7 @@
   ],
   "interpretation_boundary": "Paper 10 is hardened into a protocol-grade, non-result-bearing manuscript backbone only. It remains blocked from final claims until later admissible execution-era evidence exists, later reviewer and adjudicator action exists, and later result-bearing sections are written honestly from those records.",
   "provenance": {
-    "generated_at": "2026-04-24T06:29:35.157Z",
+    "generated_at": "2026-04-24T21:00:01.349Z",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage3_2_external_adjudication_readiness.v1",
       "estimator_version": "stage3_execution_readiness_builder.v1",
@@ -182,7 +193,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
+        "head": "5f2c5085406db07f5dfb81607569f920777909ea",
         "upstream": "origin/main"
       },
       "qicn_release": {
@@ -244,11 +255,11 @@
       },
       "paper10_main_tex": {
         "ref": "paper10_external_adjudication_and_human_comparators/main.tex",
-        "sha256": "e7933419abb3e22650df2a4f4783afe8b78ff93edb88af91dafe4e3581c8a09b"
+        "sha256": "020e2d31b942138ef92acdde16c041bd19af5cac1544a1bf4d6a1d0377c6dc02"
       },
       "paper10_section_status": {
         "ref": "paper10_external_adjudication_and_human_comparators/PAPER10_SECTION_STATUS.md",
-        "sha256": "339dc48301819b8e1adb19c9eb56d6117034b9f7a1babeb4db95d2bd15d2ff29"
+        "sha256": "0358e45f71b5859ba1246e2f72aff4f9f8a477e28e792be11953dd6fc8de6a18"
       },
       "stage2_m4_readiness_state": "comparative_internal_closure_ready",
       "stage3_opening_state": "ready_for_stage3_opening"

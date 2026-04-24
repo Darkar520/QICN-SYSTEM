@@ -1,0 +1,169 @@
+{
+  "artifact_role": "runtime_health_audit",
+  "artifact_name": "runtime_health_audit.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6b_runtime_health_audit",
+  "layer_version": "comparative_expansion_layer.stage3_6b_runtime_health_audit.v1",
+  "estimator_version": "runtime_health_audit_builder.v1",
+  "implementation_status": "runtime_health_audit_defined",
+  "runtime_health_state": "runtime_health_pass_with_warnings",
+  "environment": {
+    "platform": "win32",
+    "arch": "x64",
+    "node_version": "v24.6.0",
+    "npm_version": "11.5.1",
+    "declared_node_engine": "20.x",
+    "package_lock_present": true
+  },
+  "dependency_install": {
+    "preferred_command": "npm ci",
+    "preferred_status": "preferred_install_passed",
+    "fallback_command": null,
+    "fallback_status": null
+  },
+  "build_status": "passed",
+  "test_status": "passed",
+  "start_local_status": "passed",
+  "command_results": [
+    {
+      "id": "node_version",
+      "command": "node -v",
+      "cwd": ".",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 38,
+      "stdout_excerpt": "v24.6.0",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "npm_version",
+      "command": "npm -v",
+      "cwd": ".",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 194,
+      "stdout_excerpt": "11.5.1",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "dependency_install_preferred",
+      "command": "npm ci",
+      "cwd": ".",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 4205,
+      "stdout_excerpt": "added 189 packages, and audited 190 packages in 4s\n44 packages are looking for funding\n  run `npm fund` for details\n7 vulnerabilities (3 moderate, 4 high)\nTo address all issues, run:\n  npm audit fix\nRun `npm audit` for details.",
+      "stderr_excerpt": "npm warn EBADENGINE Unsupported engine {\nnpm warn EBADENGINE   package: 'versiones-de-interfaz@1.0.0',\nnpm warn EBADENGINE   required: { node: '20.x' },\nnpm warn EBADENGINE   current: { node: 'v24.6.0', npm: '11.5.1' }\nnpm warn EBADENGINE }",
+      "error": null
+    },
+    {
+      "id": "repository_build",
+      "command": "npm run build",
+      "cwd": ".",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 4880,
+      "stdout_excerpt": "   ├ src/simulation/NodalProcessingLayer.js                       1.6kb    0.2%\n   ├ config/interventions/preregister.v1.json                     1.6kb    0.2%\n   ├ src/components/AccessGate.jsx                                1.5kb    0.2%\n   ├ src/simulation/InformationalEntanglementField.js             1.2kb    0.1%\n   ├ src/canon/provenance/CanonicalProvenance.js                  1.1kb    0.1%\n   ├ src/canon/sourceOfTruth.js                                   881b     0.1%\n   ├ src/hooks/useDeviceCapabilities.js                           511b     0.1%\n   ├ src/hooks/useBreakpoint.js                                   480b     0.1%\n   ├ src/utils/determinism.js                                     350b     0.0%\n   ├ src/utils/pinhole.js                                         335b     0.0%\n   ├ src/utils/tick_invariants.js                                 300b     0.0%\n   ├ node_modules/react-dom/client.js                             253b     0.0%\n   ├ node_modules/react-dom/index.js                              253b     0.0%\n   ├ node_modules/react/index.js                                   51b     0.0%\n   └ node_modules/scheduler/index.js                               51b     0.0%\n> versiones-de-interfaz@1.0.0 build:css\n> tailwindcss -c tailwind.config.cjs -i ./src/styles/tailwind.input.css -o ./dist/tailwind.css --minify\n> versiones-de-interfaz@1.0.0 build:sync\n> node scripts/sync-netlify-assets.cjs\n[QICN] Sync deploy assets OK\n[QICN] Dist static synced: index.html, manifest.webmanifest, sw.js, favicon.svg\n[QICN] Root runtime synced: bundle.js, tailwind.css, network_canvas_worker.js\n[QICN] _redirects generado en root y dist\n[encoding-check] OK: UTF-8 integrity validated for dist artifacts.",
+      "stderr_excerpt": "  dist\\bundle.js      857.4kb\n  dist\\bundle.js.map    2.7mb\nDone in 308ms\nBrowserslist: caniuse-lite is outdated. Please run:\n  npx update-browserslist-db@latest\n  Why you should do it regularly: https://github.com/browserslist/update-db#readme\nRebuilding...\nDone in 1576ms.",
+      "error": null
+    },
+    {
+      "id": "repository_test",
+      "command": "npm test",
+      "cwd": ".",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 17942,
+      "stdout_excerpt": "🔄 Reintentando reconocimiento de voz en 1s... (intento 1/2)\n🔇 Speech Recognition terminó\n🎤 Speech Recognition: ESCUCHANDO\n🔄 Reconocimiento de voz (Web Speech) reiniciado\n🔌 Percepción sensorial desactivada\nOK: speech FSM test passed\n[tests] Running tests\\stasis-break-criteria.v411.test.js\nok stasis-break-criteria.v411\n[tests] Running tests\\tab-quick-help-tour.v47.test.js\nok tab-quick-help-tour.v47\n[tests] Running tests\\ui-mojibake-guard.v410.test.js\nok ui-mojibake-guard.v410\n[tests] Running tests\\ui-mojibake-guard.v47.test.js\nok ui-mojibake-guard.v47\n[tests] Running tests\\ui-navigation-top5-more.v47.test.js\nok ui-navigation-top5-more.v47\n[tests] Running tests\\verifiable-report-shape.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\nOK: verifiable report shape test passed\n[tests] Running tests\\worldmodel-planner-ablation.v54.test.js\nok worldmodel-planner-ablation.v54\n[tests] Running tests\\worldmodel-realtime-integration.v55.test.js\nok worldmodel-realtime-integration.v55\n[tests] OK: 102/102 passed",
+      "stderr_excerpt": "[QICN][QUANTUM_ENTROPY] {\"ts\":1060,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":66050,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":65050}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1060,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":66050,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":65050}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064425759,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":5000}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064425760,\"type\":\"provider_error\",\"level\":\"warn\",\"reason\":\"quality_rejected\",\"bufferOccupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064425760,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064429845,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":4022}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064425846,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1777064425924,\"type\":\"provider_error\",\"level\":\"warn\",\"reason\":\"quality_below_threshold\",\"bufferOccupancyChunks\":0}\n[SYNTHETIC-IMAGINATION] Activado. reason=sensor-blackout\n⚠️ Error cargando rostros conocidos: ReferenceError: localStorage is not defined\n    at SensoryPerceptionEngine.loadKnownFaces (file:///<local-user-root>/<workspace-root>/src/simulation/SensoryPerceptionEngine.js:258:28)\n    at new SensoryPerceptionEngine (file:///<local-user-root>/<workspace-root>/src/simulation/SensoryPerceptionEngine.js:131:32)\n    at SensoryPerceptionEngine.getInstance (file:///<local-user-root>/<workspace-root>/src/simulation/SensoryPerceptionEngine.js:21:34)\n    at file:///<local-user-root>/<workspace-root>/tests/speech-fsm.test.js:75:42\n⚠️ Error cargando memoria experiencial: ReferenceError: localStorage is not defined\n    at SensoryPerceptionEngine.loadExperientialMemory (file:///<local-user-root>/<workspace-root>/src/simulation/SensoryPerceptionEngine.js:327:28)\n    at new SensoryPerceptionEngine (file:///<local-user-root>/<workspace-root>/src/simulation/SensoryPerceptionEngine.js:169:26)\n    at SensoryPerceptionEngine.getInstance (file:///<local-user-root>/<workspace-root>/src/simulation/SensoryPerceptionEngine.js:21:34)\n    at file:///<local-user-root>/<workspace-root>/tests/speech-fsm.test.js:75:42\n⚠️ Speech recognition error: network\n🌐 Error de red en reconocimiento de voz",
+      "error": null
+    },
+    {
+      "id": "npm_run_start_local_probe",
+      "command": "npm run start:local",
+      "cwd": ".",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 2606,
+      "stdout_excerpt": "[dotenv@17.2.3] injecting env (28) from .env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops\n[sandbox-local] listening on http://localhost:3000\n[sandbox-local] functions path active: /.netlify/functions/*\nroot_status=200\nhealth_status=200\nhealth_body={\"ok\":true,\"build_hash\":\"unknown\",\"integrity_contract_version\":\"v1\",\"functions_ok\":true,\"selfpatch_mode\":\"sandbox_unrestricted\",\"timestamp\":1777064432257}",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "verify_source_of_truth",
+      "command": "npm run verify:source-of-truth",
+      "cwd": ".",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 548,
+      "stdout_excerpt": "> versiones-de-interfaz@1.0.0 verify:source-of-truth\n> node scripts/verify-source-of-truth.cjs\n[QICN] Source-of-truth verification passed.",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "verify_comparative_program_closure",
+      "command": "npm run verify:comparative-program-closure",
+      "cwd": ".",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 783,
+      "stdout_excerpt": "> versiones-de-interfaz@1.0.0 verify:comparative-program-closure\n> node scripts/verify-comparative-program-closure.cjs\nPASS verify-comparative-program-closure",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "verify_stage3_controlled_execution_opening",
+      "command": "npm run verify:stage3-controlled-execution-opening",
+      "cwd": ".",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 113652,
+      "stdout_excerpt": "> versiones-de-interfaz@1.0.0 verify:stage3-controlled-execution-opening\n> node scripts/verify-stage3-controlled-execution-opening.cjs\nPASS verify-stage3-controlled-execution-opening",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "verify_stage3_5_readiness",
+      "command": "npm run verify:stage3-5-readiness",
+      "cwd": ".",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 99743,
+      "stdout_excerpt": "> versiones-de-interfaz@1.0.0 verify:stage3-5-readiness\n> node scripts/verify-stage3-5-readiness.cjs\nPASS verify-stage3-5-readiness",
+      "stderr_excerpt": "",
+      "error": null
+    },
+    {
+      "id": "verify_paper9_handoff_readiness",
+      "command": "npm run verify:paper9-handoff-readiness",
+      "cwd": ".",
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 372,
+      "stdout_excerpt": "> versiones-de-interfaz@1.0.0 verify:paper9-handoff-readiness\n> node scripts/verify-paper9-handoff-readiness.cjs\nPASS verify-paper9-handoff-readiness (49 pages)",
+      "stderr_excerpt": "",
+      "error": null
+    }
+  ],
+  "warnings": [
+    "engine_mismatch",
+    "dependency_advisories_present"
+  ],
+  "blockers": [],
+  "non_implications": [
+    "Runtime health is not evidence generation.",
+    "Runtime health is not collection start.",
+    "Runtime health is not adjudication.",
+    "Runtime health is not Paper 10 final authorization."
+  ],
+  "provenance": {
+    "generated_at": "2026-04-24T21:04:08.127Z",
+    "current_lineage": {
+      "qicn_system_head": "5f2c5085406db07f5dfb81607569f920777909ea"
+    }
+  },
+  "schema_ref": "src/comparative_program/schemas/runtime_health_audit.v1.json"
+}

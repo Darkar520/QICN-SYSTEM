@@ -1,0 +1,18 @@
+{
+  "title": "clean_room_reproducibility_audit.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "clean_room_state",
+    "clean_room_method",
+    "source_sha",
+    "target_clean_room_sha",
+    "command_results",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "clean_room_reproducibility_audit" },
+    "artifact_name": { "const": "clean_room_reproducibility_audit.json" }
+  }
+}

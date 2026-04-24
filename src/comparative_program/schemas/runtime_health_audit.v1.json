@@ -1,0 +1,16 @@
+{
+  "title": "runtime_health_audit.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "runtime_health_state",
+    "environment",
+    "command_results",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "runtime_health_audit" },
+    "artifact_name": { "const": "runtime_health_audit.json" }
+  }
+}

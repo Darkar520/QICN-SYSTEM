@@ -1,0 +1,161 @@
+{
+  "artifact_role": "first_collection_opening_manifest",
+  "artifact_name": "first_collection_opening_manifest.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_7_first_admissible_collection_opening",
+  "layer_version": "comparative_expansion_layer.stage3_7_first_admissible_collection_opening.v1",
+  "estimator_version": "stage3_7_first_admissible_collection_gate_builder.v1",
+  "implementation_status": "first_collection_opening_manifest_defined",
+  "stage3_7_state": "stage3_7_first_collection_openable",
+  "runtime_health_state": "runtime_health_pass_with_warnings",
+  "clean_room_state": "clean_room_reproducible_with_warnings",
+  "collection_state": "collection_start_not_executed",
+  "evidence_state": "evidence_generation_absent",
+  "adjudication_state": "adjudication_not_open",
+  "decision_record_state": "decision_record_absent",
+  "operator_authorization_field_count": 7,
+  "collection_start_command_field_count": 6,
+  "start_prerequisite_count": 6,
+  "blocking_findings": [],
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "collection_start_not_executed": true,
+    "evidence_generation_absent": true,
+    "adjudication_not_open": true,
+    "decision_record_absent": true,
+    "paper10_not_final_authorized": true
+  },
+  "provenance": {
+    "generated_at": "2026-04-24T21:07:50.413Z",
+    "current_lineage": {
+      "layer_version": "comparative_expansion_layer.stage3_6b_runtime_health_and_stage3_7.v1",
+      "estimator_version": "build-stage3-runtime-health.cjs",
+      "comparator_protocol": {
+        "ref": "docs/human_comparator_protocol.v1.json",
+        "sha256": "6b71d69d114ce4662a45cce25f36148e8f8da1106f7cdba401b3dee2d3c1d0c6"
+      },
+      "equivalence_ladder": {
+        "ref": "docs/human_equivalence_ladder.v1.json",
+        "sha256": "6541ce52c03404562ddbf75b2ef275f2f0cef61ac33f2aa84d3910dea424670f"
+      },
+      "transport_protocol": {
+        "ref": "docs/cross_substrate_transport_protocol.v1.json",
+        "sha256": "ed099176336b3b4a3e139506a43c9f55053889239ffbee6b6769f6d14508b761"
+      },
+      "human_channel_requirements": {
+        "ref": "docs/human_channel_requirements.v1.json",
+        "sha256": "9b8e05fc033aca8806a93dd78d64bc84799534bf9530f7eae0ea52a18412be85"
+      },
+      "burden_matrix": {
+        "ref": "docs/comparator_burden_matrix.v1.json",
+        "sha256": "97ea0be5967d367ce6f015af079fbc6c8cd5816ee0a881076b0585fa77e7f7f3"
+      },
+      "artifact_schema": {
+        "ref": "docs/comparative_program_artifact_schema.v1.json",
+        "sha256": "0c6b04c73620e8d774f6b08f39c3d1e6105409b1ffb682fc872dbb8065c3a734"
+      },
+      "surface_policy": {
+        "ref": "docs/comparative_program_surface_policy.v1.json",
+        "sha256": "a7259dbd6094a113f9ef5b70376b533f8166b892911ea5daacc3f776cc4f9a66"
+      },
+      "root_schema_hashes": {
+        "comparative_program_manifest.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_manifest.v1.json",
+          "sha256": "d99f84496b843e45519650d144bf1205b88b896887e4907f709830791cd0644d"
+        },
+        "human_comparator_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_comparator_assessment.v1.json",
+          "sha256": "0f349d5421a43701dbe25eaf7d414f7b34ff3480a9e1d19ad3f823f88fb73ef7"
+        },
+        "human_equivalence_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_equivalence_assessment.v1.json",
+          "sha256": "089674f38b35fc2587f02262db7e14276608b882f5e82e4ea3cf3cee4f5de823"
+        },
+        "cross_substrate_transport_assessment.json": {
+          "ref": "src/comparative_program/schemas/cross_substrate_transport_assessment.v1.json",
+          "sha256": "5b979a3ec6ebd4ebc6caa08b66dccf0863de9558ac7cf933b32eaf7ecffbd8de"
+        },
+        "human_channel_pathway_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_channel_pathway_assessment.v1.json",
+          "sha256": "fccf0c3b8cfcd7395d2347a08a257ec3fbfeb8a0d76791f63024c9ac76714ec9"
+        },
+        "counterpart_artifact_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/counterpart_artifact_contract_assessment.v1.json",
+          "sha256": "b85e558e9d901c935971665c49c71d848c19ac57d9f1e09ea70a92543fdb42dc"
+        },
+        "homologation_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/homologation_contract_assessment.v1.json",
+          "sha256": "7701e94180fa24efa4a0b88394bcb9ae1580df5ede5ec3d49f701486ea2674f1"
+        },
+        "cross_substrate_transition_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/cross_substrate_transition_contract_assessment.v1.json",
+          "sha256": "9c3ba1a15e3f0ad83f9406fa1028cfcc0fa56058d093c07e442541fac95e5d22"
+        },
+        "comparative_operational_readiness.json": {
+          "ref": "src/comparative_program/schemas/comparative_operational_readiness.v1.json",
+          "sha256": "e943dd95f7d7fc8651fd119efb16074df630f11cc7e557fcd4540c1e8e230fa1"
+        },
+        "comparative_final_internal_audit.json": {
+          "ref": "src/comparative_program/schemas/comparative_final_internal_audit.v1.json",
+          "sha256": "1740d4e541252ed09f748f7b4a066fdfa2963be2dee0c944b01fe0b42e656b0d"
+        },
+        "human_channel_instantiation_readiness.json": {
+          "ref": "src/comparative_program/schemas/human_channel_instantiation_readiness.v1.json",
+          "sha256": "74e24208c862c627007bd512e36c7236d45af0a12ffceb124657e6471d0b2b86"
+        },
+        "paper10_comparative_readiness_gate.json": {
+          "ref": "src/comparative_program/schemas/paper10_comparative_readiness_gate.v1.json",
+          "sha256": "f5dbe1b18f43bac1f51419bf159862aae210a569ec30064352fa952a1c3c4c0f"
+        },
+        "comparative_program_verification_matrix.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
+          "sha256": "6cab7c9939a0615cdd857969f567fd51eb16187c7cbba9f36d802a9a02cae26a"
+        },
+        "comparative_program_readiness_gate.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json",
+          "sha256": "3ed99a108a467c01b51cb7215bec7f0d2e20dace5bc31deb967747aae871150f"
+        },
+        "comparative_burden_fulfillment.json": {
+          "ref": "src/comparative_program/schemas/comparative_burden_fulfillment.v1.json",
+          "sha256": "3227da16baed5d5205133bce35c1a770dbf0bf42170b5595a2b33c17250ff52c"
+        },
+        "stage3_opening_readiness.json": {
+          "ref": "src/comparative_program/schemas/stage3_opening_readiness.v1.json",
+          "sha256": "d680945e1e5bf59529fb722d33d6de19dee12bd9662ca050b620a0fbb99021ba"
+        },
+        "paper9_handoff_alignment.json": {
+          "ref": "src/comparative_program/schemas/paper9_handoff_alignment.v1.json",
+          "sha256": "a1b9a0ec8febc7ffe06cf600b0acee3fdef442f67976a56e9c74d62474639150"
+        },
+        "stage3_opening_gate.json": {
+          "ref": "src/comparative_program/schemas/stage3_opening_gate.v1.json",
+          "sha256": "c3715967e68f33cddc23b6e1fb5cfae5b6d03ba040f2f8870bc78bb70f1e8a46"
+        }
+      },
+      "qicn_system": {
+        "branch": "main",
+        "head": "5f2c5085406db07f5dfb81607569f920777909ea",
+        "upstream": "origin/main"
+      },
+      "qicn_release": {
+        "branch": "main",
+        "head": "92d5d2c3ea91c65e29dc8e102bed504866cffd2d",
+        "upstream": "origin/main"
+      },
+      "runtime_health_audit_policy": {
+        "ref": "docs/runtime_health_audit.v1.json",
+        "sha256": "169a1216e48fbb697310c8e26f035353b7180b9126c669c261b900ded19bff27"
+      },
+      "clean_room_reproducibility_audit_policy": {
+        "ref": "docs/clean_room_reproducibility_audit.v1.json",
+        "sha256": "798474dc85ebcc6c52a51374994ebf72bbac9c8e75cee1d1f2b056b14794a627"
+      },
+      "stage3_7_opening_criteria": {
+        "ref": "docs/stage3_7_first_admissible_collection_opening_criteria.v1.json",
+        "sha256": "692b375bbe5ac4dcffbdf24b327f5e02dd655ff5c3ae957946fac9c6d1d3066f"
+      }
+    }
+  },
+  "schema_ref": "src/comparative_program/schemas/first_collection_opening_manifest.v1.json"
+}

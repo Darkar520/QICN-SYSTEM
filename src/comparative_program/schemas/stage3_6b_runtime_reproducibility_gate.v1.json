@@ -1,0 +1,17 @@
+{
+  "title": "stage3_6b_runtime_reproducibility_gate.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "stage3_6b_state",
+    "runtime_health_state",
+    "clean_room_state",
+    "stage3_7_follow_on_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "stage3_6b_runtime_reproducibility_gate" },
+    "artifact_name": { "const": "stage3_6b_runtime_reproducibility_gate.json" }
+  }
+}

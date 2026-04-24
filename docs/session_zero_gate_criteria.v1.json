@@ -1,0 +1,25 @@
+{
+  "artifact_role": "session_zero_gate_criteria",
+  "schema_version": "1.0.0",
+  "ready_requirements": [
+    "local_frozen_record_present",
+    "candidate_pools_instantiated",
+    "assignment_stubs_instantiated",
+    "rehearsal_kit_present",
+    "dry_run_policy_present",
+    "live_artifacts_instantiated",
+    "dataset_manifests_empty",
+    "collection_log_empty",
+    "decision_record_stub_empty",
+    "contamination_policy_present",
+    "abort_policy_present",
+    "operator_checklist_present",
+    "no_evidence_present",
+    "no_adjudication_present"
+  ],
+  "blocked_conditions": [
+    "evidence_present",
+    "adjudication_present",
+    "collection_started"
+  ]
+}

@@ -45,6 +45,14 @@ import {
   DRY_RUN_SEQUENCE_PLAN,
   REHEARSAL_EVENT_LOG_SCHEMA
 } from './DryRunSequenceRegistry.js';
+import {
+  CONTROLLED_EXECUTION_OPENING_POLICY,
+  SESSION_ZERO_PROTOCOL,
+  PRE_COLLECTION_ADMISSIBILITY_GATE
+} from './ControlledExecutionOpeningRegistry.js';
+import {
+  listLiveArtifactRoles
+} from './LiveArtifactRegistry.js';
 
 const readJson = (relativePath) =>
   JSON.parse(fs.readFileSync(new URL(relativePath, import.meta.url), 'utf8'));
@@ -81,15 +89,31 @@ export const STAGE3_ROOT_SCHEMAS = Object.freeze({
   dry_run_sequence_readiness: readJson('./schemas/dry_run_sequence_readiness.v1.json'),
   rehearsal_event_log_status: readJson('./schemas/rehearsal_event_log_status.v1.json'),
   stage3_5_rehearsal_ready_gate: readJson('./schemas/stage3_5_rehearsal_ready_gate.v1.json'),
-  stage3_5_manifest: readJson('./schemas/stage3_5_manifest.v1.json')
+  stage3_5_manifest: readJson('./schemas/stage3_5_manifest.v1.json'),
+  live_artifact_instantiation_status: readJson('./schemas/live_artifact_instantiation_status.v1.json'),
+  session_zero_manifest: readJson('./schemas/session_zero_manifest.v1.json'),
+  live_collection_manifest: readJson('./schemas/live_collection_manifest.v1.json'),
+  live_collection_log_record: readJson('./schemas/live_collection_log_record.v1.json'),
+  live_dataset_manifest: readJson('./schemas/live_dataset_manifest.v1.json'),
+  live_reproducibility_package_manifest: readJson('./schemas/live_reproducibility_package_manifest.v1.json'),
+  live_decision_record_stub: readJson('./schemas/live_decision_record_stub.v1.json'),
+  live_evidence_insertion_register: readJson('./schemas/live_evidence_insertion_register.v1.json'),
+  contamination_checklist_status: readJson('./schemas/contamination_checklist_status.v1.json'),
+  session_zero_gate_result: readJson('./schemas/session_zero_gate_result.v1.json'),
+  session_zero_operator_checklist_status: readJson('./schemas/session_zero_operator_checklist_status.v1.json'),
+  session_zero_failure_mode_assessment: readJson('./schemas/session_zero_failure_mode_assessment.v1.json'),
+  pre_collection_admissibility_gate_result: readJson('./schemas/pre_collection_admissibility_gate_result.v1.json'),
+  pre_collection_invalidation_status: readJson('./schemas/pre_collection_invalidation_status.v1.json'),
+  stage3_6_controlled_execution_gate: readJson('./schemas/stage3_6_controlled_execution_gate.v1.json'),
+  stage3_6_manifest: readJson('./schemas/stage3_6_manifest.v1.json')
 });
 
 export const STAGE3_LAYER_STATUS = Object.freeze({
   layer_name: 'Stage3 External Adjudication Stack',
-  layer_id: 'comparative_expansion_layer.stage3_0_to_stage3_5_external_adjudication_stack',
-  implementation_status: 'stage3_5_rehearsal_ready_defined',
+  layer_id: 'comparative_expansion_layer.stage3_0_to_stage3_6_external_adjudication_stack',
+  implementation_status: 'stage3_6_controlled_execution_opening_defined',
   interpretation_boundary:
-    'Stage 3 now spans the local scaffold, contract, readiness, freeze, packaging, dry-run, provenance-closure, instantiated-empty, and rehearsal layers from Stage3-0 through Stage3-5. The stack remains framework-internal only and does not execute external adjudication, instantiate admissible human data, or authorize Paper 10 finality.'
+    'Stage 3 now spans the local scaffold, contract, readiness, freeze, packaging, dry-run, provenance-closure, instantiated-empty, rehearsal, and controlled-execution-opening layers from Stage3-0 through Stage3-6. The stack remains framework-internal only and does not execute external adjudication, instantiate admissible human data, or authorize Paper 10 finality.'
 });
 
 export class Stage3Layer {
@@ -136,6 +160,16 @@ export class Stage3Layer {
       rehearsal_reset_rule_count: (REHEARSAL_RESET_POLICY.reset_rules || []).length,
       rehearsal_sequence_step_count: (DRY_RUN_SEQUENCE_PLAN.sequence_steps || []).length,
       rehearsal_event_field_count: (REHEARSAL_EVENT_LOG_SCHEMA.required_fields || []).length,
+      stage3_6_controlled_execution_state_count: (
+        CONTROLLED_EXECUTION_OPENING_POLICY.controlled_execution_states || []
+      ).length,
+      stage3_6_session_zero_step_count: (
+        SESSION_ZERO_PROTOCOL.session_zero_steps || []
+      ).length,
+      stage3_6_pre_collection_requirement_count: (
+        PRE_COLLECTION_ADMISSIBILITY_GATE.ready_requirements || []
+      ).length,
+      stage3_6_live_artifact_family_count: listLiveArtifactRoles().length,
       adjudication_object_class_count: listExternalAdjudicationObjectClasses().length,
       adjudication_state_count: listExternalAdjudicationStates().length,
       evidence_class_count: listExternalEvidenceClasses().length,
@@ -148,12 +182,13 @@ export class Stage3Layer {
       stage3_artifact_schema_status: STAGE3_ARTIFACT_SCHEMA.implementation_status,
       blocked_surfaces: STAGE3_SURFACE_POLICY.blocked_surfaces || [],
       scaffold_only: false,
-      current_stage: 'stage3_rehearsal_preparation',
-      current_stage3_substage: 'stage3_5_rehearsal_ready',
+      current_stage: 'stage3_controlled_execution_opening',
+      current_stage3_substage: 'stage3_6_collection_open_pre_evidential',
       stage3_3_freeze_layer_present: true,
       stage3_4_dry_run_layer_present: true,
       stage3_4b_instantiated_empty_layer_present: true,
-      stage3_5_rehearsal_layer_present: true
+      stage3_5_rehearsal_layer_present: true,
+      stage3_6_controlled_execution_layer_present: true
     };
   }
 }

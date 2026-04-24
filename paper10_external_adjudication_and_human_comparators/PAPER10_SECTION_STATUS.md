@@ -23,9 +23,18 @@
 | Reviewer candidate pool and assignment stub architecture | protocol_defined | Candidate pools and stubs remain empty |
 | Execution pilot package architecture | protocol_defined | Pilot remains unexecuted |
 | Execution pilot rehearsal kit architecture | protocol_defined | Rehearsal remains not started |
+| Controlled execution opening | protocol_defined | Requires session-zero and pre-collection gates to remain honest |
+| Live-but-unpopulated artifacts | protocol_defined | Must remain empty until real collection start |
+| Session-zero protocol | protocol_defined | Session-zero remains not started |
+| Pre-collection admissibility gate | protocol_defined | Collection remains openable only under controls |
+| Contamination and abort policy | protocol_defined | Must remain explicit before collection start |
+| Operator checklist | protocol_defined | Must remain complete before any collection start |
 | Reproducibility skeleton architecture | protocol_defined | Package remains unpopulated |
 | Dataset population boundary | formalized | Defined-vs-populated split must remain explicit |
 | Dry-run event log grammar | protocol_defined | Event classes remain rehearsal-only |
+| Collection-start boundary | formalized | Requires real operator-authorized start event |
+| Evidence-generation boundary | formalized | Requires real population events |
+| Decision-record boundary | formalized | Live decision stub remains empty |
 | Evidence admissibility grammar | formalized | Evidence still absent |
 | Failure / rejection / inconclusive pathways | protocol_defined | Execution still absent |
 | Statistical shell architecture | protocol_defined | Analysis not executed |
@@ -39,7 +48,8 @@
 | Execution-era unlock conditions | protocol_defined | Requires later instantiated evidence-bearing surfaces |
 | Stronger execution-to-result transition map | blocked_until_execution | Requires population, admissibility, and decision layers |
 | Why Paper 10 still cannot become final yet | formalized | Must remain explicit |
-| Future execution pathway to real Stage 3 | blocked_until_execution | Requires actual execution opening |
+| Transition from session-zero to first admissible collection | blocked_until_execution | Requires real collection-start event |
+| Future execution pathway to real Stage 3 | blocked_until_execution | Requires actual controlled execution opening and later collection start |
 | Boundary to Stage 4 metaphysical consequence analysis | forbidden_claim_surface | Remains outside current authority surface |
 | Appendices of schemas and templates | protocol_defined | Expand as schemas and artifacts grow |
 | Human comparator results | blocked_until_execution | Requires admissible human comparator evidence |

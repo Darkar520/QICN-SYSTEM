@@ -77,6 +77,14 @@ import {
   REHEARSAL_EVENT_LOG_SCHEMA
 } from './DryRunSequenceRegistry.js';
 import {
+  CONTROLLED_EXECUTION_OPENING_POLICY,
+  SESSION_ZERO_PROTOCOL,
+  PRE_COLLECTION_ADMISSIBILITY_GATE
+} from './ControlledExecutionOpeningRegistry.js';
+import {
+  listLiveArtifactRoles
+} from './LiveArtifactRegistry.js';
+import {
   COMPARATIVE_PROGRAM_ARTIFACT_SCHEMA,
   COMPARATIVE_PROGRAM_EXPECTED_ARTIFACTS,
   COMPARATIVE_PROGRAM_IMPLEMENTED_ARTIFACTS
@@ -108,11 +116,11 @@ export const COMPARATIVE_PROGRAM_ROOT_SCHEMAS = Object.freeze({
 
 export const COMPARATIVE_PROGRAM_LAYER_STATUS = Object.freeze({
   layer_name: 'Comparative Expansion Layer',
-  layer_id: 'comparative_expansion_layer.stage3_rehearsal_preparation',
-  implementation_status: 'stage3_5_rehearsal_ready_defined',
-  execution_status: 'stage3_rehearsal_ready_but_non_adjudicative_comparative_runtime',
+  layer_id: 'comparative_expansion_layer.stage3_6_controlled_execution_opening',
+  implementation_status: 'stage3_6_controlled_execution_opening_defined',
+  execution_status: 'stage3_6_controlled_execution_open_pre_evidential_comparative_runtime',
   interpretation_boundary:
-    'The comparative layer now preserves Stage 2-M4 internal closure and Stage3 readiness while extending the local stack through Stage3-0, Stage3-1, Stage3-2, Stage3-3, Stage3-4, Stage3-4B, and Stage3-5 rehearsal preparation. It remains framework-internal only and does not establish human equivalence, superiority, external adjudication results, transport-preservation verdicts, identity preservation, or Paper 10 authorization.'
+    'The comparative layer now preserves Stage 2-M4 internal closure and Stage3 readiness while extending the local stack through Stage3-0, Stage3-1, Stage3-2, Stage3-3, Stage3-4, Stage3-4B, Stage3-5, and Stage3-6 controlled execution opening. It remains framework-internal only and does not establish human equivalence, superiority, external adjudication results, transport-preservation verdicts, identity preservation, or Paper 10 authorization.'
 });
 
 export class ComparativeProgramLayer {
@@ -141,8 +149,8 @@ export class ComparativeProgramLayer {
       human_comparator_program_open: true,
       human_equivalence_program_open: true,
       cross_substrate_expansion_open: true,
-      current_stage: 'stage3_rehearsal_preparation',
-      comparative_runtime_state: 'stage3_5_rehearsal_ready_non_evidential',
+      current_stage: 'stage3_controlled_execution_opening',
+      comparative_runtime_state: 'stage3_6_collection_open_pre_evidential_non_adjudicative',
       stage2_m2_runtime_opening_complete: true,
       stage2_m3_contract_operationalization_complete: true,
       stage2_m4_internal_closure_complete: true,
@@ -154,6 +162,7 @@ export class ComparativeProgramLayer {
       stage3_4_dry_run_layer_present: true,
       stage3_4b_instantiated_empty_layer_present: true,
       stage3_5_rehearsal_layer_present: true,
+      stage3_6_controlled_execution_layer_present: true,
       stage3_1_channel_contract_count: (
         HUMAN_CHANNEL_INSTANTIATION_CONTRACTS.channels || []
       ).length,
@@ -215,6 +224,16 @@ export class ComparativeProgramLayer {
       stage3_5_rehearsal_event_field_count: (
         REHEARSAL_EVENT_LOG_SCHEMA.required_fields || []
       ).length,
+      stage3_6_controlled_execution_state_count: (
+        CONTROLLED_EXECUTION_OPENING_POLICY.controlled_execution_states || []
+      ).length,
+      stage3_6_session_zero_step_count: (
+        SESSION_ZERO_PROTOCOL.session_zero_steps || []
+      ).length,
+      stage3_6_pre_collection_requirement_count: (
+        PRE_COLLECTION_ADMISSIBILITY_GATE.ready_requirements || []
+      ).length,
+      stage3_6_live_artifact_family_count: listLiveArtifactRoles().length,
       comparative_internal_closure_state: 'comparative_internal_closure_ready',
       stage2_m4_state: 'comparative_internal_closure_ready',
       stage3_readiness_state: 'stage3_ready_but_uninstantiated',
@@ -229,8 +248,10 @@ export class ComparativeProgramLayer {
       stage3_4b_provenance_state: 'artifact_forward_compatible',
       stage3_4b_instantiated_empty_state: 'instantiated_empty_layer_defined',
       stage3_5_rehearsal_state: 'stage3_5_rehearsal_ready',
+      stage3_6_execution_opening_state: 'collection_openable_under_controls',
+      stage3_6_collection_state: 'stage3_6_collection_open_pre_evidential',
       paper10_protocol_state: 'paper10_protocol_grade_backbone',
-      current_stage3_substage: 'stage3_5_rehearsal_ready',
+      current_stage3_substage: 'stage3_6_collection_open_pre_evidential',
       ready_for_stage2_m4: true,
       ready_for_stage3_opening: true,
       stage3_opening_state: 'ready_for_stage3_opening',
@@ -245,7 +266,7 @@ export class ComparativeProgramLayer {
       not_cross_substrate_equivalence_support: true,
       not_identity_preservation_support: true,
       not_external_adjudication: true,
-      external_comparative_adjudication_state: 'rehearsal_ready_non_evidential_only',
+      external_comparative_adjudication_state: 'controlled_execution_open_pre_evidential_only',
       not_paper10_authorization: true,
       no_external_validation: true,
       no_metaphysical_closure: true,

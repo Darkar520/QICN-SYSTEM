@@ -1,0 +1,245 @@
+{
+  "artifact_role": "live_evidence_insertion_register",
+  "artifact_name": "live_evidence_insertion_register.json",
+  "artifact_version": "1.0.0",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6_controlled_execution_opening",
+  "layer_version": "comparative_expansion_layer.stage3_6.live_artifact_instantiation.v1",
+  "estimator_version": "live_artifact_instantiation_evaluator.stage3_6.v1",
+  "implementation_status": "stage3_6_live_evidence_insertion_register_created",
+  "interpretation_boundary": "Framework-internal only; live-but-unpopulated artifacts are execution-facing shells only. They remain non-evidential and non-adjudicative until a later authorized collection-start event occurs.",
+  "provenance": {
+    "generated_at": "2026-04-24T06:29:36.162Z",
+    "current_lineage": {
+      "layer_version": "comparative_expansion_layer.stage3_6_controlled_execution_opening.v1",
+      "estimator_version": "stage3_controlled_execution_opening_builder.stage3_6.v1",
+      "comparator_protocol": {
+        "ref": "docs/human_comparator_protocol.v1.json",
+        "sha256": "6b71d69d114ce4662a45cce25f36148e8f8da1106f7cdba401b3dee2d3c1d0c6"
+      },
+      "equivalence_ladder": {
+        "ref": "docs/human_equivalence_ladder.v1.json",
+        "sha256": "6541ce52c03404562ddbf75b2ef275f2f0cef61ac33f2aa84d3910dea424670f"
+      },
+      "transport_protocol": {
+        "ref": "docs/cross_substrate_transport_protocol.v1.json",
+        "sha256": "ed099176336b3b4a3e139506a43c9f55053889239ffbee6b6769f6d14508b761"
+      },
+      "human_channel_requirements": {
+        "ref": "docs/human_channel_requirements.v1.json",
+        "sha256": "9b8e05fc033aca8806a93dd78d64bc84799534bf9530f7eae0ea52a18412be85"
+      },
+      "burden_matrix": {
+        "ref": "docs/comparator_burden_matrix.v1.json",
+        "sha256": "97ea0be5967d367ce6f015af079fbc6c8cd5816ee0a881076b0585fa77e7f7f3"
+      },
+      "artifact_schema": {
+        "ref": "docs/comparative_program_artifact_schema.v1.json",
+        "sha256": "0c6b04c73620e8d774f6b08f39c3d1e6105409b1ffb682fc872dbb8065c3a734"
+      },
+      "surface_policy": {
+        "ref": "docs/comparative_program_surface_policy.v1.json",
+        "sha256": "a7259dbd6094a113f9ef5b70376b533f8166b892911ea5daacc3f776cc4f9a66"
+      },
+      "root_schema_hashes": {
+        "comparative_program_manifest.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_manifest.v1.json",
+          "sha256": "d99f84496b843e45519650d144bf1205b88b896887e4907f709830791cd0644d"
+        },
+        "human_comparator_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_comparator_assessment.v1.json",
+          "sha256": "0f349d5421a43701dbe25eaf7d414f7b34ff3480a9e1d19ad3f823f88fb73ef7"
+        },
+        "human_equivalence_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_equivalence_assessment.v1.json",
+          "sha256": "089674f38b35fc2587f02262db7e14276608b882f5e82e4ea3cf3cee4f5de823"
+        },
+        "cross_substrate_transport_assessment.json": {
+          "ref": "src/comparative_program/schemas/cross_substrate_transport_assessment.v1.json",
+          "sha256": "5b979a3ec6ebd4ebc6caa08b66dccf0863de9558ac7cf933b32eaf7ecffbd8de"
+        },
+        "human_channel_pathway_assessment.json": {
+          "ref": "src/comparative_program/schemas/human_channel_pathway_assessment.v1.json",
+          "sha256": "fccf0c3b8cfcd7395d2347a08a257ec3fbfeb8a0d76791f63024c9ac76714ec9"
+        },
+        "counterpart_artifact_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/counterpart_artifact_contract_assessment.v1.json",
+          "sha256": "b85e558e9d901c935971665c49c71d848c19ac57d9f1e09ea70a92543fdb42dc"
+        },
+        "homologation_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/homologation_contract_assessment.v1.json",
+          "sha256": "7701e94180fa24efa4a0b88394bcb9ae1580df5ede5ec3d49f701486ea2674f1"
+        },
+        "cross_substrate_transition_contract_assessment.json": {
+          "ref": "src/comparative_program/schemas/cross_substrate_transition_contract_assessment.v1.json",
+          "sha256": "9c3ba1a15e3f0ad83f9406fa1028cfcc0fa56058d093c07e442541fac95e5d22"
+        },
+        "comparative_operational_readiness.json": {
+          "ref": "src/comparative_program/schemas/comparative_operational_readiness.v1.json",
+          "sha256": "e943dd95f7d7fc8651fd119efb16074df630f11cc7e557fcd4540c1e8e230fa1"
+        },
+        "comparative_final_internal_audit.json": {
+          "ref": "src/comparative_program/schemas/comparative_final_internal_audit.v1.json",
+          "sha256": "1740d4e541252ed09f748f7b4a066fdfa2963be2dee0c944b01fe0b42e656b0d"
+        },
+        "human_channel_instantiation_readiness.json": {
+          "ref": "src/comparative_program/schemas/human_channel_instantiation_readiness.v1.json",
+          "sha256": "74e24208c862c627007bd512e36c7236d45af0a12ffceb124657e6471d0b2b86"
+        },
+        "paper10_comparative_readiness_gate.json": {
+          "ref": "src/comparative_program/schemas/paper10_comparative_readiness_gate.v1.json",
+          "sha256": "f5dbe1b18f43bac1f51419bf159862aae210a569ec30064352fa952a1c3c4c0f"
+        },
+        "comparative_program_verification_matrix.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
+          "sha256": "6cab7c9939a0615cdd857969f567fd51eb16187c7cbba9f36d802a9a02cae26a"
+        },
+        "comparative_program_readiness_gate.json": {
+          "ref": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json",
+          "sha256": "3ed99a108a467c01b51cb7215bec7f0d2e20dace5bc31deb967747aae871150f"
+        },
+        "comparative_burden_fulfillment.json": {
+          "ref": "src/comparative_program/schemas/comparative_burden_fulfillment.v1.json",
+          "sha256": "3227da16baed5d5205133bce35c1a770dbf0bf42170b5595a2b33c17250ff52c"
+        },
+        "stage3_opening_readiness.json": {
+          "ref": "src/comparative_program/schemas/stage3_opening_readiness.v1.json",
+          "sha256": "d680945e1e5bf59529fb722d33d6de19dee12bd9662ca050b620a0fbb99021ba"
+        },
+        "paper9_handoff_alignment.json": {
+          "ref": "src/comparative_program/schemas/paper9_handoff_alignment.v1.json",
+          "sha256": "a1b9a0ec8febc7ffe06cf600b0acee3fdef442f67976a56e9c74d62474639150"
+        },
+        "stage3_opening_gate.json": {
+          "ref": "src/comparative_program/schemas/stage3_opening_gate.v1.json",
+          "sha256": "c3715967e68f33cddc23b6e1fb5cfae5b6d03ba040f2f8870bc78bb70f1e8a46"
+        }
+      },
+      "qicn_system": {
+        "branch": "main",
+        "head": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
+        "upstream": "origin/main"
+      },
+      "qicn_release": {
+        "branch": "main",
+        "head": "92d5d2c3ea91c65e29dc8e102bed504866cffd2d",
+        "upstream": "origin/main"
+      },
+      "CONTROLLED_EXECUTION_OPENING_POLICY_md": {
+        "ref": "docs/CONTROLLED_EXECUTION_OPENING_POLICY.md",
+        "sha256": "5d6333fa8b6fd66006c3a6af31337e3c1571084187bc8bdb75804e75a7ac4a3a"
+      },
+      "SESSION_ZERO_PROTOCOL_md": {
+        "ref": "docs/SESSION_ZERO_PROTOCOL.md",
+        "sha256": "218a60b01d9fbc38bf3cc15a0f10e8c348caa5a5463e1d95016d5713a6e025e6"
+      },
+      "PRE_COLLECTION_ADMISSIBILITY_GATE_md": {
+        "ref": "docs/PRE_COLLECTION_ADMISSIBILITY_GATE.md",
+        "sha256": "a7d80a76543ff7da5dae2947b9e1a2997fadcb21f2792eb3a5e8409467977d2b"
+      },
+      "CONTAMINATION_AND_ABORT_POLICY_md": {
+        "ref": "docs/CONTAMINATION_AND_ABORT_POLICY.md",
+        "sha256": "33956569565a99afb8285ff67cdeffdaae4c6f904fbb027076ddd378318b76b8"
+      },
+      "LIVE_BUT_UNPOPULATED_ARTIFACT_POLICY_md": {
+        "ref": "docs/LIVE_BUT_UNPOPULATED_ARTIFACT_POLICY.md",
+        "sha256": "8ff29fcaae0b617bc3ce9a1a62e5c6f9614bfbae8d4f9d00b361af23a40c74ab"
+      },
+      "SESSION_ZERO_GATE_md": {
+        "ref": "docs/SESSION_ZERO_GATE.md",
+        "sha256": "2abf5db8ea472ff640599d4e75a4f1b9a9f43056568dc504cddbc3af6529d0f1"
+      },
+      "SESSION_ZERO_OPERATOR_CHECKLIST_md": {
+        "ref": "docs/SESSION_ZERO_OPERATOR_CHECKLIST.md",
+        "sha256": "df7694751bbfea8f12a6ea13c1a61fb9e8ee18aaff53482fde9b19c3420ea345"
+      },
+      "PRE_COLLECTION_GATE_md": {
+        "ref": "docs/PRE_COLLECTION_GATE.md",
+        "sha256": "9e2aa200a12208454a6a558244588b6792a97e99f3db8cdcd5dde6a0ad683bc0"
+      },
+      "stage3_6_boundary_md": {
+        "ref": "docs/stage3_6_boundary.md",
+        "sha256": "91020abad9460b45c9450faf123f94050c6c33d94be5a25c657865fdaedcdd4c"
+      },
+      "FIRST_ADMISSIBLE_COLLECTION_UNLOCK_MAP_md": {
+        "ref": "docs/FIRST_ADMISSIBLE_COLLECTION_UNLOCK_MAP.md",
+        "sha256": "12a17e13179dabb0b5e4a3a6284d2a20a77b1000e57b1a5344ec33e84c4f5e38"
+      },
+      "controlled_execution_opening_policy_v1_json": {
+        "ref": "docs/controlled_execution_opening_policy.v1.json",
+        "sha256": "7782f29e2762da52feda2ed7aeb242cf6ab540b933d0489c9926ea0c0647d83b"
+      },
+      "session_zero_protocol_v1_json": {
+        "ref": "docs/session_zero_protocol.v1.json",
+        "sha256": "825bd457418795bf9319bcc40decfea503a2c13618fbf7d43b6ad21f989253b8"
+      },
+      "pre_collection_admissibility_gate_v1_json": {
+        "ref": "docs/pre_collection_admissibility_gate.v1.json",
+        "sha256": "3f565588ffe5e37af89ccf82cd1c073b5f90e9a73f5aaca1d8f113039750e166"
+      },
+      "contamination_and_abort_policy_v1_json": {
+        "ref": "docs/contamination_and_abort_policy.v1.json",
+        "sha256": "b564d98506d3e4d37c0874ce74adf790365351ba936bd1c6b271702f01a9c211"
+      },
+      "live_but_unpopulated_artifact_policy_v1_json": {
+        "ref": "docs/live_but_unpopulated_artifact_policy.v1.json",
+        "sha256": "23ac1fa56531d1d3fb0a100c650e179420f6b4cc05fe009f2982cb28de143e9a"
+      },
+      "session_zero_gate_criteria_v1_json": {
+        "ref": "docs/session_zero_gate_criteria.v1.json",
+        "sha256": "a2490fb64deb45ca9267681262db41cb802c8896d40daf074d8dc1de3165eb7b"
+      },
+      "session_zero_operator_checklist_v1_json": {
+        "ref": "docs/session_zero_operator_checklist.v1.json",
+        "sha256": "0bd205fedd01d66d02f8cfaeef06efcc9e284b4f2b07c075b8fda3fbb5b43628"
+      },
+      "session_zero_failure_modes_v1_json": {
+        "ref": "docs/session_zero_failure_modes.v1.json",
+        "sha256": "8fce8986b5147d464235cde81977305e5fc120f88063e26cbc39d5b4659ba0be"
+      },
+      "session_zero_reset_policy_v1_json": {
+        "ref": "docs/session_zero_reset_policy.v1.json",
+        "sha256": "32ac46009f1787f0153d92e473236cc9793cc7d795c7f003656dcb6a2cf7b858"
+      },
+      "pre_collection_gate_criteria_v1_json": {
+        "ref": "docs/pre_collection_gate_criteria.v1.json",
+        "sha256": "e7f9d44d740238241d16e9bf374f461145154fc14afdd239a25698d8bf648131"
+      },
+      "pre_collection_invalidation_policy_v1_json": {
+        "ref": "docs/pre_collection_invalidation_policy.v1.json",
+        "sha256": "91ac9d01298b4a8a38886caf74c2a02b22ae0e670a00fc4094090b889c9adbb3"
+      },
+      "pre_collection_contamination_checklist_v1_json": {
+        "ref": "docs/pre_collection_contamination_checklist.v1.json",
+        "sha256": "6dff5c67a20c4382fafb5a294b3ad659469ec6ca6ce3c75c1c48b125c36c71f5"
+      },
+      "stage3_6_controlled_execution_opening_criteria_v1_json": {
+        "ref": "docs/stage3_6_controlled_execution_opening_criteria.v1.json",
+        "sha256": "8e82ce5cff88dc799e9a7fcb179ecfc8a899981e0e8952a7594f4b7796a04821"
+      },
+      "first_admissible_collection_unlock_map_v1_json": {
+        "ref": "docs/first_admissible_collection_unlock_map.v1.json",
+        "sha256": "03228322724fa52e4ec89022a742e6c11655057cb8087d0a5e6774ecda4cedd8"
+      },
+      "paper10_main_tex": {
+        "ref": "paper10_external_adjudication_and_human_comparators/main.tex",
+        "sha256": "e7933419abb3e22650df2a4f4783afe8b78ff93edb88af91dafe4e3581c8a09b"
+      }
+    }
+  },
+  "schema_ref": "src/comparative_program/schemas/live_evidence_insertion_register.v1.json",
+  "register_state": "live_evidence_insertion_register_created",
+  "insertion_event_count": 0,
+  "collection_state": "collection_not_started",
+  "evidence_state": "evidence_generation_absent",
+  "adjudication_state": "adjudication_not_open",
+  "boundary_flags": {
+    "framework_internal_only": true,
+    "evidence_generation_absent": true,
+    "collection_not_started": true
+  },
+  "non_implications": [
+    "Not an evidential register.",
+    "Not a populated provenance chain."
+  ]
+}

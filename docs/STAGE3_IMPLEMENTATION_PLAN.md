@@ -17,6 +17,9 @@
   record instantiation without evidence population.
 - `Stage3-5`: rehearsal-kit formalization, dry-run sequence grammar, and
   rehearsal-ready gating.
+- `Stage3-6`: controlled execution opening, session-zero gating,
+  pre-collection admissibility, live-but-unpopulated artifacts, and first
+  admissible-collection unlock mapping.
 - later execution-era work: real preregistration lock instantiation, reviewer
   selection instantiation, data collection, admissibility assessment, and
   adjudication workflows.
@@ -135,5 +138,23 @@
 - populated evidence bundles;
 - reviewer decisions;
 - adjudicator decisions;
+- result-bearing Paper 10 sections;
+- public-release promotion.
+
+## What Stage3-6 implements
+
+- controlled execution opening policy;
+- session-zero manifest and gate;
+- pre-collection admissibility and contamination checks;
+- live-but-unpopulated collection, dataset, reproducibility, decision, and
+  evidence-register artifacts;
+- first admissible collection unlock-map semantics.
+
+## What Stage3-6 does not implement
+
+- collection-start execution;
+- populated datasets;
+- reviewer or adjudicator decisions;
+- evidential or adjudicative artifacts;
 - result-bearing Paper 10 sections;
 - public-release promotion.

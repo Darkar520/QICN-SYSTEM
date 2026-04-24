@@ -3,10 +3,10 @@
   "artifact_name": "paper10_protocol_hardening_status.json",
   "artifact_version": "1.0.0",
   "schema_version": "1.0.0",
-  "layer_id": "comparative_expansion_layer.stage3_5_rehearsal_preparation",
-  "layer_version": "comparative_expansion_layer.stage3_5.paper10_protocol_backbone.v1",
-  "estimator_version": "paper10_protocol_hardening_builder.stage3_5.v1",
-  "implementation_status": "stage3_5_paper10_protocol_backbone_defined",
+  "layer_id": "comparative_expansion_layer.stage3_6_controlled_execution_opening",
+  "layer_version": "comparative_expansion_layer.stage3_6.paper10_protocol_backbone.v1",
+  "estimator_version": "paper10_protocol_hardening_builder.stage3_6.v1",
+  "implementation_status": "stage3_6_paper10_protocol_backbone_defined",
   "paper10_state": "paper10_protocol_grade_backbone",
   "paper10_result_state": "paper10_result_sections_blocked",
   "paper10_authorization_state": "paper10_not_final_authorized",
@@ -33,6 +33,16 @@
     "reviewer_architecture": true,
     "execution_pilot_package_architecture": true,
     "rehearsal_kit_architecture": true,
+    "controlled_execution_opening": true,
+    "live_but_unpopulated_artifacts": true,
+    "session_zero_protocol": true,
+    "pre_collection_gate": true,
+    "contamination_abort_policy": true,
+    "operator_checklist": true,
+    "collection_start_boundary": true,
+    "evidence_generation_boundary": true,
+    "decision_record_boundary": true,
+    "first_collection_transition": true,
     "reproducibility_skeleton_architecture": true,
     "dataset_population_boundary": true,
     "dry_run_event_log_grammar": true,
@@ -46,10 +56,10 @@
   },
   "blocked_result_marker_present": true,
   "protocol_table_present": true,
-  "evidence_placeholder_count": 26,
-  "section_status_marker_count": 44,
-  "claim_boundary_block_count": 50,
-  "evidence_requirement_block_count": 7,
+  "evidence_placeholder_count": 30,
+  "section_status_marker_count": 54,
+  "claim_boundary_block_count": 59,
+  "evidence_requirement_block_count": 10,
   "boundary_flags": {
     "framework_internal_only": true,
     "non_result_bearing": true,
@@ -64,7 +74,7 @@
   ],
   "interpretation_boundary": "Paper 10 is hardened into a protocol-grade, non-result-bearing manuscript backbone only. It remains blocked from final claims until later admissible execution-era evidence exists, later reviewer and adjudicator action exists, and later result-bearing sections are written honestly from those records.",
   "provenance": {
-    "generated_at": "2026-04-23T19:56:44.762Z",
+    "generated_at": "2026-04-24T06:29:35.157Z",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage3_2_external_adjudication_readiness.v1",
       "estimator_version": "stage3_execution_readiness_builder.v1",
@@ -172,7 +182,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
+        "head": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
         "upstream": "origin/main"
       },
       "qicn_release": {
@@ -234,11 +244,11 @@
       },
       "paper10_main_tex": {
         "ref": "paper10_external_adjudication_and_human_comparators/main.tex",
-        "sha256": "a063b1c0dbe453eece24ecc1b9b589eb0ca3c14b751d4ced4a11b75b1a804a4b"
+        "sha256": "e7933419abb3e22650df2a4f4783afe8b78ff93edb88af91dafe4e3581c8a09b"
       },
       "paper10_section_status": {
         "ref": "paper10_external_adjudication_and_human_comparators/PAPER10_SECTION_STATUS.md",
-        "sha256": "da7d351594dacdb6e9f12e95bbde70f4c5734ba7598f74724eddbf7fd10db811"
+        "sha256": "339dc48301819b8e1adb19c9eb56d6117034b9f7a1babeb4db95d2bd15d2ff29"
       },
       "stage2_m4_readiness_state": "comparative_internal_closure_ready",
       "stage3_opening_state": "ready_for_stage3_opening"

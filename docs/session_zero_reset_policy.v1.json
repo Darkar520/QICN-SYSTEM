@@ -1,0 +1,10 @@
+{
+  "artifact_role": "session_zero_reset_policy",
+  "schema_version": "1.0.0",
+  "reset_rules": [
+    "clear_live_artifact_population_attempts",
+    "restore_empty_dataset_manifests",
+    "restore_empty_live_collection_log",
+    "re-run_session_zero_gate"
+  ]
+}

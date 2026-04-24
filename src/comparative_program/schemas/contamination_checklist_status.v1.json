@@ -1,0 +1,16 @@
+{
+  "title": "contamination_checklist_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "contamination_state",
+    "collection_state",
+    "evidence_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "contamination_checklist_status" },
+    "artifact_name": { "const": "contamination_checklist_status.json" }
+  }
+}

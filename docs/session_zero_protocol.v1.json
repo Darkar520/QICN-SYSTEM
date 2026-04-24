@@ -1,0 +1,28 @@
+{
+  "artifact_role": "session_zero_protocol",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6_controlled_execution_opening",
+  "implementation_status": "stage3_6_session_zero_protocol_defined",
+  "session_zero_steps": [
+    "bind_local_frozen_record_route",
+    "bind_live_collection_manifest",
+    "confirm_empty_dataset_manifests",
+    "confirm_empty_live_collection_log",
+    "confirm_empty_live_decision_stub",
+    "confirm_contamination_and_abort_controls",
+    "confirm_operator_checklist",
+    "confirm_no_evidence_present"
+  ],
+  "session_zero_states": [
+    "session_zero_not_ready",
+    "session_zero_ready",
+    "session_zero_not_started"
+  ],
+  "blocked_actions": [
+    "collection_start",
+    "dataset_population",
+    "reviewer_decision_recording",
+    "adjudicator_decision_recording"
+  ],
+  "interpretation_boundary": "Session-zero is a non-evidential initialization checkpoint only."
+}

@@ -13,7 +13,7 @@
   "current_trunk_linkage": {
     "authoritative_current_system_release_ref": "artifacts/ecosystem_release_candidate/ecosystem_release_candidate_manifest.json",
     "authoritative_current_verification_ref": "artifacts/ecosystem_release_candidate/ecosystem_verification_matrix.json",
-    "qicn_system_current_main_sha": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
+    "qicn_system_current_main_sha": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
     "qicn_release_public_main_sha": "92d5d2c3ea91c65e29dc8e102bed504866cffd2d",
     "interpretation_note": "Historical execution-campaign baselines remain fixed above. Current trunk authority for cross-repo coordination is emitted by the latest ecosystem candidate artifacts, while the live system and release main SHAs are pinned here for provenance closure and Stage 3 lineage reconciliation.",
     "public_release_scope_note": "Current release-candidate trunk is expected to expose BaseCore as the active mathematical base layer, Papers I-IX as downstream public packages, canonical_core_legacy as a preserved legacy package, and supporting or mirror variants as explicitly classified preserved lineages."

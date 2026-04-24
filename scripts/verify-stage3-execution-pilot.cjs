@@ -89,8 +89,8 @@ const verifyRuntimeImport = async () => {
   assert(description.stage3_4_dry_run_layer_present === true, 'Comparative layer must advertise Stage3-4 presence');
   assert(description.stage3_4_execution_pilot_state === 'execution_pilot_dry_run_open', 'Comparative layer must advertise dry-run open state');
   assert(
-    ['stage3_4_execution_pilot_dry_run', 'stage3_5_rehearsal_ready'].includes(description.current_stage3_substage),
-    'Comparative layer must advertise Stage3-4 dry-run or a later bounded rehearsal substage'
+    ['stage3_4_execution_pilot_dry_run', 'stage3_5_rehearsal_ready', 'stage3_6_collection_open_pre_evidential'].includes(description.current_stage3_substage),
+    'Comparative layer must advertise Stage3-4 dry-run or a later bounded rehearsal or controlled-execution substage'
   );
 };
 

@@ -1,0 +1,21 @@
+{
+  "artifact_role": "first_admissible_collection_unlock_map",
+  "schema_version": "1.0.0",
+  "current_gate_state": "collection_open_pre_evidential",
+  "missing_prerequisites": [
+    "actual_reviewer_selection",
+    "actual_adjudicator_assignment",
+    "actual_blinding_assignment",
+    "externally_filed_or_locally_approved_preregistration_route",
+    "operator_authorization",
+    "collection_start_command",
+    "contamination_free_session_start",
+    "first_populated_collection_log_event",
+    "first_admissible_dataset_population_event",
+    "first_reproducibility_package_population_event"
+  ],
+  "non_implications": [
+    "Unlock map is not a collection-start command.",
+    "Unlock map is not evidence."
+  ]
+}

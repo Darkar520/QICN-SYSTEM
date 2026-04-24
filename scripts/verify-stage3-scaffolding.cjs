@@ -146,7 +146,7 @@ const verifyRuntimeImport = async () => {
     'Stage3 layer must advertise a bounded Paper 10 state'
   );
   assert(
-    ['stage3_execution_pilot_preparation', 'stage3_rehearsal_preparation'].includes(stage3.current_stage),
+    ['stage3_execution_pilot_preparation', 'stage3_rehearsal_preparation', 'stage3_controlled_execution_opening'].includes(stage3.current_stage),
     'Stage3 layer must advertise a valid later-bounded Stage 3 state'
   );
   assert(stage3.external_adjudication_executed === false, 'Stage3 layer must keep adjudication unexecuted');

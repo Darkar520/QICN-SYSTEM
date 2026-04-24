@@ -84,6 +84,55 @@ Instantiated-empty records are not allowed to substitute for:
 - evidence-bearing logs;
 - populated decision records.
 
+## Live-but-unpopulated boundary
+
+Live-but-unpopulated artifacts are allowed to validate:
+
+- session-zero routing;
+- live manifest routing;
+- empty dataset declaration;
+- empty decision-stub grammar;
+- empty evidence-register grammar;
+- pre-collection gate wiring.
+
+Live-but-unpopulated artifacts are not allowed to substitute for:
+
+- collection-start events;
+- populated datasets;
+- evidential logs;
+- decision records;
+- adjudication output.
+
+## Collection-start boundary
+
+Collection-start is not implied by:
+
+- session-zero readiness;
+- pre-collection gate passage;
+- live artifact instantiation;
+- controlled execution opening.
+
+Collection-start requires:
+
+- explicit operator authorization;
+- an authorized collection-start event;
+- contamination-free session start;
+- the first populated collection-log event.
+
+## Decision-record boundary
+
+Decision-record population requires:
+
+- real reviewer or adjudicator action;
+- admissible evidence context;
+- provenance-linked decision entries.
+
+The live decision-record stub is not allowed to substitute for:
+
+- reviewer decisions;
+- adjudicator decisions;
+- adjudication outcomes.
+
 ## Invalid substitutes
 
 - internal runtime artifacts alone;

@@ -15,6 +15,12 @@
 - blinding assignment logic;
 - execution pilot package architecture;
 - rehearsal-kit architecture;
+- controlled execution opening architecture;
+- live-but-unpopulated artifact architecture;
+- session-zero protocol;
+- pre-collection admissibility grammar;
+- contamination, abort, and invalidation grammar;
+- operator-checklist grammar;
 - dry-run event-log grammar;
 - execution state grammar;
 - reproducibility skeleton architecture;
@@ -36,6 +42,9 @@
 - any statement that depends on actual blinding assignment;
 - any statement that depends on actual collection sessions or populated logs;
 - any statement that depends on populated pilot bundles.
+- any statement that depends on collection-start events;
+- any statement that depends on live artifact population;
+- any statement that depends on decision-record population.
 
 ## Blocked until external adjudication
 
@@ -71,3 +80,5 @@ Paper 10 may become denser, more structured, and more operationally precise.
 It may not become more conclusive until admissible execution-era evidence exists,
 reviewer-governed adjudication exists, and the later result-bearing sections are
 honestly written from those artifacts.
+Controlled execution opening remains a pre-evidential state only; it is not a
+license to speak as if collection had already started.

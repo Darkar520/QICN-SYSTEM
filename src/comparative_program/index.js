@@ -358,3 +358,52 @@ export {
   Stage3RehearsalPreparationBuilder,
   createStage3RehearsalPreparationBuilder
 } from './Stage3RehearsalPreparationBuilder.js';
+export {
+  CONTROLLED_EXECUTION_OPENING_POLICY,
+  SESSION_ZERO_PROTOCOL,
+  PRE_COLLECTION_ADMISSIBILITY_GATE,
+  CONTAMINATION_AND_ABORT_POLICY,
+  LIVE_BUT_UNPOPULATED_ARTIFACT_POLICY,
+  SESSION_ZERO_GATE_CRITERIA,
+  SESSION_ZERO_OPERATOR_CHECKLIST,
+  SESSION_ZERO_FAILURE_MODES,
+  SESSION_ZERO_RESET_POLICY,
+  PRE_COLLECTION_GATE_CRITERIA,
+  PRE_COLLECTION_INVALIDATION_POLICY,
+  PRE_COLLECTION_CONTAMINATION_CHECKLIST,
+  STAGE3_6_CONTROLLED_EXECUTION_OPENING_CRITERIA,
+  FIRST_ADMISSIBLE_COLLECTION_UNLOCK_MAP,
+  listControlledExecutionStates,
+  listLiveArtifactRoles
+} from './ControlledExecutionOpeningRegistry.js';
+export {
+  LIVE_BUT_UNPOPULATED_ARTIFACT_POLICY as LIVE_ARTIFACT_POLICY
+} from './LiveArtifactRegistry.js';
+export {
+  LiveArtifactInstantiationEvaluator,
+  createLiveArtifactInstantiationEvaluator
+} from './LiveArtifactInstantiationEvaluator.js';
+export {
+  SessionZeroGateBuilder,
+  createSessionZeroGateBuilder
+} from './SessionZeroGateBuilder.js';
+export {
+  SessionZeroOperatorChecklistEvaluator,
+  createSessionZeroOperatorChecklistEvaluator
+} from './SessionZeroOperatorChecklistEvaluator.js';
+export {
+  ContaminationChecklistEvaluator,
+  createContaminationChecklistEvaluator
+} from './ContaminationChecklistEvaluator.js';
+export {
+  PreCollectionAdmissibilityGateBuilder,
+  createPreCollectionAdmissibilityGateBuilder
+} from './PreCollectionAdmissibilityGateBuilder.js';
+export {
+  Stage3_6ControlledExecutionGateBuilder,
+  createStage3_6ControlledExecutionGateBuilder
+} from './Stage3_6ControlledExecutionGateBuilder.js';
+export {
+  Stage3ControlledExecutionOpeningBuilder,
+  createStage3ControlledExecutionOpeningBuilder
+} from './Stage3ControlledExecutionOpeningBuilder.js';

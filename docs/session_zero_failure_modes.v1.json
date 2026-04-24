@@ -1,0 +1,22 @@
+{
+  "artifact_role": "session_zero_failure_modes",
+  "schema_version": "1.0.0",
+  "failure_modes": [
+    "missing_local_frozen_record_binding",
+    "missing_live_collection_manifest",
+    "dataset_manifest_not_empty",
+    "live_collection_log_not_empty",
+    "live_decision_record_stub_not_empty",
+    "evidence_present_before_session_zero",
+    "adjudication_present_before_session_zero"
+  ],
+  "abort_modes": [
+    "operator_abort",
+    "manifest_mismatch_abort",
+    "contamination_abort"
+  ],
+  "invalidation_modes": [
+    "session_zero_invalidated_by_contamination",
+    "session_zero_invalidated_by_untracked_population"
+  ]
+}

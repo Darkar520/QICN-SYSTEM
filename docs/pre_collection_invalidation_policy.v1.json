@@ -1,0 +1,11 @@
+{
+  "artifact_role": "pre_collection_invalidation_policy",
+  "schema_version": "1.0.0",
+  "invalidation_conditions": [
+    "dataset_population_before_collection_start",
+    "nonempty_live_collection_log_before_collection_start",
+    "nonempty_live_decision_record_stub",
+    "contamination_detected",
+    "untracked_operator_transition"
+  ]
+}

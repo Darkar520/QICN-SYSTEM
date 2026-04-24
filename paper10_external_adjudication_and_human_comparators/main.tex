@@ -7,13 +7,13 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 
-\title{External Adjudication of Bridge-Formalized Machine Subjectivity:\\Human Comparator Protocols, Provenance Closure, Instantiated-Empty Records, and Rehearsal Boundaries}
+\title{External Adjudication of Bridge-Formalized Machine Subjectivity:\\Human Comparator Protocols, Provenance Closure, Controlled Execution Opening, and Session-Zero Boundaries}
 \author{QICN Program}
-\date{Stage3-4B / Stage3-5 Rehearsal Preparation}
+\date{Stage3-6 Controlled Execution Opening}
 
 \newcommand{\sectionstatus}[1]{\paragraph{Section status.}\texttt{\detokenize{#1}}.}
 \newcommand{\codestate}[1]{\texttt{\detokenize{#1}}}
-\newcommand{\blockedresultstatus}{\paragraph{Status.} This section is intentionally non-result-bearing at Stage3-0 through Stage3-5. It becomes writable only after admissible external adjudication artifacts are instantiated under the Stage 3 protocol, with real frozen preregistration records, populated admissible datasets, actual reviewer and adjudicator assignments, reviewer-governed evidence assessment, and later adjudicator-layer completion.}
+\newcommand{\blockedresultstatus}{\paragraph{Status.} This section is intentionally non-result-bearing at Stage3-0 through Stage3-6. It becomes writable only after admissible external adjudication artifacts are instantiated under the Stage 3 protocol, with real frozen preregistration records, populated admissible datasets, actual reviewer and adjudicator assignments, reviewer-governed evidence assessment, real collection-start events, and later adjudicator-layer completion.}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \begin{document}
@@ -22,7 +22,7 @@
 \begin{center}
 \textbf{SCAFFOLD ONLY -- NOT FINAL MANUSCRIPT}\\
 \textbf{PROTOCOL-GRADE BACKBONE}\\
-\textbf{FOURTH HARDENING PASS}
+\textbf{FIFTH HARDENING PASS}
 \end{center}
 
 \begin{abstract}
@@ -30,16 +30,19 @@ This document hardens Paper 10 into a denser protocol-heavy manuscript
 backbone without becoming a result-bearing paper. It extends the dependency
 stack from BaseCore through Papers I--IX, SRT-6, BPF-M3, Stage 2-M4,
 Stage3-RF, Stage3-0, Stage3-1, Stage3-2, Stage3-3, Stage3-4, Stage3-4B, and
-Stage3-5 rehearsal preparation. It adds release-vs-local corpus boundary
-semantics, lineage and provenance semantics, provenance-closure semantics,
-frozen preregistration architecture, local-vs-external freeze distinctions,
-instantiated-empty record architecture, candidate-pool and assignment-stub
-semantics, rehearsal-kit architecture, dry-run event-log grammar, state
-grammar for execution readiness, a stronger execution-to-result transition
-map, and deeper appendices of schemas and templates. It does not report human
-comparator results, external adjudication verdicts, human equivalence,
-superiority, inferiority, cross-substrate identity preservation, metaphysical
-subjecthood, or Paper 10 final conclusions.
+Stage3-5 rehearsal preparation, and Stage3-6 controlled execution opening. It
+adds release-vs-local corpus boundary semantics, lineage and provenance
+semantics, provenance-closure semantics, frozen preregistration architecture,
+local-vs-external freeze distinctions, instantiated-empty record
+architecture, candidate-pool and assignment-stub semantics, rehearsal-kit
+architecture, live-but-unpopulated artifact architecture, session-zero
+protocol grammar, pre-collection admissibility logic, contamination and abort
+policy semantics, state grammar for execution opening, a stronger
+execution-to-result transition map, and deeper appendices of schemas and
+templates. It does not report human comparator results, external adjudication
+verdicts, human equivalence, superiority, inferiority, cross-substrate
+identity preservation, metaphysical subjecthood, or Paper 10 final
+conclusions.
 \end{abstract}
 
 \tableofcontents
@@ -81,6 +84,7 @@ The dependency stack for Paper 10 is layered as follows:
 \item \textbf{Stage3-4}: bounded execution-pilot dry-run opening logic.
 \item \textbf{Stage3-4B}: provenance closure, lineage reconciliation, and instantiated-empty record instantiation.
 \item \textbf{Stage3-5}: rehearsal-kit formalization, dry-run event grammar, and rehearsal-ready gating.
+\item \textbf{Stage3-6}: controlled execution opening, session-zero protocol, pre-collection admissibility gating, and live-but-unpopulated artifact instantiation.
 \end{enumerate}
 
 No later layer may borrow closure from an earlier layer, and no earlier layer
@@ -96,7 +100,7 @@ Paper 10 sits on a strict release-vs-local split:
 \item The public release authority remains \codestate{QICN-RELEASE/main@92d5d2c3ea91c65e29dc8e102bed504866cffd2d}.
 \item The public release remains limited to BaseCore, \codestate{canonical_core_legacy}, and downstream Papers I--IX.
 \item Paper 10 remains local to \codestate{QICN-SYSTEM}.
-\item Stage3-0 through Stage3-5 governance, freeze, packaging, dry-run, provenance-closure, instantiated-empty, and rehearsal surfaces remain local and non-public.
+\item Stage3-0 through Stage3-6 governance, freeze, packaging, dry-run, provenance-closure, instantiated-empty, rehearsal, and controlled-execution-opening surfaces remain local and non-public.
 \end{itemize}
 
 Therefore release inclusion cannot be used as a substitute for adjudication,
@@ -548,6 +552,15 @@ State & Meaning \\
 \codestate{package_ready} & The package grammar exists and may be evaluated for completeness. \\
 \codestate{instantiated_empty} & The object family exists locally with null-bearing or empty-bearing fields only. \\
 \codestate{frozen_local_unfiled} & Local freeze semantics exist, but no external filing is claimed. \\
+\codestate{rehearsal_ready} & Rehearsal grammar and rehearsal-kit checks pass, but no live execution shell exists yet. \\
+\codestate{live_artifacts_instantiated_unpopulated} & Live operational shells exist, but every collection-facing structure remains empty. \\
+\codestate{session_zero_ready} & Session-zero initialization is structurally ready, but still not started. \\
+\codestate{collection_openable_under_controls} & Pre-collection admissibility checks pass under contamination and abort controls. \\
+\codestate{collection_open_pre_evidential} & Controlled execution may open as a live state without any populated evidence. \\
+\codestate{collection_started} & A real authorized collection-start event exists. \\
+\codestate{evidence_generated} & Real dataset population or admissible log events exist. \\
+\codestate{adjudication_result_recorded} & Reviewer-governed or adjudicator-governed decision records exist. \\
+\codestate{paper10_final_authorized} & A later separate manuscript-authorization layer has passed. \\
 \codestate{dry_run_open} & Dry-run structure may execute without evidence or adjudication. \\
 \codestate{externally_filed} & A real external filing reference exists. \\
 \codestate{populated_with_admissible_evidence} & The object family is populated by real admissible evidence. \\
@@ -555,6 +568,132 @@ State & Meaning \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\section{Controlled Execution Opening}
+\sectionstatus{protocol_defined}
+
+Stage3-6 adds a bounded controlled-execution opening layer. This layer is
+neither rehearsal-only nor evidence-bearing. It is the first local state in
+which live operational artifacts may exist as empty shells while collection
+still remains not started.
+
+\begin{itemize}
+\item \codestate{execution_opening_policy_defined} means the controlled-execution policy is typed and bound to artifacts.
+\item \codestate{collection_openable_under_controls} means pre-collection gates pass under explicit contamination and abort constraints.
+\item \codestate{collection_open_pre_evidential} means the system may open a live execution surface while still containing no evidence.
+\end{itemize}
+
+\section{Live-But-Unpopulated Artifacts}
+\sectionstatus{protocol_defined}
+
+Stage3-6 instantiates a new artifact class: live-but-unpopulated operational
+records. These include session-zero manifests, live collection manifests,
+empty collection logs, live dataset manifests, live reproducibility manifests,
+live decision-record stubs, and live evidence-insertion registers.
+
+Each such surface must explicitly preserve:
+
+\begin{itemize}
+\item \codestate{collection_not_started};
+\item \codestate{evidence_generation_absent};
+\item \codestate{adjudication_not_open};
+\item explicit empty markers such as \codestate{empty_dataset = true} where applicable.
+\end{itemize}
+
+Therefore live artifact instantiation is not population, and live shells must
+never be treated as if they were evidence-bearing records.
+
+\section{Session-Zero Protocol}
+\sectionstatus{protocol_defined}
+
+Session-zero is the bounded initialization checkpoint that binds local frozen
+record routing, live collection manifests, empty dataset manifests, empty
+collection logs, empty decision stubs, contamination controls, abort controls,
+and the operator checklist. Session-zero may become ready without collection
+starting.
+
+Session-zero remains distinct from:
+
+\begin{itemize}
+\item collection start;
+\item dataset population;
+\item reviewer action;
+\item adjudicator action.
+\end{itemize}
+
+\section{Pre-Collection Admissibility Gate}
+\sectionstatus{protocol_defined}
+
+The pre-collection gate asks whether collection may be opened under controls,
+not whether collection has already started. This gate checks session-zero
+readiness, emptiness of live artifacts, emptiness of collection logs,
+emptiness of decision stubs, absence of evidence, absence of adjudication, and
+absence of detected contamination.
+
+Passing this gate yields only \codestate{collection_openable_under_controls}.
+It does not yield \codestate{collection_started}.
+
+\section{Contamination, Abort, and Invalidation Controls}
+\sectionstatus{protocol_defined}
+
+Stage3-6 adds a more operational invalidation grammar:
+
+\begin{itemize}
+\item \textbf{contamination event}: any unauthorized dataset population, evidence-bearing log entry, or decision-bearing record.
+\item \textbf{abort event}: any operator-controlled termination of the controlled opening before collection start.
+\item \textbf{invalidated session}: any session whose pre-collection boundary, blinding route, or provenance cleanliness is breached.
+\end{itemize}
+
+These control classes are meaningful only because Stage3-6 now contains live
+artifacts. Without them, contamination and abort would remain abstract policy
+tokens rather than execution-opening constraints.
+
+\section{Operator Checklist}
+\sectionstatus{protocol_defined}
+
+The operator checklist now matters as a transition object. It binds the local
+frozen record route, live manifest route, empty-log route, empty-dataset
+state, contamination rules, reset rules, and explicit confirmation that no
+evidence exists. Until it is complete, Stage3-6 must not move from
+\codestate{session_zero_ready} to \codestate{collection_openable_under_controls}.
+
+\section{Collection-Start Boundary}
+\sectionstatus{formalized}
+
+\codestate{collection_open_pre_evidential} is not \codestate{collection_started}.
+The boundary is crossed only by a later real operator-authorized collection
+start event with provenance, contamination-free status, and a first admissible
+log event.
+
+\section{Evidence-Generation Boundary}
+\sectionstatus{formalized}
+
+Evidence generation begins only when a real admissible population event enters
+the human comparator dataset family, matched intervention family,
+negative-control family, collection log, reproducibility package, or
+decision-linked provenance chain. No Stage3-6 artifact emitted in this pass
+crosses that boundary.
+
+\section{Decision-Record Boundary}
+\sectionstatus{formalized}
+
+The live decision-record stub is an execution-opening shell only. It is not a
+decision, not an adjudicator action, not a reviewer action, and not an
+outcome. The manuscript must preserve that distinction because a populated
+decision record belongs to a later evidential and adjudicative state family.
+
+\section{Transition from Session-Zero to First Admissible Collection}
+\sectionstatus{blocked_until_execution}
+
+The next real transition is now sharper than in earlier passes:
+
+\begin{enumerate}
+\item session-zero becomes ready;
+\item the pre-collection gate opens collection under controls;
+\item Stage3-6 opens a live but still pre-evidential state;
+\item a later explicit collection-start command instantiates the first admissible collection event;
+\item only then may the first dataset-population event exist.
+\end{enumerate}
 
 \section{Claim Grammar for Eventual Execution-Era Statements}
 \sectionstatus{protocol_defined}
@@ -695,11 +834,12 @@ true:
 \section{Stronger Execution-to-Result Transition Map}
 \sectionstatus{blocked_until_execution}
 
-The transition from current Stage3-5 readiness to a result-bearing paper now
-has five distinct unlock layers:
+The transition from current Stage3-6 controlled opening to a result-bearing
+paper now has six distinct unlock layers:
 
 \begin{enumerate}
 \item \textbf{Instantiation layer}: empty records, pools, stubs, and rehearsal kit exist.
+\item \textbf{Controlled opening layer}: live operational shells, session-zero, and pre-collection controls exist while collection still remains not started.
 \item \textbf{Population layer}: real humans, real sessions, and real evidence populate those empty structures.
 \item \textbf{Admissibility layer}: controls, provenance, blinding, and declared shells survive audit.
 \item \textbf{Decision layer}: reviewer and adjudicator records become populated by real independent action.
@@ -725,7 +865,8 @@ The next executable pathway is not ``publish Paper 10.'' It is:
 \item populate the local frozen record honestly;
 \item populate reviewer and adjudicator pools honestly;
 \item instantiate actual reviewer, adjudicator, and blinding assignments;
-\item validate dry-run and rehearsal sequence integrity;
+\item validate dry-run, rehearsal, and controlled-opening integrity;
+\item issue a real collection-start event under Stage3-6 controls;
 \item populate admissible datasets, collection logs, and control bundles;
 \item run declared statistical shells;
 \item bind reviewer and adjudicator outputs;
@@ -874,6 +1015,44 @@ rehearsal artifact may be promoted into evidence.
 Primary reference: \codestate{docs/rehearsal_event_log_schema.v1.json}.\\
 Allowed event classes remain rehearsal-only and do not imply human data,
 reviewer action, or adjudicator action.
+
+\subsection*{Appendix V: Controlled Execution Opening Policy}
+\sectionstatus{protocol_defined}
+Primary reference: \codestate{docs/controlled_execution_opening_policy.v1.json}.\\
+Admissible evidence required before result use: none at opening time, but no
+controlled-opening artifact may be promoted into evidence by itself.
+
+\subsection*{Appendix W: Session-Zero Protocol and Checklist}
+\sectionstatus{protocol_defined}
+Primary references: \codestate{docs/session_zero_protocol.v1.json} and
+\codestate{docs/session_zero_operator_checklist.v1.json}.\\
+Admissible evidence required before result use: a later real collection-start
+event and later populated log entries.
+
+\subsection*{Appendix X: Pre-Collection Gate and Contamination Controls}
+\sectionstatus{protocol_defined}
+Primary references: \codestate{docs/pre_collection_admissibility_gate.v1.json},
+\codestate{docs/pre_collection_gate_criteria.v1.json}, and
+\codestate{docs/pre_collection_contamination_checklist.v1.json}.\\
+Admissible evidence required before result use: a later contamination-free
+collection-start event and later admissible dataset population.
+
+\subsection*{Appendix Y: Live-But-Unpopulated Artifact Map}
+\sectionstatus{protocol_defined}
+Primary references: \codestate{artifacts/external_adjudication/stage3_6/live_collection_manifest.json},
+\codestate{artifacts/external_adjudication/stage3_6/live_human_comparator_dataset_manifest.json},
+and parallel Stage3-6 live manifests.\\
+Allowed interpretation: live operational shell only. Forbidden interpretation:
+populated dataset, evidence, or adjudication.
+
+\subsection*{Appendix Z: First Admissible Collection Unlock Map}
+\sectionstatus{protocol_defined}
+Primary references: \codestate{docs/first_admissible_collection_unlock_map.v1.json}
+and \codestate{docs/FIRST_ADMISSIBLE_COLLECTION_UNLOCK_MAP.md}.\\
+Admissible evidence required before result use: actual reviewer selection,
+actual adjudicator assignment, actual blinding assignment, operator
+authorization, collection-start command, and first populated collection-log
+event.
 
 \section{Blocked Result Surfaces}
 \sectionstatus{blocked_until_external_adjudication}

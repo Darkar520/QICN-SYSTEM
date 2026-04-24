@@ -13,11 +13,11 @@
   "release_pinning_state": "pinning_consistent",
   "historical_snapshot_state": "historical_snapshots_intentionally_preserved",
   "release_authority_sha": "92d5d2c3ea91c65e29dc8e102bed504866cffd2d",
-  "system_live_pin_sha": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
-  "regenerated_system_head": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
+  "system_live_pin_sha": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
+  "regenerated_system_head": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
   "regenerated_release_head": "92d5d2c3ea91c65e29dc8e102bed504866cffd2d",
   "prior_recorded_system_heads": [
-    "f6002aae02e586b54b1abb7fb02656bef2b6bc92"
+    "ddd2cb4ac4d1468831eef3664ec733b32bb95944"
   ],
   "prior_recorded_release_heads": [
     "92d5d2c3ea91c65e29dc8e102bed504866cffd2d"
@@ -39,7 +39,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; provenance closure reconciles lineage semantics for local Stage 3 artifacts. It does not rewrite historical snapshots into new evidence and does not create external validation.",
   "provenance": {
-    "generated_at": "2026-04-23T19:56:45.962Z",
+    "generated_at": "2026-04-24T06:29:35.794Z",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage3_4b_to_stage3_5_rehearsal_preparation.v1",
       "estimator_version": "stage3_rehearsal_preparation_builder.stage3_4b_to_stage3_5.v1",
@@ -147,7 +147,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
+        "head": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
         "upstream": "origin/main"
       },
       "qicn_release": {
@@ -277,7 +277,7 @@
       },
       "paper10_main_tex": {
         "ref": "paper10_external_adjudication_and_human_comparators/main.tex",
-        "sha256": "a063b1c0dbe453eece24ecc1b9b589eb0ca3c14b751d4ced4a11b75b1a804a4b"
+        "sha256": "e7933419abb3e22650df2a4f4783afe8b78ff93edb88af91dafe4e3581c8a09b"
       }
     }
   },

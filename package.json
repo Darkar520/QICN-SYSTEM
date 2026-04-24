@@ -80,6 +80,7 @@
     "build:stage3-instantiated-empty": "node scripts/build-stage3-instantiated-empty.cjs",
     "build:stage3-rehearsal-kit": "node scripts/build-stage3-rehearsal-kit.cjs",
     "build:stage3-5-readiness": "node scripts/build-stage3-5-readiness.cjs",
+    "build:stage3-controlled-execution-opening": "node scripts/build-stage3-controlled-execution-opening.cjs",
     "verify:stage3-opening-readiness": "node scripts/verify-stage3-opening-readiness.cjs",
     "verify:paper9-handoff-readiness": "node scripts/verify-paper9-handoff-readiness.cjs",
     "verify:stage3-scaffolding": "node scripts/verify-stage3-scaffolding.cjs",
@@ -88,7 +89,8 @@
     "verify:stage3-execution-pilot": "node scripts/verify-stage3-execution-pilot.cjs",
     "verify:stage3-instantiated-empty": "node scripts/verify-stage3-instantiated-empty.cjs",
     "verify:stage3-rehearsal-kit": "node scripts/verify-stage3-rehearsal-kit.cjs",
-    "verify:stage3-5-readiness": "node scripts/verify-stage3-5-readiness.cjs"
+    "verify:stage3-5-readiness": "node scripts/verify-stage3-5-readiness.cjs",
+    "verify:stage3-controlled-execution-opening": "node scripts/verify-stage3-controlled-execution-opening.cjs"
   },
   "keywords": [],
   "author": "",

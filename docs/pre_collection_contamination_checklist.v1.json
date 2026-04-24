@@ -1,0 +1,14 @@
+{
+  "artifact_role": "pre_collection_contamination_checklist",
+  "schema_version": "1.0.0",
+  "checklist_items": [
+    "dataset_manifests_empty",
+    "live_collection_log_empty",
+    "decision_record_stub_empty",
+    "no_reviewer_output_present",
+    "no_adjudicator_output_present",
+    "no_threshold_drift_detected",
+    "no_shell_drift_detected",
+    "no_collection_start_marker_present"
+  ]
+}

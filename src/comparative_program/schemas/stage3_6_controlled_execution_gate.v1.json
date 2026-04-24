@@ -1,0 +1,19 @@
+{
+  "title": "stage3_6_controlled_execution_gate.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "stage3_6_state",
+    "openability_state",
+    "collection_state",
+    "evidence_state",
+    "adjudication_state",
+    "result_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "stage3_6_controlled_execution_gate" },
+    "artifact_name": { "const": "stage3_6_controlled_execution_gate.json" }
+  }
+}

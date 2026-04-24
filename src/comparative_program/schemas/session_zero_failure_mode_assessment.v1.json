@@ -1,0 +1,16 @@
+{
+  "title": "session_zero_failure_mode_assessment.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "failure_mode_state",
+    "abort_state",
+    "invalidation_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "session_zero_failure_mode_assessment" },
+    "artifact_name": { "const": "session_zero_failure_mode_assessment.json" }
+  }
+}

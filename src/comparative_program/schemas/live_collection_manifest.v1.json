@@ -1,0 +1,16 @@
+{
+  "title": "live_collection_manifest.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "live_artifact_state",
+    "collection_state",
+    "evidence_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "live_collection_manifest" },
+    "artifact_name": { "const": "live_collection_manifest.json" }
+  }
+}

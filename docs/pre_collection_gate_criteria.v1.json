@@ -1,0 +1,25 @@
+{
+  "artifact_role": "pre_collection_gate_criteria",
+  "schema_version": "1.0.0",
+  "ready_requirements": [
+    "session_zero_ready",
+    "session_zero_checklist_satisfied",
+    "live_artifacts_instantiated_unpopulated",
+    "dataset_manifests_empty",
+    "live_collection_log_empty",
+    "decision_record_stub_empty",
+    "no_collection_started",
+    "no_evidence_generated",
+    "no_adjudication_present",
+    "contamination_not_detected",
+    "abort_policy_present",
+    "reset_policy_present"
+  ],
+  "blocked_conditions": [
+    "collection_started",
+    "evidence_generated",
+    "adjudication_open",
+    "contamination_detected",
+    "operator_checklist_incomplete"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "artifact_role": "stage3_6_controlled_execution_opening_criteria",
+  "schema_version": "1.0.0",
+  "opening_requirements": [
+    "controlled_execution_policy_defined",
+    "live_artifacts_instantiated_unpopulated",
+    "session_zero_ready",
+    "pre_collection_gate_passed",
+    "no_evidence_generated",
+    "no_adjudication_present",
+    "paper10_not_final_authorized"
+  ],
+  "opening_blockers": [
+    "missing_session_zero",
+    "missing_pre_collection_gate",
+    "evidence_generation_detected",
+    "adjudication_detected",
+    "paper10_final_authorized"
+  ],
+  "interpretation_boundary": "Criteria only. Passing may open a controlled pre-evidential state, not a result-bearing state."
+}

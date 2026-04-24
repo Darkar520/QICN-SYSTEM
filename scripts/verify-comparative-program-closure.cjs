@@ -341,7 +341,8 @@ const verifyRuntimeImport = async () => {
     description.current_stage === 'stage2_m4_internal_closure'
       || description.current_stage === 'stage3_readiness_fulfillment'
       || description.current_stage === 'stage3_execution_pilot_preparation'
-      || description.current_stage === 'stage3_rehearsal_preparation',
+      || description.current_stage === 'stage3_rehearsal_preparation'
+      || description.current_stage === 'stage3_controlled_execution_opening',
     'Comparative layer must advertise Stage 2-M4 closure, Stage3-RF, or a later bounded Stage 3 preparation superset as current stage'
   );
   assert(

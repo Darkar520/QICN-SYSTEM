@@ -105,7 +105,7 @@ const verifyArtifacts = () => {
 
 const verifyPaper10 = () => {
   const mainTex = readText('paper10_external_adjudication_and_human_comparators/main.tex');
-  assert(/FOURTH HARDENING PASS/i.test(mainTex), 'Paper 10 fourth hardening banner missing');
+  assert(/(FOURTH|FIFTH) HARDENING PASS/i.test(mainTex), 'Paper 10 fourth-or-fifth hardening banner missing');
   assert(/Instantiated-Empty Record Layer/i.test(mainTex), 'Paper 10 instantiated-empty section missing');
   assert(/Execution Pilot Rehearsal Kit Architecture/i.test(mainTex), 'Paper 10 rehearsal-kit section missing');
   assert(/State Grammar for Execution Readiness/i.test(mainTex), 'Paper 10 state-grammar section missing');
@@ -117,8 +117,14 @@ const verifyRuntimeImport = async () => {
   const moduleUrl = pathToFileURL(path.join(ROOT, 'src', 'comparative_program', 'index.js')).href;
   const comparative = await import(moduleUrl);
   const description = comparative.describeComparativeProgramLayer();
-  assert(description.current_stage === 'stage3_rehearsal_preparation', 'Comparative layer must advertise the Stage3 rehearsal preparation family');
-  assert(description.current_stage3_substage === 'stage3_5_rehearsal_ready', 'Comparative layer must advertise the Stage3-5 rehearsal-ready substage');
+  assert(
+    ['stage3_rehearsal_preparation', 'stage3_controlled_execution_opening'].includes(description.current_stage),
+    'Comparative layer must advertise the Stage3 rehearsal or later controlled-execution family'
+  );
+  assert(
+    ['stage3_5_rehearsal_ready', 'stage3_6_collection_open_pre_evidential'].includes(description.current_stage3_substage),
+    'Comparative layer must advertise the Stage3-5 rehearsal-ready or later Stage3-6 pre-evidential substage'
+  );
   assert(description.stage3_4b_instantiated_empty_layer_present === true, 'Comparative layer must advertise Stage3-4B presence');
   assert(description.stage3_5_rehearsal_layer_present === true, 'Comparative layer must advertise Stage3-5 presence');
   assert(typeof comparative.createStage3_5ReadinessGateBuilder === 'function', 'Stage3-5 readiness gate builder export missing');

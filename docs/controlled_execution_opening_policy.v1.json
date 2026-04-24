@@ -1,0 +1,31 @@
+{
+  "artifact_role": "controlled_execution_opening_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6_controlled_execution_opening",
+  "implementation_status": "stage3_6_controlled_execution_policy_defined",
+  "controlled_execution_states": [
+    "execution_opening_not_ready",
+    "execution_opening_policy_defined",
+    "collection_openable_under_controls",
+    "collection_open_pre_evidential",
+    "collection_not_started",
+    "collection_started",
+    "collection_invalidated",
+    "collection_aborted",
+    "evidence_generation_absent",
+    "adjudication_not_open"
+  ],
+  "operator_controlled_transitions": [
+    "rehearsal_ready_to_live_artifacts_instantiated_unpopulated",
+    "live_artifacts_instantiated_unpopulated_to_session_zero_ready",
+    "session_zero_ready_to_collection_openable_under_controls",
+    "collection_openable_under_controls_to_collection_open_pre_evidential",
+    "collection_open_pre_evidential_to_collection_started"
+  ],
+  "non_implications": [
+    "Controlled execution opening is not evidence generation.",
+    "Controlled execution opening is not adjudication.",
+    "Controlled execution opening is not Paper 10 final authorization."
+  ],
+  "interpretation_boundary": "Policy only. Stage3-6 may open a controlled pre-evidential surface, but it does not itself start collection or generate evidence."
+}

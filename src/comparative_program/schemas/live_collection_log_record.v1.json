@@ -1,0 +1,9 @@
+{
+  "title": "live_collection_log_record.v1",
+  "type": "object",
+  "required": [
+    "event_class",
+    "collection_state",
+    "evidence_state"
+  ]
+}

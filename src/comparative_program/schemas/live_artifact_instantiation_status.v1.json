@@ -1,0 +1,16 @@
+{
+  "title": "live_artifact_instantiation_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "live_artifact_state",
+    "collection_state",
+    "evidence_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "live_artifact_instantiation_status" },
+    "artifact_name": { "const": "live_artifact_instantiation_status.json" }
+  }
+}

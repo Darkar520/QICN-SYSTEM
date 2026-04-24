@@ -1,0 +1,16 @@
+{
+  "artifact_role": "session_zero_operator_checklist",
+  "schema_version": "1.0.0",
+  "checklist_items": [
+    "confirm_local_frozen_record_binding",
+    "confirm_live_collection_manifest_binding",
+    "confirm_dataset_manifests_empty",
+    "confirm_live_collection_log_empty",
+    "confirm_live_decision_record_stub_empty",
+    "confirm_contamination_policy_loaded",
+    "confirm_abort_policy_loaded",
+    "confirm_no_collection_started",
+    "confirm_no_evidence_generated",
+    "confirm_no_adjudication_open"
+  ]
+}

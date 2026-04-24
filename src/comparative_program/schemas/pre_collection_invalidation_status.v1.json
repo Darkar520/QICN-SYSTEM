@@ -1,0 +1,16 @@
+{
+  "title": "pre_collection_invalidation_status.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "invalidation_state",
+    "collection_state",
+    "evidence_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "pre_collection_invalidation_status" },
+    "artifact_name": { "const": "pre_collection_invalidation_status.json" }
+  }
+}

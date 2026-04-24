@@ -1,0 +1,24 @@
+{
+  "artifact_role": "live_but_unpopulated_artifact_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6_controlled_execution_opening",
+  "implementation_status": "stage3_6_live_artifact_policy_defined",
+  "live_artifact_families": [
+    { "artifact_role": "session_zero_manifest", "must_be_empty": true },
+    { "artifact_role": "live_collection_manifest", "must_be_empty": true },
+    { "artifact_role": "live_collection_log", "must_be_empty": true },
+    { "artifact_role": "live_human_comparator_dataset_manifest", "must_be_empty": true },
+    { "artifact_role": "live_matched_intervention_dataset_manifest", "must_be_empty": true },
+    { "artifact_role": "live_negative_control_dataset_manifest", "must_be_empty": true },
+    { "artifact_role": "live_reproducibility_package_manifest", "must_be_empty": true },
+    { "artifact_role": "live_decision_record_stub", "must_be_empty": true },
+    { "artifact_role": "live_evidence_insertion_register", "must_be_empty": true }
+  ],
+  "required_empty_markers": [
+    "empty_dataset",
+    "evidence_state",
+    "collection_state",
+    "adjudication_state"
+  ],
+  "interpretation_boundary": "Live artifacts are operationally instantiated only. They are not evidence-bearing payloads."
+}

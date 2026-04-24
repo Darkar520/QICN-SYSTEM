@@ -25,7 +25,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; the Stage3-4 dry-run layer opens operational validation only. It remains non-evidential and non-adjudicative.",
   "provenance": {
-    "generated_at": "2026-04-23T19:56:45.342Z",
+    "generated_at": "2026-04-24T06:29:35.467Z",
     "current_lineage": {
       "layer_version": "comparative_expansion_layer.stage3_3_to_stage3_4_pilot_preparation.v1",
       "estimator_version": "stage3_pilot_preparation_builder.stage3_3_to_stage3_4.v1",
@@ -133,7 +133,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "f6002aae02e586b54b1abb7fb02656bef2b6bc92",
+        "head": "ddd2cb4ac4d1468831eef3664ec733b32bb95944",
         "upstream": "origin/main"
       },
       "qicn_release": {
@@ -223,7 +223,7 @@
       },
       "paper10_main_tex": {
         "ref": "paper10_external_adjudication_and_human_comparators/main.tex",
-        "sha256": "a063b1c0dbe453eece24ecc1b9b589eb0ca3c14b751d4ced4a11b75b1a804a4b"
+        "sha256": "e7933419abb3e22650df2a4f4783afe8b78ff93edb88af91dafe4e3581c8a09b"
       },
       "stage3_2_execution_readiness_state": "execution_readiness_partially_satisfied"
     }

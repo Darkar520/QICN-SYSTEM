@@ -1,0 +1,16 @@
+{
+  "title": "session_zero_manifest.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "session_zero_readiness_state",
+    "session_zero_lifecycle_state",
+    "collection_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "session_zero_manifest" },
+    "artifact_name": { "const": "session_zero_manifest.json" }
+  }
+}

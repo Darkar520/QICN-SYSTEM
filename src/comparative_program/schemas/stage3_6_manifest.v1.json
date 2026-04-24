@@ -1,0 +1,19 @@
+{
+  "title": "stage3_6_manifest.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "stage3_6_state",
+    "live_artifact_state",
+    "session_zero_state",
+    "pre_collection_state",
+    "collection_state",
+    "evidence_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "stage3_6_manifest" },
+    "artifact_name": { "const": "stage3_6_manifest.json" }
+  }
+}

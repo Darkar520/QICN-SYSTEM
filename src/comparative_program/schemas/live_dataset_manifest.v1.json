@@ -1,0 +1,12 @@
+{
+  "title": "live_dataset_manifest.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "dataset_family",
+    "dataset_state",
+    "empty_dataset",
+    "schema_ref"
+  ]
+}

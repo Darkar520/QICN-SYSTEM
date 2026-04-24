@@ -1,0 +1,16 @@
+{
+  "title": "live_decision_record_stub.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "decision_record_state",
+    "collection_state",
+    "evidence_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "live_decision_record_stub" },
+    "artifact_name": { "const": "live_decision_record_stub.json" }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "title": "live_evidence_insertion_register.v1",
+  "type": "object",
+  "required": [
+    "artifact_role",
+    "artifact_name",
+    "register_state",
+    "collection_state",
+    "evidence_state",
+    "schema_ref"
+  ],
+  "properties": {
+    "artifact_role": { "const": "live_evidence_insertion_register" },
+    "artifact_name": { "const": "live_evidence_insertion_register.json" }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "artifact_role": "pre_collection_admissibility_gate",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6_controlled_execution_opening",
+  "implementation_status": "stage3_6_pre_collection_gate_defined",
+  "ready_requirements": [
+    "session_zero_ready",
+    "live_artifacts_instantiated_unpopulated",
+    "dataset_manifests_empty",
+    "live_collection_log_empty",
+    "decision_record_stub_empty",
+    "contamination_policy_present",
+    "abort_policy_present",
+    "operator_checklist_complete",
+    "no_evidence_present",
+    "no_adjudication_present"
+  ],
+  "blocked_conditions": [
+    "collection_started",
+    "dataset_population_detected",
+    "evidence_generation_detected",
+    "adjudication_detected",
+    "contamination_detected"
+  ],
+  "interpretation_boundary": "Gate only. Passing the gate makes collection openable under controls; it does not start collection."
+}

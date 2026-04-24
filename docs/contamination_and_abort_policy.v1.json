@@ -1,0 +1,25 @@
+{
+  "artifact_role": "contamination_and_abort_policy",
+  "schema_version": "1.0.0",
+  "layer_id": "comparative_expansion_layer.stage3_6_controlled_execution_opening",
+  "implementation_status": "stage3_6_contamination_and_abort_policy_defined",
+  "contamination_events": [
+    "dataset_population_before_collection_start",
+    "evidential_log_entry_before_collection_start",
+    "undeclared_manifest_mutation_after_session_zero",
+    "reviewer_or_adjudicator_action_before_authorized_phase",
+    "threshold_or_shell_drift_after_session_zero"
+  ],
+  "abort_events": [
+    "operator_abort",
+    "manifest_consistency_failure",
+    "missing_checklist_confirmation",
+    "missing_log_emptiness_confirmation"
+  ],
+  "invalidation_events": [
+    "contamination_detected",
+    "untracked_population_event_detected",
+    "untracked_decision_event_detected"
+  ],
+  "interpretation_boundary": "Policy only. Contamination, abort, and invalidation semantics remain non-evidential governance controls."
+}

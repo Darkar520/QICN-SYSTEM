@@ -76,6 +76,39 @@ export const computeNc1TimePermutationEffect = ({ ticks, runId, preregHash }) =>
   };
 };
 
+export const computeNc3PlaceboEffect = ({ runs, preregHash, tauPlacebo = 0.02, placeboJitterMax = null }) => {
+  const normalizedRuns = (Array.isArray(runs) ? runs : [])
+    .map((run, index) => ({
+      runId: String(run?.runId || run?.runPath || `run_${index}`),
+      subj: finite(run?.subj, NaN)
+    }))
+    .filter((run) => Number.isFinite(run.subj));
+  const tau = Math.max(0, finite(tauPlacebo, 0.02));
+  const jitterDefault = tau * 0.5;
+  const jitterMax = Math.max(0, placeboJitterMax == null ? jitterDefault : finite(placeboJitterMax, jitterDefault));
+  const samples = normalizedRuns.map((run) => {
+    const unit = hashUnit(`${preregHash}::NC3_placebo::${run.runId}`);
+    const placeboDelta = (unit - 0.5) * 2 * jitterMax;
+    return {
+      runId: run.runId,
+      baseline_subj: run.subj,
+      placebo_subj: run.subj + placeboDelta,
+      placebo_delta: placeboDelta
+    };
+  });
+  const observedAbsEffect = mean(samples.map((sample) => Math.abs(sample.placebo_delta)));
+  const signedEffectMean = mean(samples.map((sample) => sample.placebo_delta));
+  return {
+    method: 'bounded_hash_placebo_surrogate',
+    n_runs: samples.length,
+    tau_placebo: tau,
+    placebo_jitter_max: jitterMax,
+    observed_abs_effect: observedAbsEffect,
+    signed_effect_mean: signedEffectMean,
+    samples
+  };
+};
+
 const loadRunsFromPairs = (prereg) => {
   const out = new Map();
   for (const p of prereg?.pairs || []) {
@@ -116,7 +149,13 @@ const evaluateNegativeControls = ({ prereg, operational, snoClean, snoLeak }) =>
     return Math.abs(noised - finite(r.subj, 0));
   });
   const nc2Effect = mean(subjEffects);
-  const nc3Effect = 0;
+  const nc3 = computeNc3PlaceboEffect({
+    runs,
+    preregHash,
+    tauPlacebo,
+    placeboJitterMax: ncCfg.placebo_jitter_max
+  });
+  const nc3Effect = nc3.observed_abs_effect;
   const nc4Acc = finite(snoLeak?.strict?.acc, 0);
 
   return {
@@ -137,7 +176,12 @@ const evaluateNegativeControls = ({ prereg, operational, snoClean, snoLeak }) =>
     },
     NC3_placebo: {
       expected: ncCfg?.expected?.NC3_placebo || 'abs_effect_le_tau',
+      method: nc3.method,
+      n_runs: nc3.n_runs,
+      placebo_jitter_max: nc3.placebo_jitter_max,
       observed_abs_effect: nc3Effect,
+      signed_effect_mean: nc3.signed_effect_mean,
+      samples: nc3.samples,
       pass: Math.abs(nc3Effect) <= tauPlacebo
     },
     NC4_leak_feature: {

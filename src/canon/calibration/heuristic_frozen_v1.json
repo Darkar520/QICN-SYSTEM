@@ -1,0 +1,13 @@
+{
+  "version": "HEURISTIC_FROZEN_V1",
+  "evidence_scope": "INTERNAL_SUPPORT_ONLY",
+  "interpretation_boundary": "Frozen runtime heuristic weights only; not external validation and not theoretical coefficient proof.",
+  "invariants": {
+    "I_per": { "continuity": 0.45, "stasis": 0.25, "io": 0.2, "monotonic": 0.1 },
+    "I_ri": { "identity": 0.38, "predictive": 0.16, "self_state": 0.15, "hash_semantic": 0.08, "operational_determinism": 0.11, "critical_observables": 0.12 },
+    "I_int": { "pmia": 0.32, "spectral_gap": 0.18, "beth_q": 0.15, "causal_closure_balance": 0.15, "wm_error": 0.1, "guardrail": 0.1 },
+    "I_cont": { "predictive": 0.7, "tau_recovery": 0.3 },
+    "I_diff": { "beth_q": 0.4, "phen": 0.25, "omega": 0.35 },
+    "I_leg": { "operational_determinism": 0.24, "critical_observables": 0.22, "hash_semantic": 0.12, "guardrail": 0.12, "verdict": 0.3 }
+  }
+}

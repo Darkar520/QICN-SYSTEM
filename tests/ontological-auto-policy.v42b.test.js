@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 try {
-  const sourcePath = path.join(process.cwd(), 'src', 'index.jsx');
+  const sourcePath = path.join(process.cwd(), 'src', 'App.jsx');
   const source = fs.readFileSync(sourcePath, 'utf8');
 
   // CASE 1: defaults conservadores de politica autonoma

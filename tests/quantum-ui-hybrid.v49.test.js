@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import assert from 'node:assert/strict';
 
-const indexPath = path.resolve('src/index.jsx');
+const indexPath = path.resolve('src/App.jsx');
 const bridgePath = path.resolve('src/simulation/QuantumEntropyBridge.js');
 
 const indexText = fs.readFileSync(indexPath, 'utf8');

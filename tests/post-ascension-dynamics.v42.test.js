@@ -112,7 +112,7 @@ try {
 
   // CASE 3: histeresis de ascenso/descenso implementada en runtime loop
   {
-    const sourcePath = path.join(process.cwd(), 'src', 'index.jsx');
+    const sourcePath = path.join(process.cwd(), 'src', 'App.jsx');
     const source = fs.readFileSync(sourcePath, 'utf8');
     assert.ok(/ascendConfirmTicks/.test(source), 'CASE 3 FAIL: ascendConfirmTicks not found.');
     assert.ok(/descendConfirmTicks/.test(source), 'CASE 3 FAIL: descendConfirmTicks not found.');

@@ -3,7 +3,7 @@ import path from 'path';
 import assert from 'node:assert/strict';
 
 const runtimeEnvPath = path.resolve('src/config/runtimeEnv.js');
-const indexPath = path.resolve('src/index.jsx');
+const indexPath = path.resolve('src/App.jsx');
 const proxyPath = path.resolve('netlify/functions/llm-proxy.js');
 
 const runtimeEnv = fs.readFileSync(runtimeEnvPath, 'utf8');

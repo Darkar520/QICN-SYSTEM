@@ -15,7 +15,7 @@ const smoothSeriesReference = (values, windowSize) => {
 };
 
 try {
-  const sourcePath = path.join(process.cwd(), 'src', 'index.jsx');
+  const sourcePath = path.join(process.cwd(), 'src', 'App.jsx');
   const source = fs.readFileSync(sourcePath, 'utf8');
 
   // CASE 1: timeline acotado y throttle visual <= 10Hz

@@ -7,7 +7,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const hookText = fs.readFileSync(path.join(__dirname, '../src/hooks/useDeviceCapabilities.js'), 'utf8');
-const indexText = fs.readFileSync(path.join(__dirname, '../src/index.jsx'), 'utf8');
+const indexText = fs.readFileSync(path.join(__dirname, '../src/App.jsx'), 'utf8');
 
 assert(hookText.includes('supportsCamera'), 'device capabilities must expose camera support');
 assert(hookText.includes('supportsMicrophone'), 'device capabilities must expose microphone support');

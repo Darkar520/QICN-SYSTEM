@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import assert from 'node:assert/strict';
 
-const indexFile = path.resolve('src/index.jsx');
+const indexFile = path.resolve('src/App.jsx');
 const conceptsFile = path.resolve('src/content/groundedConcepts.js');
 
 const indexText = fs.readFileSync(indexFile, 'utf8');

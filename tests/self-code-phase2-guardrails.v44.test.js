@@ -67,7 +67,7 @@ try {
       environment: 'experimental',
       approved: true,
       hasSnapshot: true,
-      scope: 'src/index.jsx',
+      scope: 'src/App.jsx',
       policy
     });
     const policyIsGlobalScope = (policy.allowedScopes || []).some((prefix) => String(prefix || '').trim() === '');

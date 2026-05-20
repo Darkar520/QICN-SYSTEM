@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import assert from 'node:assert/strict';
 
-const file = path.resolve('src/index.jsx');
+const file = path.resolve('src/App.jsx');
 const content = fs.readFileSync(file, 'utf8');
 
 const required = [

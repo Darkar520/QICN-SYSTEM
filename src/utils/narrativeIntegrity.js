@@ -52,6 +52,7 @@ const REAL_BASENAMES = new Set([
   'causaldyad.js',
   'hlebenchmarksystem.js',
   'humanitylastexammanager.js',
+  'app.jsx',
   'index.jsx',
   'index_network_canvas.jsx',
   'network_canvas_worker.js',
@@ -69,6 +70,7 @@ const REAL_BASENAMES = new Set([
 ]);
 
 const REAL_CANONICAL_PATHS = new Set([
+  'src/app.jsx',
   'src/index.jsx',
   'src/index_network_canvas.jsx',
   'src/network_canvas_worker.js',

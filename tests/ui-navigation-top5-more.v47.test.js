@@ -1,7 +1,7 @@
 ﻿import fs from 'fs';
 import path from 'path';
 
-const file = path.resolve('src/index.jsx');
+const file = path.resolve('src/App.jsx');
 const content = fs.readFileSync(file, 'utf8');
 
 if (!content.includes('const primaryTabs = [')) throw new Error('primaryTabs definition missing');

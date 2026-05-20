@@ -6,7 +6,7 @@ import { KaizenMetamorphosisEngine } from '../src/simulation/KaizenMetamorphosis
 
 const ROOT = process.cwd();
 const SRC_ROOT = path.join(ROOT, 'src');
-const INDEX_PATH = path.join(ROOT, 'src', 'index.jsx');
+const INDEX_PATH = path.join(ROOT, 'src', 'App.jsx');
 
 const expectedRuntimeCriticalKeys = [
   'BASE_LEARNING_RATE',
@@ -80,7 +80,7 @@ try {
     );
   }
 
-  // CASE 2: paridad mutable keys (registry vs Kaizen vs fallback string en index.jsx)
+  // CASE 2: paridad mutable keys (registry vs Kaizen vs fallback string en App.jsx)
   {
     const mutableRegistryKeys = uniqueSorted(getMutableRuntimeParameterKeys());
 
@@ -100,7 +100,7 @@ try {
     const fallbackMatch = indexText.match(
       /BASE_LEARNING_RATE,\s*HEBBIAN_FACTOR,\s*SYNAPTIC_PRUNING_THRESHOLD,\s*PLASTICITY_DECAY,\s*RETRO_FLUX_WEIGHT,\s*BOLTZMANN_ANALOG_K,\s*INFORMATIONAL_TEMP_T/
     );
-    assert.ok(fallbackMatch, 'CASE 2 FAIL: mutable fallback string not found in index.jsx.');
+    assert.ok(fallbackMatch, 'CASE 2 FAIL: mutable fallback string not found in App.jsx.');
     const fallbackMutableKeys = uniqueSorted(
       fallbackMatch[0].split(',').map((entry) => entry.trim())
     );

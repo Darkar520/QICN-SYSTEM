@@ -6,7 +6,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const indexPath = path.join(__dirname, '../src/index.jsx');
+const indexPath = path.join(__dirname, '../src/App.jsx');
 const gatePath = path.join(__dirname, '../src/components/AccessGate.jsx');
 const authPath = path.join(__dirname, '../src/auth/AuthContext.jsx');
 

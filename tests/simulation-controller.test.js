@@ -7,6 +7,7 @@ import { OntologicalSingularityCore } from '../src/simulation/OntologicalSingula
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const indexSource = fs.readFileSync(path.join(projectRoot, 'src', 'index.jsx'), 'utf8');
+const appSource = fs.readFileSync(path.join(projectRoot, 'src', 'App.jsx'), 'utf8');
 
 try {
   const controller = new SimulationController();
@@ -28,11 +29,12 @@ try {
   assert.equal(core.worldModelEngine, controller.worldModel, 'reset must rebind core worldModel');
   assert.equal(core.cognitivePlanner, controller.planner, 'reset must rebind core planner');
 
-  assert(!/WorldModelEngine/.test(indexSource), 'index.jsx must not instantiate/import WorldModelEngine directly');
-  assert(!/CognitiveEmergencePlanner/.test(indexSource), 'index.jsx must not instantiate/import CognitiveEmergencePlanner directly');
-  assert(/SimulationController/.test(indexSource), 'index.jsx must use SimulationController');
+  assert(/import App from '.\/App.jsx'/.test(indexSource), 'index.jsx must delegate to App.jsx');
+  assert(!/WorldModelEngine/.test(appSource), 'App.jsx must not instantiate/import WorldModelEngine directly');
+  assert(!/CognitiveEmergencePlanner/.test(appSource), 'App.jsx must not instantiate/import CognitiveEmergencePlanner directly');
+  assert(/SimulationController/.test(appSource), 'App.jsx must use SimulationController');
 
-  const runSimulationCycleMatch = indexSource.match(
+  const runSimulationCycleMatch = appSource.match(
     /const\s+runSimulationCycle\s*=\s*useCallback\([\s\S]*?\n\s*\},\s*\[([^\]]*)\]\);/
   );
   assert(runSimulationCycleMatch, 'runSimulationCycle useCallback block must be present');
@@ -47,4 +49,3 @@ try {
   console.error('FAIL: simulation controller unification test failed:', error.message);
   process.exit(1);
 }
-

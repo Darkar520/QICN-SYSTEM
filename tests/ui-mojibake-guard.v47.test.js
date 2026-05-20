@@ -2,7 +2,7 @@
 import path from 'path';
 
 const files = [
-  path.resolve('src/index.jsx')
+  path.resolve('src/App.jsx')
 ];
 
 const patterns = [

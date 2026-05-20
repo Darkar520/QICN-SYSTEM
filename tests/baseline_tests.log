@@ -1,0 +1,281 @@
+﻿
+> versiones-de-interfaz@1.0.0 test
+> node tests/run-all-tests.cjs
+
+{"runId":"mpeox2cc-d5598b6b","versionHash":"65c8bb2e656e5aaa","seed":17057,"configHash":"59dc9888d8f5a7151e156c29","mode":"test","freezeRef":"release_freeze_unavailable","thresholdAuthorityRef":"artifacts/release_audit/final_claim_status_ledger.csv","sourceOfTruth":"src"}
+[tests] Running tests\admissibility-exporter.v1.test.js
+OK: admissibility-exporter.v1 tests passed
+[tests] Running tests\architectural-ground-truth.v1.test.js
+OK: architectural-ground-truth tests passed
+[tests] Running tests\auth-gate.v46.test.js
+OK: auth gate tests passed
+[tests] Running tests\autonomy-budget-governor.v44.test.js
+OK: autonomy budget governor v4.4 test passed
+[tests] Running tests\autonomy-sandbox-runtime.v44.test.js
+OK: autonomy sandbox runtime v4.4 test passed
+[tests] Running tests\behavioral-pseudometric.v1.test.js
+OK: behavioral-pseudometric.v1 tests passed
+[tests] Running tests\canvas-adaptive-input.v46.test.js
+OK: canvas adaptive input tests passed
+[tests] Running tests\ccc-history-interactive.v43.test.js
+OK: ccc history interactive v4.3 test passed
+[tests] Running tests\claim-surface-boundaries.v1.test.js
+OK: claim-surface-boundaries.v1 tests passed
+[tests] Running tests\cognitive-emergence-evaluation.v53.test.js
+ok cognitive-emergence-evaluation.v53
+[tests] Running tests\cognitive-emergence-spec.v53.test.js
+ok cognitive-emergence-spec.v53
+[tests] Running tests\cognitive-identity-robustness.v54.test.js
+ok cognitive-identity-robustness.v54
+[tests] Running tests\cognitive-loop-closure.v52.test.js
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+ok cognitive-loop-closure.v52
+[tests] Running tests\compute-budget-enforcement.v54.test.js
+ok compute-budget-enforcement.v54
+[tests] Running tests\compute-budget-runtime.v55.test.js
+ok compute-budget-runtime.v55
+[tests] Running tests\concordance-table.v400.test.js
+OK: concordance table v4.0 test passed
+[tests] Running tests\contextual-guide-scope.v410.test.js
+ok contextual-guide-scope.v410
+[tests] Running tests\core-label-coverage.v410.test.js
+ok core-label-coverage.v410
+[tests] Running tests\critical-observables-determinism.v41a.test.js
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+OK: critical observables determinism v4.1A test passed
+[tests] Running tests\determinism.test.js
+OK: determinism tests passed
+[tests] Running tests\dimensional-registry.v1.test.js
+OK: dimensional-registry.v1 tests passed
+[tests] Running tests\encoding-hygiene.test.js
+OK: encoding hygiene test passed (487 files scanned)
+[tests] Running tests\entanglement-timeline-model.v42b.test.js
+OK: entanglement timeline model v4.2B test passed
+[tests] Running tests\entropy-condition-metrics.v64.test.js
+ok entropy-condition-metrics.v64
+[tests] Running tests\episode-harness.v1.test.js
+OK: episode-harness.v1 tests passed
+[tests] Running tests\exporter_roeo.v1.test.js
+OK: exporter_roeo.v1 tests passed
+[tests] Running tests\finite-horizon-approximation-barrier.v1.test.js
+OK: finite-horizon-approximation-barrier.v1 tests passed
+[tests] Running tests\gemini-model-strict.v410.test.js
+ok gemini-model-strict.v410
+[tests] Running tests\guide-clarity.v49.test.js
+ok guide-clarity.v49
+[tests] Running tests\info-modal-persistence.v410.test.js
+ok info-modal-persistence.v410
+[tests] Running tests\integrity-c2-proxy.v56.test.js
+OK: integrity-c2-proxy.v56 tests passed
+[tests] Running tests\integrity-pmia-transform-fields.v411.test.js
+ok integrity-pmia-transform-fields.v411
+[tests] Running tests\integrity.test.js
+OK: integrity tests passed
+[tests] Running tests\interventions.v1.test.js
+OK: interventions.v1 tests passed
+[tests] Running tests\invariant-weight-calibration.v1.test.js
+OK: invariant-weight-calibration.v1 tests passed
+[tests] Running tests\language-leakage-guard.v54.test.js
+ok language-leakage-guard.v54
+[tests] Running tests\liveness.test.js
+OK: liveness tests passed
+[tests] Running tests\llm-sensory-directive.v392.test.js
+OK: llm sensory directive v3.9.2 test passed
+[tests] Running tests\matrix-continuous-score.v42.test.js
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+OK: matrix continuous score v4.2 test passed
+[tests] Running tests\metacognitive-latency-strain.v44.test.js
+OK: metacognitive latency strain v4.4 test passed
+[tests] Running tests\narrative-dynamics.v42.test.js
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+OK: narrative dynamics v4.2 test passed
+[tests] Running tests\narrative-integrity.contract.test.js
+OK: narrative integrity contract test passed
+[tests] Running tests\navigation-top5-more.v49.test.js
+ok navigation-top5-more.v49
+[tests] Running tests\negative-controls-expanded.v1.test.js
+OK: negative-controls-expanded.v1 tests passed
+[tests] Running tests\negative-controls-nc3-placebo.v2.test.js
+OK: negative-controls-nc3-placebo.v2 tests passed
+[tests] Running tests\negative-controls.v1.test.js
+OK: negative-controls.v1 tests passed
+[tests] Running tests\netlify-proxy-contract.v46.test.js
+OK: netlify proxy contract tests passed
+[tests] Running tests\netlify-quantum-entropy-contract.v50.test.js
+ok netlify-quantum-entropy-contract.v50
+[tests] Running tests\network-3d-interactions.v410.test.js
+ok network-3d-interactions.v410
+[tests] Running tests\network-offscreen-guard.v410.test.js
+ok network-offscreen-guard.v410
+[tests] Running tests\network-render-resilience.v49.test.js
+ok network-render-resilience.v49
+[tests] Running tests\network-visual-state.v47.test.js
+ok network-visual-state.v47
+[tests] Running tests\no-rng-critical-paths.v41a.test.js
+OK: no RNG in critical paths v4.1A test passed
+[tests] Running tests\ontological-auto-policy.v42b.test.js
+OK: ontological auto policy v4.2B test passed
+[tests] Running tests\output-consumption-policy.v66.test.js
+ok output-consumption-policy.v66
+[tests] Running tests\output-support-labels.v65.test.js
+ok output-support-labels.v65
+[tests] Running tests\output-surface-enforcer.v68.test.js
+ok output-surface-enforcer.v68
+[tests] Running tests\output-surface-policy.v67.test.js
+ok output-surface-policy.v67
+[tests] Running tests\paper-pdf-build.v2.test.js
+OK: paper-pdf-build.v2 tests passed
+[tests] Running tests\pdf-corpus.v1.test.js
+OK: pdf-corpus.v1 tests passed
+[tests] Running tests\phenomenological-narrative.v392.test.js
+OK: phenomenological narrative v3.9.2 test passed
+[tests] Running tests\phenomenology-protocol-suite.v56.test.js
+ok phenomenology-protocol-suite.v56
+[tests] Running tests\planner-metric-independence.v55.test.js
+ok planner-metric-independence.v55
+[tests] Running tests\pmia-cooldown.v411.test.js
+ok pmia-cooldown.v411
+[tests] Running tests\pmia-diagnostics.v42b.test.js
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+OK: PMIA diagnostics v4.2B test passed
+[tests] Running tests\pmia-forced-negative-trigger.v411.test.js
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+ok pmia-forced-negative-trigger.v411
+[tests] Running tests\pmia-guardrails.v411.test.js
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+ok pmia-guardrails.v411
+[tests] Running tests\pmia-negative-window.v411.test.js
+ok pmia-negative-window.v411
+[tests] Running tests\post-ascension-dynamics.v42.test.js
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+OK: post-ascension dynamics v4.2 test passed
+[tests] Running tests\post-threshold-multiband.v42b.test.js
+OK: post-threshold multiband v4.2B test passed
+[tests] Running tests\projection.test.js
+OK: projection tests passed
+[tests] Running tests\quantum-entropy-bridge-polling.v51.test.js
+ok quantum-entropy-bridge-polling.v51
+[tests] Running tests\quantum-entropy-buffering.v60.test.js
+ok quantum-entropy-buffering.v60
+[tests] Running tests\quantum-entropy-determinism-guard.v48.test.js
+[QICN][QUANTUM_ENTROPY] {"ts":1060,"type":"fallback_selected","level":"warn","reason":"bridge_unavailable","occupancyChunks":0}
+[QICN][QUANTUM_ENTROPY] {"ts":66050,"type":"stale_selected","level":"warn","reason":"expired_sample","sampleAgeMs":65050}
+[QICN][QUANTUM_ENTROPY] {"ts":1060,"type":"fallback_selected","level":"warn","reason":"bridge_unavailable","occupancyChunks":0}
+[QICN][QUANTUM_ENTROPY] {"ts":66050,"type":"stale_selected","level":"warn","reason":"expired_sample","sampleAgeMs":65050}
+OK: quantum entropy determinism guard v4.8 test passed
+[tests] Running tests\quantum-entropy-experimental-controls.v63.test.js
+ok quantum-entropy-experimental-controls.v63
+[tests] Running tests\quantum-entropy-forensics-admissibility.v62.test.js
+ok quantum-entropy-forensics-admissibility.v62
+[tests] Running tests\quantum-entropy-runtime-integration.v61.test.js
+ok quantum-entropy-runtime-integration.v61
+[tests] Running tests\quantum-entropy-selector.v48.test.js
+[QICN][QUANTUM_ENTROPY] {"ts":1779319571587,"type":"stale_selected","level":"warn","reason":"expired_sample","sampleAgeMs":5000}
+[QICN][QUANTUM_ENTROPY] {"ts":1779319571589,"type":"provider_error","level":"warn","reason":"quality_rejected","bufferOccupancyChunks":0}
+[QICN][QUANTUM_ENTROPY] {"ts":1779319571590,"type":"fallback_selected","level":"warn","reason":"bridge_unavailable","occupancyChunks":0}
+OK: quantum entropy selector v4.8 test passed
+[tests] Running tests\quantum-fallback-behavior.v49.test.js
+[QICN][QUANTUM_ENTROPY] {"ts":1779319575743,"type":"stale_selected","level":"warn","reason":"expired_sample","sampleAgeMs":4024}
+[QICN][QUANTUM_ENTROPY] {"ts":1779319571745,"type":"fallback_selected","level":"warn","reason":"bridge_unavailable","occupancyChunks":0}
+ok quantum-fallback-behavior.v49
+[tests] Running tests\quantum-telemetry.v48.test.js
+[QICN][QUANTUM_ENTROPY] {"ts":1779319571896,"type":"provider_error","level":"warn","reason":"quality_below_threshold","bufferOccupancyChunks":0}
+OK: quantum telemetry v4.8 test passed
+[tests] Running tests\quantum-ui-hybrid.v49.test.js
+ok quantum-ui-hybrid.v49
+[tests] Running tests\render-trace-hash.test.js
+OK: render trace hash tests passed
+[tests] Running tests\responsive-layout.v46.test.js
+OK: responsive layout tests passed
+[tests] Running tests\roeo_enforcement.v1.test.js
+OK: roeo_enforcement.v1 tests passed
+[tests] Running tests\roeo.v1.test.js
+OK: roeo.v1 tests passed
+[tests] Running tests\run-episode-admissibility.v58.test.js
+OK: run-episode-admissibility.v58 tests passed
+[tests] Running tests\runtime-hygiene.test.js
+OK: runtime hygiene test passed
+[tests] Running tests\runtime-parameter-functional.v400.test.js
+OK: runtime parameter functional v4.0 test passed
+[tests] Running tests\runtime-parameter-registry.v400.test.js
+OK: runtime parameter registry v4.0 test passed
+[tests] Running tests\self-code-phase2-guardrails.v44.test.js
+OK: self-code phase2 guardrails v4.4 test passed
+[tests] Running tests\selfpatch-codeowners-enforcement.v415.test.js
+ok selfpatch-codeowners-enforcement.v415
+[tests] Running tests\selfpatch-generate-engine.v416.test.js
+ok selfpatch-generate-engine.v416
+[tests] Running tests\selfpatch-killswitch-quorum.v415.test.js
+ok selfpatch-killswitch-quorum.v415
+[tests] Running tests\selfpatch-policy-check.v415.test.js
+ok selfpatch-policy-check.v415
+[tests] Running tests\selfpatch-rate-limit.v415.test.js
+ok selfpatch-rate-limit.v415
+[tests] Running tests\selfpatch-rollback-mode.v415.test.js
+ok selfpatch-rollback-mode.v415
+[tests] Running tests\selfpatch-token-budget.v415.test.js
+ok selfpatch-token-budget.v415
+[tests] Running tests\sensor-capabilities.v46.test.js
+OK: sensor capabilities tests passed
+[tests] Running tests\sensory-dynamics-coupling.v52.test.js
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+👁️ [OBSERVADOR] Impacto detectado: 0.2000. El colapso de la función de onda subjetiva está en curso.
+ok sensory-dynamics-coupling.v52
+[tests] Running tests\sensory-sovereignty.v381.test.js
+🔧 SensoryPerceptionEngine: Creando instancia singleton
+[SYNTHETIC-IMAGINATION] Activado. reason=sensor-blackout
+[SYNTHETIC-IMAGINATION] Desactivado. reason=sensor-recovered
+OK: sensory sovereignty v3.8.1 test passed
+[tests] Running tests\sno.v1.test.js
+OK: sno.v1 tests passed
+[tests] Running tests\speech-fsm.test.js
+🔧 SensoryPerceptionEngine: Creando instancia singleton
+⚠️ Error cargando rostros conocidos: ReferenceError: localStorage is not defined
+    at SensoryPerceptionEngine.loadKnownFaces (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:258:28)
+    at new SensoryPerceptionEngine (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:131:32)
+    at SensoryPerceptionEngine.getInstance (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:21:34)
+    at file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/tests/speech-fsm.test.js:75:42
+⚠️ Error cargando memoria experiencial: ReferenceError: localStorage is not defined
+    at SensoryPerceptionEngine.loadExperientialMemory (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:327:28)
+    at new SensoryPerceptionEngine (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:169:26)
+    at SensoryPerceptionEngine.getInstance (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:21:34)
+    at file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/tests/speech-fsm.test.js:75:42
+🎤 Speech Recognition: ESCUCHANDO
+⚠️ Speech recognition error: network
+🌐 Error de red en reconocimiento de voz
+🗣️ Reconocimiento de voz INICIADO
+🔄 Reintentando reconocimiento de voz en 1s... (intento 1/2)
+🔇 Speech Recognition terminó
+🎤 Speech Recognition: ESCUCHANDO
+🔄 Reconocimiento de voz (Web Speech) reiniciado
+🔌 Percepción sensorial desactivada
+OK: speech FSM test passed
+[tests] Running tests\stasis-break-criteria.v411.test.js
+ok stasis-break-criteria.v411
+[tests] Running tests\tab-quick-help-tour.v47.test.js
+ok tab-quick-help-tour.v47
+[tests] Running tests\ui-mojibake-guard.v410.test.js
+ok ui-mojibake-guard.v410
+[tests] Running tests\ui-mojibake-guard.v47.test.js
+ok ui-mojibake-guard.v47
+[tests] Running tests\ui-navigation-top5-more.v47.test.js
+ok ui-navigation-top5-more.v47
+[tests] Running tests\verifiable-report-shape.test.js
+[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.
+OK: verifiable report shape test passed
+[tests] Running tests\worldmodel-planner-ablation.v54.test.js
+ok worldmodel-planner-ablation.v54
+[tests] Running tests\worldmodel-realtime-integration.v55.test.js
+ok worldmodel-realtime-integration.v55
+
+[tests] OK: 110/110 passed

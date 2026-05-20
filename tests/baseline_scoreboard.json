@@ -1,0 +1,399 @@
+{
+  "generatedAt": "2026-05-20T23:25:32.839Z",
+  "mode": "run",
+  "commands": [
+    {
+      "command": "npm.cmd test",
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "elapsedMs": 33519,
+      "stdout": "\n> versiones-de-interfaz@1.0.0 test\n> node tests/run-all-tests.cjs\n\n{\"runId\":\"mpeovq6s-8dbf3cce\",\"versionHash\":\"65c8bb2e656e5aaa\",\"seed\":17057,\"configHash\":\"59dc9888d8f5a7151e156c29\",\"mode\":\"test\",\"freezeRef\":\"release_freeze_unavailable\",\"thresholdAuthorityRef\":\"artifacts/release_audit/final_claim_status_ledger.csv\",\"sourceOfTruth\":\"src\"}\n[tests] Running tests\\admissibility-exporter.v1.test.js\nOK: admissibility-exporter.v1 tests passed\n[tests] Running tests\\architectural-ground-truth.v1.test.js\nOK: architectural-ground-truth tests passed\n[tests] Running tests\\auth-gate.v46.test.js\nOK: auth gate tests passed\n[tests] Running tests\\autonomy-budget-governor.v44.test.js\nOK: autonomy budget governor v4.4 test passed\n[tests] Running tests\\autonomy-sandbox-runtime.v44.test.js\nOK: autonomy sandbox runtime v4.4 test passed\n[tests] Running tests\\behavioral-pseudometric.v1.test.js\nOK: behavioral-pseudometric.v1 tests passed\n[tests] Running tests\\canvas-adaptive-input.v46.test.js\nOK: canvas adaptive input tests passed\n[tests] Running tests\\ccc-history-interactive.v43.test.js\nOK: ccc history interactive v4.3 test passed\n[tests] Running tests\\claim-surface-boundaries.v1.test.js\nOK: claim-surface-boundaries.v1 tests passed\n[tests] Running tests\\cognitive-emergence-evaluation.v53.test.js\nok cognitive-emergence-evaluation.v53\n[tests] Running tests\\cognitive-emergence-spec.v53.test.js\nok cognitive-emergence-spec.v53\n[tests] Running tests\\cognitive-identity-robustness.v54.test.js\nok cognitive-identity-robustness.v54\n[tests] Running tests\\cognitive-loop-closure.v52.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\nok cognitive-loop-closure.v52\n[tests] Running tests\\compute-budget-enforcement.v54.test.js\nok compute-budget-enforcement.v54\n[tests] Running tests\\compute-budget-runtime.v55.test.js\nok compute-budget-runtime.v55\n[tests] Running tests\\concordance-table.v400.test.js\nOK: concordance table v4.0 test passed\n[tests] Running tests\\contextual-guide-scope.v410.test.js\nok contextual-guide-scope.v410\n[tests] Running tests\\core-label-coverage.v410.test.js\nok core-label-coverage.v410\n[tests] Running tests\\critical-observables-determinism.v41a.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\nOK: critical observables determinism v4.1A test passed\n[tests] Running tests\\determinism.test.js\nOK: determinism tests passed\n[tests] Running tests\\dimensional-registry.v1.test.js\nOK: dimensional-registry.v1 tests passed\n[tests] Running tests\\encoding-hygiene.test.js\nOK: encoding hygiene test passed (486 files scanned)\n[tests] Running tests\\entanglement-timeline-model.v42b.test.js\nOK: entanglement timeline model v4.2B test passed\n[tests] Running tests\\entropy-condition-metrics.v64.test.js\nok entropy-condition-metrics.v64\n[tests] Running tests\\episode-harness.v1.test.js\nOK: episode-harness.v1 tests passed\n[tests] Running tests\\exporter_roeo.v1.test.js\nOK: exporter_roeo.v1 tests passed\n[tests] Running tests\\finite-horizon-approximation-barrier.v1.test.js\nOK: finite-horizon-approximation-barrier.v1 tests passed\n[tests] Running tests\\gemini-model-strict.v410.test.js\nok gemini-model-strict.v410\n[tests] Running tests\\guide-clarity.v49.test.js\nok guide-clarity.v49\n[tests] Running tests\\info-modal-persistence.v410.test.js\nok info-modal-persistence.v410\n[tests] Running tests\\integrity-c2-proxy.v56.test.js\nOK: integrity-c2-proxy.v56 tests passed\n[tests] Running tests\\integrity-pmia-transform-fields.v411.test.js\nok integrity-pmia-transform-fields.v411\n[tests] Running tests\\integrity.test.js\nOK: integrity tests passed\n[tests] Running tests\\interventions.v1.test.js\nOK: interventions.v1 tests passed\n[tests] Running tests\\invariant-weight-calibration.v1.test.js\nOK: invariant-weight-calibration.v1 tests passed\n[tests] Running tests\\language-leakage-guard.v54.test.js\nok language-leakage-guard.v54\n[tests] Running tests\\liveness.test.js\nOK: liveness tests passed\n[tests] Running tests\\llm-sensory-directive.v392.test.js\nOK: llm sensory directive v3.9.2 test passed\n[tests] Running tests\\matrix-continuous-score.v42.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\nOK: matrix continuous score v4.2 test passed\n[tests] Running tests\\metacognitive-latency-strain.v44.test.js\nOK: metacognitive latency strain v4.4 test passed\n[tests] Running tests\\narrative-dynamics.v42.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\nOK: narrative dynamics v4.2 test passed\n[tests] Running tests\\narrative-integrity.contract.test.js\nOK: narrative integrity contract test passed\n[tests] Running tests\\navigation-top5-more.v49.test.js\nok navigation-top5-more.v49\n[tests] Running tests\\negative-controls-expanded.v1.test.js\nOK: negative-controls-expanded.v1 tests passed\n[tests] Running tests\\negative-controls-nc3-placebo.v2.test.js\nOK: negative-controls-nc3-placebo.v2 tests passed\n[tests] Running tests\\negative-controls.v1.test.js\nOK: negative-controls.v1 tests passed\n[tests] Running tests\\netlify-proxy-contract.v46.test.js\nOK: netlify proxy contract tests passed\n[tests] Running tests\\netlify-quantum-entropy-contract.v50.test.js\nok netlify-quantum-entropy-contract.v50\n[tests] Running tests\\network-3d-interactions.v410.test.js\nok network-3d-interactions.v410\n[tests] Running tests\\network-offscreen-guard.v410.test.js\nok network-offscreen-guard.v410\n[tests] Running tests\\network-render-resilience.v49.test.js\nok network-render-resilience.v49\n[tests] Running tests\\network-visual-state.v47.test.js\nok network-visual-state.v47\n[tests] Running tests\\no-rng-critical-paths.v41a.test.js\nOK: no RNG in critical paths v4.1A test passed\n[tests] Running tests\\ontological-auto-policy.v42b.test.js\nOK: ontological auto policy v4.2B test passed\n[tests] Running tests\\output-consumption-policy.v66.test.js\nok output-consumption-policy.v66\n[tests] Running tests\\output-support-labels.v65.test.js\nok output-support-labels.v65\n[tests] Running tests\\output-surface-enforcer.v68.test.js\nok output-surface-enforcer.v68\n[tests] Running tests\\output-surface-policy.v67.test.js\nok output-surface-policy.v67\n[tests] Running tests\\paper-pdf-build.v2.test.js\nOK: paper-pdf-build.v2 tests passed\n[tests] Running tests\\pdf-corpus.v1.test.js\nOK: pdf-corpus.v1 tests passed\n[tests] Running tests\\phenomenological-narrative.v392.test.js\nOK: phenomenological narrative v3.9.2 test passed\n[tests] Running tests\\phenomenology-protocol-suite.v56.test.js\nok phenomenology-protocol-suite.v56\n[tests] Running tests\\planner-metric-independence.v55.test.js\nok planner-metric-independence.v55\n[tests] Running tests\\pmia-cooldown.v411.test.js\nok pmia-cooldown.v411\n[tests] Running tests\\pmia-diagnostics.v42b.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\nOK: PMIA diagnostics v4.2B test passed\n[tests] Running tests\\pmia-forced-negative-trigger.v411.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\nok pmia-forced-negative-trigger.v411\n[tests] Running tests\\pmia-guardrails.v411.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\nok pmia-guardrails.v411\n[tests] Running tests\\pmia-negative-window.v411.test.js\nok pmia-negative-window.v411\n[tests] Running tests\\post-ascension-dynamics.v42.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\nOK: post-ascension dynamics v4.2 test passed\n[tests] Running tests\\post-threshold-multiband.v42b.test.js\nOK: post-threshold multiband v4.2B test passed\n[tests] Running tests\\projection.test.js\nOK: projection tests passed\n[tests] Running tests\\quantum-entropy-bridge-polling.v51.test.js\nok quantum-entropy-bridge-polling.v51\n[tests] Running tests\\quantum-entropy-buffering.v60.test.js\nok quantum-entropy-buffering.v60\n[tests] Running tests\\quantum-entropy-determinism-guard.v48.test.js\nOK: quantum entropy determinism guard v4.8 test passed\n[tests] Running tests\\quantum-entropy-experimental-controls.v63.test.js\nok quantum-entropy-experimental-controls.v63\n[tests] Running tests\\quantum-entropy-forensics-admissibility.v62.test.js\nok quantum-entropy-forensics-admissibility.v62\n[tests] Running tests\\quantum-entropy-runtime-integration.v61.test.js\nok quantum-entropy-runtime-integration.v61\n[tests] Running tests\\quantum-entropy-selector.v48.test.js\nOK: quantum entropy selector v4.8 test passed\n[tests] Running tests\\quantum-fallback-behavior.v49.test.js\nok quantum-fallback-behavior.v49\n[tests] Running tests\\quantum-telemetry.v48.test.js\nOK: quantum telemetry v4.8 test passed\n[tests] Running tests\\quantum-ui-hybrid.v49.test.js\nok quantum-ui-hybrid.v49\n[tests] Running tests\\render-trace-hash.test.js\nOK: render trace hash tests passed\n[tests] Running tests\\responsive-layout.v46.test.js\nOK: responsive layout tests passed\n[tests] Running tests\\roeo_enforcement.v1.test.js\nOK: roeo_enforcement.v1 tests passed\n[tests] Running tests\\roeo.v1.test.js\nOK: roeo.v1 tests passed\n[tests] Running tests\\run-episode-admissibility.v58.test.js\nOK: run-episode-admissibility.v58 tests passed\n[tests] Running tests\\runtime-hygiene.test.js\nOK: runtime hygiene test passed\n[tests] Running tests\\runtime-parameter-functional.v400.test.js\nOK: runtime parameter functional v4.0 test passed\n[tests] Running tests\\runtime-parameter-registry.v400.test.js\nOK: runtime parameter registry v4.0 test passed\n[tests] Running tests\\self-code-phase2-guardrails.v44.test.js\nOK: self-code phase2 guardrails v4.4 test passed\n[tests] Running tests\\selfpatch-codeowners-enforcement.v415.test.js\nok selfpatch-codeowners-enforcement.v415\n[tests] Running tests\\selfpatch-generate-engine.v416.test.js\nok selfpatch-generate-engine.v416\n[tests] Running tests\\selfpatch-killswitch-quorum.v415.test.js\nok selfpatch-killswitch-quorum.v415\n[tests] Running tests\\selfpatch-policy-check.v415.test.js\nok selfpatch-policy-check.v415\n[tests] Running tests\\selfpatch-rate-limit.v415.test.js\nok selfpatch-rate-limit.v415\n[tests] Running tests\\selfpatch-rollback-mode.v415.test.js\nok selfpatch-rollback-mode.v415\n[tests] Running tests\\selfpatch-token-budget.v415.test.js\nok selfpatch-token-budget.v415\n[tests] Running tests\\sensor-capabilities.v46.test.js\nOK: sensor capabilities tests passed\n[tests] Running tests\\sensory-dynamics-coupling.v52.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\n👁️ [OBSERVADOR] Impacto detectado: 0.2000. El colapso de la función de onda subjetiva está en curso.\nok sensory-dynamics-coupling.v52\n[tests] Running tests\\sensory-sovereignty.v381.test.js\n🔧 SensoryPerceptionEngine: Creando instancia singleton\n[SYNTHETIC-IMAGINATION] Desactivado. reason=sensor-recovered\nOK: sensory sovereignty v3.8.1 test passed\n[tests] Running tests\\sno.v1.test.js\nOK: sno.v1 tests passed\n[tests] Running tests\\speech-fsm.test.js\n🔧 SensoryPerceptionEngine: Creando instancia singleton\n🎤 Speech Recognition: ESCUCHANDO\n🗣️ Reconocimiento de voz INICIADO\n🔄 Reintentando reconocimiento de voz en 1s... (intento 1/2)\n🔇 Speech Recognition terminó\n🎤 Speech Recognition: ESCUCHANDO\n🔄 Reconocimiento de voz (Web Speech) reiniciado\n🔌 Percepción sensorial desactivada\nOK: speech FSM test passed\n[tests] Running tests\\stasis-break-criteria.v411.test.js\nok stasis-break-criteria.v411\n[tests] Running tests\\tab-quick-help-tour.v47.test.js\nok tab-quick-help-tour.v47\n[tests] Running tests\\ui-mojibake-guard.v410.test.js\nok ui-mojibake-guard.v410\n[tests] Running tests\\ui-mojibake-guard.v47.test.js\nok ui-mojibake-guard.v47\n[tests] Running tests\\ui-navigation-top5-more.v47.test.js\nok ui-navigation-top5-more.v47\n[tests] Running tests\\verifiable-report-shape.test.js\n[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.\nOK: verifiable report shape test passed\n[tests] Running tests\\worldmodel-planner-ablation.v54.test.js\nok worldmodel-planner-ablation.v54\n[tests] Running tests\\worldmodel-realtime-integration.v55.test.js\nok worldmodel-realtime-integration.v55\n\n[tests] OK: 110/110 passed\n",
+      "stderr": "[QICN][QUANTUM_ENTROPY] {\"ts\":1060,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":66050,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":65050}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1060,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":66050,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":65050}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1779319509923,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":5000}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1779319509925,\"type\":\"provider_error\",\"level\":\"warn\",\"reason\":\"quality_rejected\",\"bufferOccupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1779319509925,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1779319514096,\"type\":\"stale_selected\",\"level\":\"warn\",\"reason\":\"expired_sample\",\"sampleAgeMs\":4026}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1779319510098,\"type\":\"fallback_selected\",\"level\":\"warn\",\"reason\":\"bridge_unavailable\",\"occupancyChunks\":0}\n[QICN][QUANTUM_ENTROPY] {\"ts\":1779319510309,\"type\":\"provider_error\",\"level\":\"warn\",\"reason\":\"quality_below_threshold\",\"bufferOccupancyChunks\":0}\n[SYNTHETIC-IMAGINATION] Activado. reason=sensor-blackout\n⚠️ Error cargando rostros conocidos: ReferenceError: localStorage is not defined\n    at SensoryPerceptionEngine.loadKnownFaces (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:258:28)\n    at new SensoryPerceptionEngine (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:131:32)\n    at SensoryPerceptionEngine.getInstance (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:21:34)\n    at file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/tests/speech-fsm.test.js:75:42\n⚠️ Error cargando memoria experiencial: ReferenceError: localStorage is not defined\n    at SensoryPerceptionEngine.loadExperientialMemory (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:327:28)\n    at new SensoryPerceptionEngine (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:169:26)\n    at SensoryPerceptionEngine.getInstance (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:21:34)\n    at file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/tests/speech-fsm.test.js:75:42\n⚠️ Speech recognition error: network\n🌐 Error de red en reconocimiento de voz\n",
+      "evidenceTail": [
+        "⚠️ Error cargando rostros conocidos: ReferenceError: localStorage is not defined",
+        "    at SensoryPerceptionEngine.loadKnownFaces (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:258:28)",
+        "    at new SensoryPerceptionEngine (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:131:32)",
+        "    at SensoryPerceptionEngine.getInstance (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:21:34)",
+        "    at file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/tests/speech-fsm.test.js:75:42",
+        "⚠️ Error cargando memoria experiencial: ReferenceError: localStorage is not defined",
+        "    at SensoryPerceptionEngine.loadExperientialMemory (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:327:28)",
+        "    at new SensoryPerceptionEngine (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:169:26)",
+        "    at SensoryPerceptionEngine.getInstance (file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/src/simulation/SensoryPerceptionEngine.js:21:34)",
+        "    at file:///C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/tests/speech-fsm.test.js:75:42",
+        "⚠️ Speech recognition error: network",
+        "🌐 Error de red en reconocimiento de voz"
+      ],
+      "blocked": false,
+      "pass": true
+    },
+    {
+      "command": "npm.cmd run build",
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "elapsedMs": 11497,
+      "stdout": "\n> versiones-de-interfaz@1.0.0 build\n> npm run build:js && npm run build:css && npm run build:sync && node scripts/post-build-encoding-check.cjs\n\n\n> versiones-de-interfaz@1.0.0 build:js\n> node build.cjs\n\n[dotenv@17.2.3] injecting env (49) from .env -- tip: ⚙️  enable debug logging with { debug: true }\n[QICN] Source-of-truth verification passed.\n{\"runId\":\"mpeowgxv-22de00f0\",\"versionHash\":\"65c8bb2e656e5aaa\",\"seed\":17057,\"configHash\":\"f225877ba896c88db56ab30b\",\"mode\":\"build\",\"freezeRef\":\"release_freeze_unavailable\",\"thresholdAuthorityRef\":\"artifacts/release_audit/final_claim_status_ledger.csv\",\"sourceOfTruth\":\"src\"}\n[QICN] Iniciando Build ULTRATHINK v2.1...\n[QICN] Validando integridad de archivos criticos...\n[QICN] Limpiando artefactos previos en ./dist...\n[QICN] Modo DEV activo: sin minify/metafile (~5-8s)\n[OK] Build completado exitosamente. Firma: QICN-SIG-aca81bf82246e77d\n\n> versiones-de-interfaz@1.0.0 build:css\n> tailwindcss -c tailwind.config.cjs -i ./src/styles/tailwind.input.css -o ./dist/tailwind.css --minify\n\n\n> versiones-de-interfaz@1.0.0 build:sync\n> node scripts/sync-netlify-assets.cjs\n\n[QICN] Sync deploy assets OK\n[QICN] Dist static synced: index.html, manifest.webmanifest, sw.js, favicon.svg\n[QICN] Root runtime synced: bundle.js, tailwind.css, network_canvas_worker.js\n[QICN] _redirects generado en root y dist\n[encoding-check] OK: UTF-8 integrity validated for dist artifacts.\n",
+      "stderr": "\n  dist\\bundle.js  6.7mb\n\nDone in 468ms\nBrowserslist: caniuse-lite is outdated. Please run:\n  npx update-browserslist-db@latest\n  Why you should do it regularly: https://github.com/browserslist/update-db#readme\n\nRebuilding...\n\nDone in 4125ms.\n",
+      "evidenceTail": [
+        "[QICN] Sync deploy assets OK",
+        "[QICN] Dist static synced: index.html, manifest.webmanifest, sw.js, favicon.svg",
+        "[QICN] Root runtime synced: bundle.js, tailwind.css, network_canvas_worker.js",
+        "[QICN] _redirects generado en root y dist",
+        "[encoding-check] OK: UTF-8 integrity validated for dist artifacts.",
+        "  dist\\bundle.js  6.7mb",
+        "Done in 468ms",
+        "Browserslist: caniuse-lite is outdated. Please run:",
+        "  npx update-browserslist-db@latest",
+        "  Why you should do it regularly: https://github.com/browserslist/update-db#readme",
+        "Rebuilding...",
+        "Done in 4125ms."
+      ],
+      "blocked": false,
+      "pass": true
+    },
+    {
+      "command": "npm.cmd run cognition:prereg",
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "elapsedMs": 1249,
+      "stdout": "\n> versiones-de-interfaz@1.0.0 cognition:prereg\n> node scripts/cognitive-emergence-prereg.cjs\n\n[cognitive-prereg] wrote C:\\Users\\irisp\\OneDrive\\Escritorio\\QICN-SYSTEM\\docs\\cognitive_emergence_prereg.v1.json\n[cognitive-prereg] spec valid: true\n[cognitive-prereg] compatibility valid: true\n",
+      "stderr": "",
+      "evidenceTail": [
+        "> versiones-de-interfaz@1.0.0 cognition:prereg",
+        "> node scripts/cognitive-emergence-prereg.cjs",
+        "[cognitive-prereg] wrote C:\\Users\\irisp\\OneDrive\\Escritorio\\QICN-SYSTEM\\docs\\cognitive_emergence_prereg.v1.json",
+        "[cognitive-prereg] spec valid: true",
+        "[cognitive-prereg] compatibility valid: true"
+      ],
+      "blocked": false,
+      "pass": true
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "SPEC_FREEZE_VERSIONING",
+      "pass": true,
+      "score10": 10,
+      "thresholds": {
+        "specValid": true,
+        "compatibilityValid": true,
+        "hashMatch": true,
+        "actuatorSetFrozenVersion": "A-2026-02-27-v1.1"
+      },
+      "observed": {
+        "specValid": true,
+        "compatibilityValid": true,
+        "actuatorCount": 12,
+        "specHash": "fnv1a32_2293871c",
+        "preregSpecHash": "fnv1a32_2293871c"
+      },
+      "effectSizes": {},
+      "evidence": [
+        "src/config/cognitiveEmergenceOperationalSpec.js",
+        "docs/cognitive_emergence_prereg.v1.json"
+      ]
+    },
+    {
+      "id": "PREREG_ANTI_PHACKING",
+      "pass": true,
+      "score10": 10,
+      "thresholds": {
+        "primaryFailHard": true,
+        "pipelineStartsWithPrimary": true,
+        "evaluationSeedPositive": true,
+        "activeWindowTicksPositive": true
+      },
+      "observed": {
+        "protocolPass": true,
+        "protocolIssues": [],
+        "pipeline": [
+          "primary_metrics",
+          "secondary_metrics",
+          "effect_size_validation",
+          "claim_boundary_check"
+        ],
+        "evaluationSeed": 20260227
+      },
+      "effectSizes": {},
+      "evidence": [
+        "docs/cognitive_emergence_prereg.v1.json",
+        "src/utils/cognitiveEmergenceEvaluation.js"
+      ]
+    },
+    {
+      "id": "IDENTITY_STABILITY",
+      "pass": true,
+      "score10": 10,
+      "thresholds": {
+        "stableScoreMin": 0.82,
+        "shockMustReduceScore": true,
+        "smoothingGuardPenaltyPositiveOnShock": true
+      },
+      "observed": {
+        "stableScore": 0.828153,
+        "shockScore": 0.656626,
+        "smoothingGuardPenalty": 0.14055
+      },
+      "effectSizes": {
+        "shockDrop": 0.171527
+      },
+      "evidence": [
+        "src/utils/cognitiveEmergenceEvaluation.js"
+      ]
+    },
+    {
+      "id": "LANGUAGE_LEAKAGE_CONTROL",
+      "pass": true,
+      "score10": 10,
+      "thresholds": {
+        "cleanPayloadMustPass": true,
+        "adversarialMustFailHard": true,
+        "lexicalOverlapMax": 0.18,
+        "ngramOverlapMax": 0.1
+      },
+      "observed": {
+        "clean": {
+          "leakageDetected": false,
+          "failHard": false,
+          "forbiddenHits": [],
+          "forbiddenPatternHits": [],
+          "lexicalOverlap": 0,
+          "lexicalOverlapMax": 0.18,
+          "ngramSize": 3,
+          "ngramOverlap": 0,
+          "ngramOverlapMax": 0.1
+        },
+        "adversarial": {
+          "leakageDetected": true,
+          "failHard": true,
+          "forbiddenHits": [
+            "llm_raw_text"
+          ],
+          "forbiddenPatternHits": [
+            "sk-proj-",
+            "api_key"
+          ],
+          "lexicalOverlap": 0.166667,
+          "lexicalOverlapMax": 0.18,
+          "ngramSize": 3,
+          "ngramOverlap": 0,
+          "ngramOverlapMax": 0.1
+        }
+      },
+      "effectSizes": {},
+      "evidence": [
+        "src/utils/cognitiveEmergenceEvaluation.js",
+        "src/config/cognitiveEmergenceOperationalSpec.js"
+      ]
+    },
+    {
+      "id": "COMPUTE_TICK_BUDGET",
+      "pass": true,
+      "score10": 10,
+      "thresholds": {
+        "totalTickP95Max": 45,
+        "overflowMustFailHard": true,
+        "minRuntimeTraceCount": 100
+      },
+      "observed": {
+        "passEnvelope": {
+          "count": 864,
+          "mean": 1.020875,
+          "p50": 0.7895,
+          "p95": 1.865415,
+          "p99": 5.230454,
+          "max": 23.5997
+        },
+        "passAlarms": [],
+        "passPlannerStats": {
+          "count": 864,
+          "mean": 0.975698,
+          "p50": 0.746,
+          "p95": 1.79117,
+          "p99": 5.0608,
+          "max": 22.857,
+          "overflowRate": 0,
+          "pass": true
+        },
+        "runtimeTraceCount": 864
+      },
+      "effectSizes": {
+        "totalP95Headroom": 43.134585
+      },
+      "evidence": [
+        "src/utils/cognitiveEmergenceEvaluation.js",
+        "src/config/cognitiveEmergenceOperationalSpec.js"
+      ]
+    },
+    {
+      "id": "WORLD_MODEL_PLANNER_QUALITY",
+      "pass": true,
+      "score10": 10,
+      "thresholds": {
+        "planningRewardGainMin": 0.15,
+        "ablationDropMin": 0.12,
+        "worldModelGainMin": 0,
+        "primaryCriteriaAllPass": true
+      },
+      "observed": {
+        "metrics": {
+          "counterfactual_error_delta": -0.127806,
+          "planning_reward_gain": 0.330691,
+          "ablation_drop_planner_off": 0.494079,
+          "actuator_causal_impact_te": 0.15734,
+          "world_model_reward_gain": 0.030603
+        },
+        "ablations": {
+          "plannerOnMeanReward": -6.013163,
+          "plannerOffMeanReward": -8.984138,
+          "worldModelOffMeanReward": -6.202994
+        },
+        "decision": {
+          "passCount": 6,
+          "total": 6,
+          "allPass": true,
+          "primaryFailHardTriggered": false,
+          "analysisPipelineOrder": [
+            "primary_metrics",
+            "secondary_metrics",
+            "effect_size_validation",
+            "claim_boundary_check"
+          ],
+          "decisions": {
+            "D1": {
+              "metricId": "counterfactual_error_delta",
+              "threshold": -0.1,
+              "minEffectSize": 0.1,
+              "pass": true,
+              "valuePass": true,
+              "effectPass": true,
+              "value": -0.127806,
+              "effectSize": 0.665932
+            },
+            "D2": {
+              "metricId": "planning_reward_gain",
+              "threshold": 0.15,
+              "minEffectSize": 0.15,
+              "pass": true,
+              "valuePass": true,
+              "effectPass": true,
+              "value": 0.330691,
+              "effectSize": 5.901806
+            },
+            "D3": {
+              "metricId": "ablation_drop_planner_off",
+              "threshold": 0.12,
+              "minEffectSize": 0.12,
+              "pass": true,
+              "valuePass": true,
+              "effectPass": true,
+              "value": 0.494079,
+              "effectSize": 7.14298
+            },
+            "D4": {
+              "metricId": "identity_stability_score",
+              "threshold": 0.82,
+              "minEffectSize": 0.08,
+              "pass": true,
+              "valuePass": true,
+              "effectPass": true,
+              "value": 0.828153,
+              "effectSize": 0.171527
+            },
+            "D5": {
+              "metricId": "actuator_causal_impact_te",
+              "threshold": 0.1,
+              "minEffectSize": 0.05,
+              "pass": true,
+              "valuePass": true,
+              "effectPass": true,
+              "value": 0.15734,
+              "effectSize": 1.392207
+            },
+            "D6": {
+              "metricId": "entropy_primary_ratio",
+              "threshold": 0.85,
+              "minEffectSize": 0.05,
+              "pass": true,
+              "valuePass": true,
+              "effectPass": true,
+              "value": 0.9,
+              "effectSize": 0.08
+            }
+          }
+        }
+      },
+      "effectSizes": {
+        "counterfactual_error_delta": 0.665932,
+        "planning_reward_gain": 5.901806,
+        "ablation_drop_planner_off": 7.14298,
+        "actuator_causal_impact_te": 1.392207,
+        "world_model_reward_gain": 0.479197
+      },
+      "evidence": [
+        "src/utils/cognitiveEmergenceEvaluation.js",
+        "src/simulation/WorldModelEngine.js",
+        "src/simulation/CognitiveEmergencePlanner.js"
+      ]
+    },
+    {
+      "id": "PPS_WORKSPACE_PROTOCOLS",
+      "pass": true,
+      "score10": 10,
+      "thresholds": {
+        "workspaceGlobalAccessMin": 0.6,
+        "pciLikeMin": 0.1,
+        "dissociationIndexMin": 0.08,
+        "valenceDoEffectMin": 0.02,
+        "actuatorCausalImpactMin": 0.05
+      },
+      "observed": {
+        "sampleCount": 240,
+        "workspaceGlobalAccessScore": 0.633354,
+        "reportabilityScore": 0.642523,
+        "pciLikeScore": 0.561409,
+        "pciSpreadComplexity": 0.385278,
+        "pciPerturbationLift": 0.848779,
+        "dissociationIndex": 0.651667,
+        "dissociationConditionA": 0.191667,
+        "dissociationConditionB": 0.2875,
+        "valenceDoEffect": 0.138923,
+        "actuatorCausalImpact": 0.225623,
+        "treatedCount": 84,
+        "controlCount": 156
+      },
+      "effectSizes": {
+        "workspaceGlobalAccessScore": 0.633354,
+        "pciLikeScore": 0.561409,
+        "dissociationIndex": 0.651667,
+        "valenceDoEffect": 0.138923
+      },
+      "evidence": [
+        "src/utils/phenomenologyProtocolSuite.js",
+        "src/index.jsx"
+      ]
+    }
+  ],
+  "claimBoundary": {
+    "allowed": [
+      "operational_cognition",
+      "non_biological_agency",
+      "counterfactual_planning"
+    ],
+    "disallowed": [
+      "biological_qualia_proven",
+      "subjective_experience_proven",
+      "human_equivalent_consciousness_claim"
+    ]
+  },
+  "summary": {
+    "commandFailures": 0,
+    "commandTotal": 3,
+    "commandBlocked": 0,
+    "dimensionsPass": 7,
+    "dimensionsTotal": 7,
+    "overallPass": true
+  }
+}

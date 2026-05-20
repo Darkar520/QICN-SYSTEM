@@ -93,19 +93,6 @@ const REAL_CANONICAL_PATHS = new Set([
   'src/simulation/causaldyad.js',
   'src/simulation/hlebenchmarksystem.js',
   'src/simulation/humanitylastexammanager.js',
-  'js/simulation/ontologicalsingularitycore.js',
-  'js/simulation/phenomenologycore.js',
-  'js/simulation/nodalprocessinglayer.js',
-  'js/simulation/holographicmemorynexus.js',
-  'js/simulation/informationalentanglementfield.js',
-  'js/simulation/kaizenmetamorphosisengine.js',
-  'js/simulation/metasovereigntycheck.js',
-  'js/simulation/sensoryperceptionengine.js',
-  'js/simulation/consciousnode.js',
-  'js/simulation/node.js',
-  'js/simulation/causaldyad.js',
-  'js/simulation/hlebenchmarksystem.js',
-  'js/simulation/humanitylastexammanager.js',
   'js/api/apicallcontroller.js',
   'js/api/intelligentresponsecache.js',
   'js/api/parameterunifier.js',
@@ -614,9 +601,11 @@ export const validateNarrativeIntegrity = (generatedText, actualMetrics, { stric
     const basename = normalizedRef.split('/').pop() || '';
     const isKnownPath = REAL_CANONICAL_PATHS.has(normalizedRef);
     const isKnownBase = REAL_BASENAMES.has(basename);
+    const isPathReference = normalizedRef.includes('/');
+    const isKnownReference = isPathReference ? isKnownPath : (isKnownPath || isKnownBase);
     const isHypothetical = isHypotheticalReference(generatedText, index);
 
-    if (!isKnownPath && !isKnownBase && !isHypothetical) {
+    if (!isKnownReference && !isHypothetical) {
       hallucinatedRefs.add(ref);
     }
 

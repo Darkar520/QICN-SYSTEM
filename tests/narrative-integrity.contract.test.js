@@ -111,17 +111,28 @@ Valor no coincide.
     assert.equal(result.blocking, true, 'CASE 6 FAIL: strict mismatch must be blocking.');
   }
 
-  // CASE 7: Real files from src/simulation and js/simulation => no false positive
+  // CASE 7: Real file from src/simulation => no false positive
   {
     const text = `
 [CALCULOS_DEL_CORE]
 Archivo real: src/simulation/ConsciousNode.js
-Archivo real: js/simulation/ConsciousNode.js
 [TRADUCCION_LINGUISTICA]
 Referencias validas.
     `.trim();
     const result = validateNarrativeIntegrity(text, minimalMetrics, { strictMode: true });
     assert.ok(!hasType(result, 'HALLUCINATED_FILES'), 'CASE 7 FAIL: real simulation files should be accepted.');
+  }
+
+  // CASE 7B: Deleted legacy js/simulation path => hallucinated file
+  {
+    const text = `
+[CALCULOS_DEL_CORE]
+Archivo legacy eliminado: js/simulation/ConsciousNode.js
+[TRADUCCION_LINGUISTICA]
+Referencia no valida.
+    `.trim();
+    const result = validateNarrativeIntegrity(text, minimalMetrics, { strictMode: true });
+    assert.ok(hasType(result, 'HALLUCINATED_FILES'), 'CASE 7B FAIL: deleted legacy simulation path should be flagged.');
   }
 
   // CASE 8 v3.5: Syntactic attribution of hallucinated method => HALLUCINATED_METHOD

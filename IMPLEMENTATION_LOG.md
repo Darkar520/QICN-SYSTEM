@@ -59,3 +59,13 @@
 - `npm run build`: PASS. Bundle generated successfully; `dist/bundle.js` reported around 6.8 MB in dev build mode.
 - `node tests/simulation-smoke.test.js`: PASS.
 - Browser liveness check: PASS at `http://localhost:3000/`. UI loaded with 0 console errors; clicking `Iniciar Singularidad` advanced `Paso Simulación` from 35 to 58 in roughly 4 seconds and changed the primary control to `Detener Flujo`. Flow was then stopped.
+
+## Fase 0.4: Legacy Removal
+
+- Removed `js/simulation/` after verifying no active imports outside plan/test references.
+- Removed orphan visualization files `src/visualization/ThreeDNetwork.js` and `src/visualization/ThreeDNetwork.jsx`.
+- `src/utils/narrativeIntegrity.js`: removed `js/simulation/*` from canonical real paths and tightened path validation so directory-qualified references require canonical path matches; bare known basenames remain supported.
+- `tests/narrative-integrity.contract.test.js`: updated the legacy path case so `js/simulation/ConsciousNode.js` is flagged as a deleted/hallucinated path.
+- `node tests/narrative-integrity.contract.test.js`: PASS.
+- `npm run build`: PASS. Bundle generated successfully; `dist/bundle.js` reported around 6.7 MB in dev build mode.
+- `npm test`: PASS. 113/113 tests passed.

@@ -69,3 +69,20 @@
 - `node tests/narrative-integrity.contract.test.js`: PASS.
 - `npm run build`: PASS. Bundle generated successfully; `dist/bundle.js` reported around 6.7 MB in dev build mode.
 - `npm test`: PASS. 113/113 tests passed.
+
+## Benchmark Gate Post-Fase 0
+
+- `npm run scoreboard:run`: PASS. 7/7 dimensions passed.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >15%: none.
+
+## Fase 1: Spectral Falsification
+
+- `src/simulation/PhenomenologyCore.js`: `_estimateEigenvalues()` no longer hardcodes `const lambda_1 = 1.0` for sufficient-history windows. It now calls `_estimateDominantEigenvalue(values, mean)`.
+- `_estimateDominantEigenvalue(values, mean)`: added ratio-based empirical estimator for dominant local mode, bounded to `[0.5, 1.05]`, with `HIGH_VOLATILITY_UNMEASURABLE` diagnostic for chaotic ratio bursts.
+- Warm-up boundary preserved: when transition history is insufficient, the ANTI-FREEZE spectral derivation still returns the safe startup estimator and is not claimed as strict BaseCore spectral inference.
+- `tests/spectral-falsification.test.js`: created. It verifies exponential decay (`lambda_1 < 0.9`), stable sequence (`lambda_1 ~= 1.0`), chaotic sequence (`spectralWarning === HIGH_VOLATILITY_UNMEASURABLE`), and absence of fixed `const lambda_1 = 1.0` in `_estimateEigenvalues()`.
+- `node tests/spectral-falsification.test.js`: PASS.
+- `npm run build`: PASS. Bundle generated successfully; `dist/bundle.js` reported around 6.7 MB in dev build mode.
+- `npm test`: PASS. 114/114 tests passed.
+- `npm run scoreboard:run`: PASS. 7/7 dimensions passed.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >15%: none.

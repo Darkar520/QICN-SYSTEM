@@ -61,7 +61,8 @@ export class PhenomenologyCore {
                 classify: 0
             },
             last_execution_times: {},
-            log_enabled: true
+            log_enabled: true,
+            spectralWarning: null
         };
         console.log('[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.');
     }
@@ -340,7 +341,7 @@ export class PhenomenologyCore {
 
     /**
      * Estima autovalores dominantes usando autocorrelacion
-     * lambda, = 1.0 (modo persistente por construccion)
+     * lambda, se estima desde la tasa empirica de contraccion/expansion local
      * lambda,, ?^ autocorrelacion lag-1
      */
     _estimateEigenvalues() {
@@ -348,12 +349,10 @@ export class PhenomenologyCore {
             return { lambda_1: 1.0, lambda_2: 0.5 };
         }
 
-        // lambda, = 1.0 es invariante (modo persistente del atractor)
-        const lambda_1 = 1.0;
-
         // Calcular autocorrelacion lag-1 como estimador de lambda,,
         const values = this.stateHistory.slice(-this.config.SPECTRAL_WINDOW);
         const mean = values.reduce((a, b) => a + b, 0) / values.length;
+        const lambda_1 = this._estimateDominantEigenvalue(values, mean);
 
         let numerator = 0;
         let denominator = 0;
@@ -370,6 +369,31 @@ export class PhenomenologyCore {
         const lambda_2 = Math.max(0.1, Math.min(0.99, Math.abs(autocorr)));
 
         return { lambda_1, lambda_2 };
+    }
+
+    _estimateDominantEigenvalue(values, mean) {
+        this._diagnostics.spectralWarning = null;
+        if (!Array.isArray(values) || values.length < 3) return 1.0;
+
+        const ratios = [];
+        for (let i = 2; i < values.length; i++) {
+            const delta_t = values[i] - values[i - 1];
+            const delta_t1 = values[i - 1] - values[i - 2];
+            if (Math.abs(delta_t1) > 1e-8) {
+                ratios.push(Math.abs(delta_t / delta_t1));
+            }
+        }
+
+        const stableRatios = ratios.filter((ratio) => ratio > 0.1 && ratio < 1.5);
+        if (stableRatios.length === 0) {
+            if (ratios.length > 0 && Math.max(...ratios) > 1.5) {
+                this._diagnostics.spectralWarning = 'HIGH_VOLATILITY_UNMEASURABLE';
+            }
+            return 1.0;
+        }
+
+        const avgRatio = stableRatios.reduce((a, b) => a + b, 0) / stableRatios.length;
+        return Math.max(0.5, Math.min(1.05, avgRatio));
     }
 
     // =========================================================================

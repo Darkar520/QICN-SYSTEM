@@ -34,3 +34,14 @@
 - `npm run build`: PASS. Bundle generated successfully; `dist/bundle.js` reported around 6.7 MB in dev build mode.
 - `npm test`: PASS. 112/112 tests passed.
 - Deviation note: the prior freeze fix had already introduced most of the `build.cjs`/`runtimeEnv.js` changes before this plan phase. This phase formalized them with a regression test and commits them under the requested env-sync phase.
+
+## Fase 0.2: SimulationController and Loop Decoupling
+
+- `src/simulation/SimulationController.js`: created. It owns one `WorldModelEngine` and one `CognitiveEmergencePlanner`, exposes `worldModel` and `planner`, supports `attachCore(core)`, `reset()`, and diagnostics for unified core binding.
+- `src/simulation/OntologicalSingularityCore.js`: constructor now accepts injected `worldModelEngine`/`worldModel` and `cognitivePlanner`/`planner`, preserving standalone defaults for tests and non-React imports.
+- `src/index.jsx`: direct WorldModel/Planner imports removed. Runtime now creates a single `SimulationController`, injects its instances into `OntologicalSingularityCore`, and reuses controller-owned instances through `worldModelRef` and `cogPlannerRef`.
+- `runSimulationCycle`: dynamic UI/control inputs are read through `simulationRuntimeRef`; `useCallback` dependency list reduced to `[]`, satisfying the `<= 4` gate while preserving latest values via the ref.
+- `tests/simulation-controller.test.js`: created. It verifies controller/core instance unification, reset rebinding, no direct `WorldModelEngine`/`CognitiveEmergencePlanner` use in `index.jsx`, and `runSimulationCycle` dependency count <= 4.
+- `npm run build`: PASS.
+- `npm test`: PASS. 113/113 tests passed.
+- Browser liveness check: PASS at `http://localhost:3000/`. UI loaded with 0 console errors; clicking `Iniciar Singularidad` advanced `Paso Simulación` from 0 to 27 in roughly a few seconds. Flow was then stopped. Remaining console warning was Web Speech `no-speech`, an operational browser warning rather than a runtime error.

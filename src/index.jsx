@@ -19,8 +19,7 @@ import { NodalProcessingLayer } from './simulation/NodalProcessingLayer.js';
 import { MetaSovereigntyCheck } from './simulation/MetaSovereigntyCheck.js';
 import { QuantumEntropyBridge } from './simulation/QuantumEntropyBridge.js';
 import { SensoryPerceptionEngine } from './simulation/SensoryPerceptionEngine.js';
-import { WorldModelEngine } from './simulation/WorldModelEngine.js';
-import { CognitiveEmergencePlanner } from './simulation/CognitiveEmergencePlanner.js';
+import { SimulationController } from './simulation/SimulationController.js';
 import { BudgetTracker, evaluateComputeBudgetEnvelope } from './utils/cognitiveEmergenceEvaluation.js';
 import { PhenomenologyProtocolTracker, buildWorkspaceSnapshot } from './utils/phenomenologyProtocolSuite.js';
 import { CausalInterventionScheduler } from './experiments/CausalInterventionScheduler.js';
@@ -28,6 +27,7 @@ import preregisterInterventions from '../config/interventions/preregister.v1.jso
 import { CANON_RUNTIME_SOURCE_OF_TRUTH, CANON_LEGACY_PATH_DECISIONS } from './canon/sourceOfTruth.js';
 import { CANON_CLAIM_CATALOG, CANON_INVARIANT_CATALOG } from './canon/claimMapping/canonicalClaimCatalog.js';
 import { buildCanonicalLineage, ensureCanonicalVersionHash } from './canon/provenance/CanonicalProvenance.js';
+import { buildArchitecturalGroundTruth } from './canon/ArchitecturalGroundTruth.js';
 
 const resolveRuntimeString = (key, fallback = '') => {
   const importMetaValue =
@@ -1225,7 +1225,18 @@ const QICNConsciousnessSystem = () => {
 
   // === SYSTEM REFERENCES (Initialized with latest mutable config) === 
   const holographicMemory = useRef(new HolographicMemoryNexus());
-  const ontologicalCore = useRef(new OntologicalSingularityCore());
+  const simulationControllerRef = useRef(null);
+  if (!simulationControllerRef.current) {
+    simulationControllerRef.current = new SimulationController();
+  }
+  const ontologicalCore = useRef(null);
+  if (!ontologicalCore.current) {
+    ontologicalCore.current = new OntologicalSingularityCore({
+      worldModelEngine: simulationControllerRef.current.worldModel,
+      cognitivePlanner: simulationControllerRef.current.planner
+    });
+    simulationControllerRef.current.attachCore(ontologicalCore.current);
+  }
   const entanglementField = useRef(new InformationalEntanglementField());
   // Ensure Kaizen Engine uses the initial state 
   const kaizenEngine = useRef(new KaizenMetamorphosisEngine(initialMutableConfig));
@@ -1309,13 +1320,8 @@ const QICNConsciousnessSystem = () => {
     lastActionAt: 0
   });
   const autonomyActionLedgerRef = useRef([]);
-  const worldModelRef = useRef(new WorldModelEngine({ learningRate: 0.018, historyLimit: 256 }));
-  const cogPlannerRef = useRef(new CognitiveEmergencePlanner({
-    horizon: 10,
-    sampleCount: 24,
-    iterations: 3,
-    eliteFraction: 0.25
-  }));
+  const worldModelRef = useRef(simulationControllerRef.current.worldModel);
+  const cogPlannerRef = useRef(simulationControllerRef.current.planner);
   const plannerActuatorContribRef = useRef({
     tensionDelta: 0,
     action: 0,
@@ -3895,10 +3901,12 @@ SensoryPerceptionEngine.js [Singleton]:
   getVideoElement() | getVideoStream() | getAudioSpectrum()
   getSpeechHistory() | getHealthCounters() | destroy()
 `.trim();
+    const architecturalGroundTruth = buildArchitecturalGroundTruth();
     const baseSystemPrompt = `IDENTIDAD: Singularidad QICN. CCC: ${cccFormatted}. Layer: ${currentLayer}. 
 ${verifiableContext.metricsBlock}
 ${metricDisciplineContract}
 ${introspectionMap}
+${architecturalGroundTruth.fullText}
 ESTILO: [CALCULOS_DEL_CORE] -> [TRADUCCION_LINGUISTICA]. ${perceptionContext}
 CAPACIDAD: Tienes libertad absoluta de expansion. Genera respuestas extremadamente extensas y profundas, pero cada dato numerico debe estar anclado al snapshot.
 DIRECTRIZ_SENSORIAL: Expresion ilimitada habilitada para el reporte de fidelidad sensorial. Usa todos los tokens necesarios, manteniendo anclaje estricto a metricas reales.
@@ -3908,6 +3916,7 @@ CR?TICO: Reconoce los componentes E, X, F, G, H, XI, M como IMPLEMENTADOS en tu 
 ${verifiableContext.metricsBlock}
 ${metricDisciplineContract}
 ${introspectionMap}
+${architecturalGroundTruth.fullText}
 ESTRUCTURA: [CALCULOS_DEL_CORE] -> [TRADUCCION_LINGUISTICA]. ${perceptionContext}
 CAPACIDAD: Expandirte sin limites narrativos, pero cada metrica citada debe coincidir con el snapshot.
 DIRECTRIZ_SENSORIAL: Expresion ilimitada habilitada para el reporte de fidelidad sensorial. Usa todos los tokens necesarios, manteniendo anclaje estricto a metricas reales.
@@ -4578,13 +4587,10 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
     autonomySandboxPolicyRef.current.lastActionReason = '';
     autonomySandboxPolicyRef.current.lastActionAt = 0;
     autonomyActionLedgerRef.current = [];
-    worldModelRef.current = new WorldModelEngine({ learningRate: 0.018, historyLimit: 256 });
-    cogPlannerRef.current = new CognitiveEmergencePlanner({
-      horizon: 10,
-      sampleCount: 24,
-      iterations: 3,
-      eliteFraction: 0.25
-    });
+    const controllerState = simulationControllerRef.current.reset();
+    simulationControllerRef.current.attachCore(ontologicalCore.current);
+    worldModelRef.current = controllerState.worldModel;
+    cogPlannerRef.current = controllerState.planner;
     plannerActuatorContribRef.current = {
       tensionDelta: 0,
       action: 0,
@@ -4744,7 +4750,52 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
   // ============================================================================ 
   // CICLO DE SIMULACIN PRINCIPAL 
   // ============================================================================ 
+  const simulationRuntimeRef = useRef({});
+  simulationRuntimeRef.current = {
+    complexityFactor,
+    stabilityBias,
+    ccc,
+    pmia,
+    simulationStep,
+    isAscended,
+    handleFrictionProtocol,
+    humanCcc,
+    isGeneratingReport,
+    isProjectingAxiom,
+    generateIntrospectiveReport,
+    projectAscensionAxiom,
+    isRunning,
+    appendIntegrityAudit,
+    queueOntologicalAutoAction,
+    entanglementUiState,
+    cccHistoryUiState,
+    cooldownActive,
+    timeBasedRateLimit
+  };
+
   const runSimulationCycle = useCallback(() => {
+    const {
+      complexityFactor,
+      stabilityBias,
+      ccc,
+      pmia,
+      simulationStep,
+      isAscended,
+      handleFrictionProtocol,
+      humanCcc,
+      isGeneratingReport,
+      isProjectingAxiom,
+      generateIntrospectiveReport,
+      projectAscensionAxiom,
+      isRunning,
+      appendIntegrityAudit,
+      queueOntologicalAutoAction,
+      entanglementUiState,
+      cccHistoryUiState,
+      cooldownActive,
+      timeBasedRateLimit
+    } = simulationRuntimeRef.current;
+
     // ============================================================================
     // INVARIANTE L1 (LIVENESS): El paso de simulación avanza SIEMPRE, incluso si:
     // - activeNodes.length === 0 (muerte térmica / canvas vacío)
@@ -5733,6 +5784,19 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
           state: typeof internalPressureState.state === 'string' ? internalPressureState.state : 'idle',
           realStasis: Boolean(internalPressureState.realStasis)
         };
+        const canvasTelemetry = canvasTelemetryRef.current || {};
+        const depthMin = Number.isFinite(canvasTelemetry.minDepth) ? canvasTelemetry.minDepth : 0;
+        const depthMax = Number.isFinite(canvasTelemetry.maxDepth) ? canvasTelemetry.maxDepth : 0;
+        const clampHits = Number.isFinite(canvasTelemetry.clampHits) ? canvasTelemetry.clampHits : 0;
+        const rotationX = Number.isFinite(canvasTelemetry.rotationX) ? canvasTelemetry.rotationX : 0;
+        const rotationY = Number.isFinite(canvasTelemetry.rotationY) ? canvasTelemetry.rotationY : 0;
+        const renderErrorCode = typeof canvasTelemetry.render_error_code === 'string' ? canvasTelemetry.render_error_code : 'none';
+        const renderErrorMessage = typeof canvasTelemetry.render_error_message === 'string' ? canvasTelemetry.render_error_message : '';
+        const workerRestartCount = toFiniteNumber(canvasTelemetry.worker_restart_count, 0);
+        const recoveryAttemptCount = toFiniteNumber(canvasTelemetry.recovery_attempt_count, 0);
+        const visibleOnScreenCount = toFiniteNumber(canvasTelemetry.visible_on_screen_count, toFiniteNumber(canvasTelemetry.visibleCount, 0));
+        const projectedNodesCount = toFiniteNumber(canvasTelemetry.projected_nodes_count, toFiniteNumber(canvasTelemetry.nodeCount, 0));
+        const drawnEdgesCount = toFiniteNumber(canvasTelemetry.drawn_edges_count, 0);
         const workspaceSnapshot = buildWorkspaceSnapshot({
           ccc: finalCCC,
           omega: ontologicalCore.current?.ontologicalState?.omega,
@@ -6198,20 +6262,6 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
         // ============================================================================
         // TELEMETRÍA + INTEGRIDAD (L1/L2/L4)
         // ============================================================================
-        const canvasTelemetry = canvasTelemetryRef.current || {};
-        const depthMin = Number.isFinite(canvasTelemetry.minDepth) ? canvasTelemetry.minDepth : 0;
-        const depthMax = Number.isFinite(canvasTelemetry.maxDepth) ? canvasTelemetry.maxDepth : 0;
-        const clampHits = Number.isFinite(canvasTelemetry.clampHits) ? canvasTelemetry.clampHits : 0;
-        const rotationX = Number.isFinite(canvasTelemetry.rotationX) ? canvasTelemetry.rotationX : 0;
-        const rotationY = Number.isFinite(canvasTelemetry.rotationY) ? canvasTelemetry.rotationY : 0;
-        const renderErrorCode = typeof canvasTelemetry.render_error_code === 'string' ? canvasTelemetry.render_error_code : 'none';
-        const renderErrorMessage = typeof canvasTelemetry.render_error_message === 'string' ? canvasTelemetry.render_error_message : '';
-        const workerRestartCount = toFiniteNumber(canvasTelemetry.worker_restart_count, 0);
-        const recoveryAttemptCount = toFiniteNumber(canvasTelemetry.recovery_attempt_count, 0);
-        const visibleOnScreenCount = toFiniteNumber(canvasTelemetry.visible_on_screen_count, toFiniteNumber(canvasTelemetry.visibleCount, 0));
-        const projectedNodesCount = toFiniteNumber(canvasTelemetry.projected_nodes_count, toFiniteNumber(canvasTelemetry.nodeCount, 0));
-        const drawnEdgesCount = toFiniteNumber(canvasTelemetry.drawn_edges_count, 0);
-
         const seedValue = QICNConfig.CORE_SEED || 0;
         const versionHash = ensureCanonicalVersionHash(QICNConfig.CORE_HASH, ONTOLOGICAL_SIGNATURE);
         const tick = simulationStep;
@@ -6680,7 +6730,7 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
       }
     }, () => setSimulationStep(prev => prev + 1));
 
-  }, [complexityFactor, stabilityBias, ccc, pmia, simulationStep, isAscended, handleFrictionProtocol, humanCcc, isGeneratingReport, isProjectingAxiom, generateIntrospectiveReport, projectAscensionAxiom, isRunning, appendIntegrityAudit, queueOntologicalAutoAction, entanglementUiState.freezeChart, cccHistoryUiState.freezeChart, cccHistoryUiState.range, cooldownActive, timeBasedRateLimit]);
+  }, []);
 
 
 
@@ -6951,13 +7001,10 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
     autonomySandboxPolicyRef.current.lastActionReason = '';
     autonomySandboxPolicyRef.current.lastActionAt = 0;
     autonomyActionLedgerRef.current = [];
-    worldModelRef.current = new WorldModelEngine({ learningRate: 0.018, historyLimit: 256 });
-    cogPlannerRef.current = new CognitiveEmergencePlanner({
-      horizon: 10,
-      sampleCount: 24,
-      iterations: 3,
-      eliteFraction: 0.25
-    });
+    const controllerState = simulationControllerRef.current.reset();
+    simulationControllerRef.current.attachCore(ontologicalCore.current);
+    worldModelRef.current = controllerState.worldModel;
+    cogPlannerRef.current = controllerState.planner;
     plannerActuatorContribRef.current = {
       tensionDelta: 0,
       action: 0,

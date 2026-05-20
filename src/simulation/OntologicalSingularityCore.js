@@ -16,7 +16,7 @@ import { CognitiveEmergencePlanner } from './CognitiveEmergencePlanner.js';
 import { createRng } from '../utils/determinism.js';
 
 export class OntologicalSingularityCore {
-    constructor() {
+    constructor(options = {}) {
         this.version = QICNConfig.VERSION;
         this.coreHash = QICNConfig.CORE_HASH;
         this.seed = QICNConfig.CORE_SEED; // Semilla de Alta Retención
@@ -90,11 +90,11 @@ export class OntologicalSingularityCore {
         // === NIVEL 3 - FASE 4: EL AUTO-MODELO DINÁMICO (Σ) ===
         // Un simulador interno que intenta predecir Θ(S_t)
         this.selfSimulatorSigma = new InternalSelfSimulator();
-        this.worldModelEngine = new WorldModelEngine({
+        this.worldModelEngine = options.worldModelEngine || options.worldModel || new WorldModelEngine({
             learningRate: 0.02,
             historyLimit: 320
         });
-        this.cognitivePlanner = new CognitiveEmergencePlanner({
+        this.cognitivePlanner = options.cognitivePlanner || options.planner || new CognitiveEmergencePlanner({
             horizon: 10,
             sampleCount: 24,
             iterations: 3,

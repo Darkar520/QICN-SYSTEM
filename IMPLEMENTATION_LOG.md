@@ -24,3 +24,13 @@
 - `scripts/rollback.ps1`: created with exit-code checks for `git stash push -m "rollback-safety-net"`, `npm install`, and `npm test`.
 - Gate after smoke insertion: PASS. `npm test` passed 111/111.
 - Note: `tests/baseline_tests.log` is ignored by the repository ignore rules, so it must be force-added if included in the phase commit.
+
+## Fase 0.1: Env Sync
+
+- Audit result: `src/config/runtimeEnv.js` has no `processEnvDirect` object and no direct `process.env.KEY` client reads. The remaining `globalThis.process.env` access is guarded behind existence checks inside `getEnv` plumbing.
+- `build.cjs`: uses `clientRuntimeEnv` plus generated `clientRuntimeDefines`, and injects `__QICN_RUNTIME_ENV__` for runtime-safe browser reads.
+- `tests/env-sync.test.js`: created. It checks every `getEnv('KEY')` in `runtimeEnv.js` against `clientRuntimeEnv` in `build.cjs`, verifies `clientRuntimeDefines` is included in the esbuild define block, verifies `__QICN_RUNTIME_ENV__`, and blocks direct env bypasses.
+- `node tests/env-sync.test.js`: PASS. 47 runtime keys checked.
+- `npm run build`: PASS. Bundle generated successfully; `dist/bundle.js` reported around 6.7 MB in dev build mode.
+- `npm test`: PASS. 112/112 tests passed.
+- Deviation note: the prior freeze fix had already introduced most of the `build.cjs`/`runtimeEnv.js` changes before this plan phase. This phase formalized them with a regression test and commits them under the requested env-sync phase.

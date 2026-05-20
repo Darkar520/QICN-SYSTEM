@@ -18,8 +18,15 @@ const importMetaEnv =
     ? import.meta.env
     : {};
 
+const buildTimeEnv =
+  typeof __QICN_RUNTIME_ENV__ !== 'undefined' && __QICN_RUNTIME_ENV__
+    ? __QICN_RUNTIME_ENV__
+    : {};
+
 const getEnv = (key, fallback = undefined) => {
   const value =
+    buildTimeEnv[`VITE_${key}`] ??
+    buildTimeEnv[key] ??
     importMetaEnv[`VITE_${key}`] ??
     importMetaEnv[key] ??
     processEnv[key];

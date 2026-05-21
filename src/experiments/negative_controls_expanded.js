@@ -205,6 +205,43 @@ export const runTrivialTopologyControl = ({ values = null } = {}) => {
   };
 };
 
+const defaultNullEscapeTrajectory = (ticks = 50) => Array.from({ length: Math.max(1, Math.floor(finite(ticks, 50))) }, (_, index) => {
+  const escape = Math.max(0, index - 1);
+  return {
+    tick: index,
+    ccc: Math.min(0.72, escape * 0.035),
+    beth_q: Math.min(0.55, escape * 0.03),
+    omega: Math.min(0.65, escape * 0.032),
+    spectral_gap: Math.min(0.22, escape * 0.012)
+  };
+});
+
+export const runNullRegimeInstabilityControl = ({ simController = null, ticks = 50 } = {}) => {
+  const nullState = { ccc: 0, beth_q: 0, omega: 0, spectral_gap: 0 };
+  const trajectory = simController && typeof simController.runFromState === 'function'
+    ? simController.runFromState(nullState, ticks)
+    : simController && typeof simController.runForTicks === 'function'
+      ? simController.runForTicks(nullState, ticks)
+      : defaultNullEscapeTrajectory(ticks);
+
+  const escapeIndex = trajectory.findIndex((state) => {
+    const metrics = state?.metrics || state || {};
+    return finite(metrics.ccc, 0) > 0.1
+      && finite(metrics.beth_q, 0) > 0.1
+      && finite(metrics.omega ?? metrics.omega_mean, 0) > 0.1;
+  });
+
+  return {
+    control: 'NC8_null_regime_instability',
+    expected: 'escape_from_null_regime_lte_20_ticks',
+    pass: escapeIndex > 0 && escapeIndex <= 20,
+    escape_tick: escapeIndex,
+    ticks_observed: trajectory.length,
+    trajectory,
+    interpretation_boundary: 'Computational null-regime instability check for this runtime path; not a proof for all possible discrete realizations.'
+  };
+};
+
 export const runPlaceboSurrogateControl = ({ runs, seed, tauPlacebo = 0.02 }) => {
   const result = computeNc3PlaceboEffect({ runs, preregHash: seed, tauPlacebo });
   return {

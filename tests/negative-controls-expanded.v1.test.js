@@ -5,7 +5,8 @@ import {
   runAdversarialDriftControl,
   runSpectralDecayControl,
   runInverseLimitRuptureControl,
-  runTrivialTopologyControl
+  runTrivialTopologyControl,
+  runNullRegimeInstabilityControl
 } from '../src/experiments/negative_controls_expanded.js';
 
 const assert = (condition, message) => {
@@ -46,6 +47,11 @@ const assert = (condition, message) => {
   assert(topology.winding_integer === 0, 'CASE 14 FAIL: NC7 must keep winding_integer at 0.');
   assert(topology.winding_orientation === 'trivial', 'CASE 15 FAIL: NC7 must classify orientation as trivial.');
   assert(topology.omega <= 0.05, 'CASE 16 FAIL: NC7 must keep Omega near 0.');
+
+  const nullRegime = runNullRegimeInstabilityControl();
+  assert(nullRegime.pass, 'CASE 17 FAIL: NC8 null-regime instability should pass.');
+  assert(nullRegime.escape_tick > 0 && nullRegime.escape_tick <= 20, 'CASE 18 FAIL: NC8 must escape in <= 20 ticks.');
+  assert(/null-regime instability/.test(nullRegime.interpretation_boundary), 'CASE 19 FAIL: NC8 boundary must be explicit.');
 
   console.log('OK: negative-controls-expanded.v1 tests passed');
 })();

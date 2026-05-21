@@ -852,6 +852,7 @@
         "spectral_decay",
         "inverse_limit_score_rupture",
         "trivial_topology",
+        "null_regime_instability",
         "batch runs",
         "prereg hash",
         "tau placebo",
@@ -862,7 +863,8 @@
         "tests/negative-controls-expanded.v1.test.js",
         "tests/spectral-falsification.test.js",
         "tests/inverse-limit.test.js",
-        "tests/winding-topology.test.js"
+        "tests/winding-topology.test.js",
+        "tests/null-regime-instability.test.js"
       ],
       "gate_dependencies": [
         "BG_negative_controls_enforcement"
@@ -872,7 +874,7 @@
       "external_dependency": "prereg_config",
       "status": "documented_real",
       "non_claim_boundary": "Expanded controls are internal adversarial checks, not external falsification.",
-      "notes_gaps": "Adds NC5 spectral decay, NC6 finite inverse-limit rupture, NC7 trivial topology, plus legacy placebo/ablation/shuffle/drift helpers."
+      "notes_gaps": "Adds NC5 spectral decay, NC6 finite inverse-limit rupture, NC7 trivial topology, NC8 null-regime instability, plus legacy placebo/ablation/shuffle/drift helpers."
     }
   ]
 }

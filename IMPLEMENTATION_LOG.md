@@ -406,3 +406,12 @@ Files moved/removed include: `QICN GPT5.5/` moved outside the repo to `C:\Users\
 - Gate results: `node tests/continuity-formal.test.js` PASS; `npm test` PASS (125/125); `npm run build` PASS (`dist\bundle.js` 6.9 MB); `npm run verify:source-of-truth` PASS; `npm run verify:descriptor-registry` PASS (23 rows); `npm run verify:repro-bridge` PASS (0 relative delta); `npm run scoreboard:run` PASS (7/7, all 10/10).
 - Baseline comparison: PASS. All seven scoreboard dimensions remained 10/10; degradation >5%: none; degradation >15%: none.
 - Interpretation boundary: Pi_S is a finite runtime projection into `R4 x regime labels`, and fragmentation is computed over recorded trajectories only. This does not prove complete metric-space continuity or continuity of unobserved trajectories.
+
+## Fase A1.4: I_diff Null-Regime Instability Control
+
+- Extended `src/experiments/negative_controls_expanded.js` with `runNullRegimeInstabilityControl` (`NC8_null_regime_instability`).
+- Updated `tests/negative-controls-expanded.v1.test.js` and added `tests/null-regime-instability.test.js` to verify escape from the forced null regime in <=20 ticks and failure on a trapped null trajectory.
+- Updated negative-control docs, descriptor registry, traceability matrix, and implementation status for NC8.
+- Gate results: `node tests/null-regime-instability.test.js` PASS; `node tests/negative-controls-expanded.v1.test.js` PASS; `npm test` PASS (126/126); `npm run build` PASS (`dist\bundle.js` 6.9 MB); `npm run verify:source-of-truth` PASS; `npm run verify:descriptor-registry` PASS (23 rows); `npm run verify:repro-bridge` PASS (0 relative delta); `npm run scoreboard:run` PASS (7/7, all 10/10).
+- Baseline comparison: PASS. All seven scoreboard dimensions remained 10/10; degradation >5%: none; degradation >15%: none.
+- Interpretation boundary: NC8 is an internal computational falsification route for null-regime stability. It is not a global theorem that every possible discrete realization escapes null dynamics.

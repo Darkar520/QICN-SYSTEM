@@ -192,3 +192,29 @@
 - Modified: `build.cjs`, `package.json`, `src/config/runtimeEnv.js`, `src/index.jsx`, `src/simulation/OntologicalSingularityCore.js`, `src/simulation/PhenomenologyCore.js`, `src/experiments/ExperimentalEpisodeHarness.js`, `src/experiments/negative_controls_expanded.js`, `src/experiments/index.js`, `src/canon/finite_horizon/FiniteProjectionEvaluator.js`, `src/canon/invariants/CanonicalInvariantPackage.js`, `src/canon/sourceOfTruth.js`, `src/utils/runtimeParameterRegistry.js`, `src/utils/narrativeIntegrity.js`, `docs/DESCRIPTOR_REGISTRY.md`, `docs/descriptor_registry.v1.json`, `docs/TRACEABILITY_MATRIX.md`, `docs/IMPLEMENTATION_STATUS.md`, `docs/ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md`, `docs/security/red_team_ccc.md`, `README.md`, and relevant test anchors.
 - Deleted: `js/simulation/`, `src/visualization/ThreeDNetwork.js`, `src/visualization/ThreeDNetwork.jsx`.
 - Installed but not versioned by Git: `.git/hooks/pre-commit`.
+
+# QICN Professionalization Roadmap Implementation Log
+
+## Professionalization Preflight
+
+- Date: 2026-05-21.
+- Requested roadmap: `docs/ROADMAP_PROFESIONALIZACION.md`.
+- Governance lookup: `.agent` directory is not present in this checkout. Effective local governance remains `AGENTS.md`, plus `docs/EPISTEMIC_POSTURE.md`, `docs/IMPLEMENTATION_STATUS.md`, and the existing implementation log.
+- Selected skills: `audit-context-building`, `closed-loop-delivery`, `codebase-audit-pre-push`, `react-best-practices`, and `frontend-testing-debugging`.
+- Baseline commands before implementation: `npm test` PASS (116/116), `npm run build` PASS (`dist\bundle.js` 6.7 MB), `npm run verify:source-of-truth` PASS, `npm run verify:descriptor-registry` PASS (23 rows), and `npm run scoreboard:run` PASS (7/7 dimensions, all 10/10).
+- Evidence boundary: this professionalization pass improves engineering maturity and internal reproducibility. It does not promote internal support into external validation.
+
+## Fase 8: Housekeeping And Working Tree Consolidation
+
+- Committed pending functional corrections:
+  - `scripts/benchmark-invariants.cjs`: removes hardcoded `49` reporting and validates the dynamic expected count of 26 heuristic/registry literals.
+  - `scripts/evaluate-roeo.cjs`: consolidates imports through `src/experiments/index.js`.
+  - `src/simulation/SensoryPerceptionEngine.js`: demotes expected camera unavailability from `console.error` to `console.warn` while preserving real unexpected errors.
+  - `tests/liveness.test.js`: adds TDZ ordering regression checks for `buildWorkspaceSnapshot` telemetry inputs in `src/App.jsx`.
+  - `index.html`: adds favicon link.
+- Removed obsolete tracked docs: `TRIADA_QICN_ROADMAP_v2.md` and `docs/AUDIT_INTEGRACION_QICN_CODEX.md`. Their relevant execution history is superseded by `docs/PLAN_CONVERGENCIA_TEORIA_SISTEMA.md` and this implementation log.
+- Tracked valuable governance/audit docs: `docs/PLAN_CONVERGENCIA_TEORIA_SISTEMA.md`, `docs/BRIEF_QICN_SISTEMA_Y_ARCO_TEORICO.md`, `docs/ROADMAP_PROFESIONALIZACION.md`, `docs/AUDITORIA_COMPARATIVA_QICN_GPT55.md`, and `docs/AUDITORIA_MONOLITO_KEYBASE100_V33.md`.
+- Tracked `src/canon/ArchitecturalGroundTruth.js` and `tests/architectural-ground-truth.v1.test.js` as an anti-hallucination guard for canon/experiments exports, forbidden claims, and local security posture.
+- Moved `QICN GPT5.5/` out of the repository to `C:\Users\irisp\OneDrive\Escritorio\QICN GPT5.5_backup`. The first `Move-Item` pass partially failed on long nested paths; a follow-up `robocopy /E /MOVE` pass completed the move and left no source directory in the repo.
+- `.gitignore`: added `QICN GPT5.5/` and `/PROMPT_*.md`. `coverage/` was already ignored.
+- Decision: root prompt files are preserved locally but ignored from the engineering baseline because they are operator prompts rather than source, governance docs, tests, or runtime artifacts.

@@ -9,6 +9,8 @@
 node_modules/
 coverage/
 *.tsbuildinfo
+QICN GPT5.5/
+/PROMPT_*.md
 
 # Generated outputs and audit artifacts
 dist/

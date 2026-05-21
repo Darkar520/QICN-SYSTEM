@@ -307,7 +307,7 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     + ((flags?.io_partial || flags?.monotonic_violation) ? 0 : 0.1)
   ));
 
-  const rigidIdentityScore = (
+  const legacyRigidIdentityScore = (
     (normalizeHigher(inverseLimitScore, 0, 1) * 0.25)
     + (normalizeHigher(directIdentity, 0.5, 1) * 0.25)
     + (normalizeHigher(directPredictive, 0.5, 1) * 0.12)
@@ -316,6 +316,14 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     + (normalizeHigher(directOperationalDeterminism, 0.7, 1) * 0.09)
     + (normalizeHigher(directObservableDeterminism, 0.6, 1) * 0.09)
   );
+  const formalInverseLimitScore = (
+    (Number(inverseLimit.is_inverse_limit_element) * 0.4)
+    + (normalizeHigher(inverseLimit.inverseLimitWitness?.compatibility_rate, 0, 1) * 0.2)
+    + (Number(inverseLimit.categorical_compatibility) * 0.15)
+    + (normalizeLower(inverseLimit.approximation_error_bound, 0, 0.01) * 0.15)
+    + (normalizeHigher(inverseLimitScore, 0, 1) * 0.1)
+  );
+  const rigidIdentityScore = Math.max(legacyRigidIdentityScore, formalInverseLimitScore);
 
   const causalClosureBalance = clamp01(
     (toFinite(directCausalDependency.past, 0)
@@ -382,6 +390,12 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     inverseLimitUnmeasuredComponents: inverseLimit.unmeasuredComponents,
     inverseLimitTotalCompatibilityErrors: inverseLimit.totalCompatibilityErrors,
     inverseLimitDenominator: inverseLimit.denominator,
+    inverseLimitElement: inverseLimit.is_inverse_limit_element,
+    inverseLimitWitness: inverseLimit.inverseLimitWitness,
+    categoricalCompatibility: inverseLimit.categorical_compatibility,
+    categoricalCompatibilityDiagnostics: inverseLimit.categoricalCompatibility,
+    approximationErrorBound: inverseLimit.approximation_error_bound,
+    finiteApproximationError: inverseLimit.finiteApproximationError,
     identityStabilityScore: directIdentity,
     predictiveConsistencyMean: directPredictive,
     selfStateCompleteness: directSelfState,
@@ -448,6 +462,9 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
       runtimeSignals: [
         'metrics.inverse_limit_score',
         'finite_horizon.inverse_limit_score',
+        'finite_horizon.is_inverse_limit_element',
+        'finite_horizon.categorical_compatibility',
+        'finite_horizon.approximation_error_bound',
         'metrics.identity_stability_score',
         'metrics.predictive_consistency',
         'metrics.self_state_completeness',
@@ -464,6 +481,7 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
         residualProxyContribution: 0,
         residualDependencies: [
           'inverse_limit_score is finite-window adjacent-state compatibility, not full inverse-limit preservation',
+          inverseLimit.interpretation_boundary,
           'critical_state_hash_semantic_stability can still under-report rigidity on ultra-short traces'
         ],
         supportMode: 'mostly_native_with_nonmaterial_residual'

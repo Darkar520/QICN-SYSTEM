@@ -311,6 +311,7 @@
       "layer": "runtime_derived",
       "source_module": [
         "src/canon/invariants/CanonicalInvariantPackage.js",
+        "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
         "src/canon/persistence/PersistenceCertifier.js",
         "src/experiments/LegibilityCertifier.js",
         "src/simulation/PhenomenologyCore.js"
@@ -323,6 +324,9 @@
         "persistence_certificate.forward_invariance",
         "persistence_certificate.min_collapse_distance",
         "I_ri",
+        "finite_horizon.is_inverse_limit_element",
+        "finite_horizon.categorical_compatibility",
+        "finite_horizon.approximation_error_bound",
         "I_int",
         "I_cont",
         "phenomenology.Pi_S",
@@ -342,6 +346,7 @@
         "tests/persistence-forward-invariance.test.js",
         "tests/cognitive-identity-robustness.v54.test.js",
         "tests/inverse-limit.test.js",
+        "tests/inverse-limit-formal.test.js",
         "tests/pmia-guardrails.v411.test.js",
         "tests/cognitive-loop-closure.v52.test.js",
         "tests/continuity-formal.test.js",
@@ -362,7 +367,7 @@
       "external_dependency": "none",
       "status": "documented_real",
       "non_claim_boundary": "Invariant support is not external closure.",
-      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_per includes finite forward-invariance and collapse-distance certification, not an analytic proof over all controls. I_cont includes finite Pi_S projection and fragmentation-functional diagnostics, not complete metric-space continuity. I_ri includes finite-window inverse-limit compatibility only, not full inverse-limit preservation. I_leg includes a finite L1-L6 operational certificate without promoting semantic transparency or external validation."
+      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_per includes finite forward-invariance and collapse-distance certification, not an analytic proof over all controls. I_cont includes finite Pi_S projection and fragmentation-functional diagnostics, not complete metric-space continuity. I_ri includes finite-window inverse-limit witness, categorical compatibility, and truncation-error diagnostics only, not full inverse-limit preservation. I_leg includes a finite L1-L6 operational certificate without promoting semantic transparency or external validation."
     },
     {
       "id": "ART_harness_admissibility_preverdict",
@@ -742,6 +747,9 @@
         "trace metrics (pmia, beth_q, omega)",
         "projection_morphism",
         "inverse_limit_score",
+        "inverse_limit_witness",
+        "categorical_compatibility",
+        "approximation_error_bound",
         "horizon",
         "branchFactor",
         "stateDimension"
@@ -749,7 +757,8 @@
       "downstream_artifacts": [],
       "test_anchors": [
         "tests/finite-horizon-approximation-barrier.v1.test.js",
-        "tests/inverse-limit.test.js"
+        "tests/inverse-limit.test.js",
+        "tests/inverse-limit-formal.test.js"
       ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [],
@@ -757,7 +766,7 @@
       "external_dependency": "none",
       "status": "documented_real",
       "non_claim_boundary": "Finite projection certificates and finite-window inverse-limit scores do not preserve full inverse-limit objects.",
-      "notes_gaps": "Implements BaseCore Theorem 5.4 boundary plus adjacent-state compatibility scoring. assertFiniteHorizonClaimBoundary rejects full_inverse_limit_preservation."
+      "notes_gaps": "Implements BaseCore Theorem 5.4 boundary plus adjacent-state compatibility scoring, finite inverse-limit witness diagnostics, and truncation-error bounds. assertFiniteHorizonClaimBoundary rejects full_inverse_limit_preservation."
     },
     {
       "id": "DR_behavioral_pseudometric",

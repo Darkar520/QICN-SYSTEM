@@ -13,6 +13,7 @@ const normalizeNumber = (value) => (Number.isFinite(value) ? Number(value.toFixe
 const mean = (values) => (values.length ? normalizeNumber(values.reduce((sum, value) => sum + value, 0) / values.length) : 0);
 const clamp01 = (value) => Math.max(0, Math.min(1, finite(value, 0)));
 const logger = createLogger('FiniteProjectionEvaluator');
+const COMPATIBILITY_EPSILON = 0.05;
 
 export const INVERSE_LIMIT_COMPONENTS = Object.freeze([
   'ccc',
@@ -167,6 +168,84 @@ export const buildInverseLimitStateFromTick = (tick = {}, summaryMetrics = {}) =
   };
 };
 
+const vectorDistance = (left = {}, right = {}, components = INVERSE_LIMIT_COMPONENTS) => {
+  let sum = 0;
+  let n = 0;
+  for (const component of components) {
+    const a = finite(left?.[component], NaN);
+    const b = finite(right?.[component], NaN);
+    if (Number.isFinite(a) && Number.isFinite(b)) {
+      sum += (a - b) ** 2;
+      n += 1;
+    }
+  }
+  return n > 0 ? Math.sqrt(sum) : Infinity;
+};
+
+export const verifyCategoricalCompatibility = (states = [], epsilon = COMPATIBILITY_EPSILON, components = INVERSE_LIMIT_COMPONENTS) => {
+  const componentList = Array.isArray(components) && components.length ? components : INVERSE_LIMIT_COMPONENTS;
+  let violations = 0;
+  const violationDetails = [];
+
+  for (let index = 1; index < states.length - 1; index += 1) {
+    const composed = projectionMorphism(
+      projectionMorphism(states[index + 1], states[index], epsilon, componentList).projectedState,
+      states[index - 1],
+      epsilon,
+      componentList
+    ).projectedState;
+    const direct = projectionMorphism(states[index + 1], states[index - 1], epsilon, componentList).projectedState;
+    const error = vectorDistance(composed, direct, componentList);
+    if (error > epsilon) {
+      violations += 1;
+      violationDetails.push({ index, error: normalizeNumber(error) });
+    }
+  }
+
+  const comparisons = Math.max(0, states.length - 2);
+  return {
+    categorical_compatibility: violations === 0,
+    violations,
+    comparisons,
+    violation_rate: comparisons > 0 ? violations / comparisons : 0,
+    epsilon,
+    violation_details: violationDetails,
+    interpretation_boundary: 'Finite categorical compatibility over observed projection triples; not an infinite projective-system proof.'
+  };
+};
+
+export const buildInverseLimitWitness = (states = [], epsilon = COMPATIBILITY_EPSILON, components = INVERSE_LIMIT_COMPONENTS) => {
+  const componentList = Array.isArray(components) && components.length ? components : INVERSE_LIMIT_COMPONENTS;
+  const compatibilities = [];
+  for (let index = 0; index < states.length - 1; index += 1) {
+    compatibilities.push(projectionMorphism(states[index + 1], states[index], epsilon, componentList).compatible);
+  }
+  const compatibleCount = compatibilities.filter(Boolean).length;
+  const compatibilityRate = compatibilities.length ? compatibleCount / compatibilities.length : 0;
+
+  return {
+    is_inverse_limit_element: states.length >= 2 && compatibilities.every(Boolean),
+    compatibility_rate: compatibilityRate,
+    window_size: states.length,
+    epsilon,
+    components: componentList,
+    interpretation_boundary: 'Finite-window inverse-limit witness; not uniqueness over all possible identity candidates.'
+  };
+};
+
+export const boundFiniteApproximationError = (windowSize, contractionRate = 0.5) => {
+  const window = Math.max(0, Math.floor(finite(windowSize, 0)));
+  const rho = Math.max(0, Math.min(0.999999, finite(contractionRate, 0.5)));
+  const error = rho < 1 ? (rho ** window) / Math.max(1e-9, 1 - rho) : Infinity;
+  return {
+    finite_window: window,
+    contraction_rate: rho,
+    approximation_error_bound: normalizeNumber(error),
+    negligible: error < 0.01,
+    interpretation_boundary: 'Finite truncation error bound under assumed contraction rate; not an empirical proof that the infinite limit is unique.'
+  };
+};
+
 /**
  * @param {Object} input
  * @param {Array<Record<string, unknown>>} [input.trace]
@@ -199,6 +278,25 @@ export const computeInverseLimitScore = ({
       epsilon: Math.max(0, finite(epsilon, 0.05)),
       components: measuredComponents,
       unmeasuredComponents: componentList,
+      categorical_compatibility: false,
+      categoricalCompatibility: {
+        categorical_compatibility: false,
+        violations: 0,
+        comparisons: 0,
+        violation_rate: 0,
+        epsilon: Math.max(0, finite(epsilon, 0.05)),
+        interpretation_boundary: 'No finite triples available for categorical compatibility.'
+      },
+      is_inverse_limit_element: false,
+      inverseLimitWitness: {
+        is_inverse_limit_element: false,
+        compatibility_rate: 0,
+        window_size: states.length,
+        epsilon: Math.max(0, finite(epsilon, 0.05)),
+        components: measuredComponents,
+        interpretation_boundary: 'Insufficient finite states for inverse-limit witness.'
+      },
+      approximation_error_bound: null,
       claim_scope: 'finite_horizon_inverse_limit_score_only',
       evidence_status: 'not_recorded',
       interpretation_boundary: 'Insufficient recorded finite-state components; no full inverse-limit claim is made.'
@@ -221,6 +319,10 @@ export const computeInverseLimitScore = ({
 
   const denominator = measuredComponents.length * Math.max(0, states.length - 1);
   const score = denominator > 0 ? clamp01(1 - (totalCompatibilityErrors / denominator)) : 1;
+  const categorical = verifyCategoricalCompatibility(states, epsilon, measuredComponents);
+  const witness = buildInverseLimitWitness(states, epsilon, measuredComponents);
+  const contractionRate = firstFinite(summaryMetrics.contraction_norm_K, summaryMetrics.lipschitz_norm_K, summaryMetrics.contraction_rate, 0.5);
+  const approximation = boundFiniteApproximationError(states.length, contractionRate ?? 0.5);
   if (totalCompatibilityErrors > 0) {
     logger.warn('inverse_limit_compatibility_errors', {
       totalCompatibilityErrors,
@@ -240,8 +342,14 @@ export const computeInverseLimitScore = ({
     components: measuredComponents,
     unmeasuredComponents: componentList.filter((component) => !measuredComponents.includes(component)),
     morphisms,
+    categorical_compatibility: categorical.categorical_compatibility,
+    categoricalCompatibility: categorical,
+    is_inverse_limit_element: witness.is_inverse_limit_element,
+    inverseLimitWitness: witness,
+    approximation_error_bound: approximation.approximation_error_bound,
+    finiteApproximationError: approximation,
     claim_scope: 'finite_horizon_inverse_limit_score_only',
     evidence_status: 'computed_finite_window',
-    interpretation_boundary: 'Finite-window adjacent-state compatibility score; not full inverse-limit preservation.'
+    interpretation_boundary: 'Finite-window inverse-limit witness and compatibility score; not full inverse-limit preservation or uniqueness over all identity candidates.'
   };
 };

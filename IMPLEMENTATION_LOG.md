@@ -415,3 +415,14 @@ Files moved/removed include: `QICN GPT5.5/` moved outside the repo to `C:\Users\
 - Gate results: `node tests/null-regime-instability.test.js` PASS; `node tests/negative-controls-expanded.v1.test.js` PASS; `npm test` PASS (126/126); `npm run build` PASS (`dist\bundle.js` 6.9 MB); `npm run verify:source-of-truth` PASS; `npm run verify:descriptor-registry` PASS (23 rows); `npm run verify:repro-bridge` PASS (0 relative delta); `npm run scoreboard:run` PASS (7/7, all 10/10).
 - Baseline comparison: PASS. All seven scoreboard dimensions remained 10/10; degradation >5%: none; degradation >15%: none.
 - Interpretation boundary: NC8 is an internal computational falsification route for null-regime stability. It is not a global theorem that every possible discrete realization escapes null dynamics.
+
+## Fase A2.1: I_ri Formal Finite Inverse-Limit Witness
+
+- Extended `src/canon/finite_horizon/FiniteProjectionEvaluator.js` with categorical compatibility diagnostics, finite inverse-limit witness construction, and a contraction-based finite approximation error bound.
+- Extended `src/canon/invariants/CanonicalInvariantPackage.js` so `I_ri` exposes `inverseLimitElement`, `inverseLimitWitness`, `categoricalCompatibility`, `categoricalCompatibilityDiagnostics`, `approximationErrorBound`, and `finiteApproximationError`.
+- Added `tests/inverse-limit-formal.test.js` to verify categorical compatibility, finite witness construction, approximation bounds, and invariant/runtime-signal exposure.
+- Updated descriptor/traceability/status docs for the new finite inverse-limit witness surfaces.
+- Improvement introduced: the finite approximation error is reported as an explicit residual bound rather than hidden inside the score, making the truncation boundary auditable by downstream gates.
+- Gate results: `node tests/inverse-limit-formal.test.js` PASS; `npm test` PASS (127/127); `npm run build` PASS (`dist\bundle.js` 6.9 MB); `npm run verify:source-of-truth` PASS; `npm run verify:descriptor-registry` PASS (23 rows); `npm run verify:repro-bridge` PASS (0 relative delta); `npm run scoreboard:run` PASS (7/7, all 10/10).
+- Baseline comparison: PASS. All seven scoreboard dimensions remained 10/10; degradation >5%: none; degradation >15%: none.
+- Interpretation boundary: this constructs and verifies a finite-window inverse-limit witness for the recorded trajectory. It is not a uniqueness proof over all possible identity candidates and does not establish full inverse-limit preservation over infinite time.

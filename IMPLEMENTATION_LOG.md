@@ -154,3 +154,12 @@
 - `README.md`: added an Epistemic Posture section linking to the new document and restating that internal support labels do not imply external validation.
 - Gate check: PASS. The document exists and includes the requested taxonomy and ANTI-FREEZE paragraph.
 - `npm test`: PASS. 116/116 tests passed.
+
+## Fase 7: CI/CD Pipeline and Pre-Commit Hook
+
+- `.github/workflows/verify.yml`: created with Node 20, `npm ci`, source-of-truth verification, descriptor registry verification, repro bridge verification, tests, build, and scoreboard.
+- `.git/hooks/pre-commit`: installed with `npm run verify:source-of-truth && npm test`.
+- Direct `sh .git/hooks/pre-commit` from PowerShell failed because `sh` is not in the PowerShell PATH. The same hook was then executed with Git for Windows shell at `C:\Program Files\Git\bin\sh.exe` and passed.
+- `npm run verify:source-of-truth`: PASS.
+- `.git/hooks/pre-commit` via Git shell: PASS. It ran source-of-truth verification and `npm test`.
+- `npm test`: PASS. 116/116 tests passed.

@@ -69,6 +69,11 @@ export class OntologicalSingularityCore {
             lambda_2: 0.5,
             relaxation_time: 1.0,
             holonomy_status: 'untested',
+            holonomy_winding: 0,
+            raw_winding_number: 0,
+            winding_integer: 0,
+            winding_orientation: 'trivial',
+            topo_factor: 0,
             bifurcation_detected: false,
             phi_discriminant: 0,      // Φ(S)
             holonomic_operator_D: 0,  // D(S)
@@ -1166,6 +1171,12 @@ export class OntologicalSingularityCore {
         this.ontologicalState.layer = 0;
         this.ontologicalState.omega = 0;
         this.ontologicalState.beth_q = 0.5;
+        this.ontologicalState.holonomy_status = 'untested';
+        this.ontologicalState.holonomy_winding = 0;
+        this.ontologicalState.raw_winding_number = 0;
+        this.ontologicalState.winding_integer = 0;
+        this.ontologicalState.winding_orientation = 'trivial';
+        this.ontologicalState.topo_factor = 0;
         this.ontologicalState.regime = 'PRE_CONSCIOUS';
         this.selfNarrative = "Realidad regenerada proceduralmente. Esperando seeding...";
         this.dynamicStasis.window = [];
@@ -1255,6 +1266,11 @@ export class OntologicalSingularityCore {
         this.ontologicalState.lambda_2 = metrics.lambda_2;
         this.ontologicalState.relaxation_time = metrics.relaxation_time;
         this.ontologicalState.holonomy_status = metrics.holonomy_status;
+        this.ontologicalState.holonomy_winding = metrics.holonomy_winding;
+        this.ontologicalState.raw_winding_number = metrics.raw_winding_number;
+        this.ontologicalState.winding_integer = metrics.winding_integer;
+        this.ontologicalState.winding_orientation = metrics.winding_orientation;
+        this.ontologicalState.topo_factor = metrics.topo_factor;
         this.ontologicalState.bifurcation_detected = metrics.bifurcation_detected;
         this.ontologicalState.phi_discriminant = metrics.phi_discriminant;
         this.ontologicalState.holonomic_operator_D = metrics.holonomic_operator_D;
@@ -1279,6 +1295,10 @@ export class OntologicalSingularityCore {
             beth_q: metrics.beth_q,
             spectral_gap: metrics.spectral_gap,
             holonomy_status: metrics.holonomy_status,
+            raw_winding_number: metrics.raw_winding_number,
+            winding_integer: metrics.winding_integer,
+            winding_orientation: metrics.winding_orientation,
+            topo_factor: metrics.topo_factor,
             bifurcation_detected: metrics.bifurcation_detected,
             omega: classification.omega,
             phenomenology_class: classification.class,
@@ -2042,6 +2062,10 @@ export class OntologicalSingularityCore {
             relaxation_time: toNumber(this.ontologicalState?.relaxation_time, 0),
             holonomy_status: toText(this.ontologicalState?.holonomy_status, 'untested'),
             winding_number: toNumber(this.ontologicalState?.holonomy_winding, 0),
+            raw_winding_number: toNumber(this.ontologicalState?.raw_winding_number, 0),
+            winding_integer: toNumber(this.ontologicalState?.winding_integer, 0),
+            winding_orientation: toText(this.ontologicalState?.winding_orientation, 'trivial'),
+            topo_factor: toNumber(this.ontologicalState?.topo_factor, 0),
             bifurcation_detected: toBoolean(this.ontologicalState?.bifurcation_detected, false),
             magnification_M: toNumber(this.ontologicalState?.magnification_M, 1.0),
             lipschitz_norm_K: toNumber(this.ontologicalState?.lipschitz_norm_K, 0.5),

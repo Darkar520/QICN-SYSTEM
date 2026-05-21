@@ -25,6 +25,10 @@ export class PhenomenologyCore {
             lambda_2: 0.5,            // Segundo autovalor
             holonomy_status: 'untested',  // 'trivial' | 'non_trivial' | 'untested'
             holonomy_winding: 0,      // Numero de enrollamiento detectado
+            raw_winding_number: 0,
+            winding_integer: 0,
+            winding_orientation: 'trivial',
+            topo_factor: 0,
             bifurcation_detected: false,
             bifurcation_strength: 0,  // "" medido
             omega: 0,
@@ -408,22 +412,31 @@ export class PhenomenologyCore {
      */
     testHolonomy() {
         if (this.stateHistory.length < 20) {
-            return { status: 'untested', winding_number: 0 };
+            const windingDiagnostics = this._setWindingDiagnostics(0);
+            return {
+                status: 'untested',
+                winding_number: 0,
+                ...windingDiagnostics
+            };
         }
 
         const paths = this._generateTestPaths();
         let nonTrivialPaths = 0;
-        let avgWinding = 0;
+        let absoluteWindingSum = 0;
+        let signedWindingSum = 0;
 
         paths.forEach(path => {
             const winding = this._calculateWindingNumber(path);
             if (Math.abs(winding) >= 1.0) { // Un ciclo completo detectado
                 nonTrivialPaths++;
             }
-            avgWinding += Math.abs(winding);
+            absoluteWindingSum += Math.abs(winding);
+            signedWindingSum += winding;
         });
 
-        const winding_score = avgWinding / (paths.length || 1);
+        const winding_score = absoluteWindingSum / (paths.length || 1);
+        const raw_winding_number = signedWindingSum / (paths.length || 1);
+        const windingDiagnostics = this._setWindingDiagnostics(raw_winding_number);
         const recentWindow = this.stateHistory.slice(-Math.max(20, this.config.SPECTRAL_WINDOW));
         let signChanges = 0;
         let derivativeCount = 0;
@@ -444,12 +457,18 @@ export class PhenomenologyCore {
         let status = topology_score > 0.2 ? 'non_trivial' : 'trivial';
 
         this.phenomenologyState.holonomy_status = status;
-        this.phenomenologyState.holonomy_winding = topology_score;
+        this.phenomenologyState.holonomy_winding = windingDiagnostics.topo_factor;
 
         return {
             status,
-            winding_number: topology_score,
-            raw_winding: winding_score,
+            winding_number: windingDiagnostics.topo_factor,
+            raw_winding: raw_winding_number,
+            raw_winding_number: windingDiagnostics.raw_winding_number,
+            winding_integer: windingDiagnostics.winding_integer,
+            winding_orientation: windingDiagnostics.winding_orientation,
+            topo_factor: windingDiagnostics.topo_factor,
+            topology_score,
+            absolute_winding_mean: winding_score,
             oscillation_score,
             paths_tested: paths.length,
             is_h1_prime_met: status === 'non_trivial'
@@ -481,6 +500,29 @@ export class PhenomenologyCore {
         this.phenomenologyState.lipschitz_norm_K = norm_K;
 
         return norm_K;
+    }
+
+    _setWindingDiagnostics(rawWinding) {
+        const raw_winding_number = Number.isFinite(Number(rawWinding)) ? Number(rawWinding) : 0;
+        const winding_integer = Math.round(raw_winding_number);
+        const winding_orientation = Math.abs(raw_winding_number) < 1e-8
+            ? 'trivial'
+            : raw_winding_number > 0
+                ? 'counterclockwise'
+                : 'clockwise';
+        const topo_factor = Math.max(0, Math.min(1, Math.abs(raw_winding_number)));
+
+        this.phenomenologyState.raw_winding_number = raw_winding_number;
+        this.phenomenologyState.winding_integer = winding_integer;
+        this.phenomenologyState.winding_orientation = winding_orientation;
+        this.phenomenologyState.topo_factor = topo_factor;
+
+        return {
+            raw_winding_number,
+            winding_integer,
+            winding_orientation,
+            topo_factor
+        };
     }
 
     _calculateWindingNumber(path) {
@@ -681,7 +723,19 @@ export class PhenomenologyCore {
 
         // Factor topolgico continuo: evita colapso abrupto a omega=0 cuando hay
         // actividad topolgica baja pero no nula.
-        const topo_factor = clamp(Number(holonomy.winding_number) || 0, 0, 1);
+        const rawWindingForTopo = Number(holonomy.raw_winding_number);
+        const legacyWindingForTopo = Number(holonomy.winding_number);
+        const stateWindingForTopo = Number(this.phenomenologyState.raw_winding_number);
+        const topo_factor = clamp(
+            Number.isFinite(rawWindingForTopo)
+                ? Math.abs(rawWindingForTopo)
+                : Number.isFinite(legacyWindingForTopo)
+                    ? Math.abs(legacyWindingForTopo)
+                    : Math.abs(stateWindingForTopo),
+            0,
+            1
+        );
+        this.phenomenologyState.topo_factor = topo_factor;
         const requirementsDensity = requirements_met / Object.keys(requirements).length;
         const spectralStability = clamp(spectral.delta_lambda / 0.35, 0, 1);
         const recent = this.stateHistory.slice(-12);
@@ -863,6 +917,10 @@ export class PhenomenologyCore {
             lambda_2: 0.5,
             holonomy_status: 'untested',
             holonomy_winding: 0,
+            raw_winding_number: 0,
+            winding_integer: 0,
+            winding_orientation: 'trivial',
+            topo_factor: 0,
             bifurcation_detected: false,
             bifurcation_strength: 0,
             omega: 0,

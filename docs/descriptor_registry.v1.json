@@ -12,22 +12,70 @@
     "validator_script": "scripts/validate-descriptor-registry.cjs"
   },
   "enums": {
-    "kind": ["runtime_parameter", "direct_metric", "proxy_metric", "invariant", "claim_projection", "gate_result", "artifact_only", "not_yet_classified"],
-    "layer": ["runtime", "runtime_derived", "batch", "enforcement", "cross_layer", "external"],
-    "evidence_scope": ["runtime_primary", "runtime_derived", "batch_primary", "batch_derived", "mixed", "external_frozen"],
-    "external_dependency": ["none", "frozen_canon", "prereg_config", "external_service", "legacy_input", "human_interpretation_required", "mixed"],
-    "status": ["documented_real", "documented_partial", "pending_classification", "external_dependency", "not_closed"]
+    "kind": [
+      "runtime_parameter",
+      "direct_metric",
+      "proxy_metric",
+      "invariant",
+      "claim_projection",
+      "gate_result",
+      "artifact_only",
+      "not_yet_classified"
+    ],
+    "layer": [
+      "runtime",
+      "runtime_derived",
+      "batch",
+      "enforcement",
+      "cross_layer",
+      "external"
+    ],
+    "evidence_scope": [
+      "runtime_primary",
+      "runtime_derived",
+      "batch_primary",
+      "batch_derived",
+      "mixed",
+      "external_frozen"
+    ],
+    "external_dependency": [
+      "none",
+      "frozen_canon",
+      "prereg_config",
+      "external_service",
+      "legacy_input",
+      "human_interpretation_required",
+      "mixed"
+    ],
+    "status": [
+      "documented_real",
+      "documented_partial",
+      "pending_classification",
+      "external_dependency",
+      "not_closed"
+    ]
   },
   "rows": [
     {
       "id": "RP_runtime_parameter_families",
       "kind": "runtime_parameter",
       "layer": "runtime",
-      "source_module": ["src/utils/runtimeParameterRegistry.js"],
+      "source_module": [
+        "src/utils/runtimeParameterRegistry.js"
+      ],
       "source_artifact": [],
-      "source_signals": ["core_runtime_parameters", "sensory_runtime_parameters", "quantum_runtime_parameters"],
+      "source_signals": [
+        "core_runtime_parameters",
+        "sensory_runtime_parameters",
+        "quantum_runtime_parameters"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/runtime-parameter-registry.v400.test.js", "tests/runtime-parameter-functional.v400.test.js", "tests/sensor-capabilities.v46.test.js", "tests/quantum-entropy-bridge-polling.v51.test.js"],
+      "test_anchors": [
+        "tests/runtime-parameter-registry.v400.test.js",
+        "tests/runtime-parameter-functional.v400.test.js",
+        "tests/sensor-capabilities.v46.test.js",
+        "tests/quantum-entropy-bridge-polling.v51.test.js"
+      ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [],
       "evidence_scope": "runtime_primary",
@@ -40,13 +88,47 @@
       "id": "DM_tick_record_bundle",
       "kind": "direct_metric",
       "layer": "runtime",
-      "source_module": ["src/experiments/ExperimentalEpisodeHarness.js"],
-      "source_artifact": ["run_header.json", "ticks.ndjson", "run_summary.json"],
-      "source_signals": ["tick", "t_ms", "versionHash", "configHash", "render_trace_hash", "integrity.*", "intervention.*", "sensors.*", "observability.*"],
-      "downstream_artifacts": ["run_verdict.json", "invariant_package.json", "claim_mapping_snapshot.json", "negative_controls_report.json", "eo_report.json"],
-      "test_anchors": ["tests/episode-harness.v1.test.js", "tests/run-episode-admissibility.v58.test.js"],
-      "gate_dependencies": ["RG_schema_record_integrity", "RG_config_hash_integrity", "RG_integrity_envelope", "RG_prereg_schedule_integrity", "RG_runtime_hygiene"],
-      "claim_projection_dependencies": ["via_invariant_family", "CP_P5_05"],
+      "source_module": [
+        "src/experiments/ExperimentalEpisodeHarness.js"
+      ],
+      "source_artifact": [
+        "run_header.json",
+        "ticks.ndjson",
+        "run_summary.json"
+      ],
+      "source_signals": [
+        "tick",
+        "t_ms",
+        "versionHash",
+        "configHash",
+        "render_trace_hash",
+        "integrity.*",
+        "intervention.*",
+        "sensors.*",
+        "observability.*"
+      ],
+      "downstream_artifacts": [
+        "run_verdict.json",
+        "invariant_package.json",
+        "claim_mapping_snapshot.json",
+        "negative_controls_report.json",
+        "eo_report.json"
+      ],
+      "test_anchors": [
+        "tests/episode-harness.v1.test.js",
+        "tests/run-episode-admissibility.v58.test.js"
+      ],
+      "gate_dependencies": [
+        "RG_schema_record_integrity",
+        "RG_config_hash_integrity",
+        "RG_integrity_envelope",
+        "RG_prereg_schedule_integrity",
+        "RG_runtime_hygiene"
+      ],
+      "claim_projection_dependencies": [
+        "via_invariant_family",
+        "CP_P5_05"
+      ],
       "evidence_scope": "runtime_primary",
       "external_dependency": "none",
       "status": "documented_real",
@@ -57,13 +139,50 @@
       "id": "DM_direct_metric_series_numeric",
       "kind": "direct_metric",
       "layer": "runtime",
-      "source_module": ["src/experiments/ExperimentalEpisodeHarness.js"],
-      "source_artifact": ["ticks.ndjson", "run_summary.json"],
-      "source_signals": ["stasis_index", "pmia", "beth_q", "spectral_gap", "identity_stability_score", "predictive_consistency", "tau_recovery", "temporal_convergence_tau_c", "winding_number", "operational_determinism_score", "critical_observables_deterministic", "causal_dependency_past", "causal_dependency_sensors", "causal_dependency_prompts", "causal_dependency_noise"],
-      "downstream_artifacts": ["run_summary.json", "invariant_package.json", "claim_mapping_snapshot.json"],
-      "test_anchors": ["tests/episode-harness.v1.test.js", "tests/run-episode-admissibility.v58.test.js"],
-      "gate_dependencies": ["RG_runtime_hygiene", "RG_run_verdict"],
-      "claim_projection_dependencies": ["via_invariant_family"],
+      "source_module": [
+        "src/experiments/ExperimentalEpisodeHarness.js"
+      ],
+      "source_artifact": [
+        "ticks.ndjson",
+        "run_summary.json"
+      ],
+      "source_signals": [
+        "stasis_index",
+        "pmia",
+        "beth_q",
+        "spectral_gap",
+        "identity_stability_score",
+        "predictive_consistency",
+        "tau_recovery",
+        "temporal_convergence_tau_c",
+        "winding_number",
+        "operational_determinism_score",
+        "critical_observables_deterministic",
+        "causal_dependency_past",
+        "causal_dependency_sensors",
+        "causal_dependency_prompts",
+        "causal_dependency_noise",
+        "raw_winding_number",
+        "winding_integer",
+        "topo_factor"
+      ],
+      "downstream_artifacts": [
+        "run_summary.json",
+        "invariant_package.json",
+        "claim_mapping_snapshot.json"
+      ],
+      "test_anchors": [
+        "tests/episode-harness.v1.test.js",
+        "tests/run-episode-admissibility.v58.test.js",
+        "tests/winding-topology.test.js"
+      ],
+      "gate_dependencies": [
+        "RG_runtime_hygiene",
+        "RG_run_verdict"
+      ],
+      "claim_projection_dependencies": [
+        "via_invariant_family"
+      ],
       "evidence_scope": "runtime_primary",
       "external_dependency": "none",
       "status": "documented_real",
@@ -74,13 +193,35 @@
       "id": "DM_runtime_state_traces",
       "kind": "direct_metric",
       "layer": "runtime",
-      "source_module": ["src/experiments/ExperimentalEpisodeHarness.js"],
-      "source_artifact": ["ticks.ndjson", "run_summary.json"],
-      "source_signals": ["critical_state_hash", "pmia_guardrail_state"],
-      "downstream_artifacts": ["invariant_package.json"],
-      "test_anchors": ["tests/verifiable-report-shape.test.js", "tests/cognitive-identity-robustness.v54.test.js", "tests/pmia-guardrails.v411.test.js"],
-      "gate_dependencies": ["RG_run_verdict"],
-      "claim_projection_dependencies": ["via_invariant_family", "CP_P5_01", "CP_P5_04"],
+      "source_module": [
+        "src/experiments/ExperimentalEpisodeHarness.js"
+      ],
+      "source_artifact": [
+        "ticks.ndjson",
+        "run_summary.json"
+      ],
+      "source_signals": [
+        "critical_state_hash",
+        "pmia_guardrail_state",
+        "winding_orientation"
+      ],
+      "downstream_artifacts": [
+        "invariant_package.json"
+      ],
+      "test_anchors": [
+        "tests/verifiable-report-shape.test.js",
+        "tests/cognitive-identity-robustness.v54.test.js",
+        "tests/pmia-guardrails.v411.test.js",
+        "tests/winding-topology.test.js"
+      ],
+      "gate_dependencies": [
+        "RG_run_verdict"
+      ],
+      "claim_projection_dependencies": [
+        "via_invariant_family",
+        "CP_P5_01",
+        "CP_P5_04"
+      ],
       "evidence_scope": "runtime_primary",
       "external_dependency": "none",
       "status": "documented_real",
@@ -91,13 +232,33 @@
       "id": "PX_runtime_proxy_bundle",
       "kind": "proxy_metric",
       "layer": "runtime_derived",
-      "source_module": ["src/experiments/ExperimentalEpisodeHarness.js"],
-      "source_artifact": ["run_summary.json"],
-      "source_signals": ["cog", "phen", "subj"],
-      "downstream_artifacts": ["eo_report.json", "invariant_package.json", "claim_mapping_snapshot.json"],
-      "test_anchors": ["tests/planner-metric-independence.v55.test.js", "tests/phenomenology-protocol-suite.v56.test.js", "tests/verifiable-report-shape.test.js"],
+      "source_module": [
+        "src/experiments/ExperimentalEpisodeHarness.js"
+      ],
+      "source_artifact": [
+        "run_summary.json"
+      ],
+      "source_signals": [
+        "cog",
+        "phen",
+        "subj"
+      ],
+      "downstream_artifacts": [
+        "eo_report.json",
+        "invariant_package.json",
+        "claim_mapping_snapshot.json"
+      ],
+      "test_anchors": [
+        "tests/planner-metric-independence.v55.test.js",
+        "tests/phenomenology-protocol-suite.v56.test.js",
+        "tests/verifiable-report-shape.test.js"
+      ],
       "gate_dependencies": [],
-      "claim_projection_dependencies": ["CP_P5_02", "CP_P5_05", "CP_P5_06"],
+      "claim_projection_dependencies": [
+        "CP_P5_02",
+        "CP_P5_05",
+        "CP_P5_06"
+      ],
       "evidence_scope": "runtime_derived",
       "external_dependency": "none",
       "status": "documented_real",
@@ -108,13 +269,36 @@
       "id": "PX_eo_signature_bundle",
       "kind": "proxy_metric",
       "layer": "batch",
-      "source_module": ["src/experiments/roeo_signature.js"],
-      "source_artifact": ["eo_report.json"],
-      "source_signals": ["COG", "PHEN", "SUBJ", "EO_scalar"],
-      "downstream_artifacts": ["operational_equivalence.json", "sno_report.json", "negative_controls_report.json"],
-      "test_anchors": ["tests/roeo.v1.test.js", "tests/roeo_enforcement.v1.test.js"],
-      "gate_dependencies": ["BG_admissible_run_filter_for_roeo_sno", "BG_negative_controls_enforcement"],
-      "claim_projection_dependencies": ["CP_P5_02", "CP_P5_05", "CP_P5_06"],
+      "source_module": [
+        "src/experiments/roeo_signature.js"
+      ],
+      "source_artifact": [
+        "eo_report.json"
+      ],
+      "source_signals": [
+        "COG",
+        "PHEN",
+        "SUBJ",
+        "EO_scalar"
+      ],
+      "downstream_artifacts": [
+        "operational_equivalence.json",
+        "sno_report.json",
+        "negative_controls_report.json"
+      ],
+      "test_anchors": [
+        "tests/roeo.v1.test.js",
+        "tests/roeo_enforcement.v1.test.js"
+      ],
+      "gate_dependencies": [
+        "BG_admissible_run_filter_for_roeo_sno",
+        "BG_negative_controls_enforcement"
+      ],
+      "claim_projection_dependencies": [
+        "CP_P5_02",
+        "CP_P5_05",
+        "CP_P5_06"
+      ],
       "evidence_scope": "batch_derived",
       "external_dependency": "prereg_config",
       "status": "documented_real",
@@ -125,13 +309,42 @@
       "id": "I_runtime_invariant_family",
       "kind": "invariant",
       "layer": "runtime_derived",
-      "source_module": ["src/canon/invariants/CanonicalInvariantPackage.js"],
-      "source_artifact": ["invariant_package.json"],
-      "source_signals": ["I_per", "I_ri", "I_int", "I_cont", "I_diff", "I_leg"],
-      "downstream_artifacts": ["claim_mapping_snapshot.json", "runtime_claim_projection.json", "p5_03_threshold_runtime.json"],
-      "test_anchors": ["tests/run-episode-admissibility.v58.test.js", "tests/cognitive-identity-robustness.v54.test.js", "tests/pmia-guardrails.v411.test.js", "tests/cognitive-loop-closure.v52.test.js", "tests/phenomenology-protocol-suite.v56.test.js", "tests/runtime-hygiene.test.js"],
+      "source_module": [
+        "src/canon/invariants/CanonicalInvariantPackage.js"
+      ],
+      "source_artifact": [
+        "invariant_package.json"
+      ],
+      "source_signals": [
+        "I_per",
+        "I_ri",
+        "I_int",
+        "I_cont",
+        "I_diff",
+        "I_leg"
+      ],
+      "downstream_artifacts": [
+        "claim_mapping_snapshot.json",
+        "runtime_claim_projection.json",
+        "p5_03_threshold_runtime.json"
+      ],
+      "test_anchors": [
+        "tests/run-episode-admissibility.v58.test.js",
+        "tests/cognitive-identity-robustness.v54.test.js",
+        "tests/pmia-guardrails.v411.test.js",
+        "tests/cognitive-loop-closure.v52.test.js",
+        "tests/phenomenology-protocol-suite.v56.test.js",
+        "tests/runtime-hygiene.test.js"
+      ],
       "gate_dependencies": [],
-      "claim_projection_dependencies": ["CP_P5_01", "CP_P5_02", "CP_P5_03", "CP_P5_04", "CP_P5_05", "CP_P5_06"],
+      "claim_projection_dependencies": [
+        "CP_P5_01",
+        "CP_P5_02",
+        "CP_P5_03",
+        "CP_P5_04",
+        "CP_P5_05",
+        "CP_P5_06"
+      ],
       "evidence_scope": "runtime_derived",
       "external_dependency": "none",
       "status": "documented_real",
@@ -142,11 +355,20 @@
       "id": "ART_harness_admissibility_preverdict",
       "kind": "artifact_only",
       "layer": "runtime_derived",
-      "source_module": ["src/experiments/ExperimentalEpisodeHarness.js"],
-      "source_artifact": ["admissibility.json"],
-      "source_signals": ["status:PENDING_PR6C", "run metadata references"],
+      "source_module": [
+        "src/experiments/ExperimentalEpisodeHarness.js"
+      ],
+      "source_artifact": [
+        "admissibility.json"
+      ],
+      "source_signals": [
+        "status:PENDING_PR6C",
+        "run metadata references"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/episode-harness.v1.test.js"],
+      "test_anchors": [
+        "tests/episode-harness.v1.test.js"
+      ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [],
       "evidence_scope": "runtime_derived",
@@ -159,12 +381,23 @@
       "id": "CP_P5_01",
       "kind": "claim_projection",
       "layer": "runtime_derived",
-      "source_module": ["src/canon/claimMapping/runtimeClaimMapping.js"],
-      "source_artifact": ["claim_mapping_snapshot.json", "runtime_claim_projection.json"],
-      "source_signals": ["boundary-side summaries over invariant family"],
+      "source_module": [
+        "src/canon/claimMapping/runtimeClaimMapping.js"
+      ],
+      "source_artifact": [
+        "claim_mapping_snapshot.json",
+        "runtime_claim_projection.json"
+      ],
+      "source_signals": [
+        "boundary-side summaries over invariant family"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/admissibility-exporter.v1.test.js"],
-      "gate_dependencies": ["GR_run_verdict_status"],
+      "test_anchors": [
+        "tests/admissibility-exporter.v1.test.js"
+      ],
+      "gate_dependencies": [
+        "GR_run_verdict_status"
+      ],
       "claim_projection_dependencies": [],
       "evidence_scope": "runtime_derived",
       "external_dependency": "frozen_canon",
@@ -176,12 +409,28 @@
       "id": "CP_P5_02",
       "kind": "claim_projection",
       "layer": "cross_layer",
-      "source_module": ["src/canon/claimMapping/runtimeClaimMapping.js", "src/experiments/roeo_signature.js"],
-      "source_artifact": ["claim_mapping_snapshot.json", "operational_equivalence.json"],
-      "source_signals": ["admissible pair family", "ROEO outcomes", "SNO separation", "EO signatures"],
+      "source_module": [
+        "src/canon/claimMapping/runtimeClaimMapping.js",
+        "src/experiments/roeo_signature.js"
+      ],
+      "source_artifact": [
+        "claim_mapping_snapshot.json",
+        "operational_equivalence.json"
+      ],
+      "source_signals": [
+        "admissible pair family",
+        "ROEO outcomes",
+        "SNO separation",
+        "EO signatures"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/roeo.v1.test.js", "tests/sno.v1.test.js"],
-      "gate_dependencies": ["GR_run_verdict_status"],
+      "test_anchors": [
+        "tests/roeo.v1.test.js",
+        "tests/sno.v1.test.js"
+      ],
+      "gate_dependencies": [
+        "GR_run_verdict_status"
+      ],
       "claim_projection_dependencies": [],
       "evidence_scope": "mixed",
       "external_dependency": "mixed",
@@ -193,12 +442,27 @@
       "id": "CP_P5_03",
       "kind": "claim_projection",
       "layer": "runtime_derived",
-      "source_module": ["src/canon/claimMapping/runtimeClaimMapping.js", "src/canon/thresholds/P503ThresholdRuntime.js"],
-      "source_artifact": ["claim_mapping_snapshot.json", "p5_03_threshold_runtime.json"],
-      "source_signals": ["dominant invariant", "ambiguity width", "fail offsets", "threshold geometry"],
+      "source_module": [
+        "src/canon/claimMapping/runtimeClaimMapping.js",
+        "src/canon/thresholds/P503ThresholdRuntime.js"
+      ],
+      "source_artifact": [
+        "claim_mapping_snapshot.json",
+        "p5_03_threshold_runtime.json"
+      ],
+      "source_signals": [
+        "dominant invariant",
+        "ambiguity width",
+        "fail offsets",
+        "threshold geometry"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/run-episode-admissibility.v58.test.js"],
-      "gate_dependencies": ["GR_run_verdict_status"],
+      "test_anchors": [
+        "tests/run-episode-admissibility.v58.test.js"
+      ],
+      "gate_dependencies": [
+        "GR_run_verdict_status"
+      ],
       "claim_projection_dependencies": [],
       "evidence_scope": "runtime_derived",
       "external_dependency": "mixed",
@@ -210,12 +474,29 @@
       "id": "CP_P5_05",
       "kind": "claim_projection",
       "layer": "cross_layer",
-      "source_module": ["src/canon/claimMapping/runtimeClaimMapping.js", "src/experiments/negative_controls_runner.js"],
-      "source_artifact": ["claim_mapping_snapshot.json", "negative_controls_report.json", "roeo_enforcement_report.json"],
-      "source_signals": ["NC1-NC4 outcomes", "ROEO distances", "leak accuracy"],
+      "source_module": [
+        "src/canon/claimMapping/runtimeClaimMapping.js",
+        "src/experiments/negative_controls_runner.js"
+      ],
+      "source_artifact": [
+        "claim_mapping_snapshot.json",
+        "negative_controls_report.json",
+        "roeo_enforcement_report.json"
+      ],
+      "source_signals": [
+        "NC1-NC4 outcomes",
+        "ROEO distances",
+        "leak accuracy"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/negative-controls.v1.test.js", "tests/roeo_enforcement.v1.test.js"],
-      "gate_dependencies": ["GR_run_verdict_status", "GR_paper_admissibility_status"],
+      "test_anchors": [
+        "tests/negative-controls.v1.test.js",
+        "tests/roeo_enforcement.v1.test.js"
+      ],
+      "gate_dependencies": [
+        "GR_run_verdict_status",
+        "GR_paper_admissibility_status"
+      ],
       "claim_projection_dependencies": [],
       "evidence_scope": "mixed",
       "external_dependency": "prereg_config",
@@ -227,12 +508,28 @@
       "id": "CP_P5_06",
       "kind": "claim_projection",
       "layer": "cross_layer",
-      "source_module": ["src/canon/claimMapping/runtimeClaimMapping.js", "src/experiments/roeo_signature.js"],
-      "source_artifact": ["claim_mapping_snapshot.json", "operational_equivalence.json"],
-      "source_signals": ["admissible pair family", "ROEO outcomes", "SNO separation", "EO signatures"],
+      "source_module": [
+        "src/canon/claimMapping/runtimeClaimMapping.js",
+        "src/experiments/roeo_signature.js"
+      ],
+      "source_artifact": [
+        "claim_mapping_snapshot.json",
+        "operational_equivalence.json"
+      ],
+      "source_signals": [
+        "admissible pair family",
+        "ROEO outcomes",
+        "SNO separation",
+        "EO signatures"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/roeo.v1.test.js", "tests/sno.v1.test.js"],
-      "gate_dependencies": ["GR_run_verdict_status"],
+      "test_anchors": [
+        "tests/roeo.v1.test.js",
+        "tests/sno.v1.test.js"
+      ],
+      "gate_dependencies": [
+        "GR_run_verdict_status"
+      ],
       "claim_projection_dependencies": [],
       "evidence_scope": "mixed",
       "external_dependency": "mixed",
@@ -244,13 +541,35 @@
       "id": "GR_run_verdict_status",
       "kind": "gate_result",
       "layer": "enforcement",
-      "source_module": ["src/experiments/AdmissibilityEngine.js"],
-      "source_artifact": ["run_verdict.json"],
-      "source_signals": ["aggregated record, hash, integrity, prereg, hygiene, and flake gate outputs"],
-      "downstream_artifacts": ["invariant_package.json", "claim_mapping_snapshot.json", "runtime_claim_projection.json", "eo_report.json", "operational_equivalence.json", "sno_report.json"],
-      "test_anchors": ["tests/run-episode-admissibility.v58.test.js", "tests/admissibility-exporter.v1.test.js"],
+      "source_module": [
+        "src/experiments/AdmissibilityEngine.js"
+      ],
+      "source_artifact": [
+        "run_verdict.json"
+      ],
+      "source_signals": [
+        "aggregated record, hash, integrity, prereg, hygiene, and flake gate outputs"
+      ],
+      "downstream_artifacts": [
+        "invariant_package.json",
+        "claim_mapping_snapshot.json",
+        "runtime_claim_projection.json",
+        "eo_report.json",
+        "operational_equivalence.json",
+        "sno_report.json"
+      ],
+      "test_anchors": [
+        "tests/run-episode-admissibility.v58.test.js",
+        "tests/admissibility-exporter.v1.test.js"
+      ],
       "gate_dependencies": [],
-      "claim_projection_dependencies": ["CP_P5_01", "CP_P5_02", "CP_P5_03", "CP_P5_05", "CP_P5_06"],
+      "claim_projection_dependencies": [
+        "CP_P5_01",
+        "CP_P5_02",
+        "CP_P5_03",
+        "CP_P5_05",
+        "CP_P5_06"
+      ],
       "evidence_scope": "runtime_derived",
       "external_dependency": "none",
       "status": "documented_real",
@@ -261,13 +580,27 @@
       "id": "GR_paper_admissibility_status",
       "kind": "gate_result",
       "layer": "enforcement",
-      "source_module": ["src/experiments/negative_controls_runner.js"],
-      "source_artifact": ["roeo_enforcement_report.json"],
-      "source_signals": ["SNO outputs", "negative-controls outputs", "prereg thresholds", "class-balance checks"],
+      "source_module": [
+        "src/experiments/negative_controls_runner.js"
+      ],
+      "source_artifact": [
+        "roeo_enforcement_report.json"
+      ],
+      "source_signals": [
+        "SNO outputs",
+        "negative-controls outputs",
+        "prereg thresholds",
+        "class-balance checks"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/roeo_enforcement.v1.test.js", "tests/exporter_roeo.v1.test.js"],
+      "test_anchors": [
+        "tests/roeo_enforcement.v1.test.js",
+        "tests/exporter_roeo.v1.test.js"
+      ],
       "gate_dependencies": [],
-      "claim_projection_dependencies": ["CP_P5_05"],
+      "claim_projection_dependencies": [
+        "CP_P5_05"
+      ],
       "evidence_scope": "batch_derived",
       "external_dependency": "prereg_config",
       "status": "documented_real",
@@ -278,13 +611,50 @@
       "id": "ART_batch_control_artifacts",
       "kind": "artifact_only",
       "layer": "batch",
-      "source_module": ["src/experiments/sno_discriminator.js", "src/experiments/roeo_signature.js", "src/experiments/negative_controls_runner.js"],
-      "source_artifact": ["sno_report.json", "operational_equivalence.json", "negative_controls_report.json", "eo_report.json"],
-      "source_signals": ["strict and loose SNO outputs", "ROEO pair distances", "NC1_time_permutation", "NC2_self_noise_or_shift", "NC3_placebo", "NC4_leak_feature", "COG", "PHEN", "SUBJ", "EO_scalar"],
-      "downstream_artifacts": ["roeo_enforcement_report.json"],
-      "test_anchors": ["tests/sno.v1.test.js", "tests/roeo.v1.test.js", "tests/negative-controls.v1.test.js", "tests/negative-controls-nc3-placebo.v2.test.js", "tests/roeo_enforcement.v1.test.js"],
-      "gate_dependencies": ["BG_admissible_run_filter_for_roeo_sno", "BG_sno_identifiability_enforcement", "BG_negative_controls_enforcement", "GR_paper_admissibility_status"],
-      "claim_projection_dependencies": ["CP_P5_02", "CP_P5_05", "CP_P5_06"],
+      "source_module": [
+        "src/experiments/sno_discriminator.js",
+        "src/experiments/roeo_signature.js",
+        "src/experiments/negative_controls_runner.js"
+      ],
+      "source_artifact": [
+        "sno_report.json",
+        "operational_equivalence.json",
+        "negative_controls_report.json",
+        "eo_report.json"
+      ],
+      "source_signals": [
+        "strict and loose SNO outputs",
+        "ROEO pair distances",
+        "NC1_time_permutation",
+        "NC2_self_noise_or_shift",
+        "NC3_placebo",
+        "NC4_leak_feature",
+        "COG",
+        "PHEN",
+        "SUBJ",
+        "EO_scalar"
+      ],
+      "downstream_artifacts": [
+        "roeo_enforcement_report.json"
+      ],
+      "test_anchors": [
+        "tests/sno.v1.test.js",
+        "tests/roeo.v1.test.js",
+        "tests/negative-controls.v1.test.js",
+        "tests/negative-controls-nc3-placebo.v2.test.js",
+        "tests/roeo_enforcement.v1.test.js"
+      ],
+      "gate_dependencies": [
+        "BG_admissible_run_filter_for_roeo_sno",
+        "BG_sno_identifiability_enforcement",
+        "BG_negative_controls_enforcement",
+        "GR_paper_admissibility_status"
+      ],
+      "claim_projection_dependencies": [
+        "CP_P5_02",
+        "CP_P5_05",
+        "CP_P5_06"
+      ],
       "evidence_scope": "mixed",
       "external_dependency": "prereg_config",
       "status": "documented_partial",
@@ -295,11 +665,21 @@
       "id": "SOT_policy_surface",
       "kind": "not_yet_classified",
       "layer": "external",
-      "source_module": ["src/canon/sourceOfTruth.js", "scripts/verify-source-of-truth.cjs"],
+      "source_module": [
+        "src/canon/sourceOfTruth.js",
+        "scripts/verify-source-of-truth.cjs"
+      ],
       "source_artifact": [],
-      "source_signals": ["active root", "blocked roots", "verification script policy"],
+      "source_signals": [
+        "active root",
+        "blocked roots",
+        "verification script policy"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["npm run verify:source-of-truth", "tests/runtime-hygiene.test.js"],
+      "test_anchors": [
+        "npm run verify:source-of-truth",
+        "tests/runtime-hygiene.test.js"
+      ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [],
       "evidence_scope": "runtime_primary",
@@ -312,11 +692,20 @@
       "id": "DR_dimensional_registry",
       "kind": "artifact_only",
       "layer": "runtime_derived",
-      "source_module": ["src/canon/units/DimensionalRegistry.js"],
-      "source_artifact": ["dimensional_audit_report"],
-      "source_signals": ["runtime parameter expressions", "unit declarations"],
+      "source_module": [
+        "src/canon/units/DimensionalRegistry.js"
+      ],
+      "source_artifact": [
+        "dimensional_audit_report"
+      ],
+      "source_signals": [
+        "runtime parameter expressions",
+        "unit declarations"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/dimensional-registry.v1.test.js"],
+      "test_anchors": [
+        "tests/dimensional-registry.v1.test.js"
+      ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [],
       "evidence_scope": "runtime_derived",
@@ -329,11 +718,23 @@
       "id": "DR_finite_horizon_certificate",
       "kind": "artifact_only",
       "layer": "runtime_derived",
-      "source_module": ["src/canon/finite_horizon/FiniteProjectionEvaluator.js", "src/canon/finite_horizon/ApproximationBarrierReport.js"],
-      "source_artifact": ["finite_horizon_certificate"],
-      "source_signals": ["trace metrics (pmia, beth_q, omega)", "horizon", "branchFactor", "stateDimension"],
+      "source_module": [
+        "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+        "src/canon/finite_horizon/ApproximationBarrierReport.js"
+      ],
+      "source_artifact": [
+        "finite_horizon_certificate"
+      ],
+      "source_signals": [
+        "trace metrics (pmia, beth_q, omega)",
+        "horizon",
+        "branchFactor",
+        "stateDimension"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/finite-horizon-approximation-barrier.v1.test.js"],
+      "test_anchors": [
+        "tests/finite-horizon-approximation-barrier.v1.test.js"
+      ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [],
       "evidence_scope": "runtime_derived",
@@ -346,11 +747,22 @@
       "id": "DR_behavioral_pseudometric",
       "kind": "artifact_only",
       "layer": "runtime_derived",
-      "source_module": ["src/canon/metrics/BehavioralPseudometric.js"],
-      "source_artifact": ["behavioral_distance_report"],
-      "source_signals": ["leftTrace", "rightTrace", "observables", "weights"],
+      "source_module": [
+        "src/canon/metrics/BehavioralPseudometric.js"
+      ],
+      "source_artifact": [
+        "behavioral_distance_report"
+      ],
+      "source_signals": [
+        "leftTrace",
+        "rightTrace",
+        "observables",
+        "weights"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/behavioral-pseudometric.v1.test.js"],
+      "test_anchors": [
+        "tests/behavioral-pseudometric.v1.test.js"
+      ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [],
       "evidence_scope": "runtime_derived",
@@ -363,11 +775,22 @@
       "id": "DR_intervention_registry",
       "kind": "artifact_only",
       "layer": "runtime_derived",
-      "source_module": ["src/canon/interventions/InterventionRegistry.js"],
-      "source_artifact": ["intervention_registry"],
-      "source_signals": ["intervention id", "family", "parameters", "evidenceScope"],
+      "source_module": [
+        "src/canon/interventions/InterventionRegistry.js"
+      ],
+      "source_artifact": [
+        "intervention_registry"
+      ],
+      "source_signals": [
+        "intervention id",
+        "family",
+        "parameters",
+        "evidenceScope"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/behavioral-pseudometric.v1.test.js"],
+      "test_anchors": [
+        "tests/behavioral-pseudometric.v1.test.js"
+      ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [],
       "evidence_scope": "runtime_derived",
@@ -380,11 +803,19 @@
       "id": "DR_heuristic_frozen_v1",
       "kind": "artifact_only",
       "layer": "runtime_derived",
-      "source_module": ["src/canon/calibration/InvariantWeightCalibration.js"],
-      "source_artifact": ["heuristic_frozen_v1.json"],
-      "source_signals": ["invariant weights (I_per, I_ri, I_int, I_cont, I_diff, I_leg)"],
+      "source_module": [
+        "src/canon/calibration/InvariantWeightCalibration.js"
+      ],
+      "source_artifact": [
+        "heuristic_frozen_v1.json"
+      ],
+      "source_signals": [
+        "invariant weights (I_per, I_ri, I_int, I_cont, I_diff, I_leg)"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/invariant-weight-calibration.v1.test.js"],
+      "test_anchors": [
+        "tests/invariant-weight-calibration.v1.test.js"
+      ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [],
       "evidence_scope": "runtime_derived",
@@ -397,12 +828,23 @@
       "id": "DR_expanded_negative_controls",
       "kind": "artifact_only",
       "layer": "batch",
-      "source_module": ["src/experiments/negative_controls_expanded.js"],
+      "source_module": [
+        "src/experiments/negative_controls_expanded.js"
+      ],
       "source_artifact": [],
-      "source_signals": ["batch runs", "prereg hash", "tau placebo", "amplitude"],
+      "source_signals": [
+        "batch runs",
+        "prereg hash",
+        "tau placebo",
+        "amplitude"
+      ],
       "downstream_artifacts": [],
-      "test_anchors": ["tests/negative-controls-expanded.v1.test.js"],
-      "gate_dependencies": ["BG_negative_controls_enforcement"],
+      "test_anchors": [
+        "tests/negative-controls-expanded.v1.test.js"
+      ],
+      "gate_dependencies": [
+        "BG_negative_controls_enforcement"
+      ],
       "claim_projection_dependencies": [],
       "evidence_scope": "batch_primary",
       "external_dependency": "prereg_config",

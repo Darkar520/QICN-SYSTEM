@@ -154,6 +154,9 @@ export class ExperimentalEpisodeHarness {
       'tau_recovery',
       'temporal_convergence_tau_c',
       'winding_number',
+      'raw_winding_number',
+      'winding_integer',
+      'topo_factor',
       'operational_determinism_score',
       'critical_observables_deterministic',
       'causal_dependency_past',
@@ -174,6 +177,10 @@ export class ExperimentalEpisodeHarness {
     if (typeof metrics?.pmia_guardrail_state === 'string' && metrics.pmia_guardrail_state.length > 0) {
       if (!this.state.directMetricSeries.has('pmia_guardrail_state')) this.state.directMetricSeries.set('pmia_guardrail_state', []);
       this.state.directMetricSeries.get('pmia_guardrail_state').push(metrics.pmia_guardrail_state);
+    }
+    if (typeof metrics?.winding_orientation === 'string' && metrics.winding_orientation.length > 0) {
+      if (!this.state.directMetricSeries.has('winding_orientation')) this.state.directMetricSeries.set('winding_orientation', []);
+      this.state.directMetricSeries.get('winding_orientation').push(metrics.winding_orientation);
     }
   }
 
@@ -251,6 +258,13 @@ export class ExperimentalEpisodeHarness {
     };
     const criticalHashes = this.state.directMetricSeries.get('critical_state_hash') || [];
     const guardrailStates = this.state.directMetricSeries.get('pmia_guardrail_state') || [];
+    const windingOrientations = this.state.directMetricSeries.get('winding_orientation') || [];
+    const modeString = (values) => {
+      if (!values.length) return null;
+      const counts = new Map();
+      for (const value of values) counts.set(value, (counts.get(value) || 0) + 1);
+      return [...counts.entries()].sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])))[0][0];
+    };
     const hashStats = (() => {
       if (!criticalHashes.length) {
         return {
@@ -312,6 +326,10 @@ export class ExperimentalEpisodeHarness {
       tau_recovery_direct: numericMean('tau_recovery'),
       temporal_convergence_tau_c: numericMean('temporal_convergence_tau_c'),
       winding_number: numericMean('winding_number'),
+      raw_winding_number: numericMean('raw_winding_number'),
+      winding_integer: numericMean('winding_integer'),
+      winding_orientation_mode: modeString(windingOrientations),
+      topo_factor: numericMean('topo_factor'),
       operational_determinism_score: numericMean('operational_determinism_score'),
       critical_observables_deterministic_frac: numericMean('critical_observables_deterministic'),
       causal_dependency_past: numericMean('causal_dependency_past'),
@@ -385,6 +403,10 @@ export class ExperimentalEpisodeHarness {
         tau_recovery_direct: directMetricSummary.tau_recovery_direct,
         temporal_convergence_tau_c: directMetricSummary.temporal_convergence_tau_c,
         winding_number: directMetricSummary.winding_number,
+        raw_winding_number: directMetricSummary.raw_winding_number,
+        winding_integer: directMetricSummary.winding_integer,
+        winding_orientation_mode: directMetricSummary.winding_orientation_mode,
+        topo_factor: directMetricSummary.topo_factor,
         operational_determinism_score: directMetricSummary.operational_determinism_score,
         critical_observables_deterministic_frac: directMetricSummary.critical_observables_deterministic_frac,
         causal_dependency: {

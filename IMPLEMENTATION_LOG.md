@@ -75,6 +75,21 @@
 - `npm run scoreboard:run`: PASS. 7/7 dimensions passed.
 - Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >15%: none.
 
+## Fase 3: Winding Number Topology
+
+- `src/simulation/PhenomenologyCore.js`: added signed `raw_winding_number`, rounded `winding_integer`, categorical `winding_orientation`, and absolute-clamped `topo_factor`.
+- Compatibility preserved: existing `winding_number`/`holonomy_winding` remain the non-negative topological factor; `classifySystem()` accepts both the new raw winding contract and legacy mocked `winding_number` returns.
+- `src/simulation/OntologicalSingularityCore.js`: propagates the new topological fields into `ontologicalState`, reset state, `updatePhenomenology()` return payload, and `getVerifiableReport()` metrics.
+- `src/experiments/ExperimentalEpisodeHarness.js`: records numeric `raw_winding_number`, `winding_integer`, `topo_factor`, plus string `winding_orientation`, summarized as `winding_orientation_mode`.
+- Descriptor governance reviewed and updated: `docs/DESCRIPTOR_REGISTRY.md` and `docs/descriptor_registry.v1.json` now include the new direct metric/topology fields. `npm run verify:descriptor-registry` passed.
+- `tests/winding-topology.test.js`: created. It checks raw signed winding preservation, integer rounding, clockwise/counterclockwise/trivial orientation, `topo_factor`, metrics exposure, and harness summary recording.
+- Regression found and fixed: `tests/critical-observables-determinism.v41a.test.js` exposed a legacy mock path where `testHolonomy()` returned only `winding_number`. `classifySystem()` now falls back to that value when raw winding is absent.
+- `node tests/winding-topology.test.js`: PASS.
+- `npm run build`: PASS. Bundle generated successfully; `dist/bundle.js` reported around 6.7 MB in dev build mode.
+- `npm test`: PASS. 115/115 tests passed.
+- `npm run scoreboard:run`: PASS. 7/7 dimensions passed.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >15%: none.
+
 ## Fase 1: Spectral Falsification
 
 - `src/simulation/PhenomenologyCore.js`: `_estimateEigenvalues()` no longer hardcodes `const lambda_1 = 1.0` for sufficient-history windows. It now calls `_estimateDominantEigenvalue(values, mean)`.

@@ -1,5 +1,15 @@
 export { computeNc1TimePermutationEffect, computeNc3PlaceboEffect, runNegativeControlsBatch, evaluateBatchEnforcement } from './negative_controls_runner.js';
 export {
+  buildLegibilityCertificate,
+  computeCompressibility,
+  computeInterventionFidelity,
+  computeNegativeControlCoverage,
+  computeNoiseRobustness,
+  computePersistenceWindow,
+  computeSeparabilityMargin,
+  nearestCentroidDecoder
+} from './LegibilityCertifier.js';
+export {
   runPlaceboSurrogateControl,
   runAntiFreezeAblation,
   runMetricShuffleControl,

@@ -310,7 +310,8 @@
       "kind": "invariant",
       "layer": "runtime_derived",
       "source_module": [
-        "src/canon/invariants/CanonicalInvariantPackage.js"
+        "src/canon/invariants/CanonicalInvariantPackage.js",
+        "src/experiments/LegibilityCertifier.js"
       ],
       "source_artifact": [
         "invariant_package.json"
@@ -321,7 +322,8 @@
         "I_int",
         "I_cont",
         "I_diff",
-        "I_leg"
+        "I_leg",
+        "legibility_certificate.L1_L6"
       ],
       "downstream_artifacts": [
         "claim_mapping_snapshot.json",
@@ -335,7 +337,8 @@
         "tests/pmia-guardrails.v411.test.js",
         "tests/cognitive-loop-closure.v52.test.js",
         "tests/phenomenology-protocol-suite.v56.test.js",
-        "tests/runtime-hygiene.test.js"
+        "tests/runtime-hygiene.test.js",
+        "tests/legibility-certifier.test.js"
       ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [
@@ -350,7 +353,7 @@
       "external_dependency": "none",
       "status": "documented_real",
       "non_claim_boundary": "Invariant support is not external closure.",
-      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_ri includes finite-window inverse-limit compatibility only, not full inverse-limit preservation."
+      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_ri includes finite-window inverse-limit compatibility only, not full inverse-limit preservation. I_leg includes a finite L1-L6 operational certificate without promoting semantic transparency or external validation."
     },
     {
       "id": "ART_harness_admissibility_preverdict",

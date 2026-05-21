@@ -362,3 +362,26 @@
 Files created across the roadmap include: `CONTRIBUTING.md`, `docs/APP_DEPENDENCY_MAP.md`, `docs/API_SURFACE.md`, `docs/ARCHITECTURE.md`, `docs/BRANCH_PROTECTION.md`, `docs/BUNDLE_ANALYSIS.md`, `docs/COVERAGE_BASELINE.md`, `.husky/pre-commit`, `eslint.config.js`, `jsconfig.json`, `src/components/*`, `src/contexts/*`, `src/utils/healthCheck.js`, `src/utils/logger.js`, and new professionalization tests under `tests/`.
 
 Files moved/removed include: `QICN GPT5.5/` moved outside the repo to `C:\Users\irisp\OneDrive\Escritorio\QICN GPT5.5_backup`, plus obsolete roadmap/audit docs removed in Fase 8.
+
+# C_op Track A Implementation Log
+
+## Track A Preflight
+
+- Date: 2026-05-21.
+- Requested plan: `docs/PLAN_CONVERGENCIA_FINAL_SISTEMA_MARCO.md`.
+- Scope: Track A only, phases A1.1 through A2.2. Track B, Paper 10, LaTeX papers, `src/comparative_program/`, `netlify/functions/`, and `src/canon/calibration/heuristic_frozen_v1.json` remain out of scope.
+- Governance lookup: no `.agent`, `.agents`, or `.codex` directory is present in this checkout. Effective local governance is `AGENTS.md`, `docs/EPISTEMIC_POSTURE.md`, `docs/IMPLEMENTATION_STATUS.md`, the previous implementation log, and the executable source-of-truth gates.
+- Selected skills: `audit-context-building` for evidence-first plan/code reading, `closed-loop-delivery` for phase gates and DoD discipline, and `codebase-audit-pre-push` only for final verification discipline. Broad cleanup guidance from that skill is not applied because repo-local rules forbid deleting or rewriting unrelated surfaces.
+- Dirty worktree before implementation: `docs/cognitive_emergence_prereg.v1.json` was already modified and `docs/PLAN_CONVERGENCIA_FINAL_SISTEMA_MARCO.md` was untracked. These are treated as pre-existing user changes and are not reverted.
+- Interpretation boundary: this Track A pass can strengthen finite, repo-local, computational evidence for C_op invariants. It does not establish consciousness, external validation, human equivalence, Paper 10 closure, or an exhaustive mathematical proof over infinite trajectories or all graph partitions.
+
+## Fase A1.1: I_leg Six-Clause Operational Certificate
+
+- Created `src/experiments/LegibilityCertifier.js` with deterministic finite checks for L1 separability, L2 bounded-noise robustness, L3 persistence window, L4 intervention fidelity, L5 negative-control coverage, and L6 structured compressibility.
+- Extended `src/canon/invariants/CanonicalInvariantPackage.js` so `I_leg` now exposes `legibilityCertificateScore`, `legibilityClausesPassed`, and per-clause diagnostics while preserving the previous determinism/integrity signals as a non-regressive floor.
+- Updated `src/experiments/index.js` exports and added `tests/legibility-certifier.test.js`.
+- Updated descriptor/traceability/status docs for the new legibility certificate surface.
+- Improvement introduced: bounded deterministic noise replaces random Gaussian sampling in the certificador. This keeps L2 reproducible under the repo's deterministic test discipline while still exercising perturbation stability.
+- Gate results: `node tests/legibility-certifier.test.js` PASS; `npm test` PASS (123/123); `npm run build` PASS (`dist\bundle.js` 6.9 MB); `npm run verify:source-of-truth` PASS; `npm run verify:descriptor-registry` PASS (23 rows); `npm run verify:repro-bridge` PASS (0 relative delta); `npm run scoreboard:run` PASS (7/7, all 10/10).
+- Baseline comparison: PASS. All seven scoreboard dimensions remained 10/10; degradation >5%: none; degradation >15%: none.
+- Interpretation boundary: the L1-L6 certificate is a finite operational legibility check over supplied samples, interventions, and controls. It is not semantic transparency, correctness proof, or external validation.

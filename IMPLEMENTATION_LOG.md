@@ -116,3 +116,17 @@
 - `npm test`: PASS. 116/116 tests passed.
 - `npm run scoreboard:run`: PASS. 7/7 dimensions passed.
 - Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >15%: none.
+
+## Fase 4: Python-JavaScript Repro Bridge
+
+- External scripts adapted in `C:\Users\irisp\OneDrive\Escritorio\QICN-FRAMEWORK\rigid-identity-framework\repro\`: `golden_mean_shift/golden_mean_shift_q3.py`, `padic_toy/padic_ccr.py`, and `symbolic_shift/shift_ccr.py` now accept `--json` and emit `repro-bridge-output.v1` without plotting.
+- Plot imports were moved into plotting functions so `--json` does not require a graphical backend.
+- `scripts/verify-repro-bridge.cjs`: created. It resolves `QICN_FRAMEWORK_PATH` or `../../QICN-FRAMEWORK/rigid-identity-framework`, runs `golden_mean_shift_q3.py --json`, imports the runtime `PhenomenologyCore`, and compares `spectral_gap`, `contraction_norm_K`, and `relaxation_time_tau` with a 15% threshold.
+- `package.json`: added `verify:repro-bridge`.
+- `npm run verify:repro-bridge`: PASS. Golden-mean Python output matched runtime warm-up targets with relative deltas 0 for all three compared metrics.
+- `npm run build`: PASS. Bundle generated successfully; `dist/bundle.js` reported around 6.7 MB in dev build mode.
+- `npm test`: PASS. 116/116 tests passed.
+- First `npm run scoreboard:run`: FAIL on `COMPUTE_TICK_BUDGET` only. The observed p95 was far under threshold, but a single max latency spike triggered `budget_overflow_total_tick`; this was diagnosed as runtime-probe jitter rather than a code contract regression.
+- Repeat `npm run scoreboard:run`: PASS. 7/7 dimensions passed; `COMPUTE_TICK_BUDGET` returned to 10/10 with max tick 33.5306 ms and no alarms.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS after repeat. All seven dimensions remained at 10/10; degradation >15%: none.
+- External repo note: the referenced framework tree is already highly dirty/untracked, and `repro/` appears as untracked from that repo root. I did not commit the external framework repository from within this QICN-SYSTEM phase commit.

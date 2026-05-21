@@ -40,6 +40,7 @@
     "verify:comparative-program-operationalization": "node scripts/verify-comparative-program-operationalization.cjs",
     "verify:comparative-program-closure": "node scripts/verify-comparative-program-closure.cjs",
     "verify:descriptor-registry": "node scripts/validate-descriptor-registry.cjs",
+    "verify:repro-bridge": "node scripts/verify-repro-bridge.cjs",
     "verify:claim-surface-boundaries": "node scripts/verify-claim-surface-boundaries.cjs",
     "verify:artifacts": "node scripts/verify-artifacts.cjs artifacts --scope=small_batch",
     "verify:policies": "node tests/output-support-labels.v65.test.js && node tests/output-consumption-policy.v66.test.js && node tests/output-surface-policy.v67.test.js && node tests/output-surface-enforcer.v68.test.js",

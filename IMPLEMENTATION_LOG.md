@@ -101,3 +101,18 @@
 - `npm test`: PASS. 114/114 tests passed.
 - `npm run scoreboard:run`: PASS. 7/7 dimensions passed.
 - Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >15%: none.
+
+## Fase 2: Computable Inverse Limit
+
+- `src/canon/finite_horizon/FiniteProjectionEvaluator.js`: added `projectionMorphism(state_t1, state_t, epsilon)` over `ccc`, `beth_q`, `omega`, `spectral_gap`, `identity_stability`, and `hash_semantic`, plus `computeInverseLimitScore()` for finite adjacent-state compatibility over a 40-tick window.
+- Boundary decision: when a component is not recorded anywhere in the finite window, the score reports it as `unmeasuredComponents` instead of inventing values. This preserves the repo rule that unavailable evidence remains unavailable evidence.
+- `src/canon/invariants/CanonicalInvariantPackage.js`: `I_ri` now includes the finite-window `inverseLimitScore` component with the requested weight family: inverse limit 0.25, identity 0.25, predictive 0.12, self-state 0.12, hash 0.08, operational determinism 0.09, observable determinism 0.09.
+- `src/canon/calibration/heuristic_frozen_v1.json`: intentionally not modified, per plan safety rule. The heuristic freeze remains a frozen calibration artifact, not the implementation weight authority for this phase.
+- Governance updates: `docs/DESCRIPTOR_REGISTRY.md`, `docs/descriptor_registry.v1.json`, `docs/TRACEABILITY_MATRIX.md`, and `docs/IMPLEMENTATION_STATUS.md` updated to record the finite-window inverse-limit boundary and new test anchor.
+- `tests/inverse-limit.test.js`: created. It verifies compatible morphisms, high score for stable finite traces, low score for chaotic finite traces, and `I_ri` exposure of the finite inverse-limit component with explicit non-claim provenance.
+- `node tests/inverse-limit.test.js`: PASS.
+- `npm run verify:descriptor-registry`: PASS. 23 registry rows validated.
+- `npm run build`: PASS. Bundle generated successfully; `dist/bundle.js` reported around 6.7 MB in dev build mode.
+- `npm test`: PASS. 116/116 tests passed.
+- `npm run scoreboard:run`: PASS. 7/7 dimensions passed.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >15%: none.

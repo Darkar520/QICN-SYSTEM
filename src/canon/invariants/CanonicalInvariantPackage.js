@@ -1,3 +1,5 @@
+import { computeInverseLimitScore } from '../finite_horizon/FiniteProjectionEvaluator.js';
+
 const toFinite = (value, fallback = null) => {
   const n = Number(value);
   return Number.isFinite(n) ? n : fallback;
@@ -114,6 +116,13 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
   const directWinding = meanFromSummaryOrSeries(metrics?.winding_number, windingSeries);
   const directOperationalDeterminism = meanFromSummaryOrSeries(metrics?.operational_determinism_score, operationalDeterminismSeries);
   const directObservableDeterminism = meanFromSummaryOrSeries(metrics?.critical_observables_deterministic_frac, series(ticks, (tick) => tick?.metrics?.critical_observables_deterministic));
+  const inverseLimit = computeInverseLimitScore({
+    trace: ticks,
+    window: 40,
+    epsilon: 0.05,
+    summaryMetrics: metrics
+  });
+  const inverseLimitScore = toFinite(metrics?.inverse_limit_score, inverseLimit.score);
   const directCausalDependency = {
     past: meanFromSummaryOrSeries(metrics?.causal_dependency?.past, causalPastSeries),
     sensors: meanFromSummaryOrSeries(metrics?.causal_dependency?.sensors, causalSensorsSeries),
@@ -131,12 +140,13 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
   );
 
   const rigidIdentityScore = (
-    (normalizeHigher(directIdentity, 0.5, 1) * 0.38)
-    + (normalizeHigher(directPredictive, 0.5, 1) * 0.16)
-    + (normalizeHigher(directSelfState, 0.5, 1) * 0.15)
+    (normalizeHigher(inverseLimitScore, 0, 1) * 0.25)
+    + (normalizeHigher(directIdentity, 0.5, 1) * 0.25)
+    + (normalizeHigher(directPredictive, 0.5, 1) * 0.12)
+    + (normalizeHigher(directSelfState, 0.5, 1) * 0.12)
     + (normalizeHigher(hashSemanticStability, 0.45, 1) * 0.08)
-    + (normalizeHigher(directOperationalDeterminism, 0.7, 1) * 0.11)
-    + (normalizeHigher(directObservableDeterminism, 0.6, 1) * 0.12)
+    + (normalizeHigher(directOperationalDeterminism, 0.7, 1) * 0.09)
+    + (normalizeHigher(directObservableDeterminism, 0.6, 1) * 0.09)
   );
 
   const causalClosureBalance = clamp01(
@@ -183,6 +193,12 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     monotonicViolation: Boolean(flags?.monotonic_violation)
   };
   const riDirectSignals = {
+    inverseLimitScore,
+    inverseLimitEvidenceStatus: inverseLimit.evidence_status,
+    inverseLimitComponents: inverseLimit.components,
+    inverseLimitUnmeasuredComponents: inverseLimit.unmeasuredComponents,
+    inverseLimitTotalCompatibilityErrors: inverseLimit.totalCompatibilityErrors,
+    inverseLimitDenominator: inverseLimit.denominator,
     identityStabilityScore: directIdentity,
     predictiveConsistencyMean: directPredictive,
     selfStateCompleteness: directSelfState,
@@ -235,6 +251,8 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
       score: rigidIdentityScore,
       maturity: 'MOSTLY_NATIVE_WITH_NONMATERIAL_RESIDUAL',
       runtimeSignals: [
+        'metrics.inverse_limit_score',
+        'finite_horizon.inverse_limit_score',
         'metrics.identity_stability_score',
         'metrics.predictive_consistency',
         'metrics.self_state_completeness',
@@ -249,7 +267,10 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
       provenance: {
         directRuntimeContribution: Number((runtimeCoverage(riDirectSignals) ?? 0).toFixed(6)),
         residualProxyContribution: 0,
-        residualDependencies: ['critical_state_hash_semantic_stability can still under-report rigidity on ultra-short traces'],
+        residualDependencies: [
+          'inverse_limit_score is finite-window adjacent-state compatibility, not full inverse-limit preservation',
+          'critical_state_hash_semantic_stability can still under-report rigidity on ultra-short traces'
+        ],
         supportMode: 'mostly_native_with_nonmaterial_residual'
       }
     }),
@@ -348,7 +369,7 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     invariants,
     notes: [
       'Invariant scores are runtime-native composites fed by sandbox metrics and tick-level signals.',
-      'I_ri now operates as mostly native runtime semantics with a nonmaterial residual localized to ultra-short trace hash semantics.',
+      'I_ri includes a computable finite-window inverse-limit compatibility component without promoting it to full inverse-limit preservation.',
       'I_int and I_leg now operate as full-runtime-native semantics inside the sandbox path.',
       'This package internalizes the six-invariant layer without promoting claim status by itself.'
     ]

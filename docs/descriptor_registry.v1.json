@@ -331,6 +331,7 @@
       "test_anchors": [
         "tests/run-episode-admissibility.v58.test.js",
         "tests/cognitive-identity-robustness.v54.test.js",
+        "tests/inverse-limit.test.js",
         "tests/pmia-guardrails.v411.test.js",
         "tests/cognitive-loop-closure.v52.test.js",
         "tests/phenomenology-protocol-suite.v56.test.js",
@@ -349,7 +350,7 @@
       "external_dependency": "none",
       "status": "documented_real",
       "non_claim_boundary": "Invariant support is not external closure.",
-      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row."
+      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_ri includes finite-window inverse-limit compatibility only, not full inverse-limit preservation."
     },
     {
       "id": "ART_harness_admissibility_preverdict",
@@ -727,21 +728,24 @@
       ],
       "source_signals": [
         "trace metrics (pmia, beth_q, omega)",
+        "projection_morphism",
+        "inverse_limit_score",
         "horizon",
         "branchFactor",
         "stateDimension"
       ],
       "downstream_artifacts": [],
       "test_anchors": [
-        "tests/finite-horizon-approximation-barrier.v1.test.js"
+        "tests/finite-horizon-approximation-barrier.v1.test.js",
+        "tests/inverse-limit.test.js"
       ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [],
       "evidence_scope": "runtime_derived",
       "external_dependency": "none",
       "status": "documented_real",
-      "non_claim_boundary": "Finite projection certificates do not preserve full inverse-limit objects.",
-      "notes_gaps": "Implements BaseCore Theorem 5.4 boundary. assertFiniteHorizonClaimBoundary rejects full_inverse_limit_preservation."
+      "non_claim_boundary": "Finite projection certificates and finite-window inverse-limit scores do not preserve full inverse-limit objects.",
+      "notes_gaps": "Implements BaseCore Theorem 5.4 boundary plus adjacent-state compatibility scoring. assertFiniteHorizonClaimBoundary rejects full_inverse_limit_preservation."
     },
     {
       "id": "DR_behavioral_pseudometric",

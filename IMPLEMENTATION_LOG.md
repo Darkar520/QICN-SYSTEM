@@ -163,3 +163,32 @@
 - `npm run verify:source-of-truth`: PASS.
 - `.git/hooks/pre-commit` via Git shell: PASS. It ran source-of-truth verification and `npm test`.
 - `npm test`: PASS. 116/116 tests passed.
+
+## Final Audit
+
+- Date: 2026-05-21 local session time.
+- `npm test`: PASS. 116/116 tests passed.
+- `npm run build`: PASS. `dist\bundle.js` reported 6.7 MB in the current development build mode. This is consistent with the observed project build after the plan phases and does not indicate bundle collapse.
+- `npm run verify:source-of-truth`: PASS. Source-of-truth verification passed.
+- `npm run verify:descriptor-registry`: PASS. 23 registry rows validated.
+- `npm run verify:repro-bridge`: PASS. Python golden-mean repro output and runtime warm-up targets matched with relative deltas 0 for `spectral_gap`, `contraction_norm_K`, and `relaxation_time_tau`.
+- `npm run scoreboard:run`: PASS. 7/7 dimensions passed.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; score delta 0 for every dimension; degradation >15%: none.
+- Browser liveness audit at `http://localhost:3000/`: PASS. The UI loaded, clicking `Iniciar Singularidad` changed the primary control to `Detener Flujo`, CCC progressed to 0.816818 during the observed run, memory fragmentation reached 1.0000, and `Estado Ontologico` advanced from 0 to 3.
+- Browser tab audit: PASS. `Guia`, `Validacion`, `Nucleo`, `Red Nodal`, and `Historial` were opened in the in-app browser.
+- Browser console audit: PASS. 0 red console errors after startup, start click, tab traversal, and ongoing simulation. Browser warnings observed are operational warnings, not runtime exceptions.
+- Freeze remediation status: PASS. `src/config/runtimeEnv.js` has no `processEnvDirect` object and no unsafe browser `process.env.KEY` reads; runtime env access goes through the safe wrapper or build-time defines. `tests/env-sync.test.js` checks 47 runtime env keys against `build.cjs`.
+
+## Final Deviations And Boundaries
+
+- Fase 0.3 was implemented as a conservative entrypoint extraction (`src/index.jsx` bootstrap plus `src/App.jsx` runtime body), not a full eight-component split. This preserves behavior and satisfies the small-entrypoint gate while avoiding a high-risk state split inside the monolithic runtime. The remaining component decomposition is an implementation-status follow-up, not a scientific claim.
+- Fase 4 modified Python repro scripts in the external framework tree under `C:\Users\irisp\OneDrive\Escritorio\QICN-FRAMEWORK\rigid-identity-framework\repro\`. Those files are outside this repository and were not committed here.
+- One Fase 4 scoreboard run failed only on a single compute-budget max-latency spike while p95 remained far under threshold. A repeat run passed 7/7. This was recorded as runtime-probe jitter, not external validation.
+- The new finite inverse-limit score, spectral falsification estimator, winding semantics, and NC5-NC7 controls are internal repo evidence surfaces. They strengthen falsifiability and implementation support but do not constitute external validation.
+
+## Final File Inventory
+
+- Created: `IMPLEMENTATION_LOG.md`, `tests/baseline_scoreboard.json`, `tests/baseline_tests.log`, `tests/simulation-smoke.test.js`, `scripts/rollback.ps1`, `tests/env-sync.test.js`, `src/simulation/SimulationController.js`, `tests/simulation-controller.test.js`, `src/App.jsx`, `tests/spectral-falsification.test.js`, `tests/winding-topology.test.js`, `tests/inverse-limit.test.js`, `scripts/verify-repro-bridge.cjs`, `docs/EPISTEMIC_POSTURE.md`, `.github/workflows/verify.yml`.
+- Modified: `build.cjs`, `package.json`, `src/config/runtimeEnv.js`, `src/index.jsx`, `src/simulation/OntologicalSingularityCore.js`, `src/simulation/PhenomenologyCore.js`, `src/experiments/ExperimentalEpisodeHarness.js`, `src/experiments/negative_controls_expanded.js`, `src/experiments/index.js`, `src/canon/finite_horizon/FiniteProjectionEvaluator.js`, `src/canon/invariants/CanonicalInvariantPackage.js`, `src/canon/sourceOfTruth.js`, `src/utils/runtimeParameterRegistry.js`, `src/utils/narrativeIntegrity.js`, `docs/DESCRIPTOR_REGISTRY.md`, `docs/descriptor_registry.v1.json`, `docs/TRACEABILITY_MATRIX.md`, `docs/IMPLEMENTATION_STATUS.md`, `docs/ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md`, `docs/security/red_team_ccc.md`, `README.md`, and relevant test anchors.
+- Deleted: `js/simulation/`, `src/visualization/ThreeDNetwork.js`, `src/visualization/ThreeDNetwork.jsx`.
+- Installed but not versioned by Git: `.git/hooks/pre-commit`.

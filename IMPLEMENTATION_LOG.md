@@ -295,3 +295,22 @@
 - `npm run verify:descriptor-registry`: PASS. 23 registry rows validated.
 - `npm run scoreboard:run`: PASS. 7/7 dimensions, all 10/10.
 - Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >5%: none; degradation >15%: none.
+
+## Fase 13: Professional CI/CD And Portable Hooks
+
+- Installed `husky` as a dev dependency and added the `prepare` script.
+- Updated `.github/workflows/verify.yml` to use Node 20, npm cache, `npm ci`, canonical verifications, `npm run test:coverage`, build, scoreboard, and artifact upload for scoreboard and coverage outputs.
+- Created `.husky/pre-commit` with `npm run verify:source-of-truth && npm test`.
+- Created `docs/BRANCH_PROTECTION.md` with recommended status checks, up-to-date branch requirements, review expectations, and force-push/deletion protections.
+- Created `tests/ci-professionalization.test.js` to keep CI, Husky, and branch-protection expectations under automated source contract.
+- `node tests/ci-professionalization.test.js`: PASS.
+- `npx eslint src/ --max-warnings=50`: PASS with 2 warnings, both unused historical `react-hooks/exhaustive-deps` disable comments.
+- `npm test`: PASS. 121/121 tests passed.
+- `npm run build`: PASS. `dist\bundle.js` reported 6.9 MB.
+- `npm run verify:source-of-truth`: PASS.
+- `npm run verify:descriptor-registry`: PASS. 23 registry rows validated.
+- `npm run test:coverage`: PASS. 121/121 tests passed; global coverage remained above thresholds: statements 77.53%, branches 63.82%, functions 81.99%, lines 77.53%.
+- `npm run scoreboard:run`: PASS when run sequentially. 7/7 dimensions, all 10/10.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >5%: none; degradation >15%: none.
+- Decision/deviation: a parallel `npm run test:coverage` plus `npm run scoreboard:run` attempt transiently failed `tests/quantum-entropy-experimental-controls.v63.test.js` because both processes execute provider-mock entropy paths at the same time. The isolated test, sequential coverage run, and sequential scoreboard run all passed; the gate is recorded from the sequential evidence.
+- Boundary note: `npm install --save-dev husky` again reported 7 vulnerabilities and EBADENGINE under local Node v24.6.0 versus the declared Node 20.x. No `npm audit fix` was applied because dependency remediation is outside this phase and could change runtime behavior.

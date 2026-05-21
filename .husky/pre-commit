@@ -1,0 +1,1 @@
+npm run verify:source-of-truth && npm test

@@ -98,7 +98,8 @@
     "verify:stage3-runtime-health": "node scripts/verify-stage3-runtime-health.cjs",
     "verify:stage3-first-collection-opening": "node scripts/verify-stage3-first-collection-opening.cjs",
     "benchmark:invariants": "node scripts/benchmark-invariants.cjs",
-    "test:coverage": "c8 --reporter=text --reporter=json --lines=50 --branches=40 --functions=50 node tests/run-all-tests.cjs"
+    "test:coverage": "c8 --reporter=text --reporter=json --lines=50 --branches=40 --functions=50 node tests/run-all-tests.cjs",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -110,6 +111,7 @@
     "esbuild": "^0.25.11",
     "eslint": "^10.4.0",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "husky": "^9.1.7",
     "serve": "^14.2.5",
     "tailwindcss": "^3.4.19"
   },

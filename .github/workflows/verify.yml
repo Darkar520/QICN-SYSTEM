@@ -10,10 +10,31 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
       - run: npm ci
+
+      # Canonical verification
       - run: npm run verify:source-of-truth
       - run: npm run verify:descriptor-registry
       - run: npm run verify:repro-bridge
-      - run: npm test
+
+      # Tests and coverage thresholds
+      - run: npm run test:coverage
+
+      # Build and internal scoreboard
       - run: npm run build
       - run: npm run scoreboard:run
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scoreboard-results
+          path: docs/phase4_scoreboard.latest.json
+          retention-days: 30
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7

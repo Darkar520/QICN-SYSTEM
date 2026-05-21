@@ -311,6 +311,7 @@
       "layer": "runtime_derived",
       "source_module": [
         "src/canon/invariants/CanonicalInvariantPackage.js",
+        "src/canon/persistence/PersistenceCertifier.js",
         "src/experiments/LegibilityCertifier.js"
       ],
       "source_artifact": [
@@ -318,6 +319,8 @@
       ],
       "source_signals": [
         "I_per",
+        "persistence_certificate.forward_invariance",
+        "persistence_certificate.min_collapse_distance",
         "I_ri",
         "I_int",
         "I_cont",
@@ -332,6 +335,7 @@
       ],
       "test_anchors": [
         "tests/run-episode-admissibility.v58.test.js",
+        "tests/persistence-forward-invariance.test.js",
         "tests/cognitive-identity-robustness.v54.test.js",
         "tests/inverse-limit.test.js",
         "tests/pmia-guardrails.v411.test.js",
@@ -353,7 +357,7 @@
       "external_dependency": "none",
       "status": "documented_real",
       "non_claim_boundary": "Invariant support is not external closure.",
-      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_ri includes finite-window inverse-limit compatibility only, not full inverse-limit preservation. I_leg includes a finite L1-L6 operational certificate without promoting semantic transparency or external validation."
+      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_per includes finite forward-invariance and collapse-distance certification, not an analytic proof over all controls. I_ri includes finite-window inverse-limit compatibility only, not full inverse-limit preservation. I_leg includes a finite L1-L6 operational certificate without promoting semantic transparency or external validation."
     },
     {
       "id": "ART_harness_admissibility_preverdict",

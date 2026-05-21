@@ -385,3 +385,14 @@ Files moved/removed include: `QICN GPT5.5/` moved outside the repo to `C:\Users\
 - Gate results: `node tests/legibility-certifier.test.js` PASS; `npm test` PASS (123/123); `npm run build` PASS (`dist\bundle.js` 6.9 MB); `npm run verify:source-of-truth` PASS; `npm run verify:descriptor-registry` PASS (23 rows); `npm run verify:repro-bridge` PASS (0 relative delta); `npm run scoreboard:run` PASS (7/7, all 10/10).
 - Baseline comparison: PASS. All seven scoreboard dimensions remained 10/10; degradation >5%: none; degradation >15%: none.
 - Interpretation boundary: the L1-L6 certificate is a finite operational legibility check over supplied samples, interventions, and controls. It is not semantic transparency, correctness proof, or external validation.
+
+## Fase A1.2: I_per Forward-Invariance And Collapse Distance
+
+- Created `src/canon/persistence/PersistenceCertifier.js` with explicit support bounds for `A_S`, deterministic bounded perturbation sampling, finite forward-invariance trials, and collapse-set distance measurement.
+- Extended `src/canon/invariants/CanonicalInvariantPackage.js` so `I_per` exposes `forwardInvariant`, `forwardInvarianceTrials`, `forwardInvarianceEscapeRate`, `minCollapseDistance`, and `persistenceCertificateScore`.
+- Added `tests/persistence-forward-invariance.test.js` with the requested 10,000-trial gate and `min_collapse_distance > 0` assertion.
+- Updated descriptor/traceability/status docs for the persistence certificate surface.
+- Improvement introduced: the collapse distance is measured as Euclidean distance from the collapse box, so healthy trajectories have positive distance and collapsed trajectories have zero distance. This is mathematically tighter than a one-sided threshold deficit that would return zero for already healthy states.
+- Gate results: `node tests/persistence-forward-invariance.test.js` PASS; `npm test` PASS (124/124); `npm run build` PASS (`dist\bundle.js` 6.9 MB); `npm run verify:source-of-truth` PASS; `npm run verify:descriptor-registry` PASS (23 rows); `npm run verify:repro-bridge` PASS (0 relative delta); `npm run scoreboard:run` PASS (7/7, all 10/10).
+- Baseline comparison: PASS. All seven scoreboard dimensions remained 10/10; degradation >5%: none; degradation >15%: none.
+- Interpretation boundary: the certificate is finite, sampled, and operational. It does not prove compact forward-invariance for every admissible control sequence or every possible trajectory.

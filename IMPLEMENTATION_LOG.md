@@ -147,3 +147,10 @@
 - `npm test`: PASS. 116/116 tests passed.
 - `npm run scoreboard:run`: PASS. 7/7 dimensions passed.
 - Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >15%: none.
+
+## Fase 6: Epistemic Posture
+
+- `docs/EPISTEMIC_POSTURE.md`: created. It separates ontology, mathematical model, implementation, language, and interpretation; defines `ROBUST_INTERNAL_SUPPORT`, `PROVISIONAL_SUPPORT`, and `SCAFFOLD_AWAITING_DATA`; and documents the ANTI-FREEZE warm-up boundary for `beth_q` and `spectral_gap`.
+- `README.md`: added an Epistemic Posture section linking to the new document and restating that internal support labels do not imply external validation.
+- Gate check: PASS. The document exists and includes the requested taxonomy and ANTI-FREEZE paragraph.
+- `npm test`: PASS. 116/116 tests passed.

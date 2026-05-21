@@ -61,6 +61,14 @@ npm run scoreboard:run
 - It does not claim consciousness, subjective phenomenology, or identity beyond what is operationally defined and tested.
 - It does not claim deployment security beyond the configurations, defaults, and tests explicitly verified in this repository.
 
+## Epistemic Posture
+
+See [`docs/EPISTEMIC_POSTURE.md`](docs/EPISTEMIC_POSTURE.md).
+
+This repository treats invariants as computational estimators and keeps ontology, mathematical model, implementation, language, and interpretation separate. Internal statuses such as `ROBUST_INTERNAL_SUPPORT`, `PROVISIONAL_SUPPORT`, and `SCAFFOLD_AWAITING_DATA` do not imply external validation.
+
+ANTI-FREEZE warm-up values for `beth_q` and `spectral_gap` are engineering safeguards during short-history startup. They must not be reported as strict BaseCore estimators until enough runtime history exists.
+
 ## Selected Repository Policy
 
 - Version by default: source, required configuration, reproducible scripts, tests, and engineering docs.

@@ -2450,8 +2450,12 @@ export class SensoryPerceptionEngine {
 
         } catch (e) {
             this.permissionStatus.video = 'denied';
-            console.error('❌ Error inicializando video:', e.message);
-            console.error('Detalles:', e);
+            const expectedVideoUnavailable =
+                ['NotAllowedError', 'NotFoundError', 'NotReadableError', 'SecurityError'].includes(e?.name)
+                || /permission|denied|not found|device/i.test(String(e?.message || ''));
+            const logVideoUnavailable = expectedVideoUnavailable ? console.warn : console.error;
+            logVideoUnavailable('❌ Error inicializando video:', e.message);
+            logVideoUnavailable('Detalles:', e);
             this.evaluateSyntheticFallback();
             return false;
         }

@@ -11,9 +11,7 @@ const parseArg = (name, fallback = null) => {
   const outputRoot = parseArg('output-root', 'artifacts/roeo_batches');
   const withSno = String(parseArg('with-sno', 'true')).toLowerCase() !== 'false';
   const withNc = String(parseArg('with-nc', 'false')).toLowerCase() === 'true';
-  const { evaluateRoeoBatch } = await import('../src/experiments/roeo_signature.js');
-  const { evaluateSnoBatch } = await import('../src/experiments/sno_discriminator.js');
-  const { runNegativeControlsBatch, evaluateBatchEnforcement } = await import('../src/experiments/negative_controls_runner.js');
+  const { evaluateRoeoBatch, evaluateSnoBatch, runNegativeControlsBatch, evaluateBatchEnforcement } = await import('../src/experiments/index.js');
   const { outPath, payload } = evaluateRoeoBatch({
     preregPath: path.resolve(preregPath),
     batchId,

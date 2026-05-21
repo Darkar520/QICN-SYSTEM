@@ -7,6 +7,7 @@ const assert = (condition, message) => {
 
 (async () => {
   const { runWithLivenessInvariant, recoverIfEmpty } = await import('../src/utils/tick_invariants.js');
+  const { readFileSync } = await import('fs');
 
   // L1: step increments exactly once per tick, even with early return or exceptions
   const N = 50;
@@ -101,6 +102,24 @@ const assert = (condition, message) => {
   });
   assert(recoveryCounterRef.current === 1, 'recoveryTriggers must not increment when not empty');
   assert(recovered2.recoveryTriggered === false, 'recoveryTriggered must be false when not empty');
+
+  // Runtime liveness regression: workspace snapshot inputs must be initialized
+  // before buildWorkspaceSnapshot runs, otherwise the browser tick loop hits TDZ.
+  const indexText = readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8');
+  const workspaceSnapshotIndex = indexText.indexOf('const workspaceSnapshot = buildWorkspaceSnapshot');
+  const renderErrorCodeIndex = indexText.indexOf('const renderErrorCode = typeof canvasTelemetry.render_error_code');
+  const clampHitsIndex = indexText.indexOf('const clampHits = Number.isFinite(canvasTelemetry.clampHits)');
+  assert(workspaceSnapshotIndex > -1, 'index.jsx must build a workspaceSnapshot during runtime ticks');
+  assert(renderErrorCodeIndex > -1, 'index.jsx must derive renderErrorCode for runtime tick telemetry');
+  assert(clampHitsIndex > -1, 'index.jsx must derive clampHits for runtime tick telemetry');
+  assert(
+    renderErrorCodeIndex < workspaceSnapshotIndex,
+    'renderErrorCode must be initialized before buildWorkspaceSnapshot uses it'
+  );
+  assert(
+    clampHitsIndex < workspaceSnapshotIndex,
+    'clampHits must be initialized before buildWorkspaceSnapshot uses it'
+  );
 
   console.log('OK: liveness tests passed');
 })().catch((err) => {

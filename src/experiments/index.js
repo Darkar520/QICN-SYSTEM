@@ -1,5 +1,13 @@
 export { computeNc1TimePermutationEffect, computeNc3PlaceboEffect, runNegativeControlsBatch, evaluateBatchEnforcement } from './negative_controls_runner.js';
-export { runPlaceboSurrogateControl, runAntiFreezeAblation, runMetricShuffleControl, runAdversarialDriftControl } from './negative_controls_expanded.js';
+export {
+  runPlaceboSurrogateControl,
+  runAntiFreezeAblation,
+  runMetricShuffleControl,
+  runAdversarialDriftControl,
+  runSpectralDecayControl,
+  runInverseLimitRuptureControl,
+  runTrivialTopologyControl
+} from './negative_controls_expanded.js';
 export { computeSignatureFromArtifacts, computeDistance, evaluateRoeoBatch } from './roeo_signature.js';
 export { evaluateSnoBatch } from './sno_discriminator.js';
 export { AdmissibilityEngine, exportPaperAssets } from './AdmissibilityEngine.js';

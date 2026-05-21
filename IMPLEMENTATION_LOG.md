@@ -130,3 +130,20 @@
 - Repeat `npm run scoreboard:run`: PASS. 7/7 dimensions passed; `COMPUTE_TICK_BUDGET` returned to 10/10 with max tick 33.5306 ms and no alarms.
 - Baseline comparison against `tests/baseline_scoreboard.json`: PASS after repeat. All seven dimensions remained at 10/10; degradation >15%: none.
 - External repo note: the referenced framework tree is already highly dirty/untracked, and `repro/` appears as untracked from that repo root. I did not commit the external framework repository from within this QICN-SYSTEM phase commit.
+
+## Fase 5: Expanded Negative Controls NC5-NC7
+
+- `src/experiments/negative_controls_expanded.js`: added `runSpectralDecayControl`, `runInverseLimitRuptureControl`, and `runTrivialTopologyControl`.
+- NC5 result: deterministic exponential decay produces `lambda_1 = 0.82` and `dominant_mode = DOMINANT_MODE_DECAY`.
+- NC6 result: deterministic chaotic alternation produces `inverse_limit_score = 0`, lowers `I_ri` from 0.868693 to 0.543818, and records 234 compatibility errors.
+- NC7 result: monotone linear topology reports `winding_integer = 0`, `winding_orientation = trivial`, `topo_factor = 0`, and `omega = 0`.
+- Regression found and fixed: monotone linear trajectories were producing artificial signed winding from phase-space geometry. `src/simulation/PhenomenologyCore.js` now treats derivative sign with no oscillation as topologically trivial instead of a cycle.
+- `src/experiments/index.js`: exports the three new expanded controls.
+- Governance updates: `docs/ADMISSIBILITY_GATES_AND_NEGATIVE_CONTROLS.md`, `docs/DESCRIPTOR_REGISTRY.md`, `docs/descriptor_registry.v1.json`, `docs/TRACEABILITY_MATRIX.md`, `docs/IMPLEMENTATION_STATUS.md`, and `docs/security/red_team_ccc.md` updated to reflect NC5-NC7 without promoting them to external falsification.
+- `node tests/negative-controls-expanded.v1.test.js`: PASS.
+- `node tests/winding-topology.test.js`: PASS.
+- `npm run verify:descriptor-registry`: PASS. 23 registry rows validated.
+- `npm run build`: PASS. Bundle generated successfully; `dist/bundle.js` reported around 6.7 MB in dev build mode.
+- `npm test`: PASS. 116/116 tests passed.
+- `npm run scoreboard:run`: PASS. 7/7 dimensions passed.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >15%: none.

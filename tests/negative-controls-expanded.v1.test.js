@@ -2,7 +2,10 @@ import {
   runPlaceboSurrogateControl,
   runAntiFreezeAblation,
   runMetricShuffleControl,
-  runAdversarialDriftControl
+  runAdversarialDriftControl,
+  runSpectralDecayControl,
+  runInverseLimitRuptureControl,
+  runTrivialTopologyControl
 } from '../src/experiments/negative_controls_expanded.js';
 
 const assert = (condition, message) => {
@@ -27,6 +30,22 @@ const assert = (condition, message) => {
   const drift = runAdversarialDriftControl({ values: [0.5, 0.5, 0.5], driftSpec: { amplitude: 0.2, mode: 'blind' } });
   assert(drift.mode === 'blind', 'CASE 5 FAIL: drift control must preserve adversary mode.');
   assert(drift.max_abs_delta === 0.2, 'CASE 6 FAIL: drift amplitude should be reported exactly.');
+
+  const spectral = runSpectralDecayControl();
+  assert(spectral.pass, 'CASE 7 FAIL: NC5 spectral decay should pass falsification control.');
+  assert(spectral.lambda_1 < 0.9, 'CASE 8 FAIL: NC5 must detect lambda_1 < 0.9.');
+  assert(spectral.dominant_mode === 'DOMINANT_MODE_DECAY', 'CASE 9 FAIL: NC5 must emit DOMINANT_MODE_DECAY.');
+
+  const inverseLimit = runInverseLimitRuptureControl();
+  assert(inverseLimit.pass, 'CASE 10 FAIL: NC6 inverse-limit rupture should pass.');
+  assert(inverseLimit.inverse_limit_score < 0.2, 'CASE 11 FAIL: NC6 must force inverse_limit_score < 0.20.');
+  assert(inverseLimit.I_ri_drop > 0, 'CASE 12 FAIL: NC6 must lower I_ri versus stable baseline.');
+
+  const topology = runTrivialTopologyControl();
+  assert(topology.pass, 'CASE 13 FAIL: NC7 trivial topology should pass.');
+  assert(topology.winding_integer === 0, 'CASE 14 FAIL: NC7 must keep winding_integer at 0.');
+  assert(topology.winding_orientation === 'trivial', 'CASE 15 FAIL: NC7 must classify orientation as trivial.');
+  assert(topology.omega <= 0.05, 'CASE 16 FAIL: NC7 must keep Omega near 0.');
 
   console.log('OK: negative-controls-expanded.v1 tests passed');
 })();

@@ -434,9 +434,8 @@ export class PhenomenologyCore {
             signedWindingSum += winding;
         });
 
-        const winding_score = absoluteWindingSum / (paths.length || 1);
-        const raw_winding_number = signedWindingSum / (paths.length || 1);
-        const windingDiagnostics = this._setWindingDiagnostics(raw_winding_number);
+        const preliminaryWindingScore = absoluteWindingSum / (paths.length || 1);
+        const preliminaryRawWinding = signedWindingSum / (paths.length || 1);
         const recentWindow = this.stateHistory.slice(-Math.max(20, this.config.SPECTRAL_WINDOW));
         let signChanges = 0;
         let derivativeCount = 0;
@@ -450,6 +449,10 @@ export class PhenomenologyCore {
             derivativeCount++;
         }
         const oscillation_score = derivativeCount > 1 ? signChanges / (derivativeCount - 1) : 0;
+        const monotonicLinearPath = derivativeCount > 3 && signChanges === 0;
+        const winding_score = monotonicLinearPath ? 0 : preliminaryWindingScore;
+        const raw_winding_number = monotonicLinearPath ? 0 : preliminaryRawWinding;
+        const windingDiagnostics = this._setWindingDiagnostics(raw_winding_number);
         const topology_score = Math.max(0, Math.min(1, (winding_score * 0.75) + (oscillation_score * 0.25)));
 
         // H1' Requisito: Topologia no trivial.

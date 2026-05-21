@@ -12,4 +12,4 @@
 
 ## Regla de salida
 
-[MODELO] Ningun resultado dependiente de CCC debe considerarse claim fuerte hasta ejecutar ablations y controles adversariales, especialmente NC6 anti-freeze.
+[MODELO] Ningun resultado dependiente de CCC debe considerarse claim fuerte hasta ejecutar ablations y controles adversariales, incluyendo el helper anti-freeze y NC6 inverse-limit rupture.

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-21T17:12:19.591Z",
+  "generatedAt": "2026-05-21T17:24:28.599Z",
   "specVersion": "v1.1.0",
   "preregistrationId": "CEOP-2026-02-27-v1.1",
   "frozenActuatorSetVersion": "A-2026-02-27-v1.1",
@@ -338,5 +338,5 @@
     "npm run build",
     "npm run scoreboard:run"
   ],
-  "preregChecksum": "a9efd9a264b8503f2ea4859ca78d783b36bca1ed9ee397ada65af8d1cb3083c1"
+  "preregChecksum": "b1430d7963f3e931e80246885f51c42aed0c19fd01986ab274d5db0135b1b09f"
 }

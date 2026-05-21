@@ -313,6 +313,7 @@
         "src/canon/invariants/CanonicalInvariantPackage.js",
         "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
         "src/canon/persistence/PersistenceCertifier.js",
+        "src/experiments/NonFactorizationProver.js",
         "src/experiments/LegibilityCertifier.js",
         "src/simulation/PhenomenologyCore.js"
       ],
@@ -328,6 +329,9 @@
         "finite_horizon.categorical_compatibility",
         "finite_horizon.approximation_error_bound",
         "I_int",
+        "integration.non_factorizable",
+        "integration.factorization_candidates_tested",
+        "integration.factorizations_found",
         "I_cont",
         "phenomenology.Pi_S",
         "phenomenology.fragmentation_functional",
@@ -348,6 +352,7 @@
         "tests/inverse-limit.test.js",
         "tests/inverse-limit-formal.test.js",
         "tests/pmia-guardrails.v411.test.js",
+        "tests/non-factorization.test.js",
         "tests/cognitive-loop-closure.v52.test.js",
         "tests/continuity-formal.test.js",
         "tests/phenomenology-protocol-suite.v56.test.js",
@@ -367,7 +372,7 @@
       "external_dependency": "none",
       "status": "documented_real",
       "non_claim_boundary": "Invariant support is not external closure.",
-      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_per includes finite forward-invariance and collapse-distance certification, not an analytic proof over all controls. I_cont includes finite Pi_S projection and fragmentation-functional diagnostics, not complete metric-space continuity. I_ri includes finite-window inverse-limit witness, categorical compatibility, and truncation-error diagnostics only, not full inverse-limit preservation. I_leg includes a finite L1-L6 operational certificate without promoting semantic transparency or external validation."
+      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_per includes finite forward-invariance and collapse-distance certification, not an analytic proof over all controls. I_cont includes finite Pi_S projection and fragmentation-functional diagnostics, not complete metric-space continuity. I_ri includes finite-window inverse-limit witness, categorical compatibility, and truncation-error diagnostics only, not full inverse-limit preservation. I_int includes finite candidate non-factorization diagnostics, not exhaustive non-factorization over all partitions. I_leg includes a finite L1-L6 operational certificate without promoting semantic transparency or external validation."
     },
     {
       "id": "ART_harness_admissibility_preverdict",
@@ -854,7 +859,8 @@
       "kind": "artifact_only",
       "layer": "batch",
       "source_module": [
-        "src/experiments/negative_controls_expanded.js"
+        "src/experiments/negative_controls_expanded.js",
+        "src/experiments/NonFactorizationProver.js"
       ],
       "source_artifact": [],
       "source_signals": [
@@ -862,6 +868,10 @@
         "inverse_limit_score_rupture",
         "trivial_topology",
         "null_regime_instability",
+        "degree_partition_factorization",
+        "coherence_partition_factorization",
+        "random_balanced_factorization",
+        "community_partition_factorization",
         "batch runs",
         "prereg hash",
         "tau placebo",
@@ -873,7 +883,8 @@
         "tests/spectral-falsification.test.js",
         "tests/inverse-limit.test.js",
         "tests/winding-topology.test.js",
-        "tests/null-regime-instability.test.js"
+        "tests/null-regime-instability.test.js",
+        "tests/non-factorization.test.js"
       ],
       "gate_dependencies": [
         "BG_negative_controls_enforcement"
@@ -883,7 +894,7 @@
       "external_dependency": "prereg_config",
       "status": "documented_real",
       "non_claim_boundary": "Expanded controls are internal adversarial checks, not external falsification.",
-      "notes_gaps": "Adds NC5 spectral decay, NC6 finite inverse-limit rupture, NC7 trivial topology, NC8 null-regime instability, plus legacy placebo/ablation/shuffle/drift helpers."
+      "notes_gaps": "Adds NC5 spectral decay, NC6 finite inverse-limit rupture, NC7 trivial topology, NC8 null-regime instability, NC9-NC12 finite factorization searches, plus legacy placebo/ablation/shuffle/drift helpers."
     }
   ]
 }

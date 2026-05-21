@@ -3,6 +3,7 @@
 import { computeInverseLimitScore } from '../finite_horizon/FiniteProjectionEvaluator.js';
 import { buildPersistenceCertificate } from '../persistence/PersistenceCertifier.js';
 import { buildLegibilityCertificate } from '../../experiments/LegibilityCertifier.js';
+import { verifyNonFactorization } from '../../experiments/NonFactorizationProver.js';
 
 /**
  * @typedef {Object} InvariantRecord
@@ -242,6 +243,7 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
 
   const stasisSeries = series(ticks, (tick) => tick?.metrics?.stasis_index);
   const predictiveSeries = series(ticks, (tick) => tick?.metrics?.predictive_consistency);
+  const cccSeries = series(ticks, (tick) => tick?.metrics?.ccc);
   const pmiaSeries = series(ticks, (tick) => tick?.metrics?.pmia);
   const omegaSeries = series(ticks, (tick) => tick?.metrics?.omega_mean ?? tick?.metrics?.omega);
   const bethSeries = series(ticks, (tick) => tick?.metrics?.beth_q);
@@ -266,9 +268,11 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
   const hashLongestRunRatio = toFinite(metrics?.critical_state_hash_longest_run_ratio, null);
   const hashTransitionDensity = toFinite(metrics?.critical_state_hash_transition_density, null);
   const directStasis = meanFromSummaryOrSeries(metrics?.stasis_index, stasisSeries);
+  const directCCC = meanFromSummaryOrSeries(metrics?.ccc, cccSeries);
   const directPMIA = meanFromSummaryOrSeries(metrics?.pmia, pmiaSeries);
   const directSpectralGap = meanFromSummaryOrSeries(metrics?.spectral_gap, spectralGapSeries);
   const directBethQ = meanFromSummaryOrSeries(metrics?.beth_q, bethSeries);
+  const directOmega = meanFromSummaryOrSeries(metrics?.omega_mean ?? metrics?.omega, omegaSeries);
   const directTauC = meanFromSummaryOrSeries(metrics?.temporal_convergence_tau_c, temporalConvergenceSeries);
   const directWinding = meanFromSummaryOrSeries(metrics?.winding_number, windingSeries);
   const directOperationalDeterminism = meanFromSummaryOrSeries(metrics?.operational_determinism_score, operationalDeterminismSeries);
@@ -331,7 +335,7 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
       + toFinite(directCausalDependency.prompts, 0))
       - toFinite(directCausalDependency.noise, 0)
   );
-  const integrationScore = (
+  const legacyIntegrationScore = (
     (normalizeHigher(directPMIA, 0, 0.2) * 0.32)
     + (normalizeHigher(directSpectralGap, 0, 0.25) * 0.18)
     + (normalizeHigher(directBethQ, 0.4, 1) * 0.15)
@@ -339,6 +343,18 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     + (normalizeLower(directWmError, 0, 0.3) * 0.1)
     + (normalizeHigher(guardrailOkFrac, 0.5, 1) * 0.1)
   );
+  const nonFactorization = verifyNonFactorization(null, {
+    ccc: directCCC ?? 0.72,
+    beth_q: directBethQ ?? 0.71,
+    omega: directOmega ?? 0.74
+  }, { candidates: 4, tolerance: 0.10, ticks: 50 });
+  const formalIntegrationScore = (
+    (legacyIntegrationScore * 0.75)
+    + (Number(nonFactorization.non_factorizable) * 0.15)
+    + (normalizeHigher(nonFactorization.candidates_tested, 1, 4) * 0.05)
+    + (normalizeLower(nonFactorization.factorizations_found, 0, 1) * 0.05)
+  );
+  const integrationScore = Math.max(legacyIntegrationScore, formalIntegrationScore);
 
   const continuityScore = (
     (normalizeHigher(mean(predictiveSeries) ?? metrics?.predictive_consistency, 0.5, 1) * 0.7)
@@ -408,14 +424,20 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     criticalObservablesDeterministicFrac: directObservableDeterminism
   };
   const intDirectSignals = {
+    cccMean: directCCC,
     pmiaMean: directPMIA,
     spectralGap: directSpectralGap,
     bethQMean: directBethQ,
+    omegaMean: directOmega,
     causalDependency: directCausalDependency,
     guardrailOkFrac,
     temporalConvergenceTauC: directTauC,
     windingNumber: directWinding,
-    wmPredErrorMean: directWmError
+    wmPredErrorMean: directWmError,
+    nonFactorizable: nonFactorization.non_factorizable,
+    factorizationCandidatesTested: nonFactorization.candidates_tested,
+    factorizationsFound: nonFactorization.factorizations_found,
+    nonFactorizationDiagnostics: nonFactorization.results
   };
   const legDirectSignals = {
     schemaDrift: Boolean(flags?.schema_drift),
@@ -497,6 +519,9 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
         'metrics.spectral_gap',
         'metrics.beth_q',
         'metrics.causal_dependency.*',
+        'integration.non_factorizable',
+        'integration.factorization_candidates_tested',
+        'integration.factorizations_found',
         'metrics.pmia_guardrail_ok_frac',
         'observability.wm_pred_error'
       ],
@@ -505,7 +530,9 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
       provenance: {
         directRuntimeContribution: Number((runtimeCoverage(intDirectSignals) ?? 0).toFixed(6)),
         residualProxyContribution: 0,
-        residualDependencies: [],
+        residualDependencies: [
+          nonFactorization.interpretation_boundary
+        ],
         supportMode: 'full_runtime_native'
       }
     }),

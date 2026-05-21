@@ -5,6 +5,13 @@ import { computeInverseLimitScore } from '../canon/finite_horizon/FiniteProjecti
 import { buildCanonicalInvariantPackage } from '../canon/invariants/CanonicalInvariantPackage.js';
 import { PhenomenologyCore } from '../simulation/PhenomenologyCore.js';
 import { sha256Hex } from '../utils/integrity.js';
+import {
+  generateCoherencePartition,
+  generateCommunityPartition,
+  generateDegreePartition,
+  generateRandomBalancedPartition,
+  verifyNonFactorization
+} from './NonFactorizationProver.js';
 
 /**
  * @typedef {Object} NegativeControlResult
@@ -241,6 +248,95 @@ export const runNullRegimeInstabilityControl = ({ simController = null, ticks = 
     interpretation_boundary: 'Computational null-regime instability check for this runtime path; not a proof for all possible discrete realizations.'
   };
 };
+
+const runFactorizationControl = ({
+  control,
+  expected,
+  strategy,
+  nodeGraph = null,
+  baselineMetrics = null,
+  partitionFactory
+}) => {
+  const partition = partitionFactory(nodeGraph);
+  const proof = verifyNonFactorization(nodeGraph, baselineMetrics, {
+    candidates: 1,
+    partitions: [partition],
+    ticks: 50,
+    tolerance: 0.10
+  });
+
+  return {
+    control,
+    expected,
+    strategy,
+    pass: proof.non_factorizable,
+    non_factorizable: proof.non_factorizable,
+    candidates_tested: proof.candidates_tested,
+    factorizations_found: proof.factorizations_found,
+    partition_result: proof.results[0],
+    interpretation_boundary: 'Internal finite partition falsification control; not exhaustive proof over all graph partitions.'
+  };
+};
+
+export const runDegreePartitionFactorizationControl = ({
+  nodeGraph = null,
+  baselineMetrics = null
+} = {}) => runFactorizationControl({
+  control: 'NC9_degree_partition_factorization',
+  expected: 'no_high_degree_or_low_degree_block_preserves_baseline',
+  strategy: 'degree',
+  nodeGraph,
+  baselineMetrics,
+  partitionFactory: generateDegreePartition
+});
+
+export const runCoherencePartitionFactorizationControl = ({
+  nodeGraph = null,
+  baselineMetrics = null
+} = {}) => runFactorizationControl({
+  control: 'NC10_coherence_partition_factorization',
+  expected: 'no_high_coherence_or_low_coherence_block_preserves_baseline',
+  strategy: 'coherence',
+  nodeGraph,
+  baselineMetrics,
+  partitionFactory: generateCoherencePartition
+});
+
+export const runRandomBalancedFactorizationControl = ({
+  nodeGraph = null,
+  baselineMetrics = null,
+  seed = 'NC11'
+} = {}) => runFactorizationControl({
+  control: 'NC11_random_balanced_factorization',
+  expected: 'no_random_balanced_block_preserves_baseline',
+  strategy: 'random_balanced',
+  nodeGraph,
+  baselineMetrics,
+  partitionFactory: (graph) => generateRandomBalancedPartition(graph, seed)
+});
+
+export const runCommunityPartitionFactorizationControl = ({
+  nodeGraph = null,
+  baselineMetrics = null,
+  seed = 'NC12'
+} = {}) => runFactorizationControl({
+  control: 'NC12_community_partition_factorization',
+  expected: 'no_community_block_preserves_baseline',
+  strategy: 'community',
+  nodeGraph,
+  baselineMetrics,
+  partitionFactory: (graph) => generateCommunityPartition(graph, seed)
+});
+
+export const runFactorizationSearchControls = ({
+  nodeGraph = null,
+  baselineMetrics = null
+} = {}) => [
+  runDegreePartitionFactorizationControl({ nodeGraph, baselineMetrics }),
+  runCoherencePartitionFactorizationControl({ nodeGraph, baselineMetrics }),
+  runRandomBalancedFactorizationControl({ nodeGraph, baselineMetrics }),
+  runCommunityPartitionFactorizationControl({ nodeGraph, baselineMetrics })
+];
 
 export const runPlaceboSurrogateControl = ({ runs, seed, tauPlacebo = 0.02 }) => {
   const result = computeNc3PlaceboEffect({ runs, preregHash: seed, tauPlacebo });

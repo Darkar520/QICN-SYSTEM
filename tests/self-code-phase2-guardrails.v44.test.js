@@ -67,7 +67,7 @@ try {
       environment: 'experimental',
       approved: true,
       hasSnapshot: true,
-      scope: 'src/App.jsx',
+      scope: 'src/components/SimulationEngine.jsx',
       policy
     });
     const policyIsGlobalScope = (policy.allowedScopes || []).some((prefix) => String(prefix || '').trim() === '');

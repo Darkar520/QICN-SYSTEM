@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 try {
-  const sourcePath = path.join(process.cwd(), 'src', 'App.jsx');
+  const sourcePath = path.join(process.cwd(), 'src', 'components', 'SimulationEngine.jsx');
   const source = fs.readFileSync(sourcePath, 'utf8');
 
   // CASE 1: policy defaults and runtime constants exist

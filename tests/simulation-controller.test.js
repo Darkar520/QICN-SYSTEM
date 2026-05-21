@@ -7,7 +7,7 @@ import { OntologicalSingularityCore } from '../src/simulation/OntologicalSingula
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const indexSource = fs.readFileSync(path.join(projectRoot, 'src', 'index.jsx'), 'utf8');
-const appSource = fs.readFileSync(path.join(projectRoot, 'src', 'App.jsx'), 'utf8');
+const appSource = fs.readFileSync(path.join(projectRoot, 'src', 'components', 'SimulationEngine.jsx'), 'utf8');
 
 try {
   const controller = new SimulationController();

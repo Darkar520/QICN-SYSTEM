@@ -218,3 +218,25 @@
 - Moved `QICN GPT5.5/` out of the repository to `C:\Users\irisp\OneDrive\Escritorio\QICN GPT5.5_backup`. The first `Move-Item` pass partially failed on long nested paths; a follow-up `robocopy /E /MOVE` pass completed the move and left no source directory in the repo.
 - `.gitignore`: added `QICN GPT5.5/` and `/PROMPT_*.md`. `coverage/` was already ignored.
 - Decision: root prompt files are preserved locally but ignored from the engineering baseline because they are operator prompts rather than source, governance docs, tests, or runtime artifacts.
+
+## Fase 9: App Shell, Component Boundaries, Contexts, And Lazy Tabs
+
+- `src/App.jsx`: reduced to a 25-line composition shell with `AuthProvider`, `AccessGate`, `StateProvider`, `QICNErrorBoundary`, `Suspense`, and lazy-loaded `SimulationEngine`.
+- `src/components/SimulationEngine.jsx`: moved the verified runtime body out of `App.jsx` so static evidence anchors now point to the runtime source of truth for UI logic, simulation cycle, tab rendering, and telemetry ordering.
+- Created component boundaries with ErrorBoundary wrappers: `ControlPanel.jsx`, `TelemetryHUD.jsx`, `ChatInterface.jsx`, `NetworkCanvas.jsx`, `TabRouter.jsx`, `StateProvider.jsx`, `ErrorBoundary.jsx`, and `SimulationEngine.jsx`.
+- Created split shell contexts: `src/contexts/SimulationStateContext.jsx` and `src/contexts/SimulationConfigContext.jsx`.
+- Added lazy boundaries for five More-menu tabs: `QICNBTab`, `ApiControlTab`, `SensoryTab`, `SovereigntyTab`, and `AutonomyEvolutionTab`.
+- Updated tests that inspect runtime source text from `src/App.jsx` to `src/components/SimulationEngine.jsx`. `tests/auth-gate.v46.test.js` remains anchored to `src/App.jsx` because provider composition is now the shell responsibility.
+- Updated `src/utils/runtimeParameterRegistry.js` runtime implementation paths from `src/App.jsx` to `src/components/SimulationEngine.jsx`.
+- Documented hook/state classification and cross-responsibility bridges in `docs/APP_DEPENDENCY_MAP.md`.
+- Documented production bundle meta-analysis in `docs/BUNDLE_ANALYSIS.md`.
+- Decision/deviation: this is a conservative, behavior-preserving split. The simulation loop and most render functions remain in `SimulationEngine.jsx`; the phase establishes the shell, contexts, boundaries, lazy tabs, and source-test retargeting without changing claim-facing evidence contracts.
+- `node tests/simulation-smoke.test.js`: PASS.
+- `npm test`: PASS. 116/116 tests passed.
+- `npm run build`: PASS. `dist\bundle.js` reported 6.9 MB.
+- `npm run verify:source-of-truth`: PASS.
+- `npm run verify:descriptor-registry`: PASS. 23 registry rows validated.
+- `npm run scoreboard:run`: PASS. 7/7 dimensions, all 10/10.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >5%: none; degradation >15%: none.
+- Browser liveness: PASS at `http://localhost:3000/`. The UI loaded, clicking `Iniciar Singularidad` changed the control to `Detener Flujo`, the tick count advanced beyond 100, CCC changed during runtime observation, core state advanced to layer 3, and console audit showed 0 red errors.
+- Browser navigation: PASS for `Guia`, `Nucleo`, `Red Nodal`, `QICN-B`, and `API`. Lazy More-tab boundaries loaded without console errors.

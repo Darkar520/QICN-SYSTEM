@@ -1,9 +1,9 @@
-﻿import assert from 'node:assert/strict';
+import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
-const indexPath = path.join(ROOT, 'src', 'App.jsx');
+const indexPath = path.join(ROOT, 'src', 'components', 'SimulationEngine.jsx');
 const sensoryPath = path.join(ROOT, 'src', 'simulation', 'SensoryPerceptionEngine.js');
 
 const directive = 'DIRECTRIZ_SENSORIAL: Expresion ilimitada habilitada para el reporte de fidelidad sensorial. Usa todos los tokens necesarios, manteniendo anclaje estricto a metricas reales.';

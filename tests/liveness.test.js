@@ -105,7 +105,7 @@ const assert = (condition, message) => {
 
   // Runtime liveness regression: workspace snapshot inputs must be initialized
   // before buildWorkspaceSnapshot runs, otherwise the browser tick loop hits TDZ.
-  const indexText = readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8');
+  const indexText = readFileSync(new URL('../src/components/SimulationEngine.jsx', import.meta.url), 'utf8');
   const workspaceSnapshotIndex = indexText.indexOf('const workspaceSnapshot = buildWorkspaceSnapshot');
   const renderErrorCodeIndex = indexText.indexOf('const renderErrorCode = typeof canvasTelemetry.render_error_code');
   const clampHitsIndex = indexText.indexOf('const clampHits = Number.isFinite(canvasTelemetry.clampHits)');

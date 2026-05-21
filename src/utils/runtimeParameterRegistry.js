@@ -8,7 +8,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0.0001, max: 0.5 },
     ownerFile: 'src/simulation/KaizenMetamorphosisEngine.js',
     ownerFunction: 'executeAtomicStep',
-    usagePaths: ['src/App.jsx', 'src/simulation/Node.js', 'src/simulation/ConsciousNode.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/Node.js', 'src/simulation/ConsciousNode.js'],
     verificationTestId: 'RPF_001',
     mutable: true,
     status: 'active'
@@ -20,7 +20,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0.0001, max: 0.5 },
     ownerFile: 'src/simulation/KaizenMetamorphosisEngine.js',
     ownerFunction: 'executeAtomicStep',
-    usagePaths: ['src/App.jsx', 'src/simulation/ConsciousNode.js', 'src/simulation/OntologicalSingularityCore.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/ConsciousNode.js', 'src/simulation/OntologicalSingularityCore.js'],
     verificationTestId: 'RPF_002',
     mutable: true,
     status: 'active'
@@ -32,7 +32,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0.01, max: 0.99 },
     ownerFile: 'src/simulation/KaizenMetamorphosisEngine.js',
     ownerFunction: 'executeAtomicStep',
-    usagePaths: ['src/App.jsx', 'src/simulation/ConsciousNode.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/ConsciousNode.js'],
     verificationTestId: 'RPF_003',
     mutable: true,
     status: 'active'
@@ -44,7 +44,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0.01, max: 0.99 },
     ownerFile: 'src/simulation/KaizenMetamorphosisEngine.js',
     ownerFunction: 'executeAtomicStep',
-    usagePaths: ['src/App.jsx', 'src/simulation/Node.js', 'src/simulation/OntologicalSingularityCore.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/Node.js', 'src/simulation/OntologicalSingularityCore.js'],
     verificationTestId: 'RPF_004',
     mutable: true,
     status: 'active'
@@ -56,7 +56,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0.0001, max: 0.5 },
     ownerFile: 'src/simulation/KaizenMetamorphosisEngine.js',
     ownerFunction: 'executeAtomicStep',
-    usagePaths: ['src/App.jsx', 'src/simulation/Node.js', 'src/simulation/OntologicalSingularityCore.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/Node.js', 'src/simulation/OntologicalSingularityCore.js'],
     verificationTestId: 'RPF_005',
     mutable: true,
     status: 'active'
@@ -68,7 +68,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0.1, max: 5.0 },
     ownerFile: 'src/simulation/KaizenMetamorphosisEngine.js',
     ownerFunction: 'executeAtomicStep',
-    usagePaths: ['src/App.jsx', 'src/simulation/ConsciousNode.js', 'src/simulation/InformationalEntanglementField.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/ConsciousNode.js', 'src/simulation/InformationalEntanglementField.js'],
     verificationTestId: 'RPF_006',
     mutable: true,
     status: 'active'
@@ -80,7 +80,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0.1, max: 5.0 },
     ownerFile: 'src/simulation/KaizenMetamorphosisEngine.js',
     ownerFunction: 'executeAtomicStep',
-    usagePaths: ['src/App.jsx', 'src/simulation/ConsciousNode.js', 'src/simulation/InformationalEntanglementField.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/ConsciousNode.js', 'src/simulation/InformationalEntanglementField.js'],
     verificationTestId: 'RPF_007',
     mutable: true,
     status: 'active'
@@ -104,7 +104,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0, max: 10 },
     ownerFile: 'src/simulation/OntologicalSingularityCore.js',
     ownerFunction: 'updateOntologicalLayer',
-    usagePaths: ['src/App.jsx', 'src/simulation/KaizenMetamorphosisEngine.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/KaizenMetamorphosisEngine.js'],
     verificationTestId: 'RPF_009',
     mutable: false,
     status: 'active'
@@ -116,7 +116,7 @@ export const runtimeParameterRegistry = [
     range: { min: 1, max: QICNConfig.ACTIVE_NODES_LIMIT },
     ownerFile: 'src/simulation/NodalProcessingLayer.js',
     ownerFunction: 'initializeNodes',
-    usagePaths: ['src/App.jsx'],
+    usagePaths: ['src/components/SimulationEngine.jsx'],
     verificationTestId: 'RPF_010',
     mutable: false,
     status: 'active'
@@ -150,9 +150,9 @@ export const runtimeParameterRegistry = [
     tier: 'core-threshold',
     defaultValue: QICNConfig.SIMULATION_FREQUENCY,
     range: { min: 10, max: 5000 },
-    ownerFile: 'src/App.jsx',
+    ownerFile: 'src/components/SimulationEngine.jsx',
     ownerFunction: 'runSimulationCycle',
-    usagePaths: ['src/App.jsx'],
+    usagePaths: ['src/components/SimulationEngine.jsx'],
     verificationTestId: 'RPF_013',
     mutable: false,
     status: 'active'
@@ -164,7 +164,7 @@ export const runtimeParameterRegistry = [
     range: { min: 1, max: 1000 },
     ownerFile: 'src/simulation/OntologicalSingularityCore.js',
     ownerFunction: 'startFrictionSimulation',
-    usagePaths: ['src/App.jsx'],
+    usagePaths: ['src/components/SimulationEngine.jsx'],
     verificationTestId: 'RPF_014',
     mutable: false,
     status: 'active'
@@ -246,9 +246,9 @@ export const runtimeParameterRegistry = [
     tier: 'metacognitive-runtime',
     defaultValue: 0.18,
     range: { min: 0.01, max: 1.0 },
-    ownerFile: 'src/App.jsx',
+    ownerFile: 'src/components/SimulationEngine.jsx',
     ownerFunction: 'runSimulationCycle',
-    usagePaths: ['src/App.jsx', 'src/simulation/MetaSovereigntyCheck.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/MetaSovereigntyCheck.js'],
     verificationTestId: 'RPF_021',
     mutable: false,
     status: 'active'
@@ -258,9 +258,9 @@ export const runtimeParameterRegistry = [
     tier: 'metacognitive-runtime',
     defaultValue: 800,
     range: { min: 100, max: 20000 },
-    ownerFile: 'src/App.jsx',
+    ownerFile: 'src/components/SimulationEngine.jsx',
     ownerFunction: 'runSimulationCycle',
-    usagePaths: ['src/App.jsx', 'src/simulation/MetaSovereigntyCheck.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/MetaSovereigntyCheck.js'],
     verificationTestId: 'RPF_022',
     mutable: false,
     status: 'active'
@@ -270,9 +270,9 @@ export const runtimeParameterRegistry = [
     tier: 'metacognitive-runtime',
     defaultValue: 12000,
     range: { min: 500, max: 120000 },
-    ownerFile: 'src/App.jsx',
+    ownerFile: 'src/components/SimulationEngine.jsx',
     ownerFunction: 'runSimulationCycle',
-    usagePaths: ['src/App.jsx', 'src/simulation/MetaSovereigntyCheck.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/MetaSovereigntyCheck.js'],
     verificationTestId: 'RPF_023',
     mutable: false,
     status: 'active'
@@ -282,9 +282,9 @@ export const runtimeParameterRegistry = [
     tier: 'metacognitive-runtime',
     defaultValue: 24,
     range: { min: 1, max: 240 },
-    ownerFile: 'src/App.jsx',
+    ownerFile: 'src/components/SimulationEngine.jsx',
     ownerFunction: 'runSimulationCycle',
-    usagePaths: ['src/App.jsx'],
+    usagePaths: ['src/components/SimulationEngine.jsx'],
     verificationTestId: 'RPF_024',
     mutable: false,
     status: 'active'
@@ -294,9 +294,9 @@ export const runtimeParameterRegistry = [
     tier: 'metacognitive-runtime',
     defaultValue: 20,
     range: { min: 1, max: 600 },
-    ownerFile: 'src/App.jsx',
+    ownerFile: 'src/components/SimulationEngine.jsx',
     ownerFunction: 'runSimulationCycle',
-    usagePaths: ['src/App.jsx'],
+    usagePaths: ['src/components/SimulationEngine.jsx'],
     verificationTestId: 'RPF_025',
     mutable: false,
     status: 'active'
@@ -308,7 +308,7 @@ export const runtimeParameterRegistry = [
     range: { min: 1000, max: 600000 },
     ownerFile: 'src/simulation/QuantumEntropyBridge.js',
     ownerFunction: 'selectEntropy',
-    usagePaths: ['src/App.jsx', 'src/config/runtimeEnv.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/config/runtimeEnv.js'],
     verificationTestId: 'RPF_026',
     mutable: false,
     status: 'active'
@@ -318,9 +318,9 @@ export const runtimeParameterRegistry = [
     tier: 'quantum-runtime',
     defaultValue: 10000,
     range: { min: 1000, max: 300000 },
-    ownerFile: 'src/App.jsx',
+    ownerFile: 'src/components/SimulationEngine.jsx',
     ownerFunction: 'useEffect(quantum_entropy_poll)',
-    usagePaths: ['src/App.jsx', 'src/config/runtimeEnv.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/config/runtimeEnv.js'],
     verificationTestId: 'RPF_027',
     mutable: false,
     status: 'active'
@@ -332,7 +332,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0, max: 1 },
     ownerFile: 'src/simulation/QuantumEntropyBridge.js',
     ownerFunction: 'normalizeSample',
-    usagePaths: ['src/App.jsx', 'src/config/runtimeEnv.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/config/runtimeEnv.js'],
     verificationTestId: 'RPF_028',
     mutable: false,
     status: 'active'
@@ -344,7 +344,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0, max: 1 },
     ownerFile: 'src/config/runtimeEnv.js',
     ownerFunction: 'runtimeEnv',
-    usagePaths: ['src/App.jsx', 'src/simulation/QuantumEntropyBridge.js'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/QuantumEntropyBridge.js'],
     verificationTestId: 'RPF_029',
     mutable: false,
     status: 'active'
@@ -356,7 +356,7 @@ export const runtimeParameterRegistry = [
     range: { min: 1, max: 256 },
     ownerFile: 'src/simulation/QuantumEntropyBridge.js',
     ownerFunction: 'refillFromProvider',
-    usagePaths: ['src/config/runtimeEnv.js', 'src/App.jsx'],
+    usagePaths: ['src/config/runtimeEnv.js', 'src/components/SimulationEngine.jsx'],
     verificationTestId: 'RPF_030',
     mutable: false,
     status: 'active'
@@ -368,7 +368,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0, max: 255 },
     ownerFile: 'src/simulation/QuantumEntropyBridge.js',
     ownerFunction: 'refillFromProvider',
-    usagePaths: ['src/config/runtimeEnv.js', 'src/App.jsx'],
+    usagePaths: ['src/config/runtimeEnv.js', 'src/components/SimulationEngine.jsx'],
     verificationTestId: 'RPF_031',
     mutable: false,
     status: 'active'
@@ -380,7 +380,7 @@ export const runtimeParameterRegistry = [
     range: { min: 1, max: 256 },
     ownerFile: 'src/simulation/QuantumEntropyBridge.js',
     ownerFunction: 'refillFromProvider',
-    usagePaths: ['src/config/runtimeEnv.js', 'src/App.jsx'],
+    usagePaths: ['src/config/runtimeEnv.js', 'src/components/SimulationEngine.jsx'],
     verificationTestId: 'RPF_032',
     mutable: false,
     status: 'active'
@@ -428,7 +428,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0, max: 1 },
     ownerFile: 'src/simulation/QuantumEntropyBridge.js',
     ownerFunction: 'ingestSample',
-    usagePaths: ['src/config/runtimeEnv.js', 'src/App.jsx'],
+    usagePaths: ['src/config/runtimeEnv.js', 'src/components/SimulationEngine.jsx'],
     verificationTestId: 'RPF_036',
     mutable: false,
     status: 'active'
@@ -440,7 +440,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0, max: 4 },
     ownerFile: 'src/simulation/QuantumEntropyBridge.js',
     ownerFunction: '_emitEvent',
-    usagePaths: ['src/config/runtimeEnv.js', 'src/App.jsx'],
+    usagePaths: ['src/config/runtimeEnv.js', 'src/components/SimulationEngine.jsx'],
     verificationTestId: 'RPF_037',
     mutable: false,
     status: 'active'

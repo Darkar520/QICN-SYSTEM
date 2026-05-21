@@ -6,7 +6,7 @@ import { KaizenMetamorphosisEngine } from '../src/simulation/KaizenMetamorphosis
 
 const ROOT = process.cwd();
 const SRC_ROOT = path.join(ROOT, 'src');
-const INDEX_PATH = path.join(ROOT, 'src', 'App.jsx');
+const INDEX_PATH = path.join(ROOT, 'src', 'components', 'SimulationEngine.jsx');
 
 const expectedRuntimeCriticalKeys = [
   'BASE_LEARNING_RATE',

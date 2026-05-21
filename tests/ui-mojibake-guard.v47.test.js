@@ -1,8 +1,8 @@
-﻿import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 const files = [
-  path.resolve('src/App.jsx')
+  path.resolve('src/components/SimulationEngine.jsx')
 ];
 
 const patterns = [

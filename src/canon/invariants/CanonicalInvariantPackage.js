@@ -1,4 +1,33 @@
+// @ts-check
+
 import { computeInverseLimitScore } from '../finite_horizon/FiniteProjectionEvaluator.js';
+
+/**
+ * @typedef {Object} InvariantRecord
+ * @property {string} id
+ * @property {string} name
+ * @property {number} score
+ * @property {string} maturity
+ * @property {Record<string, unknown>} runtimeSignals
+ * @property {Record<string, unknown>} directSignals
+ * @property {Record<string, unknown>} proxySignals
+ * @property {boolean} judgeDependent
+ * @property {Record<string, unknown>} provenance
+ */
+
+/**
+ * @typedef {Object} CanonicalInvariantPackage
+ * @property {string} version
+ * @property {string} sourceOfTruth
+ * @property {unknown} freezeRef
+ * @property {string} supportScope
+ * @property {Record<string, InvariantRecord>} invariants
+ * @property {string[]} notes
+ */
+
+/**
+ * @typedef {InvariantRecord & { id: 'I_ri' }} RelationalIdentityInvariant
+ */
 
 const toFinite = (value, fallback = null) => {
   const n = Number(value);
@@ -79,6 +108,14 @@ const buildInvariantRecord = ({
 
 export const CANON_INVARIANT_PACKAGE_VERSION = 'canon-invariant-package.v6';
 
+/**
+ * @param {Object} input
+ * @param {Record<string, unknown>} [input.header]
+ * @param {Record<string, unknown>} [input.summary]
+ * @param {Record<string, unknown>} [input.verdict]
+ * @param {Array<Record<string, unknown>>} [input.ticks]
+ * @returns {CanonicalInvariantPackage}
+ */
 export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verdict = {}, ticks = [] } = {}) => {
   const metrics = summary?.metrics || {};
   const flags = summary?.flags || {};

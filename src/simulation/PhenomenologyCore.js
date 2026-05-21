@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * PhenomenologyCore.js
  * NIVEL 2: Fenomenologia Estructural (Clase C^R)
@@ -15,9 +17,38 @@
  * Version: 1.0.0
  */
 
+/**
+ * @typedef {Object} PhenomenologyState
+ * @property {number} beth_q
+ * @property {number} spectral_gap
+ * @property {number} lambda_1
+ * @property {number} lambda_2
+ * @property {number} raw_winding_number
+ * @property {number} winding_integer
+ * @property {'clockwise'|'counterclockwise'|'trivial'} winding_orientation
+ * @property {number} topo_factor
+ * @property {number} omega
+ * @property {number} relaxation_time
+ */
+
+/**
+ * @typedef {Object} SpectralGapResult
+ * @property {number} lambda_1 Dominant empirical eigenvalue estimate.
+ * @property {number} lambda_2 Secondary mode estimate.
+ * @property {number} delta_lambda Absolute spectral separation.
+ */
+
+/**
+ * @typedef {Object} WindingDiagnostics
+ * @property {number} raw_winding_number Signed winding value.
+ * @property {number} winding_integer Rounded topological winding.
+ * @property {'clockwise'|'counterclockwise'|'trivial'} winding_orientation
+ */
+
 export class PhenomenologyCore {
     constructor() {
         // Estado fenomenologico persistente
+        /** @type {PhenomenologyState} */
         this.phenomenologyState = {
             beth_q: 0.5,              // Cierre causal [0,1]
             spectral_gap: 0.5,        // "lambda [0,1]

@@ -1,5 +1,28 @@
+// @ts-check
+
 import { WorldModelEngine } from './WorldModelEngine.js';
 import { CognitiveEmergencePlanner } from './CognitiveEmergencePlanner.js';
+
+/**
+ * @typedef {Object} SimulationControllerOptions
+ * @property {Record<string, unknown>} [worldModelConfig]
+ * @property {Record<string, unknown>} [plannerConfig]
+ * @property {WorldModelEngine|null} [worldModel]
+ * @property {CognitiveEmergencePlanner|null} [planner]
+ */
+
+/**
+ * @typedef {Object} ControllerAttachment
+ * @property {WorldModelEngine} worldModel
+ * @property {CognitiveEmergencePlanner} planner
+ */
+
+/**
+ * @typedef {Object} ControllerDiagnostics
+ * @property {unknown} worldModel
+ * @property {Record<string, unknown>} plannerConfig
+ * @property {boolean} unifiedCoreBinding
+ */
 
 const DEFAULT_WORLD_MODEL_CONFIG = Object.freeze({
   learningRate: 0.018,
@@ -14,6 +37,9 @@ const DEFAULT_PLANNER_CONFIG = Object.freeze({
 });
 
 export class SimulationController {
+  /**
+   * @param {SimulationControllerOptions} [options]
+   */
   constructor({
     worldModelConfig = DEFAULT_WORLD_MODEL_CONFIG,
     plannerConfig = DEFAULT_PLANNER_CONFIG,
@@ -27,6 +53,10 @@ export class SimulationController {
     this.attachedCore = null;
   }
 
+  /**
+   * @param {Record<string, unknown>} core
+   * @returns {ControllerAttachment|null}
+   */
   attachCore(core) {
     if (!core || typeof core !== 'object') return null;
     core.worldModelEngine = this.worldModel;
@@ -38,6 +68,9 @@ export class SimulationController {
     };
   }
 
+  /**
+   * @returns {ControllerAttachment}
+   */
   reset() {
     this.worldModel = new WorldModelEngine(this.worldModelConfig);
     this.planner = new CognitiveEmergencePlanner(this.plannerConfig);
@@ -48,6 +81,9 @@ export class SimulationController {
     };
   }
 
+  /**
+   * @returns {ControllerDiagnostics}
+   */
   getDiagnostics() {
     return {
       worldModel: this.worldModel?.getDiagnostics?.() || null,
@@ -62,4 +98,3 @@ export class SimulationController {
 }
 
 export default SimulationController;
-

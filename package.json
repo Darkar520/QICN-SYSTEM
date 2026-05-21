@@ -104,7 +104,10 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "esbuild": "^0.25.11",
+    "eslint": "^10.4.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "serve": "^14.2.5",
     "tailwindcss": "^3.4.19"
   },

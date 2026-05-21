@@ -1,8 +1,43 @@
+// @ts-check
+
 import { computeNc3PlaceboEffect } from './negative_controls_runner.js';
 import { computeInverseLimitScore } from '../canon/finite_horizon/FiniteProjectionEvaluator.js';
 import { buildCanonicalInvariantPackage } from '../canon/invariants/CanonicalInvariantPackage.js';
 import { PhenomenologyCore } from '../simulation/PhenomenologyCore.js';
 import { sha256Hex } from '../utils/integrity.js';
+
+/**
+ * @typedef {Object} NegativeControlResult
+ * @property {string} control
+ * @property {string} expected
+ * @property {boolean} pass
+ * @property {string} interpretation_boundary
+ */
+
+/**
+ * @typedef {NegativeControlResult & {
+ *   lambda_1: number,
+ *   lambda_2: number,
+ *   spectral_gap: number,
+ *   dominant_mode: string
+ * }} SpectralDecayControlResult
+ */
+
+/**
+ * @typedef {NegativeControlResult & {
+ *   baseline_inverse_limit_score: number,
+ *   ruptured_inverse_limit_score: number,
+ *   I_ri_drop: number
+ * }} InverseLimitRuptureControlResult
+ */
+
+/**
+ * @typedef {NegativeControlResult & {
+ *   raw_winding_number: number,
+ *   winding_integer: number,
+ *   winding_orientation: string
+ * }} TrivialTopologyControlResult
+ */
 
 const finite = (value, fallback = 0) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
 const mean = (values) => (values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0);
@@ -93,6 +128,9 @@ const invariantForTrace = (ticks) => buildCanonicalInvariantPackage({
   ticks
 }).invariants.I_ri;
 
+/**
+ * @returns {SpectralDecayControlResult}
+ */
 export const runSpectralDecayControl = ({ values = null, decay = 0.82, length = 20 } = {}) => {
   const series = Array.isArray(values) && values.length >= 6
     ? values.map((value) => finite(value, 0))
@@ -115,6 +153,9 @@ export const runSpectralDecayControl = ({ values = null, decay = 0.82, length = 
   };
 };
 
+/**
+ * @returns {InverseLimitRuptureControlResult}
+ */
 export const runInverseLimitRuptureControl = ({ stableTrace = null, chaoticTrace = null, epsilon = 0.05 } = {}) => {
   const baseline = Array.isArray(stableTrace) && stableTrace.length >= 2 ? stableTrace : stableInverseLimitTrace();
   const ruptured = Array.isArray(chaoticTrace) && chaoticTrace.length >= 2 ? chaoticTrace : chaoticInverseLimitTrace();
@@ -138,6 +179,9 @@ export const runInverseLimitRuptureControl = ({ stableTrace = null, chaoticTrace
   };
 };
 
+/**
+ * @returns {TrivialTopologyControlResult}
+ */
 export const runTrivialTopologyControl = ({ values = null } = {}) => {
   const series = Array.isArray(values) && values.length >= 20
     ? values.map((value) => finite(value, 0))

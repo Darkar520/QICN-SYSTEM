@@ -240,3 +240,23 @@
 - Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >5%: none; degradation >15%: none.
 - Browser liveness: PASS at `http://localhost:3000/`. The UI loaded, clicking `Iniciar Singularidad` changed the control to `Detener Flujo`, the tick count advanced beyond 100, CCC changed during runtime observation, core state advanced to layer 3, and console audit showed 0 red errors.
 - Browser navigation: PASS for `Guia`, `Nucleo`, `Red Nodal`, `QICN-B`, and `API`. Lazy More-tab boundaries loaded without console errors.
+
+## Fase 10: Code Quality Tooling And JSDoc Contracts
+
+- Installed dev tooling: `eslint`, `@eslint/js`, and `eslint-plugin-react-hooks`.
+- Created `eslint.config.js` using ESLint flat config. The gate keeps `no-undef` and `eqeqeq` as blocking checks over `src/`; noisy legacy rules are scoped so operational console logging and the pre-existing monolith do not block the professionalization pass.
+- Created `jsconfig.json` with `checkJs: true`, ES2022 target/module, Node module resolution, and `~/*` path alias.
+- Added `// @ts-check` and JSDoc typedef/return annotations to:
+  - `src/simulation/PhenomenologyCore.js` for `PhenomenologyState`, spectral gap, and winding diagnostics.
+  - `src/simulation/SimulationController.js` for controller options, attachments, and diagnostics.
+  - `src/canon/finite_horizon/FiniteProjectionEvaluator.js` for morphism and inverse-limit score results.
+  - `src/canon/invariants/CanonicalInvariantPackage.js` for invariant records, package shape, and `I_ri`.
+  - `src/experiments/negative_controls_expanded.js` for NC5, NC6, and NC7 result shapes.
+- `npx eslint src/ --max-warnings=50`: PASS with 2 warnings, both unused historical `react-hooks/exhaustive-deps` disable comments.
+- `npm test`: PASS. 116/116 tests passed.
+- `npm run build`: PASS. `dist\bundle.js` reported 6.9 MB.
+- `npm run verify:source-of-truth`: PASS.
+- `npm run verify:descriptor-registry`: PASS. 23 registry rows validated.
+- `npm run scoreboard:run`: PASS. 7/7 dimensions, all 10/10.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >5%: none; degradation >15%: none.
+- Boundary note: `npm install` reports 7 dependency vulnerabilities and an EBADENGINE warning because this shell is running Node v24.6.0 while the repo declares Node 20.x. The requested roadmap stack remains Node 20.x; no dependency audit fix was applied because that could change transitive runtime behavior outside this phase.

@@ -1,3 +1,5 @@
+// @ts-check
+
 const finite = (value, fallback = 0) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
 
 const getByPath = (obj, dottedPath) => String(dottedPath || '')
@@ -17,6 +19,22 @@ export const INVERSE_LIMIT_COMPONENTS = Object.freeze([
   'identity_stability',
   'hash_semantic'
 ]);
+
+/**
+ * @typedef {Object} MorphismResult
+ * @property {Record<string, number>} projectedState
+ * @property {number} compatibilityErrors
+ * @property {Array<{ component: string, previous: number, next: number, delta: number, epsilon: number }>} componentErrors
+ * @property {boolean} compatible
+ */
+
+/**
+ * @typedef {Object} InverseLimitScoreResult
+ * @property {number} inverse_limit_score
+ * @property {number} totalCompatibilityErrors
+ * @property {number} window
+ * @property {string[]} measuredComponents
+ */
 
 export const evaluateFiniteProjection = ({ trace = [], horizon, projectionSpec = {}, metricSpec = {} }) => {
   const h = Math.max(0, Math.min(trace.length, Math.floor(finite(horizon, trace.length))));
@@ -74,6 +92,13 @@ export const computeProjectionResourceProfile = ({ horizon, branchFactor = 1, st
   };
 };
 
+/**
+ * @param {Record<string, unknown>} state_t1
+ * @param {Record<string, unknown>} state_t
+ * @param {number} [epsilon]
+ * @param {readonly string[]} [components]
+ * @returns {MorphismResult}
+ */
 export const projectionMorphism = (state_t1 = {}, state_t = {}, epsilon = 0.05, components = INVERSE_LIMIT_COMPONENTS) => {
   const eps = Math.max(0, finite(epsilon, 0.05));
   const componentList = Array.isArray(components) && components.length ? components : INVERSE_LIMIT_COMPONENTS;
@@ -139,6 +164,14 @@ export const buildInverseLimitStateFromTick = (tick = {}, summaryMetrics = {}) =
   };
 };
 
+/**
+ * @param {Object} input
+ * @param {Array<Record<string, unknown>>} [input.trace]
+ * @param {number} [input.window]
+ * @param {number} [input.epsilon]
+ * @param {readonly string[]} [input.components]
+ * @returns {InverseLimitScoreResult & Record<string, unknown>}
+ */
 export const computeInverseLimitScore = ({
   trace = [],
   window = 40,

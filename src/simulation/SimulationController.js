@@ -2,6 +2,7 @@
 
 import { WorldModelEngine } from './WorldModelEngine.js';
 import { CognitiveEmergencePlanner } from './CognitiveEmergencePlanner.js';
+import { createLogger } from '../utils/logger.js';
 
 /**
  * @typedef {Object} SimulationControllerOptions
@@ -36,6 +37,8 @@ const DEFAULT_PLANNER_CONFIG = Object.freeze({
   eliteFraction: 0.25
 });
 
+const logger = createLogger('SimulationController');
+
 export class SimulationController {
   /**
    * @param {SimulationControllerOptions} [options]
@@ -58,10 +61,16 @@ export class SimulationController {
    * @returns {ControllerAttachment|null}
    */
   attachCore(core) {
-    if (!core || typeof core !== 'object') return null;
+    if (!core || typeof core !== 'object') {
+      logger.warn('attach_skipped_invalid_core');
+      return null;
+    }
     core.worldModelEngine = this.worldModel;
     core.cognitivePlanner = this.planner;
     this.attachedCore = core;
+    logger.info('attach_core', {
+      unifiedCoreBinding: core.worldModelEngine === this.worldModel && core.cognitivePlanner === this.planner
+    });
     return {
       worldModel: this.worldModel,
       planner: this.planner
@@ -75,6 +84,9 @@ export class SimulationController {
     this.worldModel = new WorldModelEngine(this.worldModelConfig);
     this.planner = new CognitiveEmergencePlanner(this.plannerConfig);
     if (this.attachedCore) this.attachCore(this.attachedCore);
+    logger.info('reset_controller', {
+      reattached: Boolean(this.attachedCore)
+    });
     return {
       worldModel: this.worldModel,
       planner: this.planner

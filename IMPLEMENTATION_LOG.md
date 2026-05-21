@@ -278,3 +278,20 @@
 - `npx eslint src/ --max-warnings=50`: PASS with 2 warnings.
 - `npm run scoreboard:run`: PASS. 7/7 dimensions, all 10/10.
 - Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >5%: none; degradation >15%: none.
+
+## Fase 12: Observability And Runtime Health Checks
+
+- Created `src/utils/logger.js` with structured JSON log events. The logger is gated by `globalThis.__QICN_STRUCTURED_LOGS__` or `QICN_STRUCTURED_LOGS` so normal tests/builds remain stable; injected sinks are supported for deterministic tests.
+- Created `src/utils/healthCheck.js` with `getSystemHealth()` returning `status`, `uptime_ticks`, `last_ccc`, `scoreboard_dims_passing`, `spectral_warning`, `inverse_limit_score`, and `test_count`.
+- Integrated operational logging in `src/simulation/SimulationController.js`, `src/simulation/PhenomenologyCore.js`, and `src/canon/finite_horizon/FiniteProjectionEvaluator.js`.
+- Integrated a browser health badge in `src/components/SimulationEngine.jsx`. Boundary note: this is an operational liveness surface, not a claim projection and not external validation.
+- Created `tests/observability-health.test.js` for logger payload shape, health status classification, and UI source integration.
+- `node tests/observability-health.test.js`: PASS.
+- `npx eslint src/ --max-warnings=50`: PASS with 2 warnings, both unused historical `react-hooks/exhaustive-deps` disable comments.
+- Initial parallel `npm test` run produced a transient failure in `tests/quantum-entropy-experimental-controls.v63.test.js` while other gates ran concurrently. The isolated test passed immediately afterward, and the full suite passed when rerun sequentially. No code change was made for that transient because it was not reproduced.
+- `npm test`: PASS. 120/120 tests passed.
+- `npm run build`: PASS. `dist\bundle.js` reported 6.9 MB.
+- `npm run verify:source-of-truth`: PASS.
+- `npm run verify:descriptor-registry`: PASS. 23 registry rows validated.
+- `npm run scoreboard:run`: PASS. 7/7 dimensions, all 10/10.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >5%: none; degradation >15%: none.

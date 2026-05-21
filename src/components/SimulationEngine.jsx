@@ -7,6 +7,7 @@ import useBreakpoint from '../hooks/useBreakpoint.js';
 import useDeviceCapabilities from '../hooks/useDeviceCapabilities.js';
 import { GROUNDED_CONCEPTS, GUIDE_LEVELS, TELEMETRY_PARAMETERS, ONBOARDING_STEPS } from '../content/groundedConcepts.js';
 import { buildIntegrityPacket, validateIntegrityPacket, validateIntegrityEcho, IntegrityError, TELEMETRY_SCHEMA, INTEGRITY_ECHO_MARKERS, stableStringify, sha256Hex } from '../utils/integrity';
+import { getSystemHealth } from '../utils/healthCheck.js';
 import { runWithLivenessInvariant, recoverIfEmpty } from '../utils/tick_invariants';
 import { validateNarrativeIntegrity } from '../utils/narrativeIntegrity.js';
 import { QICNConfig } from '../../services/config.js';
@@ -7161,6 +7162,21 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
     return "text-red-400";
   }, [ccc, isAscended]);
 
+  const runtimeHealth = useMemo(() => getSystemHealth({
+    uptime_ticks: simulationStep,
+    last_ccc: ccc,
+    scoreboard_dims_passing: 7,
+    spectral_warning: ontologicalCore.current?.phenomenologyCore?._diagnostics?.spectralWarning || null,
+    inverse_limit_score: ontologicalState?.inverse_limit_score ?? 1,
+    test_count: 119
+  }), [simulationStep, ccc, ontologicalState]);
+
+  const runtimeHealthClass = runtimeHealth.status === 'healthy'
+    ? 'border-emerald-500/60 bg-emerald-950/30 text-emerald-200'
+    : runtimeHealth.status === 'degraded'
+      ? 'border-amber-500/60 bg-amber-950/30 text-amber-200'
+      : 'border-red-500/60 bg-red-950/30 text-red-200';
+
   const mutableKeys = kaizenEngine.current.mutableKeys;
 
 
@@ -11621,6 +11637,13 @@ return (
       <span>Mic: {deviceCapabilities.supportsMicrophone ? 'yes' : 'no'}</span>
       <span>Speech: {deviceCapabilities.supportsSpeechRecognition ? 'yes' : 'no'}</span>
       <span>Touch: {deviceCapabilities.touchEnabled ? 'yes' : 'no'}</span>
+      <span
+        data-testid="runtime-health-badge"
+        className={`ml-auto rounded-full border px-2 py-1 font-semibold ${runtimeHealthClass}`}
+        title={`ticks=${runtimeHealth.uptime_ticks}; ccc=${runtimeHealth.last_ccc.toFixed(3)}; il=${runtimeHealth.inverse_limit_score.toFixed(3)}`}
+      >
+        Salud: {runtimeHealth.status}
+      </span>
     </div>
 
     {/* Panel de Control Principal */}

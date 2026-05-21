@@ -1,5 +1,7 @@
 // @ts-check
 
+import { createLogger } from '../../utils/logger.js';
+
 const finite = (value, fallback = 0) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
 
 const getByPath = (obj, dottedPath) => String(dottedPath || '')
@@ -10,6 +12,7 @@ const getByPath = (obj, dottedPath) => String(dottedPath || '')
 const normalizeNumber = (value) => (Number.isFinite(value) ? Number(value.toFixed(12)) : value);
 const mean = (values) => (values.length ? normalizeNumber(values.reduce((sum, value) => sum + value, 0) / values.length) : 0);
 const clamp01 = (value) => Math.max(0, Math.min(1, finite(value, 0)));
+const logger = createLogger('FiniteProjectionEvaluator');
 
 export const INVERSE_LIMIT_COMPONENTS = Object.freeze([
   'ccc',
@@ -218,6 +221,14 @@ export const computeInverseLimitScore = ({
 
   const denominator = measuredComponents.length * Math.max(0, states.length - 1);
   const score = denominator > 0 ? clamp01(1 - (totalCompatibilityErrors / denominator)) : 1;
+  if (totalCompatibilityErrors > 0) {
+    logger.warn('inverse_limit_compatibility_errors', {
+      totalCompatibilityErrors,
+      denominator,
+      window: states.length,
+      components: measuredComponents
+    });
+  }
   return {
     score: normalizeNumber(score),
     inverse_limit_score: normalizeNumber(score),

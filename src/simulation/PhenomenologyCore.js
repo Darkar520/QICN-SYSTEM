@@ -17,6 +17,8 @@
  * Version: 1.0.0
  */
 
+import { createLogger } from '../utils/logger.js';
+
 /**
  * @typedef {Object} PhenomenologyState
  * @property {number} beth_q
@@ -47,6 +49,7 @@
 
 export class PhenomenologyCore {
     constructor() {
+        this.logger = createLogger('PhenomenologyCore');
         // Estado fenomenologico persistente
         /** @type {PhenomenologyState} */
         this.phenomenologyState = {
@@ -423,6 +426,11 @@ export class PhenomenologyCore {
         if (stableRatios.length === 0) {
             if (ratios.length > 0 && Math.max(...ratios) > 1.5) {
                 this._diagnostics.spectralWarning = 'HIGH_VOLATILITY_UNMEASURABLE';
+                this.logger.warn('spectral_warning', {
+                    spectral_warning: this._diagnostics.spectralWarning,
+                    ratios_observed: ratios.length,
+                    max_ratio: Math.max(...ratios)
+                });
             }
             return 1.0;
         }
@@ -550,6 +558,14 @@ export class PhenomenologyCore {
         this.phenomenologyState.winding_integer = winding_integer;
         this.phenomenologyState.winding_orientation = winding_orientation;
         this.phenomenologyState.topo_factor = topo_factor;
+
+        if (Math.abs(raw_winding_number) >= 2) {
+            this.logger.warn('winding_anomaly', {
+                raw_winding_number,
+                winding_integer,
+                winding_orientation
+            });
+        }
 
         return {
             raw_winding_number,

@@ -1,14 +1,19 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo, useRef } from 'react';
 import runtimeEnv from '../config/runtimeEnv.js';
 
 const SimulationConfigContext = createContext(null);
 
 export const SimulationConfigProvider = ({ children }) => {
+  const simulationControllerRef = useRef(null);
   const value = useMemo(() => ({
+    simulationControllerRef,
+    isRunning: false,
+    currentPhase: 'shell',
+    sensorsMode: 'runtime-detected',
     appEnv: runtimeEnv.APP_ENV || 'runtime_unfrozen',
     strictGeminiModel: runtimeEnv.GEMINI_STRICT_MODEL !== false,
     quantumEntropyEnabled: runtimeEnv.QUANTUM_ENTROPY_ENABLED !== false
-  }), []);
+  }), [simulationControllerRef]);
 
   return (
     <SimulationConfigContext.Provider value={value}>

@@ -260,3 +260,21 @@
 - `npm run scoreboard:run`: PASS. 7/7 dimensions, all 10/10.
 - Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >5%: none; degradation >15%: none.
 - Boundary note: `npm install` reports 7 dependency vulnerabilities and an EBADENGINE warning because this shell is running Node v24.6.0 while the repo declares Node 20.x. The requested roadmap stack remains Node 20.x; no dependency audit fix was applied because that could change transitive runtime behavior outside this phase.
+
+## Fase 11: Coverage And Professional Test Contracts
+
+- Installed `c8` and added `npm run test:coverage`.
+- Created `docs/COVERAGE_BASELINE.md`.
+- Coverage baseline from `npm run test:coverage`: statements 77.42%, branches 63.66%, functions 81.89%, lines 77.42%, 73 instrumented files. Thresholds passed: lines 50%, branches 40%, functions 50%.
+- Created `tests/component-isolation.test.js` to verify extracted component exports, boundary coverage, context fields, and exactly one `SimulationController` instantiation in `SimulationEngine.jsx`.
+- Created `tests/api-contracts.test.js` to verify API shapes for `PhenomenologyCore.calculateSpectralGap()`, `computeInverseLimitScore()`, `buildCanonicalInvariantPackage()`, and expanded negative controls.
+- Created `tests/scoreboard-idempotency.test.js` to run the scoreboard in inspect mode three times and assert stable 7-dimension scores within tolerance. `COMPUTE_TICK_BUDGET` is allowed a 1-point jitter threshold by design; no jitter was observed in the gate run.
+- Updated shell contexts to expose the expected state/config fields: tick metrics in `SimulationStateContext` and stable runtime config fields in `SimulationConfigContext`.
+- `npm test`: PASS. 119/119 tests passed.
+- `npm run test:coverage`: PASS. 119/119 tests passed and coverage thresholds were met.
+- `npm run build`: PASS. `dist\bundle.js` reported 6.9 MB.
+- `npm run verify:source-of-truth`: PASS.
+- `npm run verify:descriptor-registry`: PASS. 23 registry rows validated.
+- `npx eslint src/ --max-warnings=50`: PASS with 2 warnings.
+- `npm run scoreboard:run`: PASS. 7/7 dimensions, all 10/10.
+- Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >5%: none; degradation >15%: none.

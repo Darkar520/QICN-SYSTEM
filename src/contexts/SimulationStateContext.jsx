@@ -5,12 +5,26 @@ const SimulationStateContext = createContext(null);
 export const SimulationStateProvider = ({ children }) => {
   const [shellState, setShellState] = useState({
     mountedAt: Date.now(),
-    runtimeStatus: 'bootstrapping'
+    runtimeStatus: 'bootstrapping',
+    tickCount: 0,
+    ccc: 0,
+    pmia: 0,
+    omega: 0,
+    beth_q: 0,
+    spectral_gap: 0,
+    stasisIndex: 0
   });
 
   const value = useMemo(() => ({
     shellState,
-    setShellState
+    setShellState,
+    tickCount: shellState.tickCount,
+    ccc: shellState.ccc,
+    pmia: shellState.pmia,
+    omega: shellState.omega,
+    beth_q: shellState.beth_q,
+    spectral_gap: shellState.spectral_gap,
+    stasisIndex: shellState.stasisIndex
   }), [shellState]);
 
   return (

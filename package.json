@@ -97,7 +97,8 @@
     "verify:stage3-controlled-execution-opening": "node scripts/verify-stage3-controlled-execution-opening.cjs",
     "verify:stage3-runtime-health": "node scripts/verify-stage3-runtime-health.cjs",
     "verify:stage3-first-collection-opening": "node scripts/verify-stage3-first-collection-opening.cjs",
-    "benchmark:invariants": "node scripts/benchmark-invariants.cjs"
+    "benchmark:invariants": "node scripts/benchmark-invariants.cjs",
+    "test:coverage": "c8 --reporter=text --reporter=json --lines=50 --branches=40 --functions=50 node tests/run-all-tests.cjs"
   },
   "keywords": [],
   "author": "",
@@ -105,6 +106,7 @@
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "c8": "^11.0.0",
     "esbuild": "^0.25.11",
     "eslint": "^10.4.0",
     "eslint-plugin-react-hooks": "^7.1.1",

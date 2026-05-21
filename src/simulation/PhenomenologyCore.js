@@ -31,6 +31,8 @@ import { createLogger } from '../utils/logger.js';
  * @property {number} topo_factor
  * @property {number} omega
  * @property {number} relaxation_time
+ * @property {number} fragmentation_bound
+ * @property {number} invalid_regime_jumps
  */
 
 /**
@@ -72,7 +74,9 @@ export class PhenomenologyCore {
             omega_feedback_gain: 1,
             omega_critical: 1.0,      // Umbral Omega_c
             phenomenology_class: 'C', // 'C' | 'C^R'
-            relaxation_time: 1.0      // " = 1 / |ln(1 - "lambda)|
+            relaxation_time: 1.0,     // " = 1 / |ln(1 - "lambda)|
+            fragmentation_bound: 0,
+            invalid_regime_jumps: 0
         };
 
         // Historial para calculos de informacion
@@ -726,6 +730,98 @@ export class PhenomenologyCore {
         return (psi + epsilon * psi_prev) / (1 + epsilon);
     }
 
+    projectRegimeState(state = {}) {
+        const metrics = state?.metrics || state || {};
+        const ccc = Number.isFinite(Number(metrics.ccc)) ? Number(metrics.ccc) : this._stateToScalar(state);
+        const beth_q = Number.isFinite(Number(metrics.beth_q)) ? Number(metrics.beth_q) : this.phenomenologyState.beth_q;
+        const omega = Number.isFinite(Number(metrics.omega ?? metrics.omega_mean)) ? Number(metrics.omega ?? metrics.omega_mean) : this.phenomenologyState.omega;
+        const spectral_gap = Number.isFinite(Number(metrics.spectral_gap)) ? Number(metrics.spectral_gap) : this.phenomenologyState.spectral_gap;
+        const regime_class = metrics.regime_class
+            || metrics.phenomenology_class
+            || metrics.regime
+            || (ccc >= 0.9 && beth_q >= 0.6 && omega >= 0.8
+                ? 'STABLE_CORE'
+                : ccc >= 0.65 && beth_q >= 0.5
+                    ? 'CONSCIOUS'
+                    : ccc >= 0.3
+                        ? 'PRE_CONSCIOUS'
+                        : 'NULL');
+
+        return {
+            ccc,
+            beth_q,
+            omega,
+            spectral_gap,
+            regime_class,
+            interpretation_boundary: 'Pi_S finite runtime projection into R4 x regime labels; not a complete phenomenological metric space.'
+        };
+    }
+
+    regimeDistance(left = {}, right = {}) {
+        const a = left.regime_class ? left : this.projectRegimeState(left);
+        const b = right.regime_class ? right : this.projectRegimeState(right);
+        const numeric = Math.sqrt(
+            ((Number(a.ccc) - Number(b.ccc)) ** 2) +
+            ((Number(a.beth_q) - Number(b.beth_q)) ** 2) +
+            ((Number(a.omega) - Number(b.omega)) ** 2) +
+            ((Number(a.spectral_gap) - Number(b.spectral_gap)) ** 2)
+        );
+        const regimePenalty = a.regime_class === b.regime_class ? 0 : 0.35;
+        return numeric + regimePenalty;
+    }
+
+    detectInvalidRegimeJumps(trajectory = []) {
+        const projected = trajectory.map((state) => this.projectRegimeState(state));
+        const invalid = [];
+        for (let index = 1; index < projected.length; index += 1) {
+            const prev = projected[index - 1];
+            const current = projected[index];
+            const consciousToPre = prev.regime_class === 'CONSCIOUS'
+                && current.regime_class === 'PRE_CONSCIOUS'
+                && current.ccc > 0.9;
+            const stableToNull = prev.regime_class === 'STABLE_CORE'
+                && current.regime_class === 'NULL'
+                && current.ccc > 0.5;
+            if (consciousToPre || stableToNull) {
+                invalid.push({
+                    index,
+                    from: prev.regime_class,
+                    to: current.regime_class,
+                    ccc: current.ccc
+                });
+            }
+        }
+        this.phenomenologyState.invalid_regime_jumps = invalid.length;
+        return {
+            invalid_jumps: invalid,
+            invalid_jump_count: invalid.length,
+            interpretation_boundary: 'Finite regime-transition consistency check; invalidity is defined by runtime labels and CCC thresholds only.'
+        };
+    }
+
+    computeFragmentationFunctional(trajectory = [], threshold = 1.5) {
+        const projected = trajectory.map((state) => this.projectRegimeState(state));
+        let maxJump = 0;
+        const jumps = [];
+        for (let index = 1; index < projected.length; index += 1) {
+            const jump = this.regimeDistance(projected[index], projected[index - 1]);
+            jumps.push(jump);
+            if (jump > maxJump) maxJump = jump;
+        }
+        const invalid = this.detectInvalidRegimeJumps(trajectory);
+        this.phenomenologyState.fragmentation_bound = maxJump;
+        return {
+            fragmentation_bound: maxJump,
+            admissible: maxJump < threshold && invalid.invalid_jump_count === 0,
+            threshold,
+            trajectory_length: projected.length,
+            invalid_regime_jumps: invalid.invalid_jump_count,
+            jumps,
+            projected,
+            interpretation_boundary: 'Finite fragmentation functional over Pi_S trajectory projections; not a proof of complete metric-space continuity.'
+        };
+    }
+
     // =========================================================================
     // INTEGRADOR: CLASIFICACI"N DE SISTEMA - Phi, D, Omega
     // =========================================================================
@@ -980,7 +1076,9 @@ export class PhenomenologyCore {
             omega_feedback_gain: 1,
             omega_critical: 1.0,
             phenomenology_class: 'C',
-            relaxation_time: 1.0
+            relaxation_time: 1.0,
+            fragmentation_bound: 0,
+            invalid_regime_jumps: 0
         };
     }
 }

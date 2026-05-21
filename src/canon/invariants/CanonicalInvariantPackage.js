@@ -146,6 +146,49 @@ const buildPersistenceTrajectory = (ticks = [], metrics = {}) => {
   }];
 };
 
+const projectContinuityState = (tick = {}) => {
+  const metrics = tick?.metrics || tick || {};
+  const ccc = toFinite(metrics.ccc, 0);
+  const beth_q = toFinite(metrics.beth_q, 0);
+  const omega = toFinite(metrics.omega ?? metrics.omega_mean, 0);
+  const spectral_gap = toFinite(metrics.spectral_gap, 0);
+  const regime_class = metrics.regime_class
+    || metrics.phenomenology_class
+    || metrics.regime
+    || (ccc >= 0.9 && beth_q >= 0.6 && omega >= 0.8 ? 'STABLE_CORE' : ccc >= 0.65 && beth_q >= 0.5 ? 'CONSCIOUS' : ccc >= 0.3 ? 'PRE_CONSCIOUS' : 'NULL');
+  return { ccc, beth_q, omega, spectral_gap, regime_class };
+};
+
+const computeContinuityFormalSignals = (ticks = []) => {
+  const projected = (Array.isArray(ticks) ? ticks : []).map(projectContinuityState);
+  let fragmentationBound = 0;
+  let invalidRegimeJumps = 0;
+  for (let index = 1; index < projected.length; index += 1) {
+    const prev = projected[index - 1];
+    const current = projected[index];
+    const numeric = Math.sqrt(
+      ((current.ccc - prev.ccc) ** 2)
+      + ((current.beth_q - prev.beth_q) ** 2)
+      + ((current.omega - prev.omega) ** 2)
+      + ((current.spectral_gap - prev.spectral_gap) ** 2)
+    );
+    fragmentationBound = Math.max(fragmentationBound, numeric + (current.regime_class === prev.regime_class ? 0 : 0.35));
+    if (
+      (prev.regime_class === 'CONSCIOUS' && current.regime_class === 'PRE_CONSCIOUS' && current.ccc > 0.9)
+      || (prev.regime_class === 'STABLE_CORE' && current.regime_class === 'NULL' && current.ccc > 0.5)
+    ) {
+      invalidRegimeJumps += 1;
+    }
+  }
+  return {
+    piSProjectionDefined: projected.length > 0,
+    fragmentationBound,
+    invalidRegimeJumps,
+    continuityFormalAdmissible: fragmentationBound < 1.5 && invalidRegimeJumps === 0,
+    interpretationBoundary: 'Finite Pi_S and fragmentation signals over recorded ticks; not complete metric-space continuity.'
+  };
+};
+
 const runtimeCoverage = (signals = {}) => {
   const values = Object.values(signals);
   if (!values.length) return null;
@@ -293,6 +336,7 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     (normalizeHigher(mean(predictiveSeries) ?? metrics?.predictive_consistency, 0.5, 1) * 0.7)
     + (normalizeLower(metrics?.tau_recovery, 0, 20) * 0.3)
   );
+  const continuityFormal = computeContinuityFormalSignals(ticks);
 
   const differentiationScore = (
     (normalizeHigher(mean(bethSeries) ?? metrics?.beth_q, 0.2, 1) * 0.4)
@@ -452,15 +496,27 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
       name: 'operational_continuity',
       score: continuityScore,
       maturity: 'FULL_NATIVE',
-      runtimeSignals: ['metrics.predictive_consistency', 'metrics.tau_recovery'],
+      runtimeSignals: [
+        'metrics.predictive_consistency',
+        'metrics.tau_recovery',
+        'phenomenology.Pi_S',
+        'phenomenology.fragmentation_functional',
+        'phenomenology.invalid_regime_jumps'
+      ],
       directSignals: {
         predictiveConsistencyMean: mean(predictiveSeries) ?? toFinite(metrics?.predictive_consistency, null),
-        tauRecovery: toFinite(metrics?.tau_recovery, null)
+        tauRecovery: toFinite(metrics?.tau_recovery, null),
+        piSProjectionDefined: continuityFormal.piSProjectionDefined,
+        fragmentationBound: continuityFormal.fragmentationBound,
+        invalidRegimeJumps: continuityFormal.invalidRegimeJumps,
+        continuityFormalAdmissible: continuityFormal.continuityFormalAdmissible
       },
       provenance: {
         directRuntimeContribution: 1,
         residualProxyContribution: 0,
-        residualDependencies: [],
+        residualDependencies: [
+          continuityFormal.interpretationBoundary
+        ],
         supportMode: 'full_runtime_native'
       }
     }),

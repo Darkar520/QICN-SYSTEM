@@ -312,7 +312,8 @@
       "source_module": [
         "src/canon/invariants/CanonicalInvariantPackage.js",
         "src/canon/persistence/PersistenceCertifier.js",
-        "src/experiments/LegibilityCertifier.js"
+        "src/experiments/LegibilityCertifier.js",
+        "src/simulation/PhenomenologyCore.js"
       ],
       "source_artifact": [
         "invariant_package.json"
@@ -324,6 +325,9 @@
         "I_ri",
         "I_int",
         "I_cont",
+        "phenomenology.Pi_S",
+        "phenomenology.fragmentation_functional",
+        "phenomenology.invalid_regime_jumps",
         "I_diff",
         "I_leg",
         "legibility_certificate.L1_L6"
@@ -340,6 +344,7 @@
         "tests/inverse-limit.test.js",
         "tests/pmia-guardrails.v411.test.js",
         "tests/cognitive-loop-closure.v52.test.js",
+        "tests/continuity-formal.test.js",
         "tests/phenomenology-protocol-suite.v56.test.js",
         "tests/runtime-hygiene.test.js",
         "tests/legibility-certifier.test.js"
@@ -357,7 +362,7 @@
       "external_dependency": "none",
       "status": "documented_real",
       "non_claim_boundary": "Invariant support is not external closure.",
-      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_per includes finite forward-invariance and collapse-distance certification, not an analytic proof over all controls. I_ri includes finite-window inverse-limit compatibility only, not full inverse-limit preservation. I_leg includes a finite L1-L6 operational certificate without promoting semantic transparency or external validation."
+      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_per includes finite forward-invariance and collapse-distance certification, not an analytic proof over all controls. I_cont includes finite Pi_S projection and fragmentation-functional diagnostics, not complete metric-space continuity. I_ri includes finite-window inverse-limit compatibility only, not full inverse-limit preservation. I_leg includes a finite L1-L6 operational certificate without promoting semantic transparency or external validation."
     },
     {
       "id": "ART_harness_admissibility_preverdict",

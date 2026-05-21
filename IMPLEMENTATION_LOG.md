@@ -396,3 +396,13 @@ Files moved/removed include: `QICN GPT5.5/` moved outside the repo to `C:\Users\
 - Gate results: `node tests/persistence-forward-invariance.test.js` PASS; `npm test` PASS (124/124); `npm run build` PASS (`dist\bundle.js` 6.9 MB); `npm run verify:source-of-truth` PASS; `npm run verify:descriptor-registry` PASS (23 rows); `npm run verify:repro-bridge` PASS (0 relative delta); `npm run scoreboard:run` PASS (7/7, all 10/10).
 - Baseline comparison: PASS. All seven scoreboard dimensions remained 10/10; degradation >5%: none; degradation >15%: none.
 - Interpretation boundary: the certificate is finite, sampled, and operational. It does not prove compact forward-invariance for every admissible control sequence or every possible trajectory.
+
+## Fase A1.3: I_cont Pi_S And Fragmentation Functional
+
+- Extended `src/simulation/PhenomenologyCore.js` with `projectRegimeState`, `regimeDistance`, `detectInvalidRegimeJumps`, and `computeFragmentationFunctional`.
+- Extended `src/canon/invariants/CanonicalInvariantPackage.js` so `I_cont` exposes `piSProjectionDefined`, `fragmentationBound`, `invalidRegimeJumps`, and `continuityFormalAdmissible`.
+- Added `tests/continuity-formal.test.js` for Pi_S projection, bounded fragmentation, and invalid regime jump detection.
+- Updated descriptor/traceability/status docs for the finite continuity formalization.
+- Gate results: `node tests/continuity-formal.test.js` PASS; `npm test` PASS (125/125); `npm run build` PASS (`dist\bundle.js` 6.9 MB); `npm run verify:source-of-truth` PASS; `npm run verify:descriptor-registry` PASS (23 rows); `npm run verify:repro-bridge` PASS (0 relative delta); `npm run scoreboard:run` PASS (7/7, all 10/10).
+- Baseline comparison: PASS. All seven scoreboard dimensions remained 10/10; degradation >5%: none; degradation >15%: none.
+- Interpretation boundary: Pi_S is a finite runtime projection into `R4 x regime labels`, and fragmentation is computed over recorded trajectories only. This does not prove complete metric-space continuity or continuity of unobserved trajectories.

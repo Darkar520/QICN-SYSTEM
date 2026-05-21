@@ -314,3 +314,18 @@
 - Baseline comparison against `tests/baseline_scoreboard.json`: PASS. All seven dimensions remained at 10/10; degradation >5%: none; degradation >15%: none.
 - Decision/deviation: a parallel `npm run test:coverage` plus `npm run scoreboard:run` attempt transiently failed `tests/quantum-entropy-experimental-controls.v63.test.js` because both processes execute provider-mock entropy paths at the same time. The isolated test, sequential coverage run, and sequential scoreboard run all passed; the gate is recorded from the sequential evidence.
 - Boundary note: `npm install --save-dev husky` again reported 7 vulnerabilities and EBADENGINE under local Node v24.6.0 versus the declared Node 20.x. No `npm audit fix` was applied because dependency remediation is outside this phase and could change runtime behavior.
+
+## Fase 14: Operational Documentation
+
+- Created `CONTRIBUTING.md` with setup, verification commands, commit conventions, test addition rules, canon barrel guidance, and evidence-discipline boundaries.
+- Created `docs/ARCHITECTURE.md` with the post-split runtime map, component boundaries, evidence layers, and explicit notes that health/logging are operational diagnostics.
+- Created `docs/API_SURFACE.md` documenting public surfaces for `PhenomenologyCore`, `CanonicalInvariantPackage`, `FiniteProjectionEvaluator`, and `SimulationController`.
+- Updated `README.md` with CI badge, Quick Start, architecture link, and expanded verification commands.
+- Created `tests/documentation-professionalization.test.js` to verify required documents, README links, and API/architecture claims.
+- Decision/deviation: the roadmap listed `SimulationController.runTick` as a public API, but the real implementation does not expose it. The docs explicitly record that the browser tick loop remains in `src/components/SimulationEngine.jsx`.
+- `node tests/documentation-professionalization.test.js`: PASS.
+- `npx eslint src/ --max-warnings=50`: PASS with 2 warnings, both unused historical `react-hooks/exhaustive-deps` disable comments.
+- `npm run verify:source-of-truth`: PASS.
+- `npm run verify:descriptor-registry`: PASS. 23 registry rows validated.
+- `npm run build`: PASS. `dist\bundle.js` reported 6.9 MB.
+- `npm test`: PASS. 122/122 tests passed.

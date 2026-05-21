@@ -1,5 +1,7 @@
 # QICN Runtime Engineering Repository
 
+[![QICN Verification Pipeline](https://github.com/sickn33/QICN-SYSTEM/actions/workflows/verify.yml/badge.svg)](https://github.com/sickn33/QICN-SYSTEM/actions/workflows/verify.yml)
+
 ## Purpose
 
 This repository contains the operational implementation of the system, its runtime verification surface, and its engineering controls. It is intentionally separate from any frozen theoretical or canonical corpus.
@@ -45,6 +47,16 @@ npm run start:local
 
 If you need Netlify Functions locally, use the Netlify CLI with the same environment contract from `.env.example`.
 
+## Quick Start
+
+```powershell
+npm ci
+npm run build
+npm run start:local
+```
+
+Open `http://localhost:3000` after the local server starts.
+
 ## Test
 
 ```powershell
@@ -53,6 +65,31 @@ npm test
 npm run build
 npm run scoreboard:run
 ```
+
+## Architecture
+
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the post-split runtime
+map, component boundaries, and evidence-layer separation.
+
+## Verification
+
+Core gates:
+
+```powershell
+npm run verify:source-of-truth
+npm run verify:descriptor-registry
+npm run verify:repro-bridge
+npm test
+npm run test:coverage
+npm run build
+npm run scoreboard:run
+npx eslint src/ --max-warnings=50
+```
+
+Additional scoped verification commands exist for subjectivity, phenomenal
+bridge, comparative program, stage-3 readiness, and policy surfaces. Those
+commands remain internal support gates unless an external campaign explicitly
+closes them.
 
 ## What This Repository Does Not Claim
 

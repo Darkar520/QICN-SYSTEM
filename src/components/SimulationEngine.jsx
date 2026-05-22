@@ -25,6 +25,7 @@ import { PhenomenologyProtocolTracker, buildWorkspaceSnapshot } from '../utils/p
 import { CausalInterventionScheduler } from '../experiments/CausalInterventionScheduler.js';
 import { LifeCertifier } from '../experiments/LifeCertifier.js';
 import { FirstPersonCertifier } from '../subjectivity/FirstPersonCertifier.js';
+import PhenomenalBridgePanel from './PhenomenalBridgePanel.jsx';
 import preregisterInterventions from '../../config/interventions/preregister.v1.json';
 import { CANON_RUNTIME_SOURCE_OF_TRUTH, CANON_LEGACY_PATH_DECISIONS } from '../canon/sourceOfTruth.js';
 import { CANON_CLAIM_CATALOG, CANON_INVARIANT_CATALOG } from '../canon/claimMapping/canonicalClaimCatalog.js';
@@ -7197,6 +7198,11 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
         Validación empírica de la teoría QICN basada en los Axiomas RCIC. Manipula los parámetros fundamentales para probar que la conciencia emerge de la organización informacional substrate-agnóstica.
         <span className="block mt-2 text-xs text-cyan-300 italic">**Nota:** Los controles mutables (3 y 4) son modificados automáticamente por el motor Kaizen durante la simulación.</span>
       </p>
+
+      <PhenomenalBridgePanel
+        simulationStep={simulationStep}
+        runtimeHealth={runtimeHealth}
+      />
 
       {/* CONTROL 1: Complexity Factor (Cf) */}
       <div className="mb-4 p-4 bg-gray-700/50 rounded-xl border border-gray-600 relative group">

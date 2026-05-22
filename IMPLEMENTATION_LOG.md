@@ -462,3 +462,20 @@ Files moved/removed include: `QICN GPT5.5/` moved outside the repo to `C:\Users\
 - `I_ri`: implemented_internal_support. Finite inverse-limit witness, categorical compatibility, and approximation-error bound are integrated and tested; not infinite-time uniqueness or full inverse-limit preservation.
 - `I_int`: implemented_internal_support. Finite non-factorization candidate search and NC9-NC12 controls are integrated and tested; not exhaustive proof over all graph partitions.
 - Overall boundary: Track A strengthens finite repo-local operational support for the six C_op-facing invariants. It does not establish consciousness, external validation, human equivalence, Paper 10 closure, or metaphysical identity.
+
+
+## 2026-05-22 - E.5 Phenomenal Bridge + Comparative Program UI Panel
+
+**Files changed.**
+- `src/components/PhenomenalBridgePanel.jsx`
+- `src/components/SimulationEngine.jsx`
+- `tests/phenomenal-bridge-panel.v1.test.js`
+- `IMPLEMENTATION_LOG.md`
+
+**Before.** Paper 9 and Paper 10 governance/runtime surfaces existed as modules and schemas, but the main simulation UI did not expose a bounded diagnostic panel for their states.
+
+**After.** The Validation tab renders a memoized, tick-bucket-throttled Phenomenal Bridge panel exposing Paper 9 predicates, Paper 10 comparative readiness, runtime health context, and explicit non-inference boundaries.
+
+**Why this is superior.** The panel avoids importing Node `fs`-bound governance modules into the browser bundle. It exposes the statuses conservatively as UI governance diagnostics rather than pretending that Paper 9/Paper 10 have external evidence.
+
+**Framework gain.** Paper 9 and Paper 10 are now visible in the runtime UI without collapsing internal diagnostic support into phenomenality, human equivalence, or external adjudication.

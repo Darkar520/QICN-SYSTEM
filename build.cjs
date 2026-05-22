@@ -132,9 +132,10 @@ async function runBuild() {
       console.log('[QICN] Modo DEV activo: sin minify/metafile (~5-8s)');
     }
     const result = await esbuild.build({
-      entryPoints: ['./src/index.jsx'],
+      entryPoints: [path.join(__dirname, 'src', 'index.jsx')],
+      absWorkingDir: __dirname,
       bundle: true,
-      outfile: './dist/bundle.js',
+      outfile: path.join(distPath, 'bundle.js'),
       loader: { '.jsx': 'jsx', '.js': 'jsx', '.svg': 'dataurl', '.png': 'dataurl' },
       define: {
         ...clientRuntimeDefines,
@@ -153,9 +154,10 @@ async function runBuild() {
     });
 
     await esbuild.build({
-      entryPoints: ['./src/network_canvas_worker.js'],
+      entryPoints: [path.join(__dirname, 'src', 'network_canvas_worker.js')],
+      absWorkingDir: __dirname,
       bundle: true,
-      outfile: './dist/network_canvas_worker.js',
+      outfile: path.join(distPath, 'network_canvas_worker.js'),
       format: 'esm',
       minify: true,
       sourcemap: true,

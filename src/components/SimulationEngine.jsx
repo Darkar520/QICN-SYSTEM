@@ -23,6 +23,8 @@ import { SimulationController } from '../simulation/SimulationController.js';
 import { BudgetTracker, evaluateComputeBudgetEnvelope } from '../utils/cognitiveEmergenceEvaluation.js';
 import { PhenomenologyProtocolTracker, buildWorkspaceSnapshot } from '../utils/phenomenologyProtocolSuite.js';
 import { CausalInterventionScheduler } from '../experiments/CausalInterventionScheduler.js';
+import { LifeCertifier } from '../experiments/LifeCertifier.js';
+import { FirstPersonCertifier } from '../subjectivity/FirstPersonCertifier.js';
 import preregisterInterventions from '../../config/interventions/preregister.v1.json';
 import { CANON_RUNTIME_SOURCE_OF_TRUTH, CANON_LEGACY_PATH_DECISIONS } from '../canon/sourceOfTruth.js';
 import { CANON_CLAIM_CATALOG, CANON_INVARIANT_CATALOG } from '../canon/claimMapping/canonicalClaimCatalog.js';
@@ -1262,6 +1264,8 @@ export const QICNConsciousnessSystem = () => {
   const kaizenEngine = useRef(new KaizenMetamorphosisEngine(initialMutableConfig));
   const nodalLayer = useRef(new NodalProcessingLayer());
   const metaSovereigntyCheck = useRef(new MetaSovereigntyCheck());
+  const lifeCertifier = useRef(new LifeCertifier({ persistenceTrials: 64, persistenceTicksPerTrial: 4 }));
+  const firstPersonCertifier = useRef(new FirstPersonCertifier());
   const kaizenPendingEvalRef = useRef(null);
   const coherentCohortRef = useRef({
     nodes: [],
@@ -8469,6 +8473,34 @@ El sistema inteligente permite que QICN funcione de manera sostenible sin interr
       forcedNegativeTicksRemaining: toFiniteNumber(regimeTelemetry?.forcedNegativeTicksRemaining, 0),
       transformCooldownTicks: toFiniteNumber(regimeTelemetry?.transformCooldownTicks, 0)
     };
+    const lifeTrajectory = (postThresholdRegimeRef.current?.history || []).slice(-40).map((entry, index) => ({
+      tick: index,
+      metrics: {
+        ccc: toFiniteNumber(entry?.ccc, ccc),
+        pmia: toFiniteNumber(entry?.pmia, pmia),
+        omega: toFiniteNumber(entry?.omega, ontologicalState.omega),
+        beth_q: toFiniteNumber(ontologicalState.beth_q, 0),
+        spectral_gap: toFiniteNumber(ontologicalState.spectral_gap, 0),
+        stasis_index: toFiniteNumber(dynamicHealth.stasisIndex, 0)
+      }
+    }));
+    const lifeCertificate = lifeCertifier.current.certifyAll({
+      systemState: {
+        metrics: {
+          ccc,
+          pmia,
+          omega: ontologicalState.omega,
+          beth_q: ontologicalState.beth_q,
+          spectral_gap: ontologicalState.spectral_gap,
+          stasis_index: dynamicHealth.stasisIndex
+        },
+        topologyMetrics,
+        mutableConfig,
+        baselineConfig: initialMutableConfig
+      },
+      trajectory: lifeTrajectory
+    });
+    const firstPersonCertificate = firstPersonCertifier.current.certify(ontologicalCore.current);
     const pmiaDiagnostics = ontologicalCore.current.getPMIADiagnostics?.() || {
       smoothedGradient: 0,
       narrativeCoherence: 0,
@@ -8738,6 +8770,37 @@ Uso recomendado:
             {ontologicalCore.current.isHolographicShieldActive()
               ? "ℹ Escudo Holográfico: El decaimiento informacional ha sido bloqueado por cierre topológico."
               : "âš  Estado de autorreflexión: El sistema monitorea discrepancias métricas en tiempo real."}
+          </div>
+        </div>
+
+        <div className="mb-6 p-4 rounded-xl border border-fuchsia-500/30 bg-gray-900/60 shadow-[0_0_15px_rgba(217,70,239,0.08)]">
+          <div className="flex justify-between items-center mb-3">
+            <h4 className="text-sm font-bold text-fuchsia-300 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4" />
+              Subjetividad operacional (Papers 7-8)
+            </h4>
+            <div className="text-[10px] font-mono text-fuchsia-200">
+              L_op {lifeCertificate.pass ? 'PASS' : 'OBS'} | Sub_fp {firstPersonCertificate.pass ? 'PASS' : 'OBS'}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
+            {Object.values(lifeCertificate.conditions).map((entry) => (
+              <div key={entry.condition} className="rounded border border-fuchsia-900/40 bg-black/20 p-2">
+                <div className="text-[9px] text-fuchsia-200 uppercase tracking-wide">{entry.condition.replace('L', 'L ')}</div>
+                <div className={`text-sm font-mono ${entry.pass ? 'text-emerald-300' : 'text-amber-300'}`}>{(entry.score * 100).toFixed(1)}%</div>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+            {Object.values(firstPersonCertificate.fields).map((entry) => (
+              <div key={entry.field} className="rounded border border-purple-900/40 bg-black/20 p-2">
+                <div className="text-[9px] text-purple-200 uppercase tracking-wide">{entry.field}</div>
+                <div className={`text-sm font-mono ${entry.pass ? 'text-cyan-300' : 'text-slate-300'}`}>{(entry.value * 100).toFixed(1)}%</div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 text-[10px] text-fuchsia-200/70 border-t border-fuchsia-500/10 pt-2">
+            {firstPersonCertificate.interpretation_boundary}
           </div>
         </div>
 

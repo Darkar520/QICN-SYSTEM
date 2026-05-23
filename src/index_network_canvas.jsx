@@ -1,5 +1,5 @@
 /**
- * NETWORK CANVAS COMPONENT (v8.0 - ULTRATHINK 3D PROJECTION ENGINE)
+ * NETWORK CANVAS COMPONENT (v8.1 - CINEMATIC 2.5D PROJECTION ENGINE)
  * Motor de renderizado 3D de alta fidelidad con proyección de pinhole y rotación interactiva.
  * 
  * CARACTERÍSTICAS:
@@ -24,6 +24,10 @@ const computeNodesKeyOrdered = (nodes) => {
 };
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+const fract = (value) => value - Math.floor(value);
+
+const pseudoRandomUnit = (a, b = 0) => fract(Math.sin((a * 12.9898) + (b * 78.233)) * 43758.5453123);
 
 const toNodeArray = (value) => (Array.isArray(value) ? value.filter(Boolean) : []);
 
@@ -105,6 +109,239 @@ const getCoherenceStyle = (coh) => getSemanticState(coh);
 // Mantenida para compatibilidad con código generado por Codex
 const getNodeHueVariant = (baseHue, nodeId, scale = 1) => baseHue;
 
+const buildNodeSummary = (node) => {
+    if (!node) return null;
+    const coherence = clamp(Number(node.coherenceState) || 0, 0, 1);
+    const intensity = clamp(Number(node.intensity) || 0, 0, 1);
+    const state = getSemanticState(coherence);
+    const degree = Array.isArray(node.connections) ? node.connections.length : 0;
+    return {
+        id: node.id,
+        coherence,
+        intensity,
+        degree,
+        stateName: state.name
+    };
+};
+
+const sameNodeSummary = (a, b) => {
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    return a.id === b.id
+        && Math.abs(a.coherence - b.coherence) < 0.001
+        && Math.abs(a.intensity - b.intensity) < 0.001
+        && a.degree === b.degree
+        && a.stateName === b.stateName;
+};
+
+const buildNeighborhoodSet = (focusId, nodes) => {
+    const ids = new Set();
+    if (focusId === null || focusId === undefined) return ids;
+    ids.add(focusId);
+    for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+        if (!node) continue;
+        if (node.id === focusId && Array.isArray(node.connections)) {
+            for (let j = 0; j < node.connections.length; j++) {
+                ids.add(node.connections[j]?.targetId);
+            }
+        }
+        if (Array.isArray(node.connections) && node.connections.some((conn) => conn?.targetId === focusId)) {
+            ids.add(node.id);
+        }
+    }
+    return ids;
+};
+
+const findNearestProjectedNode = (projectedNodes, pointer, maxDistance = 28) => {
+    if (!pointer || !Number.isFinite(pointer.x) || !Number.isFinite(pointer.y)) return null;
+    let nearest = null;
+    let nearestScore = Infinity;
+    for (let i = 0; i < projectedNodes.length; i++) {
+        const pn = projectedNodes[i];
+        if (!pn || pn.scale < 0.12) continue;
+        const node = pn.node || {};
+        const intensity = clamp(Number(node.intensity) || 0, 0, 1);
+        const radius = (5 + intensity * 10) * pn.scale;
+        const hitRadius = clamp(radius + 12, 12, maxDistance);
+        const dx = pn.x2d - pointer.x;
+        const dy = pn.y2d - pointer.y;
+        const dist = Math.sqrt((dx * dx) + (dy * dy));
+        if (dist <= hitRadius && dist < nearestScore) {
+            nearest = pn;
+            nearestScore = dist;
+        }
+    }
+    return nearest;
+};
+
+const drawCinematicDepthBackground = (ctx, canvas, center, camera, nowMs, visualPerf = 1) => {
+    const panX = Number(camera?.panX) || 0;
+    const panY = Number(camera?.panY) || 0;
+    const width = canvas.width;
+    const height = canvas.height;
+    const maxDim = Math.max(width, height);
+    const minDim = Math.min(width, height);
+    const perf = clamp(Number(visualPerf) || 1, 0.35, 1);
+    const richBg = perf > 0.46;
+    const cosmicT = nowMs * 0.00016;
+    const vanishX = center.x + panX * 0.18 + Math.sin(cosmicT * 0.71) * width * 0.035;
+    const vanishY = center.y + panY * 0.12 + Math.cos(cosmicT * 0.59) * height * 0.03;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+
+    const bg = ctx.createLinearGradient(0, 0, width, height);
+    bg.addColorStop(0, '#030916');
+    bg.addColorStop(0.28, '#041327');
+    bg.addColorStop(0.62, '#070817');
+    bg.addColorStop(1, '#010106');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, width, height);
+
+    const well = ctx.createRadialGradient(vanishX, vanishY, minDim * 0.02, vanishX, vanishY, maxDim * 0.68);
+    well.addColorStop(0, 'rgba(56,189,248,0.24)');
+    well.addColorStop(0.24, 'rgba(14,165,233,0.10)');
+    well.addColorStop(0.55, 'rgba(79,70,229,0.08)');
+    well.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = well;
+    ctx.fillRect(0, 0, width, height);
+
+    const nebulaA = ctx.createRadialGradient(
+        vanishX - width * 0.28 + Math.sin(cosmicT * 0.9) * width * 0.08,
+        vanishY + height * 0.06 + Math.cos(cosmicT * 0.7) * height * 0.05,
+        0,
+        vanishX - width * 0.28,
+        vanishY + height * 0.06,
+        maxDim * 0.52
+    );
+    nebulaA.addColorStop(0, `rgba(34,211,238,${(0.16 * perf).toFixed(3)})`);
+    nebulaA.addColorStop(0.42, `rgba(14,116,144,${(0.07 * perf).toFixed(3)})`);
+    nebulaA.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = nebulaA;
+    ctx.fillRect(0, 0, width, height);
+
+    const nebulaB = ctx.createRadialGradient(
+        vanishX + width * 0.34 + Math.cos(cosmicT * 0.6) * width * 0.06,
+        vanishY - height * 0.22 + Math.sin(cosmicT * 0.77) * height * 0.05,
+        0,
+        vanishX + width * 0.34,
+        vanishY - height * 0.22,
+        maxDim * 0.44
+    );
+    nebulaB.addColorStop(0, `rgba(217,70,239,${(0.13 * perf).toFixed(3)})`);
+    nebulaB.addColorStop(0.5, `rgba(99,102,241,${(0.07 * perf).toFixed(3)})`);
+    nebulaB.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = nebulaB;
+    ctx.fillRect(0, 0, width, height);
+
+    if (richBg) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        ctx.lineCap = 'round';
+        for (let r = 0; r < 3; r++) {
+            const ribbonAlpha = (0.035 + r * 0.018) * perf;
+            ctx.strokeStyle = r === 0
+                ? `rgba(125,211,252,${ribbonAlpha.toFixed(3)})`
+                : r === 1
+                    ? `rgba(192,132,252,${ribbonAlpha.toFixed(3)})`
+                    : `rgba(52,211,153,${(ribbonAlpha * 0.78).toFixed(3)})`;
+            ctx.lineWidth = (18 + r * 12) * perf;
+            ctx.shadowBlur = 24 * perf;
+            ctx.shadowColor = ctx.strokeStyle;
+            ctx.beginPath();
+            ctx.moveTo(-width * 0.10, vanishY + (r - 1) * height * 0.16 + Math.sin(cosmicT + r) * height * 0.04);
+            ctx.bezierCurveTo(
+                width * 0.24,
+                vanishY - height * (0.30 - r * 0.06),
+                width * 0.66,
+                vanishY + height * (0.26 - r * 0.04),
+                width * 1.10,
+                vanishY - height * (0.08 + r * 0.05)
+            );
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    const starLayerCount = richBg ? 4 : 3;
+    for (let layer = 0; layer < starLayerCount; layer++) {
+        const depth = (layer + 1) / starLayerCount;
+        const count = Math.floor((34 + layer * 26) * perf);
+        const parallaxX = (panX * (0.008 + depth * 0.018)) + (Math.sin(cosmicT * (1.2 + depth)) * (8 + layer * 5));
+        const parallaxY = (panY * (0.006 + depth * 0.014)) + (Math.cos(cosmicT * (1.1 + depth)) * (5 + layer * 4));
+        for (let i = 0; i < count; i++) {
+            const rx = pseudoRandomUnit(i + 11, layer + 3);
+            const ry = pseudoRandomUnit(i + 29, layer + 7);
+            const twinkle = 0.48 + (0.52 * Math.sin(cosmicT * (3.2 + layer) + i * 0.41));
+            const sx = ((rx * width) + parallaxX + width) % width;
+            const sy = ((ry * height) + parallaxY + height) % height;
+            const radius = (0.45 + depth * 1.25 + twinkle * 0.32) * perf;
+            const alpha = (0.08 + depth * 0.18) * twinkle;
+            ctx.fillStyle = `rgba(226,232,240,${alpha.toFixed(3)})`;
+            ctx.beginPath();
+            ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+            ctx.fill();
+            if (layer >= 2 && i % 19 === 0) {
+                ctx.strokeStyle = `rgba(125,211,252,${(alpha * 0.36).toFixed(3)})`;
+                ctx.lineWidth = Math.max(0.4, radius * 0.38);
+                ctx.beginPath();
+                ctx.moveTo(sx, sy);
+                ctx.lineTo(sx - (10 + layer * 4) * perf, sy + (4 + layer * 2) * perf);
+                ctx.stroke();
+            }
+        }
+    }
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    ctx.strokeStyle = `rgba(34,211,238,${(0.055 * perf).toFixed(3)})`;
+    ctx.lineWidth = 0.75;
+    const rings = richBg ? 5 : 3;
+    for (let r = 1; r <= rings; r++) {
+        const radius = minDim * (0.14 + r * 0.095);
+        ctx.beginPath();
+        ctx.ellipse(vanishX, vanishY, radius * 1.55, radius * 0.58, Math.sin(cosmicT) * 0.08, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    ctx.restore();
+
+    const gridLines = richBg ? 9 : 6;
+    ctx.strokeStyle = `rgba(103,232,249,${(0.045 * perf).toFixed(3)})`;
+    ctx.lineWidth = 0.7;
+    for (let i = -gridLines; i <= gridLines; i++) {
+        const bottomX = (width * 0.5) + (i / gridLines) * width * 0.9;
+        ctx.beginPath();
+        ctx.moveTo(bottomX, height + 8);
+        ctx.lineTo(vanishX, vanishY);
+        ctx.stroke();
+    }
+    for (let i = 0; i < gridLines; i++) {
+        const t = i / Math.max(1, gridLines - 1);
+        const y = vanishY + Math.pow(t, 1.85) * (height - vanishY + 12);
+        const span = width * (0.12 + t * 0.95);
+        ctx.beginPath();
+        ctx.moveTo(vanishX - span, y);
+        ctx.lineTo(vanishX + span, y);
+        ctx.stroke();
+    }
+
+    const vignette = ctx.createRadialGradient(
+        width * 0.52,
+        height * 0.48,
+        minDim * 0.18,
+        width * 0.52,
+        height * 0.48,
+        maxDim * 0.72
+    );
+    vignette.addColorStop(0, 'rgba(2,6,23,0)');
+    vignette.addColorStop(0.72, 'rgba(2,6,23,0.20)');
+    vignette.addColorStop(1, 'rgba(0,0,0,0.62)');
+    ctx.fillStyle = vignette;
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+};
+
 
 const RENDER_STATE_META = {
     active: {
@@ -176,6 +413,13 @@ const NetworkCanvas = ({
     const lastRenderErrorRef = useRef({ code: 'none', message: '' });
     const renderStateRef = useRef({ state: 'recovering', detail: 'Inicializando malla nodal.', ts: 0 });
     const projectionSmoothingRef = useRef(new Map());
+    const interactionRef = useRef({
+        pointer: null,
+        hoveredId: null,
+        selectedId: null,
+        tooltip: null
+    });
+    const dragMovedRef = useRef(false);
 
     // ESTADO DE ROTACIÓN 3D (Ángulos en radianes)
     const [fpsDisplay, setFpsDisplay] = useState(60);
@@ -192,6 +436,8 @@ const NetworkCanvas = ({
         recoveryAttempts: 0,
         renderErrorCode: 'none'
     });
+    const [hoverNode, setHoverNode] = useState(null);
+    const [selectedNode, setSelectedNode] = useState(null);
     const isDragging = useRef(false);
     const dragModeRef = useRef('rotate');
     const lastMousePos = useRef({ x: 0, y: 0 });
@@ -218,6 +464,31 @@ const NetworkCanvas = ({
     const useWorkerRender = useMemo(() => {
         return workerMode && typeof OffscreenCanvas !== 'undefined' && typeof Worker !== 'undefined';
     }, [workerMode]);
+
+    const getCanvasPointFromEvent = useCallback((event) => {
+        const canvas = canvasRef.current;
+        if (!canvas || !event) return null;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / Math.max(1, rect.width);
+        const scaleY = canvas.height / Math.max(1, rect.height);
+        return {
+            x: clamp((event.clientX - rect.left) * scaleX, 0, canvas.width),
+            y: clamp((event.clientY - rect.top) * scaleY, 0, canvas.height),
+            cssX: event.clientX - rect.left,
+            cssY: event.clientY - rect.top
+        };
+    }, []);
+
+    const updateHoverSummary = useCallback((summary) => {
+        interactionRef.current.hoveredId = summary?.id ?? null;
+        interactionRef.current.tooltip = summary || null;
+        setHoverNode((prev) => (sameNodeSummary(prev, summary) ? prev : summary));
+    }, []);
+
+    const updateSelectedSummary = useCallback((summary) => {
+        interactionRef.current.selectedId = summary?.id ?? null;
+        setSelectedNode((prev) => (sameNodeSummary(prev, summary) ? prev : summary));
+    }, []);
 
     const setRenderStateSafe = useCallback((state, detail = '', errorCode = 'none', errorMessage = '') => {
         const now = Date.now();
@@ -412,6 +683,12 @@ const NetworkCanvas = ({
                         drawn_edges_count: Number(payload.drawnEdgesCount || payload.edgeCount || 0)
                     });
                 }
+                if ('hoverNode' in payload) {
+                    updateHoverSummary(payload.hoverNode || null);
+                }
+                if ('selectedNode' in payload) {
+                    setSelectedNode((prev) => (sameNodeSummary(prev, payload.selectedNode || null) ? prev : (payload.selectedNode || null)));
+                }
             }
         };
         worker.onerror = (event) => {
@@ -478,7 +755,7 @@ const NetworkCanvas = ({
         // FIX 2: canvasSize.width y canvasSize.height ELIMINADOS de las dependencias.
         // Re-incluirlos causaba que el effect re-ejecutara en cada resize, re-intentando transferControlToOffscreen()
         // en un canvas ya transferido => InvalidStateError. El resize se maneja via postMessage (Fix 3).
-    }, [useWorkerRender, onTelemetry, perspective, center, projectionLimits, setRenderStateSafe, queueCanvasRecovery]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [useWorkerRender, onTelemetry, perspective, center, projectionLimits, setRenderStateSafe, queueCanvasRecovery, updateHoverSummary]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // FIX 3: Enviar resize al worker via postMessage en lugar de re-inicializar el useEffect del worker.
     // Esto mantiene el canvas offscreen vivo y actualiza solo las dimensiones.
@@ -734,6 +1011,10 @@ const NetworkCanvas = ({
                     edges,
                     rotation: { x: currentRotX, y: currentRotY },
                     camera: cameraRef.current,
+                    interaction: {
+                        pointer: interactionRef.current.pointer,
+                        selectedId: interactionRef.current.selectedId
+                    },
                     deterministic,
                     seed,
                     tick
@@ -841,6 +1122,20 @@ const NetworkCanvas = ({
             projectedNodes.forEach(pn => {
                 projectedById.set(pn.node.id, pn);
             });
+
+            const hoveredProjection = findNearestProjectedNode(projectedNodes, interactionRef.current.pointer);
+            const hoverSummary = hoveredProjection ? buildNodeSummary(hoveredProjection.node) : null;
+            updateHoverSummary(hoverSummary);
+            const selectedProjection = interactionRef.current.selectedId !== null
+                ? projectedById.get(interactionRef.current.selectedId)
+                : null;
+            const selectedSummary = selectedProjection ? buildNodeSummary(selectedProjection.node) : null;
+            if (interactionRef.current.selectedId !== null) {
+                setSelectedNode((prev) => (sameNodeSummary(prev, selectedSummary) ? prev : selectedSummary));
+            }
+            const focusId = interactionRef.current.selectedId ?? interactionRef.current.hoveredId;
+            const neighborhoodIds = buildNeighborhoodSet(focusId, focusedNodes);
+            const hasFocus = neighborhoodIds.size > 0;
 
             // 4. DIBUJO — Fondo atmosférico ULTRATHINK
             // === FONDO: Gradiente profundo multi-stop diagonal ===
@@ -979,6 +1274,7 @@ const NetworkCanvas = ({
             ctx.fillStyle = vignette;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            drawCinematicDepthBackground(ctx, canvas, center, cameraRef.current, now, visualPerf);
 
             ctx.globalCompositeOperation = 'source-over';
 
@@ -1025,13 +1321,16 @@ const NetworkCanvas = ({
 
             edges.forEach(edge => {
                 const { from, to, weight, opacity } = edge;
+                const edgeInFocus = hasFocus && neighborhoodIds.has(from.node.id) && neighborhoodIds.has(to.node.id);
+                const edgeDim = hasFocus && !edgeInFocus;
                 const fromC = clamp((Number(from.node.coherenceState) || 0) * 1.4, 0, 1);
                 const toC = clamp((Number(to.node.coherenceState) || 0) * 1.4, 0, 1);
                 const fromHue = getNodeHueVariant(10 + (fromC * 190), from.node.id, from.scale);
                 const toHue = getNodeHueVariant(10 + (toC * 190), to.node.id, to.scale);
                 const isEntangled = weight > 0.88;
                 const depthAlpha = clamp((from.scale + to.scale) * 0.45, 0.15, 1);
-                const alpha = clamp(opacity * depthAlpha * performanceFactor, 0.04, isEntangled ? 0.65 : 0.40);
+                const focusAlpha = edgeDim ? 0.18 : edgeInFocus ? 1.35 : 1;
+                const alpha = clamp(opacity * depthAlpha * performanceFactor * focusAlpha, 0.025, isEntangled || edgeInFocus ? 0.78 : 0.40);
                 const avgHue = (fromHue + toHue) * 0.5;
                 const grad = highFx ? ctx.createLinearGradient(from.x2d, from.y2d, to.x2d, to.y2d) : null;
 
@@ -1050,7 +1349,7 @@ const NetworkCanvas = ({
                     } else {
                         ctx.shadowBlur = 0;
                     }
-                    ctx.lineWidth = (1.8 + weight * 2.2) * clamp(from.scale, 0.4, 1.5);
+                    ctx.lineWidth = (1.8 + weight * 2.2) * clamp(from.scale, 0.4, 1.5) * (edgeInFocus ? 1.22 : edgeDim ? 0.72 : 1);
                 } else {
                     if (grad) {
                         grad.addColorStop(0, `hsla(${fromHue.toFixed(1)} 90% 60% / ${alpha.toFixed(3)})`);
@@ -1060,12 +1359,32 @@ const NetworkCanvas = ({
                         ctx.strokeStyle = `hsla(${avgHue.toFixed(1)} 90% 60% / ${alpha.toFixed(3)})`;
                     }
                     ctx.shadowBlur = 0;
-                    ctx.lineWidth = (0.8 + weight * 1.2) * clamp(from.scale, 0.45, 1.3);
+                    ctx.lineWidth = (0.8 + weight * 1.2) * clamp(from.scale, 0.45, 1.3) * (edgeInFocus ? 1.35 : edgeDim ? 0.68 : 1);
                 }
 
+                const midX = (from.x2d + to.x2d) * 0.5;
+                const midY = (from.y2d + to.y2d) * 0.5;
+                const dx = to.x2d - from.x2d;
+                const dy = to.y2d - from.y2d;
+                const curve = clamp((weight - 0.48) * 18, -5, 12) * clamp((from.scale + to.scale) * 0.5, 0.45, 1.3);
+                const controlX = midX - dy * 0.018 * curve;
+                const controlY = midY + dx * 0.018 * curve;
+                if (edgeInFocus || isEntangled) {
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'screen';
+                    ctx.strokeStyle = isEntangled
+                        ? `rgba(253,224,71,${(alpha * 0.26).toFixed(3)})`
+                        : `rgba(103,232,249,${(alpha * 0.22).toFixed(3)})`;
+                    ctx.lineWidth *= 2.6;
+                    ctx.beginPath();
+                    ctx.moveTo(from.x2d, from.y2d);
+                    ctx.quadraticCurveTo(controlX, controlY, to.x2d, to.y2d);
+                    ctx.stroke();
+                    ctx.restore();
+                }
                 ctx.beginPath();
                 ctx.moveTo(from.x2d, from.y2d);
-                ctx.lineTo(to.x2d, to.y2d);
+                ctx.quadraticCurveTo(controlX, controlY, to.x2d, to.y2d);
                 ctx.stroke();
                 ctx.shadowBlur = 0;
             });
@@ -1106,6 +1425,10 @@ const NetworkCanvas = ({
             projectedNodes.forEach(pNode => {
                 const { node, x2d, y2d, scale } = pNode;
                 if (scale < 0.1) return;
+                const nodeInFocus = hasFocus && neighborhoodIds.has(node.id);
+                const nodeDim = hasFocus && !nodeInFocus;
+                const nodeSelected = interactionRef.current.selectedId === node.id;
+                const nodeHovered = interactionRef.current.hoveredId === node.id;
 
                 const coh = clamp(Number(node.coherenceState) || 0, 0, 1);
                 const inten = clamp(Number(node.intensity) || 0, 0, 1);
@@ -1113,20 +1436,39 @@ const NetworkCanvas = ({
                 // PULSO LENTO Y SUAVE: 0.5 rad/s, ±4% — elimina el flickering
                 const pulseAmp = 0.02 + coh * 0.04;  // max ±6% (era ±16%)
                 const pulseMod = 1 + pulseAmp * Math.sin(pulseT * 0.5 + (node.phase || 0));
-                const radius = baseRadius * scale * pulseMod;
+                const focusScale = nodeSelected ? 1.22 : nodeHovered ? 1.14 : nodeInFocus ? 1.06 : 1;
+                const radius = baseRadius * scale * pulseMod * focusScale;
                 const style = getSemanticState(coh);
                 const hueVar = style.hue;
                 const coreColor = style.core;
-                const opacity = clamp(Math.min(1, coh * 1.5 + 0.2) * scale, 0.12, 0.97);
+                const dimFactor = nodeDim ? 0.34 : 1;
+                const opacity = clamp(Math.min(1, coh * 1.5 + 0.2) * scale * dimFactor, nodeDim ? 0.05 : 0.12, nodeSelected || nodeHovered ? 1 : 0.97);
+                const depthLift = clamp(scale, 0.25, 1.8);
+                const shadowAlpha = clamp(0.10 + depthLift * 0.07, 0.06, 0.20) * dimFactor;
+                ctx.save();
+                ctx.globalCompositeOperation = 'multiply';
+                ctx.fillStyle = `rgba(0,0,0,${shadowAlpha.toFixed(3)})`;
+                ctx.beginPath();
+                ctx.ellipse(
+                    x2d + radius * 0.45,
+                    y2d + radius * 0.62,
+                    radius * 1.1,
+                    radius * 0.42,
+                    0.18,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+                ctx.restore();
 
                 // === HALO: siempre visible, blend 'screen' (suave, sin strobe) ===
                 // SE ELIMINÓ: highFx && — causaba halos ON/OFF al borde de 30fps
-                const canDrawHalo = haloCount < maxHaloNodes && coh > 0.40;
+                const canDrawHalo = haloCount < maxHaloNodes && coh > 0.40 && !nodeDim;
                 if (canDrawHalo) {
-                    const haloR = radius * (coh > 0.85 ? 3.8 : coh > 0.65 ? 3.0 : 2.2);
+                    const haloR = radius * (nodeSelected ? 4.6 : nodeHovered ? 4.2 : coh > 0.85 ? 3.8 : coh > 0.65 ? 3.0 : 2.2);
                     const haloAlpha = clamp(
                         (0.05 + coh * 0.20) * performanceFactor,
-                        0.03, 0.28
+                        0.03, nodeSelected || nodeHovered ? 0.38 : 0.28
                     ) * clamp(scale, 0.4, 1.1);
                     ctx.save();
                     ctx.globalCompositeOperation = 'screen'; // SIN STROBE vs 'lighter'
@@ -1188,8 +1530,8 @@ const NetworkCanvas = ({
                 // === BORDE exterior luminoso ===
                 const borderAlpha = clamp(opacity * 0.85, 0.18, 0.92);
                 ctx.strokeStyle = `hsla(${hueVar} 100% 80% / ${borderAlpha.toFixed(3)})`;
-                ctx.lineWidth = clamp(1.2 + coh * 1.2, 0.8, 2.4) * scale;
-                ctx.shadowBlur = coh > 0.75 ? 7 * scale : 0;
+                ctx.lineWidth = clamp(1.2 + coh * 1.2, 0.8, 2.4) * scale * (nodeSelected ? 1.7 : nodeHovered ? 1.45 : 1);
+                ctx.shadowBlur = nodeSelected || nodeHovered ? 12 * scale : coh > 0.75 ? 7 * scale : 0;
                 ctx.shadowColor = coreColor;
                 ctx.stroke();
                 ctx.shadowBlur = 0;
@@ -1206,6 +1548,21 @@ const NetworkCanvas = ({
                 ctx.lineWidth = clamp(0.8 + coh * 0.6, 0.5, 1.6) * scale;
                 ctx.shadowBlur = 0;
                 ctx.stroke();
+
+                if (nodeSelected || nodeHovered) {
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'screen';
+                    ctx.strokeStyle = nodeSelected
+                        ? 'rgba(255,245,157,0.92)'
+                        : 'rgba(103,232,249,0.78)';
+                    ctx.lineWidth = Math.max(1, 1.2 * scale);
+                    ctx.setLineDash([Math.max(3, 5 * scale), Math.max(2, 4 * scale)]);
+                    ctx.beginPath();
+                    ctx.arc(x2d, y2d, radius * (nodeSelected ? 1.95 : 1.72), 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.restore();
+                }
             });
 
             if (performanceFactor > 0.45) {
@@ -1310,6 +1667,9 @@ const NetworkCanvas = ({
                     visible_on_screen_count: visibleOnscreen,
                     projected_nodes_count: projectedNodes.length,
                     drawn_edges_count: edges.length,
+                    hover_node_id: hoverSummary?.id ?? null,
+                    selected_node_id: selectedSummary?.id ?? null,
+                    focus_neighborhood_size: neighborhoodIds.size,
                     render_trace_hash: traceHash,
                     render_trace_op_count: traceOpCount
                 });
@@ -1345,7 +1705,7 @@ const NetworkCanvas = ({
             cameraRef.current = { zoom: 1, panX: 0, panY: 0 };
             nodesCacheRef.current = { ts: 0, nodes: [] };
         }
-    }, [nodalLayer, isRunning, createParticles, deterministic, seed, onTelemetry, perspective, center, projectionLimits, useWorkerRender, setRenderStateSafe, paintRecoveryCanvas, queueCanvasRecovery]);
+    }, [nodalLayer, isRunning, createParticles, deterministic, seed, onTelemetry, perspective, center, projectionLimits, useWorkerRender, setRenderStateSafe, paintRecoveryCanvas, queueCanvasRecovery, updateHoverSummary]);
 
     const handleReactivateNetwork = useCallback(() => {
         const count = viewportMode === 'mobile' ? 180 : viewportMode === 'tablet' ? 260 : 340;
@@ -1370,6 +1730,8 @@ const NetworkCanvas = ({
 
     // HANDLERS DE INTERACCIÓN
     const handleMouseDown = (e) => {
+        interactionRef.current.pointer = getCanvasPointFromEvent(e);
+        dragMovedRef.current = false;
         if (e.button === 2 || e.button === 1 || e.shiftKey) {
             dragModeRef.current = 'pan';
         } else {
@@ -1380,10 +1742,14 @@ const NetworkCanvas = ({
     };
 
     const handleMouseMove = useCallback((e) => {
+        interactionRef.current.pointer = getCanvasPointFromEvent(e);
         if (!isDragging.current) return;
 
         const dx = e.clientX - lastMousePos.current.x;
         const dy = e.clientY - lastMousePos.current.y;
+        if (Math.abs(dx) + Math.abs(dy) > 4) {
+            dragMovedRef.current = true;
+        }
 
         if (dragModeRef.current === 'pan') {
             cameraRef.current = clampCamera({
@@ -1402,7 +1768,7 @@ const NetworkCanvas = ({
         lastMousePos.current = { x: e.clientX, y: e.clientY };
 
         if (!isRunning) draw(); // Redibujar inmediatamente al mover si está en pausa
-    }, [isRunning, draw]);
+    }, [isRunning, draw, getCanvasPointFromEvent]);
 
     const handleMouseUp = useCallback(() => {
         isDragging.current = false;
@@ -1411,6 +1777,21 @@ const NetworkCanvas = ({
             autoRotBaseRef.current = { tick0: tick, rotY0: rotationRef.current.y };
         }
     }, [deterministic, tick]);
+
+    const handleCanvasClick = useCallback(() => {
+        if (dragMovedRef.current) {
+            dragMovedRef.current = false;
+            return;
+        }
+        updateSelectedSummary(interactionRef.current.tooltip || null);
+        if (!isRunning) draw();
+    }, [draw, isRunning, updateSelectedSummary]);
+
+    const handleMouseLeave = useCallback(() => {
+        interactionRef.current.pointer = null;
+        updateHoverSummary(null);
+        handleMouseUp();
+    }, [handleMouseUp, updateHoverSummary]);
 
     const handleWheel = useCallback((e) => {
         e.preventDefault();
@@ -1475,6 +1856,8 @@ const NetworkCanvas = ({
             isDragging.current = true;
             dragModeRef.current = 'rotate';
             lastMousePos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            interactionRef.current.pointer = getCanvasPointFromEvent(e.touches[0]);
+            dragMovedRef.current = false;
         } else if (e.touches.length >= 2) {
             isDragging.current = true;
             dragModeRef.current = 'pan';
@@ -1485,8 +1868,10 @@ const NetworkCanvas = ({
             touchStateRef.current.startPanY = cameraRef.current.panY;
             const mid = getTouchMidpoint(e.touches);
             lastMousePos.current = { x: mid.x, y: mid.y };
+            interactionRef.current.pointer = null;
+            dragMovedRef.current = true;
         }
-    }, [touchEnabled, handleDoubleClick]);
+    }, [touchEnabled, handleDoubleClick, getCanvasPointFromEvent]);
 
     const handleTouchMove = useCallback((e) => {
         if (!touchEnabled) return;
@@ -1494,6 +1879,7 @@ const NetworkCanvas = ({
         e.preventDefault();
 
         if (e.touches.length === 1 && !touchStateRef.current.active) {
+            interactionRef.current.pointer = getCanvasPointFromEvent(e.touches[0]);
             handleMouseMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
             return;
         }
@@ -1502,6 +1888,9 @@ const NetworkCanvas = ({
             const mid = getTouchMidpoint(e.touches);
             const dx = mid.x - lastMousePos.current.x;
             const dy = mid.y - lastMousePos.current.y;
+            if (Math.abs(dx) + Math.abs(dy) > 4) {
+                dragMovedRef.current = true;
+            }
             cameraRef.current = clampCamera({
                 ...cameraRef.current,
                 panX: cameraRef.current.panX + dx,
@@ -1518,7 +1907,7 @@ const NetworkCanvas = ({
             }, canvasRef.current);
             if (!isRunning) draw();
         }
-    }, [touchEnabled, isRunning, draw, handleMouseMove]);
+    }, [touchEnabled, isRunning, draw, handleMouseMove, getCanvasPointFromEvent]);
 
     const handleTouchEnd = useCallback(() => {
         isDragging.current = false;
@@ -1566,10 +1955,14 @@ const NetworkCanvas = ({
         <div
             ref={containerRef}
             className="relative cursor-grab active:cursor-grabbing overflow-hidden rounded-xl border border-purple-500/30 shadow-2xl bg-gradient-to-b from-slate-950 via-[#040816] to-black"
+            role="application"
+            aria-label="Red nodal interactiva: arrastra para rotar, usa scroll para zoom y click para fijar un nodo."
+            tabIndex={0}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+            onClick={handleCanvasClick}
             onWheel={handleWheel}
             onDoubleClick={handleDoubleClick}
             onTouchStart={handleTouchStart}
@@ -1616,6 +2009,7 @@ const NetworkCanvas = ({
             <div
                 className="absolute top-4 left-4 pointer-events-auto flex items-center gap-1 bg-black/45 border border-cyan-500/30 rounded-lg p-1"
                 onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
             >
                 <button
                     type="button"
@@ -1665,7 +2059,7 @@ const NetworkCanvas = ({
             <div className={`absolute top-4 right-4 pointer-events-none flex flex-col items-end gap-1 ${uiDensity === 'compact' ? 'scale-90 origin-top-right' : ''}`}>
                 <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono text-cyan-400 bg-cyan-900/30 px-2 py-0.5 rounded border border-cyan-500/30">
-                        3D ENGINE v8.0 Active
+                        2.5D ENGINE v8.1 Active
                     </span>
                     <span className="text-[10px] font-mono text-purple-400 bg-purple-900/30 px-2 py-0.5 rounded border border-purple-500/30">
                         {fpsDisplay} FPS
@@ -1694,6 +2088,35 @@ const NetworkCanvas = ({
                     N {drawStats.visibleNodes} | E {drawStats.edgeCount} | P {drawStats.projectedNodes} | OnScreen {drawStats.visibleOnScreen} | Recovery {drawStats.recoveryAttempts}
                 </div>
             </div>
+
+            {(selectedNode || hoverNode) && (
+                <div
+                    className="absolute pointer-events-none max-w-[240px] rounded-lg border border-cyan-400/35 bg-slate-950/88 px-3 py-2 text-[10px] font-mono text-slate-100 shadow-[0_0_22px_rgba(34,211,238,0.18)] backdrop-blur-sm"
+                    style={{
+                        left: interactionRef.current.pointer?.cssX
+                            ? `${Math.min(Math.max(12, interactionRef.current.pointer.cssX + 14), Math.max(12, (canvasSize.width / canvasSize.dpr) - 250))}px`
+                            : '14px',
+                        top: interactionRef.current.pointer?.cssY
+                            ? `${Math.min(Math.max(12, interactionRef.current.pointer.cssY + 14), Math.max(12, (canvasSize.height / canvasSize.dpr) - 116))}px`
+                            : '72px'
+                    }}
+                    data-testid="network-node-focus-tooltip"
+                >
+                    <div className="mb-1 flex items-center justify-between gap-3 text-cyan-200">
+                        <span>{selectedNode ? 'Nodo fijado' : 'Nodo enfocado'}</span>
+                        <span className="text-amber-200">#{selectedNode?.id ?? hoverNode?.id}</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-slate-300">
+                        <span>estado</span><span className="text-right text-emerald-200">{selectedNode?.stateName ?? hoverNode?.stateName}</span>
+                        <span>coh</span><span className="text-right">{(((selectedNode?.coherence ?? hoverNode?.coherence) || 0) * 100).toFixed(1)}%</span>
+                        <span>int</span><span className="text-right">{(((selectedNode?.intensity ?? hoverNode?.intensity) || 0) * 100).toFixed(1)}%</span>
+                        <span>grado</span><span className="text-right">{selectedNode?.degree ?? hoverNode?.degree ?? 0}</span>
+                    </div>
+                    <div className="mt-1 border-t border-cyan-500/20 pt-1 text-[9px] text-cyan-200/70">
+                        Diagnostico visual interno; no es gate ni validacion externa.
+                    </div>
+                </div>
+            )}
 
             {/* Guía Visual */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/20 text-[9px] uppercase tracking-widest font-bold text-center px-2">

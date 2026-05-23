@@ -15,6 +15,10 @@ try {
   assert.match(panelSource, /stage3_6b_runtime_health_and_stage3_7_opening_defined/, 'Panel must expose Paper 10 state.');
   assert.match(panelSource, /Interpretation boundary/, 'Panel must expose an interpretation boundary.');
   assert.match(panelSource, /not phenomenality evidence/, 'Panel must keep non-inference visible.');
+  assert.match(panelSource, /Bridge diagnostics/, 'Panel must expose bridge diagnostics as telemetry.');
+  assert.match(panelSource, /internal telemetry proxies only/, 'Panel must keep bridge diagnostics epistemically bounded.');
+  assert.match(panelSource, /not Sub_bridge gates/, 'Panel must block diagnostic promotion to Sub_bridge.');
+  assert.doesNotMatch(panelSource, /CanonicalInvariantPackage|scoreboard|claim_mapping_snapshot/, 'Panel diagnostics must not wire into claim-promotion gates.');
   assert.doesNotMatch(panelSource, /from 'fs'|from "fs"|require\('fs'\)/, 'Browser panel must not import Node fs-bound layers.');
 
   assert.match(engineSource, /PhenomenalBridgePanel/, 'SimulationEngine must import and render PhenomenalBridgePanel.');

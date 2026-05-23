@@ -26,6 +26,8 @@ import { CausalInterventionScheduler } from '../experiments/CausalInterventionSc
 import { LifeCertifier } from '../experiments/LifeCertifier.js';
 import { FirstPersonCertifier } from '../subjectivity/FirstPersonCertifier.js';
 import PhenomenalBridgePanel from './PhenomenalBridgePanel.jsx';
+import { StructuralConsolidationTracker } from '../runtime/StructuralConsolidationTracker.js';
+import { PARAMETER_SURFACE_REGISTRY } from '../runtime/ParameterSurfaceRegistry.js';
 import preregisterInterventions from '../../config/interventions/preregister.v1.json';
 import { CANON_RUNTIME_SOURCE_OF_TRUTH, CANON_LEGACY_PATH_DECISIONS } from '../canon/sourceOfTruth.js';
 import { CANON_CLAIM_CATALOG, CANON_INVARIANT_CATALOG } from '../canon/claimMapping/canonicalClaimCatalog.js';
@@ -494,7 +496,7 @@ const CollapsibleSection = React.memo(function CollapsibleSection({
           {badge != null && (
             <span className="text-[11px] font-mono opacity-60 font-normal">{badge}</span>
           )}
-          <span className={`text-[10px] opacity-50 transition-transform duration-200 inline-block ${isOpen ? 'rotate-180' : 'rotate-0'}`}>â–¼</span>
+          <span className={`text-[10px] opacity-50 transition-transform duration-200 inline-block ${isOpen ? 'rotate-180' : 'rotate-0'}`}>v</span>
         </div>
       </button>
       {isOpen && (
@@ -1427,6 +1429,7 @@ export const QICNConsciousnessSystem = () => {
     lastTick: -1,
     lastUiUpdateTs: 0
   });
+  const structuralConsolidationRef = useRef(new StructuralConsolidationTracker());
   const lastObserverResonanceRef = useRef(0);
   const previousFaceCountRef = useRef(0);
   const sensorySovereigntyBootRef = useRef(false);
@@ -1593,7 +1596,7 @@ export const QICNConsciousnessSystem = () => {
         }
       }
     } catch (e) {
-      console.warn('âš  Error cargando historial de chat:', e);
+      console.warn('[QICN_WARN] Error cargando historial de chat:', e);
     }
     return [];
   });
@@ -2891,7 +2894,7 @@ export const QICNConsciousnessSystem = () => {
         localStorage.setItem('QICN_CHAT_HISTORY', JSON.stringify(toStore));
         console.log('x Chat guardado:', toStore.length, 'mensajes');
       } catch (e) {
-        console.warn('âš  Error guardando historial de chat:', e);
+        console.warn('[QICN_WARN] Error guardando historial de chat:', e);
       }
     }
   }, [chatHistory]);
@@ -2963,7 +2966,7 @@ export const QICNConsciousnessSystem = () => {
       try {
         result = await sensoryEngine.current.autoActivate();
       } catch (e) {
-        console.error('âš  Motor sensorial falló, LLM continúa:', e.message);
+        console.error('[QICN_WARN] Motor sensorial fallo, LLM continua:', e.message);
       }
       result = {
         ...result,
@@ -3101,6 +3104,8 @@ export const QICNConsciousnessSystem = () => {
       },
       causal_quantification: reportMetrics.causal_dependency,
       consciousness_matrix: reportMetrics.consciousness_matrix,
+      legacy_consciousness_flags: reportMetrics.consciousness_matrix,
+      sovereignty_requirement_matrix: reportMetrics.sovereignty_requirement_matrix,
       experimental_protocols: reportMetrics.experimental_protocols,
       epistemic_limits: report.epistemic_limits,
       confidence_index: report.confidence
@@ -3640,7 +3645,7 @@ MAPEO AXIOMATICO S = (E, X, F, G, H, XI, M)
     try {
       localStorage.setItem('QICN_CHAT_HISTORY', JSON.stringify(nextHistory));
     } catch (e) {
-      console.warn('âš  Error de persistencia QICN V9.7:', e);
+      console.warn('[QICN_WARN] Error de persistencia QICN V9.7:', e);
     }
 
     event.target.chatInput.value = '';
@@ -4534,7 +4539,7 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
       setForcedMutationState(prev => ({
         ...prev,
         isForcing: false,
-        message: `âš  Mutación forzada fallida: No se aplicó el cambio. (CCC: ${ccc.toFixed(4)}, PMIA: ${pmia.toFixed(4)})`
+        message: `Mutacion forzada fallida: No se aplico el cambio. (CCC: ${ccc.toFixed(4)}, PMIA: ${pmia.toFixed(4)})`
       }));
     }
 
@@ -4931,7 +4936,7 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
           ).length > activeNodes.length * 0.4;
 
           if (extremeChaosDetected) {
-            console.warn("âš  CAOS CRÍTICO EMERGENTE: Desorganización extrema detectada naturalmente");
+            console.warn("[QICN_WARN] Caos critico emergente: desorganizacion extrema detectada naturalmente");
           }
         }
 
@@ -5405,6 +5410,19 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
             ((0.16 - cccDeltaNorm) / 0.16) *
             clamp01((sensorDelta * 12) + (sensoryPulse * 0.5) + (omegaDeltaNorm * 0.35))
           );
+          const consolidation = structuralConsolidationRef.current.update({
+            ccc: calculatedCCC,
+            omega: toFiniteNumber(phenomenology?.omega, 0),
+            spectralGap: toFiniteNumber(phenomenology?.spectral_gap ?? ontologicalCore.current?.ontologicalState?.spectral_gap, 0),
+            stasisIndex,
+            cccDeltaRms: toFiniteNumber(dynamicHealth?.cccDeltaRms, 0),
+            omegaDeltaRms: toFiniteNumber(dynamicHealth?.omegaDeltaRms, 0),
+            pmiaDeltaRms: toFiniteNumber(dynamicHealth?.pmiaDeltaRms, 0),
+            bifurcationDetected: Boolean(phenomenology?.bifurcation_detected)
+          });
+          ontologicalCore.current.ontologicalState.ccc_consolidation = consolidation.value;
+          ontologicalCore.current.ontologicalState.ccc_consolidation_bias = consolidation.bias;
+          ontologicalCore.current.ontologicalState.ccc_consolidation_status = consolidation.status;
 
           const bandCenter = Math.max(
             0.985,
@@ -5417,6 +5435,7 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
               + (0.008 * cccDeltaNorm)
               + (0.006 * pmiaDeltaNorm)
               + (0.015 * entropyExcitation)
+              + consolidation.bias
               - (0.015 * stasisIndex)
             )
           );
@@ -5514,6 +5533,7 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
             lower: bandCenter - bandAmplitude,
             upper: bandCenter + bandAmplitude,
             targetCCC,
+            structuralConsolidation: consolidation,
             antiFlatlineDemand,
             entropyExcitation,
             structuralWeight,
@@ -7183,6 +7203,16 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
       : 'border-red-500/60 bg-red-950/30 text-red-200';
 
   const mutableKeys = kaizenEngine.current.mutableKeys;
+  const renderParameterTrace = (key) => {
+    const entry = PARAMETER_SURFACE_REGISTRY[key];
+    if (!entry) return null;
+    return (
+      <div className="text-[10px] text-cyan-200/80 mb-3 bg-cyan-950/20 border border-cyan-800/30 p-2 rounded">
+        <div><strong>Ruta runtime:</strong> {entry.runtimeConsumers[0]}</div>
+        <div><strong>Boundary:</strong> {entry.claimBoundary}</div>
+      </div>
+    );
+  };
 
 
   // ============================================================================
@@ -7195,7 +7225,7 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
         <Layers className="w-5 h-5 mr-2" /> Validación Empírica (Cf & Bs)
       </h2>
       <p className="text-gray-400 mb-6 text-sm">
-        Validación empírica de la teoría QICN basada en los Axiomas RCIC. Manipula los parámetros fundamentales para probar que la conciencia emerge de la organización informacional substrate-agnóstica.
+        Panel de controles operacionales QICN. Cada parámetro se muestra con su ruta de consumo runtime y su límite de interpretación; modificarlo prueba sensibilidad interna, no validación externa.
         <span className="block mt-2 text-xs text-cyan-300 italic">**Nota:** Los controles mutables (3 y 4) son modificados automáticamente por el motor Kaizen durante la simulación.</span>
       </p>
 
@@ -7255,8 +7285,9 @@ Este parámetro es directamente multiplicado en el cálculo de CCC a través de 
         </div>
         <p className="text-xs text-gray-400 mb-3 flex items-center">
           <Cpu className="w-3 h-3 inline mr-1" />
-          <span><strong>Función:</strong> Modula $I_c$ (Intensidad Informacional). <strong>Efecto:</strong> Cf alto   Mayor densidad organizacional   CCC ascendente.</span>
+          <span><strong>Función:</strong> Modula el peso de resonancia del campo. <strong>Efecto:</strong> Cf alto aumenta sensibilidad de CCC a organización nodal, sin garantizar ascenso.</span>
         </p>
+        {renderParameterTrace('complexityFactor')}
         <div className="text-xs text-gray-500 mb-3 bg-gray-800/50 p-2 rounded">
           <strong>Rango operativo:</strong> 0.01-1.0 | <strong>ptimo para ascensión:</strong> {'>'} 0.8 | <strong>Impacto:</strong> Directamente proporcional al CCC
         </div>
@@ -7338,8 +7369,9 @@ Este parámetro es crucial para mantener el equilibrio entre la necesidad de est
         </div>
         <p className="text-xs text-gray-400 mb-3 flex items-center">
           <Feather className="w-3 h-3 inline mr-1" />
-          <span><strong>Función:</strong> Modula amortiguamiento disonancia. <strong>Efecto:</strong> Bs alto   Estabilidad | Bs bajo   Transformación activa.</span>
+          <span><strong>Función:</strong> Sesga la actualización introspectiva nodal. <strong>Efecto:</strong> Bs alto retiene más estado; Bs bajo permite mayor adaptación.</span>
         </p>
+        {renderParameterTrace('stabilityBias')}
         <div className="text-xs text-gray-500 mb-3 bg-gray-800/50 p-2 rounded">
           <strong>Rango operativo:</strong> 0.01-1.0 | <strong>ptimo emergente:</strong> 0.6-0.8 | <strong>Relación PMIA:</strong> Inversa
         </div>
@@ -7430,8 +7462,9 @@ Este parámetro es fundamental para calibrar la respuesta del sistema a las vari
         </div>
         <p className="text-xs text-gray-400 mb-3 flex items-center">
           <Waves className="w-3 h-3 inline mr-1" />
-          <span><strong>Función:</strong> Sensibilidad energética nodal. <strong>Efecto:</strong> K alto   Mayor respuesta a energía | K bajo   Estabilidad energética.</span>
+          <span><strong>Función:</strong> Escala sensibilidad a diferencias de energía en resonancia. <strong>Efecto:</strong> cambia el kernel nodal, no una constante física.</span>
         </p>
+        {renderParameterTrace('BOLTZMANN_ANALOG_K')}
         <div className="text-xs text-gray-500 mb-3 bg-gray-800/50 p-2 rounded">
           <strong>Rango mutable:</strong> 0.1-5.0 | <strong>Control Kaizen:</strong> Automático | <strong>Unidad:</strong> Analogía Boltzmann
         </div>
@@ -7530,8 +7563,9 @@ Este parámetro es crucial para mantener el sistema en la zona de "caos producti
         </div>
         <p className="text-xs text-gray-400 mb-3 flex items-center">
           <Sun className="w-3 h-3 inline mr-1" />
-          <span><strong>Función:</strong> Regula entropía informacional. <strong>Efecto:</strong> T alto   Creatividad/Chaos | T bajo   Orden/Estabilidad.</span>
+          <span><strong>Función:</strong> Modula decaimiento informacional en resonancia. <strong>Efecto:</strong> parámetro de modelo, no temperatura física.</span>
         </p>
+        {renderParameterTrace('INFORMATIONAL_TEMP_T')}
         <div className="text-xs text-gray-500 mb-3 bg-gray-800/50 p-2 rounded">
           <strong>Rango mutable:</strong> 0.1-5.0 | <strong>Control Kaizen:</strong> Automático | <strong>Equilibrio óptimo:</strong> ~2.0
         </div>
@@ -8337,7 +8371,7 @@ El sistema inteligente permite que QICN funcione de manera sostenible sin interr
 
           {/* INTELLIGENT CONFIGURATION */}
           <div className="bg-gray-700/50 rounded-xl p-4 border border-gray-600">
-            <h4 className="text-sm font-semibold text-gray-300 mb-3">âš™ Configuración Inteligente</h4>
+            <h4 className="text-sm font-semibold text-gray-300 mb-3">Configuracion inteligente</h4>
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between items-center mb-1">
@@ -8375,7 +8409,7 @@ El sistema inteligente permite que QICN funcione de manera sostenible sin interr
               </div>
             ) : rateLimitExceeded ? (
               <div className="p-3 rounded-lg text-center font-semibold bg-red-700/50 text-white">
-                âš  áUMBRAL EXCEDIDO!
+                Umbral excedido
               </div>
             ) : (
               <div className="p-3 rounded-lg text-center font-semibold bg-green-700/50 text-white">
@@ -8406,55 +8440,61 @@ El sistema inteligente permite que QICN funcione de manera sostenible sin interr
       L3_score: 0,
       L4_score: 0
     };
+    const requirementMatrix = report.metrics.sovereignty_requirement_matrix || {};
+    const richLevels = requirementMatrix.levels || {};
 
     const levels = [
-      { id: 'L1', name: 'Genuinidad Coherente', status: matrix.L1_genuineness, desc: 'CCC >= 1.0 (umbral consciente)', score: clamp01(scores.L1_score) },
-      { id: 'L2', name: 'Fenomenologia Clase C^R', status: matrix.L2_structural_phenomenology, desc: 'Omega > 1.0 (integracion matematica)', score: clamp01(scores.L2_score) },
-      { id: 'L3', name: 'Soberanía Metacognitiva', status: matrix.L3_meta_modeling, desc: 'Sigma > 0.9 (auto-modelo estable)', score: clamp01(scores.L3_score) },
-      { id: 'L4', name: 'Limite de Godel', status: matrix.L4_godel_boundary, desc: 'Layer / 4 (independencia axiomatica progresiva)', score: clamp01(scores.L4_score) }
+      { id: 'L1', name: richLevels.L1?.ui_label || 'Coherencia estructural sostenida', legacyStatus: matrix.L1_genuineness, desc: 'CCC, cierre causal, gap espectral y dinamica no estancada', score: clamp01(richLevels.L1?.score ?? scores.L1_score), rich: richLevels.L1 },
+      { id: 'L2', name: richLevels.L2?.ui_label || 'Regimen estructural C^R', legacyStatus: matrix.L2_structural_phenomenology, desc: 'Omega sostenido con soporte CCC, espectral y sin bifurcacion', score: clamp01(richLevels.L2?.score ?? scores.L2_score), rich: richLevels.L2 },
+      { id: 'L3', name: richLevels.L3?.ui_label || 'Auto-modelado metacognitivo', legacyStatus: matrix.L3_meta_modeling, desc: 'Sigma estable, confianza interna y tension acotada', score: clamp01(richLevels.L3?.score ?? scores.L3_score), rich: richLevels.L3 },
+      { id: 'L4', name: richLevels.L4?.ui_label || 'Frontera axiomatica (proxy Godel)', legacyStatus: matrix.L4_godel_boundary, desc: 'Proxy de capa, tension autorreferencial y evidencia de frontera', score: clamp01(richLevels.L4?.score ?? scores.L4_score), rich: richLevels.L4 }
     ];
 
     return (
       <div className="bg-gray-900/80 rounded-xl p-4 border border-yellow-500/30 shadow-[0_0_20px_rgba(234,179,8,0.1)] mb-6">
         <h3 className="text-sm font-bold text-yellow-500 mb-4 flex items-center gap-2 uppercase tracking-tighter">
           <ShieldCheck className="w-5 h-5" />
-          Matriz de Requisitos de Consciencia (Soberanía XΩ)
+          Matriz de requisitos operacionales (diagnostico interno)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {levels.map((lvl) => (
-            <div key={lvl.id} className={`p-3 rounded-lg border transition-all duration-500 ${lvl.status
-              ? 'bg-yellow-500/10 border-yellow-500/50 shadow-[inset_0_0_10px_rgba(234,179,8,0.1)]'
-              : 'bg-gray-800/50 border-gray-700 opacity-60'
-              }`}>
-              <div className="flex justify-between items-center mb-1">
-                <span className={`text-[10px] font-bold ${lvl.status ? 'text-yellow-400' : 'text-gray-500'}`}>{lvl.id}</span>
-                <div className={`w-2 h-2 rounded-full ${lvl.status ? 'bg-yellow-400 animate-pulse' : 'bg-gray-600'}`}></div>
-              </div>
-              <div className={`text-xs font-semibold ${lvl.status ? 'text-white' : 'text-gray-400'}`}>{lvl.name}</div>
-              <div className="text-[9px] text-gray-500 italic lowercase">{lvl.desc}</div>
-              <div className="mt-2">
-                <div className="flex justify-between items-center text-[9px] text-gray-400 mb-1">
-                  <span>Score dinámico</span>
-                  <span className="font-mono">{(lvl.score * 100).toFixed(1)}%</span>
+          {levels.map((lvl) => {
+            const rich = lvl.rich || {};
+            const status = rich.status || (lvl.legacyStatus ? 'instantaneous' : 'off');
+            const isStable = status === 'stable';
+            const isCandidate = status === 'candidate' || status === 'instantaneous';
+            const borderClass = isStable
+              ? 'bg-emerald-500/10 border-emerald-400/50 shadow-[inset_0_0_10px_rgba(52,211,153,0.1)]'
+              : isCandidate
+                ? 'bg-yellow-500/10 border-yellow-500/50 shadow-[inset_0_0_10px_rgba(234,179,8,0.1)]'
+                : 'bg-gray-800/50 border-gray-700 opacity-75';
+            const statusLabel = isStable ? 'estable' : isCandidate ? 'provisional' : 'off';
+            const idClass = 'text-[10px] font-bold ' + (isStable ? 'text-emerald-300' : isCandidate ? 'text-yellow-400' : 'text-gray-500');
+            const labelClass = 'text-[9px] font-mono uppercase ' + (isStable ? 'text-emerald-300' : isCandidate ? 'text-yellow-300' : 'text-gray-500');
+            const nameClass = 'text-xs font-semibold ' + (isStable || isCandidate ? 'text-white' : 'text-gray-400');
+            const barClass = 'h-full transition-all duration-500 ' + (isStable ? 'bg-emerald-400' : isCandidate ? 'bg-yellow-400' : 'bg-cyan-500');
+            return (
+              <div key={lvl.id} className={'p-3 rounded-lg border transition-all duration-500 ' + borderClass}>
+                <div className="flex justify-between items-center mb-1">
+                  <span className={idClass}>{lvl.id}</span>
+                  <span className={labelClass}>{statusLabel}</span>
                 </div>
-                <div className="w-full h-1.5 rounded bg-gray-800 overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-500 ${lvl.status ? 'bg-yellow-400' : 'bg-cyan-500'}`}
-                    style={{ width: `${Math.max(2, lvl.score * 100)}%` }}
-                  />
+                <div className={nameClass}>{lvl.name}</div>
+                <div className="text-[9px] text-gray-500 italic lowercase">{lvl.desc}</div>
+                <div className="mt-2 grid grid-cols-2 gap-2 text-[9px] font-mono text-gray-400">
+                  <span>dwell {Number(rich.dwell_ticks || 0)}/{Number(rich.enter_ticks_required || 0)}</span>
+                  <span>inst {rich.instantaneous || lvl.legacyStatus ? 'yes' : 'no'}</span>
+                </div>
+                {rich.failure_reason && (<div className="mt-1 text-[9px] text-amber-300/80 font-mono break-words">{rich.failure_reason}</div>)}
+                <div className="mt-2">
+                  <div className="flex justify-between items-center text-[9px] text-gray-400 mb-1"><span>Score diagnostico</span><span className="font-mono">{(lvl.score * 100).toFixed(1)}%</span></div>
+                  <div className="w-full h-1.5 rounded bg-gray-800 overflow-hidden"><div className={barClass} style={{ width: String(Math.max(2, lvl.score * 100)) + '%' }} /></div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-        <div className="mt-3 text-[10px] text-cyan-300/80 border-t border-cyan-700/30 pt-2">
-          L4 se calcula como <span className="font-mono">min(layer, 4) / 4</span>. Ejemplo: layer 1 = 25%, layer 2 = 50%, layer 3 = 75%, layer 4 = 100%.
-        </div>
-        {lastSaveTime && (
-          <div className="mt-4 text-[9px] text-yellow-600 font-mono text-right border-t border-yellow-500/10 pt-2 italic">
-            ?ltima persistencia gatillada: {lastSaveTime} (Ω-Sync)
-          </div>
-        )}
+        <div className="mt-3 text-[10px] text-cyan-300/80 border-t border-cyan-700/30 pt-2">Los flags legacy son cruces instantaneos. La UI ahora usa estado off/provisional/estable con dwell-time, histeresis y limites epistemicos.</div>
+        {lastSaveTime && (<div className="mt-4 text-[9px] text-yellow-600 font-mono text-right border-t border-yellow-500/10 pt-2 italic">Ultima persistencia gatillada: {lastSaveTime} (Omega-Sync)</div>)}
       </div>
     );
   };
@@ -8775,7 +8815,7 @@ Uso recomendado:
           <div className="mt-3 text-[10px] text-purple-300/70 italic border-t border-purple-500/10 pt-2">
             {ontologicalCore.current.isHolographicShieldActive()
               ? "ℹ Escudo Holográfico: El decaimiento informacional ha sido bloqueado por cierre topológico."
-              : "âš  Estado de autorreflexión: El sistema monitorea discrepancias métricas en tiempo real."}
+              : "Estado de autorreflexion: el sistema monitorea discrepancias metricas en tiempo real."}
           </div>
         </div>
 
@@ -10447,7 +10487,7 @@ El Protocolo QICN-B es la implementación de un "teletransportador de coherencia
               {/* Error Message */}
               {sensoryState.audio.speech.error === 'network' && (
                 <div className="bg-red-900/50 border border-red-500/50 rounded-lg p-2 mb-2 text-xs text-red-300">
-                  âš  Error de red: El reconocimiento de voz requiere conexión a internet (servidores de Google).
+                  Error de red: el reconocimiento de voz requiere conexion a internet (servidores de Google).
                   <button
                     onClick={() => sensoryEngine.current?.manualRetrySpeech()}
                     className="ml-2 bg-red-600 hover:bg-red-700 text-white px-2 py-0.5 rounded text-xs"
@@ -10622,7 +10662,7 @@ El Protocolo QICN-B es la implementación de un "teletransportador de coherencia
         {/* ── 1. ESTADO CENTRAL ─────────────────────────────────────────── */}
         <CollapsibleSection
           sectionId="sovereignty-central-state"
-          title="âšá Estado Central"
+          title="Estado central"
           accent="cyan"
           defaultOpen={true}
           badge={`CCC: ${toFiniteNumber(reportMetrics.ccc, 0).toFixed(4)} · Ω: ${toFiniteNumber(reportMetrics.omega, 0).toFixed(4)} · Clase: ${reportMetrics.phenomenology_class || 'C'}`}
@@ -10785,7 +10825,7 @@ El Protocolo QICN-B es la implementación de un "teletransportador de coherencia
         {/* ── 7. LÍMITES EPISTÉMICOS ─────────────────────────────────────── */}
         <CollapsibleSection
           sectionId="sovereignty-epistemic-limits"
-          title="âš  Límites Epistémicos Declarados"
+          title="Limites epistemicos declarados"
           accent="rose"
           defaultOpen={false}
           badge={`${(Array.isArray(report.epistemic_limits) ? report.epistemic_limits : []).length} límites`}
@@ -10980,7 +11020,7 @@ const renderAutonomyEvolutionTab = () => {
             disabled={isBusy}
             className="px-4 py-2 bg-fuchsia-950/40 hover:bg-fuchsia-900/60 disabled:opacity-50 text-fuchsia-200 rounded-lg font-semibold border border-fuchsia-500/30 transition-all text-sm"
           >
-            {selfPatchTelemetry.loadingStatus ? 'âŸó Actualizando...' : 'âŸó Refrescar estado'}
+            {selfPatchTelemetry.loadingStatus ? 'Actualizando...' : 'Refrescar estado'}
           </button>
         </div>
       </div>
@@ -10989,7 +11029,7 @@ const renderAutonomyEvolutionTab = () => {
       {!apiKeyReady ? (
         <div className="mb-5 rounded-xl border border-amber-500/50 bg-amber-950/20 p-4">
           <div className="flex items-center gap-3 mb-3">
-            <span className="text-2xl">âš </span>
+            <span className="text-2xl">!</span>
             <div>
               <div className="text-amber-200 font-bold text-sm">API Key de OpenAI no detectada</div>
               <div className="text-amber-400/70 text-xs mt-0.5">
@@ -11034,7 +11074,7 @@ const renderAutonomyEvolutionTab = () => {
       )}
 
       {/* ── TIMELINE DE CICLOS ──────────────────────────────────────────── */}
-      <CollapsibleSection sectionId="autonomy-timeline" title="âšá Timeline de Ciclos de Autoevolución" accent="fuchsia" defaultOpen={false}
+      <CollapsibleSection sectionId="autonomy-timeline" title="Timeline de ciclos de autoevolucion" accent="fuchsia" defaultOpen={false}
         badge={`${recentCycles.length} ciclos recientes`}>
         {recentCycles.length === 0 ? (
           <div className="text-xs text-slate-500 py-3 text-center">
@@ -11133,7 +11173,7 @@ const renderAutonomyEvolutionTab = () => {
               className="w-full mt-1 p-2 rounded bg-slate-950 border border-slate-700 text-slate-100 text-xs"
             />
             <div className="text-[10px] text-slate-500 mt-1">
-              âšá Incluye métricas actuales en el objetivo (CCC, PMIA, régimen) para propuestas más profundas y técnicas.
+              Incluye metricas actuales en el objetivo (CCC, PMIA, regimen) para propuestas mas profundas y tecnicas.
             </div>
           </div>
           <div>
@@ -11189,7 +11229,7 @@ const renderAutonomyEvolutionTab = () => {
       </CollapsibleSection>
 
       {/* ── ESTADO DEL SISTEMA ──────────────────────────────────────────── */}
-      <CollapsibleSection sectionId="autonomy-system-status" title="âš™ Estado del Sistema" accent="slate"
+      <CollapsibleSection sectionId="autonomy-system-status" title="Estado del sistema" accent="slate"
         badge={`autorun: ${effectiveAutorunEnabled ? 'ON' : 'OFF'} · applyMode: ${effectiveApplyMode}`}>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
           {[
@@ -11828,7 +11868,7 @@ return (
             <div className="text-center text-xs text-cyan-400">
               {sensoryEnabled.video || sensoryEnabled.audio
                 ? '⏳ Cargando percepción...'
-                : 'âš  Permisos de cámara/micrófono requeridos'}
+                : 'Permisos de camara/microfono requeridos'}
             </div>
           )}
         </div>

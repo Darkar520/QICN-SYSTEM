@@ -479,3 +479,49 @@ Files moved/removed include: `QICN GPT5.5/` moved outside the repo to `C:\Users\
 **Why this is superior.** The panel avoids importing Node `fs`-bound governance modules into the browser bundle. It exposes the statuses conservatively as UI governance diagnostics rather than pretending that Paper 9/Paper 10 have external evidence.
 
 **Framework gain.** Paper 9 and Paper 10 are now visible in the runtime UI without collapsing internal diagnostic support into phenomenality, human equivalence, or external adjudication.
+
+## 2026-05-22 - Bridge Mathematical Verifier Diagnostic Hardening
+
+**Files changed.**
+- `src/tools/BridgeMathematicalVerifier.js`
+- `src/components/PhenomenalBridgePanel.jsx`
+- `tests/bridge-mathematical-verifier.v1.test.js`
+- `tests/phenomenal-bridge-panel.v1.test.js`
+- `docs/IMPLEMENTATION_STATUS.md`
+- `IMPLEMENTATION_LOG.md`
+
+**Before.** `BridgeMathematicalVerifier.js` exposed useful finite bridge-health checks, but its language and API could be overread as formal certification. In particular, the fixed-point perturbation helper clipped `L >= 1` down to the configured maximum, trajectory contraction was named like an operator Lipschitz verifier, and Galerkin consistency relied primarily on cosine similarity.
+
+**After.** The verifier is now explicitly an `internal_diagnostic_proxy_only` layer. Every result includes a structured `claimBoundary` marking it as not a formal proof, not external validation, not a `Sub_bridge` gate, not `C_op` evidence by itself, and not consciousness or subjecthood evidence. Lipschitz inputs `L >= 1` now fail directly. Single-trajectory contraction and finite-pair operator proxies are separated. Galerkin consistency now uses relative norm error as the primary criterion. Phase transversality reports exhaustive vs deterministic sampled coverage. The UI exposes bridge diagnostics only as bounded telemetry.
+
+**Why this is superior.** This implementation is stricter than a simple rename: it changes the result schema so downstream consumers must see the epistemic boundary. It also blocks concrete false positives: non-contractive Lipschitz values, proportional-but-scaled Galerkin vectors, insufficient histories, expansion trajectories, and expansive finite operator pairs.
+
+**Framework gain.** The bridge diagnostic path can now be useful for runtime regression detection without silently promoting internal telemetry into theorem closure, `Sub_bridge`, `C_op`, Paper 9 authorization, Paper 10 validation, or ordinary-language consciousness claims.
+
+## 2026-05-22 - RALSI Theory-Runtime Gap Closure Layer
+
+**Files changed.**
+- `src/canon/maturity/RuntimeMaturityLedger.js`
+- `src/canon/projection/MetricProjectionOperator.js`
+- `src/canon/finite_horizon/ProjectiveTowerAuditor.js`
+- `src/canon/ontological_mass/OntologicalMassEstimator.js`
+- `src/canon/ccr/CCRApproximationBoundary.js`
+- `src/canon/coupling/CCCOmegaCouplingProtocol.js`
+- `src/tools/DiscreteBridgeRuntimeBounds.js`
+- `docs/RUNTIME_APPROXIMATION_LAYER_RALSI.md`
+- `docs/THEORY_RUNTIME_GAP_LEDGER.md`
+- `tests/runtime-maturity-ledger.v1.test.js`
+- `tests/metric-projection-operator.v1.test.js`
+- `tests/projective-tower-auditor.v1.test.js`
+- `tests/ontological-mass-estimator.v1.test.js`
+- `tests/ccr-approximation-boundary.v1.test.js`
+- `tests/ccc-omega-coupling-protocol.v1.test.js`
+- `tests/discrete-bridge-runtime-bounds.v1.test.js`
+
+**Before.** OpenCode's audit correctly identified that several theoretical objects had only finite runtime proxies: metric projection, inverse limits, M_Omega, CCR, CCC-Omega coupling, and the discrete bridge constants. Some boundaries existed, but there was no unified runtime approximation layer that classified these gaps and made the non-certification status executable.
+
+**After.** Added RALSI: a finite runtime approximation layer for structural invariants. It includes a maturity ledger, finite metric projection proxy, multi-horizon projective tower auditor, family-specific ontological-mass lower-bound estimator, non-certifying CCR approximation ladder, CCC-Omega anti-circularity protocol, and discrete bridge runtime-bounds packager.
+
+**Why this is superior to the plan's minimal sprint.** The plan proposed starting with ledger, projection, and tower modules. I implemented those plus mass, CCR, coupling, and bridge-bounds in one autocontained diagnostic layer because the objects constrain one another: a CCR boundary without mass and tower evidence is only documentary, while mass lower bounds without a CCR non-certification ladder are easy to overread. Keeping the modules uncabled from claim scores is also stricter than immediate integration: diagnostics must pass focused tests before influencing invariant packages or UI.
+
+**Framework gain.** The runtime can now answer the core theory-runtime criticism with explicit finite witnesses and explicit impossibility boundaries: it can improve internal support for projection, tower compatibility, lower-bound resistance, coupling, and bridge-health diagnostics while still refusing to claim Hilbert instantiation, full inverse-limit preservation, M_Omega computation, CCR verification, or external validation.

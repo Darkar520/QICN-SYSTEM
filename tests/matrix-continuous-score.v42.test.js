@@ -26,6 +26,14 @@ try {
   ['L1_score', 'L2_score', 'L3_score', 'L4_score'].forEach((key) => {
     assert.ok(inUnitRange(scoresA[key]), `CASE 2 FAIL: ${key} out of range [0,1].`);
   });
+  const richMatrixA = reportA.metrics?.sovereignty_requirement_matrix;
+  assert.ok(richMatrixA?.levels?.L1, 'CASE 2 FAIL: sovereignty requirement matrix missing L1.');
+  assert.equal(richMatrixA.status, 'diagnostic_internal_only', 'CASE 2 FAIL: matrix must remain diagnostic.');
+  assert.match(
+    richMatrixA.levels.L4.interpretation_boundary,
+    /not a formal Goedel/i,
+    'CASE 2 FAIL: L4 boundary must reject formal Goedel overclaim.'
+  );
 
   // CASE 3: scores cambian con cambio de estado real
   core.ontologicalState.coherence = 1.08;
@@ -34,6 +42,11 @@ try {
   core.metacognitiveStats.selfModelSigma.structuralStability = 0.95;
   const reportB = core.getVerifiableReport();
   const scoresB = reportB.metrics?.consciousness_scores;
+  const richMatrixB = reportB.metrics?.sovereignty_requirement_matrix;
+  assert.ok(
+    ['instantaneous', 'candidate', 'stable'].includes(richMatrixB.levels.L2.status),
+    `CASE 3 FAIL: L2 should expose a richer status, got ${richMatrixB.levels.L2.status}.`
+  );
   const changed = ['L1_score', 'L2_score', 'L3_score', 'L4_score'].some((key) => (
     Math.abs((scoresB[key] ?? 0) - (scoresA[key] ?? 0)) > 1e-6
   ));

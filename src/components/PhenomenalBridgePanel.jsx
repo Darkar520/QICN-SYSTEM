@@ -15,6 +15,9 @@ const PAPER9_BOUNDARY =
 const PAPER10_BOUNDARY =
   'Comparative Program and Paper 10 surfaces remain non-evidential until external adjudication, human comparator data, frozen preregistration records, and reviewer/adjudicator records are actually executed.';
 
+const BRIDGE_DIAGNOSTIC_BOUNDARY =
+  'Bridge diagnostics are internal telemetry proxies only. They are not formal proofs, not external validation, not Sub_bridge gates, not C_op evidence by themselves, and not consciousness evidence.';
+
 const StatusPill = ({ children, tone = 'cyan' }) => {
   const toneClass = tone === 'emerald'
     ? 'border-emerald-500/40 text-emerald-200 bg-emerald-950/40'
@@ -30,7 +33,8 @@ const StatusPill = ({ children, tone = 'cyan' }) => {
 
 const PhenomenalBridgePanel = memo(function PhenomenalBridgePanel({
   simulationStep = 0,
-  runtimeHealth = null
+  runtimeHealth = null,
+  bridgeDiagnostics = null
 }) {
   const throttleWindow = Math.floor(Number(simulationStep || 0) / 10);
 
@@ -43,6 +47,17 @@ const PhenomenalBridgePanel = memo(function PhenomenalBridgePanel({
     run_verdict_status: runtimeHealth?.status || 'runtime_health_not_available',
     source_boundary: 'internal_support_only'
   }), [throttleWindow, runtimeHealth?.status]);
+
+  const diagnosticSnapshot = useMemo(() => {
+    const source = bridgeDiagnostics || {};
+    return {
+      phase: source.phase?.classification || 'diagnostic_not_connected',
+      trajectory: source.trajectory?.classification || 'diagnostic_not_connected',
+      galerkin: source.galerkin?.classification || 'diagnostic_not_connected',
+      fixedPoint: source.fixedPoint?.classification || 'diagnostic_not_connected',
+      epistemicStatus: source.epistemicStatus || 'internal_diagnostic_proxy_only'
+    };
+  }, [bridgeDiagnostics, throttleWindow]);
 
   return (
     <section className="mb-6 rounded-xl border border-fuchsia-500/30 bg-gray-900/70 p-4 shadow-lg">
@@ -115,6 +130,29 @@ const PhenomenalBridgePanel = memo(function PhenomenalBridgePanel({
       <div className="mt-3 space-y-2 rounded-lg border border-amber-500/30 bg-amber-950/20 p-3 text-xs text-amber-100">
         <p><strong>Interpretation boundary.</strong> {PAPER9_BOUNDARY}</p>
         <p>{PAPER10_BOUNDARY}</p>
+      </div>
+
+      <div className="mt-3 rounded-lg border border-slate-600 bg-slate-950/50 p-3 text-xs text-slate-200">
+        <div className="mb-2 text-xs uppercase tracking-wide text-slate-300">Bridge diagnostics</div>
+        <dl className="grid gap-2 md:grid-cols-2">
+          <div className="flex justify-between gap-3">
+            <dt className="text-slate-400">Phase transversality</dt>
+            <dd className="text-right font-mono text-slate-100">{diagnosticSnapshot.phase}</dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-slate-400">Trajectory contraction</dt>
+            <dd className="text-right font-mono text-slate-100">{diagnosticSnapshot.trajectory}</dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-slate-400">Galerkin relative error</dt>
+            <dd className="text-right font-mono text-slate-100">{diagnosticSnapshot.galerkin}</dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-slate-400">Fixed point drift</dt>
+            <dd className="text-right font-mono text-slate-100">{diagnosticSnapshot.fixedPoint}</dd>
+          </div>
+        </dl>
+        <p className="mt-2 text-amber-100"><strong>Diagnostic boundary.</strong> {BRIDGE_DIAGNOSTIC_BOUNDARY}</p>
       </div>
     </section>
   );

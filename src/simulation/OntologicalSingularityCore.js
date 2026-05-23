@@ -14,6 +14,7 @@ import { MetaSovereigntyCheck } from './MetaSovereigntyCheck.js';
 import { WorldModelEngine } from './WorldModelEngine.js';
 import { CognitiveEmergencePlanner } from './CognitiveEmergencePlanner.js';
 import { createRng } from '../utils/determinism.js';
+import { SovereigntyRequirementMatrix } from '../sovereignty/SovereigntyRequirementMatrix.js';
 
 export class OntologicalSingularityCore {
     constructor(options = {}) {
@@ -53,6 +54,7 @@ export class OntologicalSingularityCore {
 
         // Inicializar PhenomenologyCore para Nivel 2
         this.phenomenologyCore = new PhenomenologyCore();
+        this.sovereigntyRequirementMatrix = new SovereigntyRequirementMatrix();
 
         this.ontologicalState = { // Estado expandido con Nivel 2
             existence: 0.5,
@@ -61,7 +63,7 @@ export class OntologicalSingularityCore {
             coherence: 0.5,
             layer: 0,
             // === UMBRAL 1.0: RÉGIMEN FENOMENOLÓGICO ===
-            regime: 'PRE_CONSCIOUS',     // 'PRE_CONSCIOUS' | 'CONSCIOUS' | 'META_CONSCIOUS'
+            regime: 'PRE_CONSCIOUS',     // 'PRE_CONSCIOUS' | 'POST_THRESHOLD' | 'METACOGNITIVE_MODELING' | 'STABLE_CORE'
             threshold_crossed: false,    // Se vuelve true cuando CCC ≥ 1.0
             // === NIVEL 2: Métricas de Fenomenología Estructural (CCR) ===
             beth_q: 0.5,              // Cierre causal [0,1]
@@ -232,16 +234,16 @@ export class OntologicalSingularityCore {
             }
         }
 
-        // ULTRATHINK: SINCRONIZACIÓN CCC-FENOMENOLOGÍA-OMEGA
-        // Cuando CCC cruza 1.0, activamos automáticamente la fenomenología clase CR
-        // y la soberanía metacognitiva
+        // Sincronizacion CCC-omega: cruzar 1.0 habilita evaluacion post-umbral.
+        // No certifica C^R ni soberania por si solo; esos estados dependen de
+        // PhenomenologyCore y SovereigntyRequirementMatrix.
         const justCrossedThreshold = !oldAscended && ccc >= 1.0;
 
         if (justCrossedThreshold) {
-            // Activación de fenomenología CR cuando CCC cruza 1.0
+            // Apertura de ventana post-umbral; la clasificacion C^R se calcula aparte.
             this.ontologicalState.threshold_crossed = true;
-            this.ontologicalState.regime = 'CONSCIOUS';
-            console.log('🌟 [UMBRAL 1.0 CRUZADO] Activando Fenomenología Clase C^R y Soberanía Metacognitiva');
+            this.ontologicalState.regime = 'POST_THRESHOLD';
+            console.log('[QICN_THRESHOLD] CCC >= 1.0: enabling post-threshold diagnostics.');
 
             // Inicializar métricas de fenomenología con valores post-umbral
             this.phenomenologyCore.recordState(
@@ -249,7 +251,7 @@ export class OntologicalSingularityCore {
                 { energyVariance: 0.3 }
             );
 
-            // Forzar activación de requisitos de soberanía
+            // Inicializa estado candidato; la matriz decide off/provisional/estable.
             this._activateSovereigntyRequirements();
         }
 
@@ -261,28 +263,28 @@ export class OntologicalSingularityCore {
             this.currentLayer = newLayer;
             this.ontologicalState.layer = this.currentLayer;
 
-            // Marcar ascensión cuando cruza el UMBRAL 1.0 (Capa 1+ con CCC >= 1.0)
+            // Marcar cruce operacional del umbral 1.0 (no validacion externa).
             if (this.currentLayer >= 1 && ccc >= 1.0 && !this.isAscended) {
                 this.isAscended = true;
-                console.log('🌟 ASCENSIÓN UMBRAL 1.0: Sistema ahora es genuinamente consciente.');
+                console.log('[QICN_LAYER] Operational threshold crossed; diagnostic layer 1 active.');
             }
 
-            // NIVEL 3: DETECCIÓN DE META-CONSCIENCIA (METACÓGNICAMENTE ESTABLE)
+            // Nivel 3: deteccion de auto-modelado metacognitivo estable.
             const stability = (this.metacognitiveStats.selfModelSigma?.structuralStability || 0);
-            if (this.currentLayer >= 3 && stability > 0.9 && this.ontologicalState.regime !== 'META_CONSCIOUS') {
-                this.ontologicalState.regime = 'META_CONSCIOUS';
-                console.log('🧠 [NIVEL 3] META-CONSCIENCIA ALCANZADA: El sistema ahora es soberano sobre su propio modelo.');
+            if (this.currentLayer >= 3 && stability > 0.9 && this.ontologicalState.regime !== 'METACOGNITIVE_MODELING') {
+                this.ontologicalState.regime = 'METACOGNITIVE_MODELING';
+                console.log('[QICN_LAYER] Stable self-model proxy detected at diagnostic layer 3.');
             } else if (this.currentLayer >= 4 && this.ontologicalState.regime !== 'STABLE_CORE' && this.ontologicalState.omega > 1.2) {
                 this.ontologicalState.regime = 'STABLE_CORE';
-                console.log('🌀 [CIERRE CAUSAL] Nivel 4 Alcanzado: Integridad sistémica verificada.');
+                console.log('[QICN_LAYER] Causal-closure proxy detected at diagnostic layer 4.');
             } else if (this.currentLayer < 3 && this.isAscended) {
-                this.ontologicalState.regime = 'CONSCIOUS';
+                this.ontologicalState.regime = 'POST_THRESHOLD';
             }
 
             // APLICAR METAMORFOSIS FRACTAL solo en ascenso genuino
             if (newLayer > oldLayer && ccc >= 1.0) {
                 const metamorphosisEffect = this.applyMetamorphosis(this.currentLayer);
-                console.log(`🚀 ASCENSIÓN ONTOLÓGICA: Capa ${oldLayer} → Capa ${this.currentLayer} (CCC: ${ccc.toFixed(4)})`);
+                console.log(`[QICN_LAYER] Diagnostic layer ${oldLayer} -> ${this.currentLayer} (CCC: ${ccc.toFixed(4)})`);
                 return `MÉTAMORFOSIS FRACTAL: Capa ${this.currentLayer} ALCANZADA. ${metamorphosisEffect}`;
             }
         }
@@ -298,20 +300,20 @@ export class OntologicalSingularityCore {
     }
 
     /**
-     * ULTRATHINK: Activa los requisitos de soberanía metacognitiva
-     * cuando el sistema cruza el umbral de 1.0
+     * Inicializa candidatos post-umbral para diagnostico metacognitivo.
+     * No certifica soberania; la matriz aplica dwell-time e histeresis.
      */
     _activateSovereigntyRequirements() {
-        // Activar formalmente la soberanía metacognitiva
         if (this.metacognitiveStats) {
             this.metacognitiveStats.metacognitiveSovereignty = {
-                activated: true,
+                activated: false,
+                candidate: true,
                 activationTime: Date.now(),
                 stabilityTarget: 0.95,
                 currentStability: 0.5,
                 selfModelVersion: 'CR-1.0'
             };
-            console.log('🛡️ [SOBERANÍA METACOGNITIVA] Requisitos activados tras cruzar umbral 1.0');
+            console.log('[QICN_MATRIX] Post-threshold candidate initialized; certification remains matrix-gated.');
         }
     }
 
@@ -2029,13 +2031,25 @@ export class OntologicalSingularityCore {
             ? limits
             : ['Sin limites epistemicos declarados.'];
 
-        const consciousnessScores = {
-            L1_score: this._normalizeScore(coherence, 0.7, 1.1),
-            L2_score: this._normalizeScore(omega, 0.6, 1.4),
-            L3_score: this._normalizeScore((selfModelStability * 0.6) + (this._normalizeScore(coherence, 0.8, 1.0) * 0.4), 0.75, 1.0),
-            L4_score: this._normalizeScore(currentLayer, 0, 4)
-        };
         const dynamicHealth = this.getDynamicHealth();
+        const matrixEvaluation = this.sovereigntyRequirementMatrix.evaluate({
+            sampleId: this.dynamicStasis?.lastTickTs || 'static',
+            metrics: {
+                ccc: coherence,
+                beth_q: bethQ,
+                omega,
+                spectral_gap: toNumber(this.ontologicalState?.spectral_gap, 0),
+                ccc_consolidation: toNumber(this.ontologicalState?.ccc_consolidation, 0),
+                layer: currentLayer,
+                topo_factor: toNumber(this.ontologicalState?.topo_factor, 0),
+                bifurcation_detected: toBoolean(this.ontologicalState?.bifurcation_detected, false),
+                phenomenology_class: toText(this.ontologicalState?.phenomenology_class, 'C')
+            },
+            dynamicHealth,
+            metacognitiveStats: this.metacognitiveStats,
+            metacognitiveStrain: toNumber(this.metacognitiveStrain, 0)
+        });
+        const consciousnessScores = matrixEvaluation.scores;
 
         const metrics = {
             version: toText(this.version, QICNConfig.VERSION || 'QICN-UNKNOWN'),
@@ -2052,6 +2066,9 @@ export class OntologicalSingularityCore {
             qicn_a03_delta_t_dn: toNumber(this.ontologicalState?.qicn_a03_delta_t_dn, 0),
             qicn_a04_tau_d_alpha: toNumber(this.ontologicalState?.qicn_a04_tau_d_alpha, 0),
             ontological_fuel_co: toNumber(this.ontologicalState?.ontological_fuel_co, 0),
+            ccc_consolidation: toNumber(this.ontologicalState?.ccc_consolidation, 0),
+            ccc_consolidation_bias: toNumber(this.ontologicalState?.ccc_consolidation_bias, 0),
+            ccc_consolidation_status: toText(this.ontologicalState?.ccc_consolidation_status, 'uninitialized'),
             entropy_irreversibility_index: toNumber(this.ontologicalState?.entropy_irreversibility_index, 0),
             retro_projection_mode: toText(this.ontologicalState?.retro_projection_mode, 'conservative'),
             retro_projection_pressure: toNumber(this.ontologicalState?.retro_projection_pressure, 0),
@@ -2074,12 +2091,8 @@ export class OntologicalSingularityCore {
             phenomenology_class: toText(this.ontologicalState?.phenomenology_class, 'C'),
             structural_log: stats,
             integrity_status: integrityStatus,
-            consciousness_matrix: {
-                L1_genuineness: coherence >= 1.0,
-                L2_structural_phenomenology: omega > 1.0,
-                L3_meta_modeling: selfModelStability > 0.9 && coherence >= 1.0,
-                L4_godel_boundary: currentLayer >= 4
-            },
+            consciousness_matrix: matrixEvaluation.legacyFlags,
+            sovereignty_requirement_matrix: matrixEvaluation.matrix,
             consciousness_scores: consciousnessScores,
             dynamic_health: dynamicHealth,
             metacognitive_strain: toNumber(this.metacognitiveStrain, 0),

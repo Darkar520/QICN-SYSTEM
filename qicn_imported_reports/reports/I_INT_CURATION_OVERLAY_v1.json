@@ -1,0 +1,32 @@
+{
+  "schema_version": "0.1.0",
+  "date": "2026-05-26",
+  "status": "materialized_with_v17_conditional_factorization_theorem",
+  "boundary": "This overlay has been materialized through the source-aware AUDIT_OVERRIDES path in scripts/registry-lib.js and regenerated into registry/theorems.jsonl. FCR v17 proves a conditional factorization-triviality theorem under an explicit atomic-separator hypothesis, but it does not prove the unconditional Paper 5 transfer proposition until that atomicity hypothesis is derived from upstream commitments and independently reviewed.",
+  "overlays": [
+    {
+      "target_id": "paper5:proposition:prop-integration-transfer",
+      "target_file": "paper5_operational_consciousness/main.tex",
+      "previous_registry_epistemic_status": "proved",
+      "current_registry_epistemic_status": "open_burden",
+      "recommended_epistemic_status": "open_burden",
+      "materialized": true,
+      "materialized_by": "scripts/registry-lib.js AUDIT_OVERRIDES",
+      "recommended_claim_class": "conditional_consolidation_invariant",
+      "reason": "FCR v17 closes the conditional theorem: atomic identity/history/response separators imply factorization triviality. The remaining burden is deriving separator atomicity from upstream rigidity, continuity, and intervention fidelity rather than assuming it.",
+      "required_for_reupgrade": [
+        "define admissible factorization category as in docs/reports/I_INT_FACTORIZATION_CATEGORY_SPEC.md",
+        "define trivial up to admissible isomorphism without smuggling integration into the definition",
+        "treat paper5:theorem:thm-iint-faithful-factorization-triviality as a conditional theorem only",
+        "prove that upstream rigidity, continuity, and intervention fidelity imply atomicity of the operational separator family Theta_S",
+        "rule out weakly coupled product counterexamples",
+        "refactor prop:integration-transfer to cite both the atomicity derivation and the completed conditional theorem after human mathematical review"
+      ],
+      "blocked_actions": [
+        "cite prop:integration-transfer as an independent proof of causal integration",
+        "use I_int as externally validated evidence",
+        "edit registry/theorems.jsonl manually to hide the burden"
+      ]
+    }
+  ]
+}

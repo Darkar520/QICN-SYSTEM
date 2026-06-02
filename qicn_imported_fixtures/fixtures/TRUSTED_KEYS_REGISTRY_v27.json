@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-05-27",
+  "governance_boundary": "This trusted-keys registry is a local v27 test registry only. It does not establish reviewer independence, production PKI, external support, consciousness, phenomenality, identity transfer, or bridge-burden closure.",
+  "trusted_keys": [
+    {
+      "reviewer_id": "v27-self-test-registered-reviewer-not-human-review",
+      "key_fingerprint_sha256": "1289f9c5535a4a931ba767a921d2535cbe542089b5a63eb0b2149a0fafed925d",
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAtgaJzBIOPSXPG7Gsf3xdZWNAmfOE5fm+adDkHy9ixNg=\n-----END PUBLIC KEY-----\n",
+      "status": "active",
+      "scope": "self_test_only"
+    }
+  ],
+  "production_note": "A real deployment requires an external key server, certificate authority, revocation policy, and independent reviewer identity checks."
+}

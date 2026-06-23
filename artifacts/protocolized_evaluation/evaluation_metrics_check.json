@@ -1,13 +1,17 @@
 {
   "artifact_role": "evaluation_metrics_check",
-  "checked_at": "2026-03-26T22:50:38.449Z",
-  "status": "PASS",
-  "failures": [],
+  "checked_at": "2026-05-25T23:19:40.610Z",
+  "status": "FAIL",
+  "failures": [
+    "missing_required_evaluation_artifacts"
+  ],
   "warnings": [],
   "checks": {
-    "missing_files": [],
-    "condition_count": 6,
-    "batch_report_status": "PASS",
+    "missing_files": [
+      "artifacts/protocolized_evaluation/latest_batch_pointer.json"
+    ],
+    "condition_count": null,
+    "batch_report_status": null,
     "portability_matches": []
   },
   "interpretation_boundary": "Evaluation metrics check only; structural and sample-size validation, not confirmatory interpretation."

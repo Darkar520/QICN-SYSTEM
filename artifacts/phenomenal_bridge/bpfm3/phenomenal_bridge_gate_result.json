@@ -96,7 +96,7 @@
       "pass": true
     }
   },
-  "gate_status": "pass",
+  "gate_status": "fail",
   "gate_definition": {
     "symbol": "Gamma_bpf",
     "non_compensatory": true,
@@ -111,8 +111,17 @@
       "no_drift_invalidation"
     ]
   },
-  "classification": "bridge_internal_admissible",
-  "invalidation_reasons": [],
+  "classification": "bridge_drift_invalidated",
+  "invalidation_reasons": [
+    "lineage:protocol:hash_mismatch",
+    "lineage:thresholds:hash_mismatch",
+    "lineage:rival_family:hash_mismatch",
+    "lineage:surface_policy:hash_mismatch",
+    "lineage:artifact_schema:hash_mismatch",
+    "lineage:root_schema:phenomenal_bridge_manifest.json:hash_mismatch",
+    "lineage:root_schema:phenomenal_bridge_projection.json:hash_mismatch",
+    "lineage:root_schema:phenomenal_bridge_gate_result.json:hash_mismatch"
+  ],
   "drift_status": {
     "compared": true,
     "exceeded": [],
@@ -158,7 +167,7 @@
       },
       "qicn_system": {
         "branch": "main",
-        "head": "3fece3e0693c22128877b915abbd96f39f0ea330",
+        "head": "04508899839e96348b0d20ba207e9d5d99f107f2",
         "upstream": "origin/main"
       },
       "qicn_release": {
@@ -172,51 +181,60 @@
       "estimator_version": "phenomenal_bridge_root_evaluator.bpfm3.v1",
       "protocol": {
         "ref": "docs/phenomenal_bridge_protocol.v1.json",
-        "sha256": "154bb0bf10002b98c8351d366549a439278d6378170cc514292509f874f16bb3"
+        "sha256": "9357b22bb9a0fdc6f2ea094107b982020c4bf572ae317fd3ed4111990724be03"
       },
       "thresholds": {
         "ref": "docs/phenomenal_bridge_thresholds.v1.json",
-        "sha256": "7564e212b00c267c888fa45aa432c4676b8caefaee3d515bb6bff1839b7218bc"
+        "sha256": "1998dd43f0729ee017f48ac42cee1c2c1e744dafb9662eb61c484342e91f1701"
       },
       "rival_family": {
         "ref": "docs/phenomenal_bridge_rival_family.v1.json",
-        "sha256": "7b935da20cc9f5c17d95e910429435ac6cf430b4a97c2cf39f91855ee8f06aeb"
+        "sha256": "e4acf443d0055347f1928957aebb511b68d24a7110b70c8f4ce5f6a53e5fa22d"
       },
       "surface_policy": {
         "ref": "docs/phenomenal_bridge_surface_policy.v1.json",
-        "sha256": "52548005cce92c32402737d52d5ad37ab64bae610b0c5675c4bd31a65d6b41d4"
+        "sha256": "1a53832c95b4d6203151f4463ee927c99f899a9ce4634c53700dc0a096e71776"
       },
       "artifact_schema": {
         "ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
-        "sha256": "cd724ff1cc241ce47627cc84a38d31f79f0aecd032f847bf718e669763b615d8"
+        "sha256": "715822eeff67a4f1e69cd90ae350cf4d37975207aa0bc1b47f16b787fd030ee4"
       },
       "root_schema_hashes": {
         "phenomenal_bridge_manifest.json": {
           "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_manifest.v1.json",
-          "sha256": "bdd647ee900bb2e0440d79818523d41378f0964fe53e812f4b47718d4939707c"
+          "sha256": "ab13db8574c20156de0c408565fbcb8159d09845a2c9935a8779f29aa7906116"
         },
         "phenomenal_bridge_projection.json": {
           "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_projection.v1.json",
-          "sha256": "7bc4e7f3f9e084f3c27a66d7a6cd28a5156ee930c99450419a582d46825b4660"
+          "sha256": "607056a9399f50b17b4efcd455479f11648164109b29c9b8ce773597956d26ab"
         },
         "phenomenal_bridge_gate_result.json": {
           "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_gate_result.v1.json",
-          "sha256": "01deb3ef3c1d15ca827d25f630b7a27e39507777c815fdb4f29b3c2a1c4acb35"
+          "sha256": "d53a8aa1ace0ad6c2b01072127950ebab31cada6481df407b9857387d6688361"
         }
       },
       "qicn_system": {
         "branch": "main",
-        "head": "04508899839e96348b0d20ba207e9d5d99f107f2",
+        "head": "1b32b9a5442fe6a3564278469b42527e9ead1114",
         "upstream": "origin/main"
       },
       "qicn_release": {
-        "branch": "main",
-        "head": "4779eb1c78341185d03b14bbb300a673e255f407",
-        "upstream": "origin/main"
+        "branch": "unknown_branch",
+        "head": "unknown_commit",
+        "upstream": null
       }
     },
-    "mismatch_reasons": [],
-    "invalidated": false
+    "mismatch_reasons": [
+      "protocol:hash_mismatch",
+      "thresholds:hash_mismatch",
+      "rival_family:hash_mismatch",
+      "surface_policy:hash_mismatch",
+      "artifact_schema:hash_mismatch",
+      "root_schema:phenomenal_bridge_manifest.json:hash_mismatch",
+      "root_schema:phenomenal_bridge_projection.json:hash_mismatch",
+      "root_schema:phenomenal_bridge_gate_result.json:hash_mismatch"
+    ],
+    "invalidated": true
   },
   "comparator_status": {
     "comparison_supported": true,
@@ -256,7 +274,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; root bridge gate result over implemented bridge reports, bridge intervention profile, and bridge reducibility report, not external validation, not human equivalence, not phenomenality proof, not metaphysical closure, and not sufficient for public claim promotion.",
   "provenance": {
-    "generated_at": "2026-04-02T23:00:05.443Z",
+    "generated_at": "2026-05-25T23:19:28.225Z",
     "projection_ref": "artifacts/phenomenal_bridge/bpfm3/phenomenal_bridge_projection.json",
     "baseline_report_refs": {
       "phenomenal_differentiation_report": "artifacts/phenomenal_bridge/bpf1/phenomenal_differentiation_report.json",
@@ -273,47 +291,47 @@
       "estimator_version": "phenomenal_bridge_root_evaluator.bpfm3.v1",
       "protocol": {
         "ref": "docs/phenomenal_bridge_protocol.v1.json",
-        "sha256": "154bb0bf10002b98c8351d366549a439278d6378170cc514292509f874f16bb3"
+        "sha256": "9357b22bb9a0fdc6f2ea094107b982020c4bf572ae317fd3ed4111990724be03"
       },
       "thresholds": {
         "ref": "docs/phenomenal_bridge_thresholds.v1.json",
-        "sha256": "7564e212b00c267c888fa45aa432c4676b8caefaee3d515bb6bff1839b7218bc"
+        "sha256": "1998dd43f0729ee017f48ac42cee1c2c1e744dafb9662eb61c484342e91f1701"
       },
       "rival_family": {
         "ref": "docs/phenomenal_bridge_rival_family.v1.json",
-        "sha256": "7b935da20cc9f5c17d95e910429435ac6cf430b4a97c2cf39f91855ee8f06aeb"
+        "sha256": "e4acf443d0055347f1928957aebb511b68d24a7110b70c8f4ce5f6a53e5fa22d"
       },
       "surface_policy": {
         "ref": "docs/phenomenal_bridge_surface_policy.v1.json",
-        "sha256": "52548005cce92c32402737d52d5ad37ab64bae610b0c5675c4bd31a65d6b41d4"
+        "sha256": "1a53832c95b4d6203151f4463ee927c99f899a9ce4634c53700dc0a096e71776"
       },
       "artifact_schema": {
         "ref": "docs/phenomenal_bridge_artifact_schema.v1.json",
-        "sha256": "cd724ff1cc241ce47627cc84a38d31f79f0aecd032f847bf718e669763b615d8"
+        "sha256": "715822eeff67a4f1e69cd90ae350cf4d37975207aa0bc1b47f16b787fd030ee4"
       },
       "root_schema_hashes": {
         "phenomenal_bridge_manifest.json": {
           "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_manifest.v1.json",
-          "sha256": "bdd647ee900bb2e0440d79818523d41378f0964fe53e812f4b47718d4939707c"
+          "sha256": "ab13db8574c20156de0c408565fbcb8159d09845a2c9935a8779f29aa7906116"
         },
         "phenomenal_bridge_projection.json": {
           "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_projection.v1.json",
-          "sha256": "7bc4e7f3f9e084f3c27a66d7a6cd28a5156ee930c99450419a582d46825b4660"
+          "sha256": "607056a9399f50b17b4efcd455479f11648164109b29c9b8ce773597956d26ab"
         },
         "phenomenal_bridge_gate_result.json": {
           "ref": "src/phenomenal_bridge/schemas/phenomenal_bridge_gate_result.v1.json",
-          "sha256": "01deb3ef3c1d15ca827d25f630b7a27e39507777c815fdb4f29b3c2a1c4acb35"
+          "sha256": "d53a8aa1ace0ad6c2b01072127950ebab31cada6481df407b9857387d6688361"
         }
       },
       "qicn_system": {
         "branch": "main",
-        "head": "04508899839e96348b0d20ba207e9d5d99f107f2",
+        "head": "1b32b9a5442fe6a3564278469b42527e9ead1114",
         "upstream": "origin/main"
       },
       "qicn_release": {
-        "branch": "main",
-        "head": "4779eb1c78341185d03b14bbb300a673e255f407",
-        "upstream": "origin/main"
+        "branch": "unknown_branch",
+        "head": "unknown_commit",
+        "upstream": null
       }
     }
   },

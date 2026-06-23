@@ -40,40 +40,40 @@
     "layer_version": "subjectivity_runtime_layer.srt5.gate.v1",
     "protocol": {
       "ref": "docs/subjectivity_protocol.v1.json",
-      "sha256": "d82bf51f05fb92016cb757d515825e42a197f028708e83fc686a863c1ddd6e96"
+      "sha256": "07a03412efed1b94ed7003c4d2515c324161fb6a69039f6defef51cd5587dcbd"
     },
     "thresholds": {
       "ref": "docs/subjectivity_thresholds.v1.json",
-      "sha256": "19cecb3002013eb88a22452ede991cef582a71479b8c1aca71cde913ebb2dbb2"
+      "sha256": "e07e6b6f17c7609f6593328e061195d79537c00c1d3ae54d2a9f0ef3485a8355"
     },
     "rival_family": {
       "ref": "docs/subjectivity_rival_family.v1.json",
-      "sha256": "8163f91c7a276f096557ba97872ce3d52c5bc4a75a71234ae98b529e539b456f"
+      "sha256": "bd8a3e1a6b7da37bb0fea95f8ea2c16976262e601a833b0cfb503ac1362a8362"
     },
     "surface_policy": {
       "ref": "docs/subjectivity_surface_policy.v1.json",
-      "sha256": "abc00bbff29b79a8c17d47603d245fc175b91ada6a08398fe1595aaf26e38d50"
+      "sha256": "2b2a2c6a61d6fbc42e8047101adb6b83391ba34c6f09ffd0f3a1186a36463b93"
     },
     "artifact_schema": {
       "ref": "docs/subjectivity_artifact_schema.v1.json",
-      "sha256": "0e18b811c0edd3fa064893cfb8a06de1dd701a7b88dfdb04b22125f8a6e5d421"
+      "sha256": "3bf09fe02129b4d9a48d3f7855d9055ef98cfa5f148efaa30a2eb00ed907a761"
     },
     "root_schema_hashes": {
       "subjectivity_manifest.json": {
         "ref": "src/subjectivity/schemas/subjectivity_manifest.v1.json",
-        "sha256": "5b8283505c7b37ef28daf2f0a818d696d35b24e4a6fed0bf025c3b90d6d1b19e"
+        "sha256": "582bc63ef72247cac8bbb14026921e49062c826d78fe1b8258be82791739f602"
       },
       "subjectivity_runtime_projection.json": {
         "ref": "src/subjectivity/schemas/subjectivity_runtime_projection.v1.json",
-        "sha256": "e460a9fda456923e3b8fa98ca358b0a6cb3c4b6763899f371e4f58f62cf0b177"
+        "sha256": "e043761f63cbc721b9bfaf55b803a842dced08d9dab948dc49020b68f3202412"
       },
       "subjectivity_gate_result.json": {
         "ref": "src/subjectivity/schemas/subjectivity_gate_result.v1.json",
-        "sha256": "8d8ccf4ff076f2588e28704c5829297414e5048cfb1ba51ea063259e015a349f"
+        "sha256": "ac9c8274416be7b24e39d8f8c89c3501f3201a0bd99e7cb655b7df9eac3b73c6"
       },
       "subjectivity_reducibility_report.json": {
         "ref": "src/subjectivity/schemas/subjectivity_reducibility_report.v1.json",
-        "sha256": "e843cc5a32a4edc4797381c5e65fe54672dfe6adb16d38018eadfe352fa83462"
+        "sha256": "a50ea5d1c9280b90eb6cb1950322e2eb875d1a7750dc005f3f6c3fd3490628b1"
       }
     }
   },
@@ -135,40 +135,40 @@
         "layer_version": "subjectivity_runtime_layer.srt5.gate.v1",
         "protocol": {
           "ref": "docs/subjectivity_protocol.v1.json",
-          "sha256": "d82bf51f05fb92016cb757d515825e42a197f028708e83fc686a863c1ddd6e96"
+          "sha256": "07a03412efed1b94ed7003c4d2515c324161fb6a69039f6defef51cd5587dcbd"
         },
         "thresholds": {
           "ref": "docs/subjectivity_thresholds.v1.json",
-          "sha256": "19cecb3002013eb88a22452ede991cef582a71479b8c1aca71cde913ebb2dbb2"
+          "sha256": "e07e6b6f17c7609f6593328e061195d79537c00c1d3ae54d2a9f0ef3485a8355"
         },
         "rival_family": {
           "ref": "docs/subjectivity_rival_family.v1.json",
-          "sha256": "8163f91c7a276f096557ba97872ce3d52c5bc4a75a71234ae98b529e539b456f"
+          "sha256": "bd8a3e1a6b7da37bb0fea95f8ea2c16976262e601a833b0cfb503ac1362a8362"
         },
         "surface_policy": {
           "ref": "docs/subjectivity_surface_policy.v1.json",
-          "sha256": "abc00bbff29b79a8c17d47603d245fc175b91ada6a08398fe1595aaf26e38d50"
+          "sha256": "2b2a2c6a61d6fbc42e8047101adb6b83391ba34c6f09ffd0f3a1186a36463b93"
         },
         "artifact_schema": {
           "ref": "docs/subjectivity_artifact_schema.v1.json",
-          "sha256": "0e18b811c0edd3fa064893cfb8a06de1dd701a7b88dfdb04b22125f8a6e5d421"
+          "sha256": "3bf09fe02129b4d9a48d3f7855d9055ef98cfa5f148efaa30a2eb00ed907a761"
         },
         "root_schema_hashes": {
           "subjectivity_manifest.json": {
             "ref": "src/subjectivity/schemas/subjectivity_manifest.v1.json",
-            "sha256": "5b8283505c7b37ef28daf2f0a818d696d35b24e4a6fed0bf025c3b90d6d1b19e"
+            "sha256": "582bc63ef72247cac8bbb14026921e49062c826d78fe1b8258be82791739f602"
           },
           "subjectivity_runtime_projection.json": {
             "ref": "src/subjectivity/schemas/subjectivity_runtime_projection.v1.json",
-            "sha256": "e460a9fda456923e3b8fa98ca358b0a6cb3c4b6763899f371e4f58f62cf0b177"
+            "sha256": "e043761f63cbc721b9bfaf55b803a842dced08d9dab948dc49020b68f3202412"
           },
           "subjectivity_gate_result.json": {
             "ref": "src/subjectivity/schemas/subjectivity_gate_result.v1.json",
-            "sha256": "8d8ccf4ff076f2588e28704c5829297414e5048cfb1ba51ea063259e015a349f"
+            "sha256": "ac9c8274416be7b24e39d8f8c89c3501f3201a0bd99e7cb655b7df9eac3b73c6"
           },
           "subjectivity_reducibility_report.json": {
             "ref": "src/subjectivity/schemas/subjectivity_reducibility_report.v1.json",
-            "sha256": "e843cc5a32a4edc4797381c5e65fe54672dfe6adb16d38018eadfe352fa83462"
+            "sha256": "a50ea5d1c9280b90eb6cb1950322e2eb875d1a7750dc005f3f6c3fd3490628b1"
           }
         }
       },
@@ -177,40 +177,40 @@
         "layer_version": "subjectivity_runtime_layer.srt5.gate.v1",
         "protocol": {
           "ref": "docs/subjectivity_protocol.v1.json",
-          "sha256": "d82bf51f05fb92016cb757d515825e42a197f028708e83fc686a863c1ddd6e96"
+          "sha256": "07a03412efed1b94ed7003c4d2515c324161fb6a69039f6defef51cd5587dcbd"
         },
         "thresholds": {
           "ref": "docs/subjectivity_thresholds.v1.json",
-          "sha256": "19cecb3002013eb88a22452ede991cef582a71479b8c1aca71cde913ebb2dbb2"
+          "sha256": "e07e6b6f17c7609f6593328e061195d79537c00c1d3ae54d2a9f0ef3485a8355"
         },
         "rival_family": {
           "ref": "docs/subjectivity_rival_family.v1.json",
-          "sha256": "8163f91c7a276f096557ba97872ce3d52c5bc4a75a71234ae98b529e539b456f"
+          "sha256": "bd8a3e1a6b7da37bb0fea95f8ea2c16976262e601a833b0cfb503ac1362a8362"
         },
         "surface_policy": {
           "ref": "docs/subjectivity_surface_policy.v1.json",
-          "sha256": "abc00bbff29b79a8c17d47603d245fc175b91ada6a08398fe1595aaf26e38d50"
+          "sha256": "2b2a2c6a61d6fbc42e8047101adb6b83391ba34c6f09ffd0f3a1186a36463b93"
         },
         "artifact_schema": {
           "ref": "docs/subjectivity_artifact_schema.v1.json",
-          "sha256": "0e18b811c0edd3fa064893cfb8a06de1dd701a7b88dfdb04b22125f8a6e5d421"
+          "sha256": "3bf09fe02129b4d9a48d3f7855d9055ef98cfa5f148efaa30a2eb00ed907a761"
         },
         "root_schema_hashes": {
           "subjectivity_manifest.json": {
             "ref": "src/subjectivity/schemas/subjectivity_manifest.v1.json",
-            "sha256": "5b8283505c7b37ef28daf2f0a818d696d35b24e4a6fed0bf025c3b90d6d1b19e"
+            "sha256": "582bc63ef72247cac8bbb14026921e49062c826d78fe1b8258be82791739f602"
           },
           "subjectivity_runtime_projection.json": {
             "ref": "src/subjectivity/schemas/subjectivity_runtime_projection.v1.json",
-            "sha256": "e460a9fda456923e3b8fa98ca358b0a6cb3c4b6763899f371e4f58f62cf0b177"
+            "sha256": "e043761f63cbc721b9bfaf55b803a842dced08d9dab948dc49020b68f3202412"
           },
           "subjectivity_gate_result.json": {
             "ref": "src/subjectivity/schemas/subjectivity_gate_result.v1.json",
-            "sha256": "8d8ccf4ff076f2588e28704c5829297414e5048cfb1ba51ea063259e015a349f"
+            "sha256": "ac9c8274416be7b24e39d8f8c89c3501f3201a0bd99e7cb655b7df9eac3b73c6"
           },
           "subjectivity_reducibility_report.json": {
             "ref": "src/subjectivity/schemas/subjectivity_reducibility_report.v1.json",
-            "sha256": "e843cc5a32a4edc4797381c5e65fe54672dfe6adb16d38018eadfe352fa83462"
+            "sha256": "a50ea5d1c9280b90eb6cb1950322e2eb875d1a7750dc005f3f6c3fd3490628b1"
           }
         }
       },
@@ -236,7 +236,7 @@
   },
   "interpretation_boundary": "Framework-internal only; subjectivity bundle lineage and support-class manifest for SRT-5, not externally validated, not human equivalence, not phenomenality closure, not claim-facing evidence.",
   "provenance": {
-    "generated_at": "2026-03-29T22:27:10.332Z",
+    "generated_at": "2026-05-25T23:19:25.751Z",
     "protocol_ref": "docs/subjectivity_protocol.v1.json",
     "thresholds_ref": "docs/subjectivity_thresholds.v1.json",
     "surface_policy_ref": "docs/subjectivity_surface_policy.v1.json",

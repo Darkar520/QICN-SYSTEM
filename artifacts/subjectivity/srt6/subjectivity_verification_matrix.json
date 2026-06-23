@@ -80,62 +80,62 @@
     "reward_aliasing_control:control_confounded"
   ],
   "baseline_refs": {
-    "qicn_system_head": "33203f82fde6863911fdbbc975255d9df88867fe",
-    "qicn_release_head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
+    "qicn_system_head": "1b32b9a5442fe6a3564278469b42527e9ead1114",
+    "qicn_release_head": "unknown_commit",
     "latest_execution_campaign_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z",
     "latest_execution_batch_id": "execution_campaign_comparable_2026-03-26T23-12-30-000Z_primary_batch"
   },
   "interpretation_boundary": "Framework-internal only; subjectivity ecosystem verification matrix is an internal hardening artifact, not externally validated, not claim-facing evidence, not phenomenality closure, and not human equivalence.",
   "provenance": {
-    "generated_at": "2026-03-29T22:27:11.661Z",
+    "generated_at": "2026-05-25T23:19:26.191Z",
     "current_lineage": {
       "layer_version": "subjectivity_runtime_layer.srt6.ecosystem.v1",
       "estimator_version": "subjectivity_ecosystem_integrator.srt6.v1",
       "protocol": {
         "ref": "docs/subjectivity_protocol.v1.json",
-        "sha256": "d82bf51f05fb92016cb757d515825e42a197f028708e83fc686a863c1ddd6e96"
+        "sha256": "07a03412efed1b94ed7003c4d2515c324161fb6a69039f6defef51cd5587dcbd"
       },
       "thresholds": {
         "ref": "docs/subjectivity_thresholds.v1.json",
-        "sha256": "19cecb3002013eb88a22452ede991cef582a71479b8c1aca71cde913ebb2dbb2"
+        "sha256": "e07e6b6f17c7609f6593328e061195d79537c00c1d3ae54d2a9f0ef3485a8355"
       },
       "rival_family": {
         "ref": "docs/subjectivity_rival_family.v1.json",
-        "sha256": "8163f91c7a276f096557ba97872ce3d52c5bc4a75a71234ae98b529e539b456f"
+        "sha256": "bd8a3e1a6b7da37bb0fea95f8ea2c16976262e601a833b0cfb503ac1362a8362"
       },
       "surface_policy": {
         "ref": "docs/subjectivity_surface_policy.v1.json",
-        "sha256": "abc00bbff29b79a8c17d47603d245fc175b91ada6a08398fe1595aaf26e38d50"
+        "sha256": "2b2a2c6a61d6fbc42e8047101adb6b83391ba34c6f09ffd0f3a1186a36463b93"
       },
       "artifact_schema": {
         "ref": "docs/subjectivity_artifact_schema.v1.json",
-        "sha256": "0e18b811c0edd3fa064893cfb8a06de1dd701a7b88dfdb04b22125f8a6e5d421"
+        "sha256": "3bf09fe02129b4d9a48d3f7855d9055ef98cfa5f148efaa30a2eb00ed907a761"
       },
       "candidate_governance": {
         "ref": "docs/ecosystem_candidate_governance.v1.json",
-        "sha256": "14884375b62241fec77ffa74995f01b3d944902dfca986e3104a17903b57504e"
+        "sha256": "1a72888b29cf7b12b8f533074e9306e66ae782cedd368bedd4a84121b89783e0"
       },
       "interface_contract": {
         "ref": "docs/ecosystem_interface_contract.v1.json",
-        "sha256": "5774e732ffde5484c8da8ae99e2d6b142f8a695dd06280d32184ae045a0c49c5"
+        "sha256": "d7b1cfaf78b236c40686327648b0eb17317bd2a9e65c939b368bf85ff738087c"
       },
       "campaign_discipline": {
         "ref": "docs/successive_campaign_discipline.v1.json",
-        "sha256": "fb8dbc96dc52f78858848f96498963db658350f6aa50e755e4663c8f14c51de2"
+        "sha256": "1269ed0fa0480e945202a6fd15fab31b9223dcf9bd89f5f271a53e8cf183dd2b"
       },
       "execution_campaign_freeze": {
         "ref": "docs/execution_campaign_freeze.v1.json",
-        "sha256": "7418724f3d30dfdd4bbfc2003307533585cf52a87557d39bfc61e4917a2b50ff"
+        "sha256": "6e59c17b212ac94092c13e4718a6e4adb5899ed3d13c4c0ec46f09285a904fec"
       },
       "qicn_system": {
         "branch": "main",
-        "head": "33203f82fde6863911fdbbc975255d9df88867fe",
+        "head": "1b32b9a5442fe6a3564278469b42527e9ead1114",
         "upstream": "origin/main"
       },
       "qicn_release": {
-        "branch": "main",
-        "head": "e4ce7bae5d86ad256ea2b70407b18b2b81645f8b",
-        "upstream": "origin/main"
+        "branch": "unknown_branch",
+        "head": "unknown_commit",
+        "upstream": null
       }
     },
     "candidate_projection_ref": "subjectivity_candidate_projection.json",

@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node 20
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: "22.x"
           cache: npm
           cache-dependency-path: "package-lock.json"
 
@@ -59,7 +59,7 @@ jobs:
       - name: Setup Node 20
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: "22.x"
 
       - name: Validate selfpatch policy and killswitch
         run: node tests/selfpatch-policy-check.v415.test.js

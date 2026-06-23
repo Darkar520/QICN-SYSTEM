@@ -1,32 +1,34 @@
 {
-  "schema": "bridge_pin.v1",
-  "generated_at": "2026-06-23",
-  "description": "Pin del commit del framework que el runtime QICN-SYSTEM declara seguir. Fase 0 del puente. No certifica nada externamente.",
-  "framework": {
-    "repo": "QICN-FRAMEWORK (origin: Darkar520/QICN-RELEASE)",
-    "subproject": "rigid-identity-framework",
-    "pin_commit": "64ba23f0029bba73c64c0bb9f24d3c781c47a84a",
-    "pin_commit_short": "64ba23f",
-    "pin_date": "2026-06-23"
-  },
-  "runtime": {
-    "repo": "QICN-SYSTEM",
-    "remotes": ["Darkar520/QICN-SYSTEM", "qicn-group/QICN-SYSTEM"]
-  },
-  "import_snapshot": {
-    "manifest": "qicn_imported_manifest_v39.json",
-    "generated_at": "2026-06-01T21:16:19",
-    "files_total": 217,
-    "status_vs_pin": "STALE_RELATIVE_TO_PIN",
-    "known_drift": [
-      "import predates pin by ~3 weeks (framework advanced: H5 closure, modeling decision, referee refresh, editorial cleanup)",
-      "qicn_imported_registry/theorems.delta.json was deleted from framework (one-time migration artifact) -> expected mismatch, allowlist in Phase 1"
-    ]
-  },
-  "governance": {
-    "external_support_certified": false,
-    "full_cop_membership": "NOT_YET",
-    "note": "El puente mejora trazabilidad/reproducibilidad internas; no promueve interno a externo."
-  },
-  "reconciliation": "Drift detection + allowlist en Fase 1 (verify-framework-import-drift.cjs). Re-import es accion manual revisada, no automatica."
+    "governance":  {
+                       "external_support_certified":  false,
+                       "full_cop_membership":  "NOT_YET",
+                       "note":  "El puente mejora trazabilidad/reproducibilidad internas; no promueve interno a externo."
+                   },
+    "runtime":  {
+                    "repo":  "QICN-SYSTEM",
+                    "remotes":  [
+                                    "Darkar520/QICN-SYSTEM",
+                                    "qicn-group/QICN-SYSTEM"
+                                ]
+                },
+    "generated_at":  "2026-06-23",
+    "reconciliation":  "Re-import ejecutado 2026-06-23. Drift = 0. Allowlist activa pero sin entries activas.",
+    "import_snapshot":  {
+                            "generated_at":  "2026-06-23T15:36:16",
+                            "status_vs_pin":  "IN_SYNC",
+                            "files_total":  193,
+                            "known_drift":  [
+
+                                            ],
+                            "manifest":  "qicn_imported_manifest_v39.json"
+                        },
+    "framework":  {
+                      "pin_date":  "2026-06-23",
+                      "pin_commit":  "64ba23f0029bba73c64c0bb9f24d3c781c47a84a",
+                      "subproject":  "rigid-identity-framework",
+                      "repo":  "QICN-FRAMEWORK (origin: Darkar520/QICN-RELEASE)",
+                      "pin_commit_short":  "64ba23f"
+                  },
+    "schema":  "bridge_pin.v1",
+    "description":  "Pin del commit del framework que el runtime QICN-SYSTEM declara seguir. Fase 0 del puente. No certifica nada externamente."
 }

@@ -618,3 +618,43 @@ framework completo).
 **Governance.** `external_support_certified=false`, `FULL_COP_MEMBERSHIP: NOT_YET`
 intactos. El mapa no certifica nada externamente; solo formaliza la trazabilidad
 interna existente y la hace auditable.
+## 2026-06-23 - Bridge Phase 3: canal runtime -> framework (datos candidatos G1.1)
+
+**Files changed.**
+- `scripts/build-g1-candidate-export.cjs` (nuevo, --self-test, 9 asserts incl. controles negativos)
+- `docs/G1_CANDIDATE_EXPORT_BOUNDARY.md` (nuevo, sello de frontera)
+- `package.json` (aliases `bridge:export-g1`, `bridge:selftest-g1`)
+- `IMPLEMENTATION_LOG.md` (esta entrada)
+
+**Before.** Las Fases 0-2 establecieron contrato, drift IN_SYNC y trazabilidad
+bidireccional. No existia canal runtime -> framework: nada conectaba las corridas
+de admisibilidad del runtime con el scaffold empirico G1.1 del framework.
+
+**After.** Canal construido con frontera dura anti-inflacion. El exportador toma
+artefactos reales de un episodio (`run_summary.json`, `run_header.json`,
+`admissibility.json`) y moldea los 6 invariantes canonicos (def-cop) en la forma
+`measurement_points` del scaffold G1.1. Sellos clave:
+- `observed_delta` = auto-medicion runtime real, etiquetada
+  `INTERNAL_RUNTIME_SELF_MEASUREMENT`, `admissible_as_external: false`.
+- `qicn_prediction`/`rival_prediction`/`measurement_sigma` = placeholders de
+  preregistro (NUNCA fabricados; rellenarlos seria calibracion circular).
+- `status = NOT_EVALUABLE_RUNTIME_SELF_MEASUREMENT`, `dataset_origin =
+  runtime_internal_self_measurement` (el caso excluido por gobernanza: el runtime
+  no es sujeto ni juez, INSTRUCCIONES 6.1).
+- **Control negativo del canal:** el script verifica `adjudicatorWouldReject ===
+  true` y aborta si el export dejara de auto-rechazarse. El pipe existe, pero lo
+  que transporta es inadmisible como evidencia externa por construccion.
+
+Probado: self-test 9/9 PASS (incl. deteccion de prediccion fabricada y de claim
+externo). Run real (episodio determinista seed 17057, 186 ticks): 6 points,
+seal_valid=true, adjudicator_would_reject=true, EXIT 0.
+
+**Framework gain.** El plumbing runtime -> G1.1 existe y esta testeado: cuando un
+tercero ejecute un experimento externo real, la herramienta de moldeado a
+`measurement_points` ya esta lista. Mientras tanto, la frontera (por que el
+runtime no puede cerrar G1.1 solo) es ahora ejecutable y verificable, no solo
+documental.
+
+**Governance.** `external_support_certified=false`, `FULL_COP_MEMBERSHIP: NOT_YET`
+intactos. Nada promovido. El export se auto-rechaza como evidencia externa. Output
+del export (`artifacts/bridge/`) gitignored (diagnostico que cambia por corrida).

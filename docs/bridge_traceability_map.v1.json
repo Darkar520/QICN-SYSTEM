@@ -1,0 +1,112 @@
+{
+  "schema": "bridge_traceability_map.v1",
+  "generated_at": "2026-06-23",
+  "description": "Mapa bidireccional teorema/hipotesis (framework) <-> estimador runtime <-> tests. Cada fila ancla un objeto teorico a su proxy finito. No certifica nada externamente.",
+  "governance": {
+    "external_support_certified": false,
+    "full_cop_membership": "NOT_YET",
+    "note": "Los estimadores son proxies finitos; no instancian los objetos teoricos. Ver THEORY_RUNTIME_GAP_LEDGER.md."
+  },
+  "entries": [
+    {
+      "framework_id": "basecore:hypothesis:hyp-h1",
+      "framework_object": "H1: s closed convex nonempty, aleph = convex projection",
+      "runtime_module": "src/canon/projection/MetricProjectionOperator.js",
+      "runtime_estimator": "finite projection diagnostics over declared constraints",
+      "gap_ledger_status": "finite proxy",
+      "tests": ["tests/metric-projection-operator.v1.test.js"],
+      "invariant_id": null,
+      "forbidden_claim": "runtime instantiates separable Hilbert space"
+    },
+    {
+      "framework_id": "basecore:hypothesis:hyp-h5",
+      "framework_object": "H5: no constant fixed points (parameterwise)",
+      "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
+      "runtime_estimator": "non-collapse proxy via I_diff (beth_q, phen, omega_mean)",
+      "gap_ledger_status": "finite proxy",
+      "tests": ["tests/verifiable-report-shape.test.js"],
+      "invariant_id": "I_diff",
+      "forbidden_claim": "H5 is instantiated in runtime (it is a structural hypothesis)"
+    },
+    {
+      "framework_id": "basecore:theorem:thm-fixedpoint",
+      "framework_object": "Unique fixed point (Banach) for each u",
+      "runtime_module": "src/simulation/OntologicalSingularityCore.js",
+      "runtime_estimator": "tick-level attractor convergence (stasis_index)",
+      "gap_ledger_status": "finite proxy",
+      "tests": ["tests/projection.test.js", "tests/determinism.test.js"],
+      "invariant_id": "I_per",
+      "forbidden_claim": "Banach fixed point theorem is implemented"
+    },
+    {
+      "framework_id": "basecore:theorem:thm-compactness",
+      "framework_object": "Compactness of attractor family A*",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "finite tower compatibility + truncation-error bounds",
+      "gap_ledger_status": "finite witness",
+      "tests": ["tests/finite-horizon-approximation-barrier.v1.test.js", "tests/inverse-limit-formal.test.js"],
+      "invariant_id": "I_ri",
+      "forbidden_claim": "full inverse-limit preservation"
+    },
+    {
+      "framework_id": "basecore:theorem:thm-noncollapse",
+      "framework_object": "Structural non-collapsibility under H1-H5",
+      "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
+      "runtime_estimator": "I_diff > threshold (non-null differentiation)",
+      "gap_ledger_status": "finite proxy",
+      "tests": ["tests/verifiable-report-shape.test.js", "tests/null-regime-instability.test.js"],
+      "invariant_id": "I_diff",
+      "forbidden_claim": "non-collapse is proved in runtime"
+    },
+    {
+      "framework_id": "basecore:definition:def-cop",
+      "framework_object": "C_op: six-invariant operational criterion",
+      "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
+      "runtime_estimator": "six-invariant internal support (I_per, I_ri, I_int, I_cont, I_diff, I_leg)",
+      "gap_ledger_status": "internal support",
+      "tests": ["tests/run-episode-admissibility.v58.test.js"],
+      "invariant_id": null,
+      "forbidden_claim": "external consciousness validation"
+    },
+    {
+      "framework_id": "basecore:definition:def-iint",
+      "framework_object": "I_int: causal integration (non-factorizability)",
+      "runtime_module": "src/experiments/NonFactorizationProver.js",
+      "runtime_estimator": "finite non-factorization candidate diagnostics (NC9-NC12)",
+      "gap_ledger_status": "finite proxy",
+      "tests": ["tests/non-factorization.test.js", "tests/negative-controls-expanded.v1.test.js"],
+      "invariant_id": "I_int",
+      "forbidden_claim": "Iint is computed or infinite"
+    },
+    {
+      "framework_id": "n/a (M_Omega ontological mass)",
+      "framework_object": "M_Omega: measure-theoretic mass of attractor under structural measure",
+      "runtime_module": "src/canon/ontological_mass/OntologicalMassEstimator.js",
+      "runtime_estimator": "finite family-specific resistance lower bound",
+      "gap_ledger_status": "lower-bound support",
+      "tests": ["tests/ontological-mass-estimator.v1.test.js"],
+      "invariant_id": null,
+      "forbidden_claim": "M_Omega is computed or infinite"
+    },
+    {
+      "framework_id": "n/a (CCR closed-causal-rigidity)",
+      "framework_object": "CCR: rigidity condition on causal structure",
+      "runtime_module": "src/canon/ccr/CCRApproximationBoundary.js",
+      "runtime_estimator": "non-certifying approximation ladder",
+      "gap_ledger_status": "finite proxy",
+      "tests": ["tests/ccr-approximation-boundary.v1.test.js"],
+      "invariant_id": null,
+      "forbidden_claim": "closed-causal-rigidity verified in runtime"
+    },
+    {
+      "framework_id": "n/a (CCC-Omega coupling)",
+      "framework_object": "CCC-Omega: coupling condition supporting no-simulability",
+      "runtime_module": "src/canon/coupling/CCCOmegaCouplingProtocol.js",
+      "runtime_estimator": "finite coupling support under controls",
+      "gap_ledger_status": "stress-tested proxy",
+      "tests": ["tests/ccc-omega-coupling-protocol.v1.test.js"],
+      "invariant_id": null,
+      "forbidden_claim": "CCC proves Omega"
+    }
+  ]
+}

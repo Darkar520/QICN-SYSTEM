@@ -586,3 +586,35 @@ gateada. Detecta tampering local (bloqueante) y separa staleness upstream
 
 **Governance.** Read-only; no muta nada. `external_support_certified=false`,
 `FULL_COP_MEMBERSHIP: NOT_YET` intactos. El reporte de drift no certifica nada.
+## 2026-06-23 - Bridge Phase 2: trazabilidad bidireccional machine-checkable
+
+**Files changed.**
+- `docs/bridge_traceability_map.v1.json` (nuevo, 10 entries)
+- `scripts/verify-bridge-traceability.cjs` (nuevo, --self-test)
+- `package.json` (aliases `bridge:verify-traceability`, `bridge:verify`)
+- `IMPLEMENTATION_LOG.md` (esta entrada)
+
+**Before.** La Fase 1 cerro el drift (IN_SYNC). La trazabilidad entre objetos
+teoricos del framework y estimadores runtime era solo narrativa
+(THEORY_RUNTIME_GAP_LEDGER.md). No habia verificacion automatica de que los
+modulos/tests referenciados existieran ni que los IDs del framework fueran reales.
+
+**After.** Mapa bidireccional machine-checkable: cada fila ancla un ID del
+registry (o un objeto teorico nombrado) a su modulo runtime, estimador, tests,
+invariant_id, gap_ledger_status y forbidden_claim. Script de verificacion con 5
+checks: (a) framework_id existe en registry, (b) modulo existe en disco, (c) tests
+existen, (d) invariant_id valido contra CANON_INVARIANT_CATALOG, (e) orphan
+load-bearing IDs (informativo). Resultado: errors=0, orphans=100 (informativo,
+territorio no cubierto por el runtime = frontera honesta).
+
+Alias agregador: `npm run bridge:verify` = drift + traceability. EXIT 0.
+
+**Framework gain.** El puente tiene un contrato verificable: si un modulo se renombra
+o un test se borra, el gate falla. Si un ID del framework desaparece del registry,
+el gate falla. 100 orphans marcan honestamente que el runtime no cubre la mayoria
+del corpus — es la frontera correcta (el runtime es un proxy finito, no el
+framework completo).
+
+**Governance.** `external_support_certified=false`, `FULL_COP_MEMBERSHIP: NOT_YET`
+intactos. El mapa no certifica nada externamente; solo formaliza la trazabilidad
+interna existente y la hace auditable.

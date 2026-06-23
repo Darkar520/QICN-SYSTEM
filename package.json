@@ -99,6 +99,8 @@
     "verify:stage3-first-collection-opening": "node scripts/verify-stage3-first-collection-opening.cjs",
     "benchmark:invariants": "node scripts/benchmark-invariants.cjs",
     "bridge:verify-drift": "node scripts/verify-framework-import-drift.cjs",
+    "bridge:verify-traceability": "node scripts/verify-bridge-traceability.cjs",
+    "bridge:verify": "npm run bridge:verify-drift && npm run bridge:verify-traceability",
     "test:coverage": "c8 --reporter=text --reporter=json --lines=50 --branches=40 --functions=50 node tests/run-all-tests.cjs",
     "prepare": "husky"
   },

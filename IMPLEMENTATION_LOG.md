@@ -525,3 +525,32 @@ Files moved/removed include: `QICN GPT5.5/` moved outside the repo to `C:\Users\
 **Why this is superior to the plan's minimal sprint.** The plan proposed starting with ledger, projection, and tower modules. I implemented those plus mass, CCR, coupling, and bridge-bounds in one autocontained diagnostic layer because the objects constrain one another: a CCR boundary without mass and tower evidence is only documentary, while mass lower bounds without a CCR non-certification ladder are easy to overread. Keeping the modules uncabled from claim scores is also stricter than immediate integration: diagnostics must pass focused tests before influencing invariant packages or UI.
 
 **Framework gain.** The runtime can now answer the core theory-runtime criticism with explicit finite witnesses and explicit impossibility boundaries: it can improve internal support for projection, tower compatibility, lower-bound resistance, coupling, and bridge-health diagnostics while still refusing to claim Hilbert instantiation, full inverse-limit preservation, M_Omega computation, CCR verification, or external validation.
+
+## 2026-06-23 - Bridge Phase 0: contrato del puente Framework<->Runtime
+
+**Files changed.**
+- `docs/BRIDGE_CONTRACT.md` (nuevo)
+- `docs/bridge_pin.v1.json` (nuevo)
+- `IMPLEMENTATION_LOG.md` (esta entrada)
+
+**Before.** El roadmap `docs/ROADMAP_BRIDGE_FRAMEWORK_RUNTIME.md` definia 5 fases
+para el puente inter-repo, pero no existia un contrato explicito de que fluye en
+cada direccion ni un pin registrado del commit del framework. El unico vinculo era
+el import snapshot `qicn_imported_manifest_v39.json` (2026-06-01), sin declaracion
+de drift ni de flujos.
+
+**After.** Fase 0 cerrada (sin codigo): contrato del puente con tablas de flujo
+framework->runtime (registry, fixtures sinteticas, scripts, reports, prompts) y
+runtime->framework (canal G1.1 candidato, aun vacio, planificado para Fase 3).
+Pin del framework registrado en `bridge_pin.v1.json` = commit `64ba23f`
+(2026-06-23). Drift conocido declarado explicitamente: el import v39 es anterior
+al pin (~3 semanas) e incluye `theorems.delta.json` ya eliminado del framework ->
+mismatch esperado, a resolver con allowlist en Fase 1.
+
+**Framework gain.** El puente pasa de snapshot implicito a contrato explicito y
+versionado, con pin trazable. Habilita las Fases 1-3 (drift, trazabilidad, canal
+G1.1) sin ambiguedad de alcance. Sin codigo nuevo, sin tocar runtime ni canon.
+
+**Governance.** `external_support_certified=false`, `FULL_COP_MEMBERSHIP: NOT_YET`
+intactos. El contrato sella que ningun flujo eleva interno a externo; las fixtures
+importadas son sinteticas; el re-import es accion manual revisada, no automatica.

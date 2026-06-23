@@ -29,7 +29,10 @@ for (const token of sharedRendererTokens) {
 }
 
 assert(canvasText.includes('2.5D ENGINE v8.1 Active'), 'network HUD should advertise the new lightweight cinematic renderer');
-assert(uiText.includes('proyeccion diagnostica cinematica (Canvas v4.2)'), 'network panel footer should reflect the cinematic renderer status');
+assert(
+  uiText.includes('proyeccion diagnostica WebGL 3D con fallback Canvas'),
+  'network panel footer should reflect the WebGL renderer with Canvas fallback status'
+);
 assert(!canvasText.includes('3D ENGINE v8.0 Active'), 'legacy HUD label should not remain after cinematic renderer upgrade');
 
 console.log('OK: network cinematic depth guards passed');

@@ -9,15 +9,25 @@ const __dirname = path.dirname(__filename);
 const text = fs.readFileSync(path.join(__dirname, '../src/components/SimulationEngine.jsx'), 'utf8');
 
 const requiredLayoutTokens = [
+  'h-screen',
   'max-w-[100vw]',
-  'overflow-x-hidden',
-  'grid min-w-0 grid-cols-1 lg:grid-cols-3',
-  'min-w-0 lg:col-span-1',
-  'lg:col-span-2 min-w-0 max-w-full overflow-hidden',
-  'min-w-0 max-w-full overflow-hidden bg-gray-900/50',
-  'relative min-w-0 max-w-full',
-  'grid grid-cols-1 xl:grid-cols-2',
-  'flex flex-wrap items-center justify-between gap-2'
+  'overflow-hidden',
+  'flex flex-col gap-2',
+  'h-[8vh] min-h-[60px] max-h-[86px]',
+  'animate-spin-slow',
+  'animate-spin-galaxy',
+  'mx-auto flex h-9 w-full max-w-[1500px] flex-shrink-0',
+  'mx-auto grid w-full min-w-0 max-w-[1500px] flex-1 min-h-0',
+  'lg:grid-cols-[265px_minmax(0,1fr)]',
+  'lg:w-[265px] lg:min-w-[265px] lg:max-w-[265px]',
+  'min-h-0 flex-1 overflow-y-auto pr-1',
+  'flex h-full min-h-0 min-w-0 max-w-full flex-col overflow-hidden',
+  'bg-gray-900/50',
+  'proyeccion diagnostica WebGL 3D con fallback Canvas',
+  'relative min-h-0 min-w-0 max-w-full flex-1 overflow-hidden',
+  'grid grid-cols-1 gap-3 xl:grid-cols-2',
+  'flex flex-shrink-0 flex-wrap items-center justify-between gap-3',
+  'grid flex-shrink-0 grid-cols-1 gap-3'
 ];
 
 for (const token of requiredLayoutTokens) {

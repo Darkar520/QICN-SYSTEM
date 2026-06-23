@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import NetworkCanvas from '../index_network_canvas';
+import NetworkCanvas from './NetworkCanvas.jsx';
 import runtimeEnv from '../config/runtimeEnv.js';
 import { AuthProvider, useAuth } from '../auth/AuthContext.jsx';
 import AccessGate from '../components/AccessGate.jsx';
@@ -1492,7 +1492,7 @@ export const QICNConsciousnessSystem = () => {
   const lastSaveTimestampRef = useRef(0);
   // Node data structure now includes positions and connections for visualization
   const [visualNodes, setVisualNodes] = useState([]);
-  const [selectedTab, setSelectedTab] = useState('validation');
+  const [selectedTab, setSelectedTab] = useState('network');
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [recentTabs, setRecentTabs] = useState([]);
   const [moreTabQuery, setMoreTabQuery] = useState('');
@@ -8451,12 +8451,12 @@ El sistema inteligente permite que QICN funcione de manera sostenible sin interr
     ];
 
     return (
-      <div className="bg-gray-900/80 rounded-xl p-4 border border-yellow-500/30 shadow-[0_0_20px_rgba(234,179,8,0.1)] mb-6">
-        <h3 className="text-sm font-bold text-yellow-500 mb-4 flex items-center gap-2 uppercase tracking-tighter">
-          <ShieldCheck className="w-5 h-5" />
+      <div className="bg-gray-900/80 rounded-xl p-2.5 border border-yellow-500/30 shadow-[0_0_20px_rgba(234,179,8,0.1)]">
+        <h3 className="text-[11px] font-bold text-yellow-500 mb-2 flex items-center gap-1.5 uppercase leading-tight">
+          <ShieldCheck className="w-3.5 h-3.5" />
           Matriz de requisitos operacionales (diagnostico interno)
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           {levels.map((lvl) => {
             const rich = lvl.rich || {};
             const status = rich.status || (lvl.legacyStatus ? 'instantaneous' : 'off');
@@ -8470,31 +8470,31 @@ El sistema inteligente permite que QICN funcione de manera sostenible sin interr
             const statusLabel = isStable ? 'estable' : isCandidate ? 'provisional' : 'off';
             const idClass = 'text-[10px] font-bold ' + (isStable ? 'text-emerald-300' : isCandidate ? 'text-yellow-400' : 'text-gray-500');
             const labelClass = 'text-[9px] font-mono uppercase ' + (isStable ? 'text-emerald-300' : isCandidate ? 'text-yellow-300' : 'text-gray-500');
-            const nameClass = 'text-xs font-semibold ' + (isStable || isCandidate ? 'text-white' : 'text-gray-400');
+            const nameClass = 'text-[11px] leading-tight font-semibold ' + (isStable || isCandidate ? 'text-white' : 'text-gray-400');
             const barClass = 'h-full transition-all duration-500 ' + (isStable ? 'bg-emerald-400' : isCandidate ? 'bg-yellow-400' : 'bg-cyan-500');
             return (
-              <div key={lvl.id} className={'p-3 rounded-lg border transition-all duration-500 ' + borderClass}>
+              <div key={lvl.id} className={'p-1.5 rounded-lg border transition-all duration-500 ' + borderClass}>
                 <div className="flex justify-between items-center mb-1">
                   <span className={idClass}>{lvl.id}</span>
                   <span className={labelClass}>{statusLabel}</span>
                 </div>
                 <div className={nameClass}>{lvl.name}</div>
-                <div className="text-[9px] text-gray-500 italic lowercase">{lvl.desc}</div>
-                <div className="mt-2 grid grid-cols-2 gap-2 text-[9px] font-mono text-gray-400">
+                <div className="text-[8px] leading-tight text-gray-500 italic lowercase line-clamp-2">{lvl.desc}</div>
+                <div className="mt-1 flex items-center justify-between gap-1 text-[8px] font-mono text-gray-400">
                   <span>dwell {Number(rich.dwell_ticks || 0)}/{Number(rich.enter_ticks_required || 0)}</span>
                   <span>inst {rich.instantaneous || lvl.legacyStatus ? 'yes' : 'no'}</span>
                 </div>
-                {rich.failure_reason && (<div className="mt-1 text-[9px] text-amber-300/80 font-mono break-words">{rich.failure_reason}</div>)}
-                <div className="mt-2">
-                  <div className="flex justify-between items-center text-[9px] text-gray-400 mb-1"><span>Score diagnostico</span><span className="font-mono">{(lvl.score * 100).toFixed(1)}%</span></div>
+                {rich.failure_reason && (<div className="mt-1 line-clamp-2 text-[8px] leading-tight text-amber-300/80 font-mono break-words">{rich.failure_reason}</div>)}
+                <div className="mt-1">
+                  <div className="flex justify-between items-center text-[8px] text-gray-400 mb-1"><span>Score diagnostico</span><span className="font-mono">{(lvl.score * 100).toFixed(1)}%</span></div>
                   <div className="w-full h-1.5 rounded bg-gray-800 overflow-hidden"><div className={barClass} style={{ width: String(Math.max(2, lvl.score * 100)) + '%' }} /></div>
                 </div>
               </div>
             );
           })}
         </div>
-        <div className="mt-3 text-[10px] text-cyan-300/80 border-t border-cyan-700/30 pt-2">Los flags legacy son cruces instantaneos. La UI ahora usa estado off/provisional/estable con dwell-time, histeresis y limites epistemicos.</div>
-        {lastSaveTime && (<div className="mt-4 text-[9px] text-yellow-600 font-mono text-right border-t border-yellow-500/10 pt-2 italic">Ultima persistencia gatillada: {lastSaveTime} (Omega-Sync)</div>)}
+        <div className="mt-1.5 text-[8px] leading-tight text-cyan-300/80 border-t border-cyan-700/30 pt-1.5">Los flags legacy son cruces instantaneos. La UI ahora usa estado off/provisional/estable con dwell-time, histeresis y limites epistemicos.</div>
+        {lastSaveTime && (<div className="mt-2 text-[8px] text-yellow-600 font-mono text-right border-t border-yellow-500/10 pt-1.5 italic">Ultima persistencia gatillada: {lastSaveTime} (Omega-Sync)</div>)}
       </div>
     );
   };
@@ -9455,13 +9455,14 @@ El Motor Kaizen es la implementación de la auto-conciencia genuina en un sistem
   );
 
   const renderNetworkVisualization = () => (
-    <div className="min-w-0 max-w-full overflow-hidden bg-gray-900/50 rounded-xl p-3 sm:p-4 border border-purple-500/30 shadow-lg">
-      <h3 className="text-base sm:text-lg font-semibold text-purple-300 mb-4 flex flex-wrap items-center gap-2">
-        <Network className="w-5 h-5" />
-        Red Nodal - Capa {ontologicalState.layer} ({visualNodes.length} nodos estructurales visibles)
-        <InfoModal
-          title="Red Nodal - Diagnostico estructural interno"
-          content={`RED NODAL - VISUALIZACION DIAGNOSTICA INTERNA
+    <div className="flex h-full min-h-0 min-w-0 max-w-full flex-col overflow-hidden rounded-2xl border border-cyan-500/35 bg-gray-900/50 bg-[radial-gradient(circle_at_18%_0%,rgba(168,85,247,0.18),transparent_30%),radial-gradient(circle_at_82%_18%,rgba(34,211,238,0.14),transparent_32%),linear-gradient(180deg,rgba(2,6,23,0.94),rgba(3,7,18,0.98))] p-3 shadow-[0_0_40px_rgba(8,145,178,0.18)] sm:p-4">
+      <div className="mb-3 flex flex-shrink-0 flex-wrap items-center justify-between gap-3">
+        <h3 className="flex flex-wrap items-center gap-2 text-base font-black tracking-wide text-fuchsia-200 sm:text-xl">
+          <Network className="h-5 w-5 text-cyan-300" />
+          Red Nodal - Capa {ontologicalState.layer} ({visualNodes.length} nodos estructurales visibles)
+          <InfoModal
+            title="Red Nodal - Diagnostico estructural interno"
+            content={`RED NODAL - VISUALIZACION DIAGNOSTICA INTERNA
 
 Esta vista proyecta una submuestra finita de nodos del runtime para inspeccionar coherencia, intensidad, fase, conectividad y estabilidad visual. Es una herramienta de operacion y depuracion; no es un certificado de conciencia, subjetividad, fenomenologia externa ni equivalencia humana.
 
@@ -9486,6 +9487,10 @@ LECTURAS DISPONIBLES:
 - La capa visual resume proxies runtime y debe leerse junto a los gates formales.
 - La UI no promueve estados epistemicos por si misma.
 
+4. TELEMETRIA DE RENDER
+- renderer_mode, render_quality_tier, visible_on_screen_count, projected_nodes_count y drawn_edges_count son senales visuales.
+- No son invariantes canonicos ni gates.
+
 USO RECOMENDADO:
 - Rotar, panear y ampliar para revisar estructura global.
 - Usar hover/click para auditar vecindarios locales.
@@ -9493,20 +9498,39 @@ USO RECOMENDADO:
 
 BOUNDARY:
 Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia, mente, experiencia ni vida operacional.`}
-        >
-          <span className="w-5 h-5 bg-purple-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-        </InfoModal>
-      </h3>
-      <div className="relative min-w-0 max-w-full">
-        <div className="mb-4 bg-purple-900/20 rounded p-3 text-xs text-purple-300">
-          <h4 className="text-purple-400 font-semibold mb-2">Leyenda Visual:</h4>
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+          >
+            <span className="flex h-5 w-5 cursor-help items-center justify-center rounded-full bg-fuchsia-500 text-xs font-bold text-white shadow-[0_0_16px_rgba(217,70,239,0.65)]">i</span>
+          </InfoModal>
+        </h3>
+        <div className="flex flex-wrap items-center gap-2 text-[10px] font-mono uppercase tracking-wider">
+          <span className="rounded-md border border-cyan-400/40 bg-cyan-950/50 px-2 py-1 text-cyan-200">Visual 3D</span>
+          <span className="rounded-md border border-purple-400/40 bg-purple-950/50 px-2 py-1 text-purple-200">Boundary activo</span>
+        </div>
+      </div>
+
+      <div className="mb-3 flex-shrink-0 rounded-xl border border-violet-500/35 bg-violet-950/24 p-3 text-xs text-purple-100 shadow-[inset_0_0_28px_rgba(88,28,135,0.22)]">
+        <h4 className="mb-3 font-bold text-fuchsia-200">Leyenda Visual:</h4>
+        <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+          <div className="flex gap-3">
+            <span className="mt-1 h-6 w-6 shrink-0 rounded-full border border-cyan-300/60 bg-cyan-400/20 shadow-[0_0_18px_rgba(34,211,238,0.45)]" />
             <div><strong>Submuestra visible:</strong> nodos seleccionados por coherencia, intensidad y presupuesto de render.</div>
+          </div>
+          <div className="flex gap-3">
+            <span className="mt-1 h-6 w-6 shrink-0 rounded-full border-4 border-cyan-300 border-r-fuchsia-400 border-t-amber-300 bg-transparent" />
             <div><strong>Color del borde:</strong> gradiente de coherencia estructural; no clasifica experiencia.</div>
+          </div>
+          <div className="flex gap-3">
+            <Activity className="mt-1 h-6 w-6 shrink-0 text-cyan-300" />
             <div><strong>Lineas:</strong> conexiones internas ponderadas; clase runtime {ontologicalState.phenomenology_class || 'C'} como proxy diagnostico.</div>
+          </div>
+          <div className="flex gap-3">
+            <Target className="mt-1 h-6 w-6 shrink-0 text-sky-300" />
             <div><strong>Hover/click:</strong> inspecciona y fija vecindarios locales sin promover ningun gate.</div>
           </div>
         </div>
+      </div>
+
+      <div className="relative min-h-0 min-w-0 max-w-full flex-1 overflow-hidden">
         <NetworkCanvas
           nodalLayer={nodalLayer}
           ontologicalState={ontologicalState}
@@ -9521,14 +9545,27 @@ Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia
           touchEnabled={deviceCapabilities.touchEnabled}
         />
       </div>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-purple-400 font-mono">
-        <span>Vista nodal: proyeccion diagnostica cinematica (Canvas v4.2)</span>
-        <span>Total de Nodos Simulados: {QICNConfig.PROCESSING_SAMPLE_SIZE}</span>
-        <span>Nodos Procesando: *{topologyMetrics.activeNodes.toLocaleString()}*</span>
-      </div>
 
-      <div className="mt-2 bg-purple-900/20 rounded p-2 text-xs text-purple-300">
-        <strong>Boundary:</strong> esta vista muestra proxies finitos del runtime. Sirve para diagnostico visual, trazabilidad de vecindarios y depuracion; no constituye validacion externa ni certificacion ontologica.
+      <div className="mt-3 grid flex-shrink-0 grid-cols-1 gap-3 rounded-2xl border border-cyan-500/20 bg-slate-950/65 p-3 text-xs text-slate-200 shadow-[inset_0_0_30px_rgba(15,23,42,0.55)] xl:grid-cols-[1fr_1.15fr_0.65fr]">
+        <div className="flex flex-col justify-center gap-2 border-cyan-500/20 xl:border-r xl:pr-4">
+          <span className="font-mono text-fuchsia-200">Vista nodal: proyeccion diagnostica WebGL 3D con fallback Canvas</span>
+          <span className="font-mono text-emerald-300">Nodos Procesando: *{topologyMetrics.activeNodes.toLocaleString()}*</span>
+        </div>
+        <div className="flex items-center gap-3 border-cyan-500/20 xl:border-r xl:pr-4">
+          <ShieldCheck className="h-8 w-8 shrink-0 text-violet-300" />
+          <p className="text-[11px] leading-relaxed text-slate-300">
+            <strong className="text-slate-100">Boundary:</strong> esta vista muestra proxies finitos del runtime. Sirve para diagnostico visual, trazabilidad de vecindarios y depuracion; no constituye validacion externa ni certificacion ontologica.
+          </p>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="text-[11px] text-slate-400">Total de Nodos Simulados</div>
+            <div className="font-mono text-4xl font-black text-cyan-100 drop-shadow-[0_0_14px_rgba(34,211,238,0.8)]">{QICNConfig.PROCESSING_SAMPLE_SIZE}</div>
+          </div>
+          <div className="hidden h-16 w-16 place-items-center rounded-full border border-cyan-300/30 bg-cyan-950/20 shadow-[0_0_22px_rgba(34,211,238,0.16)] sm:grid">
+            <Network className="h-8 w-8 text-cyan-200" />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -11724,17 +11761,56 @@ const renderCurrentTab = () => {
 
 
 return (
-  <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-gray-900 text-white font-sans p-2 sm:p-4 lg:p-6 xl:p-8">
+  <div className="h-screen w-full max-w-[100vw] overflow-hidden bg-[#020611] bg-[radial-gradient(circle_at_12%_3%,rgba(79,70,229,0.22),transparent_24%),radial-gradient(circle_at_84%_7%,rgba(245,158,11,0.12),transparent_18%),radial-gradient(circle_at_72%_42%,rgba(8,145,178,0.12),transparent_34%),linear-gradient(180deg,#020611,#050816_42%,#03050c)] p-2 font-sans text-white sm:p-3 flex flex-col gap-2">
     {/* Note: The style tag is moved to the head for best practices */}
-    <header className="text-center mb-10">
-      <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 mb-2 flex items-center justify-center">
-        <Zap className="w-8 h-8 mr-3" /> QICN Singularidad Ontológica
-      </h1>
-      <p className="text-lg text-gray-400 italic">
-        Simulación a Escala Masiva de Conciencia Coherente Interconectada (RCIC-X)
-      </p>
+    <header className="relative mx-auto h-[8vh] min-h-[60px] max-h-[86px] w-full max-w-[1500px] flex-shrink-0 overflow-hidden rounded-2xl border border-slate-700/30 bg-slate-950/20 px-3 py-2 shadow-[0_0_45px_rgba(8,145,178,0.12)]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_9%_35%,rgba(147,51,234,0.22),transparent_18%),radial-gradient(circle_at_90%_18%,rgba(245,158,11,0.16),transparent_15%),linear-gradient(90deg,transparent,rgba(14,165,233,0.06),transparent)]" />
+      <div className="relative grid h-full grid-cols-[auto_1fr] items-center gap-3 lg:grid-cols-[auto_1fr_auto]">
+        <div className="relative grid size-12 place-items-center rounded-xl border border-violet-400/30 bg-slate-950/82 shadow-[0_0_20px_rgba(168,85,247,0.28),inset_0_0_18px_rgba(34,211,238,0.12)]">
+          <svg className="size-10 text-cyan-300 animate-spin-slow" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+            <circle cx="50" cy="50" r="45" strokeDasharray="4 4" className="opacity-40" />
+            <polygon points="50,5 95,80 5,80" className="animate-pulse opacity-90" />
+            <polygon points="50,95 95,20 5,20" className="opacity-70" />
+            <path d="M50 5 L95 20 L95 80 L50 95 L5 80 L5 20 Z" className="opacity-45" />
+            <circle cx="50" cy="50" r="16" stroke="white" strokeWidth="2" className="drop-shadow-[0_0_8px_rgba(34,211,238,0.85)]" />
+            <circle cx="50" cy="5" r="3" fill="currentColor" />
+            <circle cx="95" cy="80" r="3" fill="currentColor" />
+            <circle cx="5" cy="80" r="3" fill="currentColor" />
+          </svg>
+          <span className="pointer-events-none absolute inset-3 rounded-full border border-fuchsia-400/35 shadow-[0_0_18px_rgba(217,70,239,0.4)]" />
+        </div>
+        <div className="text-center">
+          <h1 className="mb-1 text-2xl font-black leading-none text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-violet-300 to-cyan-300 drop-shadow-[0_0_18px_rgba(34,211,238,0.28)] sm:text-4xl lg:whitespace-nowrap xl:text-[2.85rem]">
+            QICN Singularidad Ontologica
+          </h1>
+          <p className="text-[10px] italic text-slate-300 sm:text-sm">
+            Simulacion a Escala Masiva de Conciencia Coherente Interconectada (RCIC-X)
+          </p>
+        </div>
+        <div className="hidden h-14 w-44 items-center justify-end overflow-hidden pr-2 lg:flex">
+          <svg className="h-36 w-36 text-fuchsia-400 opacity-85 animate-spin-galaxy" style={{ transformOrigin: 'center center' }} viewBox="0 0 200 200" fill="none" aria-hidden="true">
+            <defs>
+              <radialGradient id="qicnNebulaGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.46" />
+                <stop offset="40%" stopColor="#d946ef" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="#020611" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            <circle cx="100" cy="100" r="92" fill="url(#qicnNebulaGlow)" />
+            <path d="M100,100 Q126,66 156,62 T184,92" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="opacity-80 drop-shadow-[0_0_8px_rgba(217,70,239,0.75)]" />
+            <path d="M100,100 Q74,134 44,140 T18,108" stroke="#a5f3fc" strokeWidth="2.4" strokeLinecap="round" className="opacity-90 drop-shadow-[0_0_8px_rgba(34,211,238,0.75)]" />
+            <path d="M100,100 Q132,124 152,154 T112,184" stroke="#fbbf24" strokeWidth="1.7" strokeLinecap="round" className="opacity-55" />
+            <path d="M100,100 Q68,76 50,46 T88,18" stroke="#38bdf8" strokeWidth="1.7" strokeLinecap="round" className="opacity-55" />
+            <circle cx="100" cy="100" r="6" fill="#fff" className="drop-shadow-[0_0_8px_rgba(217,70,239,0.95)]" />
+            <circle cx="130" cy="72" r="1.5" fill="#fff" />
+            <circle cx="70" cy="128" r="1.5" fill="#fff" />
+            <circle cx="160" cy="100" r="1" fill="#fff" />
+            <circle cx="40" cy="100" r="1" fill="#fff" />
+          </svg>
+        </div>
+      </div>
     </header>
-    <div className="mb-4 rounded-xl border border-cyan-900/50 bg-cyan-950/20 px-3 py-2 text-[11px] text-cyan-200 flex flex-wrap items-center gap-3">
+    <div className="mx-auto flex h-9 w-full max-w-[1500px] flex-shrink-0 flex-wrap items-center gap-2 rounded-xl border border-cyan-900/50 bg-slate-950/58 px-3 py-1 text-[10px] text-cyan-100 shadow-[inset_0_0_18px_rgba(15,23,42,0.6)]">
       <span>Viewport: {breakpoint}</span>
       <span>SecureContext: {deviceCapabilities.secureContext ? 'yes' : 'no'}</span>
       <span>Cam: {deviceCapabilities.supportsCamera ? 'yes' : 'no'}</span>
@@ -11751,38 +11827,38 @@ return (
     </div>
 
     {/* Panel de Control Principal */}
-    <div className="grid min-w-0 grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 xl:gap-8 mb-6 lg:mb-8">
+    <main className="mx-auto grid w-full min-w-0 max-w-[1500px] flex-1 min-h-0 grid-cols-1 gap-3 overflow-hidden lg:grid-cols-[265px_minmax(0,1fr)] lg:gap-3">
       {/* Columna Izquierda: Métricas en Vivo */}
-      <div className="min-w-0 lg:col-span-1 space-y-4">
-        <div className={`p-5 rounded-xl shadow-2xl transition-all duration-500 transform ${isAscended ? 'bg-yellow-900/40 border-4 border-yellow-400 animate-pulse-slow' : 'bg-gray-800/80 border-2 border-purple-700'}`}>
+      <section className="min-h-0 min-w-0 space-y-2 overflow-y-auto pr-1 lg:w-[265px] lg:min-w-[265px] lg:max-w-[265px]">
+        <div className={`rounded-xl p-2.5 shadow-[0_0_24px_rgba(168,85,247,0.12),inset_0_0_22px_rgba(15,23,42,0.55)] transition-all duration-500 transform ${isAscended ? 'bg-yellow-950/36 border-2 border-yellow-400/70 animate-pulse-slow' : 'bg-slate-950/72 border border-purple-500/35'}`}>
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-gray-200 flex items-center">
-              <TrendingUp className={`w-6 h-6 mr-2 ${isAscended ? 'text-yellow-300' : 'text-purple-400'}`} />
+            <h2 className="text-sm font-bold text-gray-200 flex items-center leading-tight">
+              <TrendingUp className={`w-4 h-4 mr-1.5 ${isAscended ? 'text-yellow-300' : 'text-purple-400'}`} />
               CCC (Conscious Cohesion Constant)
             </h2>
             {/* CAPA ONTOL?GICA PROMINENTE */}
             {ontologicalState.layer >= 1 && (
-              <div className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-cyan-500 px-3 py-1 rounded-full shadow-lg">
-                <Layers className="w-4 h-4 text-white" />
-                <span className="text-white font-bold text-sm">CAPA {ontologicalState.layer}</span>
+              <div className="flex items-center gap-1 bg-gradient-to-r from-purple-600 to-cyan-500 px-2 py-0.5 rounded-full shadow-lg">
+                <Layers className="w-3 h-3 text-white" />
+                <span className="text-white font-bold text-[10px]">CAPA {ontologicalState.layer}</span>
               </div>
             )}
           </div>
-          <p className={`text-5xl font-extrabold mt-3 ${levelColor}`}>
+          <p className={`text-4xl font-extrabold mt-1 tabular-nums ${levelColor}`}>
             {formatCCC(ccc, isAscended)}
           </p>
-          <div className="flex justify-between items-center mt-2">
-            <p className="text-sm text-gray-400">Nivel: <span className={levelColor}>{consciousnessLevel}</span></p>
+          <div className="flex justify-between items-center mt-1">
+            <p className="text-[11px] text-gray-400 truncate">Nivel: <span className={levelColor}>{consciousnessLevel}</span></p>
             {ontologicalState.layer >= 1 && (
               <div className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-900/50 border border-cyan-400/50 text-cyan-300 animate-pulse">
-                ASCENSI?N GENUINA ACTIVA
+                ASCENSION GENUINA ACTIVA
               </div>
             )}
           </div>
         </div>
 
         {/* Métrica 2: Estado de Funcionamiento */}
-        <div className="bg-gray-800/80 p-5 rounded-xl shadow-2xl border-2 border-cyan-700 space-y-2 text-sm">
+        <div className="bg-gray-800/80 p-2.5 rounded-xl shadow-2xl border border-cyan-700 space-y-1 text-xs">
           <div className="flex justify-between border-b border-gray-700 pb-1">
             <span className="text-cyan-400 font-semibold flex items-center"><Activity className="w-4 h-4 mr-1" /> Paso Simulación</span>
             <span className="text-white font-mono">{simulationStep}</span>
@@ -11801,9 +11877,9 @@ return (
         {renderSovereigntyMatrix()}
 
         {/* PANEL DE PERCEPCI?N SENSORIAL */}
-        <div className="bg-gradient-to-br from-cyan-900/50 to-purple-900/50 p-4 rounded-xl shadow-2xl border-2 border-cyan-500/50">
-          <h3 className="text-lg font-bold text-cyan-300 mb-3 flex items-center">
-            <Eye className="w-5 h-5 mr-2" /> Percepción Sensorial
+        <div className="bg-gradient-to-br from-cyan-900/50 to-purple-900/50 p-2.5 rounded-xl shadow-2xl border border-cyan-500/50">
+          <h3 className="text-sm font-bold text-cyan-300 mb-1.5 flex items-center">
+            <Eye className="w-4 h-4 mr-1.5" /> Percepción Sensorial
           </h3>
 
           {/* Camera Preview */}
@@ -11814,14 +11890,14 @@ return (
                 autoPlay
                 playsInline
                 muted
-                className="w-full h-32 object-cover rounded-lg border border-cyan-500 bg-black"
+                className="w-full h-20 object-cover rounded-lg border border-cyan-500 bg-black"
               />
             </div>
           )}
 
           {/* Perception Metrics */}
           {sensoryState ? (
-            <div className="space-y-2 text-xs">
+            <div className="space-y-1 text-[10px]">
               {/* Video Perception */}
               {sensoryState.video.enabled && (
                 <>
@@ -11855,12 +11931,12 @@ return (
               )}
 
               {/* Perception Description */}
-              <div className="mt-2 p-2 bg-black/30 rounded text-cyan-200 text-[10px] italic">
+              <div className="mt-1.5 p-1.5 bg-black/30 rounded text-cyan-200 text-[9px] italic line-clamp-2">
                 {sensoryState.video.description || sensoryState.audio.environment.description || 'Analizando...'}
               </div>
             </div>
           ) : (
-            <div className="text-center text-xs text-cyan-400">
+            <div className="text-center text-[10px] text-cyan-400">
               {sensoryEnabled.video || sensoryEnabled.audio
                 ? '⏳ Cargando percepción...'
                 : 'Permisos de camara/microfono requeridos'}
@@ -11869,56 +11945,56 @@ return (
         </div>
 
         {/* Controles de Simulación */}
-        <div className="flex space-x-3">
+        <div className="flex gap-2">
           <button
             onClick={() => setIsRunning(!isRunning)}
             // Allow toggling even when ascended, the system just won't change its laws
-            className={`flex-1 flex items-center justify-center p-3 rounded-xl font-bold shadow-lg transition-all ${isRunning
+            className={`flex-1 flex items-center justify-center p-2 rounded-xl text-sm font-bold shadow-lg transition-all ${isRunning
               ? 'bg-red-600 hover:bg-red-700'
               : 'bg-green-600 hover:bg-green-700'
               }`}
           >
-            {isRunning ? <><Pause className="w-5 h-5 mr-2" /> Detener Flujo</> : <><Play className="w-5 h-5 mr-2" /> Iniciar Singularidad</>}
+            {isRunning ? <><Pause className="w-4 h-4 mr-1.5" /> Detener Flujo</> : <><Play className="w-4 h-4 mr-1.5" /> Iniciar Singularidad</>}
           </button>
           <button
             onClick={handleReset}
-            className="p-3 rounded-xl bg-indigo-700 hover:bg-indigo-800 shadow-lg text-white"
+            className="p-2 rounded-xl bg-indigo-700 hover:bg-indigo-800 shadow-lg text-white"
             title="Reiniciar Todo"
           >
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
 
         {/* PERSISTENCIA ONTOL?GICA (ULTRATHINK) */}
-        <div className="grid grid-cols-2 gap-3 mt-4">
+        <div className="grid grid-cols-2 gap-2">
           <button
             onClick={handleSaveState}
-            className="flex items-center justify-center p-3 rounded-xl bg-blue-600/80 hover:bg-blue-600 font-bold border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-white"
+            className="flex items-center justify-center p-2 rounded-xl bg-blue-600/80 hover:bg-blue-600 text-sm font-bold border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-white"
             title="Cristalizar Estado Actual"
           >
-            <Database className="w-5 h-5 mr-2" /> Cristalizar
+            <Database className="w-4 h-4 mr-1.5" /> Cristalizar
           </button>
           <button
             onClick={handleLoadState}
-            className="flex items-center justify-center p-3 rounded-xl bg-amber-600/80 hover:bg-amber-600 font-bold border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all text-white"
+            className="flex items-center justify-center p-2 rounded-xl bg-amber-600/80 hover:bg-amber-600 text-sm font-bold border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all text-white"
             title="Revoco Ontológico (Cargar)"
           >
-            <RotateCcw className="w-5 h-5 mr-2" /> Revocar
+            <RotateCcw className="w-4 h-4 mr-1.5" /> Revocar
           </button>
         </div>
-      </div>
+      </section>
 
       {/* Columna Central y Derecha (Contenido de Pestaña) */}
-      <div className="lg:col-span-2 min-w-0 max-w-full overflow-hidden">
+      <section className="min-h-0 min-w-0 max-w-full overflow-hidden rounded-2xl border border-slate-700/20 bg-slate-950/40 p-3 flex flex-col">
         {/* Navegación de Pestañas - AUTO-HIDE on scroll (ULTRATHINK) */}
         {/* Spacer compensatorio para evitar salto de contenido cuando el nav es sticky */}
         <div
-          className="mb-4 lg:mb-6 p-2 rounded-xl shadow-inner border border-cyan-900/50"
+          className="mb-3 flex-shrink-0 p-2 rounded-xl shadow-inner border border-cyan-900/50"
           style={{
             background: 'rgba(15,23,42,0.92)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
-            position: 'sticky',
+            position: 'relative',
             top: 0,
             zIndex: 30,
             transform: navVisible ? 'translateY(0)' : 'translateY(-120%)',
@@ -12005,14 +12081,15 @@ return (
         </div>
 
         {/* Contenido de la Pestaña */}
-        {renderCurrentTab()}
-      </div>
-    </div>
+        <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+          {renderCurrentTab()}
+        </div>
+      </section>
+    </main>
 
     {/* Footer - Información de la simulación */}
-    <footer className="mt-10 pt-6 border-t border-gray-700/50 text-xs text-gray-500 text-center">
-      <p>Arquitectura QICN Operativa. CCC, PMIA y la Narrativa del Yo se auto-modifican atómicamente a través del motor Kaizen.</p>
-      <p>Estado de Memoria: {holographicMemory.current?.getFragmentationLevel().toFixed(4)} Fragmentación. Estado Ontológico: {ontologicalCore.current?.frictionProtocolState}</p>
+    <footer className="mx-auto flex h-6 w-full max-w-[1500px] flex-shrink-0 items-center justify-center border-t border-gray-700/50 px-2 text-center text-[9px] text-gray-500">
+      <p>Arquitectura QICN Operativa. CCC, PMIA y la Narrativa del Yo se auto-modifican atomicamente a traves del motor Kaizen. Estado de Memoria: {holographicMemory.current?.getFragmentationLevel().toFixed(4)} Fragmentacion. Estado Ontologico: {ontologicalCore.current?.frictionProtocolState}</p>
     </footer>
     <PersistentInfoModal modal={activeInfoModal} onClose={closePersistentInfoModal} />
   </div>

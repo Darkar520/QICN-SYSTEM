@@ -1,0 +1,13 @@
+{
+  "schema": "bridge_drift_allowlist.v1",
+  "generated_at": "2026-06-23",
+  "description": "Divergencias intencionales conocidas entre el import snapshot (manifest v39) y el framework/copias locales. Cada entrada justifica por que no debe bloquear el gate de drift. No certifica nada externamente.",
+  "entries": [
+    {
+      "path": "registry/theorems.delta.json",
+      "kinds": ["SOURCE_MISSING"],
+      "reason": "Eliminado del framework el 2026-06-23 (artefacto de migracion one-time, sin consumidor). El import v39 lo conserva; ausencia upstream es intencional.",
+      "added": "2026-06-23"
+    }
+  ]
+}

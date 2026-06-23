@@ -98,6 +98,7 @@
     "verify:stage3-runtime-health": "node scripts/verify-stage3-runtime-health.cjs",
     "verify:stage3-first-collection-opening": "node scripts/verify-stage3-first-collection-opening.cjs",
     "benchmark:invariants": "node scripts/benchmark-invariants.cjs",
+    "bridge:verify-drift": "node scripts/verify-framework-import-drift.cjs",
     "test:coverage": "c8 --reporter=text --reporter=json --lines=50 --branches=40 --functions=50 node tests/run-all-tests.cjs",
     "prepare": "husky"
   },

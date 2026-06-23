@@ -554,3 +554,35 @@ G1.1) sin ambiguedad de alcance. Sin codigo nuevo, sin tocar runtime ni canon.
 **Governance.** `external_support_certified=false`, `FULL_COP_MEMBERSHIP: NOT_YET`
 intactos. El contrato sella que ningun flujo eleva interno a externo; las fixtures
 importadas son sinteticas; el re-import es accion manual revisada, no automatica.
+## 2026-06-23 - Bridge Phase 1: deteccion de drift framework->runtime
+
+**Files changed.**
+- `scripts/verify-framework-import-drift.cjs` (nuevo, dependency-free, --self-test)
+- `docs/bridge_drift_allowlist.v1.json` (nuevo)
+- `package.json` (alias `bridge:verify-drift`)
+- `IMPLEMENTATION_LOG.md` (esta entrada)
+
+**Before.** El contrato (Fase 0) declaraba el import v39 como STALE pero no habia
+forma automatica de medir el drift entre las copias `qicn_imported_*`, el manifest
+y el framework vivo en el pin.
+
+**After.** Script de drift con semantica honesta: (a) integridad LOCAL (copias
+importadas vs manifest) -> bloqueante; (b) staleness UPSTREAM (framework vivo vs
+manifest) -> informativo, no bloqueante (re-import es accion manual revisada).
+Allowlist para divergencias intencionales (theorems.delta.json eliminado upstream).
+--self-test con mundo sintetico (8 asserts) PASS. --strict opcional. Reporte JSON
+a artifacts/bridge/ (gitignored, diagnostico que cambia por corrida).
+
+**Resultado medido (pin 64ba23f).** total=217, in_sync=175, local_drift=0,
+dest_missing=0, upstream_drift=18, source_missing=24, allowlisted=1. Veredicto:
+integrity=PASS, sync_status=STALE, blocking=0. Confirma lo declarado en Fase 0: la
+integridad local esta intacta; el import esta ~3 semanas detras del framework
+(avance por cierre H5, decision de modelado, limpieza editorial). La reconciliacion
+(re-import) queda como accion manual revisada, fuera de esta fase.
+
+**Framework gain.** El puente ahora mide su propio drift de forma reproducible y
+gateada. Detecta tampering local (bloqueante) y separa staleness upstream
+(informativo), sin re-importar automaticamente.
+
+**Governance.** Read-only; no muta nada. `external_support_certified=false`,
+`FULL_COP_MEMBERSHIP: NOT_YET` intactos. El reporte de drift no certifica nada.

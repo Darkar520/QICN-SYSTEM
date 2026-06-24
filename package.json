@@ -100,7 +100,7 @@
     "benchmark:invariants": "node scripts/benchmark-invariants.cjs",
     "bridge:verify-drift": "node scripts/verify-framework-import-drift.cjs",
     "bridge:verify-traceability": "node scripts/verify-bridge-traceability.cjs",
-    "bridge:verify": "npm run bridge:verify-drift && npm run bridge:verify-traceability",
+    "bridge:verify": "npm run bridge:verify-drift && npm run bridge:verify-traceability && npm run bridge:selftest-g1",
     "bridge:export-g1": "node scripts/build-g1-candidate-export.cjs",
     "bridge:selftest-g1": "node scripts/build-g1-candidate-export.cjs --self-test",
     "test:coverage": "c8 --reporter=text --reporter=json --lines=50 --branches=40 --functions=50 node tests/run-all-tests.cjs",

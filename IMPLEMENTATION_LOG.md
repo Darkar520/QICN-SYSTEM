@@ -658,3 +658,30 @@ documental.
 **Governance.** `external_support_certified=false`, `FULL_COP_MEMBERSHIP: NOT_YET`
 intactos. Nada promovido. El export se auto-rechaza como evidencia externa. Output
 del export (`artifacts/bridge/`) gitignored (diagnostico que cambia por corrida).
+## 2026-06-23 - Bridge Phase 4: pulido acotado (superficie publica + agregador)
+
+**Files changed.**
+- `src/canon/index.js` (re-exports de los 4 estimadores RALSI del traceability map)
+- `package.json` (bridge:verify ahora incluye bridge:selftest-g1)
+- `IMPLEMENTATION_LOG.md` (esta entrada)
+
+**Before.** Los estimadores referenciados por bridge_traceability_map.v1.json
+(MetricProjectionOperator, OntologicalMassEstimator, CCRApproximationBoundary,
+CCCOmegaCouplingProtocol) solo eran importables por path interno. El agregador
+bridge:verify cubria drift + traceability pero no la logica del exportador G1.
+
+**After.** (1) Superficie publica: src/canon/index.js re-exporta los 4 estimadores
+RALSI (boundaries + funciones), de modo que el mapa de trazabilidad apunta a una
+superficie estable. (2) bridge:verify = drift + traceability + g1-export self-test
+(una sola orden verifica todo el puente, read-only).
+
+Acotado por diseno: NO se refactorizo App.jsx ni arquitectura general (eso es
+ROADMAP_PROFESIONALIZACION), NO se toco comparative_program ni canon calibrado.
+
+Verificado: verify:source-of-truth PASS (imports validos), build PASS (los nuevos
+re-exports resuelven en esbuild), npm test 146/146 PASS, bridge:verify EXIT 0
+(drift IN_SYNC + traceability PASS + g1 self-test PASS).
+
+**Governance.** `external_support_certified=false`, `FULL_COP_MEMBERSHIP: NOT_YET`
+intactos. Solo superficie de import + alias; ningun cambio de comportamiento ni de
+claim.

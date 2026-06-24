@@ -57,13 +57,13 @@
   ],
   "entrypoints_missing": [],
   "environment_contract": {
-    "ok": false,
+    "ok": true,
     "output": "artifacts\\operational_readiness\\environment_contract_manifest.json"
   },
   "workflow": {
     "path": ".github\\workflows\\ci.yml",
     "present": true,
-    "runs_on_node_20": false,
+    "runs_on_node_22": true,
     "verifies_operational_readiness": true,
     "runs_smoke_operational": true,
     "covers_codex_branches": true

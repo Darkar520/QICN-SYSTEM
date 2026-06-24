@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-23T21:35:00",
+  "generated_at": "2026-06-24T05:42:14",
   "source_root": "C:/Users/irisp/OneDrive/Escritorio/QICN-FRAMEWORK/rigid-identity-framework",
   "destination_root": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM",
   "mode": "non_destructive_quarantine_import",
@@ -247,8 +247,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_scripts/scripts/extract-registry.js",
       "source_relative": "scripts/extract-registry.js",
       "destination_relative": "qicn_imported_scripts/scripts/extract-registry.js",
-      "sha256_source": "f50619f6f2a8d42531a1f3f6f0cb4ca9a4b2ca76dc6095ec5aaaea54175ed080",
-      "sha256_destination": "f50619f6f2a8d42531a1f3f6f0cb4ca9a4b2ca76dc6095ec5aaaea54175ed080",
+      "sha256_source": "61448f60ba28764825e733441fd3cfc47ac27ca2a1bd861ae5d141bfdbd1d4c8",
+      "sha256_destination": "61448f60ba28764825e733441fd3cfc47ac27ca2a1bd861ae5d141bfdbd1d4c8",
       "hash_match": true
     },
     {
@@ -256,8 +256,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_scripts/scripts/fcr-impact-analyzer.js",
       "source_relative": "scripts/fcr-impact-analyzer.js",
       "destination_relative": "qicn_imported_scripts/scripts/fcr-impact-analyzer.js",
-      "sha256_source": "de457f234b1bd692639ee60c652bb5d7f8b0ed5002ce5d5c655ff0a072bb44d9",
-      "sha256_destination": "de457f234b1bd692639ee60c652bb5d7f8b0ed5002ce5d5c655ff0a072bb44d9",
+      "sha256_source": "2a2fda9169d3b6a8db86f40a5c6f884e8f589dc70592f50416c9ca3e0e5813ee",
+      "sha256_destination": "2a2fda9169d3b6a8db86f40a5c6f884e8f589dc70592f50416c9ca3e0e5813ee",
       "hash_match": true
     },
     {
@@ -292,8 +292,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_scripts/scripts/generate-report.js",
       "source_relative": "scripts/generate-report.js",
       "destination_relative": "qicn_imported_scripts/scripts/generate-report.js",
-      "sha256_source": "50ed7657be73c3ae332a9db4796b7e360f4688e58e19ad85c1bebc2648c76523",
-      "sha256_destination": "50ed7657be73c3ae332a9db4796b7e360f4688e58e19ad85c1bebc2648c76523",
+      "sha256_source": "263120946b31fe0b31750658991edfddb3336f519b0e6f97959790c7a6c643de",
+      "sha256_destination": "263120946b31fe0b31750658991edfddb3336f519b0e6f97959790c7a6c643de",
       "hash_match": true
     },
     {
@@ -346,8 +346,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_scripts/scripts/registry-lib.js",
       "source_relative": "scripts/registry-lib.js",
       "destination_relative": "qicn_imported_scripts/scripts/registry-lib.js",
-      "sha256_source": "e793ad384f293d67461194552967fb73ccc32f4fa03191de437bedbd6b035878",
-      "sha256_destination": "e793ad384f293d67461194552967fb73ccc32f4fa03191de437bedbd6b035878",
+      "sha256_source": "c9b0ac29aed191c0458b86f49ef88b2fb18ad98479663f33c1b5c7662e5bd4e5",
+      "sha256_destination": "c9b0ac29aed191c0458b86f49ef88b2fb18ad98479663f33c1b5c7662e5bd4e5",
       "hash_match": true
     },
     {
@@ -463,8 +463,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_scripts/scripts/validate-corpus.js",
       "source_relative": "scripts/validate-corpus.js",
       "destination_relative": "qicn_imported_scripts/scripts/validate-corpus.js",
-      "sha256_source": "22f373d20e8202f38cb2569eacd797d35509d1c75fbff89dfcc53480baf74fd0",
-      "sha256_destination": "22f373d20e8202f38cb2569eacd797d35509d1c75fbff89dfcc53480baf74fd0",
+      "sha256_source": "94a6c104e3b0d41c2c809b968257ab356600026b26a98dd099efd5c0f1e49d9c",
+      "sha256_destination": "94a6c104e3b0d41c2c809b968257ab356600026b26a98dd099efd5c0f1e49d9c",
       "hash_match": true
     },
     {
@@ -472,8 +472,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_scripts/scripts/validate-macros.js",
       "source_relative": "scripts/validate-macros.js",
       "destination_relative": "qicn_imported_scripts/scripts/validate-macros.js",
-      "sha256_source": "3f12e14729a63c6c97db107e765cfc30efea71f36a4d65e17e007b3adbe20317",
-      "sha256_destination": "3f12e14729a63c6c97db107e765cfc30efea71f36a4d65e17e007b3adbe20317",
+      "sha256_source": "d46973bc1ce448df2f84e32e8dd7928ea711880f6c4a5a4a5d88a3f42fd75163",
+      "sha256_destination": "d46973bc1ce448df2f84e32e8dd7928ea711880f6c4a5a4a5d88a3f42fd75163",
       "hash_match": true
     },
     {
@@ -553,8 +553,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_scripts/scripts/verify-monolithic-risk.js",
       "source_relative": "scripts/verify-monolithic-risk.js",
       "destination_relative": "qicn_imported_scripts/scripts/verify-monolithic-risk.js",
-      "sha256_source": "7af81581f5574beeb1a2261a8325e9535c147036eebd1a73037cace12c89d2bb",
-      "sha256_destination": "7af81581f5574beeb1a2261a8325e9535c147036eebd1a73037cace12c89d2bb",
+      "sha256_source": "13666a92d00fc36d5b8b7d61902c36579e0b857deb0ac772e32ea071dd179bee",
+      "sha256_destination": "13666a92d00fc36d5b8b7d61902c36579e0b857deb0ac772e32ea071dd179bee",
       "hash_match": true
     },
     {
@@ -760,8 +760,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_fixtures/fixtures/TRUSTED_KEYS_REGISTRY_v27.json",
       "source_relative": "docs/fixtures/TRUSTED_KEYS_REGISTRY_v27.json",
       "destination_relative": "qicn_imported_fixtures/fixtures/TRUSTED_KEYS_REGISTRY_v27.json",
-      "sha256_source": "6d1e41972f89a28670c477409ed863909422c786ffa9ef343a6d1bc1192a5c1e",
-      "sha256_destination": "6d1e41972f89a28670c477409ed863909422c786ffa9ef343a6d1bc1192a5c1e",
+      "sha256_source": "3561b17b28428f0cc8e1e805ce1f02b9bca5a926398d4e72843ea06147876750",
+      "sha256_destination": "3561b17b28428f0cc8e1e805ce1f02b9bca5a926398d4e72843ea06147876750",
       "hash_match": true
     },
     {
@@ -1003,8 +1003,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/HUMAN_VETO_SIGNATURE_SELF_TEST_v27.json",
       "source_relative": "docs/reports/HUMAN_VETO_SIGNATURE_SELF_TEST_v27.json",
       "destination_relative": "qicn_imported_reports/reports/HUMAN_VETO_SIGNATURE_SELF_TEST_v27.json",
-      "sha256_source": "21d00f6ebf21ecc7ed344b710d8bd97daa092a9f363699704784278e8ffacea7",
-      "sha256_destination": "21d00f6ebf21ecc7ed344b710d8bd97daa092a9f363699704784278e8ffacea7",
+      "sha256_source": "bccde6b54aabe14fd0d2de52a044939b8651f04982070e7eac22f44ef0b51b02",
+      "sha256_destination": "bccde6b54aabe14fd0d2de52a044939b8651f04982070e7eac22f44ef0b51b02",
       "hash_match": true
     },
     {
@@ -1354,8 +1354,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/QICN_THEORY_FALSIFIABILITY_ROADMAP.md",
       "source_relative": "docs/reports/QICN_THEORY_FALSIFIABILITY_ROADMAP.md",
       "destination_relative": "qicn_imported_reports/reports/QICN_THEORY_FALSIFIABILITY_ROADMAP.md",
-      "sha256_source": "dc99d065899148a4c0f48cac8ed634229bdc654d33aebef9777224a399b10bf0",
-      "sha256_destination": "dc99d065899148a4c0f48cac8ed634229bdc654d33aebef9777224a399b10bf0",
+      "sha256_source": "0c83468a87ff728e6c91199c0108094d8424a345d6aec9324e2c798d5d73ec2e",
+      "sha256_destination": "0c83468a87ff728e6c91199c0108094d8424a345d6aec9324e2c798d5d73ec2e",
       "hash_match": true
     },
     {
@@ -1678,8 +1678,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/V35_ALL_LEGACY_VERIFICATION.json",
       "source_relative": "docs/reports/V35_ALL_LEGACY_VERIFICATION.json",
       "destination_relative": "qicn_imported_reports/reports/V35_ALL_LEGACY_VERIFICATION.json",
-      "sha256_source": "76c53b952e002376adf18d25c3ca97fec31ef349f029e4285ee5db35eb31ced5",
-      "sha256_destination": "76c53b952e002376adf18d25c3ca97fec31ef349f029e4285ee5db35eb31ced5",
+      "sha256_source": "689edb0fd93843c9ff1ba6e6fd8b093b2b914b004cabef638df4121f886dd23a",
+      "sha256_destination": "689edb0fd93843c9ff1ba6e6fd8b093b2b914b004cabef638df4121f886dd23a",
       "hash_match": true
     },
     {
@@ -1732,8 +1732,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_registry/registry/schema.json",
       "source_relative": "registry/schema.json",
       "destination_relative": "qicn_imported_registry/registry/schema.json",
-      "sha256_source": "d6fee97e327e6459ce197930fc5e2d26503b8e2257818be0b6806049332e3095",
-      "sha256_destination": "d6fee97e327e6459ce197930fc5e2d26503b8e2257818be0b6806049332e3095",
+      "sha256_source": "92453f8c3cf54fffac648d7f33c99ef215abb13ca296be6c5c9d5a415ddc9b75",
+      "sha256_destination": "92453f8c3cf54fffac648d7f33c99ef215abb13ca296be6c5c9d5a415ddc9b75",
       "hash_match": true
     },
     {

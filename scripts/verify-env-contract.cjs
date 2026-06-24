@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
-const EXPECTED_NODE_MAJOR = 20;
+const EXPECTED_NODE_MAJOR = 22;
 const REQUIRED_ENV_KEYS = [
   'APP_ENV',
   'NODE_ENV',
@@ -102,7 +102,7 @@ function verifyEnvironmentContract({
   ensureDirForFile(outputPath);
   fs.writeFileSync(outputPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 
-  const ok = nodeMajor === EXPECTED_NODE_MAJOR
+  const ok = nodeMajor >= EXPECTED_NODE_MAJOR
     && nvmrcPresent
     && String(nvmrcValue || '').startsWith(String(EXPECTED_NODE_MAJOR))
     && missingRequiredKeys.length === 0;

@@ -34,7 +34,10 @@ const ALLOWLIST = path.join(REPO_ROOT, 'docs', 'bridge_drift_allowlist.v1.json')
 const PIN = path.join(REPO_ROOT, 'docs', 'bridge_pin.v1.json');
 
 function sha256(file) {
-  return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  // Normalize line endings to LF before hashing for cross-platform consistency.
+  // Windows commits with CRLF; CI (Ubuntu) checks out as LF via git autocrlf.
+  const raw = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
+  return crypto.createHash('sha256').update(raw).digest('hex');
 }
 
 function readJson(p) {

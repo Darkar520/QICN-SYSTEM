@@ -105,7 +105,7 @@ function verifyOperationalReadiness({
     workflow: {
       path: path.relative(projectRoot, workflowPath),
       present: workflowPresent,
-      runs_on_node_20: /node-version:\s*["']?20(?:\.x)?["']?/i.test(workflowContent),
+      runs_on_node_22: /node-version:\s*["']?22(?:\.x)?["']?/i.test(workflowContent),
       verifies_operational_readiness: /npm run verify:operational-readiness/.test(workflowContent),
       runs_smoke_operational: /npm run smoke:operational/.test(workflowContent),
       covers_codex_branches: /codex\/\*\*/.test(workflowContent)
@@ -125,11 +125,11 @@ function verifyOperationalReadiness({
     && missingScriptFiles.length === 0
     && missingEntrypoints.length === 0
     && workflowPresent
-    && manifest.workflow.runs_on_node_20
+    && manifest.workflow.runs_on_node_22
     && manifest.workflow.verifies_operational_readiness
     && manifest.workflow.runs_smoke_operational
     && manifest.workflow.covers_codex_branches
-    && String(packageJson.engines?.node || '') === '20.x';
+    && String(packageJson.engines?.node || '') === '22.x';
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');

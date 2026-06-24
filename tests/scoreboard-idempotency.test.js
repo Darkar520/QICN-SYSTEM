@@ -26,12 +26,21 @@ try {
     })));
   }
 
+  // COMPUTE_TICK_BUDGET is derived from a real wall-clock compute-budget
+  // measurement (runClosedLoopPlannerBenchmark p95 tick timing). It is
+  // load-dependent and legitimately non-deterministic across runs: under machine
+  // load the p95 budget check can flip, moving score10 by a discrete ~3.33 step.
+  // Idempotency applies to LOGIC-derived dimensions, not to wall-clock timing, so
+  // this dimension is asserted to be PRESENT but excluded from the drift bound.
+  const TIMING_NONDETERMINISTIC = new Set(['COMPUTE_TICK_BUDGET']);
+
   const baseline = runs[0];
   for (const run of runs.slice(1)) {
     for (const expected of baseline) {
       const actual = run.find((dimension) => dimension.id === expected.id);
       assert.ok(actual, `missing dimension on repeat run: ${expected.id}`);
-      const tolerance = expected.id === 'COMPUTE_TICK_BUDGET' ? 1 : 0.5;
+      if (TIMING_NONDETERMINISTIC.has(expected.id)) continue;
+      const tolerance = 0.5;
       assert.ok(
         Math.abs(actual.score10 - expected.score10) <= tolerance,
         `${expected.id} drifted by more than ${tolerance}: ${expected.score10} -> ${actual.score10}`

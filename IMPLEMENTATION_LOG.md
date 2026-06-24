@@ -685,3 +685,39 @@ re-exports resuelven en esbuild), npm test 146/146 PASS, bridge:verify EXIT 0
 **Governance.** `external_support_certified=false`, `FULL_COP_MEMBERSHIP: NOT_YET`
 intactos. Solo superficie de import + alias; ningun cambio de comportamiento ni de
 claim.
+## 2026-06-23 - Bridge Phase 5: gate del puente en CI + estabilizacion scoreboard-idempotency
+
+**Files changed.**
+- `.github/workflows/ci.yml` (job nuevo `ci/bridge-verify`)
+- `tests/scoreboard-idempotency.test.js` (estabilizado)
+- `IMPLEMENTATION_LOG.md` (esta entrada)
+
+**Estabilizacion del flaky (causa raiz, no enmascarado).** `scoreboard-idempotency`
+comparaba `score10` de TODAS las dimensiones entre 3 corridas. `COMPUTE_TICK_BUDGET`
+deriva de una medicion wall-clock real (runClosedLoopPlannerBenchmark p95 tick
+timing): bajo carga de maquina el check de p95 se voltea y score10 salta ~3.33
+(3 checks), excediendo la tolerancia. La varianza es LEGITIMA (medicion de tiempo
+real), no un bug; la suposicion de idempotencia sobre una dimension de timing era
+incorrecta. Fix: excluir COMPUTE_TICK_BUDGET de la cota de drift (se sigue
+asertando que la dimension EXISTE), comparando solo dimensiones derivadas de
+logica (deterministas). Verificado estable 3/3 corridas aisladas + 146/146 suite.
+
+**Fase 5 (gate CI).** Job `ci/bridge-verify` en ci.yml (Node 22): npm ci +
+`npm run bridge:verify` (drift + traceability + g1 self-test). Bloqueante por
+diseno (read-only, determinista). En CI el framework root no existe -> el drift
+evalua integridad LOCAL solamente y reporta upstream como skipped (no bloquea):
+verificado integrity=PASS, EXIT 0 con --framework-root inexistente.
+
+**Framework gain.** El puente no se degrada en silencio: cada push corre el gate.
+Si una copia importada se altera (integridad local) o la trazabilidad se rompe
+(modulo/test renombrado o ID inexistente), el pipeline falla. El test de scoreboard
+ya no es flaky.
+
+**Governance.** `external_support_certified=false`, `FULL_COP_MEMBERSHIP: NOT_YET`
+intactos. Gate read-only; no muta nada. El fix del test corrige una suposicion
+incorrecta, no relaja un gate de claim.
+
+### Estado del roadmap del puente: COMPLETO
+F0 contrato | F1 drift | re-import IN_SYNC | F2 trazabilidad | F3 canal G1.1 |
+F4 superficie+agregador | F5 gate CI. Frontera abierta (no cerrable por runtime):
+datos externos reales G1.1, adjudicador independiente G1.3.

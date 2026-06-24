@@ -75,8 +75,8 @@ function computeDrift({ manifest, frameworkRoot, repoRoot, allow, hashFn, exists
 
   for (const entry of manifest.entries) {
     counts.total += 1;
-    const destAbs = path.join(repoRoot, entry.destination_relative);
-    const srcAbs = path.join(frameworkRoot, entry.source_relative);
+    const destAbs = path.join(repoRoot, ...entry.destination_relative.replace(/\\\\/g, "/").split("/"));
+    const srcAbs = path.join(frameworkRoot, ...entry.source_relative.replace(/\\\\/g, "/").split("/"));
     const rec = { path: normRel(entry.source_relative), status: [], allowlisted: [] };
 
     // (a) local integrity

@@ -57,19 +57,19 @@
   ],
   "entrypoints_missing": [],
   "environment_contract": {
-    "ok": true,
+    "ok": false,
     "output": "artifacts\\operational_readiness\\environment_contract_manifest.json"
   },
   "workflow": {
     "path": ".github\\workflows\\ci.yml",
     "present": true,
-    "runs_on_node_20": true,
+    "runs_on_node_20": false,
     "verifies_operational_readiness": true,
     "runs_smoke_operational": true,
     "covers_codex_branches": true
   },
   "package_engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "interpretation_boundary": "Operational readiness manifest only; not external validation, not framework confirmation, not claim closure.",
   "non_claim_restrictions": [

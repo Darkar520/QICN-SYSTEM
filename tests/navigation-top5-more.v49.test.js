@@ -3,7 +3,10 @@ import path from 'path';
 import assert from 'node:assert/strict';
 
 const file = path.resolve('src/components/SimulationEngine.jsx');
-const content = fs.readFileSync(file, 'utf8');
+// Fase 2: primaryTabs/moreTabs -> TabConfig.jsx. Texto combinado para el chequeo estático.
+const content = [file, path.resolve('src/components/TabConfig.jsx')]
+  .map((p) => fs.readFileSync(p, 'utf8'))
+  .join('\n');
 
 assert.ok(content.includes('const primaryTabs = ['), 'CASE 1 FAIL: primaryTabs definition missing.');
 assert.ok(content.includes('const moreTabs = ['), 'CASE 2 FAIL: moreTabs definition missing.');

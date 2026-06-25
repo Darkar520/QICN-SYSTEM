@@ -2,7 +2,10 @@ import fs from 'fs';
 import path from 'path';
 
 const file = path.resolve('src/components/SimulationEngine.jsx');
-const content = fs.readFileSync(file, 'utf8');
+// Fase 2: primaryTabs/moreTabs -> TabConfig.jsx. Texto combinado para el chequeo estático.
+const content = [file, path.resolve('src/components/TabConfig.jsx')]
+  .map((p) => fs.readFileSync(p, 'utf8'))
+  .join('\n');
 
 if (!content.includes('const primaryTabs = [')) throw new Error('primaryTabs definition missing');
 if (!content.includes('const moreTabs = [')) throw new Error('moreTabs definition missing');

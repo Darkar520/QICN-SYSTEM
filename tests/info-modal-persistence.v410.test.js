@@ -3,7 +3,15 @@ import path from 'path';
 import assert from 'node:assert/strict';
 
 const file = path.resolve('src/components/SimulationEngine.jsx');
-const content = fs.readFileSync(file, 'utf8');
+// Fase 2: PersistentInfoModal -> InfoModal.jsx; NavigationTabButton -> TabConfig.jsx.
+// El test lee el texto combinado (orquestador + componentes extraídos).
+const extraSources = [
+  'src/components/InfoModal.jsx',
+  'src/components/TabConfig.jsx'
+];
+const content = [file, ...extraSources.map((p) => path.resolve(p))]
+  .map((p) => fs.readFileSync(p, 'utf8'))
+  .join('\n');
 
 const required = [
   'const PersistentInfoModal =',

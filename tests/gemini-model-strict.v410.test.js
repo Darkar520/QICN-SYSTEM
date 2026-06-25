@@ -7,7 +7,8 @@ const indexPath = path.resolve('src/components/SimulationEngine.jsx');
 const proxyPath = path.resolve('netlify/functions/llm-proxy.js');
 
 const runtimeEnv = fs.readFileSync(runtimeEnvPath, 'utf8');
-const indexContent = fs.readFileSync(indexPath, 'utf8');
+const defaultsPath = path.resolve('src/config/simulationDefaults.js');
+const indexContent = fs.readFileSync(indexPath, 'utf8') + '\n' + fs.readFileSync(defaultsPath, 'utf8');
 const proxyContent = fs.readFileSync(proxyPath, 'utf8');
 
 assert.ok(

@@ -4,7 +4,8 @@ import path from 'node:path';
 
 try {
   const sourcePath = path.join(process.cwd(), 'src', 'components', 'SimulationEngine.jsx');
-  const source = fs.readFileSync(sourcePath, 'utf8');
+  const defaultsPath = path.join(process.cwd(), 'src', 'config', 'simulationDefaults.js');
+  const source = fs.readFileSync(sourcePath, 'utf8') + '\n' + fs.readFileSync(defaultsPath, 'utf8');
 
   // CASE 1: policy defaults and runtime constants exist
   assert.ok(/LATENCY_STRAIN_ALPHA:\s*0\.18/.test(source), 'CASE 1 FAIL: LATENCY_STRAIN_ALPHA default missing.');

@@ -3,7 +3,7 @@ import path from 'path';
 import assert from 'node:assert/strict';
 
 const file = path.resolve('src/components/SimulationEngine.jsx');
-const content = fs.readFileSync(file, 'utf8');
+const content = fs.readFileSync(file, 'utf8') + '\n' + fs.readFileSync(path.resolve('src/hooks/useSimulationCycle.js'), 'utf8');
 
 const required = [
   "regime.forcedNegativeTicksRemaining = 24",

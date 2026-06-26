@@ -186,36 +186,32 @@ export default SimulationEngine; // = () => <QICNConsciousnessSystem />
 
 ---
 
-### Fase 3: Hook de Simulación Core (lógica de tick)
+### Fase 3: Hook de Simulación Core (lógica de tick) ✅ COMPLETADA
 
-**Objetivo:** Extraer `runSimulationCycle` y toda la lógica de tick a un custom hook.
+**Objetivo:** Extraer `runSimulationCycle` e `initializeSystem` a un hook dedicado.
 
-**Archivos nuevos:**
+**Archivo nuevo:**
 
 | Archivo | Contenido |
 |---------|-----------|
-| `src/hooks/useSimulationCycle.js` | Hook que encapsula: `runSimulationCycle`, `initializeSystem`, `simulationRuntimeRef`, `computeAdaptiveIntervalMs`, el effect del simulation loop, y las refs de régimen (`ascensionDynamicsRef`, `postThresholdRegimeRef`, `autonomySandboxPolicyRef`, `autonomyActionLedgerRef`, `latencyStrainRef`, `internalPressureRef`, `kaizenPendingEvalRef`, etc.) |
+| `src/hooks/useSimulationCycle.js` | `useSimulationCycle(deps)` que encapsula `initializeSystem` (~228 líneas) y `runSimulationCycle` (~1970 líneas) con cuerpos BYTE-IDÉNTICOS al original |
 
-**Interfaz del hook:**
-```js
-const {
-  isRunning, setIsRunning,
-  simulationStep,
-  ccc, pmia, isAscended,
-  mutableConfig, metamorphosisCounter, lastMutation,
-  fieldMetrics, ontologicalState, topologyMetrics,
-  visualNodes, systemHealth,
-  // refs expuestos para el UI
-  postThresholdRegimeRef, entropyModeRef, latencyStrainRef,
-  internalPressureRef, autonomySandboxPolicyRef,
-  // funciones
-  initializeSystem, handleFrictionProtocol,
-} = useSimulationCycle({ ...dependencies });
-```
+**Técnica de extracción (clave para preservar comportamiento):**
+- El hook recibe un `deps` bag (44 refs + 27 setters + 5 extras: `getEnvironmentContext`, `getPreregisterScheduleDoc`, `complexityFactor`, `initialMutableConfig`, `quantumUiConfig`) y lo destructura en los **mismos nombres locales** que usaban los cuerpos originales.
+- Los cuerpos de las dos funciones son **byte-idénticos** al monolito, incluyendo sus arrays de dependencias de `useCallback` (`runSimulationCycle`: `[]`; `initializeSystem`: `[complexityFactor, initialMutableConfig]`). Esto preserva la semántica de closures exactamente.
+- **Los `useEffect` permanecen en el componente** (init effect, loop adaptativo) → el orden de ejecución de effects de React no cambia (mitiga el riesgo 5.6).
 
-**Complejidad:** Esta es la fase más delicada. El ciclo de simulación lee y escribe ~30 refs y ~15 states. El hook **posee internamente** todas las refs de régimen (ascensionDynamicsRef, postThresholdRegimeRef, autonomySandboxPolicyRef, latencyStrainRef, internalPressureRef, etc.) porque son estado interno de la simulación, no del UI. Solo los outputs visibles (ccc, pmia, isAscended, fieldMetrics, ontologicalState, etc.) se exponen al componente consumidor.
+**Decisión sobre ownership de refs:** El reviewer prefería que el hook poseyera las refs de régimen. Sin embargo, ~20 de esas refs (postThresholdRegimeRef, entropyModeRef, latencyStrainRef, internalPressureRef, autonomySandboxPolicyRef, etc.) son leídas por las render functions que aún viven en el componente (Fase 5 pendiente). Mantener las refs en el componente y pasarlas vía `deps` evita retornar 25+ refs por el hook y elimina el riesgo de romper la capa de render. Se documentó la desviación; es la opción mínima y segura.
 
-**Reducción estimada:** ~2200 líneas.
+**Verificación estática adicional:** Tras generar el hook, se confirmó programáticamente que todo `.current` owner y todo `setXxx(` usado en el hook está presente en el `deps` bag (cero símbolos libres). `setVisualPosition` es método de nodo (falso positivo). El hook no contiene `WorldModelEngine`/`CognitiveEmergencePlanner` (preserva assertions de simulation-controller).
+
+**Gate de salida:** ✅ build PASS, 146/146 tests PASS, verify:source-of-truth PASS, bridge:verify PASS.
+
+**Tests ajustados (11):** Leen el source como texto buscando lógica del ciclo que se movió al hook. Se actualizaron para leer el texto combinado (SimulationEngine + useSimulationCycle): autonomy-budget-governor, ccc-history-interactive, entanglement-timeline-model, integrity-pmia-transform-fields, liveness, pmia-cooldown, pmia-negative-window, post-ascension-dynamics, post-threshold-multiband, simulation-controller, stasis-break-criteria.
+
+**Reducción real:** −2.120 líneas (SimulationEngine.jsx: ~11.057 → ~8.937; hook: 2.313 líneas).
+
+**Limitación de verificación reconocida:** No existe harness headless para ejecutar el ciclo en React y comparar valores de tick antes/después. La equivalencia se sostiene por construcción (cuerpos byte-idénticos + refs por referencia + deps arrays preservados) más build + 146 tests + verificación estática de símbolos. La verificación de valores de tick en vivo queda pendiente de validación manual en navegador.
 
 ---
 

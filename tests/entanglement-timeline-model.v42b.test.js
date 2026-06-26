@@ -16,7 +16,7 @@ const smoothSeriesReference = (values, windowSize) => {
 
 try {
   const sourcePath = path.join(process.cwd(), 'src', 'components', 'SimulationEngine.jsx');
-  const source = fs.readFileSync(sourcePath, 'utf8');
+  const source = fs.readFileSync(sourcePath, 'utf8') + '\n' + fs.readFileSync(path.join(process.cwd(), 'src', 'hooks', 'useSimulationCycle.js'), 'utf8');
 
   // CASE 1: timeline acotado y throttle visual <= 10Hz
   assert.ok(/maxPoints:\s*120/.test(source), 'CASE 1 FAIL: timeline maxPoints=120 missing.');

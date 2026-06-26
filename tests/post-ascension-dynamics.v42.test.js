@@ -113,7 +113,7 @@ try {
   // CASE 3: histeresis de ascenso/descenso implementada en runtime loop
   {
     const sourcePath = path.join(process.cwd(), 'src', 'components', 'SimulationEngine.jsx');
-    const source = fs.readFileSync(sourcePath, 'utf8');
+    const source = fs.readFileSync(sourcePath, 'utf8') + '\n' + fs.readFileSync(path.join(process.cwd(), 'src', 'hooks', 'useSimulationCycle.js'), 'utf8');
     assert.ok(/ascendConfirmTicks/.test(source), 'CASE 3 FAIL: ascendConfirmTicks not found.');
     assert.ok(/descendConfirmTicks/.test(source), 'CASE 3 FAIL: descendConfirmTicks not found.');
     assert.ok(

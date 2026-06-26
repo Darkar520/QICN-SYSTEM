@@ -26,6 +26,22 @@ for (const file of allTests) {
   }
 }
 
+// Fase 3 regression guard: ejecuta el ciclo de simulacion extraido end-to-end
+// (ESM + loader) para detectar identificadores libres / wiring del bag roto que
+// el build y los tests .test.js no capturan.
+const headlessHarness = path.join('tests', 'simulation-cycle-headless.smoke.mjs');
+if (fs.existsSync(path.resolve(testsDir, 'simulation-cycle-headless.smoke.mjs'))) {
+  console.log(`[tests] Running ${headlessHarness} (headless simulation-cycle guard)`);
+  const harnessResult = spawnSync(
+    process.execPath,
+    ['--import', './tests/lib/register-loader.mjs', headlessHarness],
+    { stdio: 'inherit' }
+  );
+  if (harnessResult.status !== 0) {
+    failed.push(headlessHarness);
+  }
+}
+
 if (failed.length > 0) {
   console.error(`\n[tests] Failed: ${failed.length}/${allTests.length}`);
   for (const file of failed) {

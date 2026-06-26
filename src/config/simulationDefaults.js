@@ -68,7 +68,7 @@ export const SELFPATCH_ENDPOINTS = {
 // ============================================================================
 
 const GEMINI_3_FLASH_MODEL_ID = 'gemini-3-flash-preview';
-const GEMINI_STRICT_MODEL = runtimeEnv.GEMINI_STRICT_MODEL !== false;
+export const GEMINI_STRICT_MODEL = runtimeEnv.GEMINI_STRICT_MODEL !== false;
 
 export const GEMINI_MODEL_FALLBACK_CHAIN = [
   'gemini-3-flash-preview',

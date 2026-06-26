@@ -18,7 +18,7 @@ assert.match(workflow, /npm run scoreboard:run/, 'scoreboard gate must be in CI'
 assert.equal((workflow.match(/actions\/upload-artifact@v4/g) || []).length, 2, 'CI must upload scoreboard and coverage artifacts');
 
 const preCommit = fs.readFileSync(path.join(rootDir, '.husky', 'pre-commit'), 'utf8');
-assert.match(preCommit, /npm run verify:source-of-truth && npm test/, 'pre-commit must run source-of-truth verification and tests');
+assert.match(preCommit, /npm run verify:source-of-truth && npm run lint && npm test/, 'pre-commit must run source-of-truth verification, lint gate and tests');
 
 const branchProtection = fs.readFileSync(path.join(rootDir, 'docs', 'BRANCH_PROTECTION.md'), 'utf8');
 assert.match(branchProtection, /Require status checks/);

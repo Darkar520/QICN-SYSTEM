@@ -36,7 +36,7 @@ import { buildArchitecturalGroundTruth } from '../canon/ArchitecturalGroundTruth
 
 // --- Fase 1: modulos extraidos ---
 import { Icon, GenericIcon, Brain, Network, Zap, Activity, TrendingUp, Pause, Play, RotateCcw, Cpu, Database, Layers, Feather, Settings, LineChart, BookOpen, Eye, Code, Waves, Target, Sparkles, TrendingDown, InfinityIcon, Microscope, MessageSquare, ShieldCheck, Sun, Users, Lightbulb } from './icons/SimulationIcons.jsx';
-import { resolveRuntimeString, ONTOLOGICAL_SIGNATURE, FRONTEND_GEMINI_KEY_STORAGE, FRONTEND_CODEX_KEY_STORAGE, FRONTEND_CODEX_MODEL_STORAGE, FRONTEND_CODEX_REASONING_STORAGE, CODEX_REASONING_EFFORT_OPTIONS, TOUR_DISMISS_STORAGE, QUANTUM_UI_CONFIG_STORAGE, INTEGRITY_MODE_KEY, INTEGRITY_AUDIT_LOG_KEY, INTEGRITY_AUDIT_LOG_LIMIT, SELFPATCH_ENDPOINTS, GEMINI_ENGINE_CONFIG, GEMINI_MODEL_FALLBACK_CHAIN, LLM_AUTH_ERROR_TOKEN, AUTONOMY_RUNTIME_DEFAULTS, QUANTUM_RUNTIME_DEFAULTS, QUANTUM_EXPERIMENT_DEFAULTS, QUANTUM_PROVIDER_OPTIONS, PMIA_NEGATIVE_DRIVE_DEFAULTS, toFiniteNumber, clamp, clamp01, parseQuantumReplaySequence } from '../config/simulationDefaults.js';
+import { resolveRuntimeString, ONTOLOGICAL_SIGNATURE, FRONTEND_GEMINI_KEY_STORAGE, FRONTEND_CODEX_KEY_STORAGE, FRONTEND_CODEX_MODEL_STORAGE, FRONTEND_CODEX_REASONING_STORAGE, CODEX_REASONING_EFFORT_OPTIONS, TOUR_DISMISS_STORAGE, QUANTUM_UI_CONFIG_STORAGE, INTEGRITY_MODE_KEY, INTEGRITY_AUDIT_LOG_KEY, INTEGRITY_AUDIT_LOG_LIMIT, SELFPATCH_ENDPOINTS, GEMINI_ENGINE_CONFIG, GEMINI_MODEL_FALLBACK_CHAIN, GEMINI_STRICT_MODEL, LLM_AUTH_ERROR_TOKEN, AUTONOMY_RUNTIME_DEFAULTS, QUANTUM_RUNTIME_DEFAULTS, QUANTUM_EXPERIMENT_DEFAULTS, QUANTUM_PROVIDER_OPTIONS, PMIA_NEGATIVE_DRIVE_DEFAULTS, toFiniteNumber, clamp, clamp01, parseQuantumReplaySequence } from '../config/simulationDefaults.js';
 import { computeRms, formatCCC, calculateRelaxationTimeDefault, readLocalStorageJSON, getInitialIntegrityMode, getInitialIntegrityAuditLog, withExponentialBackoff } from '../utils/simulationUtils.js';
 import { toComparablePacket, findFirstPacketMismatch, getPrimaryBlockingDiscrepancy, buildDiscrepancyTrace, getIntegritySeverity, normalizeCausalDependency, buildSovereigntyDifferentialEvidence, buildSensorSummaryFromPerception, buildSovereigntyRows, normalizeVerifiableReport, ensureObject, getSafeVerifiableReport, emitEpisodeHarnessTick } from '../utils/integrityHelpers.js';
 import { useSimulationCycle } from '../hooks/useSimulationCycle.js';
@@ -636,6 +636,7 @@ export const QICNConsciousnessSystem = () => {
   );
   const canUseProxy = !runtimeEnv.AUTH_REQUIRED || isAuthenticated;
   const canUseLlmNow = (frontendGeminiEnabled && hasFrontendGeminiKey) || canUseProxy;
+  const IS_MISSING_API_KEY = !canUseLlmNow;
   const resolveLlmEndpoint = useCallback(() => (
     frontendGeminiEnabled && hasFrontendGeminiKey
       ? GEMINI_ENGINE_CONFIG.getEndpoint(customGeminiKey)

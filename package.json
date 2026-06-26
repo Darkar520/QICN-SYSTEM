@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "node tests/run-all-tests.cjs",
+    "lint": "eslint src/ --max-warnings=50",
     "test:sandbox": "node tests/projection.test.js && node tests/liveness.test.js && node tests/determinism.test.js && node tests/integrity.test.js && node tests/verifiable-report-shape.test.js && node tests/runtime-hygiene.test.js && node tests/speech-fsm.test.js && node tests/encoding-hygiene.test.js && node tests/netlify-proxy-contract.v46.test.js && node tests/auth-gate.v46.test.js && node tests/responsive-layout.v46.test.js && node tests/canvas-adaptive-input.v46.test.js && node tests/sensor-capabilities.v46.test.js && node tests/quantum-ui-hybrid.v49.test.js && node tests/quantum-fallback-behavior.v49.test.js && node tests/netlify-quantum-entropy-contract.v50.test.js && node tests/network-render-resilience.v49.test.js && node tests/navigation-top5-more.v49.test.js && node tests/guide-clarity.v49.test.js && node tests/selfpatch-policy-check.v415.test.js && node tests/selfpatch-generate-engine.v416.test.js",
     "build:css": "tailwindcss -c tailwind.config.cjs -i ./src/styles/tailwind.input.css -o ./dist/tailwind.css --minify",
     "verify:env-contract": "node scripts/verify-env-contract.cjs",

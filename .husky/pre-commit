@@ -1,1 +1,1 @@
-npm run verify:source-of-truth && npm test
+npm run verify:source-of-truth && npm run lint && npm test

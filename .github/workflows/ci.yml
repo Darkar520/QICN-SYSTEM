@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint (ESLint no-undef blocking, warnings <= 50)
+        run: npm run lint
+
       - name: Verify source of truth
         run: npm run verify:source-of-truth
 

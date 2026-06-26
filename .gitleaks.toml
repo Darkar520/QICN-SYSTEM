@@ -1,0 +1,24 @@
+# Configuracion Gitleaks para QICN-SYSTEM.
+#
+# Se EXTIENDE el ruleset por defecto de Gitleaks (useDefault = true). NO se
+# desactiva ninguna regla. El unico allowlist es MINIMO y JUSTIFICADO:
+#
+#   - `.env.example` se versiona de forma intencional como plantilla y solo
+#     contiene valores placeholder ("replace_with_real_key",
+#     "replace_with_random_secret"), no credenciales reales. El `.env` real esta
+#     gitignored. Sin este allowlist, la regla generic-api-key podria marcar las
+#     lineas `*_API_KEY=` / `*_SECRET=` de la plantilla como falsos positivos.
+#
+# Si en el futuro aparecen otros falsos positivos legitimos, anadir entradas
+# adicionales MINIMAS y comentadas aqui; nunca desactivar reglas globalmente.
+
+title = "QICN-SYSTEM gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowlist minimo: plantilla .env.example con placeholders (sin secretos reales)."
+paths = [
+  '''^\.env\.example$''',
+]

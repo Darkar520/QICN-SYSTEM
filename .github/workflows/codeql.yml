@@ -1,0 +1,55 @@
+# CodeQL — analisis estatico nativo de GitHub (SAST) para JavaScript/TypeScript.
+#
+# REQUISITO GHAS: CodeQL/Code Scanning requiere GitHub Advanced Security en repos
+#   PRIVADOS. En repos PUBLICOS funciona sin GHAS. Si el repo es privado y GHAS
+#   NO esta habilitado, el step "Perform CodeQL Analysis" fallara al subir
+#   resultados a la pestana Security. Por eso este workflow se entrega LISTO pero
+#   PENDIENTE DE HABILITAR GHAS en: Settings > Code security and analysis.
+#   No requiere ningun cambio de codigo de runtime.
+#
+# NO BLOQUEANTE para el resto del CI: CodeQL reporta a la pestana Security y no
+#   bloquea merges salvo que se configure como required status check en branch
+#   protection (ver docs/BRANCH_PROTECTION.md). Para promoverlo a bloqueante,
+#   anadir "security/codeql" a los required checks una vez GHAS este activo y
+#   los findings iniciales revisados.
+#
+# CERO dependencias npm: usa la action oficial github/codeql-action.
+
+name: codeql
+
+on:
+  push:
+    branches: ["main"]
+  schedule:
+    - cron: "0 5 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: security/codeql
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["javascript-typescript"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      # JavaScript/TypeScript es interpretado: CodeQL no necesita paso de build.
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"

@@ -1,0 +1,58 @@
+# Semgrep CE — analisis estatico (SAST) de codigo fuente.
+#
+# RULESETS: p/javascript + p/react + p/secrets (Community Edition, sin cuenta).
+# ALCANCE: src/ y netlify/functions/ (superficies de runtime y de control).
+#
+# MODO: report / NO bloqueante al inicio.
+#   - `semgrep scan` (sin `--error`) termina con exit 0 aunque haya hallazgos.
+#   - `continue-on-error: true` protege ademas ante fallos del propio scan.
+#   - Los resultados se publican como artefacto SARIF descargable del run.
+#
+# PROMOCIoN A BLOQUEANTE: una vez revisados los findings, promover SOLO reglas
+#   de ALTA CONFIANZA a bloqueantes anadiendo `--error --severity ERROR` al
+#   comando (o un step dedicado con esas reglas) y quitando `continue-on-error`.
+#   No promover el ruleset completo de golpe.
+#
+# CERO dependencias npm: corre dentro del contenedor oficial de Semgrep,
+# fijado a una version estable.
+
+name: semgrep
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  semgrep:
+    name: security/semgrep
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container:
+      image: semgrep/semgrep:1.163.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Semgrep scan (report-only, no bloqueante)
+        continue-on-error: true
+        run: |
+          semgrep scan \
+            --config p/javascript \
+            --config p/react \
+            --config p/secrets \
+            --sarif --output semgrep.sarif \
+            --metrics off \
+            src/ netlify/functions/
+
+      - name: Upload Semgrep SARIF artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-sarif
+          path: semgrep.sarif
+          retention-days: 7

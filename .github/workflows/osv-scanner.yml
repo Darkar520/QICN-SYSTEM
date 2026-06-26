@@ -1,0 +1,40 @@
+# OSV-Scanner — analisis de composicion de software (SCA) sobre package-lock.json.
+#
+# MODO: report / NO bloqueante al inicio.
+#   - fail-on-vuln: false  => el job no falla aunque se detecten vulnerabilidades.
+#   - upload-sarif: false  => no se sube a Code Scanning, evitando la dependencia
+#                             de GitHub Advanced Security (GHAS). Los resultados
+#                             quedan como artefacto SARIF descargable del run.
+#
+# PROMOCIoN A BLOQUEANTE: tras revisar findings, cambiar `fail-on-vuln: false`
+#   a `true`. Si el repo tiene GHAS habilitado y se quiere el dashboard de
+#   Code Scanning, ademas poner `upload-sarif: true`.
+#
+# Se usa el workflow reutilizable OFICIAL de Google, fijado a una version mayor
+# estable (@v2.3.8). CERO dependencias npm: todo corre como GitHub Action.
+
+name: osv-scanner
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.3.8
+    with:
+      scan-args: |-
+        --lockfile=./package-lock.json
+      fail-on-vuln: false
+      upload-sarif: false

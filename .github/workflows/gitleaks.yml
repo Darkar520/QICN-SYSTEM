@@ -1,0 +1,42 @@
+# Gitleaks — escaneo de secretos (SAST de credenciales), CI-only.
+#
+# MODO: report / NO bloqueante al inicio (continue-on-error: true en el step de scan).
+# PROMOCIoN A BLOQUEANTE: tras revisar y resolver findings, eliminar
+#   `continue-on-error: true` del step "Gitleaks scan". Si aparecieran falsos
+#   positivos legitimos, ampliar el allowlist MINIMO en `.gitleaks.toml` (nunca
+#   desactivar reglas en bloque).
+#
+# LICENCIA: gitleaks-action@v2 solo requiere GITLEAKS_LICENSE para repos que
+#   pertenecen a una ORGANIZACION de GitHub. Este repo vive en cuentas de usuario
+#   (origin: Darkar520/QICN-SYSTEM), por lo que el uso es gratuito y no requiere
+#   secreto adicional.
+#
+# CONTRATO DE SECRETOS: `.env` esta gitignored (.gitignore) y NO debe versionarse;
+#   solo se versiona `.env.example` con valores placeholder (ver .gitleaks.toml).
+
+name: gitleaks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    name: security/gitleaks
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout (historial completo para escaneo de secretos)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml

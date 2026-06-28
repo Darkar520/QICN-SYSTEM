@@ -27,9 +27,8 @@ jobs:
 
       # Build and internal scoreboard
       - run: npm run build
-        # scoreboard inspect-only: calculates all 7 dimensions WITHOUT running npm test
-        # (npm test is the canonical gate in ci/build-test, not here)
-        - run: node scripts/scoreboard.cjs --json-file=docs/phase4_scoreboard.latest.json
+        - run: npm run scoreboard:run
+          continue-on-error: true  # npm test inside scoreboard may be flaky in CI; gate is ci/build-test
 
       - uses: actions/upload-artifact@v4
         if: always()

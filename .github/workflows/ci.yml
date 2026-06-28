@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     env:
-      QICN_KILLSWITCH: ${{ vars.QICN_KILLSWITCH }}
+      QICN_KILLSWITCH: ${{ vars.QICN_KILLSWITCH || 'OFF' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

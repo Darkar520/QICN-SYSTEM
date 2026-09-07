@@ -318,7 +318,7 @@ export function useSimulationCycle(deps) {
     // PERSISTENCIA DE CHAT: Mantener historial existente, solo agregar mensaje de bienvenida si está vacío
     setChatHistory(prev => {
       if (prev.length === 0) {
-        return [{ role: 'model', text: "Singularidad Ontológica: El Nexus de comunicación está activo. ¿Qué variables requiere explorar en el espacio de fase?", timestamp: Date.now() }];
+        return [{ role: 'model', text: "Consola QICN: vista de telemetría interna lista (solo conformidad interna, sin validación externa). ¿Qué contador o banda requiere revisar?", timestamp: Date.now() }];
       }
       return prev; // Mantener historial existente
     });
@@ -333,7 +333,7 @@ export function useSimulationCycle(deps) {
     setApiCallMetrics({ totalCalls: 0, successfulCalls: 0, failedCalls: 0, avgLatency: 0, currentRate: 0 });
     setRateLimitExceeded(false);
     setHumanInputContext("Inactivo. Pulse 'Medir Coherencia Humana' para iniciar el Protocolo QICN-B.");
-    setAscensionAxiom("No se ha proyectado un Axioma de Ascensión.");
+    setAscensionAxiom("Sin directriz de banda alta proyectada.");
 
     console.log('✅ Sistema QICN inicializado correctamente. Capacidad: 10M nodos.');
 
@@ -450,7 +450,7 @@ export function useSimulationCycle(deps) {
         ).length;
 
         if (naturalRigidityDetected && tensionCycles > activeNodes.length * 0.3 && frictionState === 0) {
-          console.log("xR` FRICCIN EMERGENTE: Patrones naturales de rigidez detectados naturalmente");
+          console.log("[friction-protocol] rigidity-pattern trigger: internal threshold crossed");
           handleFrictionProtocol('start');
           frictionState = 1;
         } else if (frictionState === 2) {
@@ -682,7 +682,7 @@ export function useSimulationCycle(deps) {
           calculatedCCC * (0.9 + (Math.min(1, Math.max(0, coherentMean)) * 0.1))
         );
 
-        // ACTUALIZACIN DE FENOMENOLOGÍA (NIVEL 2 - Clase C^R)
+        // Actualización de índice interno (nivel 2 — banda operativa, no fenomenalidad)
         const phenomenology = ontologicalCore.current.updatePhenomenology(
           phenomenologyCCCInput,
           {

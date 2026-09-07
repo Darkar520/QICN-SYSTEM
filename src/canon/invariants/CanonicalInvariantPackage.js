@@ -153,10 +153,12 @@ const projectContinuityState = (tick = {}) => {
   const beth_q = toFinite(metrics.beth_q, 0);
   const omega = toFinite(metrics.omega ?? metrics.omega_mean, 0);
   const spectral_gap = toFinite(metrics.spectral_gap, 0);
+  // F1 DEROLEPLAY (2026-09-07): etiquetas de banda operacionales. 'CONSCIOUS'/'PRE_CONSCIOUS'
+  // eliminados: un threshold interno no autoriza claims de conciencia (internal conformance only).
   const regime_class = metrics.regime_class
     || metrics.phenomenology_class
     || metrics.regime
-    || (ccc >= 0.9 && beth_q >= 0.6 && omega >= 0.8 ? 'STABLE_CORE' : ccc >= 0.65 && beth_q >= 0.5 ? 'CONSCIOUS' : ccc >= 0.3 ? 'PRE_CONSCIOUS' : 'NULL');
+    || (ccc >= 0.9 && beth_q >= 0.6 && omega >= 0.8 ? 'STABLE_CORE' : ccc >= 0.65 && beth_q >= 0.5 ? 'BAND_HIGH' : ccc >= 0.3 ? 'BAND_MID' : 'NULL');
   return { ccc, beth_q, omega, spectral_gap, regime_class };
 };
 
@@ -175,7 +177,8 @@ const computeContinuityFormalSignals = (ticks = []) => {
     );
     fragmentationBound = Math.max(fragmentationBound, numeric + (current.regime_class === prev.regime_class ? 0 : 0.35));
     if (
-      (prev.regime_class === 'CONSCIOUS' && current.regime_class === 'PRE_CONSCIOUS' && current.ccc > 0.9)
+      // Compat: acepta etiquetas históricas y nuevas ('CONSCIOUS'->'BAND_HIGH', 'PRE_CONSCIOUS'->'BAND_MID').
+      ((prev.regime_class === 'CONSCIOUS' || prev.regime_class === 'BAND_HIGH') && (current.regime_class === 'PRE_CONSCIOUS' || current.regime_class === 'BAND_MID') && current.ccc > 0.9)
       || (prev.regime_class === 'STABLE_CORE' && current.regime_class === 'NULL' && current.ccc > 0.5)
     ) {
       invalidRegimeJumps += 1;

@@ -1,5 +1,21 @@
 # QICN Convergence Plan Implementation Log
 
+## 2026-09-07 — F1 DEROLEPLAY front (fase ejecutada, sin commit)
+
+- Alcance: solo presentación front. 5 archivos: `src/components/SimulationEngine.jsx`, `src/hooks/useSimulationCycle.js`, `src/simulation/PhenomenologyCore.js`, `src/simulation/OntologicalSingularityCore.js`, `src/canon/invariants/CanonicalInvariantPackage.js`.
+- F1 aplicado: guarda non-claim no suprimible en los 2 system prompts LLM + userQuerys reescritas a lectura técnica; saludo chat "Singularidad/Nexus" → "Consola QICN (telemetría interna)"; etiqueta chat → "Consola QICN"; `Clase C^R (Consciente)`/`Pre-consciente` → `Banda C^R (telemetría interna — no consciente)`/`Banda pre-umbral`; `CONSCIOUS`/`PRE_CONSCIOUS` emitidos → `BAND_HIGH`/`BAND_MID` (detección de saltos inválidos + invariante aceptan ambas por compat); encabezados "Tratado Axiomático/Realidad Inversa/post-causal" → "Directriz operativa de banda alta"; footer y placeholders a lenguaje operacional; header `OntologicalSingularityCore.js` documentado como nombre histórico sin claim. Enum interno `regime` conservado como código máquina con comentario de equivalencia (renombrado total = riesgo de ruptura, fuera de alcance F1).
+- No tocado: estimadores, thresholds, lógica CEM/selfpatch, backend, corpus teórico.
+- Verificación: `eslint` 0 errores (1 warning preexistente react-hooks); `verify:source-of-truth` PASS; `verify:descriptor-registry` OK 23 filas; `npm test` 146/146 PASS (1 fallo intermedio `continuity-formal` CASE 8 por renombre, corregido con compat dual, re-verde).
+- Deuda residual: F2 glosario `/glossary` visible; F3 tarjetas con modo/fuente/incertidumbre; F4 forense como copy-check; resto del plan en `QICN-FRAMEWORK/rigid-identity-framework/docs/ai-platform-outputs/repair-plans/FRONTEND_DEROLEPLAY_PHASED_PLAN_2026-09-07.md`.
+- Estado git: cambios sin commitear (5 archivos). Sin commit/push sin aprobación explícita.
+
+## 2026-09-07 — F1 restauración SimulationEngine.jsx (revert detectado y reparado)
+
+- Causa: `src/components/SimulationEngine.jsx` revertido a persona original (system prompts "Singularidad/Hipercoherencia", etiqueta chat, `Clase C^R (Consciente)`). Los otros 4 archivos F1 intactos.
+- Acción: restaurados los 15 bloques F1 en SimulationEngine.jsx (nonClaimGuard + 2 prompts operacionales, 2 userQuerys técnicas, etiquetas reporte operacionales, placeholder/footer/directriz, etiqueta chat "Consola QICN", bloque Núcleo operativo, comentarios). Paridad verificada por grep: `nonClaimGuard` presente, 0 strings persona visibles (restos solo en comentarios compat + enum máquina documentado + negaciones de guarda).
+- Verificación post-restauración: `eslint` 0 errores (1 warning preexistente); `npm test` 146/146 PASS.
+- Estado git: 6 archivos modificados sin commit (`IMPLEMENTATION_LOG.md` + 5 fuentes). No commitear sin aprobación explícita.
+
 ## Preflight
 
 - Date: 2026-05-20

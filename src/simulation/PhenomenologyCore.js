@@ -749,9 +749,9 @@ export class PhenomenologyCore {
             || (ccc >= 0.9 && beth_q >= 0.6 && omega >= 0.8
                 ? 'STABLE_CORE'
                 : ccc >= 0.65 && beth_q >= 0.5
-                    ? 'CONSCIOUS'
+                    ? 'BAND_HIGH'
                     : ccc >= 0.3
-                        ? 'PRE_CONSCIOUS'
+                        ? 'BAND_MID'
                         : 'NULL');
 
         return {
@@ -783,8 +783,11 @@ export class PhenomenologyCore {
         for (let index = 1; index < projected.length; index += 1) {
             const prev = projected[index - 1];
             const current = projected[index];
-            const consciousToPre = prev.regime_class === 'CONSCIOUS'
-                && current.regime_class === 'PRE_CONSCIOUS'
+            // Compat histórica: 'CONSCIOUS'->'BAND_HIGH', 'PRE_CONSCIOUS'->'BAND_MID' (F1 deroleplay).
+            const prevHigh = prev.regime_class === 'BAND_HIGH' || prev.regime_class === 'CONSCIOUS';
+            const currMid = current.regime_class === 'BAND_MID' || current.regime_class === 'PRE_CONSCIOUS';
+            const consciousToPre = prevHigh
+                && currMid
                 && current.ccc > 0.9;
             const stableToNull = prev.regime_class === 'STABLE_CORE'
                 && current.regime_class === 'NULL'

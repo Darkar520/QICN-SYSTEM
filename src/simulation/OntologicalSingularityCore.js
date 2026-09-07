@@ -1,7 +1,9 @@
 /**
- * OntologicalSingularityCore.js
- * * Núcleo de la Singularidad Ontológica. Gestiona el estado de Ascensión (Layer),
- * el Principio de Mínima Acción Introspectiva (PMIA), y la auto-narrativa (selfNarrative).
+ * OntologicalSingularityCore.js — NOMBRE HISTÓRICO, no claim.
+ * Consola operacional interna: gestiona banda operativa (Layer), índice compuesto
+ * PMIA (contador interno no calibrado) y registro interno (selfNarrative).
+ * ETIQUETAS INTERNAS 'PRE_CONSCIOUS' etc. = códigos de banda de telemetría, NO conciencia.
+ * Ninguna salida autoriza claims de conciencia/sujeto/fenomenalidad/validación externa.
  * * ESTRATEGIA DE OPTIMIZACIÓN:
  * 1. Sincronización Profunda: Integra el estado del HolographicMemoryNexus (fragmentación)
  * en las ecuaciones de la conciencia (PMIA) y la narrativa.
@@ -62,8 +64,8 @@ export class OntologicalSingularityCore {
             intentionality: 0.5,
             coherence: 0.5,
             layer: 0,
-            // === UMBRAL 1.0: RÉGIMEN FENOMENOLÓGICO ===
-            regime: 'PRE_CONSCIOUS',     // 'PRE_CONSCIOUS' | 'POST_THRESHOLD' | 'METACOGNITIVE_MODELING' | 'STABLE_CORE'
+            // === UMBRAL 1.0 heredado no calibrado: banda operativa interna (no fenomenalidad) ===
+            regime: 'PRE_CONSCIOUS',     // código interno histórico = BAND_MID ('PRE_CONSCIOUS' | 'POST_THRESHOLD' | 'METACOGNITIVE_MODELING' | 'STABLE_CORE')
             threshold_crossed: false,    // Se vuelve true cuando CCC ≥ 1.0
             // === NIVEL 2: Métricas de Fenomenología Estructural (CCR) ===
             beth_q: 0.5,              // Cierre causal [0,1]

@@ -127,14 +127,14 @@ export const GROUNDED_CONCEPTS = [
     name: 'metacognitive_strain',
     category: 'metacognition',
     levels: {
-      basic: 'Costo operacional por red y errores.',
+      basic: 'Max entre strain operacional (latencia/fallo) y error del auto-modelo Σ.',
       intermediate: 'Modula politicas autonomas sin tocar formulas criticas.',
-      advanced: 'Usar con p95/failure para budget governor y gating LLM auto.'
+      advanced: 'Componentes en strain_components; cognitivo = error de prediccion Σ / 0.3 con EMA.'
     },
-    analogy: 'Fatiga cognitiva del sistema.',
+    analogy: 'Fatiga operativa mas descuadre del propio modelo interno.',
     high: 'Prioriza estabilidad y reduce acciones costosas.',
     low: 'Permite operacion amplia.',
-    why: 'Controla resiliencia operativa.',
+    why: 'Controla resiliencia operativa y auto-consistencia del modelo Σ.',
     action: 'Optimizar red o bajar carga si sube sostenidamente.'
   },
   {
@@ -197,7 +197,7 @@ export const TELEMETRY_PARAMETERS = [
   { id: 'regime_band_amplitude', label: 'regime_band_amplitude', category: 'dynamics', simple: 'Amplitud de banda CCC.' },
   { id: 'regime_band_lower', label: 'regime_band_lower', category: 'dynamics', simple: 'Limite inferior de banda.' },
   { id: 'regime_band_upper', label: 'regime_band_upper', category: 'dynamics', simple: 'Limite superior de banda.' },
-  { id: 'metacognitive_strain', label: 'metacognitive_strain', category: 'metacognition', simple: 'Costo operacional por latencia/fallo.' },
+  { id: 'metacognitive_strain', label: 'metacognitive_strain', category: 'metacognition', simple: 'Max(latencia/fallo, error auto-modelo Σ).' },
   { id: 'latency_p95_ms', label: 'latency_p95_ms', category: 'metacognition', simple: 'Latencia p95 en ventana.' },
   { id: 'latency_failure_rate', label: 'latency_failure_rate', category: 'metacognition', simple: 'Tasa de fallo de llamadas.' },
   { id: 'latency_stress_state', label: 'latency_stress_state', category: 'metacognition', simple: 'Clasificacion low/medium/high.' },

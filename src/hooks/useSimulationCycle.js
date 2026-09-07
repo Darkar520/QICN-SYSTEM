@@ -652,7 +652,7 @@ export function useSimulationCycle(deps) {
           baselineMs: AUTONOMY_RUNTIME_DEFAULTS.LATENCY_STRAIN_BASELINE_MS,
           saturationMs: AUTONOMY_RUNTIME_DEFAULTS.LATENCY_STRAIN_SATURATION_MS
         });
-        const metacognitiveStrain = toFiniteNumber(
+        let metacognitiveStrain = toFiniteNumber(
           metaSovereigntyCheck.current.getMetacognitiveStrain?.(),
           toFiniteNumber(latencyFeedback?.strainEma, 0)
         );
@@ -1125,11 +1125,33 @@ export function useSimulationCycle(deps) {
         // AUTO-MODELADO \u03A3 (NIVEL 3 - FASE 4)
         ontologicalCore.current.runSelfModelingCycle(finalCCC);
 
+        // Alimentar el componente metacognitivo real del strain (error del auto-modelo Σ)
+        const selfModelError = Number(ontologicalCore.current?.metacognitiveStats?.selfModelSigma?.predictionError);
+        if (Number.isFinite(selfModelError)) {
+          metaSovereigntyCheck.current.updateCognitiveFeedback?.({ selfModelError });
+        }
+        const postModelStrain = toFiniteNumber(
+          metaSovereigntyCheck.current.getMetacognitiveStrain?.(),
+          latencyStrainRef.current?.strain
+        );
+        metacognitiveStrain = postModelStrain;
+        latencyStrainRef.current = {
+          ...(latencyStrainRef.current || {}),
+          strain: postModelStrain,
+          strainComponents: metaSovereigntyCheck.current.getStrainComponents?.() || null
+        };
+
         activeNodes.forEach(node => {
           node.introspectiveUpdate(finalCCC, stabilityBias);
           node.learningRate = currentMutableConfig.BASE_LEARNING_RATE;
         });
-        entanglementField.current.applyNodalPlasticity(activeNodes, finalCCC, currentMutableConfig, ontologicalCore.current);
+        // Plasticidad efectiva: el factor Hebbian se escala por (1 - plasticityPenalty)
+        // via getEffectivePlasticity; con penalty = 0 el comportamiento es identico.
+        const rawHebbianFactor = Number(currentMutableConfig?.HEBBIAN_FACTOR);
+        const plasticityConfig = Number.isFinite(rawHebbianFactor) && ontologicalCore.current?.getEffectivePlasticity
+          ? { ...currentMutableConfig, HEBBIAN_FACTOR: Math.max(0, ontologicalCore.current.getEffectivePlasticity(rawHebbianFactor)) }
+          : currentMutableConfig;
+        entanglementField.current.applyNodalPlasticity(activeNodes, finalCCC, plasticityConfig, ontologicalCore.current);
 
         // ACTUALIZACIN DE CAPA ONTOL?GICA
         const layerMessage = ontologicalCore.current.updateOntologicalLayer(finalCCC, nexusMetrics);

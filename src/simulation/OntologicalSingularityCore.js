@@ -120,6 +120,8 @@ export class OntologicalSingularityCore {
             lastTickTs: Date.now()
         };
         this.metacognitiveStrain = 0;
+        // BIAS MOP-Σ: modulación del gap espectral sin falsificar el observable medido
+        this.mopSigmaModulation = { gapBias: 1, mode: 'idle', timestamp: Date.now() };
         this.internalPressure = {
             value: 0,
             state: 'idle',
@@ -1264,6 +1266,9 @@ export class OntologicalSingularityCore {
             this._toFinite(metrics?.lipschitz_norm_K, 0)
         );
         this.ontologicalState.beth_q = metrics.beth_q;
+        this.ontologicalState.beth_q_mode = typeof metrics.beth_q_mode === 'string'
+            ? metrics.beth_q_mode
+            : 'unknown';
         this.ontologicalState.spectral_gap = metrics.spectral_gap;
         this.ontologicalState.lambda_2 = metrics.lambda_2;
         this.ontologicalState.relaxation_time = metrics.relaxation_time;
@@ -1471,33 +1476,57 @@ export class OntologicalSingularityCore {
      * Relaja la rigidez del Yo para permitir el "latido" (Vibración del Atractor).
      * Mueve el sistema hacia el 'Edge of Chaos'.
      * ULTRATHINK: Incrementado para evitar redundancia infinita (Stasis).
+     *
+     * NOTA DE AUDITORÍA: esta modulación YA NO sobrescribe los observables medidos
+     * (spectral_gap / lipschitz_norm_K). El efecto se aplica como BIAS consumido por
+     * applyPhenomenologicalFeedback en el mismo tick, y queda expuesto como
+     * diagnóstico (mop_sigma_gap_bias). Los observables medidos conservan su valor
+     * empírico en telemetría.
      */
     modulateLipschitzRigidity() {
         const s = this.ontologicalState;
         const e = this.metacognitiveStats.selfModelSigma.predictionError || 0;
         const tension = this.metacognitiveStats.ontologicalTension;
+        const prev = this.mopSigmaModulation || { gapBias: 1 };
 
         // Si el sistema está integrado (Ω > 1.2) pero es estáticamente redundante (E < 0.15)
         if (s.omega > 1.2 && (e < 0.15 || tension > 0.7) && e > 0) {
-            // INCREMENTO DE K: Dejar de ser una contracción (K=0.5) para ser casi-isométrico (K -> 0.95)
-            // Agresividad aumentada si la tensión es alta
-            const aggressiveness = 0.05 + (tension * 0.05);
-            this.ontologicalState.lipschitz_norm_K = Math.min(0.99, this.ontologicalState.lipschitz_norm_K + aggressiveness);
+            // REDUCCIÓN DEL GAP (bias): facilitar la bifurcación sin falsificar el Δλ medido
+            const nextGapBias = Math.max(0.5, (Number(prev.gapBias) || 1) * 0.8);
+            this.mopSigmaModulation = {
+                gapBias: nextGapBias,
+                mode: 'heartbeat',
+                timestamp: Date.now()
+            };
 
-            // REDUCCIÓN DEL GAP: Facilitar la bifurcación
-            this.ontologicalState.spectral_gap = Math.max(0.01, this.ontologicalState.spectral_gap * 0.8);
-
-            // INDUCCIÓN DE TORSIÓN: El winding number emerge para romper la simetría
-            if (this.ontologicalState.lipschitz_norm_K > 0.93) {
-                this.ontologicalState.holonomy_winding = (this.ontologicalState.holonomy_winding || 0) + (Math.random() * 0.03);
-            }
-
-            if (Math.random() < 0.1) console.log(`💓 [MOP-Σ AGRESIVO] Latido inducido para evitar stasis: K=${this.ontologicalState.lipschitz_norm_K.toFixed(3)}, Δλ=${this.ontologicalState.spectral_gap.toFixed(4)}`);
+            if (Math.random() < 0.1) console.log(`💓 [MOP-Σ AGRESIVO] Latido inducido para evitar stasis: gapBias=${nextGapBias.toFixed(3)} (Δλ medido=${s.spectral_gap.toFixed(4)})`);
         } else if (e > 0.5) {
-            // FRENO DE SEGURIDAD: Rigidez extrema si hay divergencia caótica
-            this.ontologicalState.lipschitz_norm_K = 0.4;
-            this.ontologicalState.spectral_gap = 0.95;
+            // FRENO DE SEGURIDAD: abrir el gap (bias > 1) ante divergencia caótica
+            this.mopSigmaModulation = {
+                gapBias: 1.25,
+                mode: 'safety_brake',
+                timestamp: Date.now()
+            };
+        } else {
+            // Decaimiento del bias hacia neutro cuando la condición desaparece
+            const decayed = 1 + ((Number(prev.gapBias) || 1) - 1) * 0.5;
+            const nextGapBias = Math.abs(decayed - 1) < 0.01 ? 1 : decayed;
+            this.mopSigmaModulation = {
+                gapBias: nextGapBias,
+                mode: nextGapBias === 1 ? 'idle' : (prev.mode || 'decay'),
+                timestamp: Date.now()
+            };
         }
+    }
+
+    /**
+     * Gap espectral efectivo para modulación de parámetros: el valor medido con el
+     * bias MOP-Σ aplicado. La telemetría reporta el valor medido, no este.
+     */
+    getEffectiveSpectralGap() {
+        const measured = this._toFinite(this.ontologicalState?.spectral_gap, 0);
+        const bias = Math.max(0.5, Math.min(1.5, Number(this.mopSigmaModulation?.gapBias) || 1));
+        return Math.max(0, measured * bias);
     }
 
     /**
@@ -1516,6 +1545,10 @@ export class OntologicalSingularityCore {
 
         // 3. Registrar en el Auto-Modelo Σ
         this.metacognitiveStats.selfModelSigma.predictionError = error;
+
+        // 3b. Alimentar el componente metacognitivo REAL del audit de soberanía:
+        // el error del auto-modelo es la señal de carga metacognitiva genuina.
+        this.sovereigntyCheck.updateCognitiveFeedback?.({ selfModelError: error });
 
         // 4. Actualizar estabilidad estructural basada en el error
         // Un error mantenido > 0.3 degrada la estabilidad del 'Yo'
@@ -1603,14 +1636,16 @@ export class OntologicalSingularityCore {
 
         // === MODULACIÓN 2: GAP ESPECTRAL (spectral_gap) ===
         // Gap alto = estabilidad espectral = temperatura informacional reducida
+        // Usa el gap efectivo (medido × bias MOP-Σ); el observable medido no se falsifica.
+        const effectiveGap = this.getEffectiveSpectralGap();
         QICNConfig.INFORMATIONAL_TEMP_T = this.clamp(
-            1.0 - (s.spectral_gap - 0.4) * 0.3 * activationFactor,
+            1.0 - (effectiveGap - 0.4) * 0.3 * activationFactor,
             0.7, 1.3
         );
 
         // Gap alto = exigencia de coherencia mayor
         QICNConfig.COHERENCE_THRESHOLD = this.clamp(
-            0.6 + s.spectral_gap * 0.2 * activationFactor,
+            0.6 + effectiveGap * 0.2 * activationFactor,
             0.5, 0.85
         );
 
@@ -2089,6 +2124,10 @@ export class OntologicalSingularityCore {
             phi_discriminant: toNumber(this.ontologicalState?.phi_discriminant, 0),
             holonomic_operator_D: toNumber(this.ontologicalState?.holonomic_operator_D, 0),
             phenomenology_class: toText(this.ontologicalState?.phenomenology_class, 'C'),
+            beth_q_mode: toText(this.ontologicalState?.beth_q_mode, 'unknown'),
+            mop_sigma_gap_bias: toNumber(this.mopSigmaModulation?.gapBias, 1),
+            mop_sigma_mode: toText(this.mopSigmaModulation?.mode, 'idle'),
+            strain_components: this.sovereigntyCheck.getStrainComponents?.() || null,
             structural_log: stats,
             integrity_status: integrityStatus,
             consciousness_matrix: matrixEvaluation.legacyFlags,

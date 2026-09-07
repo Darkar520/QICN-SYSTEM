@@ -56,6 +56,7 @@ export class PhenomenologyCore {
         /** @type {PhenomenologyState} */
         this.phenomenologyState = {
             beth_q: 0.5,              // Cierre causal [0,1]
+            beth_q_mode: 'uninitialized', // 'empirical' | 'warmup_derived' | 'deterministic_baseline' | 'uninitialized'
             spectral_gap: 0.5,        // "lambda [0,1]
             lambda_1: 1.0,            // Autovalor dominante
             lambda_2: 0.5,            // Segundo autovalor
@@ -159,11 +160,14 @@ export class PhenomenologyCore {
 
         if (this.stateHistory.length < 10) {
             // ANTI-FREEZE: derivar beth_q del CCC actual (siempre varia)
+            // NOTA EPISTEMICA: esto NO es el estimador beta_q = 1 - I(X;Y)/H(X) del
+            // corpus (paper1). Es un safeguard de warm-up.
             const currentCCC = this.stateHistory.length > 0
                 ? this.stateHistory[this.stateHistory.length - 1]
                 : 0.5;
             // Formula: beth_q correlaciona positivamente con CCC
             this.phenomenologyState.beth_q = Math.max(0.1, Math.min(1, 0.3 + (currentCCC * 0.7)));
+            this.phenomenologyState.beth_q_mode = 'warmup_derived';
             if (this._diagnostics.log_enabled) {
                 console.log(`[BETH_Q_DERIVED] CCC=${currentCCC.toFixed(4)} ?' beth_q=${this.phenomenologyState.beth_q.toFixed(4)}`);
             }
@@ -180,8 +184,10 @@ export class PhenomenologyCore {
         // Evitar division por cero (Entropia Nula)
         if (H_X < 0.001) {
             // Modo determinista critico: sin ruido interno en metrica final.
+            // NOTA EPISTEMICA: valor derivado, no el estimador empirico de informacion mutua.
             const baseline = Math.max(0.1, Math.min(0.99, 0.3 + (this.stateHistory[this.stateHistory.length - 1] * 0.69)));
             this.phenomenologyState.beth_q = baseline;
+            this.phenomenologyState.beth_q_mode = 'deterministic_baseline';
 
             const t1 = performance.now();
             this._diagnostics.last_execution_times.beth_q = t1 - t0;
@@ -193,6 +199,7 @@ export class PhenomenologyCore {
 
         const beth_q = Math.max(0, Math.min(1, 1 - (I_XY / H_X)));
         this.phenomenologyState.beth_q = beth_q;
+        this.phenomenologyState.beth_q_mode = 'empirical';
 
         const t1 = performance.now();
         this._diagnostics.last_execution_times.beth_q = t1 - t0;

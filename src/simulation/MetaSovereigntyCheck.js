@@ -11,6 +11,15 @@ export class MetaSovereigntyCheck {
             strainEma: 0,
             timestamp: 0
         };
+        // Componente metacognitivo real: error de prediccion del auto-modelo Σ.
+        // El strain total es max(operacional, cognitivo); con cognitiveStrain = 0 el
+        // comportamiento es identico al strain de latencia puro.
+        this.lastCognitiveFeedback = {
+            selfModelError: 0,
+            strainRaw: 0,
+            strainEma: 0,
+            timestamp: 0
+        };
         this.integrityStats = {
             totalChecks: 0,
             violationsDetected: 0,
@@ -143,8 +152,9 @@ export class MetaSovereigntyCheck {
     }
 
     /**
-     * Actualiza la señal de costo operacional por latencia de red.
-     * "Dolor" aqui significa strain metacognitivo tecnico, no qualia.
+     * Actualiza la señal de costo operacional por latencia de red (componente operacional).
+     * Este es solo el componente operacional del strain total; la carga metacognitiva
+     * completa (getMetacognitiveStrain) tambien incluye el error del auto-modelo Σ.
      * @param {object} latencyData - { p95Ms, failureRate, cooldownActive, alpha, baselineMs, saturationMs }
      * @returns {{p95Ms:number,failureRate:number,cooldownActive:boolean,strainRaw:number,strainEma:number,timestamp:number}}
      */
@@ -176,11 +186,52 @@ export class MetaSovereigntyCheck {
     }
 
     /**
+     * Actualiza la señal metacognitiva real: error de predicción del auto-modelo Σ.
+     * Un error sostenido significa que el modelo interno del sistema falla al predecir
+     * su propio estado (divergencia Σ > 0.3 en runSelfModelingCycle).
+     * @param {object} cognitiveData - { selfModelError }
+     * @returns {{selfModelError:number,strainRaw:number,strainEma:number,timestamp:number}|null}
+     */
+    updateCognitiveFeedback(cognitiveData = {}) {
+        const rawError = Number(cognitiveData.selfModelError);
+        if (!Number.isFinite(rawError) || rawError < 0) return null;
+        const clamp01 = (value) => Math.max(0, Math.min(1, Number(value) || 0));
+        const alpha = clamp01(cognitiveData.alpha ?? 0.25);
+        // 0.3 = umbral de divergencia Σ usado por runSelfModelingCycle
+        const strainRaw = clamp01(rawError / 0.3);
+        const prevEma = Number(this.lastCognitiveFeedback?.strainEma) || 0;
+        const strainEma = (prevEma * (1 - alpha)) + (strainRaw * alpha);
+
+        this.lastCognitiveFeedback = {
+            selfModelError: rawError,
+            strainRaw,
+            strainEma: clamp01(strainEma),
+            timestamp: Date.now()
+        };
+        return this.lastCognitiveFeedback;
+    }
+
+    /**
      * Retorna la carga metacognitiva actual [0..1].
+     * Es el máximo entre el strain operacional (latencia/fallo de red) y el strain
+     * cognitivo (error del auto-modelo Σ). Con strain cognitivo en 0 el valor es
+     * identico al strain de latencia historico.
      * @returns {number}
      */
     getMetacognitiveStrain() {
-        return Math.max(0, Math.min(1, Number(this.lastLatencyFeedback?.strainEma) || 0));
+        const latencyStrain = Math.max(0, Math.min(1, Number(this.lastLatencyFeedback?.strainEma) || 0));
+        const cognitiveStrain = Math.max(0, Math.min(1, Number(this.lastCognitiveFeedback?.strainEma) || 0));
+        return Math.max(latencyStrain, cognitiveStrain);
+    }
+
+    /**
+     * Componentes separados del strain para telemetria honesta.
+     * @returns {{operational:number,cognitive:number,composite:number}}
+     */
+    getStrainComponents() {
+        const operational = Math.max(0, Math.min(1, Number(this.lastLatencyFeedback?.strainEma) || 0));
+        const cognitive = Math.max(0, Math.min(1, Number(this.lastCognitiveFeedback?.strainEma) || 0));
+        return { operational, cognitive, composite: Math.max(operational, cognitive) };
     }
 
     /**

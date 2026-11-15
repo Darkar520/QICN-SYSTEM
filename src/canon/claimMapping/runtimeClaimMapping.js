@@ -2,7 +2,6 @@
 import { buildCanonicalLineage } from '../provenance/CanonicalProvenance.js';
 import { buildCanonicalInvariantPackage, flattenInvariantScores } from '../invariants/CanonicalInvariantPackage.js';
 import { createBoundaryFamilyFromRuntimeTrajectory, evaluateBoundaryProbeFamily } from '../boundary/BoundaryProbeScaffold.js';
-import { evaluateSubstratePairFamily } from '../substrate/SubstrateEquivalenceScaffold.js';
 import { P503_THRESHOLD_RUNTIME_VERSION, evaluateP503ThresholdRuntime } from '../thresholds/P503ThresholdRuntime.js';
 
 const READINESS_RANK = Object.freeze({
@@ -23,37 +22,24 @@ const rankReadiness = (runtime = {}) => {
 };
 
 const selectRuntimePath = ({ localRuntime = null, canonicalRuntime = null, pathId = 'runtime_path' } = {}) => {
-  if (!canonicalRuntime) {
-    return {
-      selected: 'local',
-      runtime: localRuntime,
-      localRuntime,
-      canonicalRuntime: null,
-      selectedRank: rankReadiness(localRuntime),
-      canonicalRank: 0,
-      notes: [`${pathId}: canonical runtime evidence not provided; local runtime path retained.`]
-    };
-  }
-
-  const localRank = rankReadiness(localRuntime);
-  const canonicalRank = rankReadiness(canonicalRuntime);
-  const useCanonical = canonicalRank > localRank;
+  // A caller-provided object does not establish provenance, artifact integrity,
+  // or applicability to this run. Keep it for audit but never promote it.
   return {
-    selected: useCanonical ? 'canonical' : 'local',
-    runtime: useCanonical ? canonicalRuntime : localRuntime,
+    selected: 'local',
+    runtime: localRuntime,
     localRuntime,
     canonicalRuntime,
-    selectedRank: useCanonical ? canonicalRank : localRank,
-    canonicalRank,
-    notes: useCanonical
-      ? [`${pathId}: canonical runtime evidence selected because it is stronger than the current run-local path.`]
-      : [`${pathId}: local runtime path retained because it is at least as strong as the canonical fallback.`]
+    selectedRank: rankReadiness(localRuntime),
+    canonicalRank: 0,
+    notes: [canonicalRuntime
+      ? `${pathId}: supplied boundary object is unverified and was not selected.`
+      : `${pathId}: canonical runtime evidence not provided; local runtime path retained.`]
   };
 };
 
 const buildSubstrateRuntimeAwaitingPairFamily = ({ header = {}, externalEvidence = {} } = {}) => ({
   familyId: `${header?.runId || 'run'}_substrate_pair_family_required`,
-  description: 'Runtime substrate semantics are ready to consume a canonical pair family, but none was supplied for this run-level projection.',
+  description: 'A verified canonical pair family is required; none has been verified for this run-level projection.',
   maturity: 'PARTIAL_RUNTIME_PATH',
   pairs: [],
   thresholds: null,
@@ -71,29 +57,25 @@ const buildSubstrateRuntimeAwaitingPairFamily = ({ header = {}, externalEvidence
     },
     familyConvergence: 'PAIR_FAMILY_REQUIRED',
     evidenceAvailability: {
-      runtimeSubstrateFamilyProvided: false,
+      runtimeSubstrateFamilyProvided: Boolean(externalEvidence?.runtimeSubstrateFamily || externalEvidence?.operationalEquivalence?.runtime_substrate_family),
+      runtimeSubstrateFamilyVerified: false,
       operationalEquivalenceProvided: Boolean(externalEvidence?.operationalEquivalence)
     }
   },
   externalMaterializationDependencies: [
-    'canonical pair family still required for substrate closure',
+      'verified canonical pair family still required for substrate closure',
     'final substrate claim-ledger promotion remains outside runtime',
     'campaign-level ROEO/SNO batch closure still remains external'
   ],
   notes: [
-    'The runtime no longer fabricates synthetic positive/negative substrate pairs when no canonical pair family is available.',
-    'This state is more literal to the runtime than the previous same-run hardcoded-delta fallback.'
+    'Caller-supplied pair families are not promoted without provenance and integrity verification.',
+    'No same-run synthetic positive or negative pairs are created by this mapping.'
   ]
 });
 
 const buildSubstrateRuntime = ({ header = {}, externalEvidence = {} } = {}) => {
-  const runtimeSubstrateFamily = externalEvidence?.runtimeSubstrateFamily
-    || externalEvidence?.operationalEquivalence?.runtime_substrate_family
-    || null;
-  if (!runtimeSubstrateFamily) {
-    return buildSubstrateRuntimeAwaitingPairFamily({ header, externalEvidence });
-  }
-  return evaluateSubstratePairFamily({ family: runtimeSubstrateFamily });
+  // Pair-family contents and provenance are not verified at this boundary.
+  return buildSubstrateRuntimeAwaitingPairFamily({ header, externalEvidence });
 };
 
 const buildBoundaryRuntime = ({ header = {}, summary = {}, verdict = {}, ticks = [], externalEvidence = {} } = {}) => {
@@ -122,31 +104,25 @@ const buildBoundaryRuntime = ({ header = {}, summary = {}, verdict = {}, ticks =
   };
 };
 
-const buildReleaseMaterializationMap = ({ boundaryFamily, boundarySelection, substrateRuntime, p503ThresholdRuntime, externalEvidence = {} }) => {
+const buildReleaseMaterializationMap = ({ boundaryFamily, p503ThresholdRuntime }) => {
   const internalized = [
     'invariant_package',
     'claim_mapping_snapshot',
     'boundary_runtime',
-    'boundary_runtime_family_from_ticks',
     'p5_03_threshold_runtime',
     'full_native_invariant_status',
     'claim_closure_runtime_diagnostics',
     'runtime_claim_projection'
   ];
-  if (boundaryFamily?.members?.length) internalized.push('boundary_runtime_window_members');
-  if (boundarySelection?.selected === 'canonical') internalized.push('canonical_boundary_runtime_fallback');
-  if ((externalEvidence?.runtimeSubstrateFamily || externalEvidence?.operationalEquivalence?.runtime_substrate_family)) {
-    internalized.push('runtime_substrate_family');
-    internalized.push('substrate_runtime');
+  if (boundaryFamily?.members?.length) {
+    internalized.push('boundary_runtime_family_from_ticks', 'boundary_runtime_window_members');
   }
 
   const externalized = [
     'final_claim_ledger_epistemic_promotion',
     'campaign_level_roeo_sno_batch_closure'
   ];
-  if (!(externalEvidence?.runtimeSubstrateFamily || externalEvidence?.operationalEquivalence?.runtime_substrate_family)) {
-    externalized.push('canonical_substrate_pair_family');
-  }
+  externalized.push('verified_canonical_substrate_pair_family');
   if (p503ThresholdRuntime?.closureSummary?.requiresExternalDenseStress !== false) {
     externalized.push('denser_external_threshold_stress');
   }
@@ -155,8 +131,8 @@ const buildReleaseMaterializationMap = ({ boundaryFamily, boundarySelection, sub
     internalized,
     externalized,
     notes: [
-      'Boundary runtime is now derived from actual tick-window invariant trajectories and can consume a stronger canonical runtime fallback when the current run is non-diagnostic.',
-      'Substrate runtime consumes canonical ROEO/SNO runtime families when available and otherwise reports pair-family absence explicitly instead of fabricating same-run positives/negatives.',
+      'Boundary runtime uses eligible recorded tick windows; caller-supplied fallback objects are not verified or promoted.',
+      'Substrate pair families require provenance and integrity verification before this mapping can consume them.',
       'External release-facing closure still exists only at frozen claim-ledger promotion and campaign-batch ROEO/SNO closure.'
     ]
   };
@@ -185,6 +161,7 @@ export const buildCanonicalClaimMappingSnapshot = ({
     Object.entries(invariantPackage.invariants).map(([id, record]) => [id, {
       maturity: record.maturity,
       supportMode: record?.provenance?.supportMode || 'unspecified',
+      scoreEvidenceStatus: record?.provenance?.scoreEvidenceStatus || 'not_evaluated',
       residualDependencies: record?.provenance?.residualDependencies || [],
       judgeDependent: Boolean(record?.judgeDependent)
     }])
@@ -263,9 +240,9 @@ export const buildCanonicalClaimMappingSnapshot = ({
       evidenceScope: 'INTERNAL_SUPPORT_ONLY'
     },
     P5_05: {
-      runtimePath: 'RUNTIME_READY',
-      claimClosingReadiness: 'CLAIM_CLOSING_READY_RUNTIME_EVIDENCE',
-      supportInterpretation: 'runtime_negative_control_ready',
+      runtimePath: 'PARTIAL_RUNTIME_PATH',
+      claimClosingReadiness: 'INSUFFICIENT_FOR_CLAIM_CLOSING',
+      supportInterpretation: 'batch_negative_controls_not_consumed',
       evidenceScope: 'INTERNAL_SUPPORT_ONLY'
     },
     P5_06: {
@@ -280,10 +257,7 @@ export const buildCanonicalClaimMappingSnapshot = ({
 
   const releaseMaterializationMap = buildReleaseMaterializationMap({
     boundaryFamily: boundaryBundle.boundaryFamily,
-    boundarySelection: boundaryBundle.boundaryRuntimeSelection,
-    substrateRuntime,
     p503ThresholdRuntime,
-    externalEvidence
   });
 
   return {
@@ -310,7 +284,9 @@ export const buildCanonicalClaimMappingSnapshot = ({
     releaseMaterializationMap,
     externalEvidenceSummary: {
       runtimeBoundaryProvided: Boolean(externalEvidence?.runtimeBoundaryRuntime),
-      runtimeSubstrateFamilyProvided: Boolean(externalEvidence?.runtimeSubstrateFamily),
+      runtimeBoundaryVerified: false,
+      runtimeSubstrateFamilyProvided: Boolean(externalEvidence?.runtimeSubstrateFamily || externalEvidence?.operationalEquivalence?.runtime_substrate_family),
+      runtimeSubstrateFamilyVerified: false,
       operationalEquivalenceProvided: Boolean(externalEvidence?.operationalEquivalence),
       snoProvided: Boolean(externalEvidence?.snoReport)
     },
@@ -319,14 +295,15 @@ export const buildCanonicalClaimMappingSnapshot = ({
       P5_02: substrateRuntime?.closureSummary?.readiness || 'PARTIAL_RUNTIME_PATH',
       P5_03: p503ThresholdRuntime?.closureSummary?.runtimePath || 'PARTIAL_RUNTIME_PATH',
       P5_04: boundaryBundle.boundaryRuntime?.closureSummary?.readiness || 'PARTIAL_RUNTIME_PATH',
-      P5_05: 'RUNTIME_READY',
+      P5_05: 'PARTIAL_RUNTIME_PATH',
       P5_06: substrateRuntime?.closureSummary?.readiness || 'PARTIAL_RUNTIME_PATH'
     },
     notes: [
       'This file is a native runtime mapping layer, not a replacement for the frozen claim ledger.',
-      'Boundary runtime now exposes closure-facing summaries derived from observed tick-window trajectories and can fall back to stronger canonical runtime boundary evidence when the current run is non-diagnostic.',
-      'Substrate runtime now prefers canonical ROEO/SNO runtime families and no longer fabricates same-run positive/negative pair evidence when none is supplied.',
+      'Boundary runtime exposes closure-facing summaries only for eligible tick windows; unverified caller-supplied boundary results are not promoted.',
+      'Supplied substrate families are not promoted until provenance and integrity can be verified.',
       'P5-03 keeps a dedicated runtime threshold path that localizes knife-edge behavior inside the canonical chain.',
+      'P5-05 cannot assert batch-negative-control readiness: this projection does not consume the required batch reports.',
       'All empirical support remains INTERNAL_SUPPORT_ONLY.'
     ]
   };

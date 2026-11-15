@@ -40,6 +40,19 @@ const QICNConfig = {
   FUTURE_PROJECTION_STEPS: 5,
   RETRO_FLUX_WEIGHT: 0.15,
   TEMPORAL_HORIZON: 10,
+  // Feedback contract v2 (2026-11-07): the length of the internal template
+  // narrative no longer modulates COHERENCE_THRESHOLD / PLASTICITY_DECAY.
+  // Set true only to reproduce the legacy coupling in ablation experiments.
+  NARRATIVE_LENGTH_COUPLING_ENABLED: false,
+
+  // Kaizen adjustment mode (user decision 2026-11-08, alignment matrix C-6b).
+  // 'legacy': previous behaviour (atomic mutations; 6 of 7 keys are
+  //   overwritten by the core before use). 'learned': the core computes the
+  //   base value of 6 keys and Kaizen learns a bounded, persistent factor
+  //   (±20 %) on each, judged over a tick window (stability rewarded, stasis
+  //   and strain penalised, CCC level not rewarded). Default stays 'legacy'
+  //   until the user switches it.
+  KAIZEN_ADJUSTMENT_MODE: 'legacy',
 
   // Memoria Holográfica
   HOLOGRAPHIC_FRAGMENTS: 10,

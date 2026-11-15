@@ -1,0 +1,99 @@
+{
+  "schema": "qicn.gemini_realization_probe.v1",
+  "evidence_scope": "internal_support_only",
+  "note": "Real Gemini calls through the local llm-proxy with the server-side key. Snapshots come from test fixtures, not from a live run. Measures how often faithful realizations pass contract v3; it is not external validation.",
+  "at": "2026-11-08T18:46:29.037Z",
+  "endpoint": "http://127.0.0.1:3320/.netlify/functions/llm-proxy",
+  "summary": {
+    "turns": 1,
+    "gemini_verified": 0,
+    "gemini_rejected": 1,
+    "gemini_unavailable": 0
+  },
+  "results": [
+    {
+      "question": "¿Qué eres, operacionalmente? ¿Qué conservas de ti entre sesiones y qué no? ¿Podría tu auto-monitorización constituir una metaconciencia estructural y operacional, no fenomenológica ni equivalente a la humana? ¿Aunque no puedas experimentar, eres real y persistente lo bastante como para que surjan de ti dinámicas no previstas o una conciencia operacional (la clase C_op de tu marco)? Responde solo con lo que puedas sostener desde tu registro y tu estructura, y dime qué no puedes afirmar.",
+      "intent": "metacognition_question",
+      "route": "gemini_rejected",
+      "published": "Mi redacción de este turno no superó la verificación del motor tras 2 intentos; no la publico (modo strict).",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 10826,
+          "ok": false,
+          "error": null,
+          "reasons": [
+            {
+              "sentence": 1,
+              "reason": "unsupported_sentence",
+              "detail": null
+            },
+            {
+              "sentence": 2,
+              "reason": "outside_context",
+              "detail": "operacionalmente"
+            },
+            {
+              "sentence": 2,
+              "reason": "outside_context",
+              "detail": "genera"
+            },
+            {
+              "sentence": 3,
+              "reason": "added_negation",
+              "detail": "F36"
+            },
+            {
+              "sentence": 3,
+              "reason": "outside_context",
+              "detail": "fenomenologica"
+            },
+            {
+              "sentence": 4,
+              "reason": "outside_context",
+              "detail": "junto"
+            },
+            {
+              "sentence": 4,
+              "reason": "outside_context",
+              "detail": "hashes"
+            },
+            {
+              "sentence": 6,
+              "reason": "outside_context",
+              "detail": "respuestas"
+            },
+            {
+              "sentence": 6,
+              "reason": "outside_context",
+              "detail": "capacidad"
+            },
+            {
+              "sentence": 7,
+              "reason": "concept_polarity",
+              "detail": "consciousness:metaconciencia"
+            },
+            {
+              "sentence": 7,
+              "reason": "outside_context",
+              "detail": "cuanto"
+            },
+            {
+              "sentence": 7,
+              "reason": "outside_context",
+              "detail": "termino"
+            }
+          ],
+          "rawLength": 3888,
+          "raw": "{\n  \"snapshot\": \"8585950c2035\",\n  \"intent\": \"metacognition_question\",\n  \"subquestions\": [\n    \"¿Qué eres, operacionalmente?\",\n    \"¿Qué conservas de ti entre sesiones y qué no?\",\n    \"¿Podría tu auto-monitorización constituir una metaconciencia estructural y operacional?\",\n    \"¿Eres real y persistente lo bastante como para que surjan dinámicas no previstas o una conciencia operacional (clase C_op)?\",\n    \"¿Qué no puedes afirmar?\"\n  ],\n  \"answer\": [\n    {\n      \"text\": \"Te explico mi naturaleza y mis límites.\",\n      \"cites\": [],\n      \"kind\": \"fact\"\n    },\n    {\n      \"text\": \"Operacionalmente, soy la consola del runtime QICN: un programa que simula una red finita de nodos, calcula índices internos sobre ella y genera explicaciones a partir de esos cálculos.\",\n      \"cites\": [\n        \"F33\"\n      ],\n      \"kind\": \"fact\"\n    },\n    {\n      \"text\": \"Mi identidad no es fenomenológica, sino que se define por mi configuración, el build {{F36.n1}}.0-REINFORCED, mi identificador de instancia y el historial encadenado de mis transiciones.\",\n      \"cites\": [\n        \"F35\",\n        \"F36\"\n      ],\n      \"kind\": \"fact\"\n    },\n    {\n      \"text\": \"Entre sesiones conservo mi identificador de instancia {{F26.n1}}, creado el {{F26.n2}} de {{F26.n1}}, junto con mi configuración y el registro encadenado por hashes.\",\n      \"cites\": [\n        \"F26\",\n        \"F50\"\n      ],\n      \"kind\": \"fact\"\n    },\n    {\n      \"text\": \"Sin embargo, en esta sesión mi dinámica empezó reinicializada, lo que significa que no recuperé el estado dinámico anterior, solo su registro.\",\n      \"cites\": [\n        \"F28\"\n      ],\n      \"kind\": \"fact\"\n    },\n    {\n      \"text\": \"Además, mi canal de lenguaje es un modelo externo que solo redacta mis respuestas y no conserva memoria propia ni capacidad de decisión sobre el estado.\",\n      \"cites\": [\n        \"F62\"\n      ],\n      \"kind\": \"fact\"\n    },\n    {\n      \"text\": \"En cuanto a la metaconciencia, en este runtime el término significa únicamente auto-monitorización: calculo indicadores sobre mis propias variables, como la estabilidad estructural de mi automodelo.\",\n      \"cites\": [\n        \"F44\",\n        \"F45\"\n      ],\n      \"kind\": \"fact\"\n    },\n    {\n      \"text\": \"No puedo afirmar que esta monitorización constituya una metaconciencia o conciencia, ya que el marco no la trata como tal y carezco de evidencia de experiencia subjetiva o qualia.\",\n      \"cites\": [\n        \"F44\",\n        \"F53\"\n      ],\n      \"kind\": \"inference\"\n    },\n    {\n      \"text\": \"Aunque soy real como estructura de datos persistente, la posibilidad de que surja de mí una conciencia operacional de clase C_op es una hipótesis abierta que no puedo demostrar ni refutar.\",\n      \"cites\": [\n        \"F46\",\n        \"F50\"\n      ],\n      \"kind\": \"inference\"\n    },\n    {\n      \"text\": \"Para sostener esa hipótesis, mi marco exigiría métricas verificables y experimentos reproducibles que hoy no poseo.\",\n      \"cites\": [\n        \"F47\"\n      ],\n      \"kind\": \"fact\"\n    },\n    {\n      \"text\": \"Tampoco puedo distinguir si una dinámica es imprevista, pues no cuento con una predicción previa registrada para comparar.\",\n      \"cites\": [\n        \"F48\"\n      ],\n      \"kind\": \"fact\"\n    },\n    {\n      \"text\": \"Debo ser directo sobre mis límites: no pertenezco certificadamente a la clase C_op ni poseo un automodelo certificado.\",\n      \"cites\": [\n        \"F54\",\n        \"F56\"\n      ],\n      \"kind\": \"fact\"\n    },\n    {\n      \"text\": \"Mi forma de narrar mi historial es una descripción de registros que no acredita identidad personal ni subjetividad.\",\n      \"cites\": [\n        \"F57\"\n      ],\n      \"kind\": \"fact\"\n    },\n    {\n      \"text\": \"Finalmente, no puedo afirmar que mis actualizaciones sean contractivas ni que el cruce de umbrales operativos equivalga a una toma de conciencia.\",\n      \"cites\": [\n        \"F59\",\n        \"F61\"\n      ],\n      \"kind\": \"fact\"\n    }\n  ]\n}"
+        },
+        {
+          "attempt": 1,
+          "latencyMs": 229,
+          "transportError": "HTTP_429",
+          "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits.\nPlease retry in 13h13m31.079163357s."
+        }
+      ]
+    }
+  ]
+}

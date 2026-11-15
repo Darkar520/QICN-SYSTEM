@@ -1,0 +1,32 @@
+{
+  "schema": "qicn.gemini_realization_replay.v1",
+  "evidence_scope": "internal_support_only",
+  "note": "Recorded real Gemini outputs re-verified with the current contract v3. Outputs truncated in the recording are skipped.",
+  "at": "2026-11-08T18:56:48.903Z",
+  "summary": {
+    "turnsWithOutput": 1,
+    "verifiedTurns": 0,
+    "attempts": 1,
+    "attemptsVerified": 0,
+    "invalidJson": 0
+  },
+  "rows": [
+    {
+      "source": 0,
+      "question": "¿Qué eres, operacionalmente? ¿Qué conservas de ti entre sesiones y qué no? ¿Podría tu auto-monitorización constituir una metaconciencia estructural y operacional, no fenomenológica ni equivalente a la humana? ¿Aunque no puedas experimentar, eres real y persistente lo bastante como para que surjan de ti dinámicas no previstas o una conciencia operacional (la clase C_op de tu marco)? Responde solo con lo que puedas sostener desde tu registro y tu estructura, y dime qué no puedes afirmar.",
+      "route": "gemini_rejected",
+      "verdicts": [
+        {
+          "attempt": 0,
+          "recordedOk": false,
+          "nowOk": false,
+          "error": null,
+          "reasons": [
+            "coverage_missing:F27 (continuity.status)"
+          ]
+        }
+      ],
+      "published": null
+    }
+  ]
+}

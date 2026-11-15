@@ -49,6 +49,12 @@ const runHarness = async ({ baseDir, runId, seed = 17057, configHash = 'cfg_ok',
     assert(row.configHash === 'cfg_ok', 'CASE 2 FAIL: configHash unstable');
   });
   const summary1 = JSON.parse(fs.readFileSync(path.join(r1.artifactDir, 'run_summary.json'), 'utf8'));
+  const header1 = JSON.parse(fs.readFileSync(path.join(r1.artifactDir, 'run_header.json'), 'utf8'));
+  assert(header1.runtime_use_admissibility && typeof header1.runtime_use_admissibility === 'object', 'CASE 2B FAIL: runtime_use_admissibility missing in run_header.json');
+  for (const field of ['measured_state_space', 'estimator_or_update_rule', 'finite_horizon', 'calibration_regime', 'failure_controls', 'claim_class']) {
+    assert(field in header1.runtime_use_admissibility, `CASE 2B FAIL: runtime_use_admissibility missing field ${field}`);
+  }
+  assert(header1.runtime_use_admissibility.claim_class === 'internal_support_only', 'CASE 2B FAIL: default claim_class must be internal_support_only');
   assert(summary1.counts.schema_violations === 0, 'CASE 3 FAIL: schema violations must be zero');
   assert(!fs.existsSync(path.join(r1.artifactDir, 'entropy_preverdict.json')), 'CASE 3B FAIL: no entropy artifact should be emitted when no entropy snapshots are provided.');
   assert(r1.ticksHash === r2.ticksHash, 'CASE 4 FAIL: deterministic ticks_hash mismatch');

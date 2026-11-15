@@ -1,7 +1,7 @@
 import { buildCanonicalInvariantPackage, flattenInvariantScores } from '../invariants/CanonicalInvariantPackage.js';
 
 export const BOUNDARY_PROBE_SCAFFOLD_VERSION = 'boundary-probe-scaffold.v1';
-export const BOUNDARY_RUNTIME_VERSION = 'boundary-runtime.v7';
+export const BOUNDARY_RUNTIME_VERSION = 'boundary-runtime.v8';
 
 const toFinite = (value, fallback = 0) => {
   const n = Number(value);
@@ -174,10 +174,10 @@ export const evaluateBoundaryProbeFamily = ({
     transitionDetected: transitionIndex >= 0,
     firstFailingInvariant: firstCrossing?.firstInvariantCrossing?.invariantId || null,
     firstCrossingIsolationMargin: firstCrossing?.targetIsolationMargin ?? null,
-    confounderState: diagnostics.confoundedMembers === 0 ? 'BACKGROUND_HEALTHY' : 'BACKGROUND_MIXED',
+    confounderState: !members.length ? 'NOT_RECORDED' : diagnostics.confoundedMembers === 0 ? 'BACKGROUND_HEALTHY' : 'BACKGROUND_MIXED',
     closureConfidence: Number(confidence.toFixed(6)),
-    cleanliness: diagnostics.confoundedMembers === 0 ? 'clean' : 'confounded',
-    boundaryEventType: cleanIsolation
+    cleanliness: !members.length ? 'not_recorded' : diagnostics.confoundedMembers === 0 ? 'clean' : 'confounded',
+    boundaryEventType: !members.length ? 'NOT_RECORDED' : cleanIsolation
       ? 'TRUE_TARGET_CROSSING'
       : (targetedFirstCrossing ? 'TARGET_CROSSING_WITH_WEAK_ISOLATION' : 'MIXED_OR_BACKGROUND_EVENT'),
     supportInterpretation: (
@@ -318,6 +318,8 @@ const buildRuntimeWindowCandidates = ({ header = {}, summary = {}, verdict = {},
   return uniqueWindows.map((window, candidateIndex) => {
     const windowTicks = ticks.slice(window.start, window.end);
     const windowPackage = buildCanonicalInvariantPackage({ header, summary, verdict, ticks: windowTicks });
+    if (['I_per', 'I_ri', 'I_int', 'I_cont', 'I_diff', 'I_leg'].some((id) =>
+      windowPackage.invariants[id]?.provenance?.scoreEvidenceStatus !== 'complete_recorded')) return null;
     const invariantScores = flattenInvariantScores(windowPackage);
     return {
       candidateIndex,
@@ -328,7 +330,7 @@ const buildRuntimeWindowCandidates = ({ header = {}, summary = {}, verdict = {},
       targetedScore: clamp01(invariantScores[targetedInvariant]),
       invariantScores
     };
-  });
+  }).filter(Boolean);
 };
 
 const sampleBoundaryRepresentatives = (candidates = [], targetedInvariant = 'I_ri', memberCount = 5) => {
@@ -365,12 +367,14 @@ export const createBoundaryFamilyFromRuntimeTrajectory = ({
 }) => {
   const candidates = buildRuntimeWindowCandidates({ header, summary, verdict, ticks, targetedInvariant, memberCount });
   if (!candidates.length) {
-    const fallbackPackage = buildCanonicalInvariantPackage({ header, summary, verdict, ticks });
-    return createBoundaryFamilyFromInvariantPackage({
+    return buildBoundaryProbeFamily({
       familyId,
       description,
-      invariantPackage: fallbackPackage,
-      targetedInvariant
+      generatorPath: 'src/canon/boundary/BoundaryProbeScaffold.js#createBoundaryFamilyFromRuntimeTrajectory',
+      evaluationPath: 'src/canon/boundary/BoundaryProbeScaffold.js#evaluateBoundaryProbeFamily',
+      decisionPath: 'src/canon/boundary/BoundaryProbeScaffold.js#evaluateBoundaryProbeMember',
+      targetedInvariant,
+      members: []
     });
   }
 

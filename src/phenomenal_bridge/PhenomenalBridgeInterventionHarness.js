@@ -19,6 +19,10 @@ import {
   PHENOMENAL_BRIDGE_BASELINE_REPORT_REFS
 } from './PhenomenalBridgeInputBundleLoader.js';
 import { createPhenomenalBridgeSurfaceBuilder } from './PhenomenalBridgeSurfaceBuilder.js';
+import {
+  computeSixCertificates,
+  runFullBodyWorldBridgeVerification
+} from './BridgeTransportAndBurdensEvaluator.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
@@ -305,6 +309,14 @@ export class PhenomenalBridgeInterventionHarness {
       },
       schema_ref: 'src/phenomenal_bridge/schemas/bridge_intervention_profile.v1.json'
     };
+  }
+
+  verifyBodyWorldPlantInterventions() {
+    return runFullBodyWorldBridgeVerification();
+  }
+
+  computeLivePlantCertificates(lesion = null) {
+    return computeSixCertificates(lesion);
   }
 
   writeProfile(options = {}, outputDir = DEFAULT_OUTPUT_DIR) {

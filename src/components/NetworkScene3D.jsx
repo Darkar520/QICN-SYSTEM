@@ -379,7 +379,9 @@ const NetworkScene3D = React.memo(({
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = reducedMotion ? 0.12 : 0.05;
-    controls.enableZoom = true;
+    // Let the page scroll when the pointer is over the visualisation.
+    // The explicit + / - controls continue to adjust the camera.
+    controls.enableZoom = false;
     controls.zoomSpeed = 1.05;
     controls.enablePan = true;
     controls.panSpeed = 0.55;
@@ -699,7 +701,7 @@ const NetworkScene3D = React.memo(({
     <div
       ref={hostRef}
       role="application"
-      aria-label="Red nodal WebGL 3D interactiva: arrastra para rotar, usa scroll para zoom y click para fijar un nodo."
+      aria-label="Red nodal WebGL 3D interactiva: arrastra para rotar, usa los botones para acercar y click para fijar un nodo."
       className="relative h-full min-h-[320px] max-w-full overflow-hidden rounded-2xl border border-cyan-400/55 bg-[#020713] shadow-[0_0_30px_rgba(34,211,238,0.24),inset_0_0_42px_rgba(14,165,233,0.10)]"
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
@@ -738,7 +740,7 @@ const NetworkScene3D = React.memo(({
       )}
 
       <div className="pointer-events-none absolute inset-x-0 bottom-8 z-10 text-center font-mono text-[10px] uppercase tracking-[0.38em] text-slate-400/70">
-        Arrastrar: rotar | Scroll: zoom | Shift/click derecho: pan | Doble click: reset vista
+        Arrastrar: rotar | Botones +/−: zoom | Shift/click derecho: pan | Doble click: reset vista
       </div>
 
       <div className="pointer-events-none absolute bottom-4 left-5 right-5 z-10 flex flex-col gap-1 font-mono text-[9px] text-slate-300/85 sm:flex-row sm:items-end sm:justify-between">

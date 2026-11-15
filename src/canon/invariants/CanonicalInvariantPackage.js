@@ -1,9 +1,6 @@
 // @ts-check
 
 import { computeInverseLimitScore } from '../finite_horizon/FiniteProjectionEvaluator.js';
-import { buildPersistenceCertificate } from '../persistence/PersistenceCertifier.js';
-import { buildLegibilityCertificate } from '../../experiments/LegibilityCertifier.js';
-import { verifyNonFactorization } from '../../experiments/NonFactorizationProver.js';
 
 /**
  * @typedef {Object} InvariantRecord
@@ -33,6 +30,7 @@ import { verifyNonFactorization } from '../../experiments/NonFactorizationProver
  */
 
 const toFinite = (value, fallback = null) => {
+  if (value === null || value === undefined || value === '') return fallback;
   const n = Number(value);
   return Number.isFinite(n) ? n : fallback;
 };
@@ -56,12 +54,12 @@ const series = (ticks = [], pathGetter) => {
 };
 
 const continuityRatio = (ticks = []) => {
-  if (!Array.isArray(ticks) || ticks.length <= 1) return 1;
+  if (!Array.isArray(ticks) || ticks.length <= 1) return 0;
   let ok = 0;
   for (let idx = 1; idx < ticks.length; idx += 1) {
-    const prev = toFinite(ticks[idx - 1]?.tick, idx - 1);
-    const current = toFinite(ticks[idx]?.tick, idx);
-    if (current === prev + 1) ok += 1;
+    const prev = toFinite(ticks[idx - 1]?.tick, null);
+    const current = toFinite(ticks[idx]?.tick, null);
+    if (prev !== null && current !== null && current === prev + 1) ok += 1;
   }
   return ok / Math.max(1, ticks.length - 1);
 };
@@ -70,81 +68,6 @@ const meanFromSummaryOrSeries = (summaryValue, values = []) => {
   const fromSeries = mean(values);
   if (fromSeries !== null) return fromSeries;
   return toFinite(summaryValue, null);
-};
-
-const defaultNegativeControls = () => Array.from({ length: 7 }, (_, index) => ({
-  control: `NC${index + 1}`,
-  pass: true
-}));
-
-const buildLegibilityInputs = ({
-  directOperationalDeterminism,
-  directObservableDeterminism,
-  hashSemanticStability,
-  guardrailOkFrac,
-  verdict,
-  flags
-} = {}) => {
-  const determinism = clamp01(toFinite(directOperationalDeterminism, 0.94));
-  const observability = clamp01(toFinite(directObservableDeterminism, 1));
-  const hash = clamp01(toFinite(hashSemanticStability, 0.93));
-  const guardrail = clamp01(toFinite(guardrailOkFrac, 1));
-  const center = [determinism, observability, hash, guardrail];
-  const classSamples = [
-    {
-      label: 'admissible_structured',
-      vectors: [
-        center,
-        center.map((value, index) => clamp01(value - (index + 1) * 0.002)),
-        center.map((value, index) => clamp01(value + (index + 1) * 0.001))
-      ]
-    },
-    {
-      label: 'drift_or_partial',
-      vectors: [
-        [0.2, 0.3, 0.25, 0.2],
-        [0.25, 0.35, 0.2, 0.25],
-        [0.18, 0.28, 0.22, 0.18]
-      ]
-    }
-  ];
-  const samples = classSamples.flatMap((item) => item.vectors.map((vector) => ({ label: item.label, vector })));
-  const assignments = Array.from({ length: 12 }, (_, tick) => ({ tick, label: verdict?.status === 'DISCARDED' ? 'discarded' : 'admissible_structured' }));
-  const interventions = [
-    { tick: 10, expected_change: !flags?.schema_drift, observed_change: !flags?.schema_drift },
-    { tick: 11, expected_change: !flags?.hash_drift, observed_change: !flags?.hash_drift }
-  ];
-  return {
-    classSamples,
-    samples,
-    assignments,
-    interventions,
-    negativeControls: defaultNegativeControls(),
-    historyVectors: classSamples.flatMap((item) => item.vectors),
-    noiseStdDev: 0.005,
-    trials: 20,
-    tauMin: 5,
-    compressionRatio: 0.5
-  };
-};
-
-const buildPersistenceTrajectory = (ticks = [], metrics = {}) => {
-  const fromTicks = (Array.isArray(ticks) ? ticks : [])
-    .map((tick) => ({
-      ccc: toFinite(tick?.metrics?.ccc, null),
-      omega: toFinite(tick?.metrics?.omega ?? tick?.metrics?.omega_mean, null),
-      beth_q: toFinite(tick?.metrics?.beth_q, null),
-      spectral_gap: toFinite(tick?.metrics?.spectral_gap, null)
-    }))
-    .filter((state) => state.ccc !== null && state.omega !== null && state.beth_q !== null);
-
-  if (fromTicks.length) return fromTicks;
-  return [{
-    ccc: toFinite(metrics?.ccc, 0.72),
-    omega: toFinite(metrics?.omega ?? metrics?.omega_mean, 0.74),
-    beth_q: toFinite(metrics?.beth_q, 0.71),
-    spectral_gap: toFinite(metrics?.spectral_gap, 0.22)
-  }];
 };
 
 const projectContinuityState = (tick = {}) => {
@@ -163,7 +86,14 @@ const projectContinuityState = (tick = {}) => {
 };
 
 const computeContinuityFormalSignals = (ticks = []) => {
-  const projected = (Array.isArray(ticks) ? ticks : []).map(projectContinuityState);
+  const trace = Array.isArray(ticks) ? ticks : [];
+  const complete = trace.every((tick) => {
+    const metrics = tick?.metrics || tick || {};
+    const regime = metrics.regime_class ?? metrics.phenomenology_class ?? metrics.regime;
+    return [metrics.ccc, metrics.beth_q, metrics.omega ?? metrics.omega_mean, metrics.spectral_gap]
+      .every((value) => toFinite(value, null) !== null) && typeof regime === 'string' && Boolean(regime.trim());
+  });
+  const projected = complete ? trace.map(projectContinuityState) : [];
   let fragmentationBound = 0;
   let invalidRegimeJumps = 0;
   for (let index = 1; index < projected.length; index += 1) {
@@ -186,9 +116,9 @@ const computeContinuityFormalSignals = (ticks = []) => {
   }
   return {
     piSProjectionDefined: projected.length > 0,
-    fragmentationBound,
-    invalidRegimeJumps,
-    continuityFormalAdmissible: fragmentationBound < 1.5 && invalidRegimeJumps === 0,
+    fragmentationBound: projected.length >= 2 ? fragmentationBound : null,
+    invalidRegimeJumps: projected.length >= 2 ? invalidRegimeJumps : null,
+    continuityFormalAdmissible: projected.length >= 2 ? fragmentationBound < 1.5 && invalidRegimeJumps === 0 : null,
     interpretationBoundary: 'Finite Pi_S and fragmentation signals over recorded ticks; not complete metric-space continuity.'
   };
 };
@@ -230,7 +160,7 @@ const buildInvariantRecord = ({
   provenance
 });
 
-export const CANON_INVARIANT_PACKAGE_VERSION = 'canon-invariant-package.v6';
+export const CANON_INVARIANT_PACKAGE_VERSION = 'canon-invariant-package.v7';
 
 /**
  * @param {Object} input
@@ -286,7 +216,8 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     epsilon: 0.05,
     summaryMetrics: metrics
   });
-  const inverseLimitScore = toFinite(metrics?.inverse_limit_score, inverseLimit.score);
+  const inverseLimitScore = toFinite(metrics?.inverse_limit_score, null)
+    ?? (inverseLimit.evidence_status === 'not_recorded' ? null : inverseLimit.score);
   const directCausalDependency = {
     past: meanFromSummaryOrSeries(metrics?.causal_dependency?.past, causalPastSeries),
     sensors: meanFromSummaryOrSeries(metrics?.causal_dependency?.sensors, causalSensorsSeries),
@@ -299,20 +230,11 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
   const legacyPersistenceScore = (
     (continuityRatio(ticks) * 0.45)
     + (normalizeLower(directStasis, 0, 1) * 0.25)
-    + (flags?.io_partial ? 0 : 0.2)
-    + (flags?.monotonic_violation ? 0 : 0.1)
+    + (flags?.io_partial === false ? 0.2 : 0)
+    + (flags?.monotonic_violation === false ? 0.1 : 0)
   );
-  const persistenceCertificate = buildPersistenceCertificate({
-    trajectory: buildPersistenceTrajectory(ticks, metrics),
-    trials: 128,
-    ticksPerTrial: 20
-  });
-  const persistenceScore = Math.max(legacyPersistenceScore, (
-    (Number(persistenceCertificate.forward.forward_invariant) * 0.4)
-    + (persistenceCertificate.collapse.normalized_collapse_distance * 0.3)
-    + (continuityRatio(ticks) * 0.2)
-    + ((flags?.io_partial || flags?.monotonic_violation) ? 0 : 0.1)
-  ));
+  // Simulated forward-invariance trials are not observed runtime persistence.
+  const persistenceScore = legacyPersistenceScore;
 
   const legacyRigidIdentityScore = (
     (normalizeHigher(inverseLimitScore, 0, 1) * 0.25)
@@ -346,18 +268,9 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     + (normalizeLower(directWmError, 0, 0.3) * 0.1)
     + (normalizeHigher(guardrailOkFrac, 0.5, 1) * 0.1)
   );
-  const nonFactorization = verifyNonFactorization(null, {
-    ccc: directCCC ?? 0.72,
-    beth_q: directBethQ ?? 0.71,
-    omega: directOmega ?? 0.74
-  }, { candidates: 4, tolerance: 0.10, ticks: 50 });
-  const formalIntegrationScore = (
-    (legacyIntegrationScore * 0.75)
-    + (Number(nonFactorization.non_factorizable) * 0.15)
-    + (normalizeHigher(nonFactorization.candidates_tested, 1, 4) * 0.05)
-    + (normalizeLower(nonFactorization.factorizations_found, 0, 1) * 0.05)
-  );
-  const integrationScore = Math.max(legacyIntegrationScore, formalIntegrationScore);
+  // No runtime node graph, intervention histories, or factorization oracle are
+  // supplied here. A synthetic default graph cannot certify this execution.
+  const integrationScore = legacyIntegrationScore;
 
   const continuityScore = (
     (normalizeHigher(mean(predictiveSeries) ?? metrics?.predictive_consistency, 0.5, 1) * 0.7)
@@ -377,30 +290,25 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     + (normalizeHigher(hashSemanticStability, 0.45, 1) * 0.12)
     + (normalizeHigher(guardrailOkFrac, 0.5, 1) * 0.12)
     + (verdict?.status === 'ADMISSIBLE' ? 0.16 : 0)
-    + (flags?.schema_drift ? 0 : 0.08)
-    + (flags?.hash_drift ? 0 : 0.04)
-    + (flags?.io_partial ? 0 : 0.02)
+    + (flags?.schema_drift === false ? 0.08 : 0)
+    + (flags?.hash_drift === false ? 0.04 : 0)
+    + (flags?.io_partial === false ? 0.02 : 0)
   );
-  const legibilityCertificate = buildLegibilityCertificate(buildLegibilityInputs({
-    directOperationalDeterminism,
-    directObservableDeterminism,
-    hashSemanticStability,
-    guardrailOkFrac,
-    verdict,
-    flags
-  }));
-  const legibilityScore = Math.max(legacyLegibilityScore, legibilityCertificate.score);
+  // The standalone L1-L6 fixture is not run-level evidence. Until actual
+  // class histories, interventions and controls are supplied, retain only
+  // the measured operational composite and mark the certificate unavailable.
+  const legibilityScore = legacyLegibilityScore;
 
   const perDirectSignals = {
     continuityRatio: Number(continuityRatio(ticks).toFixed(6)),
     stasisIndex: directStasis,
-    ioPartial: Boolean(flags?.io_partial),
-    monotonicViolation: Boolean(flags?.monotonic_violation),
-    forwardInvariant: persistenceCertificate.forward.forward_invariant,
-    forwardInvarianceTrials: persistenceCertificate.forward.trials,
-    forwardInvarianceEscapeRate: persistenceCertificate.forward.escape_rate,
-    minCollapseDistance: persistenceCertificate.collapse.min_collapse_distance,
-    persistenceCertificateScore: persistenceCertificate.score
+    ioPartial: typeof flags?.io_partial === 'boolean' ? flags.io_partial : null,
+    monotonicViolation: typeof flags?.monotonic_violation === 'boolean' ? flags.monotonic_violation : null,
+    forwardInvariant: null,
+    forwardInvarianceTrials: null,
+    forwardInvarianceEscapeRate: null,
+    minCollapseDistance: null,
+    persistenceCertificateScore: null
   };
   const riDirectSignals = {
     inverseLimitScore,
@@ -437,46 +345,65 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     temporalConvergenceTauC: directTauC,
     windingNumber: directWinding,
     wmPredErrorMean: directWmError,
-    nonFactorizable: nonFactorization.non_factorizable,
-    factorizationCandidatesTested: nonFactorization.candidates_tested,
-    factorizationsFound: nonFactorization.factorizations_found,
-    nonFactorizationDiagnostics: nonFactorization.results
+    nonFactorizable: null,
+    factorizationCandidatesTested: null,
+    factorizationsFound: null,
+    nonFactorizationDiagnostics: null
   };
   const legDirectSignals = {
-    schemaDrift: Boolean(flags?.schema_drift),
-    hashDrift: Boolean(flags?.hash_drift),
-    ioPartial: Boolean(flags?.io_partial),
+    schemaDrift: typeof flags?.schema_drift === 'boolean' ? flags.schema_drift : null,
+    hashDrift: typeof flags?.hash_drift === 'boolean' ? flags.hash_drift : null,
+    ioPartial: typeof flags?.io_partial === 'boolean' ? flags.io_partial : null,
     operationalDeterminismScore: directOperationalDeterminism,
     criticalObservablesDeterministicFrac: directObservableDeterminism,
     criticalStateHashStability: hashSemanticStability,
     guardrailOkFrac,
-    legibilityCertificateScore: legibilityCertificate.score,
-    legibilityClausesPassed: legibilityCertificate.clauses_passed,
-    legibilityClauses: legibilityCertificate.clauses
+    legibilityCertificateScore: null,
+    legibilityClausesPassed: null,
+    legibilityClauses: null
   };
+  const hasContinuityData = ticks.length >= 2 && ticks.every((tick) => toFinite(tick?.tick, null) !== null);
+  const perHasEvidence = hasContinuityData
+    || directStasis !== null || typeof flags?.io_partial === 'boolean'
+    || typeof flags?.monotonic_violation === 'boolean';
+  const intHasEvidence = [directPMIA, directSpectralGap, directBethQ, directWmError, guardrailOkFrac,
+    ...Object.values(directCausalDependency)].some((value) => value !== null);
+  const riHasEvidence = [inverseLimitScore, directIdentity, directPredictive, directSelfState,
+    hashSemanticStability, directOperationalDeterminism, directObservableDeterminism].some((value) => value !== null);
+  const contHasEvidence = [mean(predictiveSeries), toFinite(metrics?.predictive_consistency, null),
+    toFinite(metrics?.tau_recovery, null)].some((value) => value !== null);
+  const diffHasEvidence = [directBethQ, directOmega, mean(phenSeries), toFinite(metrics?.phen, null)]
+    .some((value) => value !== null);
+  const legHasEvidence = [directOperationalDeterminism, directObservableDeterminism, hashSemanticStability,
+    guardrailOkFrac].some((value) => value !== null) || ['schema_drift', 'hash_drift', 'io_partial']
+    .some((key) => typeof flags?.[key] === 'boolean') || typeof verdict?.status === 'string';
 
   const invariants = {
     I_per: buildInvariantRecord({
       id: 'I_per',
       name: 'structural_persistence',
       score: persistenceScore,
-      maturity: 'FULL_NATIVE',
+      maturity: 'PARTIAL_RUNTIME_PATH',
       runtimeSignals: [
         'ticks.tick',
         'metrics.stasis_index',
-        'persistence_certificate.forward_invariance',
-        'persistence_certificate.min_collapse_distance',
         'flags.io_partial',
         'flags.monotonic_violation'
       ],
       directSignals: perDirectSignals,
       provenance: {
-        directRuntimeContribution: Number((runtimeCoverage(perDirectSignals) ?? 0).toFixed(6)),
+        scoreEvidenceStatus: perHasEvidence ? 'partial_recorded' : 'not_recorded',
+        directRuntimeContribution: Number((runtimeCoverage({
+          continuity: hasContinuityData ? continuityRatio(ticks) : null,
+          stasis: directStasis,
+          ioPartial: perDirectSignals.ioPartial,
+          monotonicViolation: perDirectSignals.monotonicViolation
+        }) ?? 0).toFixed(6)),
         residualProxyContribution: 0,
         residualDependencies: [
-          persistenceCertificate.interpretation_boundary
+          'No observed forward-invariance or collapse-distance certificate is supplied by this run.'
         ],
-        supportMode: 'full_runtime_native'
+        supportMode: 'partial_runtime_path'
       }
     }),
     I_ri: buildInvariantRecord({
@@ -502,7 +429,11 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
       directSignals: riDirectSignals,
       proxySignals: {},
       provenance: {
-        directRuntimeContribution: Number((runtimeCoverage(riDirectSignals) ?? 0).toFixed(6)),
+        scoreEvidenceStatus: riHasEvidence ? 'partial_recorded' : 'not_recorded',
+        directRuntimeContribution: Number((runtimeCoverage({
+          inverseLimitScore, directIdentity, directPredictive, directSelfState,
+          hashSemanticStability, directOperationalDeterminism, directObservableDeterminism
+        }) ?? 0).toFixed(6)),
         residualProxyContribution: 0,
         residualDependencies: [
           'inverse_limit_score is finite-window adjacent-state compatibility, not full inverse-limit preservation',
@@ -516,27 +447,28 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
       id: 'I_int',
       name: 'causal_integration',
       score: integrationScore,
-      maturity: 'FULL_NATIVE',
+      maturity: 'PARTIAL_RUNTIME_PATH',
       runtimeSignals: [
         'metrics.pmia',
         'metrics.spectral_gap',
         'metrics.beth_q',
         'metrics.causal_dependency.*',
-        'integration.non_factorizable',
-        'integration.factorization_candidates_tested',
-        'integration.factorizations_found',
         'metrics.pmia_guardrail_ok_frac',
         'observability.wm_pred_error'
       ],
       directSignals: intDirectSignals,
       proxySignals: {},
       provenance: {
-        directRuntimeContribution: Number((runtimeCoverage(intDirectSignals) ?? 0).toFixed(6)),
+        scoreEvidenceStatus: intHasEvidence ? 'partial_recorded' : 'not_recorded',
+        directRuntimeContribution: Number((runtimeCoverage({
+          directPMIA, directSpectralGap, directBethQ, directWmError, guardrailOkFrac,
+          ...directCausalDependency
+        }) ?? 0).toFixed(6)),
         residualProxyContribution: 0,
         residualDependencies: [
-          nonFactorization.interpretation_boundary
+          'Runtime factorization graph and intervention histories are not supplied; no non-factorization result is recorded.'
         ],
-        supportMode: 'full_runtime_native'
+        supportMode: 'partial_runtime_path'
       }
     }),
     I_cont: buildInvariantRecord({
@@ -560,7 +492,11 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
         continuityFormalAdmissible: continuityFormal.continuityFormalAdmissible
       },
       provenance: {
-        directRuntimeContribution: 1,
+        scoreEvidenceStatus: contHasEvidence ? 'partial_recorded' : 'not_recorded',
+        directRuntimeContribution: Number((runtimeCoverage({
+          predictiveConsistency: mean(predictiveSeries) ?? toFinite(metrics?.predictive_consistency, null),
+          tauRecovery: toFinite(metrics?.tau_recovery, null)
+        }) ?? 0).toFixed(6)),
         residualProxyContribution: 0,
         residualDependencies: [
           continuityFormal.interpretationBoundary
@@ -580,7 +516,10 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
         omegaMean: mean(omegaSeries) ?? toFinite(metrics?.omega_mean, null)
       },
       provenance: {
-        directRuntimeContribution: 1,
+        scoreEvidenceStatus: diffHasEvidence ? 'partial_recorded' : 'not_recorded',
+        directRuntimeContribution: Number((runtimeCoverage({
+          bethQ: directBethQ, phen: mean(phenSeries) ?? toFinite(metrics?.phen, null), omega: directOmega
+        }) ?? 0).toFixed(6)),
         residualProxyContribution: 0,
         residualDependencies: [],
         supportMode: 'full_runtime_native'
@@ -590,13 +529,12 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
       id: 'I_leg',
       name: 'operational_legibility',
       score: legibilityScore,
-      maturity: 'FULL_NATIVE',
+      maturity: 'PARTIAL_RUNTIME_PATH',
       runtimeSignals: [
         'metrics.operational_determinism_score',
         'metrics.critical_observables_deterministic_frac',
         'metrics.critical_state_hash_semantic_stability',
         'metrics.pmia_guardrail_ok_frac',
-        'legibility_certificate.L1_L6',
         'flags.schema_drift',
         'flags.hash_drift',
         'flags.io_partial'
@@ -604,6 +542,7 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
       directSignals: legDirectSignals,
       judgeDependent: false,
       provenance: {
+        scoreEvidenceStatus: legHasEvidence ? 'partial_recorded' : 'not_recorded',
         directRuntimeContribution: Number((runtimeCoverage({
           operationalDeterminismScore: directOperationalDeterminism,
           criticalObservablesDeterministicFrac: directObservableDeterminism,
@@ -612,9 +551,9 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
         }) ?? 0).toFixed(6)),
         residualProxyContribution: 0,
         residualDependencies: [
-          legibilityCertificate.interpretation_boundary
+          'L1-L6 require recorded class histories, interventions and negative controls; no certificate is recorded here.'
         ],
-        supportMode: 'full_runtime_native'
+        supportMode: 'partial_runtime_path'
       }
     })
   };
@@ -628,7 +567,7 @@ export const buildCanonicalInvariantPackage = ({ header = {}, summary = {}, verd
     notes: [
       'Invariant scores are runtime-native composites fed by sandbox metrics and tick-level signals.',
       'I_ri includes a computable finite-window inverse-limit compatibility component without promoting it to full inverse-limit preservation.',
-      'I_int and I_leg now operate as full-runtime-native semantics inside the sandbox path.',
+      'I_per, I_int and I_leg are partial runtime composites; simulated certificates are not recorded as run-level evidence.',
       'This package internalizes the six-invariant layer without promoting claim status by itself.'
     ]
   };

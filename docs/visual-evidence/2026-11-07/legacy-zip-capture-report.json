@@ -1,0 +1,55 @@
+{
+  "label": "legacy-zip",
+  "url": "http://127.0.0.1:3311/",
+  "capturedAt": "2026-11-08T04:26:40.284Z",
+  "browser": "msedge.exe",
+  "captures": [
+    {
+      "viewport": "desktop",
+      "tab": "default",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/legacy-zip-desktop-default.png"
+    },
+    {
+      "viewport": "desktop",
+      "tab": "network",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/legacy-zip-desktop-network.png"
+    },
+    {
+      "viewport": "desktop",
+      "tab": "chat",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/legacy-zip-desktop-chat.png"
+    },
+    {
+      "viewport": "mobile",
+      "tab": "default",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/legacy-zip-mobile-default.png"
+    },
+    {
+      "viewport": "mobile",
+      "tab": "network",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/legacy-zip-mobile-network.png"
+    },
+    {
+      "viewport": "mobile",
+      "tab": "chat",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/legacy-zip-mobile-chat.png"
+    }
+  ],
+  "consoleErrors": [
+    "❌ Error inicializando video: Permission denied",
+    "Detalles: NotAllowedError: Permission denied",
+    "❌ Error inicializando video: Permission denied",
+    "Detalles: NotAllowedError: Permission denied"
+  ],
+  "exceptions": [],
+  "chat": [],
+  "started": {
+    "started": true
+  }
+}

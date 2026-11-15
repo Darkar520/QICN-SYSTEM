@@ -755,7 +755,7 @@ const NetworkCanvas = ({
         // FIX 2: canvasSize.width y canvasSize.height ELIMINADOS de las dependencias.
         // Re-incluirlos causaba que el effect re-ejecutara en cada resize, re-intentando transferControlToOffscreen()
         // en un canvas ya transferido => InvalidStateError. El resize se maneja via postMessage (Fix 3).
-    }, [useWorkerRender, onTelemetry, perspective, center, projectionLimits, setRenderStateSafe, queueCanvasRecovery, updateHoverSummary]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [useWorkerRender, onTelemetry, perspective, center, projectionLimits, setRenderStateSafe, queueCanvasRecovery, updateHoverSummary]);
 
     // FIX 3: Enviar resize al worker via postMessage en lugar de re-inicializar el useEffect del worker.
     // Esto mantiene el canvas offscreen vivo y actualiza solo las dimensiones.
@@ -1793,35 +1793,6 @@ const NetworkCanvas = ({
         handleMouseUp();
     }, [handleMouseUp, updateHoverSummary]);
 
-    const handleWheel = useCallback((e) => {
-        e.preventDefault();
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / Math.max(1, rect.width);
-        const scaleY = canvas.height / Math.max(1, rect.height);
-        const cursorX = (e.clientX - rect.left) * scaleX;
-        const cursorY = (e.clientY - rect.top) * scaleY;
-
-        const previous = cameraRef.current;
-        const oldZoom = clamp(previous.zoom, 0.35, 3.5);
-        const zoomDelta = e.deltaY < 0 ? 1.12 : 0.89;
-        const newZoom = clamp(oldZoom * zoomDelta, 0.35, 3.5);
-        if (Math.abs(newZoom - oldZoom) < 1e-6) return;
-
-        // Mantener el punto bajo el cursor estable durante el zoom
-        const worldX = (cursorX - center.x - previous.panX) / oldZoom;
-        const worldY = (cursorY - center.y - previous.panY) / oldZoom;
-        const panX = cursorX - center.x - (worldX * newZoom);
-        const panY = cursorY - center.y - (worldY * newZoom);
-
-        cameraRef.current = clampCamera({
-            zoom: newZoom,
-            panX,
-            panY
-        }, canvasRef.current);
-    }, [center.x, center.y]);
-
     const handleDoubleClick = useCallback(() => {
         cameraRef.current = clampCamera({ zoom: 1, panX: 0, panY: 0 }, canvasRef.current);
         setRenderStateSafe('recovering', 'Camara recentrada manualmente.');
@@ -1956,14 +1927,13 @@ const NetworkCanvas = ({
             ref={containerRef}
             className="relative cursor-grab active:cursor-grabbing overflow-hidden rounded-xl border border-purple-500/30 shadow-2xl bg-gradient-to-b from-slate-950 via-[#040816] to-black"
             role="application"
-            aria-label="Red nodal interactiva: arrastra para rotar, usa scroll para zoom y click para fijar un nodo."
+            aria-label="Red nodal interactiva: arrastra para rotar, usa los botones para acercar y click para fijar un nodo."
             tabIndex={0}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
             onClick={handleCanvasClick}
-            onWheel={handleWheel}
             onDoubleClick={handleDoubleClick}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -2122,7 +2092,7 @@ const NetworkCanvas = ({
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/20 text-[9px] uppercase tracking-widest font-bold text-center px-2">
                 {touchEnabled
                     ? '1 dedo: Rotar | 2 dedos: Zoom/Pan | Doble tap: Reset vista'
-                    : 'Scroll: Zoom | Arrastrar: Rotar | Shift/Click Derecho: Pan | Doble Click: Reset vista'}
+                    : 'Botones +/−: Zoom | Arrastrar: Rotar | Shift/Click Derecho: Pan | Doble Click: Reset vista'}
             </div>
         </div>
     );

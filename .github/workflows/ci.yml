@@ -14,6 +14,13 @@ jobs:
     name: ci/build-test
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    env:
+      # FIX 2026-09-07: el job ejecuta `npm test` (146 tests) que incluye
+      # selfpatch-policy-check.v415, el cual exige QICN_KILLSWITCH definido
+      # cuando CI=true (seteado automáticamente por Actions). Sin este env el
+      # job fallaba siempre en remoto y pasaba en local. Mismo patrón ya usado
+      # en el job ci/selfpatch-policy-check de este archivo.
+      QICN_KILLSWITCH: ${{ vars.QICN_KILLSWITCH || 'OFF' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

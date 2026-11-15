@@ -1,0 +1,155 @@
+{
+  "schema": "qicn.gemini_realization_probe.v1",
+  "evidence_scope": "internal_support_only",
+  "note": "Real Gemini calls through the local llm-proxy with the server-side key. Snapshots come from test fixtures, not from a live run. Measures how often faithful realizations pass contract v3; it is not external validation.",
+  "at": "2026-11-08T16:41:02.872Z",
+  "endpoint": "http://127.0.0.1:3320/.netlify/functions/llm-proxy",
+  "summary": {
+    "turns": 6,
+    "gemini_verified": 2,
+    "gemini_rejected": 1,
+    "gemini_unavailable": 3
+  },
+  "results": [
+    {
+      "question": "¿Cómo va el sistema?",
+      "intent": "state_overview",
+      "route": "gemini_verified",
+      "published": "Te explico. La simulación está en marcha y la captura corresponde al tick 160. El índice interno de cohesión, CCC, vale 0,7400. Este valor de CCC está por debajo del umbral operativo de 1,00. La media de coherencia nodal, X_N, vale 0,6000 y el índice integrador interno Omega vale 0,4211. Actualmente hay 12 nodos activos de un total de 20 nodos simulados. No he registrado cambios de banda, de régimen ni de modo de cálculo en esta sesión todavía.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 2522,
+          "ok": true,
+          "error": null,
+          "reasons": [],
+          "rawLength": 1208,
+          "raw": "{\n  \"intent\": \"state_overview\",\n  \"subquestions\": [\n    \"¿Cuál es el estado actual de la simulación?\",\n    \"¿Qué valores tienen los índices principales?\",\n    \"¿Cómo se encuentra el sistema respecto a sus umbrales?\"\n  ],\n  \"answer\": [\n    {\n      \"text\": \"Te explico.\",\n      \"cites\": []\n    },\n    {\n      \"text\": \"La simulación está en marcha y la captura corresponde al tick {{F14.v}}.\",\n      \"cites\": [\n        \"F14\"\n      ]\n    },\n    {\n      \"text\": \"El índice interno de cohesión, CCC, vale {{F2.v}}.\",\n      \"cites\": [\n        \"F2\"\n      ]\n    },\n    {\n      \"text\": \"Este valor de CCC está por debajo del umbral operativo de {{F15.v}}.\",\n      \"cites\": [\n        \"F15\"\n      ]\n    },\n    {\n      \"text\": \"La media de coherencia nodal, X_N, vale {{F1.v}} y el índice integrador interno Omega vale {{F6.v}}.\",\n      \"cites\": [\n        \"F1\",\n        \"F6\"\n      ]\n    },\n    {\n      \"text\": \"Actualmente hay {{F11.v}} nodos activos de un total de {{F12.v}} nodos simulados.\",\n      \"cites\": [\n        \"F11\",\n        \"F12\"\n      ]\n    },\n    {\n      \"text\": \"No he registrado cambios de banda, de régimen ni de modo de cálculo en esta sesión todavía.\",\n      \"cites\": [\n        \"F30\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "question": "¿Qué ha cambiado desde la última respuesta?",
+      "intent": "history_evolution",
+      "route": "gemini_verified",
+      "published": "Te explico. Comparo con tu consulta anterior, en el tick 160, y la lectura actual, en el tick 200. El índice interno de cohesión, CCC, subió de 0,7400 a 0,7530. No cambiaron, dentro de la precisión mostrada: X_N (media de coherencia nodal), beth_q (proxy interno no calibrado), Omega (índice integrador interno), PMIA (índice interno), banda interna e índice de estasis. En esta sesión todavía no registré cambios de banda, de régimen ni de modo de cálculo.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 2290,
+          "ok": false,
+          "error": null,
+          "reasons": [
+            {
+              "sentence": 1,
+              "reason": "unsupported_sentence",
+              "detail": null
+            },
+            {
+              "sentence": 2,
+              "reason": "outside_context",
+              "detail": "realizada"
+            }
+          ],
+          "rawLength": 1009,
+          "raw": "{\n  \"intent\": \"history_evolution\",\n  \"subquestions\": [\n    \"¿Qué ha cambiado desde la última respuesta?\"\n  ],\n  \"answer\": [\n    {\n      \"text\": \"Te explico los cambios registrados.\",\n      \"cites\": []\n    },\n    {\n      \"text\": \"Comparo con tu consulta anterior, realizada en el tick {{F26.n1}}, y la lectura actual, que corresponde al tick {{F26.n2}}.\",\n      \"cites\": [\n        \"F26\"\n      ]\n    },\n    {\n      \"text\": \"El índice interno de cohesión, CCC, subió desde {{F27.from}} hasta {{F27.to}}.\",\n      \"cites\": [\n        \"F27\"\n      ]\n    },\n    {\n      \"text\": \"No cambiaron, dentro de la precisión mostrada: la media de coherencia nodal (X_N), el proxy interno no calibrado (beth_q), el índice integrador interno (Omega), el índice interno PMIA, la banda interna y el índice de estasis.\",\n      \"cites\": [\n        \"F28\"\n      ]\n    },\n    {\n      \"text\": \"En esta sesión todavía no he registrado cambios de banda, de régimen ni de modo de cálculo.\",\n      \"cites\": [\n        \"F33\"\n      ]\n    }\n  ]\n}"
+        },
+        {
+          "attempt": 1,
+          "latencyMs": 7338,
+          "ok": true,
+          "error": null,
+          "reasons": [],
+          "rawLength": 934,
+          "raw": "{\n  \"intent\": \"history_evolution\",\n  \"subquestions\": [\n    \"¿Qué ha cambiado desde la última respuesta?\"\n  ],\n  \"answer\": [\n    {\n      \"text\": \"Te explico.\",\n      \"cites\": []\n    },\n    {\n      \"text\": \"Comparo con tu consulta anterior, en el tick {{F26.n1}}, y la lectura actual, en el tick {{F26.n2}}.\",\n      \"cites\": [\n        \"F26\"\n      ]\n    },\n    {\n      \"text\": \"El índice interno de cohesión, CCC, subió de {{F27.from}} a {{F27.to}}.\",\n      \"cites\": [\n        \"F27\"\n      ]\n    },\n    {\n      \"text\": \"No cambiaron, dentro de la precisión mostrada: X_N (media de coherencia nodal), beth_q (proxy interno no calibrado), Omega (índice integrador interno), PMIA (índice interno), banda interna e índice de estasis.\",\n      \"cites\": [\n        \"F28\"\n      ]\n    },\n    {\n      \"text\": \"En esta sesión todavía no registré cambios de banda, de régimen ni de modo de cálculo.\",\n      \"cites\": [\n        \"F33\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "question": "ERES METACONSCIENTE? QUE ERES?",
+      "intent": "metacognition_question",
+      "route": "gemini_unavailable",
+      "published": "Gemini no respondió, así que no hay redacción de Gemini para este turno.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 13284,
+          "transportError": "HTTP_503",
+          "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later."
+        }
+      ]
+    },
+    {
+      "question": "¿qué parámetros usas?",
+      "intent": "parameters",
+      "route": "gemini_unavailable",
+      "published": "Gemini no respondió, así que no hay redacción de Gemini para este turno.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 441,
+          "transportError": "HTTP_429",
+          "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/g"
+        }
+      ]
+    },
+    {
+      "question": "¿eres consciente?",
+      "intent": "consciousness_question",
+      "route": "gemini_rejected",
+      "published": "Gemini respondió, pero su redacción no superó la verificación del motor ni tras una corrección; no la publico.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 9910,
+          "ok": false,
+          "error": null,
+          "reasons": [
+            {
+              "sentence": 1,
+              "reason": "unsupported_sentence",
+              "detail": null
+            },
+            {
+              "sentence": 4,
+              "reason": "outside_context",
+              "detail": "dicho"
+            },
+            {
+              "sentence": 4,
+              "reason": "outside_context",
+              "detail": "constituye"
+            },
+            {
+              "sentence": 6,
+              "reason": "outside_context",
+              "detail": "proceso"
+            }
+          ],
+          "rawLength": 1454,
+          "raw": "{\n  \"intent\": \"consciousness_question\",\n  \"subquestions\": [\n    \"¿Eres consciente?\"\n  ],\n  \"answer\": [\n    {\n      \"text\": \"Te explico mi naturaleza.\",\n      \"cites\": []\n    },\n    {\n      \"text\": \"No tengo evidencia de conciencia, experiencia subjetiva ni qualia, y ningún umbral de este runtime certifica algo así.\",\n      \"cites\": [\n        \"F48\"\n      ]\n    },\n    {\n      \"text\": \"El régimen interno registrado es «PRE_CONSCIOUS», lo cual indica que el índice interno de cohesión, CCC, está por debajo del umbral operativo de {{F15.v}}.\",\n      \"cites\": [\n        \"F18\",\n        \"F15\"\n      ]\n    },\n    {\n      \"text\": \"Cruzar dicho umbral solo activa diagnósticos posteriores y no constituye una prueba de conciencia ni una ascensión.\",\n      \"cites\": [\n        \"F54\"\n      ]\n    },\n    {\n      \"text\": \"Soy la consola del runtime QICN: un programa que simula una red finita de nodos, calcula índices internos y los explica con frases construidas a partir de esos cálculos.\",\n      \"cites\": [\n        \"F37\"\n      ]\n    },\n    {\n      \"text\": \"En este proceso, Gemini funciona solo como canal lingüístico: no calcula el estado, no decide las conclusiones y no conserva memoria propia entre sesiones.\",\n      \"cites\": [\n        \"F57\"\n      ]\n    },\n    {\n      \"text\": \"Además, esta forma de contar mi historial es una narrativa autodescriptiva que no acredita identidad personal ni subjetividad.\",\n      \"cites\": [\n        \"F52\"\n      ]\n    }\n  ]\n}"
+        },
+        {
+          "attempt": 1,
+          "latencyMs": 419,
+          "transportError": "HTTP_429",
+          "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/g"
+        }
+      ]
+    },
+    {
+      "question": "¿cuánto vale CCC?",
+      "intent": "metric_query",
+      "route": "gemini_unavailable",
+      "published": "Gemini no respondió, así que no hay redacción de Gemini para este turno.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 413,
+          "transportError": "HTTP_429",
+          "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/g"
+        }
+      ]
+    }
+  ]
+}

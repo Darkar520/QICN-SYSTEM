@@ -1,0 +1,30 @@
+{
+  "label": "current-badkey",
+  "url": "http://127.0.0.1:3320/",
+  "capturedAt": "2026-11-08T05:52:16.555Z",
+  "browser": "msedge.exe",
+  "captures": [
+    {
+      "viewport": "desktop",
+      "tab": "chat",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/current-badkey-desktop-chat.png"
+    }
+  ],
+  "consoleErrors": [],
+  "exceptions": [],
+  "chat": [
+    {
+      "viewport": "desktop",
+      "mode": "gemini",
+      "question": "¿Cuánto vale CCC?",
+      "ok": true,
+      "text": "Consola QICN23:52:35 (7472 ms)Gemini · redacción verificadaconsulta de lecturastick 5digest e9a91c02publicado en tick 16 (+11)Lecturas de la captura de este turno. El índice de cohesión interna, CCC, es de 0,7550. En este momento, CCC es inferior al umbral de 1,00.Evidencia y traza (2 proposiciones)ProposiciónTipoEvidenciaReformuladastate.cccstatederived_proxysí (verificada)state.thresholdstatesnapshotsí (verificada){ \"route\": \"gemini_verified_rewrite\", \"localIntent\": \"metric_query\", \"localConfidence\": 0.82, \"modelIntent\": \"metric_query\", \"intentAccepted\": false, \"rejectedIds\": [], \"rewritesApplied\": [ \"state.ccc\", \"state.threshold\" ], \"rewritesRejected\": [ { \"id\": \"state.ascension_threshold\", \"reason\": \"not_in_published_plan\" } ], \"modelFailure\": null, \"provider\": { \"provider\": \"gemini\", \"model\": \"gemini-3-flash-preview\", \"route\": \"netlify_proxy_after_direct_error\" }, \"configHash\": \"8c537e767774a55b\", \"build\": { \"version\": \"2.1.0-REINFORCED\", \"signature\": \"QICN-SIG-561eeaaebc259c35\" } }",
+      "waitedMs": 7500
+    }
+  ],
+  "frontendKeyInjected": true,
+  "started": {
+    "started": true
+  }
+}

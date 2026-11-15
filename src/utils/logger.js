@@ -27,7 +27,10 @@ const emit = (sink, method, payload) => {
 export const createLogger = (module, options = {}) => {
   const enabled = options.enabled ?? defaultEnabled();
   const sink = options.sink || console;
-  const now = options.now || Date.now;
+  // Resolved per call, and only when logging is enabled (2026-11-08): a
+  // disabled logger has no side effects, so diagnostics computed by the
+  // language layer do not consume the clock the engine reads.
+  const now = options.now || (() => Date.now());
 
   const write = (level, msg, data) => {
     const payload = {
@@ -35,7 +38,7 @@ export const createLogger = (module, options = {}) => {
       module,
       msg,
       ...safeData(data),
-      ts: now()
+      ts: enabled ? now() : null
     };
     if (!enabled) return payload;
     return emit(sink, level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log', payload);

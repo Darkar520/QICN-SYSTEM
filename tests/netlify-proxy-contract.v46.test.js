@@ -1,8 +1,5 @@
 ﻿const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
-const b64url = (obj) => Buffer.from(JSON.stringify(obj)).toString('base64url');
-const fakeJwt = () => `${b64url({ alg: 'none', typ: 'JWT' })}.${b64url({ sub: 'test', exp: Math.floor(Date.now()/1000) + 3600 })}.sig`;
-
 (async () => {
   const { handler } = await import('../netlify/functions/llm-proxy.js');
   const previousAuthRequired = process.env.AUTH_REQUIRED;
@@ -20,9 +17,9 @@ const fakeJwt = () => `${b64url({ alg: 'none', typ: 'JWT' })}.${b64url({ sub: 't
 
   const invalidSchema = await handler({
     httpMethod: 'POST',
-    headers: { Authorization: `Bearer ${fakeJwt()}` },
+    headers: {},
     body: JSON.stringify({ provider: 'gemini' })
-  }, {});
+  }, { clientContext: { user: { sub: 'verified-test-user' } } });
   const invalidSchemaBody = JSON.parse(invalidSchema.body);
   assert(invalidSchema.statusCode === 400, 'invalid schema should be 400');
   assert(invalidSchemaBody.error === 'INVALID_MODEL', 'schema validator should identify missing model first');

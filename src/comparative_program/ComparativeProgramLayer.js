@@ -100,6 +100,7 @@ import {
   COMPARATIVE_PROGRAM_IMPLEMENTED_ARTIFACTS
 } from './ComparativeProgramArtifactRegistry.js';
 import { COMPARATIVE_PROGRAM_SURFACE_POLICY } from './ComparativeProgramSurfacePolicy.js';
+import { runFullStatisticalAdjudicationSuite } from './StatisticalAdjudicationEngine.js';
 
 const readJson = (relativePath) => JSON.parse(fs.readFileSync(new URL(relativePath, import.meta.url), 'utf8'));
 const readArtifactJson = (relativePath) => {
@@ -346,6 +347,10 @@ export class ComparativeProgramLayer {
       no_metaphysical_closure: true,
       framework_internal_only: true
     };
+  }
+
+  runStatisticalAdjudicationSuite() {
+    return runFullStatisticalAdjudicationSuite();
   }
 }
 

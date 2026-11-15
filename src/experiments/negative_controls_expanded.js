@@ -181,7 +181,7 @@ export const runInverseLimitRuptureControl = ({ stableTrace = null, chaoticTrace
     ruptured_I_ri: rupturedInvariant.score,
     I_ri_drop: Number(iRiDrop.toFixed(6)),
     compatibility_errors: rupturedScore.totalCompatibilityErrors,
-    pass: rupturedScore.inverse_limit_score < 0.2 && iRiDrop > 0,
+    pass: Number.isFinite(rupturedScore.inverse_limit_score) && rupturedScore.inverse_limit_score < 0.2 && iRiDrop > 0,
     interpretation_boundary: 'Finite-window rupture control only; not proof about full inverse-limit objects.'
   };
 };

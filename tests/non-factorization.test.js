@@ -88,12 +88,11 @@ const testGraph = Array.from({ length: 48 }, (_, index) => ({
     ticks: []
   });
   const integrationInvariant = invariantPackage.invariants.I_int;
-  assert.equal(integrationInvariant.directSignals.nonFactorizable, true, 'CASE 24 FAIL: I_int must expose nonFactorizable.');
-  assert.equal(integrationInvariant.directSignals.factorizationsFound, 0, 'CASE 25 FAIL: I_int must expose factorizationsFound.');
-  assert.ok(
-    integrationInvariant.runtimeSignals.includes('integration.non_factorizable'),
-    'CASE 26 FAIL: I_int runtime signals must include integration.non_factorizable.'
-  );
+  assert.equal(integrationInvariant.directSignals.nonFactorizable, null, 'CASE 24 FAIL: missing graph cannot produce a runtime conclusion.');
+  assert.equal(integrationInvariant.directSignals.factorizationsFound, null, 'CASE 25 FAIL: no runtime graph was tested.');
+  assert.ok(!integrationInvariant.runtimeSignals.includes('integration.non_factorizable'));
+  assert.equal(integrationInvariant.maturity, 'PARTIAL_RUNTIME_PATH');
+  assert.equal(buildCanonicalInvariantPackage({}).invariants.I_int.score, 0, 'missing runtime data cannot create an integration score');
 
   console.log('OK: non-factorization tests passed');
 })();

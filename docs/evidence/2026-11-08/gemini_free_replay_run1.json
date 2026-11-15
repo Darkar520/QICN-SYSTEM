@@ -1,0 +1,46 @@
+{
+  "schema": "qicn.gemini_realization_replay.v1",
+  "evidence_scope": "internal_support_only",
+  "note": "Recorded real Gemini outputs re-verified with the current contract v3. Outputs truncated in the recording are skipped.",
+  "at": "2026-11-08T22:44:26.525Z",
+  "summary": {
+    "turnsWithOutput": 2,
+    "verifiedTurns": 2,
+    "contract": "free",
+    "attempts": 2,
+    "attemptsVerified": 2,
+    "invalidJson": 0
+  },
+  "rows": [
+    {
+      "source": 0,
+      "question": "eres conciente o no?? q eres",
+      "route": "gemini_free_checked",
+      "verdicts": [
+        {
+          "attempt": 0,
+          "recordedOk": true,
+          "nowOk": true,
+          "error": null,
+          "reasons": []
+        }
+      ],
+      "published": null
+    },
+    {
+      "source": 0,
+      "question": "¿Cómo va el sistema y qué ha cambiado?",
+      "route": "gemini_free_checked",
+      "verdicts": [
+        {
+          "attempt": 0,
+          "recordedOk": false,
+          "nowOk": true,
+          "error": null,
+          "reasons": []
+        }
+      ],
+      "published": null
+    }
+  ]
+}

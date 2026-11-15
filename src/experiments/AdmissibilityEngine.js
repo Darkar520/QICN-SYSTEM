@@ -113,6 +113,59 @@ const runFlakeGate = ({ command, cwd, runs = 2 }) => {
   return statuses;
 };
 
+export const RUNTIME_USE_ADMISSIBILITY_REQUIRED_FIELDS = Object.freeze([
+  'measured_state_space',
+  'estimator_or_update_rule',
+  'finite_horizon',
+  'calibration_regime',
+  'failure_controls',
+  'claim_class'
+]);
+
+const FORBIDDEN_RUNTIME_CLAIM_CLASSES = new Set([
+  'external_validation',
+  'theorem_proof',
+  'certified_phenomenality',
+  'human_equivalence'
+]);
+
+export const validateRuntimeUseAdmissibilityDeclaration = (decl) => {
+  const obj = asObject(decl);
+  if (!obj) {
+    return { ok: false, present: false, reasons: ['DSC_RUNTIME_USE_ADMISSIBILITY_MISSING'] };
+  }
+  const reasons = [];
+  for (const key of RUNTIME_USE_ADMISSIBILITY_REQUIRED_FIELDS) {
+    if (!(key in obj) || obj[key] === null || obj[key] === undefined) {
+      reasons.push(`DSC_RUNTIME_USE_ADMISSIBILITY_MISSING_${key.toUpperCase()}`);
+      continue;
+    }
+    if (key === 'failure_controls') {
+      if (!Array.isArray(obj.failure_controls) || obj.failure_controls.length === 0 || !obj.failure_controls.every((x) => typeof x === 'string' && x.trim().length > 0)) {
+        reasons.push('DSC_RUNTIME_USE_ADMISSIBILITY_INVALID_FAILURE_CONTROLS');
+      }
+    } else if (key === 'finite_horizon') {
+      const fh = obj.finite_horizon;
+      const validFh = (typeof fh === 'string' && fh.trim().length > 0)
+        || (typeof fh === 'number' && Number.isFinite(fh) && fh > 0)
+        || (asObject(fh) !== null && Object.keys(fh).length > 0);
+      if (!validFh) {
+        reasons.push('DSC_RUNTIME_USE_ADMISSIBILITY_INVALID_FINITE_HORIZON');
+      }
+    } else if (typeof obj[key] !== 'string' || obj[key].trim().length === 0) {
+      reasons.push(`DSC_RUNTIME_USE_ADMISSIBILITY_INVALID_${key.toUpperCase()}`);
+    }
+  }
+  if (typeof obj.claim_class === 'string' && FORBIDDEN_RUNTIME_CLAIM_CLASSES.has(obj.claim_class.trim())) {
+    reasons.push('DSC_RUNTIME_USE_ADMISSIBILITY_OVERCLAIM');
+  }
+  return {
+    ok: reasons.length === 0,
+    present: true,
+    reasons
+  };
+};
+
 export class AdmissibilityEngine {
   constructor({ capP95Ms = 50, hardCapMs = 100 } = {}) {
     this.capP95Ms = Number(capP95Ms);
@@ -134,6 +187,12 @@ export class AdmissibilityEngine {
     const tamperedReasons = [];
     const discardedReasons = [];
     const extrasDetected = [];
+    const ruaCheck = validateRuntimeUseAdmissibilityDeclaration(header.runtime_use_admissibility);
+    if (header.runtime_use_admissibility !== undefined && !ruaCheck.ok) {
+      discardedReasons.push('DSC_RUNTIME_USE_ADMISSIBILITY_INVALID');
+    } else if (header.runtime_use_admissibility === undefined && header.require_runtime_use_admissibility === true) {
+      discardedReasons.push('DSC_RUNTIME_USE_ADMISSIBILITY_INVALID');
+    }
     if (parseError) discardedReasons.push('DSC_SCHEMA_VIOLATION');
     if (rows.length === 0 || lineCount !== rows.length) discardedReasons.push('DSC_MISSING_LINES');
 
@@ -234,6 +293,12 @@ export class AdmissibilityEngine {
         }
         : null,
       interpretation_boundary: 'Run-level admissibility only; not support label, not claim closure, not external validation.',
+      runtime_use_admissibility: {
+        present: ruaCheck.present,
+        valid: ruaCheck.ok,
+        reasons: ruaCheck.reasons,
+        declaration: header.runtime_use_admissibility || null
+      },
       extras_detected: mode === 'permissive' ? [...new Set(extrasDetected)] : [],
       metrics: { tick_count: rows.length, tick_ms_p95: p95, tick_ms_max: maxTick },
       hashes: {

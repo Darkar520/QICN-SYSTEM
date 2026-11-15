@@ -99,6 +99,12 @@ export {
   createPhenomenalBridgeFinalAuditor
 } from './PhenomenalBridgeFinalAuditor.js';
 
+export {
+  verifyBinaryCycleTransport,
+  computeSixCertificates,
+  runFullBodyWorldBridgeVerification
+} from './BridgeTransportAndBurdensEvaluator.js';
+
 export { mapPhenomenalDifferentiation } from './PhenomenalDifferentiationMapper.js';
 export { mapValenceStructure } from './ValenceStructureMapper.js';
 export { mapWorldRichness } from './WorldRichnessMapper.js';

@@ -15,7 +15,7 @@ try {
       core.pmiaValue = i % 2 === 0 ? 0.12 : 0.36;
       core.evolveSelfNarrative(
         1.01 + (i * 0.004),
-        'HIPER-DIMENSIONAL',
+        'BANDA POST-UMBRAL (Capa 1)',
         { context: `tick-${i}` },
         { fragmentationLevel: 0.1 + (i * 0.01), consolidationEntropy: 0.2 + (i * 0.01) }
       );

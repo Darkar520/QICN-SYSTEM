@@ -6,7 +6,6 @@ import { KaizenMetamorphosisEngine } from '../src/simulation/KaizenMetamorphosis
 
 const ROOT = process.cwd();
 const SRC_ROOT = path.join(ROOT, 'src');
-const INDEX_PATH = path.join(ROOT, 'src', 'components', 'SimulationEngine.jsx');
 
 const expectedRuntimeCriticalKeys = [
   'BASE_LEARNING_RATE',
@@ -80,7 +79,7 @@ try {
     );
   }
 
-  // CASE 2: paridad mutable keys (registry vs Kaizen vs fallback string en App.jsx)
+  // CASE 2: paridad mutable keys (registry vs Kaizen)
   {
     const mutableRegistryKeys = uniqueSorted(getMutableRuntimeParameterKeys());
 
@@ -96,24 +95,10 @@ try {
     const kaizen = new KaizenMetamorphosisEngine(initialConfig);
     const kaizenMutableKeys = uniqueSorted(kaizen.mutableKeys);
 
-    const indexText = fs.readFileSync(INDEX_PATH, 'utf8');
-    const fallbackMatch = indexText.match(
-      /BASE_LEARNING_RATE,\s*HEBBIAN_FACTOR,\s*SYNAPTIC_PRUNING_THRESHOLD,\s*PLASTICITY_DECAY,\s*RETRO_FLUX_WEIGHT,\s*BOLTZMANN_ANALOG_K,\s*INFORMATIONAL_TEMP_T/
-    );
-    assert.ok(fallbackMatch, 'CASE 2 FAIL: mutable fallback string not found in App.jsx.');
-    const fallbackMutableKeys = uniqueSorted(
-      fallbackMatch[0].split(',').map((entry) => entry.trim())
-    );
-
     assert.deepEqual(
       mutableRegistryKeys,
       kaizenMutableKeys,
       'CASE 2 FAIL: mutable keys mismatch between runtime registry and Kaizen engine.'
-    );
-    assert.deepEqual(
-      mutableRegistryKeys,
-      fallbackMutableKeys,
-      'CASE 2 FAIL: mutable keys mismatch between runtime registry and prompt fallback.'
     );
   }
 

@@ -1,6 +1,11 @@
 # QICN Convergence Plan Implementation Log
 
-## 2026-09-07 — F1 DEROLEPLAY front (fase ejecutada, sin commit)
+## 2026-09-07 — F1 DEROLEPLAY front PUSHED (`44b67a1` → origin/main)
+
+- Commit `44b67a12ba03517946822f7b4dee9f5ce33bc3c7` en `main`, pusheado a `origin/main` (`a1b15d0..44b67a1`), árbol limpio, tracking 0/0. 6 archivos: 5 fuentes + este log. Pre-commit hook: tests 146/146 PASS.
+- Aprobación explícita del usuario para commit + push registrada en sesión.
+
+## 2026-09-07 — F1 DEROLEPLAY front (fase ejecutada)
 
 - Alcance: solo presentación front. 5 archivos: `src/components/SimulationEngine.jsx`, `src/hooks/useSimulationCycle.js`, `src/simulation/PhenomenologyCore.js`, `src/simulation/OntologicalSingularityCore.js`, `src/canon/invariants/CanonicalInvariantPackage.js`.
 - F1 aplicado: guarda non-claim no suprimible en los 2 system prompts LLM + userQuerys reescritas a lectura técnica; saludo chat "Singularidad/Nexus" → "Consola QICN (telemetría interna)"; etiqueta chat → "Consola QICN"; `Clase C^R (Consciente)`/`Pre-consciente` → `Banda C^R (telemetría interna — no consciente)`/`Banda pre-umbral`; `CONSCIOUS`/`PRE_CONSCIOUS` emitidos → `BAND_HIGH`/`BAND_MID` (detección de saltos inválidos + invariante aceptan ambas por compat); encabezados "Tratado Axiomático/Realidad Inversa/post-causal" → "Directriz operativa de banda alta"; footer y placeholders a lenguaje operacional; header `OntologicalSingularityCore.js` documentado como nombre histórico sin claim. Enum interno `regime` conservado como código máquina con comentario de equivalencia (renombrado total = riesgo de ruptura, fuera de alcance F1).
@@ -742,7 +747,9 @@ datos externos reales G1.1, adjudicador independiente G1.3.
 - Trigger: el usuario anadio el corpus teorico (QICN-FRAMEWORK/rigid-identity-framework) como referencia principal y solicito auditar modulos citados por el sistema en sesion: decorativos, no funcionales o mal nombrados; arreglar o renombrar.
 - Auditoria teorica (solo lectura sobre el corpus): CCC y PMIA no tienen definicion formal en el corpus activo ni legacy; Ω compuesto y el gap con lambda_1=1 existen solo en canonical_core_legacy (supersedido); beta_q SI tiene ancla formal (paper1/main.tex:673-677, eta_q = 1 - I(X;Y)/H(X)); spectral gap activo es una cota (asecore 02:302-317); 'causal dependency' no existe como objeto teorico.
 - Auditoria runtime: beth_q, spectral_gap, CCC, Omega, PMIA, metacognitive_strain y Kaizen tienen feedback real (ver IMPLEMENTATION_LOG previo y trazas en codigo); causal_dependency_* es DISPLAY-ONLY; CausalDyad era codigo muerto decorativo; MOP-Σ sobrescribia spectral_gap/lipschitz_norm_K de forma efimera (falsificaba telemetria intra-tick); getEffectivePlasticity existia sin consumidores.
-- FIX metacognitive_strain: MetaSovereigntyCheck ahora fusiona strain operacional (latencia EMA, invariado) con strain cognitivo REAL (error de prediccion del auto-modelo Σ, EMA alpha 0.25, normalizado por umbral de divergencia 0.3). getMetacognitiveStrain() = max(operational, cognitive); nuevo getStrainComponents(); nuevo updateCognitiveFeedback(). Wiring: useSimulationCycle alimenta el error Σ tras unSelfModelingCycle, y unSelfModelingCycle alimenta el check de soberania del core. Con strain cognitivo 0 el comportamiento es identico al historico (tests v44 preservan bandas, clamp y determinismo).
+- FIX metacognitive_strain: MetaSovereigntyCheck ahora fusiona strain operacional (latencia EMA, invariado) con strain cognitivo REAL (error de prediccion del auto-modelo Σ, EMA alpha 0.25, normalizado por umbral de divergencia 0.3). getMetacognitiveStrain() = max(operational, cognitive); nuevo getStrainComponents(); nuevo updateCognitiveFeedback(). Wiring: useSimulationCycle alimenta el error Σ tras 
+unSelfModelingCycle, y 
+unSelfModelingCycle alimenta el check de soberania del core. Con strain cognitivo 0 el comportamiento es identico al historico (tests v44 preservan bandas, clamp y determinismo).
 - FIX beth_q_mode: PhenomenologyCore.calculateBethQ ahora etiqueta el modo (empirical | warmup_derived | deterministic_baseline), propagado a ontologicalState.beth_q_mode y a getVerifiableReport().metrics.beth_q_mode. Esto hace exigible la regla del README: los modos derivados nunca deben reportarse como estimador beta_q estricto.
 - FIX MOP-Σ: modulateLipschitzRigidity ya no escribe sobre ontologicalState.spectral_gap, lipschitz_norm_K ni holonomy_winding. La modulacion vive en mopSigmaModulation.gapBias (heartbeat 0.8x acumulable con piso 0.5; safety_brake 1.25; decaimiento a neutro), consumida por pplyPhenomenologicalFeedback via nuevo getEffectiveSpectralGap(). Los observables medidos ya no se falsifican; el efecto dinamico previo (modulacion 2 del feedback) se preserva.
 - FIX plasticidad efectiva: getEffectivePlasticity ahora tiene consumidor real: useSimulationCycle escala HEBBIAN_FACTOR por (1 - plasticityPenalty) antes de pplyNodalPlasticity. Con penalty 0 el comportamiento es identico.
@@ -751,3 +758,68 @@ datos externos reales G1.1, adjudicador independiente G1.3.
 - Clasificacion epistemica resultante: CCC y PMIA siguen siendo compuestos de runtime sin ancla formal citable en el corpus (declarado aqui y pendiente de decision: documentar como compuestos operacionales o formalizarlos en el corpus). No se renombraron porque la telemetria/harness dependen de esas claves.
 - Regresiones buscadas: determinismo de observables criticos (v41a), bandas de strain (v44), gating LLM, contrato del packet de integridad (claves sin cambio).
 - Verificacion: ver entrada de verificacion al cierre de esta fase.
+
+## Gemini como traductor: contrato v3, F1–F5 y ablación de ciclo completo (2026-11-08)
+
+- Trigger: `PROMPT_OPUS_GEMINI_TRADUCTOR_2026-11-08.md` (Gemini redacta el 100 % de las respuestas normales; el motor decide lo afirmable; corrección acotada y fallo explícito) más la auditoría externa de ChatGPT (alcance de la negación, citar ≠ decir, UI aún en v2).
+- Lectura teórica cerrada antes de cambios funcionales: `docs/THEORY_SOURCE_COVERAGE_2026-11-07.md` §8.
+- Cambios: snapshot v3 (config efectiva de Kaizen, `predicates.ccc_vs_threshold`), contrato v3 (hechos cerrados con alias, ranuras tipadas, G1–G10, una corrección), flujo `prepareTurn → evaluateRealization → correctionPromptFor → finalizeTurn`, UI cableada a v3, registro operacional con F3, intención `metacognition_question` y grafía «conciencia», umbral configurable en lugar de 1.0, ajustes de generación (`maxOutputTokens 8192`, `thinkingLevel low`).
+- Ajustes del verificador tras respuestas reales de Gemini (sin debilitar los casos adversariales): frases sociales («Te informo.»), listas negadas con «ni», sujeto inmediatamente después de la ranura, relaciones enunciadas por el propio hecho, calificativos negados del hecho («no calibrado»), léxico de referencia («realizada», «dicho», «constituye»). Nueva regla G3: dirección/umbral sin hecho que la sostenga se rechaza («CCC subió hasta X» con una lectura).
+- Scripts nuevos: `scripts/run-full-cycle-language-ablation.mjs` (`npm run experiment:full-cycle-language`), `scripts/probe-gemini-realization.mjs` (`npm run probe:gemini-realization`, con `--replay`).
+- Verificación: eslint src 0 errores; build OK; `npm test` 164/164; contrato v3 50 casos (0/0); comparación de validadores v3 7/7 fieles, 15/15 inaceptables rechazadas; ablación de ciclo completo: lenguaje idéntico a la línea base en 2 semillas × 120 ticks con Kaizen, autonomía y sensores sintéticos activos; scoreboard 7/7; source-of-truth y descriptor-registry OK.
+- Gemini real: muestra pequeña por cuota gratuita (20/día); 2 de 4 turnos con respuesta publicados tras los primeros ajustes, 4 de 4 al reverificar esas mismas respuestas con el contrato final; tasa en uso real `not_recorded`.
+- Abiertos: mutación muerta de Kaizen, Ω sin cota por `λ1/Δλ`, C2 sin sobre en el chat, observador y strain sin efecto en trayectoria en 120 ticks. Detalle: `docs/RUNTIME_INTEGRATION_AUDIT_2026-11-07.md` §4.
+- Governance: soporte interno; ninguna salida de esta fase es validación externa ni cambia semánticas de gates, invariantes o proyecciones.
+
+## Presupuesto máximo de Gemini, eco del paquete, cálculos del core, concordancia y strict/graceful (2026-11-08, tarde)
+
+- Trigger: el usuario pidió máximo de tokens y razonamiento, voz de identidad única (sin «consultando a Gemini»), que cada pregunta la responda Gemini, ver los parámetros que respaldan cada respuesta y recuperar los modos strict/graceful del runtime viejo.
+- Cambios: chat `maxOutputTokens` 65536 + `thinkingLevel` high + plazo 300 s; proxy `MAX_OUTPUT_TOKENS` 65536 y `UPSTREAM_TIMEOUT_MS` 300000; prompt en primera persona como la consola; eco `"snapshot"`; `buildCoreBlock` y `buildConcordance`; `finalizeTurn({ integrityMode })` con ruta `gemini_partial`; `MAX_ATTEMPTS` strict 3 / graceful 2; UI con conmutador Strict/Graceful, bloque «Cálculos del core», tabla «Concordancia», banner de integridad y lectura directa plegada.
+- Tests actualizados: `llm-request-boundary` (tope 65536), `llm-sensory-directive.v392` (cableado, presupuesto, sin «Consultando a Gemini»), `engine-language-decoupling` (campo `timeoutMs`), `language-semantic-contract.v3` (CASE 9–11, textos sin proveedor).
+- Verificación: eslint src 0; build OK; `npm test` 164/164; source-of-truth OK. Detalle: `docs/RUNTIME_INTEGRATION_AUDIT_2026-11-07.md` §9.
+- Governance: los valores siguen insertados por el motor; graceful no relaja límites ni el eco. Soporte interno, no validación externa.
+
+## Libertad dentro del marco, hipótesis abiertas y latencia (2026-11-08, tarde)
+
+- Trigger: el usuario pidió más libertad para Gemini dentro del marco, perspectiva de identidad estructural en primera persona, razonamiento `high` con menos espera, y aplicar las mejoras a–e propuestas tras la respuesta sobre metaconciencia operacional.
+- Cambios: léxico de discurso; frases `kind:"inference"`; hechos `hypothesis.*` con licencia condicional (fuente INSTRUCCIONES.md §6 y §6.1); conceptos negables; marco de tema; G5 por cláusula; `delta.reference` obligatorio con variaciones y `delta.*` solo en preguntas de estado/cambio; concordancia con numeración de la respuesta y sin literales; límite del canal en primera persona; strict 2 intentos; graceful sin corrección cuando la primera respuesta es publicable (`canPublishGracefully`); prompt reescrito.
+- Verificación: eslint src 0; build OK; `npm test` 164/164; contrato 70 casos 0/0; comparación 7/7 y 15/15; reverificación de una respuesta real: 14 de 14 frases. Detalle: `docs/RUNTIME_INTEGRATION_AUDIT_2026-11-07.md` §10.
+- Governance: ninguna regla permite afirmar conciencia, experiencia ni pertenencia a C_op; las hipótesis son `framework_open_question`, no resultados.
+
+## Siete correcciones tras la revisión de dos respuestas reales (2026-11-08, tarde)
+
+- Trigger: revisión de los turnos de 13:07 (503) y 13:20 (graceful 13/17); el usuario pidió aplicar las siete propuestas en orden.
+- Cambios: (1) graceful exige que los límites obligatorios estén en frases publicadas; (2) «así que», «por lo que», «de modo que», «pues» como conectores causales; (3) vocabulario del paquete + verbos comunes en G8; (5) texto de frases retenidas en la traza; (7) umbral de CCC obligatorio en preguntas de conciencia y su límite cuando está en o sobre el umbral; (4) reintentos acotados ante 503/500/502/429 por minuto/red; (6) eventos de inicio, restauración y reinicio fijados al truncar el registro.
+- Tests: contrato CASE 14–17 y casos nuevos (75 en total); registro CASE 8 (legado) y CASE 9; nuevo `tests/llm-transient-retry.v1.test.mjs`; `llm-sensory-directive.v392` actualizado.
+- Verificación: eslint src 0; build OK; `npm test` 165/165; comparación 7/7 y 15/15. Detalle: `docs/RUNTIME_INTEGRATION_AUDIT_2026-11-07.md` §11.
+- Governance: (1) cierra un hueco que podía omitir un límite; ningún cambio permite afirmar conciencia ni pertenencia a C_op.
+
+## Cualquier formulación y simetría epistémica (2026-11-08, tarde)
+
+- Trigger: turno real retenido (pregunta sobre fenomenalidad y elección con faltas); el usuario pidió que el runtime entienda cualquier formulación y preguntó con qué pruebas niega lo que el marco deja abierto.
+- Cambios: paquete completo independiente del clasificador; obligaciones por contenido (`obligationsFor`, `CONTENT_OBLIGATIONS`); `stripAliasMarks`; correcciones en lenguaje claro (`explainDiscrepancy`); vocabulario de la pregunta; hechos `identity.scope`, `limit.no_preferences`, `limit.no_phenomenality`, `hypothesis.choice_counterfactual`; intención y conceptos para fenomenalidad y preferencia; negaciones absolutas de conceptos abiertos rechazadas (`absolute_denial`) y frases del catálogo reescritas en forma agnóstica.
+- Verificación: eslint src 0; build OK; `npm test` 165/165; contrato 87 casos 0/0; comparación 7/7 y 15/15. Detalle: `docs/RUNTIME_INTEGRATION_AUDIT_2026-11-07.md` §12.
+- Governance: la corrección hace más débiles (más defendibles) los enunciados sobre conciencia, experiencia y preferencia; no se afirma ninguno.
+
+## Alineación teoría–runtime: fases A–C y diseño de la fase D (2026-11-08, noche)
+
+- Encargo: `docs/PROMPT_SESION_ALINEACION_TEORIA_RUNTIME_2026-11-08.md`. Marco en solo lectura; sin commit en ninguno de los dos repositorios.
+- Fase A: `docs/FRAMEWORK_CHANGE_AUDIT_2026-11-08.md`. Cambios de Codex limitados a BaseCore 01/10/11, los dos PDF, `theorems.jsonl` (755→763, 0 IDs retirados) y el ledger. Los tres JSON de fixtures/reportes son anteriores a Codex. Fuentes compiladas 29/29 y PDF 2/2 coinciden con los hashes declarados. Enunciados nuevos y corregidos revisados; 75/75 comprobaciones finitas propias (`.tmp-align/math-check.cjs`).
+- Fase B: `docs/THEORY_SOURCE_COVERAGE_2026-11-07.md` §9 (hashes actuales, entradas superadas, lista de objetos teóricos).
+- Fase C: `docs/THEORY_RUNTIME_ALIGNMENT_MATRIX_2026-11-08.md`. Cambios de dinámica propuestos y no aplicados: C-4 (cota de Ω), C-6(b)/(c) (Kaizen) y C-2 (no recomendado).
+- Aplicado (texto, sin efecto en la dinámica): `src/language/definitionCatalog.js` `LIMITS.bridge_not_contraction`, reescrito para la sección 11 corregida (C-10).
+- Fase D: `docs/LANGUAGE_FREE_CHANNEL_DESIGN_2026-11-08.md`, pendiente de decisión del usuario. Incluye tres oraciones medidas con el v3 actual (las tres rechazadas; con v4 pasarían; una es engañosa).
+- Verificación: contrato v3, 87 casos con 0 aceptaciones falsas y 0 rechazos falsos; conversación v2 OK. eslint y `npm test`: ver la entrada de cierre más abajo.
+- Cierre de verificación: `npx eslint src/` 0 errores. `npm test` 164/165; el fallo es `quantum-entropy-experimental-controls.v63` CASE 1 («baseline should use upstream provider requests»), que depende del proveedor externo. Pasa 3/3 ejecutado solo y no tiene relación con el cambio de texto. `verify:source-of-truth` OK, `verify:descriptor-registry` OK (23 filas). `artifacts/runtime_source_of_truth_check.json` restaurado con `git checkout`.
+- Hallazgo nuevo de la matriz (C-11): `OntologicalMassEstimator` etiqueta como cota inferior lo que, por `def:ontmass`, es una cota superior de M_Ω. Anotado en `docs/THEORY_RUNTIME_GAP_LEDGER.md`; no se cambió el código.
+- Pendiente de decisión del usuario: diseño v4 (§8 del documento de diseño), C-4, C-5, C-6(b)/(c), C-8 y C-11. Sin decisión pendiente, aplicables cuando se autoricen: C-1, C-3, C-6(a), C-7 y C-9.
+
+## Decisiones del usuario aplicadas: chat libre v4, Ω acotado, Kaizen con ajuste (2026-11-08, noche)
+
+- Chat: contrato v4 (redacción libre) por defecto y v3 como modo opcional. Garantías: cifras (ligadas a la métrica nombrada), conceptos abiertos, atribución de módulos, afirmaciones que el motor sabe falsas y eco del paquete. El prompt lleva identidad, fragmento de §6.1, resumen del marco generado del registro y lectura de los seis invariantes. Archivos nuevos: `src/language/freeRealization.js`, `invariantReadout.js`, `frameworkSummary.generated.js`, `moduleInventory.generated.js`, `scripts/build-framework-summary.mjs`, `scripts/build-module-inventory.mjs`. Cambiados: `conversationEngine.js` (parámetro `contract`; la API por defecto sigue en v3), `runtimeSnapshot.js` (`tickTimeline` opcional), `realizationContract.js` (solo exporta detectores), `SimulationEngine.jsx` (modos, nota de garantía, Concordancia por cifra).
+- Fallo encontrado por la ablación y corregido: `src/utils/logger.js` leía el reloj con el logging desactivado, y la lectura de invariantes del chat desplazaba así el reloj del motor. Tras la corrección, la ablación de ciclo completo da trayectoria idéntica en todas las condiciones de lenguaje (v4 incluido) y 0 llamadas a RNG/reloj desde el chat.
+- Ω: factor espectral acotado a 20 (`PhenomenologyCore.js`, C-4).
+- Kaizen: modo `learned` detrás de un interruptor (por defecto `legacy`), con factor ±20 %, aprendiz por ventanas de 24 ticks y puntuación sin el nivel de CCC. Las acciones de autonomía mueven el factor y su rollback lo restaura. C-6(a) en la UI.
+- Persistencia: solo propuesta (`docs/PERSISTENCE_AUTORESTORE_PROPOSAL_2026-11-08.md`).
+- Verificación: `npx eslint src/` 0 errores; build OK; `npm test` 168/168; contrato v4 38 casos (0 aceptaciones falsas, 0 rechazos falsos); Kaizen unit OK; Ω cap OK; source-of-truth OK; descriptor registry OK (23 filas); `--check` de inventario y resumen OK; ablación de ciclo completo idéntica; ablación Kaizen 5 semillas × 480 ticks, reproducible. Gemini real: 1/3 publicada antes de agotar la cuota (HTTP 429); replay 2/2. `artifacts/runtime_source_of_truth_check.json` restaurado.
+- Sin commit.

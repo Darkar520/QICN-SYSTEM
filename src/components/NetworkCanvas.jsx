@@ -8,12 +8,15 @@ const canAttemptWebGL = () => {
   try {
     const canvas = document.createElement('canvas');
     return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
-  } catch (_error) {
+  } catch {
     return false;
   }
 };
 
-export const NetworkCanvas = (props) => {
+// preferredRenderer: '2d' mounts the Canvas renderer (the original pseudo-3D
+// aesthetic, evolved); '3d' mounts NetworkScene3D when WebGL is available and
+// keeps BaseNetworkCanvas as the fallback. Both are visual-only surfaces.
+export const NetworkCanvas = ({ preferredRenderer = '2d', ...props }) => {
   const [fallbackReason, setFallbackReason] = React.useState('');
   const [webglAvailable, setWebglAvailable] = React.useState(() => canAttemptWebGL());
   const { onTelemetry } = props;
@@ -21,6 +24,11 @@ export const NetworkCanvas = (props) => {
   React.useEffect(() => {
     setWebglAvailable(canAttemptWebGL());
   }, []);
+
+  React.useEffect(() => {
+    // A new explicit 3D request gets a fresh attempt after an earlier fallback.
+    if (preferredRenderer === '3d') setFallbackReason('');
+  }, [preferredRenderer]);
 
   const handleFallback = React.useCallback((reason) => {
     setFallbackReason(reason || 'webgl_fallback_requested');
@@ -32,9 +40,11 @@ export const NetworkCanvas = (props) => {
     });
   }, [onTelemetry]);
 
+  const useWebGL = preferredRenderer === '3d' && webglAvailable && !fallbackReason;
+
   return (
     <QICNErrorBoundary boundaryName="NetworkCanvas">
-      {webglAvailable && !fallbackReason ? (
+      {useWebGL ? (
         <NetworkScene3D {...props} onFallback={handleFallback} />
       ) : (
         <BaseNetworkCanvas {...props} />

@@ -2,7 +2,10 @@
 
 import { createLogger } from '../../utils/logger.js';
 
-const finite = (value, fallback = 0) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
+const finite = (value, fallback = 0) => {
+  if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) return fallback;
+  return Number.isFinite(Number(value)) ? Number(value) : fallback;
+};
 
 const getByPath = (obj, dottedPath) => String(dottedPath || '')
   .split('.')
@@ -34,7 +37,7 @@ export const INVERSE_LIMIT_COMPONENTS = Object.freeze([
 
 /**
  * @typedef {Object} InverseLimitScoreResult
- * @property {number} inverse_limit_score
+ * @property {number | null} inverse_limit_score
  * @property {number} totalCompatibilityErrors
  * @property {number} window
  * @property {string[]} measuredComponents
@@ -65,15 +68,19 @@ export const evaluateFiniteProjection = ({ trace = [], horizon, projectionSpec =
 };
 
 export const computeProjectionError = ({ projected = {}, target = {}, metricSpec = {} }) => {
-  const keys = Object.keys(target).filter((key) => Number.isFinite(Number(projected[key])) && Number.isFinite(Number(target[key])));
+  const requiredKeys = Object.keys(target);
+  const keys = requiredKeys.filter((key) => Number.isFinite(finite(projected[key], NaN)) && Number.isFinite(finite(target[key], NaN)));
   const errors = keys.map((key) => Math.abs(finite(projected[key]) - finite(target[key])));
-  const error = mean(errors);
+  const complete = requiredKeys.length > 0 && keys.length === requiredKeys.length;
+  const error = complete ? mean(errors) : null;
   const epsilon = finite(metricSpec.epsilon, 0);
   const comparator = metricSpec.comparator || 'lte';
-  const pass = comparator === 'lt' ? error < epsilon : error <= epsilon;
+  const pass = complete && (comparator === 'lt' ? error < epsilon : error <= epsilon);
   return {
     metric: metricSpec.name || 'l1_absolute',
     n: keys.length,
+    expected_n: requiredKeys.length,
+    evidence_status: complete ? 'computed' : 'not_recorded',
     error,
     epsilon,
     comparator,
@@ -233,6 +240,133 @@ export const buildInverseLimitWitness = (states = [], epsilon = COMPATIBILITY_EP
   };
 };
 
+import { F, ZERO, ONE, fSum } from '../../simulation/tower/ExactFraction.js';
+import {
+  ALTERNATING,
+  CONTEXTS,
+  SITES,
+  TAP,
+  circle,
+  createState,
+  encodeBits,
+  prefix,
+  step,
+  writePrefix
+} from '../../simulation/tower/WritablePrefixTower.js';
+
+export const evaluateFoundationalFront1 = () => {
+  // 1. Fixed-scale separation modulus omega_T(r) = r^2
+  for (const n of [2, 10, 100, 1000]) {
+    const r = F(1, n);
+    for (const x of [ZERO, ONE.sub(r).div(2), ONE.sub(r)]) {
+      const diff = x.add(r).pow(2).sub(x.mul(x));
+      if (!diff.gte(r.mul(r))) {
+        throw new Error(`Fixed-scale modulus failed at n=${n}`);
+      }
+    }
+    if (!r.mul(r).div(r).eq(r)) {
+      throw new Error('Modulus slope identity failed');
+    }
+  }
+
+  // 2. 4032 distinct 6-bit ternary pairs: 3^-m <= |c(x)-c(y)| <= 3*3^-m
+  const words = [];
+  for (let mask = 0; mask < 64; mask += 1) {
+    words.push(
+      Array.from({ length: 6 }, (_, idx) => (mask >> idx) & 1)
+    );
+  }
+  let ternaryPairs = 0;
+  for (let i = 0; i < words.length; i += 1) {
+    for (let j = 0; j < words.length; j += 1) {
+      if (i === j) continue;
+      const x = words[i];
+      const y = words[j];
+      let m = 1;
+      while (m <= 6 && x[m - 1] === y[m - 1]) m += 1;
+      let diff = ZERO;
+      for (let k = 1; k <= 6; k += 1) {
+        diff = diff.add(F(2 * (x[k - 1] - y[k - 1]), 3n ** BigInt(k)));
+      }
+      diff = diff.abs();
+      const lo = F(1n, 3n ** BigInt(m));
+      const hi = F(3n, 3n ** BigInt(m));
+      if (!diff.gte(lo) || !diff.lte(hi)) {
+        throw new Error(`Ternary metric bound violated at m=${m}`);
+      }
+      ternaryPairs += 1;
+    }
+  }
+
+  // 3. Interventional vs observational causal separation (prop:causal-rigid)
+  const weights = [
+    [0, F(3, 4)],
+    [1, F(1, 4)]
+  ];
+  const stable = (y, z) => z;
+  const sensitive = (y, z) => y ^ z;
+  const probability = (model, intervention) =>
+    fSum(weights.filter(([z]) => model(intervention, z) === 1).map(([, w]) => w));
+  if (
+    !probability(stable, 0).eq(F(1, 4)) ||
+    !probability(sensitive, 0).eq(F(1, 4)) ||
+    !probability(stable, 1).eq(F(1, 4)) ||
+    !probability(sensitive, 1).eq(F(3, 4))
+  ) {
+    throw new Error('Causal interventional vs observational separation check failed');
+  }
+
+  // 4. Projective tape cuts & cofinal probes (verify_links in check_prefix_tower.py)
+  const writes = [null];
+  for (const s of SITES) writes.push([s, 0], [s, 1]);
+  const shiftCut = (bits, write) => {
+    const res = [0, ...bits.slice(0, -1).map((b) => 1 - b)];
+    if (write !== null && write[0] <= bits.length) {
+      res[write[0] - 1] = write[1];
+    }
+    return res;
+  };
+  let projectedAgreements = 0;
+  for (let depth = 1; depth <= 6; depth += 1) {
+    const count = 1 << depth;
+    for (let mask = 0; mask < count; mask += 1) {
+      const bits = Array.from({ length: depth }, (_, idx) => (mask >> idx) & 1);
+      const state = createState(CONTEXTS[0], ZERO, encodeBits(bits, ALTERNATING), ZERO);
+      for (const write of writes) {
+        const observed = prefix(step(state, { write }).code, depth);
+        const expected = shiftCut(bits, write);
+        if (observed.some((b, idx) => b !== expected[idx])) {
+          throw new Error('Projective shift cut mismatch');
+        }
+        projectedAgreements += depth;
+      }
+    }
+  }
+
+  // Omitted-bit control at site 7
+  const a = createState(CONTEXTS[0], ZERO, ALTERNATING, ZERO);
+  const b = a.replace({ code: writePrefix(a.code, 7, 1) });
+  if (
+    prefix(a.code, 6).some((bit, idx) => bit !== prefix(b.code, 6)[idx]) ||
+    !circle(step(a, { probe: [7, 0] }).phase.sub(step(b, { probe: [7, 0] }).phase)).eq(TAP)
+  ) {
+    throw new Error('Omitted-bit control at site 7 failed');
+  }
+
+  return {
+    passed: true,
+    fixedScaleModulusVerified: true,
+    ternaryPairsChecked: ternaryPairs,
+    causalRigidSeparation: {
+      observationalAtZero: '1/4',
+      interventionalStableAtOne: '1/4',
+      interventionalSensitiveAtOne: '3/4'
+    },
+    projectiveCutAgreements: projectedAgreements,
+    omittedBitSite7PhaseGap: TAP.toString()
+  };
+};
+
 export const boundFiniteApproximationError = (windowSize, contractionRate = 0.5) => {
   const window = Math.max(0, Math.floor(finite(windowSize, 0)));
   const rho = Math.max(0, Math.min(0.999999, finite(contractionRate, 0.5)));
@@ -269,15 +403,15 @@ export const computeInverseLimitScore = ({
 
   if (states.length < 2 || measuredComponents.length === 0) {
     return {
-      score: 1,
-      inverse_limit_score: 1,
+      score: null,
+      inverse_limit_score: null,
       totalCompatibilityErrors: 0,
       denominator: 0,
       comparisons: 0,
       window: states.length,
       epsilon: Math.max(0, finite(epsilon, 0.05)),
       components: measuredComponents,
-      unmeasuredComponents: componentList,
+      unmeasuredComponents: componentList.filter((component) => !measuredComponents.includes(component)),
       categorical_compatibility: false,
       categoricalCompatibility: {
         categorical_compatibility: false,
@@ -318,7 +452,7 @@ export const computeInverseLimitScore = ({
   }
 
   const denominator = measuredComponents.length * Math.max(0, states.length - 1);
-  const score = denominator > 0 ? clamp01(1 - (totalCompatibilityErrors / denominator)) : 1;
+  const score = denominator > 0 ? clamp01(1 - (totalCompatibilityErrors / denominator)) : 0;
   const categorical = verifyCategoricalCompatibility(states, epsilon, measuredComponents);
   const witness = buildInverseLimitWitness(states, epsilon, measuredComponents);
   const contractionRate = firstFinite(summaryMetrics.contraction_norm_K, summaryMetrics.lipschitz_norm_K, summaryMetrics.contraction_rate, 0.5);
@@ -348,6 +482,7 @@ export const computeInverseLimitScore = ({
     inverseLimitWitness: witness,
     approximation_error_bound: approximation.approximation_error_bound,
     finiteApproximationError: approximation,
+    foundational_front1: evaluateFoundationalFront1(),
     claim_scope: 'finite_horizon_inverse_limit_score_only',
     evidence_status: 'computed_finite_window',
     interpretation_boundary: 'Finite-window inverse-limit witness and compatibility score; not full inverse-limit preservation or uniqueness over all identity candidates.'

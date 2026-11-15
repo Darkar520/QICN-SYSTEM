@@ -4,6 +4,7 @@ import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import dotenv from 'dotenv';
+import { isLocalRuntimeRequest, serveRuntimeStatic } from './runtime-static-server.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,24 +27,6 @@ try {
 } catch {
   // noop: dotenv.config above already attempted loading
 }
-
-const MIME_TYPES = {
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'application/javascript; charset=utf-8',
-  '.mjs': 'application/javascript; charset=utf-8',
-  '.cjs': 'application/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.svg': 'image/svg+xml',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
-  '.webp': 'image/webp',
-  '.ico': 'image/x-icon',
-  '.txt': 'text/plain; charset=utf-8',
-  '.map': 'application/json; charset=utf-8',
-  '.webmanifest': 'application/manifest+json; charset=utf-8'
-};
 
 const FUNCTION_MODULES = {
   'auth-introspection': 'netlify/functions/auth-introspection.js',
@@ -82,44 +65,8 @@ const parseBody = async (req) => {
 
 const send = (res, statusCode, headers = {}, body = '') => {
   const normalizedBody = typeof body === 'string' ? body : JSON.stringify(body ?? {});
-  res.writeHead(statusCode, {
-    'access-control-allow-origin': '*',
-    'access-control-allow-methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
-    'access-control-allow-headers': 'Content-Type,Authorization,X-Requested-With',
-    ...headers
-  });
+  res.writeHead(statusCode, headers);
   res.end(normalizedBody);
-};
-
-const serveStatic = async (req, res, pathname) => {
-  const safePath = path.normalize(pathname).replace(/^(\.\.[/\\])+/, '');
-  const relPath = safePath === '/' ? '/index.html' : safePath;
-  const absPath = path.resolve(PROJECT_ROOT, `.${relPath}`);
-
-  if (!absPath.startsWith(PROJECT_ROOT)) {
-    send(res, 403, { 'content-type': 'text/plain; charset=utf-8' }, 'Forbidden');
-    return;
-  }
-
-  let targetPath = absPath;
-  try {
-    const stat = await fsp.stat(targetPath);
-    if (stat.isDirectory()) {
-      targetPath = path.join(targetPath, 'index.html');
-    }
-  } catch {
-    targetPath = path.resolve(PROJECT_ROOT, 'index.html');
-  }
-
-  if (!fs.existsSync(targetPath)) {
-    send(res, 404, { 'content-type': 'text/plain; charset=utf-8' }, 'Not found');
-    return;
-  }
-
-  const ext = path.extname(targetPath).toLowerCase();
-  const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-  res.writeHead(200, { 'content-type': contentType });
-  fs.createReadStream(targetPath).pipe(res);
 };
 
 const handleFunction = async (req, res, urlObj) => {
@@ -165,19 +112,23 @@ const handleFunction = async (req, res, urlObj) => {
 
 const server = http.createServer(async (req, res) => {
   try {
+    if (!isLocalRuntimeRequest(req, server.address().port)) {
+      send(res, 403, { 'content-type': 'text/plain; charset=utf-8' }, 'Forbidden');
+      return;
+    }
     const host = req.headers.host || `localhost:${PORT}`;
     const urlObj = new URL(req.url || '/', `http://${host}`);
     if (urlObj.pathname.startsWith('/.netlify/functions/')) {
       await handleFunction(req, res, urlObj);
       return;
     }
-    await serveStatic(req, res, urlObj.pathname);
+    await serveRuntimeStatic(req, res, urlObj.pathname, path.join(PROJECT_ROOT, 'dist'));
   } catch (error) {
     send(res, 500, { 'content-type': 'text/plain; charset=utf-8' }, `Server error: ${error?.message || error}`);
   }
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '127.0.0.1', () => {
   // eslint-disable-next-line no-console
   console.log(`[sandbox-local] listening on http://localhost:${PORT}`);
   // eslint-disable-next-line no-console

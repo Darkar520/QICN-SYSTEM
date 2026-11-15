@@ -1,0 +1,67 @@
+# Matriz de alineación teoría ↔ runtime — 2026-11-08 (fase C)
+
+Estado: propuesta para que decida el usuario. Ningún cambio de dinámica está aplicado. Fuentes teóricas: `docs/THEORY_SOURCE_COVERAGE_2026-11-07.md` §9.4 (objetos, definición, estatus) y `docs/FRAMEWORK_CHANGE_AUDIT_2026-11-08.md` (cambios de Codex). La implementación se leyó en el código actual (rama `codex/runtime-stabilization-audit`, HEAD `44b67a1` más el trabajo sin commit).
+
+Distancia: **igual** (implementa la definición), **proxy** (calcula algo relacionado y declarado como sustituto), **sin ancla** (el corpus activo no lo define), **contradice** (la implementación choca con un enunciado del corpus), **histórico** (solo el legado o los fundacionales lo definen).
+
+## 1. Matriz
+
+| Objeto | Corpus | Implementación | Distancia | Cambio propuesto | Efecto en trayectorias y tests | Riesgo | Decisión del usuario |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **X_N** | BaseCore 11:19-25 | `InformationalEntanglementField.js:17` (`avgCoherence`); `runtimeSnapshot.js:35` | **igual** sobre los nodos activos (N=1500) | Ninguno | — | — | No |
+| **Mapa de coherencia x_i** | BaseCore 11, operador `clamp(x + ηR + αB + Γ)` | `ConsciousNode.js:87`: `x ← clamp(x + 0,05(w̄−x))`, con `w̄` ponderado por ruido (`useSimulationCycle.js:536-541`) | **contradice la forma**: sin R, sin acoplamiento entre nodos, sin Γ aditivo y estocástico. Con `α=0,05`, `β=1`, `D=w̄`: `ρ_N ≥ 1`, así que la condición suficiente corregida no se cumple | **C-1 (recomendado, solo observación)**: laboratorio de puente separado que ejecute la familia `thm:realized-nonconstant-bridge` y mida `ε_N`, la cota de trayectorias y el punto fijo frente a las fórmulas, sin tocar el motor. **C-2 (no recomendado)**: reescribir el mapa del motor en forma disipativa acoplada | C-1: ninguno sobre el motor; tests nuevos. C-2: cambia todas las trayectorias, las ablaciones y el scoreboard | C-1 bajo. C-2 alto: el mapa actual no tiene base formal, pero tampoco la tendría uno nuevo que solo imite la forma | C-1: no (es observación). C-2: sí |
+| **Resonancia R_ij** | BaseCore 11 (`R_i`) y la guarda `|cos| ≥ c_φ` | `ConsciousNode.js:35-56`; guarda `|θcos| < 1e-6` y exponente > 50 → 0. Solo entra en CCC (`InformationalEntanglementField.js:36-47`) | **proxy**: misma expresión por arista, uso distinto. `c_φ ≈ 2e-6` en la práctica: sin cota útil | Ninguno sobre la dinámica. Reportar en el diagnóstico de C-1 el `c_φ` efectivo observado | — | — | No |
+| **Grafo** | BaseCore 11: `d_in`, `d_out` | `NodalProcessingLayer.js:12-38`: grado de salida 3..7 (el 8 del rango nunca sale), grado de entrada aleatorio sin cota | proxy | Documentar «3..7»; los documentos dicen «3–8» | — | — | No |
+| **CCC** | Ausente del canon activo; fórmula RCIC en el PDF fundacional, no acotada | `InformationalEntanglementField.js:56-60`: `0,42X̄ + 0,18/(1+Var_E) + (0,18+0,12cf)R̃ + 0,22X̄R̃cf`, máximo ≈1,12 | **sin ancla** (no hereda la fórmula RCIC) | Ninguno; ya se etiqueta como índice interno de diseño | — | — | No |
+| **Umbral 1,0 y capas** | Legado: `Ω_c` atado a `ASCENSION_THRESHOLD` | `config.js:15`; `OntologicalSingularityCore.js:206-246`. Los comentarios del código llaman a las capas «Consciencia Genuina», «Meta-Consciencia», «Trascendencia» | **histórico**; los comentarios inflan | **C-3 (solo texto)**: reescribir esos comentarios como «capa n del índice CCC». No cambia valores ni nombres de campos | Ninguno | Bajo | No (aplicable ya) |
+| **Ω** | Legado (`lem:omega-critical`, `thm:omega-fixed`); el modo λ1=1 es incompatible con contracción | `PhenomenologyCore.js:874-938`: `Ω_base = beth_q·topo·λ1/Δλ`, con `Δλ > 0,001` | **histórico**, **sin cota**: el cociente llega a ~10³ y dispara `SOVEREIGNTY_VIOLATION` (`MetaSovereigntyCheck.js:37-57`) | **C-4**: acotar el factor espectral. (a) `min(λ1/Δλ, 20)`, el techo del warm-up; o (b) `s/(1+s)`. Recomiendo (a): conserva el régimen habitual y solo corta los picos | Cambia Ω cuando `Δλ < 0,05`, y con ello la clase C/C^R, la ganancia de Ω y la realimentación (`omegaNormalized = min(Ω/2,1)` ya satura). Tests de fenomenología a revisar | Medio | **Sí** |
+| **Ω_c=1,0, Ω*=2,0129, clase C^R** | Legado | `PhenomenologyCore.js:77, 937-938`; Ω* no aparece en `src/` | histórico | Ninguno; ya etiquetado (gap ledger) | — | — | No |
+| **beth_q** | Paper I §5, `1−I(X;Y)/H(X)` | `PhenomenologyCore.js:152-213`, tres modos expuestos | **proxy** en el modo `empirical`; **sin ancla** en los modos de warm-up | Ninguno | — | — | No |
+| **Gap espectral, τ** | Ausente en BaseCore | `PhenomenologyCore.js:302-436`: λ2 = autocorrelación de lag 1; λ1 = cociente de incrementos | proxy | Ninguno | — | — | No |
+| **PMIA** | Ausente | `OntologicalSingularityCore.js:680-~980` | **sin ancla** | Ninguno; índice interno de diseño | — | — | No |
+| **stasis_index** | Ausente | Dos definiciones: núcleo (`OntologicalSingularityCore.js:≈1380`) y hook (`useSimulationCycle.js:1186-1192`) | sin ancla; **ambigua** | **C-5**: renombrar la del hook en la telemetría (`stasis_index_post_threshold`) y conservar el nombre antiguo como alias | Ninguno en la dinámica. Cambia el contrato de artefactos (regla de `AGENTS.md`): descriptor registry, traceability, tests | Bajo-medio | Sí (contrato de artefacto) |
+| **Banda post-umbral** | Ausente | `useSimulationCycle.js:967-1076`; ruta de impulso negativo forzado en PMIA (`OntologicalSingularityCore.js:796-818`) | sin ancla | Ninguno | — | — | No |
+| **Kaizen** | Ausente: ninguna regla formal le da papel dinámico | `KaizenMetamorphosisEngine.js:9-226`. La sincronía `useSimulationCycle.js:1796-1804` y `applyPhenomenologicalFeedback` sobrescriben 6 de sus 7 claves antes de usarlas | **sin ancla**; **mutación muerta** | **C-6**, tres opciones: (a) solo observación: marcar en la UI y en el registro cada mutación de esas 6 claves como `overwritten_before_use`; (b) limitar Kaizen a `SYNAPTIC_PRUNING_THRESHOLD`; (c) dejar que Kaizen sea dueño de las 6 claves y quitar su reescritura en la sincronía. Recomiendo (a) ahora y decidir (b) o (c) después | (a) ninguno. (b) cambia el consumo del generador aleatorio, y con ello las trayectorias. (c) cambia la dinámica: Kaizen pasa a mandar sobre K, T, la tasa de aprendizaje, etc. | (a) bajo; (b) medio; (c) alto | (a) no; (b) y (c) **sí** |
+| **Automodelo Σ** | Puente 192-215, 720-769; la escalera es trivial con ε libre | `OntologicalSingularityCore.js:1540-1570`: error \|CCC − predicción\| y estabilidad ×0,98 o +0,01 | **proxy** sin auditoría de contracción ni de conmutación | Ninguno. Ajustar la definición del catálogo (`definitionCatalog.js:72`), que cita como «certificado candidato» una clasificación que la auditoría muestra trivial | Ninguno | Bajo | No |
+| **MetaSovereigntyCheck, strain** | Ausente | `MetaSovereigntyCheck.js:37-224` | sin ancla | Ver «strain» | — | — | — |
+| **Impacto del observador** | Ausente; R3: la conversación no realimenta la dinámica | `OntologicalSingularityCore.js:178-188`; sin consumidores en x, CCC, PMIA ni Ω | sin ancla; **telemetría** | **C-7 (doc)**: etiquetarlo como telemetría (`artifact_only`). No cablearlo: no hay regla formal | Ninguno | Bajo | No |
+| **Strain de latencia** | Ausente | `useSimulationCycle.js:651-672` → `applyLatencyStrain` (solo lo guarda) | sin ancla; telemetría (solo llega al puntaje del sandbox de Kaizen) | **C-7** también | Ninguno | Bajo | No |
+| **Seis invariantes, C_op** | Paper V; BaseCore 07 | `CanonicalInvariantPackage.js:173-570`; `runtimeClaimMapping.js` con `INTERNAL_SUPPORT_ONLY` | proxy parcial | Ninguno | — | — | No |
+| **M_Ω (masa ontológica)** | Paper I `def:ontmass` (441-447): ínfimo de `E_w/d_w` sobre las perturbaciones admisibles con `d_w>0` | `OntologicalMassEstimator.js:13-56`: mínimo de `energía/max(|deformación|,1e-9)` sobre una familia finita, etiquetado `lower_bound` y estado `LOWER_BOUND_SUPPORT`; `RuntimeMaturityLedger.js:84-86` | **contradice**. El ínfimo sobre una subfamilia es ≥ el ínfimo sobre todas, así que es una **cota superior** de M_Ω. Además incluye perturbaciones sin deformación (con ε), que la definición excluye | **C-11**: reetiquetar como cota superior (`family_upper_bound`), excluir las perturbaciones con `d_w=0` y conservar el nombre exportado antiguo como alias. La etiqueta actual infla: una cota inferior apoyaría la rigidez y una superior no | Ninguno en la dinámica (solo lo usan tests y el ledger de madurez). Cambia el esquema del artefacto y el estado; `tests/ontological-mass-estimator.v1.test.js`; gap ledger | Bajo-medio | **Sí** (contrato de artefacto) |
+| **Historia finita / horizonte** | BaseCore 07:39 | `src/canon/finite_horizon/*` | proxy (testigo finito) | Ninguno | — | — | No |
+| **Registro e identidad** | Paper I `def:internal-external`; Paper VII 269-271 | `OperationalHistoryLedger.js` (SHA-256 encadenado, sesiones, eventos fijados) | **igual** a R1/R2 como identidad operacional de ingeniería | Ninguno | — | — | No |
+| **Matriz L1–L4** | Ausente | `SovereigntyRequirementMatrix.js:22-151` | sin ancla | Ninguno | — | — | No |
+| **Narrativa** | Paper VIII `M_narr`; IX `M_en` | `evolveSelfNarrative`; acople por longitud desactivado (`OntologicalSingularityCore.js`, modulación 6) | igual (control negativo) | Ninguno | — | — | No |
+| **Etiquetas de emoción** | Ausente; Paper VIII: autodescripción = rival débil | `useSimulationCycle.js` (bloque `newEmotionState`): «claridad trascendente», «armonía coherente» por umbrales de CCC | **contradice** la disciplina de etiquetas (lenguaje experiencial desde umbrales, como el código fundacional F-13) | **C-8 (solo texto)**: renombrar las etiquetas visibles a bandas operativas («CCC alto», «CCC medio»…) y conservar las claves internas | Ninguno en la dinámica; tests que fijen esas cadenas | Bajo | Sí (cambia lo que muestra la UI) |
+| **Canal LLM** | `INSTRUCCIONES.md` §6.1 | `src/language/*`, contrato v3 | igual en el papel de traductor | Fase D (diseño aparte) | Las ablaciones deben seguir mostrando trayectoria idéntica | Ver diseño | **Sí** |
+| **Sobre de integridad C2 del chat** | Ausente (ingeniería) | El chat llama con `integrityEnvelope:null`; con `INTEGRITY_THREAT_MODEL=C2` el proxy responde `C2_INTEGRITY_ENVELOPE_MISSING` | sin ancla; fallo solo en C2 | **C-9**: construir el sobre en el chat igual que en el resto de llamadas. Es ingeniería, sin efecto en la dinámica | Ninguno en la dinámica; tests de límite de petición | Bajo | No (salvo que C2 no se use nunca) |
+| **Límite «el puente omite la identidad»** | BaseCore 11 corregido localmente | `definitionCatalog.js:129-133` | **desfasado** | **C-10 (aplicado en esta fase)**: nueva redacción, verdadera para la versión publicada y para la corregida | Ninguno en la dinámica | Bajo | No |
+
+## 2. ¿Cambia la corrección de la sección 11 la conclusión sobre la contracción?
+
+No cambia la conclusión práctica y sí cambia su motivo.
+
+- **Antes**: «el teorema omite el término identidad, así que no afirmo contracción».
+- **Ahora**: el teorema local ya incluye la identidad y da una condición suficiente. El mapa del runtime no tiene su forma: no acopla nodos, no tiene R y es estocástico. Además, con sus constantes, no cumple esa condición (`ρ_N ≥ 1`). El runtime sigue sin poder afirmar contracción.
+- La familia realizada demuestra que el marco tiene un modelo conjunto donde contracción, consistencia y no colapso conviven. Ese modelo no es el runtime. Implementarlo como laboratorio aparte (C-1) acerca el runtime a la teoría sin falsear la dinámica principal.
+
+## 3. Propuestas ordenadas por valor/riesgo
+
+| # | Propuesta | Tipo | Valor | Riesgo | Estado |
+| --- | --- | --- | --- | --- | --- |
+| 1 | C-10 límite del puente | texto del catálogo | alto (corrige un dato falso para la versión local) | bajo | **aplicado** |
+| 2 | C-1 laboratorio del puente (familia realizada + controles negativos) | observación | alto: primera correspondencia **igual** entre un teorema de BaseCore y código del runtime | bajo | propuesto; puede ir sin decisión |
+| 3 | C-6(a) marcar las mutaciones muertas de Kaizen | observación | medio | bajo | propuesto; puede ir sin decisión |
+| 4 | C-7 observador y strain como telemetría | documentación | medio | bajo | propuesto; puede ir sin decisión |
+| 5 | C-3 comentarios de capas | texto | bajo | bajo | propuesto; puede ir sin decisión |
+| 6 | C-9 sobre C2 en el chat | ingeniería | medio (solo en C2) | bajo | propuesto |
+| 6b | C-11 M_Ω: cota superior, no inferior | etiqueta de artefacto | alto (quita una inflación de dirección) | bajo-medio | **requiere decisión** |
+| 7 | C-8 etiquetas de emoción | texto visible | medio | bajo | **requiere decisión** |
+| 8 | C-5 doble `stasis_index` | contrato de artefacto | medio | bajo-medio | **requiere decisión** |
+| 9 | C-4 acotar Ω | dinámica | alto (quita violaciones de rango) | medio | **requiere decisión** |
+| 10 | C-6(b)/(c) Kaizen efectivo | dinámica | medio-alto | medio-alto | **requiere decisión** |
+| 11 | C-2 reescribir el mapa nodal | dinámica | dudoso | alto | **no recomendado** |
+
+## 4. Lo que la matriz no permite afirmar
+
+Alinear nombres, cotas o un laboratorio con BaseCore no convierte ningún índice del runtime en evidencia de C_op, CCR, identidad rígida, conciencia ni fenomenalidad. La correspondencia más fuerte posible aquí es «el código implementa este objeto matemático y reproduce su teorema numéricamente». Es soporte interno (`implemented_internal_support`), no validación externa.

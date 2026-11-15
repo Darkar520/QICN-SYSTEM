@@ -44,6 +44,11 @@ try {
 
   const l5 = computeNegativeControlCoverage(Array.from({ length: 7 }, (_, index) => ({ control: `NC${index + 1}`, pass: true })));
   assert.equal(l5.l5_negative_controls, true, 'CASE 9 FAIL: L5 should require all NC1-NC7 to pass.');
+  assert.equal(computeNegativeControlCoverage(Array.from({length:7}, () => ({control:'NC1',pass:true}))).l5_negative_controls, false, 'repeating one control cannot satisfy coverage');
+  assert.equal(computeInterventionFidelity([]).l4_intervention_fidelity, false, 'missing interventions cannot establish fidelity');
+  assert.equal(computeInterventionFidelity([{expected_change:false}]).intervention_fidelity_rate, null, 'missing observation is not a matched false result');
+  assert.equal(computeNoiseRobustness(nearestCentroidDecoder([]), [{label:'x',vector:[0]}], 0, 2).l2_noise_robustness, false, 'an untrained decoder is not robust');
+  assert.equal(computePersistenceWindow(Array.from({length:8}, () => ({})), 5).l3_persistence_window, false, 'missing labels are not persistent assignments');
 
   const l6 = computeCompressibility(samples.map((sample) => sample.vector), 0.5);
   assert.equal(l6.l6_compressibility, true, 'CASE 10 FAIL: L6 should preserve class-distance structure under compression.');
@@ -79,8 +84,12 @@ try {
     ticks: []
   });
   const invariant = invariantPackage.invariants.I_leg;
-  assert.equal(invariant.directSignals.legibilityClausesPassed, 6, 'CASE 15 FAIL: I_leg must expose L1-L6 clauses.');
-  assert.ok(invariant.runtimeSignals.includes('legibility_certificate.L1_L6'), 'CASE 16 FAIL: I_leg runtime signals must include certificate surface.');
+  assert.equal(invariant.directSignals.legibilityClausesPassed, null, 'CASE 15 FAIL: absent run-level controls must not be reported as passed.');
+  assert.ok(!invariant.runtimeSignals.includes('legibility_certificate.L1_L6'), 'CASE 16 FAIL: synthetic fixture is not a runtime signal.');
+  assert.equal(invariant.maturity, 'PARTIAL_RUNTIME_PATH');
+  const missing = buildCanonicalInvariantPackage({}).invariants.I_leg;
+  assert.equal(missing.score, 0, 'missing telemetry and flags cannot produce a positive score');
+  assert.equal(missing.directSignals.legibilityClauses, null);
 
   console.log('OK: legibility-certifier tests passed');
 } catch (error) {

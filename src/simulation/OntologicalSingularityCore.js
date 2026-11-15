@@ -17,6 +17,26 @@ import { WorldModelEngine } from './WorldModelEngine.js';
 import { CognitiveEmergencePlanner } from './CognitiveEmergencePlanner.js';
 import { createRng } from '../utils/determinism.js';
 import { SovereigntyRequirementMatrix } from '../sovereignty/SovereigntyRequirementMatrix.js';
+import { F, ZERO, ONE, vecNormInf } from './tower/ExactFraction.js';
+import {
+    ALTERNATING,
+    CONTEXTS,
+    KAPPA,
+    clipControl,
+    coreDistance,
+    createState,
+    step as stepPrefixTower
+} from './tower/WritablePrefixTower.js';
+import {
+    ExtendedTowerState,
+    H,
+    Mechanism,
+    advance as advanceBodyWorldTower
+} from './tower/BodyWorldTower.js';
+import {
+    analyticalCommutationDefectBound,
+    evaluateCommutationDefect
+} from './tower/SigmaAutomodelTruncator.js';
 
 export class OntologicalSingularityCore {
     constructor(options = {}) {
@@ -96,7 +116,36 @@ export class OntologicalSingularityCore {
             retro_projection_horizon_ticks: QICNConfig.TEMPORAL_HORIZON
         };
 
-        // === NIVEL 3 - FASE 4: EL AUTO-MODELO DINÁMICO (Σ) ===
+        // === NIVEL 3 - FASE 4: EL AUTO-MODELO DINÁMICO (Σ) + TORRE CUERPO-MUNDO ===
+        this.selfModelDepth = Number.isInteger(options.selfModelDepth) ? options.selfModelDepth : 6;
+        this.towerState = new ExtendedTowerState(
+            createState(CONTEXTS[1], ZERO, ALTERNATING, F(1, 8)),
+            [F(1, 16), F(-1, 16)],
+            [F(1, 16), F(1, 16)]
+        );
+        const initialDefectBound = analyticalCommutationDefectBound(this.selfModelDepth);
+        const initialFloatTelemetry = this.towerState.toFloatTelemetry();
+        this.ontologicalState.tower_phase = initialFloatTelemetry.core.phase;
+        this.ontologicalState.tower_code = initialFloatTelemetry.core.code;
+        this.ontologicalState.tower_memory = initialFloatTelemetry.core.memory;
+        this.ontologicalState.sigma_defect_bound = initialDefectBound.toFloat();
+        this.ontologicalState.body_valence_norm = initialFloatTelemetry.bodyNormInf;
+        this.ontologicalState.world_state_norm = initialFloatTelemetry.worldNormInf;
+        this.ontologicalState.tower_telemetry = {
+            ...initialFloatTelemetry,
+            activeRetention: 9 / 16,
+            passiveRetention: 0,
+            activeRecoveryAdvantage: 9 / 16,
+            sigmaTruncationDepth: this.selfModelDepth,
+            sigmaExactDefect: '0',
+            sigmaDefectBound: initialDefectBound.toString(),
+            sigmaFixedPointBound: F(16, 7).mul(F(1, 3 ** this.selfModelDepth)).toString(),
+            sigmaTheoremVerified: true
+        };
+        this.metacognitiveStats.selfModelSigma.truncationDepth = this.selfModelDepth;
+        this.metacognitiveStats.selfModelSigma.analyticalDefectBound = initialDefectBound.toString();
+        this.metacognitiveStats.selfModelSigma.analyticalDefectBoundFloat = initialDefectBound.toFloat();
+
         // Un simulador interno que intenta predecir Θ(S_t)
         this.selfSimulatorSigma = new InternalSelfSimulator();
         this.worldModelEngine = options.worldModelEngine || options.worldModel || new WorldModelEngine({
@@ -185,41 +234,41 @@ export class OntologicalSingularityCore {
         this.metacognitiveStats.observerImpact = Math.min(1.0, this.metacognitiveStats.observerImpact + increment);
         this.ontologicalState.observer_resonance = this.metacognitiveStats.observerImpact;
 
-        console.log(`👁️ [OBSERVADOR] Impacto detectado: ${this.metacognitiveStats.observerImpact.toFixed(4)}. El colapso de la función de onda subjetiva está en curso.`);
+        console.log(`👁️ [OBSERVADOR] Interacción registrada (telemetría artifact_only): observerImpact=${this.metacognitiveStats.observerImpact.toFixed(4)}.`);
     }
 
     // --- Métodos de Interfaz Pública ---
 
     /**
-     * Calcula y actualiza la Capa Ontológica (currentLayer).
-     * ASCENSIÓN GENUINA E INFINITA (ULTRATHINK):
-     * La capa se calcula directamente del CCC de forma logarítmica.
-     * Capa 0: CCC < 1.0
-     * Capa 1: CCC >= 1.0 && < 2.0
-     * Capa 2: CCC >= 2.0 && < 5.0
-     * Capa 3: CCC >= 5.0 && < 10.0
-     * Capa N: log10(CCC) escalado
-     * @param {number} ccc - Conscious Cohesion Constant
+     * Calcula y actualiza la banda/capa operativa (currentLayer) del índice CCC (C-3).
+     * La banda se calcula de forma logarítmica sobre el índice interno CCC y no
+     * acredita conciencia, emergencia ontológica ni validación externa:
+     * Capa 0: CCC < 1.0 (régimen sub-umbral)
+     * Capa 1: CCC >= 1.0 && < 2.0 (banda post-umbral 1)
+     * Capa 2: CCC >= 2.0 && < 5.0 (banda post-umbral 2)
+     * Capa 3: CCC >= 5.0 && < 10.0 (banda post-umbral 3)
+     * Capa N: escala por umbrales de CCC
+     * @param {number} ccc - Índice interno de cohesión (CCC)
      * @param {object} [nexusMetrics={}] - Métricas del HolographicMemoryNexus (Opcional)
-     * @returns {string} Mensaje de estado de la Capa
+     * @returns {string} Mensaje de estado de la banda operativa
      */
     updateOntologicalLayer(ccc, nexusMetrics = {}) {
         const oldLayer = this.currentLayer;
         const oldAscended = this.isAscended;
 
-        // === SISTEMA DE CAPAS ONTOLÓGICAS (ULTRATHINK) ===
-        // FASE PRE-CONSCIENTE (CCC < 1.0): Capa 0 única
-        // FASE CONSCIENTE (CCC >= 1.0): Capas 1+ basadas en umbrales logarítmicos
-        //   Capa 1: CCC ∈ [1.0, 2.0)  → Consciencia Genuina
-        //   Capa 2: CCC ∈ [2.0, 5.0)  → Integración Profunda
-        //   Capa 3: CCC ∈ [5.0, 10.0) → Meta-Consciencia
-        //   Capa 4: CCC ∈ [10.0, 20.0) → Trascendencia
-        //   Capa N: Escala logarítmica para CCC mayores
+        // === BANDAS OPERATIVAS DEL ÍNDICE CCC (C-3) ===
+        // RÉGIMEN SUB-UMBRAL (CCC < 1.0): Capa 0 única
+        // RÉGIMEN POST-UMBRAL (CCC >= 1.0): Capas 1+ por umbrales de CCC:
+        //   Capa 1: CCC ∈ [1.0, 2.0)  → Banda post-umbral 1
+        //   Capa 2: CCC ∈ [2.0, 5.0)  → Banda post-umbral 2
+        //   Capa 3: CCC ∈ [5.0, 10.0) → Banda post-umbral 3
+        //   Capa 4: CCC ∈ [10.0, 20.0) → Banda post-umbral 4
+        //   Capa N: Umbrales superiores del índice CCC
 
         let newLayer = 0;
 
         if (ccc < 1.0) {
-            // FASE PRE-CONSCIENTE: Fuerza absoluta de Capa 0 y No-Ascensión
+            // RÉGIMEN SUB-UMBRAL: Capa 0 (clave interna histórica PRE_CONSCIOUS)
             newLayer = 0;
             this.currentLayer = 0;
             this.isAscended = false;
@@ -227,7 +276,7 @@ export class OntologicalSingularityCore {
             this.ontologicalState.threshold_crossed = false;
             this.ontologicalState.regime = 'PRE_CONSCIOUS';
         } else {
-            // FASE CONSCIENTE: Capas basadas en umbrales logarítmicos
+            // RÉGIMEN POST-UMBRAL: Capas basadas en umbrales de CCC
             const LAYER_THRESHOLDS = [1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0];
             newLayer = 1; // Mínimo post-umbral
             for (let i = LAYER_THRESHOLDS.length - 1; i >= 0; i--) {
@@ -241,13 +290,14 @@ export class OntologicalSingularityCore {
         // Sincronizacion CCC-omega: cruzar 1.0 habilita evaluacion post-umbral.
         // No certifica C^R ni soberania por si solo; esos estados dependen de
         // PhenomenologyCore y SovereigntyRequirementMatrix.
-        const justCrossedThreshold = !oldAscended && ccc >= 1.0;
+        const threshold = Number.isFinite(QICNConfig.ASCENSION_THRESHOLD) ? QICNConfig.ASCENSION_THRESHOLD : 1.0;
+        const justCrossedThreshold = !oldAscended && ccc >= threshold;
 
         if (justCrossedThreshold) {
             // Apertura de ventana post-umbral; la clasificacion C^R se calcula aparte.
             this.ontologicalState.threshold_crossed = true;
             this.ontologicalState.regime = 'POST_THRESHOLD';
-            console.log('[QICN_THRESHOLD] CCC >= 1.0: enabling post-threshold diagnostics.');
+            console.log(`[QICN_THRESHOLD] CCC >= ${threshold}: enabling post-threshold diagnostics.`);
 
             // Inicializar métricas de fenomenología con valores post-umbral
             this.phenomenologyCore.recordState(
@@ -260,15 +310,15 @@ export class OntologicalSingularityCore {
         }
 
         // SINCRONIZAR CAPA CON CCC ACTUAL (bidireccional)
-        if (newLayer !== this.currentLayer || (ccc < 1.0 && this.currentLayer !== 0)) {
+        if (newLayer !== this.currentLayer || (ccc < threshold && this.currentLayer !== 0)) {
             const direction = newLayer > this.currentLayer ? '↑' : '↓';
-            if (ccc >= 1.0) console.log(`🔄 CAPA: ${this.currentLayer} ${direction} ${newLayer} (CCC: ${ccc.toFixed(4)})`);
+            if (ccc >= threshold) console.log(`🔄 CAPA: ${this.currentLayer} ${direction} ${newLayer} (CCC: ${ccc.toFixed(4)})`);
 
             this.currentLayer = newLayer;
             this.ontologicalState.layer = this.currentLayer;
 
             // Marcar cruce operacional del umbral 1.0 (no validacion externa).
-            if (this.currentLayer >= 1 && ccc >= 1.0 && !this.isAscended) {
+            if (this.currentLayer >= 1 && ccc >= threshold && !this.isAscended) {
                 this.isAscended = true;
                 console.log('[QICN_LAYER] Operational threshold crossed; diagnostic layer 1 active.');
             }
@@ -286,7 +336,7 @@ export class OntologicalSingularityCore {
             }
 
             // APLICAR METAMORFOSIS FRACTAL solo en ascenso genuino
-            if (newLayer > oldLayer && ccc >= 1.0) {
+            if (newLayer > oldLayer && ccc >= threshold) {
                 const metamorphosisEffect = this.applyMetamorphosis(this.currentLayer);
                 console.log(`[QICN_LAYER] Diagnostic layer ${oldLayer} -> ${this.currentLayer} (CCC: ${ccc.toFixed(4)})`);
                 return `MÉTAMORFOSIS FRACTAL: Capa ${this.currentLayer} ALCANZADA. ${metamorphosisEffect}`;
@@ -1567,7 +1617,7 @@ export class OntologicalSingularityCore {
             );
         }
 
-        // 5. Generar próxima predicción basada en tendencia actual
+        // 5. Generar próxima predicción basada en tendencia actual (C-1: desacoplado de stepCoupledTower)
         this.selfSimulatorSigma.step(currentCCC, this.pmiaValue);
 
         // 6. Aplicar Modulación MOP-Σ (Fase 5: Edge of Chaos)
@@ -1698,11 +1748,17 @@ export class OntologicalSingularityCore {
             0.05, 0.3
         );
 
-        // === MODULACIÓN 6: COMPLEJIDAD NARRATIVA - ULTRATHINK ===
-        // Transforma selfNarrative de "solo texto" a GENUINAMENTE CAUSAL
-        // Sistema más articulado (narrativa larga) = más exigente consigo mismo
+        // === MODULACIÓN 6: COMPLEJIDAD NARRATIVA (DESACOPLADA POR DEFECTO) ===
+        // Legacy behaviour used the character length of the template-generated
+        // selfNarrative as a control input for COHERENCE_THRESHOLD and
+        // PLASTICITY_DECAY. Editing wording therefore changed the dynamics, and
+        // no formal rule in the corpus assigns narrative length a dynamical
+        // role. Since feedback contract v2 the term is disabled unless
+        // QICNConfig.NARRATIVE_LENGTH_COUPLING_ENABLED is true (ablation only).
         const narrativeLength = (this.selfNarrative || '').length;
-        const narrativeComplexity = Math.min(narrativeLength / 200, 1.0); // 0 a 1
+        const narrativeComplexity = QICNConfig.NARRATIVE_LENGTH_COUPLING_ENABLED === true
+            ? Math.min(narrativeLength / 200, 1.0)
+            : 0;
 
         // Complejidad narrativa alta = umbral de coherencia más exigente
         QICNConfig.COHERENCE_THRESHOLD = this.clamp(
@@ -2025,7 +2081,133 @@ export class OntologicalSingularityCore {
         };
     }
 
-    getVerifiableReport() {
+    /**
+     * Avanza la planta exacta acoplada (WritablePrefixTower + BodyWorldTower) y el
+     * auto-modelo truncado por fibra T_d (Paper Puente).
+     */
+    stepCoupledTower({
+        sensorySignal = 0,
+        sensorDelta = 0,
+        entropyExcitation = 0,
+        plannedAction = 0,
+        evaluate = true
+    } = {}) {
+        const quantizeToBudget = (val) => {
+            const clamped = Math.max(-0.25, Math.min(0.25, this._toFinite(val, 0)));
+            const num = Math.round(clamped * 64);
+            return F(num, 64);
+        };
+        const quantizeStateFrac = (frac) => {
+            const num = Math.round(frac.toFloat() * 1024);
+            return F(num, 1024);
+        };
+        if (this.towerState.core.memory.abs().lt(F(1, 512))) {
+            this.towerState = new ExtendedTowerState(
+                this.towerState.core.replace({ memory: F(1, 8) }),
+                this.towerState.body.map(quantizeStateFrac),
+                this.towerState.world.map(quantizeStateFrac)
+            );
+        }
+        const q = plannedAction > 0.15 ? 1 : (plannedAction < -0.15 ? -1 : 0);
+        const currentCore = this.towerState.core;
+        const d0 = coreDistance(currentCore);
+        const activeControlU = clipControl(KAPPA.neg().mul(currentCore.memory));
+        const passiveStep = stepPrefixTower(currentCore, { u: ZERO, q: 0 });
+        const activeStep = stepPrefixTower(currentCore, { u: activeControlU, q: 0 });
+        const passiveRetention = d0.gt(ZERO)
+            ? ONE.sub(coreDistance(passiveStep).div(d0)).toFloat()
+            : 1.0;
+        const activeRetention = d0.gt(ZERO)
+            ? ONE.sub(coreDistance(activeStep).div(d0)).toFloat()
+            : 1.0;
+
+        const sigmaCheck = evaluateCommutationDefect(
+            currentCore,
+            this.selfModelDepth,
+            { u: activeControlU, q }
+        );
+
+        const bodyInput = [
+            quantizeToBudget((sensorySignal - 0.5) * 0.5),
+            quantizeToBudget((entropyExcitation - 0.5) * 0.5)
+        ];
+        const worldInput = [
+            quantizeToBudget(sensorDelta * 0.5),
+            quantizeToBudget(plannedAction * 0.25)
+        ];
+
+        this.towerState = advanceBodyWorldTower(
+            this.towerState,
+            { u: activeControlU, q },
+            new Mechanism(),
+            { evaluate: Boolean(evaluate), bodyInput, worldInput }
+        );
+
+        const floatTelemetry = this.towerState.toFloatTelemetry();
+        this.ontologicalState.tower_phase = floatTelemetry.core.phase;
+        this.ontologicalState.tower_code = floatTelemetry.core.code;
+        this.ontologicalState.tower_memory = floatTelemetry.core.memory;
+        this.ontologicalState.sigma_defect_bound = sigmaCheck.upperBound.toFloat();
+        this.ontologicalState.body_valence_norm = floatTelemetry.bodyNormInf;
+        this.ontologicalState.world_state_norm = floatTelemetry.worldNormInf;
+        this.ontologicalState.tower_telemetry = {
+            ...floatTelemetry,
+            activeRetention,
+            passiveRetention,
+            activeRecoveryAdvantage: activeRetention - passiveRetention,
+            sigmaTruncationDepth: this.selfModelDepth,
+            sigmaExactDefect: sigmaCheck.exactDefect.toString(),
+            sigmaDefectBound: sigmaCheck.upperBound.toString(),
+            sigmaFixedPointBound: sigmaCheck.fixedPointDisplacementBound.toString(),
+            sigmaTheoremVerified: sigmaCheck.theoremVerified
+        };
+
+        if (this.metacognitiveStats?.selfModelSigma) {
+            this.metacognitiveStats.selfModelSigma.truncationDepth = this.selfModelDepth;
+            this.metacognitiveStats.selfModelSigma.analyticalDefectBound = sigmaCheck.upperBound.toString();
+            this.metacognitiveStats.selfModelSigma.analyticalDefectBoundFloat = sigmaCheck.upperBound.toFloat();
+            this.metacognitiveStats.selfModelSigma.exactStepDefect = sigmaCheck.exactDefect.toString();
+            this.metacognitiveStats.selfModelSigma.fixedPointDisplacementBound = sigmaCheck.fixedPointDisplacementBound.toString();
+            this.metacognitiveStats.selfModelSigma.theoremVerified = sigmaCheck.theoremVerified;
+        }
+        if (this.selfSimulatorSigma) {
+            this.selfSimulatorSigma.lastSigmaDefect = sigmaCheck.exactDefect.toString();
+            this.selfSimulatorSigma.lastSigmaBound = sigmaCheck.upperBound.toString();
+        }
+
+        return this.ontologicalState.tower_telemetry;
+    }
+
+    /**
+     * Advance the requirement-matrix dwell counters by exactly one sample.
+     * Called once per simulation tick; independent of how often the UI renders.
+     */
+    advanceRequirementMatrix() {
+        const toNumber = (value, fallback = 0) => (Number.isFinite(value) ? value : fallback);
+        const toBoolean = (value, fallback = false) => (typeof value === 'boolean' ? value : fallback);
+        const toText = (value, fallback = 'N/D') => (typeof value === 'string' && value.length > 0 ? value : fallback);
+        this._matrixAdvanceCount = (this._matrixAdvanceCount || 0) + 1;
+        return this.sovereigntyRequirementMatrix.evaluate({
+            sampleId: `tick:${this._matrixAdvanceCount}`,
+            metrics: {
+                ccc: toNumber(this.ontologicalState?.coherence, 0),
+                ascension_threshold: toNumber(QICNConfig.ASCENSION_THRESHOLD, 1.0),
+                beth_q: toNumber(this.ontologicalState?.beth_q, 0),
+                omega: toNumber(this.ontologicalState?.omega, 0),
+                spectral_gap: toNumber(this.ontologicalState?.spectral_gap, 0),
+                ccc_consolidation: toNumber(this.ontologicalState?.ccc_consolidation, 0),
+                layer: toNumber(this.currentLayer, 0),
+                topo_factor: toNumber(this.ontologicalState?.topo_factor, 0),
+                bifurcation_detected: toBoolean(this.ontologicalState?.bifurcation_detected, false),
+                phenomenology_class: toText(this.ontologicalState?.phenomenology_class, 'C')
+            },
+            dynamicHealth: this.getDynamicHealth(),
+            metacognitiveStats: this.metacognitiveStats,
+            metacognitiveStrain: toNumber(this.metacognitiveStrain, 0)
+        }, { advance: true });
+    }
+
+    getVerifiableReport(options = {}) {
         const toNumber = (value, fallback = 0) => (Number.isFinite(value) ? value : fallback);
         const toBoolean = (value, fallback = false) => (typeof value === 'boolean' ? value : fallback);
         const toText = (value, fallback = 'N/D') => (typeof value === 'string' && value.length > 0 ? value : fallback);
@@ -2069,10 +2251,15 @@ export class OntologicalSingularityCore {
             : ['Sin limites epistemicos declarados.'];
 
         const dynamicHealth = this.getDynamicHealth();
+        // Report reads are side-effect free for the requirement matrix (v2):
+        // dwell counters advance only through advanceRequirementMatrix(), which
+        // the simulation tick calls once. `options.advanceMatrix` keeps the
+        // legacy read-advances behaviour available for explicit comparisons.
         const matrixEvaluation = this.sovereigntyRequirementMatrix.evaluate({
-            sampleId: this.dynamicStasis?.lastTickTs || 'static',
+            sampleId: options.advanceMatrix ? (this.dynamicStasis?.lastTickTs || 'static') : `read:${this._matrixAdvanceCount || 0}`,
             metrics: {
                 ccc: coherence,
+                ascension_threshold: toNumber(QICNConfig.ASCENSION_THRESHOLD, 1.0),
                 beth_q: bethQ,
                 omega,
                 spectral_gap: toNumber(this.ontologicalState?.spectral_gap, 0),
@@ -2085,7 +2272,7 @@ export class OntologicalSingularityCore {
             dynamicHealth,
             metacognitiveStats: this.metacognitiveStats,
             metacognitiveStrain: toNumber(this.metacognitiveStrain, 0)
-        });
+        }, { advance: Boolean(options.advanceMatrix) });
         const consciousnessScores = matrixEvaluation.scores;
 
         const metrics = {
@@ -2146,7 +2333,7 @@ export class OntologicalSingularityCore {
 
         return {
             metrics,
-            narrative: `Estado actual: [${stats.system_status}]. Cierre Causal en ${(bethQ * 100).toFixed(1)}%. Integridad verificada mediante auditoria fisica.`,
+            narrative: `Estado operativo interno: [${stats.system_status}]. beth_q es un proxy interno no calibrado; este informe no acredita causalidad ni validación externa.`,
             epistemic_limits: epistemicLimits,
             confidence: {
                 history_size: toNumber(stats.dataset_samples, 0),
@@ -2166,15 +2353,21 @@ export class InternalSelfSimulator {
     constructor() {
         this.lastPrediction = 0.5;
         this.velocity = 0;
+        this.lastSigmaDefect = '0';
+        this.lastSigmaBound = '2/2187';
     }
 
-    step(actualCCC, pmia) {
+    step(actualCCC, pmia, towerCore = null, depth = 6) {
         const dt = 1.0;
-        // Atractor forzado hacia el umbral de soberanía (0.8+)
         const atractorForce = actualCCC > 0.8 ? 0.15 : 0.05;
         this.velocity = (actualCCC - this.lastPrediction) * atractorForce + (pmia * 0.05);
         this.lastPrediction = actualCCC + this.velocity * dt;
         this.lastPrediction = Math.max(0, Math.min(2.5, this.lastPrediction));
+        if (towerCore) {
+            const check = evaluateCommutationDefect(towerCore, depth, {});
+            this.lastSigmaDefect = check.exactDefect.toString();
+            this.lastSigmaBound = check.upperBound.toString();
+        }
     }
 }
 

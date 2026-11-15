@@ -1,8 +1,123 @@
 // @ts-check
 
+import { F, ZERO, ONE, HALF } from '../../simulation/tower/ExactFraction.js';
+import {
+  ALTERNATING,
+  CONTEXTS,
+  CORE,
+  KAPPA,
+  LAMBDA,
+  PROFILES,
+  RETENTION,
+  SAFE,
+  SITES,
+  circle,
+  clipControl,
+  coreDistance,
+  createState,
+  readout,
+  readoutEquals,
+  referenceBit,
+  signedTurn,
+  step
+} from '../../simulation/tower/WritablePrefixTower.js';
+
 const finite = (value, fallback = 0) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
 const clamp = (value, min, max) => Math.max(min, Math.min(max, finite(value, min)));
 const clamp01 = (value) => clamp(value, 0, 1);
+
+export const runTowerViabilityAndBoundaryControls = () => {
+  if (!F(1, 3).sub(SAFE).eq(F(1, 12))) {
+    throw new Error('Viability margin 1/3 - SAFE != 1/12');
+  }
+  if (!RETENTION.mul(SAFE).add(LAMBDA).eq(F(5, 24))) {
+    throw new Error('Memory retention envelope != 5/24');
+  }
+  if (!SAFE.sub(CORE).div(4).eq(F(3, 64))) {
+    throw new Error('Safe-to-core distance != 3/64');
+  }
+
+  let recoveryCount = 0;
+  for (const p of PROFILES) {
+    for (const m of [F(-1, 16), ZERO, F(1, 16)]) {
+      for (const sign of [-1, 1]) {
+        const core = createState(p, ZERO, ALTERNATING, m);
+        for (const q of [-1, 1]) {
+          if (!coreDistance(step(core, { q })).isZero()) {
+            throw new Error('Core forward invariance under q in {-1,1} failed');
+          }
+        }
+        const shocked = createState(p, F(sign, 32).mod1(), ALTERNATING, F(sign, 8));
+        const d0 = coreDistance(shocked);
+        const passive = ONE.sub(coreDistance(step(shocked)).div(d0));
+        if (!passive.eq(HALF)) {
+          throw new Error('Passive shocked retention must equal 1/2');
+        }
+        for (const noise of [F(-1, 32), ZERO, F(1, 32)]) {
+          const feedback = clipControl(KAPPA.neg().mul(shocked.memory.add(noise)));
+          const recovered = step(shocked, { u: feedback });
+          const ret = ONE.sub(coreDistance(recovered).div(d0));
+          if (!ret.sub(passive).gte(F(3, 8)) || !recovered.memory.abs().lte(SAFE)) {
+            throw new Error('Active recovery retention advantage fell below 3/8');
+          }
+          if (noise.isZero() && !ret.eq(ONE)) {
+            throw new Error('Noiseless active recovery must reach retention 1');
+          }
+          recoveryCount += 1;
+        }
+      }
+    }
+  }
+
+  let boundaryTraces = 0;
+  const lesion0 = [SITES[0], 1 - referenceBit(SITES[0])];
+  for (const p of PROFILES) {
+    for (const m of [SAFE.neg(), ZERO, SAFE]) {
+      for (const code of [ZERO, ALTERNATING, ONE]) {
+        let x = createState(p, F(7, 8), code, m);
+        for (let k = 0; k < 7; k += 1) x = step(x);
+        const sham = step(x);
+        const interior = step(x, { u: F(1, 8) });
+        const threat = step(x, { write: lesion0 });
+        if (
+          !interior.code.eq(sham.code) ||
+          !threat.code.sub(sham.code).abs().eq(F(2, 27)) ||
+          !threat.memory.abs().lte(SAFE)
+        ) {
+          throw new Error('Boundary threat vs interior separation failed');
+        }
+        boundaryTraces += 1;
+      }
+    }
+  }
+
+  const histories = [-1, 1].map((s) => {
+    const start = createState(CONTEXTS[0], ZERO, ALTERNATING, F(s, 8));
+    const past = step(start);
+    const present = step(past, { q: 1 });
+    const lossNeg = circle(step(present, { u: F(-1, 256) }).phase);
+    const lossPos = circle(step(present, { u: F(1, 256) }).phase);
+    const correct = lossNeg.lte(lossPos) ? -1 : 1;
+    return [readout(past), readout(present), correct];
+  });
+  if (
+    !readoutEquals(histories[0][1], histories[1][1]) ||
+    histories[0][2] === histories[1][2]
+  ) {
+    throw new Error('Historical gain witness failed');
+  }
+
+  return {
+    passed: true,
+    activeRecoveriesVerified: recoveryCount,
+    passiveRetentionExact: '1/2',
+    noiselessActiveRetentionExact: '1',
+    noisyRetentionAdvantageLowerBound: '3/8',
+    boundaryTracesVerified: boundaryTraces,
+    boundaryThreatCodeGap: '2/27',
+    historicalDependenceGain: '1/2'
+  };
+};
 
 export const DEFAULT_SUPPORT_BOUNDS = Object.freeze({
   ccc: [0.5, 2.0],
@@ -63,16 +178,26 @@ const deterministicRelaxationTrajectory = (startState = {}, supportBounds = DEFA
   const safeTicks = Math.max(1, Math.floor(finite(ticks, 20)));
   const trajectory = [];
   let current = { ...startState };
+  // Coupled to exact WritablePrefixTower active feedback contraction (factor 9/16)
+  let tower = createState(CONTEXTS[0], F(1, 32), ALTERNATING, F(1, 8));
   for (let tick = 0; tick < safeTicks; tick += 1) {
+    const feedback = clipControl(KAPPA.neg().mul(tower.memory));
+    tower = step(tower, { u: feedback, q: 0 });
+    const contractionWeight = 9 / 16;
     const next = {};
     for (const [key, bounds] of Object.entries(supportBounds)) {
       if (key === 'perturbationMax') continue;
       const [min, max] = Array.isArray(bounds) ? bounds : [0, 1];
       const center = (min + max) / 2;
       const value = finite(current?.[key], center);
-      next[key] = clamp((value * 0.92) + (center * 0.08), min, max);
+      next[key] = clamp((value * contractionWeight) + (center * (1 - contractionWeight)), min, max);
     }
-    trajectory.push({ tick, ...next });
+    trajectory.push({
+      tick,
+      ...next,
+      tower_phase: tower.phase.toFloat(),
+      tower_memory: tower.memory.toFloat()
+    });
     current = next;
   }
   return trajectory;
@@ -148,6 +273,7 @@ export const buildPersistenceCertificate = ({
 } = {}) => {
   const forward = verifyForwardInvariance(simulationController, supportBounds, trials, ticksPerTrial);
   const collapse = measureCollapseDistance(trajectory, collapseThreshold);
+  const towerViability = runTowerViabilityAndBoundaryControls();
   const score = (
     (Number(forward.forward_invariant) * 0.4)
     + (collapse.normalized_collapse_distance * 0.3)
@@ -157,8 +283,9 @@ export const buildPersistenceCertificate = ({
   return {
     forward,
     collapse,
+    tower_viability_certificate: towerViability,
     score: Number(clamp01(score).toFixed(12)),
     support_bounds: supportBounds,
-    interpretation_boundary: 'Finite operational persistence certificate; supports internal I_per only and does not prove compact forward-invariance for all controls.'
+    interpretation_boundary: 'Finite operational persistence certificate backed by exact WritablePrefixTower active recovery controls; supports internal I_per only and does not prove compact forward-invariance for all controls.'
   };
 };

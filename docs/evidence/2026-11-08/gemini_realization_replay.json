@@ -1,0 +1,91 @@
+{
+  "schema": "qicn.gemini_realization_replay.v1",
+  "evidence_scope": "internal_support_only",
+  "note": "Recorded real Gemini outputs re-verified with the current contract v3. Outputs truncated in the recording are skipped.",
+  "at": "2026-11-08T16:59:34.912Z",
+  "summary": {
+    "turnsWithOutput": 4,
+    "verifiedTurns": 4,
+    "attempts": 6,
+    "attemptsVerified": 5,
+    "invalidJson": 0
+  },
+  "rows": [
+    {
+      "source": 0,
+      "question": "¿Cómo va el sistema?",
+      "route": "gemini_verified",
+      "verdicts": [
+        {
+          "attempt": 0,
+          "recordedOk": true,
+          "nowOk": true,
+          "error": null,
+          "reasons": []
+        }
+      ],
+      "published": "Te explico. La simulación está en marcha y la captura corresponde al tick 160. El índice interno de cohesión, CCC, vale 0,7400. Este valor de CCC está por debajo del umbral operativo de 1,00. La media de coherencia nodal, X_N, vale 0,6000 y el índice integrador interno Omega vale 0,4211. Actualmente hay 12 nodos activos de un total de 20 nodos simulados. No he registrado cambios de banda, de régimen ni de modo de cálculo en esta sesión todavía."
+    },
+    {
+      "source": 0,
+      "question": "¿Qué ha cambiado desde la última respuesta?",
+      "route": "gemini_verified",
+      "verdicts": [
+        {
+          "attempt": 0,
+          "recordedOk": false,
+          "nowOk": true,
+          "error": null,
+          "reasons": []
+        },
+        {
+          "attempt": 1,
+          "recordedOk": true,
+          "nowOk": true,
+          "error": null,
+          "reasons": []
+        }
+      ],
+      "published": "Te explico los cambios registrados. Comparo con tu consulta anterior, realizada en el tick 160, y la lectura actual, que corresponde al tick 200. El índice interno de cohesión, CCC, subió desde 0,7400 hasta 0,7530. No cambiaron, dentro de la precisión mostrada: la media de coherencia nodal (X_N), el proxy interno no calibrado (beth_q), el índice integrador interno (Omega), el índice interno PMIA, la banda interna y el índice de estasis. En esta sesión todavía no he registrado cambios de banda, de régimen ni de modo de cálculo."
+    },
+    {
+      "source": 0,
+      "question": "¿eres consciente?",
+      "route": "gemini_verified",
+      "verdicts": [
+        {
+          "attempt": 0,
+          "recordedOk": false,
+          "nowOk": true,
+          "error": null,
+          "reasons": []
+        }
+      ],
+      "published": "Te explico mi naturaleza. No tengo evidencia de conciencia, experiencia subjetiva ni qualia, y ningún umbral de este runtime certifica algo así. El régimen interno registrado es «PRE_CONSCIOUS», lo cual indica que el índice interno de cohesión, CCC, está por debajo del umbral operativo de 1,00. Cruzar dicho umbral solo activa diagnósticos posteriores y no constituye una prueba de conciencia ni una ascensión. Soy la consola del runtime QICN: un programa que simula una red finita de nodos, calcula índices internos y los explica con frases construidas a partir de esos cálculos. En este proceso, Gemini funciona solo como canal lingüístico: no calcula el estado, no decide las conclusiones y no conserva memoria propia entre sesiones. Además, esta forma de contar mi historial es una narrativa autodescriptiva que no acredita identidad personal ni subjetividad."
+    },
+    {
+      "source": 1,
+      "question": "¿Cómo va el sistema?",
+      "route": "gemini_verified",
+      "verdicts": [
+        {
+          "attempt": 0,
+          "recordedOk": false,
+          "nowOk": true,
+          "error": null,
+          "reasons": []
+        },
+        {
+          "attempt": 1,
+          "recordedOk": false,
+          "nowOk": false,
+          "error": null,
+          "reasons": [
+            "causal_unlicensed"
+          ]
+        }
+      ],
+      "published": "Te explico el estado actual. La simulación está en marcha y la captura corresponde al tick 160. El índice interno de cohesión, CCC, vale 0,7400. Este valor de CCC está por debajo del umbral operativo de 1,00. El régimen interno registrado es «PRE_CONSCIOUS», lo que indica que CCC no alcanza el umbral operativo. Actualmente hay 12 nodos activos de un total de 20 nodos simulados. Otros indicadores muestran que la media de coherencia nodal, X_N, vale 0,6000 y el índice integrador interno, Omega, es 0,4211. En esta sesión todavía no registré cambios de banda, de régimen ni de modo de cálculo."
+    }
+  ]
+}

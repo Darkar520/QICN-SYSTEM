@@ -1,5 +1,50 @@
 import { QICNConfig } from '../../services/config.js';
 
+// Learned adjustment mode (C-6b, user decision 2026-11-08). The six keys the
+// core recomputes every tick get a multiplicative factor that Kaizen learns.
+export const KAIZEN_ADJUSTABLE_KEYS = Object.freeze([
+  'BASE_LEARNING_RATE', 'HEBBIAN_FACTOR', 'PLASTICITY_DECAY',
+  'RETRO_FLUX_WEIGHT', 'BOLTZMANN_ANALOG_K', 'INFORMATIONAL_TEMP_T'
+]);
+// Design parameters, not theoretical constants.
+export const KAIZEN_LEARNING_DEFAULTS = Object.freeze({
+  factorMin: 0.8,        // ±20 % around the core's base value
+  factorMax: 1.2,
+  step: 0.02,            // factor change per learning trial
+  sandboxStep: 0.02,     // factor change per autonomy action
+  windowTicks: 24,       // ticks per baseline or trial window
+  margin: 0.02,          // minimum improvement for a trial to be kept
+  noiseK: 2,             // ...and at least noiseK × the measured baseline-to-baseline noise
+  warmupBaselines: 2,    // baselines measured before the first trial (noise estimate)
+  oscTarget: 0.005,      // target RMS of tick-to-tick CCC change (2× the core stasis threshold 0.0025)
+  stasisWeight: 0.5,
+  strainWeight: 0.25
+});
+export const isKaizenLearned = () => QICNConfig.KAIZEN_ADJUSTMENT_MODE === 'learned';
+// Keys the window learner tries. PLASTICITY_DECAY is excluded: no active code
+// path reads it from the Kaizen config (only the legacy Node.js class reads
+// QICNConfig.PLASTICITY_DECAY), so any "improvement" on it would be noise
+// (kaizen mode ablation 2026-11-08: it was kept at ×1.20 in 5/5 seeds).
+// It still receives a factor (×1 unless an autonomy action moves it).
+export const KAIZEN_LEARNABLE_KEYS = Object.freeze(KAIZEN_ADJUSTABLE_KEYS.filter((k) => k !== 'PLASTICITY_DECAY'));
+
+/**
+ * Window score: rewards a CCC that moves at the target rate (neither frozen
+ * nor oscillating) and penalises stasis and strain. The CCC level does not
+ * enter, so the learner has no incentive to push CCC across the threshold.
+ */
+export function kaizenWindowScore(samples, cfg = KAIZEN_LEARNING_DEFAULTS) {
+  if (!Array.isArray(samples) || samples.length < 3) return null;
+  let sq = 0;
+  for (let i = 1; i < samples.length; i += 1) sq += (samples[i].ccc - samples[i - 1].ccc) ** 2;
+  const osc = Math.sqrt(sq / (samples.length - 1));
+  const mean = (k) => samples.reduce((s, x) => s + (Number.isFinite(x[k]) ? x[k] : 0), 0) / samples.length;
+  const stasis = Math.max(0, Math.min(1, mean('stasis')));
+  const strain = Math.max(0, Math.min(1, mean('strain')));
+  const rate = -Math.abs(Math.log((osc + 1e-4) / cfg.oscTarget));
+  return { score: rate - cfg.stasisWeight * stasis - cfg.strainWeight * strain, osc, stasis, strain };
+}
+
 export class KaizenMetamorphosisEngine {
           constructor(initialConfig) {
             this.transformationSteps = 0;
@@ -34,6 +79,114 @@ export class KaizenMetamorphosisEngine {
               }
             ];
             this.mutableConfig = initialConfig;
+            this.resetLearning();
+          }
+
+          // --- Learned adjustment mode (C-6b) -------------------------------
+          resetLearning(adjustments = null) {
+            this.adjustments = Object.fromEntries(KAIZEN_ADJUSTABLE_KEYS.map((k) => [k, Number.isFinite(adjustments?.[k]) ? adjustments[k] : 1]));
+            this.learning = { phase: 'baseline', samples: [], baseline: null, baselines: [], trial: null, cursor: 0, direction: Object.fromEntries(KAIZEN_ADJUSTABLE_KEYS.map((k) => [k, 1])), history: [] };
+          }
+
+          getAdjustments() {
+            return { ...this.adjustments };
+          }
+
+          /** Restore factors (autonomy rollback). */
+          restoreAdjustments(adjustments) {
+            if (!adjustments || typeof adjustments !== 'object') return;
+            for (const k of KAIZEN_ADJUSTABLE_KEYS) if (Number.isFinite(adjustments[k])) this.adjustments[k] = adjustments[k];
+          }
+
+          _boundValue(key, value) {
+            if (key.includes('RATE') || key.includes('FACTOR') || key.includes('WEIGHT')) return Math.max(0.0001, Math.min(0.5, value));
+            if (key.includes('THRESHOLD') || key.includes('DECAY')) return Math.max(0.01, Math.min(0.99, value));
+            if (key === 'BOLTZMANN_ANALOG_K' || key === 'INFORMATIONAL_TEMP_T') return Math.max(0.1, Math.min(5.0, value));
+            return value;
+          }
+
+          _clampFactor(f, cfg = KAIZEN_LEARNING_DEFAULTS) {
+            return Math.round(Math.max(cfg.factorMin, Math.min(cfg.factorMax, f)) * 1e6) / 1e6;
+          }
+
+          /** Effective config: core base value × learned factor, within Kaizen bounds. */
+          applyLearnedAdjustments(baseConfig) {
+            const next = { ...this.mutableConfig };
+            for (const key of KAIZEN_ADJUSTABLE_KEYS) {
+              const base = Number(baseConfig?.[key]);
+              if (Number.isFinite(base)) next[key] = this._boundValue(key, base * this.adjustments[key]);
+            }
+            this.mutableConfig = next;
+            return next;
+          }
+
+          /** Autonomy actions in learned mode: one bounded factor step on the action's key. */
+          applyFactorStep(key, direction, cfg = KAIZEN_LEARNING_DEFAULTS) {
+            if (!KAIZEN_ADJUSTABLE_KEYS.includes(key) || (direction !== 1 && direction !== -1)) return { changeApplied: false };
+            const before = this.adjustments[key];
+            const after = this._clampFactor(before + direction * cfg.sandboxStep, cfg);
+            if (after === before) return { changeApplied: false, reason: 'factor_at_bound' };
+            this.adjustments[key] = after;
+            this.transformationSteps++;
+            this.lastChangeRate = after - before;
+            return { changeApplied: true, mutatedKey: key, newValue: after, direction, kind: 'learned_factor' };
+          }
+
+          /**
+           * One learning tick: alternate a baseline window and a trial window.
+           * A trial changes one factor by ±step; it is kept only if its window
+           * score beats the preceding baseline by `margin`, otherwise reverted
+           * and the next trial on that key goes the other way. Deterministic:
+           * no RNG and no clock.
+           */
+          observeLearningTick(signal, cfg = KAIZEN_LEARNING_DEFAULTS) {
+            const L = this.learning;
+            if (!signal || !Number.isFinite(signal.ccc)) return null;
+            L.samples.push({ ccc: signal.ccc, stasis: Number(signal.stasis) || 0, strain: Number(signal.strain) || 0 });
+            if (L.samples.length < cfg.windowTicks) return null;
+            const score = kaizenWindowScore(L.samples, cfg);
+            L.samples = [];
+            if (L.phase === 'baseline') {
+              L.baseline = score;
+              L.baselines.push(score.score);
+              if (L.baselines.length > 16) L.baselines.shift();
+              if (L.baselines.length < cfg.warmupBaselines) return { event: 'baseline_measured', baselineScore: score.score };
+              // Pick the next key whose factor can move in its preferred direction.
+              for (let tries = 0; tries < KAIZEN_LEARNABLE_KEYS.length * 2; tries += 1) {
+                const key = KAIZEN_LEARNABLE_KEYS[L.cursor % KAIZEN_LEARNABLE_KEYS.length];
+                const from = this.adjustments[key];
+                const to = this._clampFactor(from + L.direction[key] * cfg.step, cfg);
+                if (to !== from) {
+                  this.adjustments[key] = to;
+                  L.trial = { key, from, to };
+                  L.phase = 'trial';
+                  this.transformationSteps++;
+                  this.lastChangeRate = to - from;
+                  return { event: 'trial_started', key, from, to, baselineScore: score.score };
+                }
+                L.direction[key] = -L.direction[key];
+                if (tries % 2 === 1) L.cursor += 1;
+              }
+              return { event: 'no_trial_possible' };
+            }
+            const { key, from, to } = L.trial;
+            // Noise: mean absolute change between consecutive baselines (same
+            // factors, so only noise). A trial must beat it by noiseK.
+            const diffs = L.baselines.slice(1).map((s, i) => Math.abs(s - L.baselines[i]));
+            const noise = diffs.length ? diffs.reduce((a, b) => a + b, 0) / diffs.length : 0;
+            const requiredGain = Math.max(cfg.margin, cfg.noiseK * noise);
+            const kept = score.score > L.baseline.score + requiredGain;
+            if (!kept) {
+              this.adjustments[key] = from;
+              L.direction[key] = -L.direction[key];
+            }
+            L.cursor += 1;
+            L.phase = 'baseline';
+            L.trial = null;
+            const record = { key, from, to, kept, baselineScore: L.baseline.score, trialScore: score.score, requiredGain, noise, trialOsc: score.osc, trialStasis: score.stasis };
+            L.history.push(record);
+            if (L.history.length > 64) L.history.shift();
+            return { event: kept ? 'trial_kept' : 'trial_reverted', ...record };
           }
 
           _clamp01(value) {
@@ -153,6 +306,18 @@ export class KaizenMetamorphosisEngine {
            * Executes an "atomic step" of modification in the system's own constants (self-rewriting).
            */
           executeAtomicStep(ccc, pmia, frictionProtocolState, reinforcementVector, forcedKey, forcedDirection) {
+            // Learned mode: the six recomputed keys move only through factors.
+            // Forced (autonomy) steps on them become factor steps; the window
+            // learner replaces random and reinforcement mutations on them.
+            // SYNAPTIC_PRUNING_THRESHOLD keeps the legacy atomic mutation.
+            if (isKaizenLearned()) {
+              const forced = forcedKey && (forcedDirection === 1 || forcedDirection === -1);
+              if (forced && KAIZEN_ADJUSTABLE_KEYS.includes(forcedKey)) return this.applyFactorStep(forcedKey, forcedDirection);
+              if (!forced) {
+                this.lastChangeRate = 0;
+                return { changeApplied: false, reason: 'learned_mode_window_learner' };
+              }
+            }
             
             const THRESHOLD_CCC_HIGH = 0.8;  
             const THRESHOLD_PMIA_LOW = -0.5;  

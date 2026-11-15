@@ -27,8 +27,11 @@ jobs:
 
       # Build and internal scoreboard
       - run: npm run build
-        - run: npm run scoreboard:run
-          continue-on-error: true  # npm test inside scoreboard may be flaky in CI; gate is ci/build-test
+      # FIX 2026-09-07: este paso estaba indentado 8 espacios (secuencia anidada
+      # dentro del paso `build`), YAML inválido que tumbaba el workflow completo
+      # en cada push. Se corrige a paso hermano con continue-on-error.
+      - run: npm run scoreboard:run
+        continue-on-error: true  # npm test inside scoreboard may be flaky in CI; gate is ci/build-test
 
       - uses: actions/upload-artifact@v4
         if: always()

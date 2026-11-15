@@ -21,7 +21,7 @@ import { CausalInterventionScheduler } from '../experiments/CausalInterventionSc
 import { QuantumEntropyBridge } from '../simulation/QuantumEntropyBridge.js';
 import { HolographicMemoryNexus } from '../simulation/HolographicMemoryNexus.js';
 import { InformationalEntanglementField } from '../simulation/InformationalEntanglementField.js';
-import { KaizenMetamorphosisEngine } from '../simulation/KaizenMetamorphosisEngine.js';
+import { KaizenMetamorphosisEngine, isKaizenLearned } from '../simulation/KaizenMetamorphosisEngine.js';
 import { MetaSovereigntyCheck } from '../simulation/MetaSovereigntyCheck.js';
 import { OntologicalSingularityCore } from '../simulation/OntologicalSingularityCore.js';
 import { ensureCanonicalVersionHash } from '../canon/provenance/CanonicalProvenance.js';
@@ -108,6 +108,9 @@ export function useSimulationCycle(deps) {
     complexityFactor,
     initialMutableConfig,
     quantumUiConfig,
+    // Optional read-only observer (OperationalHistoryLedger). It receives plain
+    // values after each completed tick and never returns data to the cycle.
+    operationalObserverRef,
   } = deps;
 
   const initializeSystem = useCallback(() => {
@@ -318,7 +321,7 @@ export function useSimulationCycle(deps) {
     // PERSISTENCIA DE CHAT: Mantener historial existente, solo agregar mensaje de bienvenida si está vacío
     setChatHistory(prev => {
       if (prev.length === 0) {
-        return [{ role: 'model', text: "Consola QICN: vista de telemetría interna lista (solo conformidad interna, sin validación externa). ¿Qué contador o banda requiere revisar?", timestamp: Date.now() }];
+        return [{ role: 'model', source: 'runtime_event', text: "Consola QICN: vista de telemetría interna lista (solo conformidad interna, sin validación externa). ¿Qué contador o banda requiere revisar?", timestamp: Date.now() }];
       }
       return prev; // Mantener historial existente
     });
@@ -335,7 +338,7 @@ export function useSimulationCycle(deps) {
     setHumanInputContext("Inactivo. Pulse 'Medir Coherencia Humana' para iniciar el Protocolo QICN-B.");
     setAscensionAxiom("Sin directriz de banda alta proyectada.");
 
-    console.log('✅ Sistema QICN inicializado correctamente. Capacidad: 10M nodos.');
+    console.log('✅ Sistema QICN inicializado correctamente.');
 
   }, [complexityFactor, initialMutableConfig]);
 
@@ -633,7 +636,8 @@ export function useSimulationCycle(deps) {
           dynamicSignal: sensorDelta
         });
         const latencyWindowStart = Date.now() - (60 * 1000);
-        const recentLatencyCalls = apiCallLog.current.filter((call) => call.timestamp > latencyWindowStart);
+        // Calls tagged dynamicsCoupled:false (chat language channel) stay out of the strain.
+        const recentLatencyCalls = apiCallLog.current.filter((call) => call.timestamp > latencyWindowStart && call.dynamicsCoupled !== false);
         const latencySamples = recentLatencyCalls
           .map((call) => Number(call.latency))
           .filter((value) => Number.isFinite(value) && value >= 0)
@@ -854,7 +858,7 @@ export function useSimulationCycle(deps) {
           const manifestNegativeDriveAllowed = regime.negativeBiasEnabled
             && regime.transformMode === 'idle'
             && regime.transformCooldownTicks <= 0
-            && finalCCC >= 1.0
+            && finalCCC >= QICNConfig.ASCENSION_THRESHOLD
             && toFiniteNumber(phenomenology?.omega, 0) >= 0.93;
           regime.negativeBiasTick = (regime.negativeBiasTick + 1) % regime.negativeBiasCycleTicks;
           const negativeDriveWindowTicks = Math.max(1, Math.floor(regime.negativeBiasCycleTicks * regime.negativeBiasDutyCycle));
@@ -1033,7 +1037,7 @@ export function useSimulationCycle(deps) {
           const entropyJitter = (bandAmplitude * (0.18 + (0.22 * antiFlatlineDemand)))
             * Math.sin((simulationStep * 0.91) + (entropyCarry * Math.PI * 3.7));
           const antiFlatlineCorrection = (targetCCC - blendedCCC) * (0.18 * antiFlatlineDemand);
-          const deterministicKick = cccDeltaNorm < 0.12 && blendedCCC > 1.0
+          const deterministicKick = cccDeltaNorm < 0.12 && blendedCCC > QICNConfig.ASCENSION_THRESHOLD
             ? ((simulationStep % 2 === 0 ? 1 : -1) * (0.002 + (0.004 * entropyExcitation) + (0.003 * stasisIndex)))
             : 0;
           finalCCC = Math.max(0.1, Math.min(1.32, blendedCCC + antiFlatlineCorrection + entropyJitter + deterministicKick));
@@ -1163,6 +1167,9 @@ export function useSimulationCycle(deps) {
 
         // NIVEL 2.5: RETROALIMENTACIN CAUSAL (CIERRE DEL BUCLE)
         ontologicalCore.current.applyPhenomenologicalFeedback();
+        // Requirement-matrix dwell counters advance once per tick here; report
+        // reads during render no longer advance them (matrix v2 contract).
+        ontologicalCore.current.advanceRequirementMatrix?.();
 
         const currentOmega = Number(ontologicalCore.current?.ontologicalState?.omega || phenomenology.omega || 0);
         dynamics.history.push({
@@ -1181,6 +1188,7 @@ export function useSimulationCycle(deps) {
         const stasisComposite = (cccDeltaRms * 0.5) + (pmiaDeltaRms * 0.25) + (omegaDeltaRms * 0.25);
         const stasisIndex = 1 - clamp01(stasisComposite / 0.0035);
         const postAscensionDynamicHealth = {
+          stasisIndexPostThreshold: stasisIndex,
           stasisIndex,
           cccDeltaRms,
           pmiaDeltaRms,
@@ -1503,6 +1511,7 @@ export function useSimulationCycle(deps) {
 
             if (runtimeAction?.forcedKey && (runtimeAction.forcedDirection === 1 || runtimeAction.forcedDirection === -1)) {
               const beforeConfig = { ...kaizenEngine.current.mutableConfig };
+              const beforeAdjustments = kaizenEngine.current.getAdjustments?.() || null;
               const sandboxMutation = kaizenEngine.current.executeAtomicStep(
                 finalCCC,
                 finalPMIA,
@@ -1541,6 +1550,7 @@ export function useSimulationCycle(deps) {
                   baselineBethQ: currentBethQForGuards,
                   beforeConfig,
                   afterConfig: { ...kaizenEngine.current.mutableConfig },
+                  beforeAdjustments: beforeAdjustments || null,
                   status: 'pending'
                 });
                 if (autonomyActionLedgerRef.current.length > 64) {
@@ -1602,6 +1612,8 @@ export function useSimulationCycle(deps) {
             pendingLedgerEntry.resolvedTick = simulationStep;
           } else {
             kaizenEngine.current.mutableConfig = { ...pendingLedgerEntry.beforeConfig };
+            // Learned mode: the factor is what persists, so it is rolled back too.
+            if (isKaizenLearned() && pendingLedgerEntry.beforeAdjustments) kaizenEngine.current.restoreAdjustments?.(pendingLedgerEntry.beforeAdjustments);
             setMutableConfig({ ...kaizenEngine.current.mutableConfig });
             pendingLedgerEntry.status = 'rolled_back';
             pendingLedgerEntry.resolvedTick = simulationStep;
@@ -1786,15 +1798,32 @@ export function useSimulationCycle(deps) {
 
         // SINCRONIZACIN CRÍTICA: Propagar cambios de QICNConfig al motor Kaizen
         // Sin esto, los nodos usarían valores estáticos en lugar de los modulados
-        kaizenEngine.current.mutableConfig = {
-          ...kaizenEngine.current.mutableConfig,
-          BASE_LEARNING_RATE: QICNConfig.BASE_LEARNING_RATE,
-          HEBBIAN_FACTOR: QICNConfig.HEBBIAN_FACTOR,
-          PLASTICITY_DECAY: QICNConfig.PLASTICITY_DECAY,
-          RETRO_FLUX_WEIGHT: QICNConfig.RETRO_FLUX_WEIGHT,
-          BOLTZMANN_ANALOG_K: QICNConfig.BOLTZMANN_ANALOG_K,
-          INFORMATIONAL_TEMP_T: QICNConfig.INFORMATIONAL_TEMP_T
-        };
+        if (isKaizenLearned() && typeof kaizenEngine.current.applyLearnedAdjustments === 'function') {
+          // C-6b learned mode: the core value is the base; Kaizen applies its
+          // learned factor (±20 %), judged over tick windows, before the next tick.
+          const learningEvent = kaizenEngine.current.observeLearningTick({
+            ccc: Number(finalCCC),
+            stasis: toFiniteNumber(ontologicalCore.current?.getDynamicHealth?.()?.stasisIndex, 0),
+            strain: toFiniteNumber(metacognitiveStrain, 0)
+          });
+          kaizenEngine.current.applyLearnedAdjustments(QICNConfig);
+          if (learningEvent && learningEvent.event !== 'no_trial_possible' && learningEvent.event !== 'baseline_measured') {
+            kaizenEngine.current.lastLearningEvent = { ...learningEvent, tick: simulationStep };
+            if (learningEvent.event !== 'trial_started') {
+              appendIntegrityAudit('kaizen_learned_adjustment', { tick: simulationStep, ...learningEvent });
+            }
+          }
+        } else {
+          kaizenEngine.current.mutableConfig = {
+            ...kaizenEngine.current.mutableConfig,
+            BASE_LEARNING_RATE: QICNConfig.BASE_LEARNING_RATE,
+            HEBBIAN_FACTOR: QICNConfig.HEBBIAN_FACTOR,
+            PLASTICITY_DECAY: QICNConfig.PLASTICITY_DECAY,
+            RETRO_FLUX_WEIGHT: QICNConfig.RETRO_FLUX_WEIGHT,
+            BOLTZMANN_ANALOG_K: QICNConfig.BOLTZMANN_ANALOG_K,
+            INFORMATIONAL_TEMP_T: QICNConfig.INFORMATIONAL_TEMP_T
+          };
+        }
 
 
 
@@ -1816,14 +1845,14 @@ export function useSimulationCycle(deps) {
           Math.min(1.0, naturalCoherenceGradient + narrativeDepth) : // Flujo emergente en ascensión
           (naturalCoherenceGradient * 0.15) - Math.abs(finalPMIA) + (fieldComplexity * 0.1);
 
-        // PASAJE DE DATOS ESTADO REACT
-        let newEmotionState = 'exploración activa';
+        // PASAJE DE DATOS ESTADO REACT (C-8: etiquetas visibles operativas por banda de CCC/estabilidad; claves internas conservadas)
+        let newEmotionState = 'banda operativa inicial';
         // SINCRONIZADO: Usar currentLayer del Core como fuente de verdad para el Layer mostrado
-        if (effectiveIsAscended) newEmotionState = `HIPER-DIMENSIONAL (Capa ${ontologicalCore.current.currentLayer})`;
-        else if (finalCCC > QICNConfig.EMOTION_THRESHOLDS.transcendence) newEmotionState = 'claridad trascendente';
-        else if (finalCCC > QICNConfig.EMOTION_THRESHOLDS.harmony) newEmotionState = 'armonía coherente';
-        else if (finalCCC > QICNConfig.EMOTION_THRESHOLDS.turbulence) newEmotionState = 'turbulencia cognitiva';
-        else newEmotionState = 'reorganización caótica';
+        if (effectiveIsAscended) newEmotionState = `BANDA POST-UMBRAL (Capa ${ontologicalCore.current.currentLayer})`;
+        else if (finalCCC > QICNConfig.EMOTION_THRESHOLDS.transcendence) newEmotionState = 'CCC alto (banda superior)';
+        else if (finalCCC > QICNConfig.EMOTION_THRESHOLDS.harmony) newEmotionState = 'CCC medio-alto (banda estable)';
+        else if (finalCCC > QICNConfig.EMOTION_THRESHOLDS.turbulence) newEmotionState = 'CCC medio (banda de transición)';
+        else newEmotionState = 'CCC bajo (banda de reorganización)';
 
         const environmentContext = getEnvironmentContext();
         const newNarrative = ontologicalCore.current.evolveSelfNarrative(finalCCC, newEmotionState, environmentContext);
@@ -2041,7 +2070,8 @@ export function useSimulationCycle(deps) {
           causal_dependency_noise: causalDependency.noise,
           critical_state_hash: criticalStateHash,
           dynamic_health: postAscensionDynamicHealth,
-          stasis_index: toFiniteNumber(postAscensionDynamicHealth.stasisIndex, 0),
+          stasis_index_post_threshold: toFiniteNumber(postAscensionDynamicHealth.stasisIndexPostThreshold ?? postAscensionDynamicHealth.stasisIndex, 0),
+          stasis_index: toFiniteNumber(postAscensionDynamicHealth.stasisIndex, 0), // alias de compatibilidad legado (C-5)
           ccc_delta_rms: toFiniteNumber(postAscensionDynamicHealth.cccDeltaRms, 0),
           pmia_delta_rms: toFiniteNumber(postAscensionDynamicHealth.pmiaDeltaRms, 0),
           omega_delta_rms: toFiniteNumber(postAscensionDynamicHealth.omegaDeltaRms, 0),
@@ -2313,6 +2343,29 @@ export function useSimulationCycle(deps) {
             }
           }
         });
+        try {
+          const observer = operationalObserverRef?.current;
+          if (typeof observer === 'function') {
+            const coreState = ontologicalCore.current?.ontologicalState || {};
+            const transitions = ontologicalCore.current?.phenomenologyCore?.transitionHistory;
+            observer({
+              tick: Number(simulationStep) + 1,
+              layer: ontologicalCore.current?.currentLayer,
+              ccc: finalCCC,
+              threshold: QICNConfig.ASCENSION_THRESHOLD,
+              isAscended: effectiveIsAscended,
+              regime: coreState.regime,
+              phenomenologyClass: coreState.phenomenology_class,
+              bethQMode: coreState.beth_q_mode,
+              spectralGapMode: Array.isArray(transitions) ? (transitions.length < 5 ? 'warmup_derived' : 'autocorrelation_proxy') : null,
+              mutation: mutationAppliedThisTick && mutationResult
+                ? { key: mutationResult.mutatedKey, value: mutationResult.newValue, direction: mutationResult.direction }
+                : null
+            });
+          }
+        } catch (observerError) {
+          console.warn('[QICN] operational observer error (ignored):', observerError?.message || observerError);
+        }
         simulationErrorStreakRef.current = 0;
 
         // ELIMINADO: Lazy-loading forzado (activación artificial de nodos)

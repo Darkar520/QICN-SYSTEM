@@ -19,7 +19,7 @@ limits, M_Omega, phenomenality, or human equivalence.
 | Theory-runtime maturity | `src/canon/maturity/RuntimeMaturityLedger.js` | diagnostic ledger |
 | Metric projection proxy | `src/canon/projection/MetricProjectionOperator.js` | finite proxy |
 | Projective tower witness | `src/canon/finite_horizon/ProjectiveTowerAuditor.js` | finite witness |
-| Ontological mass | `src/canon/ontological_mass/OntologicalMassEstimator.js` | lower-bound support |
+| Ontological mass | `src/canon/ontological_mass/OntologicalMassEstimator.js` | family upper-bound support (C-11) |
 | CCR boundary | `src/canon/ccr/CCRApproximationBoundary.js` | non-certifying ladder |
 | CCC-Omega coupling | `src/canon/coupling/CCCOmegaCouplingProtocol.js` | stress-tested proxy |
 | Discrete bridge bounds | `src/tools/DiscreteBridgeRuntimeBounds.js` | finite diagnostic bounds |

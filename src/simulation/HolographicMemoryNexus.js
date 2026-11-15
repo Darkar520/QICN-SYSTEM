@@ -148,6 +148,8 @@ export class HolographicMemoryNexus {
      * @param {object} context - Contexto adicional (PMIA, estado de Fricción, etc.).
      */
     storeLearnedKnowledge(question, answer, cccScore, layer, context = {}) {
+        if (typeof question !== 'string' || !question.trim() || typeof answer !== 'string' ||
+            !Number.isFinite(cccScore) || !Number.isFinite(layer)) return;
         // Ontological Friction: Resist storing new knowledge if friction is active
         if (context.frictionProtocolState === 2 && Math.random() < 0.7) {
             return; // 70% chance to reject new knowledge during friction
@@ -179,6 +181,7 @@ export class HolographicMemoryNexus {
                      entry.timestamp = Date.now();
                      entry.accessCount = 0;
                      entry.relevanceScore = 1.0; // Resetear relevancia ontológica
+                     this.ephemeralCache.clear();
                      this.metrics.memoriesStored++; // Contar como nuevo almacenamiento
                 }
                 return; // Ya existe, actualizada o no.
@@ -224,6 +227,12 @@ export class HolographicMemoryNexus {
      * @returns {object|null} - La respuesta encontrada o null si se debe generar una nueva.
      */
     retrieveLearnedAnswer(question, currentCCC, currentLayer, currentPMIA, currentFrictionProtocolState) {
+        if (typeof question !== 'string' || !question.trim() ||
+            ![currentCCC, currentLayer, currentPMIA].every(Number.isFinite) ||
+            ![0, 1, 2, 3, 'STABLE'].includes(currentFrictionProtocolState)) {
+            this.metrics.retrievalsFailedMatch++;
+            return null;
+        }
         const normalizedQuery = question.toLowerCase().trim();
         // Asumir un valor para PMIA_VOLATILE_THRESHOLD si QICNConfig no está (aunque debería)
         const pmiaThreshold = (typeof QICNConfig !== 'undefined' && QICNConfig.PMIA_VOLATILE_THRESHOLD) 
@@ -239,16 +248,8 @@ export class HolographicMemoryNexus {
             return null; // ANTI-YO: "Elijo la novedad sobre el eco."
         }
 
-        // 2. Revisar caché efímera (preguntas idénticas inmediatas)
-        if (this.ephemeralCache.has(normalizedQuery)) {
-            const cached = this.ephemeralCache.get(normalizedQuery);
-            // Refrescar en caché (mover al final de la lista LRU simulada)
-            this.ephemeralCache.delete(normalizedQuery);
-            this.ephemeralCache.set(normalizedQuery, cached);
-            this.metrics.retrievalsSucceeded++;
-            return cached;
-        }
-
+        // Re-score on every query. A question-only cache cannot certify that
+        // CCC, layer, PMIA, friction and relevance still satisfy the policy.
         const queryTokens = this._tokenize(question);
         let bestMatch = null;
         let highestScore = -Infinity;
@@ -288,7 +289,7 @@ export class HolographicMemoryNexus {
             }
 
             // Penalizar si Fricción Ontológica (λ) está activa (contexto de crisis)
-            if (currentFrictionProtocolState !== 'STABLE') {
+            if (currentFrictionProtocolState !== 0 && currentFrictionProtocolState !== 'STABLE') {
                 contextPenalty += THRESHOLD_CONFIG.CONTEXT_PENALTY.FRICTION_ACTIVE;
             }
             

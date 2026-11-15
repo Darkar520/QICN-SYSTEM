@@ -52,12 +52,13 @@ try {
     ticks: stableTrajectory
   });
   const invariant = invariantPackage.invariants.I_per;
-  assert.equal(invariant.directSignals.forwardInvariant, true, 'CASE 12 FAIL: I_per must expose forwardInvariant.');
-  assert.ok(invariant.directSignals.minCollapseDistance > 0, 'CASE 13 FAIL: I_per must expose minCollapseDistance.');
-  assert.ok(
-    invariant.runtimeSignals.includes('persistence_certificate.forward_invariance'),
-    'CASE 14 FAIL: I_per runtime signals must include persistence certificate.'
-  );
+  assert.equal(invariant.directSignals.forwardInvariant, null, 'CASE 12 FAIL: simulated trials are not recorded runtime observations.');
+  assert.equal(invariant.directSignals.minCollapseDistance, null, 'CASE 13 FAIL: no measured collapse certificate was supplied.');
+  assert.ok(!invariant.runtimeSignals.includes('persistence_certificate.forward_invariance'));
+  assert.equal(invariant.maturity, 'PARTIAL_RUNTIME_PATH');
+  assert.equal(buildCanonicalInvariantPackage({}).invariants.I_per.score, 0, 'missing runtime data cannot produce persistence support');
+  assert.equal(buildCanonicalInvariantPackage({ ticks: [{}, {}] }).invariants.I_per.directSignals.continuityRatio, 0,
+    'missing tick identifiers cannot be replaced by synthetic consecutive indices');
 
   console.log('OK: persistence-forward-invariance tests passed');
 } catch (error) {

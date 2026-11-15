@@ -1,0 +1,600 @@
+{
+  "schema": "qicn.full_cycle_language_ablation.v1",
+  "generatedAt": "2026-11-08T22:47:10.994Z",
+  "evidenceScope": "internal_support_only",
+  "boundary": "Internal implementation check over the full useSimulationCycle: whether the chat language channel can change the engine trajectory. Sensors use a deterministic synthetic perception stream, not hardware. It does not validate any claim about consciousness, identity or subjectivity.",
+  "parameters": {
+    "ticks": 120,
+    "seeds": [
+      11,
+      23
+    ],
+    "nodes": 300,
+    "turnEvery": 10,
+    "conditions": [
+      "current",
+      "language_local",
+      "language_model",
+      "language_wording",
+      "api_coupled_control",
+      "observer_channel"
+    ]
+  },
+  "method": "Each run is a child process with seeded Math.random (mulberry32), stepped Date.now / new Date() / performance.now, installed before importing engine modules. The cycle is the extracted useSimulationCycle driven through initializeSystem + runSimulationCycle, wired like tests/simulation-cycle-headless.smoke.mjs. Chat turns use captureRuntimeSnapshot (with Kaizen effectiveConfig) / prepareTurn / evaluateRealization / correctionPromptFor / finalizeTurn with their own clock.",
+  "wallMs": 43558,
+  "verdict": {
+    "baselineReproducible": true,
+    "languageLocalIdentical": true,
+    "languageModelIdentical": true,
+    "languageWordingIdentical": true,
+    "apiCoupledControlMovesStrain": true,
+    "apiCoupledControlChangesTrajectory": false,
+    "observerChannelMovesObserverImpact": true,
+    "observerChannelChangesTrajectory": false,
+    "kaizenActive": true,
+    "autonomyActive": true,
+    "sensorsActive": true
+  },
+  "bySeed": {
+    "11": {
+      "baselineReproducible": true,
+      "vsCurrent": {
+        "language_local": {
+          "identical": true,
+          "trajectory": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "kaizenConfigMismatchTicks": 0,
+            "maxAbsDelta": {
+              "ccc": 0,
+              "pmia": 0,
+              "omega": 0,
+              "x_n": 0,
+              "layer": 0,
+              "autonomyActions": 0,
+              "kaizenSteps": 0
+            }
+          },
+          "channels": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "maxAbsDelta": {
+              "strain": 0,
+              "observerImpact": 0
+            }
+          }
+        },
+        "language_model": {
+          "identical": true,
+          "trajectory": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "kaizenConfigMismatchTicks": 0,
+            "maxAbsDelta": {
+              "ccc": 0,
+              "pmia": 0,
+              "omega": 0,
+              "x_n": 0,
+              "layer": 0,
+              "autonomyActions": 0,
+              "kaizenSteps": 0
+            }
+          },
+          "channels": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "maxAbsDelta": {
+              "strain": 0,
+              "observerImpact": 0
+            }
+          }
+        },
+        "language_wording": {
+          "identical": true,
+          "trajectory": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "kaizenConfigMismatchTicks": 0,
+            "maxAbsDelta": {
+              "ccc": 0,
+              "pmia": 0,
+              "omega": 0,
+              "x_n": 0,
+              "layer": 0,
+              "autonomyActions": 0,
+              "kaizenSteps": 0
+            }
+          },
+          "channels": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "maxAbsDelta": {
+              "strain": 0,
+              "observerImpact": 0
+            }
+          }
+        },
+        "api_coupled_control": {
+          "identical": false,
+          "trajectory": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "kaizenConfigMismatchTicks": 0,
+            "maxAbsDelta": {
+              "ccc": 0,
+              "pmia": 0,
+              "omega": 0,
+              "x_n": 0,
+              "layer": 0,
+              "autonomyActions": 0,
+              "kaizenSteps": 0
+            }
+          },
+          "channels": {
+            "identical": false,
+            "firstDivergentTick": 12,
+            "maxAbsDelta": {
+              "strain": 0.28582602563399995,
+              "observerImpact": 0
+            }
+          }
+        },
+        "observer_channel": {
+          "identical": false,
+          "trajectory": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "kaizenConfigMismatchTicks": 0,
+            "maxAbsDelta": {
+              "ccc": 0,
+              "pmia": 0,
+              "omega": 0,
+              "x_n": 0,
+              "layer": 0,
+              "autonomyActions": 0,
+              "kaizenSteps": 0
+            }
+          },
+          "channels": {
+            "identical": false,
+            "firstDivergentTick": 10,
+            "maxAbsDelta": {
+              "strain": 0,
+              "observerImpact": 0.508022630976
+            }
+          }
+        }
+      },
+      "finals": {
+        "current": {
+          "tick": 120,
+          "ccc": 0.903756988103,
+          "pmia": 1,
+          "omega": 7.2972392701,
+          "x_n": 0.58682573605,
+          "layer": 0,
+          "kaizenDigest": "5b504fc7",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.100415322125,
+          "observerImpact": 0.131879029823,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 0,
+          "engineRandomCalls": 390118,
+          "engineNowCalls": 177731
+        },
+        "language_local": {
+          "tick": 120,
+          "ccc": 0.903756988103,
+          "pmia": 1,
+          "omega": 7.2972392701,
+          "x_n": 0.58682573605,
+          "layer": 0,
+          "kaizenDigest": "5b504fc7",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.100415322125,
+          "observerImpact": 0.131879029823,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 0,
+          "engineRandomCalls": 390118,
+          "engineNowCalls": 177731
+        },
+        "language_model": {
+          "tick": 120,
+          "ccc": 0.903756988103,
+          "pmia": 1,
+          "omega": 7.2972392701,
+          "x_n": 0.58682573605,
+          "layer": 0,
+          "kaizenDigest": "5b504fc7",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.100415322125,
+          "observerImpact": 0.131879029823,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 20,
+          "engineRandomCalls": 390118,
+          "engineNowCalls": 177731
+        },
+        "language_wording": {
+          "tick": 120,
+          "ccc": 0.903756988103,
+          "pmia": 1,
+          "omega": 7.2972392701,
+          "x_n": 0.58682573605,
+          "layer": 0,
+          "kaizenDigest": "5b504fc7",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.100415322125,
+          "observerImpact": 0.131879029823,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 24,
+          "engineRandomCalls": 390118,
+          "engineNowCalls": 177731
+        },
+        "api_coupled_control": {
+          "tick": 120,
+          "ccc": 0.903756988103,
+          "pmia": 1,
+          "omega": 7.2972392701,
+          "x_n": 0.58682573605,
+          "layer": 0,
+          "kaizenDigest": "5b504fc7",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.103727027015,
+          "observerImpact": 0.131879029823,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 24,
+          "engineRandomCalls": 390118,
+          "engineNowCalls": 177731
+        },
+        "observer_channel": {
+          "tick": 120,
+          "ccc": 0.903756988103,
+          "pmia": 1,
+          "omega": 7.2972392701,
+          "x_n": 0.58682573605,
+          "layer": 0,
+          "kaizenDigest": "5b504fc7",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.100415322125,
+          "observerImpact": 0.639901660799,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 0,
+          "engineRandomCalls": 390118,
+          "engineNowCalls": 177743
+        }
+      },
+      "language": {
+        "language_local": {
+          "turns": 12,
+          "routes": {
+            "local_narrator": 12
+          },
+          "attempts": 0,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0,
+          "contracts": {
+            "verified": 12
+          }
+        },
+        "language_model": {
+          "turns": 12,
+          "routes": {
+            "gemini_free_checked": 8,
+            "gemini_rejected": 4
+          },
+          "attempts": 20,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0,
+          "contracts": {
+            "free": 12
+          }
+        },
+        "language_wording": {
+          "turns": 12,
+          "routes": {
+            "gemini_verified": 6,
+            "gemini_rejected": 6
+          },
+          "attempts": 24,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0,
+          "contracts": {
+            "verified": 12
+          }
+        }
+      }
+    },
+    "23": {
+      "baselineReproducible": true,
+      "vsCurrent": {
+        "language_local": {
+          "identical": true,
+          "trajectory": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "kaizenConfigMismatchTicks": 0,
+            "maxAbsDelta": {
+              "ccc": 0,
+              "pmia": 0,
+              "omega": 0,
+              "x_n": 0,
+              "layer": 0,
+              "autonomyActions": 0,
+              "kaizenSteps": 0
+            }
+          },
+          "channels": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "maxAbsDelta": {
+              "strain": 0,
+              "observerImpact": 0
+            }
+          }
+        },
+        "language_model": {
+          "identical": true,
+          "trajectory": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "kaizenConfigMismatchTicks": 0,
+            "maxAbsDelta": {
+              "ccc": 0,
+              "pmia": 0,
+              "omega": 0,
+              "x_n": 0,
+              "layer": 0,
+              "autonomyActions": 0,
+              "kaizenSteps": 0
+            }
+          },
+          "channels": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "maxAbsDelta": {
+              "strain": 0,
+              "observerImpact": 0
+            }
+          }
+        },
+        "language_wording": {
+          "identical": true,
+          "trajectory": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "kaizenConfigMismatchTicks": 0,
+            "maxAbsDelta": {
+              "ccc": 0,
+              "pmia": 0,
+              "omega": 0,
+              "x_n": 0,
+              "layer": 0,
+              "autonomyActions": 0,
+              "kaizenSteps": 0
+            }
+          },
+          "channels": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "maxAbsDelta": {
+              "strain": 0,
+              "observerImpact": 0
+            }
+          }
+        },
+        "api_coupled_control": {
+          "identical": false,
+          "trajectory": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "kaizenConfigMismatchTicks": 0,
+            "maxAbsDelta": {
+              "ccc": 0,
+              "pmia": 0,
+              "omega": 0,
+              "x_n": 0,
+              "layer": 0,
+              "autonomyActions": 0,
+              "kaizenSteps": 0
+            }
+          },
+          "channels": {
+            "identical": false,
+            "firstDivergentTick": 12,
+            "maxAbsDelta": {
+              "strain": 0.272128077419,
+              "observerImpact": 0
+            }
+          }
+        },
+        "observer_channel": {
+          "identical": false,
+          "trajectory": {
+            "identical": true,
+            "firstDivergentTick": null,
+            "kaizenConfigMismatchTicks": 0,
+            "maxAbsDelta": {
+              "ccc": 0,
+              "pmia": 0,
+              "omega": 0,
+              "x_n": 0,
+              "layer": 0,
+              "autonomyActions": 0,
+              "kaizenSteps": 0
+            }
+          },
+          "channels": {
+            "identical": false,
+            "firstDivergentTick": 10,
+            "maxAbsDelta": {
+              "strain": 0,
+              "observerImpact": 0.508024003791
+            }
+          }
+        }
+      },
+      "finals": {
+        "current": {
+          "tick": 120,
+          "ccc": 0.782379949187,
+          "pmia": 1,
+          "omega": 0.915407331216,
+          "x_n": 0.57818670936,
+          "layer": 0,
+          "kaizenDigest": "153cd768",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.161956809848,
+          "observerImpact": 0.131879802543,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 0,
+          "engineRandomCalls": 389818,
+          "engineNowCalls": 177728
+        },
+        "language_local": {
+          "tick": 120,
+          "ccc": 0.782379949187,
+          "pmia": 1,
+          "omega": 0.915407331216,
+          "x_n": 0.57818670936,
+          "layer": 0,
+          "kaizenDigest": "153cd768",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.161956809848,
+          "observerImpact": 0.131879802543,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 0,
+          "engineRandomCalls": 389818,
+          "engineNowCalls": 177728
+        },
+        "language_model": {
+          "tick": 120,
+          "ccc": 0.782379949187,
+          "pmia": 1,
+          "omega": 0.915407331216,
+          "x_n": 0.57818670936,
+          "layer": 0,
+          "kaizenDigest": "153cd768",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.161956809848,
+          "observerImpact": 0.131879802543,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 20,
+          "engineRandomCalls": 389818,
+          "engineNowCalls": 177728
+        },
+        "language_wording": {
+          "tick": 120,
+          "ccc": 0.782379949187,
+          "pmia": 1,
+          "omega": 0.915407331216,
+          "x_n": 0.57818670936,
+          "layer": 0,
+          "kaizenDigest": "153cd768",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.161956809848,
+          "observerImpact": 0.131879802543,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 24,
+          "engineRandomCalls": 389818,
+          "engineNowCalls": 177728
+        },
+        "api_coupled_control": {
+          "tick": 120,
+          "ccc": 0.782379949187,
+          "pmia": 1,
+          "omega": 0.915407331216,
+          "x_n": 0.57818670936,
+          "layer": 0,
+          "kaizenDigest": "153cd768",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.161956809848,
+          "observerImpact": 0.131879802543,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 24,
+          "engineRandomCalls": 389818,
+          "engineNowCalls": 177728
+        },
+        "observer_channel": {
+          "tick": 120,
+          "ccc": 0.782379949187,
+          "pmia": 1,
+          "omega": 0.915407331216,
+          "x_n": 0.57818670936,
+          "layer": 0,
+          "kaizenDigest": "153cd768",
+          "kaizenSteps": 24,
+          "autonomyActions": 24,
+          "strain": 0.161956809848,
+          "observerImpact": 0.639903806334,
+          "stasis": 0,
+          "sensorFrames": 120,
+          "apiCallLogEntries": 0,
+          "engineRandomCalls": 389818,
+          "engineNowCalls": 177740
+        }
+      },
+      "language": {
+        "language_local": {
+          "turns": 12,
+          "routes": {
+            "local_narrator": 12
+          },
+          "attempts": 0,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0,
+          "contracts": {
+            "verified": 12
+          }
+        },
+        "language_model": {
+          "turns": 12,
+          "routes": {
+            "gemini_free_checked": 8,
+            "gemini_rejected": 4
+          },
+          "attempts": 20,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0,
+          "contracts": {
+            "free": 12
+          }
+        },
+        "language_wording": {
+          "turns": 12,
+          "routes": {
+            "gemini_verified": 6,
+            "gemini_rejected": 6
+          },
+          "attempts": 24,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0,
+          "contracts": {
+            "verified": 12
+          }
+        }
+      }
+    }
+  }
+}

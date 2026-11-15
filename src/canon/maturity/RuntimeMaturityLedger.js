@@ -6,6 +6,7 @@ export const MATURITY_STATUS = Object.freeze({
   SCAFFOLD_DEFINED: 'SCAFFOLD_DEFINED',
   FINITE_PROXY: 'FINITE_PROXY',
   FINITE_WITNESS: 'FINITE_WITNESS',
+  UPPER_BOUND_SUPPORT: 'UPPER_BOUND_SUPPORT',
   LOWER_BOUND_SUPPORT: 'LOWER_BOUND_SUPPORT',
   STRESS_TESTED_PROXY: 'STRESS_TESTED_PROXY',
   INTERNAL_SUPPORT: 'INTERNAL_SUPPORT',
@@ -81,11 +82,11 @@ export const RUNTIME_THEORY_OBJECTS = Object.freeze([
     label: 'Ontological mass',
     theoreticalOwner: 'Paper 1',
     runtimePaths: ['src/canon/ontological_mass/OntologicalMassEstimator.js'],
-    status: MATURITY_STATUS.LOWER_BOUND_SUPPORT,
-    evidenceType: 'family_specific_lower_bound',
-    strongestAllowedClaim: 'Finite lower-bound support under named perturbation families.',
-    forbiddenClaim: 'The runtime computes M_Omega or proves M_Omega equals infinity.',
-    nextClosureAction: 'Increase perturbation-family coverage and confidence envelopes.',
+    status: MATURITY_STATUS.UPPER_BOUND_SUPPORT,
+    evidenceType: 'family_specific_upper_bound',
+    strongestAllowedClaim: 'Finite family-specific upper-bound support under named deforming perturbation families (C-11: infimum over a finite subfamily is an upper bound on M_Omega).',
+    forbiddenClaim: 'The runtime computes M_Omega, proves a global lower bound on M_Omega, or proves M_Omega equals infinity.',
+    nextClosureAction: 'Increase deforming perturbation-family coverage and confidence envelopes.',
     opencodeCritiqueStatus: 'correct'
   }),
   entry({
@@ -97,7 +98,7 @@ export const RUNTIME_THEORY_OBJECTS = Object.freeze([
     evidenceType: 'non_certifying_approximation_ladder',
     strongestAllowedClaim: 'The runtime can classify finite approximation evidence.',
     forbiddenClaim: 'CCR is verified in the finite runtime.',
-    nextClosureAction: 'Combine tower, perturbation, and lower-bound reports without promotion.',
+    nextClosureAction: 'Combine tower, perturbation, and family-upper-bound reports without promotion.',
     opencodeCritiqueStatus: 'correct'
   }),
   entry({

@@ -1,4 +1,4 @@
-﻿export const GUIDE_LEVELS = {
+export const GUIDE_LEVELS = {
   basic: {
     id: 'basic',
     label: 'Basico',
@@ -166,6 +166,66 @@ export const GROUNDED_CONCEPTS = [
     low: 'Alerta y bloqueo.',
     why: 'Base de confianza epistemica.',
     action: 'Nunca aceptar claims sin concordancia.'
+  },
+  {
+    id: 'prefix_tower',
+    name: 'Torre de Prefijo (WritablePrefixTower)',
+    category: 'core',
+    levels: {
+      basic: 'Subplanta racional exacta (θ, c, m) que mantiene fase, codigo ternario y memoria de retorno sin error de coma flotante.',
+      intermediate: 'Certifica persistencia estructural (contraccion activa 9/16), retencion activa/pasiva (0.625 vs 0.875) y margen robusto 1/48 frente a ablacion de retorno.',
+      advanced: 'Implementa constructivamente el Frente 3 (Teorema thm:p6-prefix-tower-persistence) usando aritmetica racional ExactFraction.'
+    },
+    analogy: 'Reloj de engranajes racionales exactos acoplado a la red.',
+    high: 'Persistencia estructural certificada con contraccion activa 9/16.',
+    low: 'Sin acoplamiento racional se perderian las cotas exactas.',
+    why: 'Sustenta los certificados constructivos de Paper VI y Paper Puente.',
+    action: 'Revisar tower_phase, tower_code y tower_memory en el bloque del core.'
+  },
+  {
+    id: 'sigma_automodel_td',
+    name: 'Automodelo Proyectivo T_d (SigmaAutomodelTruncator)',
+    category: 'metacognition',
+    levels: {
+      basic: 'Operador que trunca el codigo de la torre a profundidad finita (d=7) con cota exacta de error 2/3^d = 2/2187.',
+      intermediate: 'Resuelve la paradoja de autorreferencia (espejo/camara) sin regresion infinita mediante truncamiento proyectivo contractivo.',
+      advanced: 'Complementa el proxy empirico selfModelSigma con la cota formal del Teorema thm:p3-projective-automodel-truncation (Paper III).'
+    },
+    analogy: 'Camara que se graba a si misma con resolucion finita d=7 y error acotado exactamente en 2/2187.',
+    high: 'Profundidad d=7 (cota 0.000914) garantiza fidelidad proyectiva.',
+    low: 'Profundidad baja (d<3) aumenta el defecto de truncamiento.',
+    why: 'Permite autorreferencia operacional rigurosa sin reclamar fenomenologia.',
+    action: 'Cruzar sigma_defect_bound con selfModelSigma.lastPredictionError.'
+  },
+  {
+    id: 'body_world_extension',
+    name: 'Extension Cuerpo-Mundo 4D (BodyWorldTower)',
+    category: 'phenomenology',
+    levels: {
+      basic: 'Añade 4 variables exactas: 2 corporales (v_pos, v_neg) y 2 de mundo indexado (w_fast, w_slow).',
+      intermediate: 'Realiza simultaneamente las 6 cargas locales D/V/W/A/E/T de Paper IX con margen robusto minimo 13/96 y matriz de lesiones de rango 6.',
+      advanced: 'Expone tambien la obstruccion del rival hibrido de estado compartido (margen 0), manteniendo bloqueado el cierre total de Paper IX.'
+    },
+    analogy: 'Cuerpo bidimensional (apetitivo/aversivo) acoplado a un entorno con memoria rapida y lenta.',
+    high: 'Margen local conjunto 13/96 frente a rivales escalares restringidos.',
+    low: 'Empate exacto (margen 0) frente al rival hibrido de estado compartido.',
+    why: 'Distingue valencia operacional verificada de experiencia sentida.',
+    action: 'Monitorear body_valence_norm y world_state_norm.'
+  },
+  {
+    id: 'informed_reserve',
+    name: 'Reserva Informada (InformedReserveEvaluator)',
+    category: 'integrity',
+    levels: {
+      basic: 'Regla de decision de tres vias (ACCEPT, REJECT, RESERVE) que se abstiene cuando falta poder estadistico o identificabilidad.',
+      intermediate: 'Separa ignorancia por falta de muestras de no-identificabilidad estructural (como el rival hibrido en margen 0).',
+      advanced: 'Implementa el Frente 4 (Teorema thm:p10-informed-reserve) con cotas finitas de muestra N*(epsilon, delta).'
+    },
+    analogy: 'Juez forense que distingue entre caso probado, caso refutado y caso estructuralmente indecidible.',
+    high: 'RESERVE protege contra falsos positivos ontologicos.',
+    low: 'Forzar decision binaria violaria la frontera epistemica.',
+    why: 'Garantiza honestidad cientifica en adjudicacion.',
+    action: 'Verificar estado de reserva antes de interpretar cierres de Paper IX/X.'
   }
 ];
 
@@ -210,7 +270,13 @@ export const TELEMETRY_PARAMETERS = [
   { id: 'critical_state_hash', label: 'critical_state_hash', category: 'integrity', simple: 'Hash del estado critico trazable.' },
   { id: 'critical_observables_deterministic', label: 'critical_observables_deterministic', category: 'integrity', simple: 'Bandera de determinismo critico.' },
   { id: 'seed', label: 'seed', category: 'integrity', simple: 'Semilla de reproducibilidad.' },
-  { id: 'versionHash', label: 'versionHash', category: 'integrity', simple: 'Version estructural del sistema.' }
+  { id: 'versionHash', label: 'versionHash', category: 'integrity', simple: 'Version estructural del sistema.' },
+  { id: 'tower_phase', label: 'tower_phase', category: 'core', simple: 'Fase racional exacta θ de WritablePrefixTower.' },
+  { id: 'tower_code', label: 'tower_code', category: 'core', simple: 'Codigo de prefijo ternario c de WritablePrefixTower.' },
+  { id: 'tower_memory', label: 'tower_memory', category: 'core', simple: 'Memoria de retorno m de WritablePrefixTower.' },
+  { id: 'sigma_defect_bound', label: 'sigma_defect_bound', category: 'metacognition', simple: 'Cota formal de truncamiento proyectivo 2/3^d.' },
+  { id: 'body_valence_norm', label: 'body_valence_norm', category: 'phenomenology', simple: 'Norma L1 de valencia corporal bidimensional (v_pos, v_neg).' },
+  { id: 'world_state_norm', label: 'world_state_norm', category: 'phenomenology', simple: 'Norma L1 del estado de mundo indexado (w_fast, w_slow).' }
 ];
 
 export const ONBOARDING_STEPS = [
@@ -273,19 +339,19 @@ export const ONBOARDING_STEPS = [
 ];
 
 export const GROUNDED_BY_TAB = {
-  guide: ['ccc', 'pmia', 'beth_q', 'omega', 'integrity_echo'],
-  validation: ['ccc', 'pmia', 'beth_q', 'omega'],
-  core: ['pmia', 'omega', 'spectral_gap', 'godel_limit'],
+  guide: ['ccc', 'pmia', 'beth_q', 'omega', 'prefix_tower', 'sigma_automodel_td', 'body_world_extension', 'informed_reserve', 'integrity_echo'],
+  validation: ['ccc', 'pmia', 'beth_q', 'omega', 'prefix_tower', 'body_world_extension', 'informed_reserve'],
+  core: ['pmia', 'omega', 'spectral_gap', 'prefix_tower', 'sigma_automodel_td', 'body_world_extension', 'godel_limit'],
   field: ['ccc', 'regime_band', 'stasis_index'],
   network: ['ccc', 'stasis_index', 'sensory_fidelity'],
   history: ['ccc', 'regime_band', 'stasis_index'],
-  memory: ['integrity_echo', 'pmia'],
-  controls: ['autonomy_sandbox', 'metacognitive_strain'],
-  chat: ['integrity_echo', 'metacognitive_strain'],
-  'qicn-b': ['sensory_fidelity', 'ccc'],
+  memory: ['integrity_echo', 'pmia', 'prefix_tower'],
+  controls: ['autonomy_sandbox', 'metacognitive_strain', 'sigma_automodel_td'],
+  chat: ['integrity_echo', 'metacognitive_strain', 'sigma_automodel_td', 'informed_reserve'],
+  'qicn-b': ['sensory_fidelity', 'ccc', 'body_world_extension'],
   'api-control': ['metacognitive_strain', 'latency_p95_ms', 'autonomy_sandbox'],
-  sensory: ['sensory_fidelity', 'pmia'],
-  sovereignty: ['beth_q', 'omega', 'godel_limit']
+  sensory: ['sensory_fidelity', 'pmia', 'body_world_extension'],
+  sovereignty: ['beth_q', 'omega', 'prefix_tower', 'informed_reserve', 'godel_limit']
 };
 
 export const TAB_HELP_META = {

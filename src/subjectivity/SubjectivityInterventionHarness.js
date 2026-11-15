@@ -2,6 +2,10 @@ import fs from 'fs';
 import path from 'path';
 
 import { createSubjectiveValuationEngine } from './SubjectiveValuationEngine.js';
+import {
+  runInformedReserveSuite,
+  runSelectiveAddressLesionSuite
+} from './InformedReserveEvaluator.js';
 
 const PAPER_SOURCE = Object.freeze({
   paper_id: 'paper8_first_person_subjectivity',
@@ -236,6 +240,13 @@ export class SubjectivityInterventionHarness {
         input_profile: input.provenance?.input_profile || 'srt3_intervention_minimal'
       },
       schema_ref: INTERVENTION_SCHEMA_REF
+    };
+  }
+
+  runTowerSelectiveLesionAndReserveControls() {
+    return {
+      selective_address_lesions: runSelectiveAddressLesionSuite(),
+      informed_reserve: runInformedReserveSuite()
     };
   }
 

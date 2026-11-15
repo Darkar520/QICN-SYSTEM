@@ -429,3 +429,17 @@ export {
   Stage3_7FirstAdmissibleCollectionGateBuilder,
   createStage3_7FirstAdmissibleCollectionGateBuilder
 } from './Stage3_7FirstAdmissibleCollectionGateBuilder.js';
+
+export {
+  exactBinomialMass,
+  exactBinomialTail,
+  verifyCampaignIntegrity,
+  runPaper4CampaignControls,
+  clopperPearsonContains,
+  multinomialMass,
+  computeLeakageFloors,
+  buildAr1PrecisionMatrix,
+  evaluateQuadraticForm,
+  runPaper10AdjudicationControls,
+  runFullStatisticalAdjudicationSuite
+} from './StatisticalAdjudicationEngine.js';

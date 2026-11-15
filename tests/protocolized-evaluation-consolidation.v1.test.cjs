@@ -521,14 +521,22 @@ const runSeededCondition = async ({
     assert(tamperedCheck.failures.includes('unknown_comparisons_in_report'), 'A2 FAIL: injected unsupported comparison must be rejected as unknown_comparisons_in_report.');
 
     // A3: new evaluation artifacts must be blocked from claim-facing export surfaces.
+    // This is a synthetic boundary test, independent of mutable latest pointers.
     const actualProtocolManifest = readJson(path.join(EVALUATION_ROOT, 'evaluation_protocol_manifest.json'));
-    const latestPointer = readJson(path.join(EVALUATION_ROOT, 'latest_batch_pointer.json'));
-    const latestBatchRoot = path.join(PROJECT_ROOT, latestPointer.batch_root);
-    const latestRunsRoot = path.join(latestBatchRoot, 'artifacts');
-    const sampleRunDir = fs.readdirSync(latestRunsRoot, { withFileTypes: true })
+    const sampleRunDir = fs.readdirSync(path.join(descriptionRoot, 'runs'), { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
-      .map((entry) => path.join(latestRunsRoot, entry.name))[0];
-    assert(sampleRunDir && fs.existsSync(path.join(sampleRunDir, 'run_evaluation_metrics.json')), 'A3 FAIL: latest batch must contain at least one run_evaluation_metrics.json artifact.');
+      .map((entry) => path.join(descriptionRoot, 'runs', entry.name))[0];
+    assert(sampleRunDir && fs.existsSync(path.join(sampleRunDir, 'run_evaluation_metrics.json')), 'A3 FAIL: synthetic batch must contain run evaluation metrics.');
+    // Model an existing governed output plus ungoverned evaluation artifacts.
+    // Separate output-policy tests verify generation of the full policy inventory.
+    const policy = {
+      governed_outputs: ['ordinary_report.json'],
+      outputs: { 'ordinary_report.json': { allowed_surfaces: ['local_report_surface'] } }
+    };
+    for (const [dir, name] of [[sampleRunDir, 'output_surface_policy.json'], [descriptionRoot, 'condition_output_surface_policy.json']]) {
+      writeJson(path.join(dir, name), policy);
+      writeJson(path.join(dir, 'ordinary_report.json'), { artifact_role: 'synthetic_control' });
+    }
 
     const blockedBatchArtifacts = [
       'condition_evaluation_summary.json',
@@ -558,7 +566,7 @@ const runSeededCondition = async ({
 
     for (const artifactName of blockedBatchArtifacts) {
       const exportResult = exportOutputForSurface({
-        rootDir: EVALUATION_ROOT,
+        rootDir: descriptionRoot,
         artifactName,
         surface: 'claim_facing_blocked_surface',
         scope: 'small_batch',
@@ -569,10 +577,11 @@ const runSeededCondition = async ({
       assert(exportResult.decision.reason_code === 'blocked_output_not_governed', `A3 FAIL: ${artifactName} must be refused as blocked_output_not_governed under claim-facing export.`);
     }
     const localReport = buildLocalReportForSurface({
-      rootDir: EVALUATION_ROOT,
+      rootDir: descriptionRoot,
       scope: 'small_batch',
       outputPath: path.join(claimBlockRoot, 'local_report.json')
     });
+    assert(localReport.artifact.included_outputs['ordinary_report.json'], 'A3 FAIL: positive control must be included.');
     for (const artifactName of blockedBatchArtifacts) {
       assert(!localReport.artifact.included_outputs[artifactName], `A3 FAIL: ${artifactName} must not appear in local_report included outputs.`);
     }

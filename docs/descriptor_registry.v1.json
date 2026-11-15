@@ -147,6 +147,7 @@
         "run_summary.json"
       ],
       "source_signals": [
+        "stasis_index_post_threshold",
         "stasis_index",
         "pmia",
         "beth_q",
@@ -312,9 +313,6 @@
       "source_module": [
         "src/canon/invariants/CanonicalInvariantPackage.js",
         "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
-        "src/canon/persistence/PersistenceCertifier.js",
-        "src/experiments/NonFactorizationProver.js",
-        "src/experiments/LegibilityCertifier.js",
         "src/simulation/PhenomenologyCore.js"
       ],
       "source_artifact": [
@@ -322,23 +320,17 @@
       ],
       "source_signals": [
         "I_per",
-        "persistence_certificate.forward_invariance",
-        "persistence_certificate.min_collapse_distance",
         "I_ri",
         "finite_horizon.is_inverse_limit_element",
         "finite_horizon.categorical_compatibility",
         "finite_horizon.approximation_error_bound",
         "I_int",
-        "integration.non_factorizable",
-        "integration.factorization_candidates_tested",
-        "integration.factorizations_found",
         "I_cont",
         "phenomenology.Pi_S",
         "phenomenology.fragmentation_functional",
         "phenomenology.invalid_regime_jumps",
         "I_diff",
-        "I_leg",
-        "legibility_certificate.L1_L6"
+        "I_leg"
       ],
       "downstream_artifacts": [
         "claim_mapping_snapshot.json",
@@ -357,7 +349,8 @@
         "tests/continuity-formal.test.js",
         "tests/phenomenology-protocol-suite.v56.test.js",
         "tests/runtime-hygiene.test.js",
-        "tests/legibility-certifier.test.js"
+        "tests/legibility-certifier.test.js",
+        "tests/finite-projection-missing-evidence.test.js"
       ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [
@@ -370,9 +363,9 @@
       ],
       "evidence_scope": "runtime_derived",
       "external_dependency": "none",
-      "status": "documented_real",
+      "status": "documented_partial",
       "non_claim_boundary": "Invariant support is not external closure.",
-      "notes_gaps": "Executable minimum groups the six repo-real invariants as one family row. I_per includes finite forward-invariance and collapse-distance certification, not an analytic proof over all controls. I_cont includes finite Pi_S projection and fragmentation-functional diagnostics, not complete metric-space continuity. I_ri includes finite-window inverse-limit witness, categorical compatibility, and truncation-error diagnostics only, not full inverse-limit preservation. I_int includes finite candidate non-factorization diagnostics, not exhaustive non-factorization over all partitions. I_leg includes a finite L1-L6 operational certificate without promoting semantic transparency or external validation."
+      "notes_gaps": "Invariant package v7: I_per, I_int and I_leg use partial runtime composites. Synthetic persistence trials, default-graph factorization and fabricated L1-L6 fixtures are not run-level evidence or score inputs. Missing values are not successful checks. Finite inverse-limit and continuity diagnostics remain bounded proxies; I_per and I_ri require further audit. Missing finite-projection inputs cannot pass or be converted to zero."
     },
     {
       "id": "ART_harness_admissibility_preverdict",
@@ -449,7 +442,8 @@
       "downstream_artifacts": [],
       "test_anchors": [
         "tests/roeo.v1.test.js",
-        "tests/sno.v1.test.js"
+        "tests/sno.v1.test.js",
+        "tests/runtime-claim-evidence-absence.test.js"
       ],
       "gate_dependencies": [
         "GR_run_verdict_status"
@@ -459,7 +453,7 @@
       "external_dependency": "mixed",
       "status": "not_closed",
       "non_claim_boundary": "Claim projection is not external substrate-preserved class closure.",
-      "notes_gaps": "Depends on batch surfaces and external canon boundary."
+      "notes_gaps": "Pair-family and ROEO/SNO artifacts are required dependencies, but the runtime mapping currently does not promote caller-provided families because provenance and integrity are unverified. Independent batch surfaces remain separate."
     },
     {
       "id": "CP_P5_03",
@@ -496,36 +490,30 @@
     {
       "id": "CP_P5_05",
       "kind": "claim_projection",
-      "layer": "cross_layer",
+      "layer": "runtime_derived",
       "source_module": [
-        "src/canon/claimMapping/runtimeClaimMapping.js",
-        "src/experiments/negative_controls_runner.js"
+        "src/canon/claimMapping/runtimeClaimMapping.js"
       ],
       "source_artifact": [
-        "claim_mapping_snapshot.json",
-        "negative_controls_report.json",
-        "roeo_enforcement_report.json"
+        "claim_mapping_snapshot.json"
       ],
       "source_signals": [
-        "NC1-NC4 outcomes",
-        "ROEO distances",
-        "leak accuracy"
+        "batch negative controls required but not consumed"
       ],
       "downstream_artifacts": [],
       "test_anchors": [
-        "tests/negative-controls.v1.test.js",
-        "tests/roeo_enforcement.v1.test.js"
+        "tests/runtime-claim-evidence-absence.test.js"
       ],
       "gate_dependencies": [
         "GR_run_verdict_status",
         "GR_paper_admissibility_status"
       ],
       "claim_projection_dependencies": [],
-      "evidence_scope": "mixed",
+      "evidence_scope": "runtime_derived",
       "external_dependency": "prereg_config",
       "status": "not_closed",
       "non_claim_boundary": "Claim projection is not external falsification of complexity-only alternatives.",
-      "notes_gaps": "Kept distinct from negative-control outputs and gate results."
+      "notes_gaps": "P5-05 remains PARTIAL_RUNTIME_PATH: this run-level projection does not consume batch NC1-NC4, ROEO or SNO reports; gate dependencies identify required future inputs, not current reads."
     },
     {
       "id": "CP_P5_06",
@@ -548,7 +536,8 @@
       "downstream_artifacts": [],
       "test_anchors": [
         "tests/roeo.v1.test.js",
-        "tests/sno.v1.test.js"
+        "tests/sno.v1.test.js",
+        "tests/runtime-claim-evidence-absence.test.js"
       ],
       "gate_dependencies": [
         "GR_run_verdict_status"
@@ -558,7 +547,7 @@
       "external_dependency": "mixed",
       "status": "not_closed",
       "non_claim_boundary": "Claim projection is not publication-grade biological non-primacy closure.",
-      "notes_gaps": "Depends on batch equivalence path and external canon boundary."
+      "notes_gaps": "Pair-family and ROEO/SNO artifacts are required dependencies, but the runtime mapping currently does not promote caller-provided families because provenance and integrity are unverified. Independent batch surfaces remain separate."
     },
     {
       "id": "GR_run_verdict_status",
@@ -856,8 +845,8 @@
     },
     {
       "id": "DR_expanded_negative_controls",
-      "kind": "artifact_only",
-      "layer": "batch",
+      "kind": "not_yet_classified",
+      "layer": "runtime",
       "source_module": [
         "src/experiments/negative_controls_expanded.js",
         "src/experiments/NonFactorizationProver.js"
@@ -886,15 +875,13 @@
         "tests/null-regime-instability.test.js",
         "tests/non-factorization.test.js"
       ],
-      "gate_dependencies": [
-        "BG_negative_controls_enforcement"
-      ],
+      "gate_dependencies": [],
       "claim_projection_dependencies": [],
-      "evidence_scope": "batch_primary",
-      "external_dependency": "prereg_config",
-      "status": "documented_real",
-      "non_claim_boundary": "Expanded controls are internal adversarial checks, not external falsification.",
-      "notes_gaps": "Adds NC5 spectral decay, NC6 finite inverse-limit rupture, NC7 trivial topology, NC8 null-regime instability, NC9-NC12 finite factorization searches, plus legacy placebo/ablation/shuffle/drift helpers."
+      "evidence_scope": "mixed",
+      "external_dependency": "none",
+      "status": "documented_partial",
+      "non_claim_boundary": "Standalone helpers may use synthetic defaults; their outputs are not recorded run or batch artifacts and do not imply external validation.",
+      "notes_gaps": "NC5-NC12 and planning helpers are exported and tested in isolation; default traces and graphs can be synthetic. No automatic integration with NC1-NC4 batch enforcement was found."
     }
   ]
 }

@@ -7,6 +7,7 @@ import {
 } from './PhenomenalBridgeInputBundleLoader.js';
 import { createPhenomenalBridgeInterventionHarness } from './PhenomenalBridgeInterventionHarness.js';
 import { createPhenomenalBridgeReducibilityComparator } from './PhenomenalBridgeReducibilityComparator.js';
+import { runFullBodyWorldBridgeVerification } from './BridgeTransportAndBurdensEvaluator.js';
 import { PHENOMENAL_BRIDGE_THRESHOLDS } from './PhenomenalBridgeThresholdRegistry.js';
 import { PHENOMENAL_BRIDGE_SURFACE_POLICY } from './PhenomenalBridgeSurfacePolicy.js';
 import { PHENOMENAL_BRIDGE_ARTIFACT_SCHEMA } from './PhenomenalBridgeArtifactRegistry.js';
@@ -633,6 +634,8 @@ export class PhenomenalBridgeGateEvaluator {
       schema_ref: PHENOMENAL_BRIDGE_ARTIFACT_SCHEMA.root_schema_refs?.['phenomenal_bridge_manifest.json']
     };
 
+    const towerBridgeVerification = runFullBodyWorldBridgeVerification();
+
     return {
       projection,
       gate_result: gateResult,
@@ -641,7 +644,8 @@ export class PhenomenalBridgeGateEvaluator {
       phi_bpf: phiBpf,
       gamma_bpf: gammaBpf,
       classification,
-      gate_pass: gatePass
+      gate_pass: gatePass,
+      mathematical_tower_verification: towerBridgeVerification
     };
   }
 

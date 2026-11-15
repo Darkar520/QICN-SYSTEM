@@ -76,3 +76,9 @@ export {
   SubjectivityEcosystemIntegrator,
   createSubjectivityEcosystemIntegrator
 } from './SubjectivityEcosystemIntegrator.js';
+
+export {
+  runInformedReserveSuite,
+  runSelectiveAddressLesionSuite,
+  computePrimarySubjectivityScores
+} from './InformedReserveEvaluator.js';

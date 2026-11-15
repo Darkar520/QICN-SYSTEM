@@ -1,7 +1,7 @@
 ﻿{
-  "name": "QICN Singularidad Ontologica",
+  "name": "QICN Runtime experimental",
   "short_name": "QICN",
-  "description": "Quantum-Informational Consciousness Network",
+  "description": "Simulación y telemetría interna QICN; sin validación externa",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#020617",

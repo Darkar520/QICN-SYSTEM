@@ -5,7 +5,7 @@
 
 const sortByPosition = (rows = []) => [...rows].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
 
-export const P503_THRESHOLD_RUNTIME_VERSION = 'p5-03-threshold-runtime.v4';
+export const P503_THRESHOLD_RUNTIME_VERSION = 'p5-03-threshold-runtime.v5';
 
 export const DEFAULT_P503_THRESHOLD_SPEC = Object.freeze({
   invariantFloors: Object.freeze({
@@ -267,6 +267,35 @@ export const evaluateP503ThresholdRuntime = ({
   thresholdSpec = DEFAULT_P503_THRESHOLD_SPEC
 } = {}) => {
   const flags = summary?.flags || {};
+  const missing = Object.keys(thresholdSpec.invariantFloors).filter((id) => {
+    const record = invariantPackage?.invariants?.[id];
+    return !record || record?.provenance?.scoreEvidenceStatus !== 'complete_recorded';
+  });
+  if (missing.length) {
+    return {
+      version: P503_THRESHOLD_RUNTIME_VERSION,
+      maturity: 'PARTIAL_RUNTIME_PATH',
+      thresholdSpec,
+      profiles: [],
+      constraintSummary: null,
+      closureSummary: {
+        runtimePath: 'PARTIAL_RUNTIME_PATH',
+        claimClosingReadiness: 'INSUFFICIENT_FOR_CLAIM_CLOSING',
+        supportInterpretation: 'runtime_threshold_evidence_incomplete',
+        baseDecision: 'UNKNOWN',
+        firstFailOffset: null,
+        criticalPassBoundaryOffset: null,
+        criticalFailBoundaryOffset: null,
+        ambiguityZoneWidth: null,
+        dominantInvariant: null,
+        requiresExternalDenseStress: true,
+        evidenceScope: 'INTERNAL_SUPPORT_ONLY',
+        missingInvariantEvidence: missing
+      },
+      externalMaterializationDependencies: ['recorded invariant inputs and external threshold stress remain required'],
+      notes: ['Missing or partial evidence cannot establish a formal threshold crossing or failing invariant.']
+    };
+  }
   const rows = thresholdSpec.profiles.map((profile) => buildProfileRow({
     profile,
     invariantPackage,

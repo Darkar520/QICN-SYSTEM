@@ -19,6 +19,9 @@
 
 import { createLogger } from '../utils/logger.js';
 
+/** Cap of the spectral factor λ1/Δλ in Ω (C-4, user decision 2026-11-08). */
+export const SPECTRAL_FACTOR_MAX = 20;
+
 /**
  * @typedef {Object} PhenomenologyState
  * @property {number} beth_q
@@ -30,6 +33,9 @@ import { createLogger } from '../utils/logger.js';
  * @property {'clockwise'|'counterclockwise'|'trivial'} winding_orientation
  * @property {number} topo_factor
  * @property {number} omega
+ * @property {number} [spectral_factor] λ1/Δλ after the C-4 cap.
+ * @property {number} [spectral_factor_raw] λ1/Δλ before the cap.
+ * @property {boolean} [spectral_factor_capped] true when the cap was applied.
  * @property {number} relaxation_time
  * @property {number} fragmentation_bound
  * @property {number} invalid_regime_jumps
@@ -873,9 +879,18 @@ export class PhenomenologyCore {
         // Omega(S): Operador Integrador Final
         // Formula: Omega = beth_q * (1 - |?(I)|) * lambda,/"lambda
         const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
-        const spectral_factor = spectral.delta_lambda > 0.001
+        // C-4 (user decision 2026-11-08): the ratio λ1/Δλ has no bound in the
+        // active corpus and reached ~10^3 with small gaps, pushing Ω outside
+        // the [0,100] range MetaSovereigntyCheck validates. It is capped at
+        // SPECTRAL_FACTOR_MAX = 20, the ceiling of the warm-up regime
+        // (λ1 = 1, Δλ ≥ 0.05). Design parameter, not a theoretical bound.
+        const rawSpectralFactor = spectral.delta_lambda > 0.001
             ? spectral.lambda_1 / spectral.delta_lambda
             : 0;
+        const spectral_factor = Math.min(SPECTRAL_FACTOR_MAX, Math.max(0, rawSpectralFactor));
+        this.phenomenologyState.spectral_factor = spectral_factor;
+        this.phenomenologyState.spectral_factor_raw = rawSpectralFactor;
+        this.phenomenologyState.spectral_factor_capped = rawSpectralFactor > SPECTRAL_FACTOR_MAX;
 
         // Factor topolgico continuo: evita colapso abrupto a omega=0 cuando hay
         // actividad topolgica baja pero no nula.

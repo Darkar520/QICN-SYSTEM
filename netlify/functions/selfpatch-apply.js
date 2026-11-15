@@ -52,17 +52,48 @@ const applyEditOperation = (source, edit) => {
   return `${lines.join('\n')}${normalized.endsWith('\n') ? '\n' : ''}`;
 };
 
+const validPatchPath = (file) => {
+  if (typeof file !== 'string' || !file.trim() || file.includes('\0') || /[:]/.test(file)) return false;
+  const normalized = file.replace(/\\/g, '/');
+  if (normalized.startsWith('/')) return false;
+  const segments = normalized.split('/');
+  if (segments.some((part) => !part || /[. ]$/.test(part))) return false;
+  return !segments.some((part) => /^(?:\.git|\.env(?:\..*)?|\.netlify|node_modules)$/i.test(part));
+};
+
+const isWithinRoot = (root, target) => {
+  const relative = path.relative(root, target);
+  return relative !== '..' && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative);
+};
+
+const safeLocalTarget = (projectRoot, relativePath) => {
+  const absolutePath = path.resolve(projectRoot, relativePath);
+  if (!isWithinRoot(projectRoot, absolutePath)) throw new Error('local_apply_path_escape');
+  let ancestor = absolutePath;
+  for (;;) {
+    try {
+      // lstat also detects dangling links; realpath below then fails closed.
+      fs.lstatSync(ancestor);
+      break;
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+      const parent = path.dirname(ancestor);
+      if (parent === ancestor) throw error;
+      ancestor = parent;
+    }
+  }
+  if (!isWithinRoot(projectRoot, fs.realpathSync(ancestor))) throw new Error('local_apply_symlink_escape');
+  return absolutePath;
+};
+
 const applyPatchLocally = ({ patch }) => {
-  const projectRoot = process.cwd();
+  const projectRoot = fs.realpathSync(process.cwd());
   const backups = [];
 
   try {
     for (const edit of patch.edits) {
       const relativePath = String(edit.file || '').replace(/\\/g, '/').replace(/^\/+/, '');
-      const absolutePath = path.resolve(projectRoot, relativePath);
-      if (!absolutePath.startsWith(projectRoot)) {
-        throw new Error(`local_apply_path_escape:${relativePath}`);
-      }
+      const absolutePath = safeLocalTarget(projectRoot, relativePath);
 
       const exists = fs.existsSync(absolutePath);
       if (!exists && edit.op !== 'insert') {
@@ -101,10 +132,14 @@ const applyPatchLocally = ({ patch }) => {
 const readBlobKillSwitchState = async (fetchImpl = fetch) => {
   const url = process.env.QICN_BLOB_KILLSWITCH_URL || '';
   if (!url) return 'UNKNOWN';
-  const response = await fetchImpl(url, { method: 'GET' });
-  if (!response.ok) return 'UNKNOWN';
-  const payload = await response.json().catch(() => ({}));
-  return payload?.state || payload?.killswitch || 'UNKNOWN';
+  try {
+    const response = await fetchImpl(url, { method: 'GET', signal: AbortSignal.timeout(5000) });
+    if (!response.ok) return 'UNKNOWN';
+    const payload = await response.json();
+    return payload?.state || payload?.killswitch || 'UNKNOWN';
+  } catch {
+    return 'UNKNOWN';
+  }
 };
 
 const readGithubKillSwitchState = async ({ owner, repo, token, fetchImpl = fetch }) => {
@@ -115,7 +150,7 @@ const readGithubKillSwitchState = async ({ owner, repo, token, fetchImpl = fetch
       repo,
       name: 'QICN_KILLSWITCH',
       token,
-      fetchImpl
+      fetchImpl: (url, options) => fetchImpl(url, { ...options, signal: AbortSignal.timeout(5000) })
     });
     return variable?.value || 'UNKNOWN';
   } catch {
@@ -128,7 +163,7 @@ const validatePatch = (patch) => {
   if (!Array.isArray(patch.edits) || patch.edits.length === 0) return 'INVALID_EDITS';
   for (const edit of patch.edits) {
     if (!edit || typeof edit !== 'object') return 'INVALID_EDIT_ENTRY';
-    if (!edit.file || typeof edit.file !== 'string') return 'INVALID_EDIT_FILE';
+    if (!validPatchPath(edit.file)) return 'INVALID_EDIT_FILE';
     if (!['replace', 'insert', 'delete'].includes(edit.op)) return 'INVALID_EDIT_OP';
     if (!Number.isFinite(Number(edit.start_line)) || !Number.isFinite(Number(edit.end_line))) {
       return 'INVALID_EDIT_LINES';
@@ -276,8 +311,8 @@ export const handler = async (event, context) => {
 
   // Phase-1 quorum check (entry).
   if (hasGithubConfig) {
-    const blobStateStart = body.blobKillSwitchState || await readBlobKillSwitchState();
-    const githubStateStart = body.githubKillSwitchState || await readGithubKillSwitchState({ owner, repo, token });
+    const blobStateStart = await readBlobKillSwitchState();
+    const githubStateStart = await readGithubKillSwitchState({ owner, repo, token });
     const quorumStart = evaluateKillSwitchQuorum({
       blobState: blobStateStart,
       githubState: githubStateStart
@@ -310,8 +345,8 @@ export const handler = async (event, context) => {
 
   // Phase-2 quorum check (just before GitHub write).
   if (hasGithubConfig) {
-    const blobStatePreWrite = body.blobKillSwitchState || await readBlobKillSwitchState();
-    const githubStatePreWrite = body.githubKillSwitchState || await readGithubKillSwitchState({ owner, repo, token });
+    const blobStatePreWrite = await readBlobKillSwitchState();
+    const githubStatePreWrite = await readGithubKillSwitchState({ owner, repo, token });
     const quorumPreWrite = evaluateKillSwitchQuorum({
       blobState: blobStatePreWrite,
       githubState: githubStatePreWrite

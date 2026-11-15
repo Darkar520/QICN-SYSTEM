@@ -82,11 +82,11 @@
       "framework_id": "n/a (M_Omega ontological mass)",
       "framework_object": "M_Omega: measure-theoretic mass of attractor under structural measure",
       "runtime_module": "src/canon/ontological_mass/OntologicalMassEstimator.js",
-      "runtime_estimator": "finite family-specific resistance lower bound",
-      "gap_ledger_status": "lower-bound support",
+      "runtime_estimator": "finite family-specific resistance upper bound on M_Omega (C-11, d_w > 0)",
+      "gap_ledger_status": "family upper-bound support",
       "tests": ["tests/ontological-mass-estimator.v1.test.js"],
       "invariant_id": null,
-      "forbidden_claim": "M_Omega is computed or infinite"
+      "forbidden_claim": "M_Omega is computed, globally lower-bounded, or infinite"
     },
     {
       "framework_id": "n/a (CCR closed-causal-rigidity)",

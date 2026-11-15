@@ -65,7 +65,7 @@ do not by themselves change runtime evidence contracts.
   and canon paths. They are not owned by `StateProvider`.
 - `SimulationController` currently owns `WorldModelEngine` and
   `CognitiveEmergencePlanner` instances. It does not expose a public `runTick`
-  API; the browser tick loop remains in `SimulationEngine.jsx`.
+  API; the browser tick loop is extracted into `src/hooks/useSimulationCycle.js` and wired by `SimulationEngine.jsx`.
 - Health checks and structured logs are operational diagnostics. They are not
   claim projections and must not be reported as external validation.
 - `netlify/functions/` and `js/api/` remain operational or compatibility
@@ -89,3 +89,14 @@ npm run build
 npm run scoreboard:run
   -> internal professionalization scoreboard
 ```
+
+
+## Runtime stabilization boundaries (2026-11-05)
+
+`SimulationEngine.jsx` owns presentation and chat orchestration; `src/utils/llmTransport.js` owns HTTP deadlines, provider/proxy routing and transport provenance. This extraction is still Gemini-specific and is not a universal inference adapter.
+
+The chat validates each newly generated reply against its current integrity packet; historical Q&A cannot bypass that validation. `HolographicMemoryNexus` remains an internal heuristic memory with context-dependent retrieval, not a truth store.
+
+Server authentication is centralized in `netlify/functions/lib/auth-user.js`. The standalone local server serves only the built public tree and binds to loopback; it does not emulate verified Identity contexts. Selfpatch remains a high-risk operational surface even after its path and stop-control fixes.
+
+See [the dated audit](RUNTIME_STABILIZATION_AUDIT_2026-11-05.md) for baseline provenance, test evidence, scientific non-claims and unresolved dependencies.

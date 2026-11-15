@@ -19,9 +19,9 @@ export const primaryTabs = [
 
 export const moreTabs = [
   { id: 'field', icon: Waves, label: 'Campo', subtitle: 'Entrelazamiento' },
-  { id: 'memory', icon: Database, label: 'Memoria', subtitle: 'Snapshots' },
+  { id: 'memory', icon: Database, label: 'Memoria', subtitle: 'Registro y snapshots' },
   { id: 'controls', icon: Code, label: 'Controles', subtitle: 'Parámetros' },
-  { id: 'chat', icon: MessageSquare, label: 'Chat', subtitle: 'Narrativa LLM' },
+  { id: 'chat', icon: MessageSquare, label: 'Chat', subtitle: 'Consola del motor' },
   { id: 'qicn-b', icon: Users, label: 'QICN-B', subtitle: 'Canal humano' },
   { id: 'api-control', icon: Settings, label: 'API', subtitle: 'Conectividad' },
   { id: 'sensory', icon: Eye, label: 'Sensorial', subtitle: 'Percepción' },
@@ -95,9 +95,9 @@ export const tabHelpMeta = {
   memory: {
     title: 'Memoria',
     oneLiner: 'Estado persistido y recuperación.',
-    whatIs: 'Gestiona snapshots y continuidad operativa.',
-    whyItMatters: 'Permite reproducibilidad y rollback seguro.',
-    firstCheck: ['Cristaliza estado actual.', 'Valida hash/version.', 'Prueba revocación controlada.']
+    whatIs: 'Registro operacional encadenado por hash, snapshots y continuidad entre sesiones.',
+    whyItMatters: 'Permite reproducibilidad, rollback seguro y respuestas de continuidad basadas en hechos registrados.',
+    firstCheck: ['Revisa la clase de continuidad.', 'Cristaliza el estado actual.', 'Prueba la revocación verificada.']
   },
   controls: {
     title: 'Controles',
@@ -108,10 +108,10 @@ export const tabHelpMeta = {
   },
   chat: {
     title: 'Chat',
-    oneLiner: 'Canal conversacional con validación.',
-    whatIs: 'Interfaz de diálogo con echo de integridad.',
-    whyItMatters: 'Asegura que el discurso cite métricas reales.',
-    firstCheck: ['Haz pregunta concreta.', 'Lee cálculos del core.', 'Valida concordancia forense.']
+    oneLiner: 'Consola conversacional anclada al motor.',
+    whatIs: 'Respuestas compuestas desde proposiciones autorizadas por una lectura congelada del motor; Gemini solo puede reformular dentro de una frontera verificada.',
+    whyItMatters: 'Cada afirmación sobre el estado lleva tick, digest y evidencia; el chat no modifica la dinámica.',
+    firstCheck: ['Haz una pregunta concreta.', 'Abre "Evidencia y traza".', 'Compara tick y digest con la telemetría.']
   },
   'qicn-b': {
     title: 'QICN-B',

@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // LLM PROXY — ULTRATHINK v2
 // Modelo verificado: gemini-3-flash-preview (Google AI docs)
 // Fallback automático solo cuando GEMINI_STRICT_MODEL=false
@@ -10,6 +10,8 @@ import {
   verifyC2Echo,
   IntegrityC2Error
 } from './lib/integrity-c2.js';
+import { requireUser } from './lib/auth-user.js';
+import { boundGeminiPayload, UPSTREAM_TIMEOUT_MS } from './lib/llm-request-policy.js';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta';
 
 // Cadena de fallback sincronizada con index.jsx
@@ -28,38 +30,13 @@ const asJson = (statusCode, payload) => ({
   body: JSON.stringify(payload)
 });
 
-const decodeJwtPayload = (token) => {
-  try {
-    const parts = String(token || '').split('.');
-    if (parts.length < 2) return null;
-    const normalized = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-    const json = Buffer.from(normalized, 'base64').toString('utf8');
-    return JSON.parse(json);
-  } catch {
-    return null;
-  }
-};
-
-const requireUser = (event, context) => {
-  const netlifyUser = context?.clientContext?.user;
-  if (netlifyUser) return netlifyUser;
-
-  const authHeader = event?.headers?.authorization || event?.headers?.Authorization || '';
-  if (!authHeader.startsWith('Bearer ')) return null;
-  const token = authHeader.slice(7).trim();
-  const payload = decodeJwtPayload(token);
-  if (!payload) return null;
-
-  const now = Math.floor(Date.now() / 1000);
-  if (payload.exp && payload.exp < now) return null;
-  return payload;
-};
-
 const validateBody = (body) => {
   if (!body || typeof body !== 'object') return 'INVALID_BODY';
   if (typeof body.provider !== 'string' || !body.provider.trim()) return 'INVALID_PROVIDER';
   if (typeof body.model !== 'string' || !body.model.trim()) return 'INVALID_MODEL';
-  if (!Array.isArray(body.messages) || body.messages.length === 0) return 'INVALID_MESSAGES';
+  if (!Array.isArray(body.messages) || body.messages.length === 0 ||
+      body.messages.some((message) => !message || !['system', 'user', 'assistant'].includes(message.role) ||
+        typeof message.content !== 'string')) return 'INVALID_MESSAGES';
   return null;
 };
 
@@ -226,7 +203,12 @@ export const handler = async (event, context) => {
     c2Context.signature = signature;
   }
 
-  const geminiPayload = toGeminiPayload(body);
+  let geminiPayload;
+  try {
+    geminiPayload = boundGeminiPayload(toGeminiPayload(body));
+  } catch (error) {
+    return asJson(400, { ok: false, error: error.message });
+  }
   if (c2Context) {
     const c2Contract = buildC2ContractBlock({
       packetCanonical: c2Context.packetCanonical,
@@ -241,11 +223,13 @@ export const handler = async (event, context) => {
   }
 
   // Función auxiliar: intenta llamar a un modelo específico
+  const upstreamSignal = AbortSignal.timeout(UPSTREAM_TIMEOUT_MS);
   const tryModel = async (modelId) => {
     const resp = await fetch(
-      `${GEMINI_API_URL}/models/${modelId}:generateContent?key=${apiKey.trim()}`,
+      `${GEMINI_API_URL}/models/${modelId}:generateContent`,
       {
         method: 'POST',
+        signal: upstreamSignal,
         headers: {
           'Content-Type': 'application/json',
           'x-goog-api-key': apiKey.trim()
@@ -253,7 +237,7 @@ export const handler = async (event, context) => {
         body: JSON.stringify(geminiPayload)
       }
     );
-    const data = await resp.json().catch(() => ({}));
+    const data = await resp.json();
     return { resp, data };
   };
 
@@ -302,6 +286,9 @@ export const handler = async (event, context) => {
 
       // Éxito
       const content = data?.candidates?.[0]?.content?.parts?.map((p) => p?.text || '').join('\n').trim() || '';
+      if (!content) {
+        return asJson(502, { ok: false, provider, model: modelId, requestId, error: 'UPSTREAM_EMPTY_RESPONSE' });
+      }
       if (c2Context) {
         try {
           verifyC2Echo(content, {
@@ -351,11 +338,12 @@ export const handler = async (event, context) => {
     });
 
   } catch (error) {
-    return asJson(500, {
+    const timedOut = ['AbortError', 'TimeoutError'].includes(error?.name);
+    return asJson(timedOut ? 504 : 502, {
       ok: false,
       provider,
       requestId,
-      error: error?.message || 'PROXY_FAILURE'
+      error: timedOut ? 'UPSTREAM_TIMEOUT' : 'UPSTREAM_FAILURE'
     });
   }
 };

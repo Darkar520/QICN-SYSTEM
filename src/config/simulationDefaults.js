@@ -77,32 +77,48 @@ export const GEMINI_MODEL_FALLBACK_CHAIN = [
 ];
 
 export const GEMINI_ENGINE_CONFIG = {
-  MODEL_ID: GEMINI_STRICT_MODEL
-    ? GEMINI_3_FLASH_MODEL_ID
-    : (runtimeEnv.GEMINI_MODEL_ID || GEMINI_3_FLASH_MODEL_ID),
+  MODEL_ID: runtimeEnv.GEMINI_MODEL_ID || GEMINI_3_FLASH_MODEL_ID,
   API_VERSION: 'v1beta',
   BASE_URL: 'https://generativelanguage.googleapis.com',
 
+  // Since 2026-05-28 Google AI Studio issues authorization ("auth") keys, which
+  // do not use the legacy `AIza` prefix (observed format `AQ.`); restricted
+  // standard keys may still start with `AIza`. The client therefore only checks
+  // that the value is a plausible token and lets the provider decide; the
+  // provider's own error is preserved and shown when it rejects the key.
+  // Source: https://aistudio.google.com/docs/api-key (consulted 2026-11-07).
   validateApiKey(key) {
-    if (!key || typeof key !== 'string') return false;
-    const trimmed = key.trim();
-    return trimmed.length >= 30 && /^AIza/.test(trimmed);
+    return describeGeminiKey(key).usable;
   },
 
   getEndpointForModel(apiKey, modelId) {
     const model = modelId || this.MODEL_ID;
-    return `${this.BASE_URL}/${this.API_VERSION}/models/${model}:generateContent?key=${apiKey.trim()}`;
+    return `${this.BASE_URL}/${this.API_VERSION}/models/${model}:generateContent`;
   },
 
   getEndpoint(apiKey) {
     if (apiKey && apiKey.trim() && this.validateApiKey(apiKey)) {
-      return `${this.BASE_URL}/${this.API_VERSION}/models/${this.MODEL_ID}:generateContent?key=${apiKey.trim()}`;
+      return `${this.BASE_URL}/${this.API_VERSION}/models/${this.MODEL_ID}:generateContent`;
     }
     return runtimeEnv.LLM_PROXY_ENDPOINT;
   }
 };
 
 export const LLM_AUTH_ERROR_TOKEN = 'LLM_API_KEY_INVALID_401';
+
+/**
+ * Classify a Gemini key string without contacting the provider.
+ * @returns {{usable:boolean, format:'auth_key'|'standard_key'|'unrecognized'|'empty'|'invalid_characters'}}
+ */
+export function describeGeminiKey(key) {
+  if (typeof key !== 'string' || !key.trim()) return { usable: false, format: 'empty' };
+  const trimmed = key.trim();
+  if (/\s/.test(trimmed) || !/^[A-Za-z0-9._-]+$/.test(trimmed)) return { usable: false, format: 'invalid_characters' };
+  if (trimmed.length < 20) return { usable: false, format: 'unrecognized' };
+  if (/^AQ\./.test(trimmed)) return { usable: true, format: 'auth_key' };
+  if (/^AIza/.test(trimmed)) return { usable: true, format: 'standard_key' };
+  return { usable: true, format: 'unrecognized' };
+}
 
 // ============================================================================
 // AUTONOMY RUNTIME DEFAULTS
@@ -137,11 +153,11 @@ export const QUANTUM_RUNTIME_DEFAULTS = {
   pollIntervalMs: Math.max(1000, Number(runtimeEnv.QUANTUM_POLL_INTERVAL_MS) || 10000),
   requiredQualityMin: clamp01(runtimeEnv.QUANTUM_REQUIRED_QUALITY_MIN ?? 0.2),
   bufferCapacityChunks: Math.max(1, Number(runtimeEnv.QUANTUM_BUFFER_CAPACITY_CHUNKS) || 8),
-  lowWatermarkChunks: Math.max(0, Number(runtimeEnv.QUANTUM_BUFFER_LOW_WATERMARK_CHUNKS) || 2),
+  lowWatermarkChunks: Math.max(0, toFiniteNumber(runtimeEnv.QUANTUM_BUFFER_LOW_WATERMARK_CHUNKS, 2)),
   refillTargetChunks: Math.max(1, Number(runtimeEnv.QUANTUM_BUFFER_REFILL_TARGET_CHUNKS) || 6),
   providerTimeoutMs: Math.max(500, Number(runtimeEnv.QUANTUM_PROVIDER_TIMEOUT_MS) || 4500),
-  providerRetryCount: Math.max(0, Number(runtimeEnv.QUANTUM_PROVIDER_RETRY_COUNT) || 1),
-  providerRetryBackoffMs: Math.max(0, Number(runtimeEnv.QUANTUM_PROVIDER_RETRY_BACKOFF_MS) || 300),
+  providerRetryCount: Math.max(0, toFiniteNumber(runtimeEnv.QUANTUM_PROVIDER_RETRY_COUNT, 1)),
+  providerRetryBackoffMs: Math.max(0, toFiniteNumber(runtimeEnv.QUANTUM_PROVIDER_RETRY_BACKOFF_MS, 300)),
   allowProviderFallback: Boolean(runtimeEnv.QUANTUM_PROVIDER_FALLBACK_ENABLED),
   logLevel: typeof runtimeEnv.QUANTUM_LOG_LEVEL === 'string' ? runtimeEnv.QUANTUM_LOG_LEVEL : 'warn'
 };

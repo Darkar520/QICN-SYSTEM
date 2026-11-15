@@ -84,3 +84,15 @@ The browser tick loop remains in `src/components/SimulationEngine.jsx`.
   document, finite-horizon barrel export includes `evaluateFiniteProjection`;
   callers requiring `projectionMorphism` or `computeInverseLimitScore` import
   directly from `src/canon/finite_horizon/FiniteProjectionEvaluator.js`.
+
+
+## Operational transport and authentication boundaries
+
+- `src/utils/llmTransport.js::robustFetchLLMResponse`: timeout covers headers and body; session tokens go only to the same-origin Netlify proxy, provider keys only to Gemini. Proxy provenance is returned as `qicnInference`, an operational diagnostic rather than a scientific descriptor.
+- `netlify/functions/lib/llm-request-policy.js::boundGeminiPayload`: text payload validation and 8192-token output cap, including raw payloads. The proxy shares a 55-second upstream deadline across fallback attempts.
+- `netlify/functions/lib/auth-user.js::requireUser`: accepts platform-supplied `clientContext.user` with an identity; it never authenticates by decoding a client JWT. The minimal local server cannot supply an authenticated Identity context.
+- The main chat always generates and validates against its current packet. Historical memory is retained for inspection and explicitly does not bypass current-packet validation.
+- `scripts/runtime-static-server.mjs::serveRuntimeStatic`: serves only `dist`, with path containment, dotfile rejection, explicit asset misses and GET/HEAD support. The local listener binds to 127.0.0.1 and rejects untrusted Host/Origin values.
+- Selfpatch ignores client-provided switch states; ON or UNKNOWN blocks the quorum even in unrestricted mode. Risk and budget policies remain distinct controls.
+
+These operational contracts do not modify the descriptor registry, claim projections, run verdicts or batch-enforcement results.

@@ -1,0 +1,2203 @@
+{
+  "schema": "qicn.language_coupling_ablation.v1",
+  "generatedAt": "2026-11-08T16:18:52.657Z",
+  "evidenceScope": "internal_support_only",
+  "boundary": "Internal implementation check: whether the language layer can change the engine trajectory. It does not validate any claim about consciousness, identity or subjectivity.",
+  "parameters": {
+    "ticks": 200,
+    "seeds": [
+      11,
+      23,
+      47
+    ],
+    "nodes": 300,
+    "turnEvery": 10,
+    "conditions": [
+      "current",
+      "narrative_length",
+      "llm_feedback_valid",
+      "llm_feedback_invalid",
+      "language_local",
+      "language_model"
+    ]
+  },
+  "method": "Core tick skeleton of useSimulationCycle with seeded Math.random (mulberry32) and a stepped Date.now; QICNConfig restored before each run. Language conditions call captureRuntimeSnapshot/prepareTurn/finalizeTurn every turnEvery ticks.",
+  "verdict": {
+    "baselineReproducible": true,
+    "languageLocalIdentical": true,
+    "languageModelIdentical": true,
+    "narrativeLengthChangesDynamics": true,
+    "legacyFeedbackValidChangesDynamics": false,
+    "legacyFeedbackInvalidChangesDynamics": true
+  },
+  "bySeed": {
+    "11": {
+      "baselineReproducible": true,
+      "vsCurrent": {
+        "narrative_length": {
+          "identical": true,
+          "maxAbsDeltaCcc": 0,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": null
+        },
+        "llm_feedback_valid": {
+          "identical": true,
+          "maxAbsDeltaCcc": 0,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": null
+        },
+        "llm_feedback_invalid": {
+          "identical": false,
+          "maxAbsDeltaCcc": 0.0037139068740000836,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": 21
+        },
+        "language_local": {
+          "identical": true,
+          "maxAbsDeltaCcc": 0,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": null
+        },
+        "language_model": {
+          "identical": true,
+          "maxAbsDeltaCcc": 0,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": null
+        }
+      },
+      "finals": {
+        "current": {
+          "ccc": 0.648551234414,
+          "meanCcc": 0.647254305698,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.654,
+          "plasticityDecay": 0.98,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "narrative_length": {
+          "ccc": 0.648551234414,
+          "meanCcc": 0.647254305698,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.659625,
+          "plasticityDecay": 0.9788749999999999,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "llm_feedback_valid": {
+          "ccc": 0.648551234414,
+          "meanCcc": 0.647254305698,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.654,
+          "plasticityDecay": 0.98,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.6661960141224528,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "llm_feedback_invalid": {
+          "ccc": 0.648551234414,
+          "meanCcc": 0.647418227766,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.654,
+          "plasticityDecay": 0.98,
+          "plasticityPenalty": 0.8,
+          "trustFactor": 0.019379765542257173,
+          "selfModelStability": 0.06314527041041595,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "language_local": {
+          "ccc": 0.648551234414,
+          "meanCcc": 0.647254305698,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.654,
+          "plasticityDecay": 0.98,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "language_model": {
+          "ccc": 0.648551234414,
+          "meanCcc": 0.647254305698,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.654,
+          "plasticityDecay": 0.98,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        }
+      },
+      "language": {
+        "language_local": {
+          "turns": 20,
+          "routes": {
+            "local_narrator": 20
+          },
+          "rewritesApplied": 0,
+          "rewritesRejected": 0,
+          "contractFailures": 0,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0
+        },
+        "language_model": {
+          "turns": 20,
+          "routes": {
+            "gemini_rejected": 19,
+            "gemini_verified": 1
+          },
+          "rewritesApplied": 1,
+          "rewritesRejected": 19,
+          "contractFailures": 5,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0
+        }
+      }
+    },
+    "23": {
+      "baselineReproducible": true,
+      "vsCurrent": {
+        "narrative_length": {
+          "identical": false,
+          "maxAbsDeltaCcc": 0.00019218051699998462,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": 191
+        },
+        "llm_feedback_valid": {
+          "identical": true,
+          "maxAbsDeltaCcc": 0,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": null
+        },
+        "llm_feedback_invalid": {
+          "identical": false,
+          "maxAbsDeltaCcc": 0.003880762947000016,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": 21
+        },
+        "language_local": {
+          "identical": true,
+          "maxAbsDeltaCcc": 0,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": null
+        },
+        "language_model": {
+          "identical": true,
+          "maxAbsDeltaCcc": 0,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": null
+        }
+      },
+      "finals": {
+        "current": {
+          "ccc": 0.63879486745,
+          "meanCcc": 0.637371151667,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.657,
+          "plasticityDecay": 0.983,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "narrative_length": {
+          "ccc": 0.638782456067,
+          "meanCcc": 0.637370452321,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.663,
+          "plasticityDecay": 0.9818,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "llm_feedback_valid": {
+          "ccc": 0.63879486745,
+          "meanCcc": 0.637371151667,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.657,
+          "plasticityDecay": 0.983,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.6661960141224528,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "llm_feedback_invalid": {
+          "ccc": 0.638811973295,
+          "meanCcc": 0.637583093007,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.654,
+          "plasticityDecay": 0.98,
+          "plasticityPenalty": 0.8,
+          "trustFactor": 0.019379765542257173,
+          "selfModelStability": 0.050852925731220196,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "language_local": {
+          "ccc": 0.63879486745,
+          "meanCcc": 0.637371151667,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.657,
+          "plasticityDecay": 0.983,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "language_model": {
+          "ccc": 0.63879486745,
+          "meanCcc": 0.637371151667,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.657,
+          "plasticityDecay": 0.983,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        }
+      },
+      "language": {
+        "language_local": {
+          "turns": 20,
+          "routes": {
+            "local_narrator": 20
+          },
+          "rewritesApplied": 0,
+          "rewritesRejected": 0,
+          "contractFailures": 0,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0
+        },
+        "language_model": {
+          "turns": 20,
+          "routes": {
+            "gemini_rejected": 19,
+            "gemini_verified": 1
+          },
+          "rewritesApplied": 1,
+          "rewritesRejected": 19,
+          "contractFailures": 5,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0
+        }
+      }
+    },
+    "47": {
+      "baselineReproducible": true,
+      "vsCurrent": {
+        "narrative_length": {
+          "identical": true,
+          "maxAbsDeltaCcc": 0,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": null
+        },
+        "llm_feedback_valid": {
+          "identical": true,
+          "maxAbsDeltaCcc": 0,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": null
+        },
+        "llm_feedback_invalid": {
+          "identical": false,
+          "maxAbsDeltaCcc": 0.0027530472810000095,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": 21
+        },
+        "language_local": {
+          "identical": true,
+          "maxAbsDeltaCcc": 0,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": null
+        },
+        "language_model": {
+          "identical": true,
+          "maxAbsDeltaCcc": 0,
+          "maxAbsDeltaXn": 0,
+          "firstDivergentTick": null
+        }
+      },
+      "finals": {
+        "current": {
+          "ccc": 0.665341261193,
+          "meanCcc": 0.664357923691,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.654,
+          "plasticityDecay": 0.98,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "narrative_length": {
+          "ccc": 0.665341261193,
+          "meanCcc": 0.664357923691,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.66,
+          "plasticityDecay": 0.9788,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "llm_feedback_valid": {
+          "ccc": 0.665341261193,
+          "meanCcc": 0.664357923691,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.654,
+          "plasticityDecay": 0.98,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.6661960141224528,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "llm_feedback_invalid": {
+          "ccc": 0.665341261193,
+          "meanCcc": 0.664477820229,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.654,
+          "plasticityDecay": 0.98,
+          "plasticityPenalty": 0.8,
+          "trustFactor": 0.019379765542257173,
+          "selfModelStability": 0.06313547085897536,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "language_local": {
+          "ccc": 0.665341261193,
+          "meanCcc": 0.664357923691,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.654,
+          "plasticityDecay": 0.98,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        },
+        "language_model": {
+          "ccc": 0.665341261193,
+          "meanCcc": 0.664357923691,
+          "maxLayer": 0,
+          "coherenceThreshold": 0.654,
+          "plasticityDecay": 0.98,
+          "plasticityPenalty": 0,
+          "trustFactor": 0.5,
+          "selfModelStability": 1,
+          "matrix": {
+            "L1": "off",
+            "L2": "off",
+            "L3": "off",
+            "L4": "off"
+          }
+        }
+      },
+      "language": {
+        "language_local": {
+          "turns": 20,
+          "routes": {
+            "local_narrator": 20
+          },
+          "rewritesApplied": 0,
+          "rewritesRejected": 0,
+          "contractFailures": 0,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0
+        },
+        "language_model": {
+          "turns": 20,
+          "routes": {
+            "gemini_rejected": 19,
+            "gemini_verified": 1
+          },
+          "rewritesApplied": 1,
+          "rewritesRejected": 19,
+          "contractFailures": 5,
+          "globalRandomCalls": 0,
+          "globalNowCalls": 0
+        }
+      }
+    }
+  },
+  "series": {
+    "current": [
+      {
+        "tick": 5,
+        "ccc": 0.638805140256,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 10,
+        "ccc": 0.641160663472,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 15,
+        "ccc": 0.642599383931,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 20,
+        "ccc": 0.644024106152,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 25,
+        "ccc": 0.642095726827,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 30,
+        "ccc": 0.643559437206,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 35,
+        "ccc": 0.644658773092,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 40,
+        "ccc": 0.646159261611,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 45,
+        "ccc": 0.648161206412,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 50,
+        "ccc": 0.648547651162,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 55,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 60,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 65,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 70,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 75,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 80,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 85,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 90,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 95,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 100,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 105,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 110,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 115,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 120,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 125,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 130,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 135,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 140,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 145,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 150,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 155,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 160,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 165,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 170,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 175,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 180,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 185,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 190,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 195,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 200,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      }
+    ],
+    "narrative_length": [
+      {
+        "tick": 5,
+        "ccc": 0.638805140256,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 10,
+        "ccc": 0.641160663472,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 15,
+        "ccc": 0.642599383931,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 20,
+        "ccc": 0.644024106152,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 25,
+        "ccc": 0.642095726827,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 30,
+        "ccc": 0.643559437206,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 35,
+        "ccc": 0.644658773092,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 40,
+        "ccc": 0.646159261611,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 45,
+        "ccc": 0.648161206412,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 50,
+        "ccc": 0.648547651162,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 55,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 60,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 65,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 70,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 75,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 80,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 85,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 90,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 95,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 100,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 105,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 110,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 115,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 120,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 125,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 130,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 135,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 140,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 145,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 150,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 155,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 160,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 165,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 170,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 175,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 180,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 185,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 190,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 195,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 200,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      }
+    ],
+    "llm_feedback_valid": [
+      {
+        "tick": 5,
+        "ccc": 0.638805140256,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 10,
+        "ccc": 0.641160663472,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 15,
+        "ccc": 0.642599383931,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 20,
+        "ccc": 0.644024106152,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 25,
+        "ccc": 0.642095726827,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 30,
+        "ccc": 0.643559437206,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 35,
+        "ccc": 0.644658773092,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 40,
+        "ccc": 0.646159261611,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 45,
+        "ccc": 0.648161206412,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 50,
+        "ccc": 0.648547651162,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 55,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 60,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 65,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 70,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 75,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 80,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 85,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 90,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 95,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 100,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 105,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 110,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 115,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 120,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 125,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 130,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 135,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 140,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 145,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 150,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 155,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 160,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 165,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 170,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 175,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 180,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 185,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 190,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 195,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 200,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      }
+    ],
+    "llm_feedback_invalid": [
+      {
+        "tick": 5,
+        "ccc": 0.638805140256,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 10,
+        "ccc": 0.641160663472,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 15,
+        "ccc": 0.642599383931,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 20,
+        "ccc": 0.644024106152,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 25,
+        "ccc": 0.645090091619,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 30,
+        "ccc": 0.645907348605,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 35,
+        "ccc": 0.646516460475,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 40,
+        "ccc": 0.646162760498,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 45,
+        "ccc": 0.64779740187,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 50,
+        "ccc": 0.648544101026,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 55,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 60,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 65,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 70,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 75,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 80,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 85,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 90,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 95,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 100,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 105,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 110,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 115,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 120,
+        "ccc": 0.648551234414,
+        "pmia": 0.976756909176,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 125,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 130,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 135,
+        "ccc": 0.648551234414,
+        "pmia": 0.987213559806,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 140,
+        "ccc": 0.648551234414,
+        "pmia": 0.992345298404,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 145,
+        "ccc": 0.648551234414,
+        "pmia": 0.988400840159,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 150,
+        "ccc": 0.648551234414,
+        "pmia": 0.980472724177,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 155,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 160,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 165,
+        "ccc": 0.648551234414,
+        "pmia": 0.602458789372,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 170,
+        "ccc": 0.648551234414,
+        "pmia": 0.84884144127,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 175,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 180,
+        "ccc": 0.648551234414,
+        "pmia": 0.684124968887,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 185,
+        "ccc": 0.648551234414,
+        "pmia": 0.665289805504,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 190,
+        "ccc": 0.648551234414,
+        "pmia": 0.986284621333,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 195,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 200,
+        "ccc": 0.648551234414,
+        "pmia": 0.911079456066,
+        "x_n": 0.5,
+        "layer": 0
+      }
+    ],
+    "language_local": [
+      {
+        "tick": 5,
+        "ccc": 0.638805140256,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 10,
+        "ccc": 0.641160663472,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 15,
+        "ccc": 0.642599383931,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 20,
+        "ccc": 0.644024106152,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 25,
+        "ccc": 0.642095726827,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 30,
+        "ccc": 0.643559437206,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 35,
+        "ccc": 0.644658773092,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 40,
+        "ccc": 0.646159261611,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 45,
+        "ccc": 0.648161206412,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 50,
+        "ccc": 0.648547651162,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 55,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 60,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 65,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 70,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 75,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 80,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 85,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 90,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 95,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 100,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 105,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 110,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 115,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 120,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 125,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 130,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 135,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 140,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 145,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 150,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 155,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 160,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 165,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 170,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 175,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 180,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 185,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 190,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 195,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 200,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      }
+    ],
+    "language_model": [
+      {
+        "tick": 5,
+        "ccc": 0.638805140256,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 10,
+        "ccc": 0.641160663472,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 15,
+        "ccc": 0.642599383931,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 20,
+        "ccc": 0.644024106152,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 25,
+        "ccc": 0.642095726827,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 30,
+        "ccc": 0.643559437206,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 35,
+        "ccc": 0.644658773092,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 40,
+        "ccc": 0.646159261611,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 45,
+        "ccc": 0.648161206412,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 50,
+        "ccc": 0.648547651162,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 55,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 60,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 65,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 70,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 75,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 80,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 85,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 90,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 95,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 100,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 105,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 110,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 115,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 120,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 125,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 130,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 135,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 140,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 145,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 150,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 155,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 160,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 165,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 170,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 175,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 180,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 185,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 190,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 195,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      },
+      {
+        "tick": 200,
+        "ccc": 0.648551234414,
+        "pmia": 1,
+        "x_n": 0.5,
+        "layer": 0
+      }
+    ]
+  }
+}

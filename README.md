@@ -1,6 +1,6 @@
 # QICN Runtime Engineering Repository
 
-[![QICN Verification Pipeline](https://github.com/sickn33/QICN-SYSTEM/actions/workflows/verify.yml/badge.svg)](https://github.com/sickn33/QICN-SYSTEM/actions/workflows/verify.yml)
+[![QICN Verification Pipeline](https://github.com/Darkar520/QICN-SYSTEM/actions/workflows/verify.yml/badge.svg)](https://github.com/Darkar520/QICN-SYSTEM/actions/workflows/verify.yml)
 
 ## Purpose
 
@@ -111,3 +111,10 @@ ANTI-FREEZE warm-up values for `beth_q` and `spectral_gap` are engineering safeg
 - Version by default: source, required configuration, reproducible scripts, tests, and engineering docs.
 - Exclude by default: secrets, caches, build outputs, conversation exports, sensitive datasets, and non-reproducible artifacts.
 - Review manually: ambiguous legacy files, external corpus references, and any path that mixes theory with runtime.
+
+
+## Current stabilization audit
+
+See [the 2026-11-05 runtime audit](docs/RUNTIME_STABILIZATION_AUDIT_2026-11-05.md) for local/remote provenance, reproduced defects, verification and remaining limits.
+
+`npm start` and `npm run start:local` serve the built `dist` directory on loopback. Build first. They do not serve repository files or emulate a verified Netlify Identity session. For private authenticated use, run through a verified platform Identity context; disabling auth is an explicit local development choice.

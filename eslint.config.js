@@ -32,6 +32,7 @@ const sharedGlobals = {
   prompt: readonly,
   Promise: readonly,
   requestAnimationFrame: readonly,
+  indexedDB: readonly,
   ResizeObserver: readonly,
   Response: readonly,
   self: readonly,
@@ -39,6 +40,8 @@ const sharedGlobals = {
   setTimeout: readonly,
   SpeechRecognition: readonly,
   structuredClone: readonly,
+  TextDecoder: readonly,
+  TextEncoder: readonly,
   URL: readonly,
   URLSearchParams: readonly,
   Vosk: readonly,
@@ -54,9 +57,6 @@ export default [
       'dist/**',
       'node_modules/**',
       'coverage/**',
-      'src/comparative_program/**',
-      'src/subjectivity/**',
-      'src/phenomenal_bridge/**',
       'src/canon/ArchitecturalGroundTruth.js',
       'src/canon/index.js'
     ]

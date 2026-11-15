@@ -1,3 +1,6 @@
+import { requireUser } from './auth-user.js';
+export { requireUser };
+
 export const asJson = (statusCode, payload) => ({
   statusCode,
   headers: {
@@ -6,31 +9,6 @@ export const asJson = (statusCode, payload) => ({
   },
   body: JSON.stringify(payload)
 });
-
-const decodeJwtPayload = (token) => {
-  try {
-    const parts = String(token || '').split('.');
-    if (parts.length < 2) return null;
-    const normalized = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-    return JSON.parse(Buffer.from(normalized, 'base64').toString('utf8'));
-  } catch {
-    return null;
-  }
-};
-
-export const requireUser = (event, context) => {
-  const netlifyUser = context?.clientContext?.user;
-  if (netlifyUser) return netlifyUser;
-
-  const authHeader = event?.headers?.authorization || event?.headers?.Authorization || '';
-  if (!authHeader.startsWith('Bearer ')) return null;
-  const token = authHeader.slice(7).trim();
-  const payload = decodeJwtPayload(token);
-  if (!payload) return null;
-  const now = Math.floor(Date.now() / 1000);
-  if (payload.exp && payload.exp < now) return null;
-  return payload;
-};
 
 export const parseJsonBody = (event) => {
   try {

@@ -8,11 +8,11 @@ emitRunMetadata('test');
 const testsDir = path.resolve(__dirname);
 const allTests = fs
   .readdirSync(testsDir)
-  .filter((file) => file.endsWith('.test.js'))
+  .filter((file) => /\.test\.(?:js|cjs|mjs)$/.test(file))
   .sort((a, b) => a.localeCompare(b));
 
 if (allTests.length === 0) {
-  console.error('[tests] No .test.js files found.');
+  console.error('[tests] No test modules found.');
   process.exit(1);
 }
 
@@ -20,7 +20,7 @@ const failed = [];
 for (const file of allTests) {
   const relative = path.join('tests', file);
   console.log(`[tests] Running ${relative}`);
-  const result = spawnSync(process.execPath, [relative], { stdio: 'inherit' });
+  const result = spawnSync(process.execPath, [relative], { stdio: 'inherit', timeout: 120000 });
   if (result.status !== 0) {
     failed.push(relative);
   }
@@ -35,7 +35,7 @@ if (fs.existsSync(path.resolve(testsDir, 'simulation-cycle-headless.smoke.mjs'))
   const harnessResult = spawnSync(
     process.execPath,
     ['--import', './tests/lib/register-loader.mjs', headlessHarness],
-    { stdio: 'inherit' }
+    { stdio: 'inherit', timeout: 120000 }
   );
   if (harnessResult.status !== 0) {
     failed.push(headlessHarness);

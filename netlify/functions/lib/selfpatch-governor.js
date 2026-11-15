@@ -12,17 +12,6 @@ export const normalizeKillSwitchState = (value) => {
 };
 
 export const evaluateKillSwitchQuorum = ({ blobState, githubState }) => {
-  if (String(policyJson?.mode || '').toLowerCase() === 'sandbox_unrestricted') {
-    return {
-      allowed: true,
-      reason: 'sandbox_unrestricted_mode',
-      states: {
-        blob: normalizeKillSwitchState(blobState),
-        github: normalizeKillSwitchState(githubState)
-      }
-    };
-  }
-
   const blob = normalizeKillSwitchState(blobState);
   const github = normalizeKillSwitchState(githubState);
   if (blob !== 'OFF' || github !== 'OFF') {

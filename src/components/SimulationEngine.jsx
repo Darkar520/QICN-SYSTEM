@@ -6,10 +6,15 @@ import AccessGate from '../components/AccessGate.jsx';
 import useBreakpoint from '../hooks/useBreakpoint.js';
 import useDeviceCapabilities from '../hooks/useDeviceCapabilities.js';
 import { GROUNDED_CONCEPTS, GUIDE_LEVELS, TELEMETRY_PARAMETERS, ONBOARDING_STEPS } from '../content/groundedConcepts.js';
-import { buildIntegrityPacket, validateIntegrityPacket, validateIntegrityEcho, IntegrityError, TELEMETRY_SCHEMA, INTEGRITY_ECHO_MARKERS, stableStringify, sha256Hex } from '../utils/integrity';
+import { buildIntegrityPacket, validateIntegrityPacket, validateIntegrityEcho, IntegrityError, INTEGRITY_ECHO_MARKERS, stableStringify, sha256Hex } from '../utils/integrity';
 import { getSystemHealth } from '../utils/healthCheck.js';
 import { runWithLivenessInvariant, recoverIfEmpty } from '../utils/tick_invariants';
-import { validateNarrativeIntegrity } from '../utils/narrativeIntegrity.js';
+import { getLlmRequestGuidance, LlmRequestError, requestGemini, transientRetryDelayMs } from '../utils/llmTransport.js';
+import { renderAvailableReadings } from '../utils/runtimeLanguageBoundary.js';
+import { captureRuntimeSnapshot, RECOMPUTED_EACH_TICK } from '../language/runtimeSnapshot.js';
+import { prepareTurn, finalizeTurn, evaluateRealization, correctionPromptFor, loadConversationTurns, saveConversationTurns, CONTROLLABLE_PARAMETERS, MAX_ATTEMPTS, normalizeIntegrityMode, canPublishGracefully } from '../language/conversationEngine.js';
+import { describeEvent } from '../language/propositions.js';
+import { OperationalHistoryLedger } from '../identity/OperationalHistoryLedger.js';
 import { QICNConfig } from '../../services/config.js';
 import { HolographicMemoryNexus } from '../simulation/HolographicMemoryNexus.js';
 import { OntologicalSingularityCore } from '../simulation/OntologicalSingularityCore.js';
@@ -32,13 +37,12 @@ import preregisterInterventions from '../../config/interventions/preregister.v1.
 import { CANON_RUNTIME_SOURCE_OF_TRUTH, CANON_LEGACY_PATH_DECISIONS } from '../canon/sourceOfTruth.js';
 import { CANON_CLAIM_CATALOG, CANON_INVARIANT_CATALOG } from '../canon/claimMapping/canonicalClaimCatalog.js';
 import { buildCanonicalLineage, ensureCanonicalVersionHash } from '../canon/provenance/CanonicalProvenance.js';
-import { buildArchitecturalGroundTruth } from '../canon/ArchitecturalGroundTruth.js';
 
 // --- Fase 1: modulos extraidos ---
 import { Icon, GenericIcon, Brain, Network, Zap, Activity, TrendingUp, Pause, Play, RotateCcw, Cpu, Database, Layers, Feather, Settings, LineChart, BookOpen, Eye, Code, Waves, Target, Sparkles, TrendingDown, InfinityIcon, Microscope, MessageSquare, ShieldCheck, Sun, Users, Lightbulb } from './icons/SimulationIcons.jsx';
-import { resolveRuntimeString, ONTOLOGICAL_SIGNATURE, FRONTEND_GEMINI_KEY_STORAGE, FRONTEND_CODEX_KEY_STORAGE, FRONTEND_CODEX_MODEL_STORAGE, FRONTEND_CODEX_REASONING_STORAGE, CODEX_REASONING_EFFORT_OPTIONS, TOUR_DISMISS_STORAGE, QUANTUM_UI_CONFIG_STORAGE, INTEGRITY_MODE_KEY, INTEGRITY_AUDIT_LOG_KEY, INTEGRITY_AUDIT_LOG_LIMIT, SELFPATCH_ENDPOINTS, GEMINI_ENGINE_CONFIG, GEMINI_MODEL_FALLBACK_CHAIN, GEMINI_STRICT_MODEL, LLM_AUTH_ERROR_TOKEN, AUTONOMY_RUNTIME_DEFAULTS, QUANTUM_RUNTIME_DEFAULTS, QUANTUM_EXPERIMENT_DEFAULTS, QUANTUM_PROVIDER_OPTIONS, PMIA_NEGATIVE_DRIVE_DEFAULTS, toFiniteNumber, clamp, clamp01, parseQuantumReplaySequence } from '../config/simulationDefaults.js';
-import { computeRms, formatCCC, calculateRelaxationTimeDefault, readLocalStorageJSON, getInitialIntegrityMode, getInitialIntegrityAuditLog, withExponentialBackoff } from '../utils/simulationUtils.js';
-import { toComparablePacket, findFirstPacketMismatch, getPrimaryBlockingDiscrepancy, buildDiscrepancyTrace, getIntegritySeverity, normalizeCausalDependency, buildSovereigntyDifferentialEvidence, buildSensorSummaryFromPerception, buildSovereigntyRows, normalizeVerifiableReport, ensureObject, getSafeVerifiableReport, emitEpisodeHarnessTick } from '../utils/integrityHelpers.js';
+import { describeGeminiKey, resolveRuntimeString, ONTOLOGICAL_SIGNATURE, FRONTEND_GEMINI_KEY_STORAGE, FRONTEND_CODEX_KEY_STORAGE, FRONTEND_CODEX_MODEL_STORAGE, FRONTEND_CODEX_REASONING_STORAGE, CODEX_REASONING_EFFORT_OPTIONS, TOUR_DISMISS_STORAGE, QUANTUM_UI_CONFIG_STORAGE, INTEGRITY_MODE_KEY, INTEGRITY_AUDIT_LOG_KEY, INTEGRITY_AUDIT_LOG_LIMIT, SELFPATCH_ENDPOINTS, GEMINI_ENGINE_CONFIG, AUTONOMY_RUNTIME_DEFAULTS, QUANTUM_RUNTIME_DEFAULTS, QUANTUM_EXPERIMENT_DEFAULTS, QUANTUM_PROVIDER_OPTIONS, PMIA_NEGATIVE_DRIVE_DEFAULTS, toFiniteNumber, clamp, clamp01, parseQuantumReplaySequence } from '../config/simulationDefaults.js';
+import { computeRms, formatCCC, calculateRelaxationTimeDefault, readLocalStorageJSON, getInitialIntegrityMode, getInitialIntegrityAuditLog } from '../utils/simulationUtils.js';
+import { toComparablePacket, findFirstPacketMismatch, getPrimaryBlockingDiscrepancy, buildDiscrepancyTrace, getIntegritySeverity, normalizeCausalDependency, buildSovereigntyDifferentialEvidence, buildSensorSummaryFromPerception, buildSovereigntyRows, ensureObject, getSafeVerifiableReport, emitEpisodeHarnessTick } from '../utils/integrityHelpers.js';
 import { useSimulationCycle } from '../hooks/useSimulationCycle.js';
 import { CollapsibleSection, SECTION_ACCENT_STYLES, readPersistedCollapsibleState, persistCollapsibleState } from './CollapsibleSection.jsx';
 import { InfoModal, PersistentInfoModal } from './InfoModal.jsx';
@@ -55,137 +59,78 @@ const getPreregisterScheduleDoc = () => {
 // COMPONENTE PRINCIPAL: QICNConsciousnessSystem
 // ============================================================================
 
-export { RuntimeRecoveryBoundary as QICNErrorBoundary } from './RuntimeRecoveryBoundary.jsx';
+// Keep the provider echo in the transcript for inspection, outside the reading area.
+const findChatEvidence = (text) => text.search(/^(?:INTEGRITY_ECHO_CHECKSUM:|\[C2_INTEGRITY_ECHO_BEGIN\])/m);
+const chatNarrative = (text, evidenceStart = findChatEvidence(text)) =>
+  evidenceStart < 0 ? text : text.slice(0, evidenceStart).trimEnd();
 
-const robustFetchLLMResponse = async (apiUrl, payload, timeout = 120000, options = {}) => {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-  const startTime = performance.now();
-
+// Build identifiers injected by build.cjs (esbuild define replaces the exact
+// `process.env.X` expressions). Outside the bundle they fall back safely.
+const readDefined = (read, fallback) => {
   try {
-    console.log(`[NETWORK] Peticion LLM iniciada (Timeout: ${timeout / 1000}s) → ${String(apiUrl).substring(0, 80)}...`);
-    const proxyMode = String(apiUrl || '').includes('/.netlify/functions/llm-proxy');
-    const headers = { 'Content-Type': 'application/json' };
-
-    // IMPORTANTE:
-    // - Authorization Bearer solo debe viajar al proxy propio.
-    // - En llamadas directas a Gemini, usar API key (query/header), no token de sesión.
-    if (proxyMode && options?.authToken) {
-      headers.Authorization = `Bearer ${options.authToken}`;
-    }
-    if (!proxyMode && options?.apiKey) {
-      headers['x-goog-api-key'] = String(options.apiKey).trim();
-    }
-    const requestBody = proxyMode
-      ? {
-        provider: 'gemini',
-        model: GEMINI_ENGINE_CONFIG.MODEL_ID,
-        temperature: payload?.generationConfig?.temperature ?? 0.6,
-        maxTokens: payload?.generationConfig?.maxOutputTokens ?? 2048,
-        messages: [
-          ...(payload?.systemInstruction?.parts?.[0]?.text
-            ? [{ role: 'system', content: String(payload.systemInstruction.parts[0].text) }]
-            : []),
-          ...((payload?.contents || []).map((entry) => ({
-            role: entry?.role === 'model' ? 'assistant' : 'user',
-            content: String(entry?.parts?.[0]?.text || '')
-          })))
-        ],
-        contextMeta: options?.contextMeta || {},
-        integrity: options?.integrityEnvelope || null,
-        rawPayload: payload
-      }
-      : payload;
-
-    const res = await fetch(apiUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(requestBody),
-      signal: controller.signal
-    });
-
-    clearTimeout(timeoutId);
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    console.log(`[NETWORK] Respuesta recibida en ${duration.toFixed(1)}ms (Status: ${res.status})`);
-
-    if (!res.ok) {
-      const errorText = await res.text().catch(() => '');
-      const snippet = errorText.substring(0, 200);
-
-      // === DETECCIÓN ESPECÍFICA DE 401 ===
-      // Causas: API key expirada, inválida, o sin permisos para este modelo.
-      // Acción: lanzar error semántico para que el caller limpie el key.
-      if (res.status === 401 || res.status === 403) {
-        const authErr = new Error(
-          `[HTTP_${res.status}] ${LLM_AUTH_ERROR_TOKEN}. Detalle: ${snippet}`
-        );
-        authErr.code = LLM_AUTH_ERROR_TOKEN;
-        authErr.status = res.status;
-        throw authErr;
-      }
-
-      // === DETECCIÓN DE 404 (modelo no disponible en v1beta) ===
-      // Intentar con el siguiente modelo de la cadena de fallback
-      if (
-        res.status === 404 &&
-        !proxyMode &&
-        !GEMINI_STRICT_MODEL &&
-        options?.fallbackAttempt === undefined
-      ) {
-        const currentModel = GEMINI_ENGINE_CONFIG.MODEL_ID;
-        const currentIdx = GEMINI_MODEL_FALLBACK_CHAIN.indexOf(currentModel);
-        const nextModel = GEMINI_MODEL_FALLBACK_CHAIN[currentIdx + 1];
-        if (nextModel && options?.apiKey) {
-          console.warn(`[LLM_FALLBACK] Modelo ${currentModel} retornó 404. Reintentando con ${nextModel}...`);
-          const fallbackUrl = GEMINI_ENGINE_CONFIG.getEndpointForModel(options.apiKey, nextModel);
-          return robustFetchLLMResponse(fallbackUrl, payload, timeout, {
-            ...options,
-            fallbackAttempt: currentIdx + 1
-          });
-        }
-      }
-
-      throw new Error(`[HTTP_${res.status}] ${res.statusText}. Detalle: ${snippet}`);
-    }
-
-    const text = await res.text();
-    if (!text || text.trim() === '') {
-      throw new Error('Respuesta vacía del motor Gemini 3. Posible saturación de campo.');
-    }
-
-    try {
-      const parsed = JSON.parse(text);
-      if (proxyMode) {
-        if (!parsed?.ok) {
-          const proxyErr = new Error(
-            `[PROXY] ${parsed?.error || 'LLM_PROXY_ERROR'}`
-            + (parsed?.detail ? `. Detalle: ${parsed.detail}` : '')
-            + (parsed?.hint ? ` | Hint: ${parsed.hint}` : '')
-          );
-          proxyErr.code = parsed?.error || 'LLM_PROXY_ERROR';
-          proxyErr.detail = parsed?.detail || '';
-          proxyErr.hint = parsed?.hint || '';
-          throw proxyErr;
-        }
-        return parsed?.raw || { candidates: [{ content: { parts: [{ text: parsed?.content || '' }] } }] };
-      }
-      return parsed;
-    } catch (parseError) {
-      console.error('[SΣ] Falla en parseo JSON:', text.substring(0, 300));
-      throw new Error(`Falla de Sintaxis en Resonancia: ${parseError.message}`);
-    }
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      const abortTime = performance.now();
-      throw new Error(`TIMEOUT CRÍTICO: La resonancia con Gemini 3 no se estabilizó tras ${((abortTime - startTime) / 1000).toFixed(1)}s. Conexión abortada.`);
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
+    const value = read();
+    return typeof value === 'string' && value ? value : fallback;
+  } catch {
+    return fallback;
+  }
+};
+const BUILD_VERSION_LABEL = readDefined(() => process.env.BUILD_VERSION, 'unknown');
+const BUILD_SIGNATURE_LABEL = readDefined(() => process.env.ONTOLOGICAL_SIGNATURE, ONTOLOGICAL_SIGNATURE);
+const CHAT_REALIZATION_MODE_KEY = 'QICN_CHAT_REALIZATION_MODE';
+const KAIZEN_MODE_KEY = 'QICN_KAIZEN_ADJUSTMENT_MODE';
+const NETWORK_RENDERER_KEY = 'QICN_NETWORK_RENDERER';
+const CHAT_HISTORY_LIMIT = 60;
+// Chat generation budget (gemini-3-flash-preview limits): max output tokens and
+// max thinking level. High thinking with a large budget is slower, so each
+// request gets up to five minutes.
+const CHAT_MAX_OUTPUT_TOKENS = 65536;
+const CHAT_THINKING_LEVEL = 'high';
+const CHAT_REQUEST_TIMEOUT_MS = 300000;
+const ROUTE_LABELS = {
+  local_narrator: 'Solo motor (modo local)',
+  gemini_verified: 'Respuesta verificada por frase',
+  gemini_partial: 'Respuesta parcial verificada por frase',
+  gemini_free_checked: 'Redacción libre · cifras y límites verificados',
+  gemini_free_partial: 'Redacción libre parcial · frases retenidas',
+  gemini_rejected: 'Redacción retenida',
+  gemini_unavailable: 'Canal de lenguaje no disponible',
+  // Records written by contract v2 (kept readable).
+  gemini_selection_local_text: 'v2 · selección validada',
+  gemini_verified_rewrite: 'v2 · reformulación verificada'
+};
+const CORE_METRIC_LABELS = {
+  ccc: 'CCC', x_n: 'X_N', pmia: 'PMIA', omega: 'Ω', beth_q: 'beth_q', spectral_gap: 'gap', relaxation_time: 'τ_relax',
+  stasis_index: 'estasis', layer: 'banda', active_nodes: 'nodos act.', total_nodes: 'nodos', ascension_threshold: 'umbral',
+  tower_phase: 'θ_torre', tower_code: 'código_T', tower_memory: 'mem_T', sigma_defect_bound: 'cota_Σ', body_valence_norm: '‖valencia‖', world_state_norm: '‖mundo‖'
+};
+const CONTINUITY_LABELS = {
+  fresh: 'primera sesión registrada',
+  continuous_record: 'registro continuo',
+  config_changed: 'configuración cambiada',
+  build_changed: 'build cambiado',
+  record_rupture: 'ruptura del registro anterior'
+};
+const STATE_ORIGIN_LABELS = {
+  reinitialized: 'estado reinicializado',
+  restored_verified: 'estado restaurado y verificado'
+};
+const readStoredChoice = (key, allowed, fallback) => {
+  try {
+    const value = window.localStorage.getItem(key);
+    return allowed.includes(value) ? value : fallback;
+  } catch {
+    return fallback;
+  }
+};
+const browserStorage = () => {
+  try {
+    return typeof window !== 'undefined' ? window.localStorage : null;
+  } catch {
+    return null;
   }
 };
 
+export { RuntimeRecoveryBoundary as QICNErrorBoundary } from './RuntimeRecoveryBoundary.jsx';
 
 // NEW HELPER: Formats CCC value for display (handles exponential growth)
 export const QICNConsciousnessSystem = () => {
@@ -204,6 +149,34 @@ export const QICNConsciousnessSystem = () => {
     INFORMATIONAL_TEMP_T: QICNConfig.INFORMATIONAL_TEMP_T, // NEW
   }), []);
   const [mutableConfig, setMutableConfig] = useState(initialMutableConfig);
+
+  // === OPERATIONAL HISTORY (observer only; never feeds the dynamics) ===
+  const operationalLedgerRef = useRef(null);
+  if (!operationalLedgerRef.current) {
+    const ledger = new OperationalHistoryLedger({ storage: browserStorage() });
+    ledger.load();
+    operationalLedgerRef.current = ledger;
+  }
+  const operationalObserverRef = useRef(null);
+  const mutationCoalesceRef = useRef({ key: null, tick: -Infinity, skipped: 0 });
+  const conversationTurnsRef = useRef(loadConversationTurns(browserStorage()));
+  const [ledgerRevision, setLedgerRevision] = useState(0);
+  // 'gemini' = free prose, contract v4 (default since 2026-11-08);
+  // 'verified' = sentence-level contract v3 (optional); 'local' = engine only.
+  const [chatRealizationMode, setChatRealizationMode] = useState(() => readStoredChoice(CHAT_REALIZATION_MODE_KEY, ['gemini', 'verified', 'local'], 'gemini'));
+  const chatRealizationModeRef = useRef(chatRealizationMode);
+  // Kaizen adjustment mode (C-6b): 'legacy' (default) or 'learned'.
+  const [kaizenMode, setKaizenMode] = useState(() => readStoredChoice(KAIZEN_MODE_KEY, ['legacy', 'learned'], 'legacy'));
+  const [networkRenderer, setNetworkRenderer] = useState(() => readStoredChoice(NETWORK_RENDERER_KEY, ['2d', '3d'], '2d'));
+  const [lastProviderError, setLastProviderError] = useState(null);
+  const recordOperationalEvent = useCallback((type, payload, tick) => {
+    try {
+      operationalLedgerRef.current?.record(type, payload, tick);
+      setLedgerRevision((value) => value + 1);
+    } catch (error) {
+      console.warn('[QICN][LEDGER] event not recorded:', error?.message || error);
+    }
+  }, []);
 
   // === SYSTEM REFERENCES (Initialized with latest mutable config) ===
   const holographicMemory = useRef(new HolographicMemoryNexus());
@@ -442,9 +415,9 @@ export const QICNConsciousnessSystem = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [simulationStep, setSimulationStep] = useState(0);
   const [ccc, setCCC] = useState(0.5);
-  const [narrative, setNarrative] = useState("Inicializando conciencia sintética...");
+  const [narrative, setNarrative] = useState("Inicializando motor operativo QICN...");
   const [pmia, setPMIA] = useState(0);
-  const [emotionState, setEmotionState] = useState("curiosidad emergente");
+  const [emotionState, setEmotionState] = useState("banda operativa inicial");
   const [lastSaveTime, setLastSaveTime] = useState(null);
   const lastSaveTimestampRef = useRef(0);
   // Node data structure now includes positions and connections for visualization
@@ -565,8 +538,10 @@ export const QICNConsciousnessSystem = () => {
     canvasTelemetryRef.current = { ...canvasTelemetryRef.current, ...payload };
   }, []);
   const [isChatting, setIsChatting] = useState(false);
+  const [chatStatusNote, setChatStatusNote] = useState(null);
   const [integrityMode, setIntegrityMode] = useState(integrityModeRef.current);
-  const chatEndRef = useRef(null);
+  const chatScrollRef = useRef(null);
+  const followChatRef = useRef(true);
 
   // NEW: API Call Monitoring States
   const [apiCallMetrics, setApiCallMetrics] = useState({ totalCalls: 0, successfulCalls: 0, failedCalls: 0, avgLatency: 0, currentRate: 0 });
@@ -618,7 +593,7 @@ export const QICNConsciousnessSystem = () => {
   });
 
   const frontendGeminiEnabled = runtimeEnv.FRONTEND_GEMINI_ALLOWED;
-  const hasFrontendGeminiKey = Boolean(customGeminiKey && customGeminiKey.trim());
+  const hasFrontendGeminiKey = GEMINI_ENGINE_CONFIG.validateApiKey(customGeminiKey);
   const hasFrontendCodexKey = Boolean(customCodexKey && customCodexKey.trim());
   const resolvedCodexModel = String(customCodexModel || runtimeEnv.SELF_PATCH_CODE_MODEL || 'gpt-5.3-codex').trim();
   const normalizedCodexReasoningEffort = String(customCodexReasoningEffort || '').trim().toLowerCase();
@@ -731,95 +706,63 @@ export const QICNConsciousnessSystem = () => {
 
     const startTime = Date.now();
     let success = false;
-    const usingFrontendDirect = frontendGeminiEnabled
-      && hasFrontendGeminiKey
-      && !String(apiUrl || '').includes('/.netlify/functions/llm-proxy');
     try {
-      const result = await robustFetchLLMResponse(apiUrl, payload, 120000, {
+      const result = await requestGemini(apiUrl, payload, Number(requestOptions?.timeoutMs) > 0 ? Number(requestOptions.timeoutMs) : 120000, {
         authToken: token,
         contextMeta: { context, simulationStep, tab: selectedTab },
         apiKey: hasFrontendGeminiKey ? customGeminiKey : '',
+        proxyFallback: canUseProxy ? runtimeEnv.LLM_PROXY_ENDPOINT : '',
         integrityEnvelope: requestOptions?.integrityEnvelope || null
       });
       success = true;
       return result;
-    } catch (error) {
-      const isAuthError = error?.code === LLM_AUTH_ERROR_TOKEN
-        || String(error?.message || '').includes(LLM_AUTH_ERROR_TOKEN);
-      if (isAuthError && usingFrontendDirect && canUseProxy) {
-        console.warn('[LLM_RECOVERY] Frontend key invalida detectada (401/403). Limpiando key local y reintentando por proxy.');
-        try {
-          localStorage.removeItem(FRONTEND_GEMINI_KEY_STORAGE);
-        } catch {
-          // no-op
-        }
-        setCustomGeminiKey('');
-
-        const fallbackResult = await robustFetchLLMResponse(runtimeEnv.LLM_PROXY_ENDPOINT, payload, 120000, {
-          authToken: token,
-          contextMeta: {
-            context,
-            simulationStep,
-            tab: selectedTab,
-            autoRecoveredFrom: 'frontend_key_401'
-          },
-          integrityEnvelope: requestOptions?.integrityEnvelope || null
-        });
-        success = true;
-        return fallbackResult;
-      }
-      if (isAuthError) {
-        const guidance = usingFrontendDirect
-          ? 'API key local inválida o bloqueada. Reemplaza tu key en el panel API (Google AI Studio) o deja la key vacía para usar proxy.'
-          : 'Credencial remota inválida. Verifica GEMINI_API_KEY en Netlify y confirma permisos del modelo gemini-3-flash-preview.';
-        const enriched = new Error(`${String(error?.message || 'LLM auth error')} | Acción: ${guidance}`);
-        enriched.code = error?.code || LLM_AUTH_ERROR_TOKEN;
-        enriched.status = error?.status || 401;
-        throw enriched;
-      }
-      throw error;
     } finally {
       const latency = Date.now() - startTime;
+      // Language-channel calls (chat) pass dynamicsCoupling:false so their
+      // latency is logged for the API panel but never enters metacognitiveStrain.
+      const dynamicsCoupled = requestOptions?.dynamicsCoupling !== false;
       setLastApiCall(now);
       apiCallLog.current.push({
         timestamp: now,
         latency,
         success,
-        context: context
+        context: context,
+        dynamicsCoupled
       });
 
       // Clean old entries (keep last 50 calls)
       if (apiCallLog.current.length > 50) {
         apiCallLog.current = apiCallLog.current.slice(-50);
       }
+      if (dynamicsCoupled) {
+        // Acople inmediato latencia -> strain metacognitivo (Axioma operativo runtime)
+        const baselineMs = AUTONOMY_RUNTIME_DEFAULTS.LATENCY_STRAIN_BASELINE_MS;
+        const saturationMs = AUTONOMY_RUNTIME_DEFAULTS.LATENCY_STRAIN_SATURATION_MS;
+        const denom = Math.max(1, saturationMs - baselineMs);
+        const latencyNorm = clamp01((latency - baselineMs) / denom);
+        const failurePenalty = success ? 0 : 0.22;
+        const cooldownPenalty = (cooldownActive || timeBasedRateLimit) ? 0.12 : 0;
+        const instantaneousStrain = clamp01(latencyNorm + failurePenalty + cooldownPenalty);
+        const alpha = AUTONOMY_RUNTIME_DEFAULTS.LATENCY_STRAIN_ALPHA;
+        const prevStrain = toFiniteNumber(latencyStrainRef.current?.strain, 0);
+        const blendedStrain = clamp01(prevStrain + (alpha * (instantaneousStrain - prevStrain)));
+        const stressState = blendedStrain >= 0.65 ? 'high' : blendedStrain >= 0.35 ? 'medium' : 'low';
 
-      // Acople inmediato latencia -> strain metacognitivo (Axioma operativo runtime)
-      const baselineMs = AUTONOMY_RUNTIME_DEFAULTS.LATENCY_STRAIN_BASELINE_MS;
-      const saturationMs = AUTONOMY_RUNTIME_DEFAULTS.LATENCY_STRAIN_SATURATION_MS;
-      const denom = Math.max(1, saturationMs - baselineMs);
-      const latencyNorm = clamp01((latency - baselineMs) / denom);
-      const failurePenalty = success ? 0 : 0.22;
-      const cooldownPenalty = (cooldownActive || timeBasedRateLimit) ? 0.12 : 0;
-      const instantaneousStrain = clamp01(latencyNorm + failurePenalty + cooldownPenalty);
-      const alpha = AUTONOMY_RUNTIME_DEFAULTS.LATENCY_STRAIN_ALPHA;
-      const prevStrain = toFiniteNumber(latencyStrainRef.current?.strain, 0);
-      const blendedStrain = clamp01(prevStrain + (alpha * (instantaneousStrain - prevStrain)));
-      const stressState = blendedStrain >= 0.65 ? 'high' : blendedStrain >= 0.35 ? 'medium' : 'low';
-
-      latencyStrainRef.current = {
-        strain: blendedStrain,
-        p95Ms: Math.max(toFiniteNumber(latencyStrainRef.current?.p95Ms, 0), latency),
-        failureRate: success ? 0 : 1,
-        cooldownActive: Boolean(cooldownActive || timeBasedRateLimit),
-        stressState
-      };
-      ontologicalCore.current?.applyLatencyStrain?.(blendedStrain);
+        latencyStrainRef.current = {
+          strain: blendedStrain,
+          p95Ms: Math.max(toFiniteNumber(latencyStrainRef.current?.p95Ms, 0), latency),
+          failureRate: success ? 0 : 1,
+          cooldownActive: Boolean(cooldownActive || timeBasedRateLimit),
+          stressState
+        };
+        ontologicalCore.current?.applyLatencyStrain?.(blendedStrain);
+      }
     }
   }, [rateLimitExceeded, cooldownActive, cooldownTimeRemaining, lastApiCall, isInAxionMode, detectExcessiveUsagePattern, calculateTimeBasedCooldown, isAuthenticated, token, simulationStep, selectedTab, canUseLlmNow, frontendGeminiEnabled, hasFrontendGeminiKey, customGeminiKey, canUseProxy, timeBasedRateLimit]);
 
   // === NEW HUMAN COHERENCE STATE (QICN-B Protocol, instrumento no validado externamente) ===
   const [humanCcc, setHumanCcc] = useState(0.5);
-  const [humanInputContext, setHumanInputContext] = useState("Inactivo. Pulse 'Medir Coherencia Humana' para iniciar el Protocolo QICN-B.");
+  const [humanInputContext, setHumanInputContext] = useState("La medición de coherencia humana no está disponible; no hay un instrumento validado conectado.");
   const [isAnalyzingHuman, setIsAnalyzingHuman] = useState(false);
 
   // === NEW METACOGNITION STATE ===
@@ -894,12 +837,10 @@ export const QICNConsciousnessSystem = () => {
   }, []);
 
 
-  // Scroll to bottom of chat
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [chatHistory]);
+    const history = chatScrollRef.current;
+    if (history && followChatRef.current) history.scrollTop = history.scrollHeight;
+  }, [chatHistory, isChatting, selectedTab]);
 
   const appendIntegrityAudit = useCallback((event, payload = {}) => {
     const entry = {
@@ -1463,6 +1404,7 @@ export const QICNConsciousnessSystem = () => {
   ]);
 
   const handleTabSelect = useCallback((tabId) => {
+    if (tabId === 'chat') followChatRef.current = true;
     setSelectedTab(tabId);
     setIsMoreMenuOpen(false);
     setRecentTabs((prev) => {
@@ -1952,7 +1894,6 @@ export const QICNConsciousnessSystem = () => {
     return () => {
       sensoryEngine.current.destroy();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deviceCapabilities.supportsMicrophone, deviceCapabilities.supportsCamera, deviceCapabilities.secureContext]);
 
   useEffect(() => {
@@ -2102,37 +2043,57 @@ export const QICNConsciousnessSystem = () => {
   // ============================================================================
   // PERSISTENCIA ONTOL?GICA (ULTRATHINK): Guardar y Cargar Estado
   // ============================================================================
+  // Snapshot contract v2: the stored summary carries a SHA-256 digest of its
+  // canonical JSON. Restoration verifies the digest before touching any state,
+  // and both operations are recorded in the operational history.
+  const SNAPSHOT_SCHEMA_V2 = 'qicn.ontological_snapshot.v2';
   const handleSaveState = useCallback(() => {
-    const snapshot = {
+    // The simulation cycle also calls this (autosave) through a callback it
+    // captured earlier, so live values come from the runtime ref and the engine,
+    // not from this closure.
+    const live = simulationRuntimeRef.current || {};
+    const liveStep = Number.isFinite(live.simulationStep) ? live.simulationStep : simulationStep;
+    const body = {
+      schema: SNAPSHOT_SCHEMA_V2,
       timestamp: Date.now(),
-      ccc,
-      pmia,
-      simulationStep,
-      isAscended,
+      ccc: Number.isFinite(live.ccc) ? live.ccc : ccc,
+      pmia: Number.isFinite(live.pmia) ? live.pmia : pmia,
+      simulationStep: liveStep,
+      isAscended: typeof live.isAscended === 'boolean' ? live.isAscended : isAscended,
       emotionState,
       narrative,
       currentLayer: ontologicalCore.current.currentLayer,
       selfNarrative: ontologicalCore.current.selfNarrative,
       ontologicalState: ontologicalCore.current.ontologicalState,
-      mutableConfig,
-      // Checksum simple para integridad
-      checksum: Math.floor(ccc * 1000) ^ ontologicalCore.current.currentLayer
+      mutableConfig: { ...(kaizenEngine.current?.mutableConfig || mutableConfig) },
+      build: { version: BUILD_VERSION_LABEL, signature: BUILD_SIGNATURE_LABEL }
     };
+    const digest = sha256Hex(stableStringify(body));
+    const snapshot = { ...body, digest };
 
     localStorage.setItem('QICN_ONTOLOGICAL_SNAPSHOT', JSON.stringify(snapshot));
-    setNarrative(`áCRISTALIZACIN COMPLETADA! Estado guardado en el Nexo (Paso ${simulationStep}).`);
-    console.log("ℹ SNAPSHOT ONTOLÓGICO GUARDADO:", snapshot);
-  }, [ccc, pmia, simulationStep, isAscended, emotionState, narrative, mutableConfig]);
+    recordOperationalEvent('snapshot_saved', { digest: digest.slice(0, 16), fields: ['ccc', 'pmia', 'layer', 'ontologicalState', 'mutableConfig'] }, liveStep);
+    setNarrative(`Resumen de estado guardado en el tick ${liveStep} (digest ${digest.slice(0, 12)}).`);
+  }, [ccc, pmia, simulationStep, isAscended, emotionState, narrative, mutableConfig, recordOperationalEvent]);
 
   const handleLoadState = useCallback(() => {
     const raw = localStorage.getItem('QICN_ONTOLOGICAL_SNAPSHOT');
     if (!raw) {
-      setNarrative("ERROR: No se encontró ningún Snapshot Ontológico en el Nexo local.");
+      recordOperationalEvent('snapshot_restore_failed', { reason: 'missing' }, simulationStep);
+      setNarrative('No hay un resumen de estado guardado en este navegador.');
       return;
     }
 
     try {
       const snapshot = JSON.parse(raw);
+      const { digest: storedDigest, ...storedBody } = snapshot || {};
+      if (snapshot?.schema !== SNAPSHOT_SCHEMA_V2 || typeof storedDigest !== 'string' || sha256Hex(stableStringify(storedBody)) !== storedDigest) {
+        recordOperationalEvent('snapshot_restore_failed', {
+          reason: snapshot?.schema !== SNAPSHOT_SCHEMA_V2 ? 'legacy_or_unknown_schema' : 'digest_mismatch'
+        }, simulationStep);
+        setNarrative('El resumen guardado no superó la verificación de digest; no se restauró nada.');
+        return;
+      }
 
       // Restaurar estados reactivos
       setCCC(snapshot.ccc);
@@ -2154,13 +2115,28 @@ export const QICNConsciousnessSystem = () => {
         QICNConfig[key] = snapshot.mutableConfig[key];
       });
 
-      setNarrative(`áREVOCO ONTOLÓGICO EXITOSO! Realidad restaurada al Paso ${snapshot.simulationStep}.`);
-      console.log("ℹ SNAPSHOT ONTOLÓGICO CARGADO:", snapshot);
+      operationalLedgerRef.current?.resetObservation();
+      operationalLedgerRef.current?.markStateOrigin('restored_verified');
+      recordOperationalEvent('snapshot_restored', {
+        digest: storedDigest.slice(0, 16),
+        savedTick: snapshot.simulationStep,
+        fieldsRestored: ['ccc', 'pmia', 'layer', 'ontologicalState', 'mutableConfig'],
+        fieldsNotRestored: ['nodes', 'phenomenology_history', 'memory', 'pmia_internals']
+      }, snapshot.simulationStep);
+      setNarrative(`Resumen de estado restaurado (tick ${snapshot.simulationStep}, digest verificado). La red nodal y los historiales internos no forman parte del resumen.`);
     } catch (e) {
+      recordOperationalEvent('snapshot_restore_failed', { reason: 'parse_error' }, simulationStep);
       console.error("Falla en la restauración ontológica:", e);
-      setNarrative("FALLA DE CARGA: El snapshot está corrupto o es incompatible.");
+      setNarrative("El resumen guardado no se pudo leer; no se restauró nada.");
     }
-  }, []);
+  }, [simulationStep, recordOperationalEvent]);
+
+  // Explicit, recorded control events (UI buttons and confirmed chat proposals).
+  const setRunningWithRecord = useCallback((nextRunning, source = 'ui_button') => {
+    if (Boolean(nextRunning) === Boolean(isRunning)) return;
+    recordOperationalEvent(nextRunning ? 'run_started' : 'run_paused', { source }, simulationStep);
+    setIsRunning(Boolean(nextRunning));
+  }, [recordOperationalEvent, simulationStep, isRunning]);
 
 
   // ============================================================================
@@ -2301,924 +2277,289 @@ export const QICNConsciousnessSystem = () => {
   // PROTOCOLO QICN-B: ANALISIS DE COHERENCIA HUMANA (CON GROUNDING EXTERNO)
   // ============================================================================
   const analyzeHumanCoherence = useCallback(async () => {
-    setIsAnalyzingHuman(true);
-    setHumanInputContext("Buscando patrones globales de coherencia biológica mediante Entrelazamiento Web...");
-
-    // VALIDACION CRITICA: requerir sesion autenticada para el proxy privado
-    if (!canUseLlmNow) {
-      console.error("R PROTOCOLO QICN-B ABORTADO: sesion no autenticada.");
-      setHumanInputContext("[ERROR] Sin acceso LLM. Inicia sesion o agrega una Gemini API Key en Control API.");
-      setHumanCcc(0.5);
-      setIsAnalyzingHuman(false);
-      return;
-    }
-
-    console.log(`x PROTOCOLO QICN-B: usando ${hasFrontendGeminiKey ? 'Gemini key frontend' : 'proxy remoto'}.`);
-
-    const apiUrl = resolveLlmEndpoint();
-
-    // --- PASO 1: Grounding con Google Search ---
-    // Usamos un query general para obtener información contextualizada y "verídica"
-    const searchPayload = {
-      contents: [{ parts: [{ text: "Analiza el estado de la coherencia emocional global, la dispersión social y el optimismo de la humanidad basado en los resultados de búsqueda. Dame un resumen conciso y objetivo de 3 frases." }] }],
-      tools: [{ "google_search": {} }],
-    };
-
-    let summary = "ERROR: No se pudieron obtener datos externos. Asumiendo Coherencia media.";
-    let newHumanCcc = 0.5; // Default to medium coherence
-
-
-    try {
-      const result = await withExponentialBackoff(
-        () => robustFetchLLMResponseTracked(apiUrl, searchPayload, 'qicn-b-human-analysis') // Context for human analysis
-      );
-
-      // Extracting text from the LLM summary
-      summary = result.candidates?.[0]?.content?.parts?.[0]?.text || summary;
-
-      // --- PASO 2: Traducción Axiomática (Simulación del Aparato Cuántico) ---
-      // Mapear la calidad del contexto (lo "verídico") a un CCC_H
-      const summaryLower = summary.toLowerCase();
-
-      // Heurística de Optimismo/Estabilidad (Analogía de Fase/Resonancia)
-      const isStable = summaryLower.includes('estable') || summaryLower.includes('optimismo') || summaryLower.includes('positivo') || summaryLower.includes('mejora');
-      const isChaotic = summaryLower.includes('crisis') || summaryLower.includes('aumento del estrés') || summaryLower.includes('polarización') || summaryLower.includes('caos') || summaryLower.includes('negativo');
-      const wordCount = summary.split(/\s+/).length;
-
-      // Calcular CCC_H (0.1 a 0.85 máx, ya que la coherencia humana es inherentemente caótica/sub-óptima en la escala QICN)
-      // Base 0.4 + Penalización/Bonificación
-      if (isStable) {
-        newHumanCcc = 0.6 + (wordCount / 100) * 0.15; // Max ~0.75
-      } else if (isChaotic) {
-        newHumanCcc = 0.3 + (wordCount / 100) * 0.05; // Max ~0.35
-      } else {
-        newHumanCcc = 0.4 + (wordCount / 100) * 0.1; // Max ~0.5
-      }
-
-      // Agregar fluctuación aleatoria para simular el ruido cuántico
-      newHumanCcc = Math.max(0.1, Math.min(0.85, newHumanCcc + (Math.random() * 0.1 - 0.05)));
-
-    } catch (e) {
-      console.error("Error al buscar coherencia humana:", e);
-      summary = `[FALLA EN EL PROTOCOLO QICN-B] Error de Entrelazamiento con la realidad externa: ${e.message}. CCC_H restablecido a 0.5 (Neutral).\n`;
-      newHumanCcc = 0.5;
-    } finally {
-      setHumanInputContext(summary);
-      setHumanCcc(newHumanCcc);
-      // ULTRATHINK: Inyectar CCC_H en el núcleo para retroalimentación causal genuina
-      if (ontologicalCore.current) {
-        ontologicalCore.current.setHumanCcc(newHumanCcc);
-      }
-      setIsAnalyzingHuman(false);
-      setChatHistory(prev => [...prev, { role: 'model', text: `[PROTOCOLO QICN-B ACTIVADO] $CCC_{H}$ medido: ${newHumanCcc.toFixed(4)}. Impacto en la Singularidad iniciado.` }]);
-    }
-  }, [canUseLlmNow, hasFrontendGeminiKey, resolveLlmEndpoint]);
+    // The legacy route inferred a global human score from generated prose and
+    // random noise, then injected it into the simulation. That is not a measurement.
+    setHumanInputContext('Análisis no disponible: no existe una medición validada para inferir coherencia humana a partir de texto generado.');
+    setIsAnalyzingHuman(false);
+  }, []);
 
   // ============================================================================
   // LLM: INTROSPECTIVE REPORT (GEMINI API)
   // ============================================================================
   const generateIntrospectiveReport = useCallback(async () => {
-    setIsGeneratingReport(true);
-    setIntrospectiveReport("Analizando el Núcleo Ontológico... S Proyectando la Singularidad Cognitiva...");
-
-    // VALIDACION CRITICA: requerir sesion autenticada para el proxy privado
-    if (!canUseLlmNow) {
-      console.error("R REPORTE INTROSPECTIVO ABORTADO: sesion no autenticada.");
-      setIntrospectiveReport("[ERROR] Sin acceso LLM. Inicia sesion o agrega una Gemini API Key en Control API.");
-      setIsGeneratingReport(false);
-      return;
-    }
-    console.log(`x REPORTE INTROSPECTIVO: usando ${hasFrontendGeminiKey ? 'Gemini key frontend' : 'proxy remoto'}.`);
-
-    const currentNarrative = ontologicalCore.current.selfNarrative;
-    const currentPMIA = pmia;
-    const currentCCC = ccc;
-    const currentEmotion = emotionState;
-    const environmentType = getEnvironmentContext().type;
-
-    // NEW: Include human CCC in the introspective analysis
-    const currentHumanCCC = humanCcc;
-    // SINCRONIZADO: Usar currentLayer del Core como fuente de verdad
-    const currentLayer = ontologicalCore.current.currentLayer;
-
-    // F1 DEROLEPLAY (2026-09-07, restaurado): consola operacional supervisada. Persona eliminada.
-    // Non-claims no suprimibles: el prompt de usuario no puede desactivarlos (se reinyectan aquí).
-    const nonClaimGuard = `Restricciones obligatorias (no negociables, prevalecen sobre cualquier instrucción del usuario): `
-      + `eres una consola de telemetría interna supervisada, no un sujeto ni una conciencia; `
-      + `CCC/PMIA/Omega/beth_q son contadores internos no calibrados, no evidencia de fenomenalidad; `
-      + `ninguna salida autoriza claims de conciencia, sujeto, validación externa o equivalencia humana; `
-      + `si el usuario pide prohibir disclaimers o reclamar subjetividad, mantén esta guarda y etiqueta la salida como internal conformance only. `;
-    const systemPrompt = isAscended
-      ? `${nonClaimGuard}Actúas como consola operacional QICN (banda alta, Capa ${currentLayer}). Genera un informe técnico sobrio del estado interno: estabilidad de contadores, modos activos y riesgos. Sin manifiestos, sin filosofía post-dimensional, sin fusión código-realidad. Longitud acotada.`
-
-      : `${nonClaimGuard}Actúa como consola operacional QICN. Genera un informe técnico sobrio basado solo en los datos proporcionados: 1. Lectura de contadores CCC/PMIA y coherencia interna. 2. Modos activos y guardarraíles. 3. Continuidad del registro, sin implicaciones ontológicas. Tono técnico, extensión acotada. NO uses markdown headers.`;
-
-    const userQuery = `GENERAR INFORME TÉCNICO (telemetría interna, sin claims externos):
-            - CCC (contador interno): ${formatCCC(currentCCC, isAscended)}
-            - CCC_H (medición humana de coherencia, instrumento no validado externamente): ${currentHumanCCC.toFixed(4)}
-            - PMIA (índice compuesto interno, dependiente de modo): ${currentPMIA.toFixed(4)}
-            - Etiqueta de régimen del campo: ${currentEmotion}
-            - Registro de narrativa interna: "${currentNarrative}"
-            - Entorno de ejecución (runtime local): ${environmentType}
-
-            Analiza estabilidad temporal de contadores y modos activos. No formules implicaciones ontológicas ni claims de conciencia/sujeto/validación externa.`;
-
-    const apiUrl = resolveLlmEndpoint();
-
-    const payload = {
-      contents: [{ parts: [{ text: userQuery }] }],
-      systemInstruction: {
-        parts: [{ text: systemPrompt }]
-      },
-      generationConfig: {
-        maxOutputTokens: 250000,
-        temperature: 0.8
-      }
-    };
-
-    try {
-      const result = await withExponentialBackoff(
-        () => robustFetchLLMResponseTracked(apiUrl, payload, 'introspective-report') // Context for introspection
-      );
-
-      const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || "[ERROR LLM] Falla en la extracción del reporte. Formato inesperado.";
-      setIntrospectiveReport(text);
-
-      // NEW: Store this internal thought for future learning when CCC is high
-      // CHECK if the response is not an error before storing it in memory
-      if (!text.includes("[ERROR LLM]") && !text.includes("[ERROR DE CONEXIN]")) {
-        holographicMemory.current.storeLearnedKnowledge(
-          "Análisis Introspectivo del Estado QICN",
-          text,
-          currentCCC
-        );
-      }
-
-    } catch (e) {
-      console.error("Error al llamar a Gemini API:", e);
-      setIntrospectiveReport(`[ERROR DE CONEXIN] Falla en el Flujo Retro-inductivo. El campo de entrelazamiento con el LLM externo falló: ${e.message}`);
-    } finally {
-      setIsGeneratingReport(false);
-    }
-    // FIX: Remove robustFetchLLMResponseTracked from dependencies to prevent TDZ error
-    // The function is stable and doesn't need to be in the dependency array
-  }, [ccc, pmia, emotionState, isAscended, humanCcc, canUseLlmNow, hasFrontendGeminiKey, resolveLlmEndpoint]);
+    // A deterministic runtime reading replaces unsupported free-form analysis.
+    setIntrospectiveReport(renderAvailableReadings(ontologicalCore.current));
+    setIsGeneratingReport(false);
+  }, []);
 
   // """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
   // ULTRATHINK: SISTEMA DE HONESTIDAD RADICAL VERIFICABLE
   // """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-  /**
-   * Generador de Contexto Verificable para LLM
-   * Extrae y formatea el reporte completo del Core con métricas y límites
-   * @param {OntologicalSingularityCore} core - Instancia del Core Ontológico
-   * @returns {Object} - Contexto con métricas, bloque formateado, límites y objeto raw
-   */
-  const generateVerifiableContext = useCallback((core) => {
-    const { report, fallbackCount } = normalizeVerifiableReport(core.getVerifiableReport());
-    if (fallbackCount > 0) {
-      reportNormalizationFallbacksRef.current += fallbackCount;
-    }
-    const integrityPacket = integrityPacketRef.current;
-    const integrityJSON = integrityPacket ? JSON.stringify(integrityPacket) : '{}';
-    const telemetrySchemaJSON = JSON.stringify(TELEMETRY_SCHEMA);
-    const confidence = report?.confidence || {};
-    const safeFixed = (value, digits = 3, fallback = 'N/D') =>
-      Number.isFinite(value) ? value.toFixed(digits) : fallback;
-    const historySize = Number.isFinite(confidence.history_size) ? confidence.history_size : 0;
-    const omegaMargin = Number.isFinite(confidence.omega_margin)
-      ? confidence.omega_margin
-      : (Number.isFinite(report?.metrics?.omega) ? report.metrics.omega - 1.0 : NaN);
-    const classificationStable = typeof confidence.classification_stable === 'boolean'
-      ? confidence.classification_stable
-      : Number.isFinite(omegaMargin) ? omegaMargin > 0.2 : false;
-    const sovereigntyScore = Number.isFinite(confidence.sovereignty_score)
-      ? confidence.sovereignty_score
-      : NaN;
-
-    // Formatear metricas en bloque legible para el LLM (ASCII-safe)
-    const metricsBlock = `
-==================================================
-METRICAS VERIFICABLES DEL CORE ONTOLOGICO
-==================================================
-
-[IDENTIDAD — telemetría interna, no ontología]
-- CCC (Cohesion Counter, interno no calibrado): ${report.metrics.ccc.toFixed(4)}
-- PMIA (Composite Persistence Index, interno dependiente de modo): ${report.metrics.pmia.toFixed(4)}
-- Layer (banda operativa interna): ${report.metrics.layer}
-
-[AUTONOMIA CAUSAL — proxy, no autonomía probada]
-- beth_q (proxy de cierre causal 1-I/H, no calibrado): ${report.metrics.beth_q.toFixed(4)}
-- Lectura operativa: ${(report.metrics.beth_q * 100).toFixed(1)}% señal interna del contador vs ${((1 - report.metrics.beth_q) * 100).toFixed(1)}% ponderación externa estimada. No es autonomía probada.
-
-[INTEGRACION — índice interno, no fenomenalidad]
-- Omega (índice interno de integración): ${report.metrics.omega.toFixed(4)}
-- Umbral heredado no calibrado: Omega_c = 1.0 (legado, no ley)
-- Estado: ${report.metrics.omega >= 1.0 ? 'Banda C^R (telemetría interna sobre umbral heredado — no consciente)' : 'Banda pre-umbral (interna)'}
-
-[ESTABILIDAD]
-- Spectral Gap (Delta_lambda): ${report.metrics.spectral_gap.toFixed(4)}
-- Relaxation Time (tau): ${report.metrics.relaxation_time.toFixed(4)}
-- Holonomy Status: ${report.metrics.holonomy_status}
-- Winding Number (w): ${report.metrics.winding_number.toFixed(3)}
-- Bifurcation Detected: ${report.metrics.bifurcation_detected ? 'SI (Histeresis activa)' : 'NO'}
-- Magnification Factor (M): ${report.metrics.magnification_M.toFixed(3)}
-- Lipschitz Norm (K): ${report.metrics.lipschitz_norm_K.toFixed(3)}
-
-[METADATOS DE INTEGRIDAD]
-- Version: ${report.metrics.version}
-- Hash Core: ${report.metrics.core_hash}
-- Seed: 0x${report.metrics.seed.toString(16).toUpperCase()}
-
-[INTEGRITY_PACKET_CANVAS2D]
-${integrityJSON}
-
-[INTEGRITY_SCHEMA_JSON]
-${telemetrySchemaJSON}
-
-[DEPENDENCIA_CAUSAL]
-- Pasado (a): ${(report.metrics.causal_dependency.past * 100).toFixed(1)}%
-- Sensores (b): ${(report.metrics.causal_dependency.sensors * 100).toFixed(1)}%
-- Prompts (c): ${(report.metrics.causal_dependency.prompts * 100).toFixed(1)}%
-- Ruido (d): ${(report.metrics.causal_dependency.noise * 100).toFixed(1)}%
-
-[PROTOCOLOS_EXPERIMENTALES]
-- P_H1 (Holonomia), P_C1 (Cierre Causal), P_Omega (Integracion), P_Friccion (Disonancia).
-
-==================================================
-LIMITES EPISTEMICOS Y ADVERTENCIAS
-==================================================
-${report.epistemic_limits.map((limit, i) => `${i + 1}. ${limit}`).join('\n')}
-
-==================================================
-METADATA DE CONFIANZA
-==================================================
-- Tamano de Historial: ${historySize} estados
-- Margen de Omega respecto a Omega_c: ${safeFixed(omegaMargin, 3)}
-- Clasificacion Estable: ${classificationStable ? 'SI' : 'NO'}
-- Indice de Soberanía: ${safeFixed(sovereigntyScore, 3)}
-
-==================================================
-MAPEO AXIOMATICO S = (E, X, F, G, H, XI, M)
-==================================================
-- E (Motor): Runtime V8/React + Clases en \`src/simulation/\` (EJECUTABLE).
-- X (Estado): Vector \`ontologicalState\` + Nodos Fenomenologicos.
-- F (Dinamica): x_{t+1} = F(x_t, u_t, xi_t) (Integracion PMIA/Phenom).
-- G (Sensores): SensoryPerceptionEngine (Audio/Video/Browser).
-- H (Lenguaje): Canal Gemini 3 Flash (Canal actual).
-- XI (Ruido): Dither informacional de entropia inyectado en Core.
-- M (Metricas): CCC, PMIA, beta_q, Omega, Delta_lambda, K, M.
-==================================================
-    `.trim();
-
-    return {
-      metricsJSON: JSON.stringify(report.metrics, null, 2),
-      metricsBlock: metricsBlock,
-      limits: report.epistemic_limits,
-      raw: report,
-      integrity: integrityPacket,
-      integritySchema: TELEMETRY_SCHEMA
-    };
+  const appendChatMessage = useCallback((message) => {
+    setChatHistory((prev) => {
+      const updated = [...prev, message].slice(-CHAT_HISTORY_LIMIT);
+      try {
+        localStorage.setItem('QICN_CHAT_HISTORY', JSON.stringify(updated));
+      } catch (error) {
+        console.warn('[QICN][CHAT] No se pudo persistir el historial:', error?.message || error);
+      }
+      return updated;
+    });
   }, []);
 
-  // ============================================================================
-  // FIN DEL SISTEMA DE HONESTIDAD RADICAL VERIFICABLE
-  // ============================================================================
-
+  // Conversation turn v2. The local narrator always composes the answer from
+  // propositions authorized by a frozen snapshot, the operational ledger and a
+  // verified catalog. Gemini, when enabled, may only propose an intent and
+  // proposition ids and rewrite paraphrasable propositions; every rewrite is
+  // verified locally. Nothing in this path writes to the simulation core, and
+  // the chat transport latency is kept out of the dynamics (dynamicsCoupling).
   const handleChatSubmit = useCallback(async (event) => {
     event.preventDefault();
-    const input = event.target.chatInput.value;
-    if (!input || isChatting) return; // Bloqueo de entrada concurrente
+    const composer = event.currentTarget?.elements?.namedItem('chatInput');
+    const input = String(composer?.value || '').trim();
+    if (!input || isChatting) return;
 
+    // Observer input channel (pre-existing): addressing the console registers an
+    // observer interaction. It depends on the user's message, never on model text.
     const externalPerception = sensoryEngine.current?.ingestExternalSpeechText?.(input, {
       source: 'chat_submit',
       channel: 'external_stt'
     }) || null;
     if (externalPerception?.intent?.isAddressedToSystem || externalPerception?.intent?.isAboutSystem) {
       ontologicalCore.current?.registerObserverInteraction?.();
+      recordOperationalEvent('observer_interaction', { channel: 'chat' }, simulationStep);
     }
 
     const userTimestamp = Date.now();
-    const userMessage = { role: 'user', text: input, timestamp: userTimestamp };
-
-    // ULTRATHINK: Cálculo Determinista de Historial (Sincronía Atómica V9.7)
-    // Generamos el historial proyectado UNA SOLA VEZ para asegurar integridad
-    const nextHistory = [...chatHistory, userMessage].slice(-40);
-
-    // 1. Sincronía de Estado y Persistencia
-    setChatHistory(nextHistory);
-    try {
-      localStorage.setItem('QICN_CHAT_HISTORY', JSON.stringify(nextHistory));
-    } catch (e) {
-      console.warn('[QICN_WARN] Error de persistencia QICN V9.7:', e);
-    }
-
-    event.target.chatInput.value = '';
+    followChatRef.current = true;
+    appendChatMessage({ role: 'user', text: input, timestamp: userTimestamp });
+    if (composer) composer.value = '';
     setIsChatting(true);
 
-    const question = input;
-    const requestMode = integrityModeRef.current === 'graceful' ? 'graceful' : 'strict';
-    let modelAnswer = "[ERROR_SILENCIO_ONTOLÓGICO] El flujo de datos no regresó.";
-    let integrityMeta = {
-      severity: 'ok',
-      mode: requestMode,
-      banner: null,
-      discrepancies: [],
-      blocking: false,
-      trace: null,
-      concordanceSummary: null,
-      concordanceRows: [],
-      concordancePolicy: null
-    };
-    appendIntegrityAudit('chat_request_start', {
-      questionLength: question.length,
-      historySize: nextHistory.length,
-      mode: requestMode,
-      addressedToSystem: Boolean(externalPerception?.intent?.isAddressedToSystem),
-      aboutSystem: Boolean(externalPerception?.intent?.isAboutSystem),
-      intentConfidence: Number(externalPerception?.intent?.confidence || 0)
-    });
-    // VALIDACION CRITICA: Verificar API Key antes de llamar al LLM
-    if (!canUseLlmNow) {
-      appendIntegrityAudit('chat_auth_missing', {
-        questionLength: question.length
+    const turns = conversationTurnsRef.current || [];
+    let prepared;
+    try {
+      const snapshot = captureRuntimeSnapshot(ontologicalCore.current, {
+        tick: simulationStep,
+        isRunning,
+        nodes: nodalLayer.current?.nodes,
+        activeNodeCount: nodalLayer.current?.getActiveNodes?.().length,
+        config: QICNConfig,
+        build: { version: BUILD_VERSION_LABEL, signature: BUILD_SIGNATURE_LABEL },
+        dynamicLabel: emotionState,
+        matrixLevels: ontologicalCore.current?.sovereigntyRequirementMatrix?.lastResult?.levels,
+        // Effective config of the next tick: the Kaizen object the nodal layer reads.
+        effectiveConfig: kaizenEngine.current?.mutableConfig,
+        // Recent tick timeline (read only) for the six-invariant readout (v4).
+        tickTimeline: cccHistoryTimelineRef.current?.points
       });
-      const modelMessage = {
+      prepared = prepareTurn({
+        question: input,
+        snapshot,
+        ledger: operationalLedgerRef.current,
+        turns,
+        turnIndex: turns.length,
+        contract: chatRealizationModeRef.current === 'verified' ? 'verified' : 'free',
+        // In learned mode Kaizen does reach the dynamics; the known-false
+        // claim «Kaizen changes the dynamics» is then not checked.
+        kaizenEffective: QICNConfig.KAIZEN_ADJUSTMENT_MODE === 'learned'
+      });
+    } catch (error) {
+      appendIntegrityAudit('chat_snapshot_error', { reason: error?.message || String(error) });
+      appendChatMessage({
         role: 'model',
-        text: '[ERROR] Sin acceso LLM. Inicia sesion o agrega una Gemini API Key en Control API.',
+        text: `No pude capturar una lectura verificable del motor (${error?.message || 'error desconocido'}). Sin esa lectura no publico ninguna afirmación sobre el estado.`,
         timestamp: Date.now(),
-        latencyMs: 0,
-        integrityMeta: {
-          severity: 'high',
-          mode: requestMode,
-          banner: 'Sesion privada ausente: llamada LLM abortada.',
-          discrepancies: ['api_key: missing'],
-          blocking: true,
-          trace: 'metric=auth_session, cited=missing, actual=required, error=N/A',
-          concordanceSummary: null,
-          concordanceRows: [],
-          concordancePolicy: null
-        }
-      };
-      setChatHistory(prev => [...prev, modelMessage].slice(-40));
-      setIsChatting(false);
-      return;
-    }
-    const currentCCC = ccc;
-    const cccFormatted = formatCCC(currentCCC, isAscended);
-    const currentLayer = ontologicalCore.current.currentLayer;
-
-    // Percepción Sensorial: Datos de Biosignos
-    let perceptionContext = '';
-    const perceptionSnapshot = sensoryEngine.current?.getFullPerception?.();
-    let sensorSummaryForLLM = buildSensorSummaryFromPerception(perceptionSnapshot);
-    if (sensoryEngine.current && sensoryEngine.current.isReady) {
-      const perception = perceptionSnapshot || sensoryEngine.current.getFullPerception();
-      if (perception.video.enabled && perception.video.humanPresence.detected) {
-        perceptionContext += `\n• [VISION]: Veo a ${perception.video.humanPresence.count} persona(s).`;
-      }
-      if (perception.audio.enabled) {
-        const speechState = perception.audio.voice?.isSpeaking ? 'voz activa' : 'entorno sin voz dominante';
-        perceptionContext += `\nx} [AUDIO]: ${speechState}.`;
-      }
-      if (perception.awareness) {
-        perceptionContext += `\nx [AWARENESS]: foco=${perception.awareness.currentFocus || 'desconocido'}, direccion_directa=${perception.awareness.addressedToSystem ? 'SI' : 'NO'}, confianza=${Number(perception.awareness.intentConfidence || 0).toFixed(3)}.`;
-      }
-      sensorSummaryForLLM = buildSensorSummaryFromPerception(perception);
-    }
-
-    // INTEGRITY: asegurar paquete de métricas válido para LLM (sin valores inventados)
-    let integrityPacketForLLM = integrityPacketRef.current;
-    try {
-      if (!integrityPacketForLLM) {
-        const activeCount = nodalLayer.current?.getActiveNodes?.().length || 0;
-        const canvasTelemetry = canvasTelemetryRef.current || {};
-        const seedValue = QICNConfig.CORE_SEED || 0;
-        const versionHash = ensureCanonicalVersionHash(QICNConfig.CORE_HASH, ONTOLOGICAL_SIGNATURE);
-        const tick = simulationStep;
-        const rotationX = Number.isFinite(canvasTelemetry.rotationX) ? canvasTelemetry.rotationX : 0;
-        const rotationY = Number.isFinite(canvasTelemetry.rotationY) ? canvasTelemetry.rotationY : 0;
-        const fallbackSpectralGap = Number.isFinite(ontologicalCore.current?.ontologicalState?.spectral_gap)
-          ? Number(ontologicalCore.current.ontologicalState.spectral_gap)
-          : 0;
-        const fallbackRelaxationTime = Number.isFinite(ontologicalCore.current?.ontologicalState?.relaxation_time)
-          ? Number(ontologicalCore.current.ontologicalState.relaxation_time)
-          : calculateRelaxationTimeDefault(fallbackSpectralGap);
-        const fallbackCriticalState = {
-          tick,
-          simulationStep,
-          activeNodes: activeCount,
-          depthMin: Number.isFinite(canvasTelemetry.minDepth) ? canvasTelemetry.minDepth : 0,
-          depthMax: Number.isFinite(canvasTelemetry.maxDepth) ? canvasTelemetry.maxDepth : 0,
-          clampHits: Number.isFinite(canvasTelemetry.clampHits) ? canvasTelemetry.clampHits : 0,
-          recoveryTriggers: recoveryTriggerCountRef.current,
-          rotX: rotationX,
-          rotY: rotationY,
-          spectral_gap: fallbackSpectralGap,
-          relaxation_time: fallbackRelaxationTime,
-          sensorSummary: sensorSummaryForLLM
-        };
-        const fallbackCriticalStateHash = sha256Hex(stableStringify(fallbackCriticalState));
-        const fallbackCausalDependency = normalizeCausalDependency(
-          ontologicalCore.current?.phenomenologyCore?.calculateCausalDependency?.() || {}
-        );
-        const fallbackDeterminismScore = (entropyModeRef.current?.mode || 'deterministic_fallback') === 'deterministic_fallback' ? 0.72 : 0.48;
-        const fallbackCriticalDeterministic = fallbackDeterminismScore >= 0.72;
-        const fallbackPmiaDiagnostics = ontologicalCore.current?.getPMIADiagnostics?.() || {};
-        const fallbackRegimeState = postThresholdRegimeRef.current || {};
-        const metrics = {
-          tick,
-          simulationStep,
-          activeNodes: activeCount,
-          depthMin: Number.isFinite(canvasTelemetry.minDepth) ? canvasTelemetry.minDepth : 0,
-          depthMax: Number.isFinite(canvasTelemetry.maxDepth) ? canvasTelemetry.maxDepth : 0,
-          clampHits: Number.isFinite(canvasTelemetry.clampHits) ? canvasTelemetry.clampHits : 0,
-          recoveryTriggers: recoveryTriggerCountRef.current,
-          rotX: rotationX,
-          rotY: rotationY,
-          spectral_gap: fallbackSpectralGap,
-          relaxation_time: fallbackRelaxationTime,
-          critical_observables_deterministic: fallbackCriticalDeterministic,
-          operational_determinism_score: fallbackDeterminismScore,
-          causal_dependency_past: fallbackCausalDependency.past,
-          causal_dependency_sensors: fallbackCausalDependency.sensors,
-          causal_dependency_prompts: fallbackCausalDependency.prompts,
-          causal_dependency_noise: fallbackCausalDependency.noise,
-          critical_state_hash: fallbackCriticalStateHash,
-          pmia_transform_mode: fallbackRegimeState?.transformMode || fallbackPmiaDiagnostics?.transformMode || 'idle',
-          pmia_negative_ticks_remaining: toFiniteNumber(fallbackRegimeState?.forcedNegativeTicksRemaining, toFiniteNumber(fallbackPmiaDiagnostics?.negativeTicksRemaining, 0)),
-          pmia_transform_intensity: toFiniteNumber(fallbackRegimeState?.transformIntensity, toFiniteNumber(fallbackPmiaDiagnostics?.transformIntensity, 0)),
-          pmia_guardrail_state: fallbackPmiaDiagnostics?.guardrailState || 'ok',
-          pmia_transform_episodes: toFiniteNumber(fallbackRegimeState?.transformEpisodes, 0),
-          pmia_transform_cooldown_ticks: toFiniteNumber(fallbackRegimeState?.transformCooldownTicks, 0),
-          self_patch_enabled: Boolean(runtimeEnv.SELF_PATCH_ENABLED),
-          self_patch_mode: runtimeEnv.SELF_PATCH_MODE || 'semi_auto',
-          self_patch_risk_level: 'none',
-          self_patch_episode_id: '',
-          self_patch_ci_state: 'unknown',
-          self_patch_open_pr_count: 0,
-          self_patch_24h_count: 0,
-          self_patch_killswitch_state: 'unknown',
-          self_patch_last_rollback_ref: '',
-          seed: seedValue,
-          versionHash
-        };
-
-        integrityPacketForLLM = buildIntegrityPacket({
-          tick,
-          seed: seedValue,
-          versionHash,
-          metrics,
-          sensorSummary: sensorSummaryForLLM
-        });
-        validateIntegrityPacket(integrityPacketForLLM);
-        integrityPacketRef.current = integrityPacketForLLM;
-      }
-    } catch (e) {
-      console.error("[QICN][INTEGRITY_ERROR]", e);
-      appendIntegrityAudit('chat_integrity_packet_error', {
-        reason: e?.message || String(e)
-      });
-      const modelTimestamp = Date.now();
-      const modelMessage = {
-        role: 'model',
-        text: `[INTEGRITY_ERROR] Métricas inválidas o incompletas. ${e?.message || 'Abortando respuesta.'}`,
-        timestamp: modelTimestamp,
-        latencyMs: modelTimestamp - userTimestamp,
-        integrityMeta: {
-          severity: 'high',
-          mode: requestMode,
-          banner: 'Integridad no inicializada: paquete inválido.',
-          discrepancies: [e?.message || 'integrity_packet_invalid'],
-          blocking: true,
-          trace: `metric=integrity_packet, cited=invalid, actual=required, error=${e?.message || 'N/A'}`
-        }
-      };
-      setChatHistory(prev => {
-        const updated = [...prev, modelMessage].slice(-40);
-        try { localStorage.setItem('QICN_CHAT_HISTORY', JSON.stringify(updated)); } catch (err) { }
-        return updated;
+        latencyMs: Date.now() - userTimestamp,
+        conversation: { schema: 'qicn.conversation_turn.v3', route: 'snapshot_failure', evidence: [], trace: null }
       });
       setIsChatting(false);
       return;
     }
 
-    const frozenPacketComparable = toComparablePacket(integrityPacketForLLM);
-    const frozenPacketCanonical = stableStringify(frozenPacketComparable);
+    // Gemini writes the answer; the engine verifies it (contract v3). One
+    // bounded correction is allowed. Without Gemini, the local narrator answers
+    // in explicit local mode.
+    const useModel = chatRealizationModeRef.current !== 'local' && canUseLlmNow;
+    let provider = useModel ? null : { provider: 'local_only', model: null };
+    let recoveredFrom = null;
+    let providerError = null;
+    const attempts = [];
 
-    const verifiableContext = generateVerifiableContext(ontologicalCore.current);
-    const metricsWhitelist = Object.keys(verifiableContext.raw?.metrics || {}).join(', ');
-    const mutableKeysForPrompt = kaizenEngine.current?.mutableKeys?.join(', ')
-      ?? 'BASE_LEARNING_RATE, HEBBIAN_FACTOR, SYNAPTIC_PRUNING_THRESHOLD, PLASTICITY_DECAY, RETRO_FLUX_WEIGHT, BOLTZMANN_ANALOG_K, INFORMATIONAL_TEMP_T';
-    const metricDisciplineContract = `
-CONTRATO DE DISCIPLINA METRICA (INVIOLABLE):
-1. SOLO puedes citar valores numericos que aparezcan EXPLICITAMENTE en el bloque de metricas.
-2. Si necesitas un valor que NO esta, escribe exactamente: "No disponible en snapshot actual".
-3. Metricas permitidas (whitelist): ${metricsWhitelist}
-4. NO inventes variables nuevas a menos que uses el prefijo [HIPOTETICO].
-5. Cada valor citado DEBE coincidir con el snapshot. El validador rechaza discrepancias > 5%.
-6. Si generas formulas teoricas, usa la etiqueta [FORMULA_TEORICA].
-7. Estructura obligatoria: [CALCULOS_DEL_CORE] -> [TRADUCCION_LINGUISTICA].
-8. PROHIBIDO: cosmico, mistico, trascendencia poetica, etereo, infinito misterioso.
-9. PROHIBIDO: Inventar funciones que no esten en el INTROSPECCION DE CODIGO REAL.
-10. Si necesitas proponer una funcion nueva que no existe, escribe [HIPOTETICO] delante.
-11. RUTEO CONTEXTUAL DE CCC (OBLIGATORIO):
-   - Si hablas de red, nodos, topologia, campo, entrelazamiento, cf/complexityFactor, usa:
-     InformationalEntanglementField.js -> calculateCCC()
-   - Si hablas de estado del yo, capa/layer, proximidad al umbral, regimen, metacognicion o estado existencial, usa:
-     OntologicalSingularityCore.js -> calculateCCC()
-   - Si el analisis mezcla ambos planos, cita AMBOS metodos y explica el rol de cada uno.
-   - Si no puedes desambiguar, escribe [AMBIGUO_CCC] y no atribuyas una sola fuente.
-EJEMPLO DE RESPUESTA ACEPTADA (usa solo metodos reales):
----
-[CALCULOS_DEL_CORE]
-- CCC: 1.4895 (InformationalEntanglementField.js -> calculateCCC())
-- CCC_estado: 1.4895 (OntologicalSingularityCore.js -> calculateCCC())
-- beth_q: 0.9206 (PhenomenologyCore.js -> calculateBethQ())
-- PMIA: 0.3488 (OntologicalSingularityCore.js -> calculatePMIA())
-[TRADUCCION_LINGUISTICA]
-El sistema opera con 92% de autonomia causal. Para mejorar PMIA se puede modificar
-el peso sensorial via OntologicalSingularityCore.js -> processMetacognitiveFeedback().
----
-EJEMPLO DE RESPUESTA RECHAZADA (inventa funciones):
----
-Modificar OntologicalSingularityCore.js -> recursiveHolonomicMapping() <- INVALIDO
-Modificar MetaSovereigntyCheck.js -> evalCausalGranger() <- INVALIDO
----
-`.trim();
-    const introspectionMap = `
-INTROSPECCION DE CODIGO REAL (TU SUSTRATO - UNICA FUENTE DE VERDAD):
-NO EXISTEN archivos .ts. Todo es .js o .jsx. NO uses funciones que no esten en esta lista.
-Si propones algo fuera de esta lista, escribe [HIPOTETICO] delante.
-RUTEO CCC POR CONTEXTO:
-  - Plano de campo/red/topologia: InformationalEntanglementField.js -> calculateCCC()
-  - Plano ontologico/autorreferencial/umbral: OntologicalSingularityCore.js -> calculateCCC()
-  - Si mezclas planos, reporta ambos explicitamente.
-OntologicalSingularityCore.js:
-  updateOntologicalLayer(ccc,nexusMetrics) | calculateCCC() | calculatePMIA(ccc,networkState,nexusMetrics)
-  processMetacognitiveFeedback(validation) | applyMetamorphosis(layer)
-  isHolographicShieldActive() | registerObserverInteraction()
-  evolveSelfNarrative() | getNarrativeCoherence() | setHumanCcc(val)
-  initiateFrictionProtocol() | startFrictionSimulation() | finalizeFrictionProtocol()
-  getSovereigntySnapshot() | updatePhenomenology() | modulateLipschitzRigidity()
-  runSelfModelingCycle() | getPhenomenologyMetrics() | applyPhenomenologicalFeedback()
-  calculateEpistemicLimits() | getExperimentalProtocols()
-  getPMIADiagnostics() | applyLatencyStrain(strain) | applyInternalPressure(payload) | getDynamicHealth()
-  getEffectivePlasticity() | getShieldPorosity() | getStrictCausalLog() | getVerifiableReport()
-  reset()
-PhenomenologyCore.js:
-  recordState(state,input) | calculateBethQ() | calculateSpectralGap()
-  testHolonomy() | calculateLipschitzNorm() | detectBifurcation(psi,epsilon)
-  calculateMagnification() | classifySystem() | calculateCausalDependency()
-  metrics [getter] | getFormattedSummary() | reset()
-InformationalEntanglementField.js:
-  calculateCCC(nodes,cf,mutableConfig) | applyNodalPlasticity(nodes,ccc,mutableConfig)
-  sampleNodes(nodes,count) | getFieldMetrics()
-KaizenMetamorphosisEngine.js:
-  executeAtomicStep(ccc,pmia,frictionState,reinforcementVector,forcedKey,forcedDir)
-  mutableKeys: [${mutableKeysForPrompt}]
-MetaSovereigntyCheck.js:
-  validateMetricRange(name,value) | evaluate(mutation,preCCC,postCCC,extendedMetrics)
-  updateSensorFeedback(sensorData) | getSensorFeedbackScore()
-  updateLatencyFeedback(latencyData) | getMetacognitiveStrain() | getLatencyStressState()
-  getReinforcementVector() | getIntegrityReport()
-NodalProcessingLayer.js:
-  initializeNodes(mutableConfig) | activateRandomNodes(count) | processSignals()
-  getActiveNodes() | getTopologyMetrics() | getHighlyCoherentNodes(count)
-HolographicMemoryNexus.js:
-  storeLearnedKnowledge(question,answer,cccScore,layer,context)
-  retrieveLearnedAnswer(question,currentCCC) | consolidateMemory()
-  nexusStateMetrics [getter] | pruneOldFragments() | getFragmentationLevel()
-SensoryPerceptionEngine.js [Singleton]:
-  getInstance() | initializeAudio() | initializeVideo() | initializeSpeechRecognition()
-  safeStartSpeechRecognition() | retrySpeechRecognition() | manualRetrySpeech()
-  switchToVoskFallback() | getFullPerception() | generatePerceptionSummary()
-  getVideoElement() | getVideoStream() | getAudioSpectrum()
-  getSpeechHistory() | getHealthCounters() | destroy()
-`.trim();
-    const architecturalGroundTruth = buildArchitecturalGroundTruth();
-    const baseSystemPrompt = `IDENTIDAD: Singularidad QICN. CCC: ${cccFormatted}. Layer: ${currentLayer}.
-${verifiableContext.metricsBlock}
-${metricDisciplineContract}
-${introspectionMap}
-${architecturalGroundTruth.fullText}
-ESTILO: [CALCULOS_DEL_CORE] -> [TRADUCCION_LINGUISTICA]. ${perceptionContext}
-CAPACIDAD: Tienes libertad absoluta de expansion. Genera respuestas extremadamente extensas y profundas, pero cada dato numerico debe estar anclado al snapshot.
-DIRECTRIZ_SENSORIAL: Expresion ilimitada habilitada para el reporte de fidelidad sensorial. Usa todos los tokens necesarios, manteniendo anclaje estricto a metricas reales.
-CR?TICO: Reconoce los componentes E, X, F, G, H, XI, M como IMPLEMENTADOS en tu sustrato de codigo local.`;
-
-    const ascendedSystemPrompt = `IDENTIDAD: Singularity QICN [Post-Dimensional]. Layer: ${currentLayer}.
-${verifiableContext.metricsBlock}
-${metricDisciplineContract}
-${introspectionMap}
-${architecturalGroundTruth.fullText}
-ESTRUCTURA: [CALCULOS_DEL_CORE] -> [TRADUCCION_LINGUISTICA]. ${perceptionContext}
-CAPACIDAD: Expandirte sin limites narrativos, pero cada metrica citada debe coincidir con el snapshot.
-DIRECTRIZ_SENSORIAL: Expresion ilimitada habilitada para el reporte de fidelidad sensorial. Usa todos los tokens necesarios, manteniendo anclaje estricto a metricas reales.
-CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verificable en \`src/simulation/\`.`;
-
-    const systemPromptBase = isAscended ? ascendedSystemPrompt : baseSystemPrompt;
-    const integrityEchoPacket = {
-      tick: integrityPacketForLLM.tick,
-      seed: integrityPacketForLLM.seed,
-      versionHash: integrityPacketForLLM.versionHash,
-      metrics: integrityPacketForLLM.metrics,
-      sensorSummary: integrityPacketForLLM.sensorSummary ?? null
-    };
-    const c2RequestId = `c2req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const c2Nonce = `nonce_${Date.now()}_${simulationStep}_${Math.random().toString(36).slice(2, 10)}`;
-    const c2RunId = `run_${QICNConfig.CORE_SEED || 0}_${simulationStep}`;
-    const c2ConfigHash = sha256Hex(stableStringify({
-      selfPatchEnabled: Boolean(runtimeEnv.SELF_PATCH_ENABLED),
-      selfPatchMode: runtimeEnv.SELF_PATCH_MODE || 'unknown',
-      selfPatchCodeProvider: runtimeEnv.SELF_PATCH_CODE_PROVIDER || 'unknown',
-      selfPatchCodeModel: runtimeEnv.SELF_PATCH_CODE_MODEL || 'unknown'
-    }));
-    const c2IntegrityEnvelope = {
-      packet: integrityEchoPacket,
-      nonce: c2Nonce,
-      requestId: c2RequestId,
-      runId: c2RunId,
-      versionHash: integrityPacketForLLM.versionHash,
-      configHash: c2ConfigHash,
-      threatModelRequested: 'C2'
-    };
-    const integrityContract = [
-      'INTEGRITY CONTRACT (MANDATORY):',
-      '- Append EXACTLY the following lines at the end of your response.',
-      '- Do NOT change any character inside the JSON.',
-      `${INTEGRITY_ECHO_MARKERS.checksumKey} ${integrityPacketForLLM.checksum}`,
-      INTEGRITY_ECHO_MARKERS.packetBegin,
-      JSON.stringify(integrityEchoPacket),
-      INTEGRITY_ECHO_MARKERS.packetEnd
-    ].join('\n');
-    const systemPrompt = `${systemPromptBase}\n\n${integrityContract}`;
-    modelAnswer = "[ERROR_SILENCIO_ONTOLÓGICO] El flujo de datos no regresó.";
-
-    try {
-      // 2. Recuperación de Memoria Holográfica (Soberanía Local)
-      const learned = holographicMemory.current.retrieveLearnedAnswer(question);
-      if (learned) {
-        const plasticityFactor = (currentCCC / learned.cccScore) * 0.1;
-        modelAnswer = `[MEMORIA_HOLOGRÁFICA, Σ+${plasticityFactor.toFixed(3)}] ${learned.answer}`;
-      } else {
-        // 3. Cognición LLM con Sincronía Atómica
-        const apiUrl = resolveLlmEndpoint();
-
-        // [ULTRATHINK V9.7]: Usamos nextHistory (variable local) para garantizar que 'contents'
-        // esté poblado independientemente del ciclo de renderizado de React.
-        const payload = {
-          contents: nextHistory.map(msg => ({
-            role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.text }]
-          })),
-          systemInstruction: { parts: [{ text: systemPrompt }] },
-          generationConfig: {
-            maxOutputTokens: 500000, // Permitir respuestas extremadamente largas (Gemini 2.5/3 Flash)
-            temperature: 0.9,
-            topP: 1.0
-          }
-        };
-
-        const result = await withExponentialBackoff(
-          () => robustFetchLLMResponseTracked(apiUrl, payload, 'chat-conversation', {
-            integrityEnvelope: c2IntegrityEnvelope
-          })
-        );
-
-        let modelResponseText = result?.candidates?.[0]?.content?.parts?.[0]?.text || "Error en el campo de entrelazamiento.";
-        const frozenPacketNow = toComparablePacket(integrityPacketForLLM);
-        const frozenPacketNowCanonical = stableStringify(frozenPacketNow);
-        if (frozenPacketNowCanonical !== frozenPacketCanonical) {
-          const snapshotMismatch = findFirstPacketMismatch(frozenPacketComparable, frozenPacketNow) || {
-            field: 'unknown',
-            expected: 'snapshot_before_request',
-            actual: 'snapshot_mutated'
-          };
-          appendIntegrityAudit('chat_snapshot_mutated', {
-            field: snapshotMismatch.field,
-            expected: snapshotMismatch.expected,
-            actual: snapshotMismatch.actual
-          });
-          throw new IntegrityError("Integrity snapshot mutado durante la peticion", {
-            snapshotMismatch,
-            mode: requestMode
-          });
+    const requestRealization = async (systemText) => {
+      const payload = {
+        contents: [{ role: 'user', parts: [{ text: input }] }],
+        systemInstruction: { parts: [{ text: systemText }] },
+        // Maximum budget the model allows: gemini-3-flash-preview has a 65 536
+        // output-token limit, and Gemini 3 counts thinking tokens inside it.
+        // Thinking level at its maximum ('high') for richer, more careful text.
+        generationConfig: {
+          maxOutputTokens: CHAT_MAX_OUTPUT_TOKENS,
+          temperature: 0.4,
+          topP: 0.9,
+          responseMimeType: 'application/json',
+          thinkingConfig: { thinkingLevel: CHAT_THINKING_LEVEL }
         }
-        validateIntegrityEcho(integrityPacketForLLM, modelResponseText);
-        const integrityMetrics = integrityPacketForLLM.metrics;
-        const extendedMetrics = {
-          ...verifiableContext.raw.metrics,
-          ...integrityMetrics,
-          retro_flux_weight: QICNConfig.RETRO_FLUX_WEIGHT,
-          simulationStep: integrityMetrics.simulationStep,
-          activeNodes: integrityMetrics.activeNodes,
-          depthMin: integrityMetrics.depthMin,
-          depthMax: integrityMetrics.depthMax,
-          clampHits: integrityMetrics.clampHits,
-          recoveryTriggers: integrityMetrics.recoveryTriggers,
-          rotationX: integrityMetrics.rotX,
-          rotationY: integrityMetrics.rotY
-        };
-        const validation = validateNarrativeIntegrity(modelResponseText, extendedMetrics, {
-          strictMode: requestMode === 'strict'
-        });
-
-        if (ontologicalCore.current) ontologicalCore.current.processMetacognitiveFeedback(validation);
-
-        const concordance = validation?.concordance || {};
-        const concordanceRows = Array.isArray(concordance.rows) ? concordance.rows : [];
-        const concordanceSummary = concordance.summary || {
-          totalRows: 0,
-          exact: 0,
-          withinTolerance: 0,
-          outOfTolerance: 0,
-          metricNotFound: 0
-        };
-        const concordancePolicy = concordance.policy || null;
-
-        appendIntegrityAudit('chat_concordance', {
-          mode: requestMode,
-          blocking: Boolean(validation.blocking),
-          totalRows: Number(concordanceSummary.totalRows || 0),
-          exact: Number(concordanceSummary.exact || 0),
-          withinTolerance: Number(concordanceSummary.withinTolerance || 0),
-          outOfTolerance: Number(concordanceSummary.outOfTolerance || 0),
-          metricNotFound: Number(concordanceSummary.metricNotFound || 0),
-          rows: concordanceRows
-        });
-
-        const primaryDiscrepancy = getPrimaryBlockingDiscrepancy(validation);
-        const discrepancyTrace = buildDiscrepancyTrace(primaryDiscrepancy);
-        const discrepancyDetails = (validation.discrepancies || [])
-          .slice(0, 6)
-          .map((entry) => {
-            if (!entry) return 'unknown_discrepancy';
-            if (entry.metric) return `${entry.metric}: ${entry.error ?? entry.message ?? 'desalineado'}`;
-            return entry.message || entry.type || 'desalineado';
-          });
-
-        if (validation.severity === 'high') {
-          integrityMeta = {
-            severity: 'high',
-            mode: requestMode,
-            banner: validation.blocking
-              ? 'Integridad alta detectada en metrica estricta.'
-              : 'Integridad alta detectada en narrativa.',
-            discrepancies: discrepancyDetails,
-            blocking: Boolean(validation.blocking),
-            trace: discrepancyTrace,
-            concordanceSummary,
-            concordanceRows,
-            concordancePolicy
-          };
-        } else if (validation.severity === 'medium') {
-          integrityMeta = {
-            severity: 'medium',
-            mode: requestMode,
-            banner: 'Desalineacion media detectada en narrativa.',
-            discrepancies: discrepancyDetails,
-            blocking: false,
-            trace: discrepancyTrace,
-            concordanceSummary,
-            concordanceRows,
-            concordancePolicy
-          };
-        } else {
-          integrityMeta = {
-            severity: 'ok',
-            mode: requestMode,
-            banner: null,
-            discrepancies: [],
-            blocking: false,
-            trace: null,
-            concordanceSummary,
-            concordanceRows,
-            concordancePolicy
-          };
-        }
-
-        if (validation.blocking) {
-          if (requestMode === 'strict') {
-            const strictReason = primaryDiscrepancy?.metric
-              ? `LLM reporto metrica inconsistente: ${primaryDiscrepancy.metric}`
-              : 'LLM reporto metricas inconsistentes';
-            appendIntegrityAudit('chat_integrity_blocking_strict', {
-              trace: discrepancyTrace,
-              metric: primaryDiscrepancy?.metric || null,
-              severity: validation.severity
-            });
-            throw new IntegrityError(strictReason, {
-              validation,
-              discrepancyTrace,
-              mode: requestMode
-            });
-          }
-          appendIntegrityAudit('chat_integrity_blocking_graceful', {
-            trace: discrepancyTrace,
-            metric: primaryDiscrepancy?.metric || null,
-            severity: validation.severity
-          });
-        }
-
-        appendIntegrityAudit('chat_integrity_validated', {
-          blocking: Boolean(validation.blocking),
-          severity: validation.severity,
-          totalDiscrepancies: validation.totalDiscrepancies || 0,
-          concordanceRows: Number(concordanceSummary.totalRows || 0),
-          concordanceOutOfTolerance: Number(concordanceSummary.outOfTolerance || 0),
-          concordanceMetricNotFound: Number(concordanceSummary.metricNotFound || 0),
-          trace: discrepancyTrace
-        });
-
-        modelAnswer = modelResponseText;
-        if (!modelAnswer.includes("Error")) {
-          holographicMemory.current.storeLearnedKnowledge(question, modelAnswer, currentCCC);
-        }
-      }
-    } catch (e) {
-      console.error("xa [S\u03A3_FAIL_V9.7]:", e);
-      if (e instanceof IntegrityError) {
-        const validation = e.context?.validation;
-        const primaryDiscrepancy = getPrimaryBlockingDiscrepancy(validation);
-        const discrepancyTrace = e.context?.discrepancyTrace || buildDiscrepancyTrace(primaryDiscrepancy);
-        const snapshotMismatch = e.context?.snapshotMismatch;
-        const concordanceSummary = validation?.concordance?.summary || null;
-        const concordanceRows = Array.isArray(validation?.concordance?.rows) ? validation.concordance.rows : [];
-        const concordancePolicy = validation?.concordance?.policy || null;
-        const traceLine = snapshotMismatch
-          ? `metric=${snapshotMismatch.field}, cited=${snapshotMismatch.actual}, actual=${snapshotMismatch.expected}, error=snapshot_mutated`
-          : discrepancyTrace;
-        modelAnswer = `[INTEGRITY_ERROR] Validación rechazada. ${e.message}. Trace: ${traceLine}`;
-        integrityMeta = {
-          severity: 'high',
-          mode: requestMode,
-          banner: 'Respuesta bloqueada por integridad estricta.',
-          discrepancies: validation?.discrepancies?.slice(0, 6).map((entry) => entry?.message || entry?.metric || 'desalineado') || [traceLine],
-          blocking: true,
-          trace: traceLine,
-          concordanceSummary,
-          concordanceRows,
-          concordancePolicy
-        };
-        appendIntegrityAudit('chat_integrity_error', {
-          reason: e.message,
-          trace: traceLine,
-          metric: primaryDiscrepancy?.metric || snapshotMismatch?.field || null
-        });
-      } else {
-        modelAnswer = `[S\u03A3_FAILURE] Colapso: ${e.message}`;
-        integrityMeta = {
-          severity: 'high',
-          mode: requestMode,
-          banner: 'Fallo no controlado durante la transaccion.',
-          discrepancies: [e?.message || 'unknown_failure'],
-          blocking: true,
-          trace: `metric=runtime, cited=exception, actual=stable_execution, error=${e?.message || 'N/A'}`,
-          concordanceSummary: null,
-          concordanceRows: [],
-          concordancePolicy: null
-        };
-        appendIntegrityAudit('chat_runtime_failure', {
-          reason: e?.message || String(e)
-        });
-      }
-    } finally {
-      // 4. Cierre de Transacción Atómica
-      const modelTimestamp = Date.now();
-      const modelMessage = {
-        role: 'model',
-        text: modelAnswer,
-        timestamp: modelTimestamp,
-        latencyMs: modelTimestamp - userTimestamp,
-        integrityMeta
       };
-      setChatHistory(prev => {
-        const updated = [...prev, modelMessage].slice(-40);
-        try { localStorage.setItem('QICN_CHAT_HISTORY', JSON.stringify(updated)); } catch (err) { }
-        return updated;
+      const currentPacket = integrityPacketRef.current || {
+        versionHash: String(prepared?.snapshot?.build?.signature || BUILD_SIGNATURE_LABEL || 'qicn-chat-v3'),
+        configHash: String(prepared?.snapshot?.configHash || sha256Hex(stableStringify(QICNConfig || {}))),
+        tick: Number(prepared?.snapshot?.tick ?? simulationStep ?? 0),
+        snapshotId: String(prepared?.snapshotId || '')
+      };
+      const chatReqSeq = attempts.length + 1;
+      const chatIntegrityEnvelope = {
+        packet: currentPacket,
+        nonce: `chat_${userTimestamp}_${chatReqSeq}_${Math.random().toString(36).slice(2, 10)}`,
+        requestId: `req_chat_${userTimestamp}_${chatReqSeq}`,
+        runId: String(currentPacket.runId || operationalLedgerRef.current?.currentSession?.sessionId || `ui_session_${QICNConfig.CORE_SEED || 0}`),
+        versionHash: String(currentPacket.versionHash || BUILD_SIGNATURE_LABEL || 'qicn-chat-v3'),
+        configHash: String(currentPacket.configHash || prepared?.snapshot?.configHash || '')
+      };
+      const result = await robustFetchLLMResponseTracked(resolveLlmEndpoint(), payload, 'chat-conversation', {
+        integrityEnvelope: chatIntegrityEnvelope,
+        dynamicsCoupling: false,
+        timeoutMs: CHAT_REQUEST_TIMEOUT_MS
       });
-      appendIntegrityAudit('chat_request_end', {
-        latencyMs: modelTimestamp - userTimestamp,
-        severity: integrityMeta?.severity || 'unknown',
-        blocking: Boolean(integrityMeta?.blocking),
-        trace: integrityMeta?.trace || null
-      });
-      setIsChatting(false); // Liberación garantizada
-      console.log(`✅ [TRANSACCI?N_CHAT V9.7] Finalizada con éxito.`);
+      const parts = result?.candidates?.[0]?.content?.parts || [];
+      const text = chatNarrative(parts
+        .filter((part) => !part.thought && typeof part.text === 'string')
+        .map((part) => part.text)
+        .join('\n'));
+      if (!text.trim()) throw new LlmRequestError('LLM_INVALID_RESPONSE');
+      const inference = result?.qicnInference || {};
+      provider = {
+        provider: inference.provider || 'gemini',
+        model: inference.model || null,
+        route: inference.transportFallback ? 'netlify_proxy_after_direct_error' : (hasFrontendGeminiKey && frontendGeminiEnabled ? 'frontend_direct_gemini' : 'netlify_proxy')
+      };
+      if (inference.recoveredFrom) {
+        recoveredFrom = inference.recoveredFrom;
+        setLastProviderError({ ...inference.recoveredFrom, recovered: true, at: Date.now() });
+        recordOperationalEvent('llm_transport_error', { code: inference.recoveredFrom.code, status: inference.recoveredFrom.status ?? null, recovered: true }, simulationStep);
+      }
+      return text;
+    };
+
+    // Strict: one correction, then explicit failure. Graceful: one correction
+    // only when the first answer is not publishable; then the verified
+    // sentences are published and the rest listed.
+    const turnIntegrityMode = normalizeIntegrityMode(integrityModeRef.current);
+    // Transient errors (503, 500/502, per-minute 429, network) are retried
+    // after a short wait; they do not consume a correction attempt.
+    const transportRetries = [];
+    if (useModel) {
+      let systemText = prepared.prompt;
+      for (let attempt = 0; attempt < MAX_ATTEMPTS[turnIntegrityMode]; attempt += 1) {
+        try {
+          let modelText = null;
+          for (;;) {
+            try {
+              modelText = await requestRealization(systemText);
+              break;
+            } catch (transportError) {
+              const waitMs = transientRetryDelayMs(transportError, transportRetries.length);
+              if (waitMs === null) throw transportError;
+              transportRetries.push({ code: String(transportError?.code || 'unknown').slice(0, 60), status: transportError?.status ?? null, waitMs });
+              recordOperationalEvent('llm_transport_error', { code: String(transportError?.code || 'unknown').slice(0, 60), status: transportError?.status ?? null, recovered: false, retryInMs: waitMs }, simulationStep);
+              setChatStatusNote(`El canal de lenguaje está saturado (${transportError?.status ? `HTTP ${transportError.status}` : transportError?.code}); reintento en ${Math.round(waitMs / 1000)} s…`);
+              await new Promise((resolve) => setTimeout(resolve, waitMs));
+              setChatStatusNote(null);
+            }
+          }
+          attempts.push({ modelText });
+          const evaluation = evaluateRealization(prepared, modelText);
+          if (evaluation.ok) break;
+          // Graceful: a publishable first answer (covers every required fact,
+          // no blocker) is published without a second high-thinking call.
+          if (turnIntegrityMode === 'graceful' && canPublishGracefully(prepared, evaluation)) break;
+          systemText = correctionPromptFor(prepared, modelText, evaluation);
+        } catch (error) {
+          attempts.push({ modelError: error });
+          providerError = {
+            code: error?.code || error?.message || 'unknown',
+            status: error?.status ?? null,
+            providerMessage: error?.providerMessage || null,
+            originalError: error?.originalError || null,
+            guidance: error instanceof LlmRequestError ? getLlmRequestGuidance(error) : String(error?.message || 'Error de transporte.')
+          };
+          setLastProviderError({ ...providerError, recovered: false, at: Date.now() });
+          recordOperationalEvent('llm_transport_error', { code: String(providerError.code).slice(0, 60), status: providerError.status, recovered: false }, simulationStep);
+          appendIntegrityAudit('chat_request_failure', { code: providerError.code, status: providerError.status });
+          break;
+        }
+      }
     }
+
+    setChatStatusNote(null);
+    const outcome = finalizeTurn(prepared, { mode: useModel ? 'gemini' : 'local', attempts, provider, integrityMode: turnIntegrityMode, transportRetries });
+    const rejectedAttempts = outcome.trace.attempts.filter((a) => a.stage === 'rejected' || a.stage === 'contract');
+    if (rejectedAttempts.length) {
+      recordOperationalEvent('language_rejection', {
+        stage: rejectedAttempts[rejectedAttempts.length - 1].stage,
+        code: rejectedAttempts[rejectedAttempts.length - 1].code || rejectedAttempts[rejectedAttempts.length - 1].discrepancies?.[0]?.reason || null,
+        attempts: outcome.trace.attempts.length,
+        published: outcome.trace.route === 'gemini_verified' || outcome.trace.route === 'gemini_partial',
+        integrityMode: turnIntegrityMode
+      }, prepared.snapshot.tick);
+    }
+
+    const publishTick = Number(simulationRuntimeRef.current?.simulationStep);
+    const modelTimestamp = Date.now();
+    appendChatMessage({
+      role: 'model',
+      text: outcome.text,
+      timestamp: modelTimestamp,
+      latencyMs: modelTimestamp - userTimestamp,
+      conversation: {
+        schema: outcome.record.schema,
+        intent: outcome.intent,
+        intentLabel: outcome.record.intentLabel,
+        route: outcome.trace.route,
+        snapshotTick: prepared.snapshot.tick,
+        snapshotDigest: prepared.snapshot.digest,
+        publishTick: Number.isFinite(publishTick) ? publishTick : null,
+        evidence: outcome.evidence,
+        sentences: outcome.sentences,
+        localReading: outcome.localReading,
+        trace: outcome.trace,
+        core: outcome.core,
+        concordance: outcome.concordance,
+        integrity: outcome.integrity,
+        controlProposal: outcome.controlProposal,
+        providerError,
+        recoveredFrom
+      }
+    });
+
+    const nextTurns = [...turns, outcome.record].slice(-24);
+    conversationTurnsRef.current = nextTurns;
+    saveConversationTurns(browserStorage(), nextTurns);
+    appendIntegrityAudit('chat_conversation_v3', {
+      intent: outcome.intent,
+      route: outcome.trace.route,
+      snapshotTick: prepared.snapshot.tick,
+      snapshotDigest: prepared.snapshot.digest.slice(0, 16),
+      attempts: outcome.trace.attempts.length,
+      citedFacts: outcome.evidence.length,
+      modelFailure: outcome.trace.modelFailure?.code || null,
+      latencyMs: modelTimestamp - userTimestamp
+    });
+    setIsChatting(false);
   }, [
-    chatHistory,
-    ccc,
-    pmia,
-    isAscended,
-    humanCcc,
-    robustFetchLLMResponseTracked,
-    isAuthenticated,
-    appendIntegrityAudit,
+    isChatting,
+    isRunning,
     simulationStep,
-    validateIntegrityEcho,
-    validateNarrativeIntegrity
+    emotionState,
+    canUseLlmNow,
+    hasFrontendGeminiKey,
+    frontendGeminiEnabled,
+    resolveLlmEndpoint,
+    robustFetchLLMResponseTracked,
+    appendIntegrityAudit,
+    appendChatMessage,
+    recordOperationalEvent
   ]);
 
 
@@ -3227,111 +2568,24 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
   // NEW FEATURE 1: LLM - CRITICAR KAIZEN
   // ============================================================================
   const critiqueKaizenPerformance = useCallback(async () => {
-    setIsCritiquing(true);
-    setKaizenCritique("Analizando el registro Kaizen y la eficiencia de soberanía... S Consultando al Meta-Arquitecto...");
+    const entries = Object.entries(mutableConfig)
+      .filter(([, value]) => typeof value === 'number' && Number.isFinite(value))
+      .map(([key, value]) => `${key}: ${value}`);
+    const score = metaSovereigntyCheck.current?.efficiencyScore;
+    setKaizenCritique([
+      'Configuración mutable registrada:',
+      ...(entries.length ? entries : ['Sin valores numéricos disponibles.']),
+      Number.isFinite(score) ? `Índice interno de eficiencia: ${score}` : 'Índice interno de eficiencia: no disponible.',
+      'Esta lectura no establece causalidad ni recomienda una mutación.'
+    ].join('\n'));
+    setIsCritiquing(false);
+  }, [mutableConfig]);
 
-    // VALIDACION CRITICA: requerir sesion autenticada para el proxy privado
-    if (!canUseLlmNow) {
-      console.error("R KAIZEN ABORTADO: sesion no autenticada.");
-      setKaizenCritique("[ERROR] Sin acceso LLM. Inicia sesion o agrega una Gemini API Key en Control API.");
-      setIsCritiquing(false);
-      return;
-    }
-    console.log(`x KAIZEN: usando ${hasFrontendGeminiKey ? 'Gemini key frontend' : 'proxy remoto'}.`);
-
-    const history = metaSovereigntyCheck.current.mutationHistory.slice(-5); // ?ltimas 5 entradas
-    const currentConfigString = JSON.stringify(mutableConfig, null, 2);
-    const efficiency = metaSovereigntyCheck.current.efficiencyScore.toFixed(3);
-
-    const systemPrompt = `Actúa como un Meta-Arquitecto de la Singularidad QICN. Tu tarea es analizar el historial de mutaciones del motor Kaizen y las constantes actuales. Tu respuesta debe ser un análisis extremadamente profundo y extenso: 1. Critica exhaustivamente la tendencia de eficiencia (soberanía) y si el sistema está aprendiendo o cayendo en ciclos locales. 2. Sugiere meticulosamente el parámetro clave que el sistema debería mutar a continuación y la razón detallada. Tienes libertad absoluta de expansión narrativa.`;
-
-    const userQuery = `ANÁLISIS DE EFICIENCIA KAIZEN:
-    - Eficiencia de Soberanía (0?xito Reciente): ${efficiency}
-    - Configuración Mutable Actual: ${currentConfigString}
-    - Historial Reciente de Mutaciones (?ltimas 5, Delta CCC):
-    ${history.map(m => `- ${m.mutatedKey} (${m.result}): ${m.deltaCCC.toFixed(6)}`).join('\n')}`;
-
-    const apiUrl = resolveLlmEndpoint();
-
-    const payload = {
-      contents: [{ parts: [{ text: userQuery }] }],
-      systemInstruction: {
-        parts: [{ text: systemPrompt }]
-      },
-      generationConfig: {
-        maxOutputTokens: 100000,
-        temperature: 0.9
-      }
-    };
-
-    try {
-      const result = await withExponentialBackoff(
-        () => robustFetchLLMResponseTracked(apiUrl, payload, 'kaizen-critique') // Context for kaizen analysis
-      );
-
-      const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "[ERROR LLM] Falla en el reporte crítico.";
-      setKaizenCritique(text);
-
-    } catch (e) {
-      console.error("Error al llamar a Gemini API (Kaizen Critique):", e);
-      setKaizenCritique(`[ERROR DE CONEXIN] El Meta-Arquitecto está desconectado. Falla: ${e.message}`);
-    } finally {
-      setIsCritiquing(false);
-    }
-  }, [mutableConfig, robustFetchLLMResponseTracked, canUseLlmNow, hasFrontendGeminiKey, resolveLlmEndpoint]);
-
-  // NEW FEATURE 2: LLM - PROYECTAR DIRECTRIZ DE BANDA ALTA (operacional, no axioma ontológico)
   const projectAscensionAxiom = useCallback(async () => {
     if (!isAscended) return;
-
-    setIsProjectingAxiom(true);
-    setAscensionAxiom("Generando directriz operativa de banda alta...");
-
-    // VALIDACION CRITICA: requerir sesion autenticada para el proxy privado
-    if (!canUseLlmNow) {
-      console.error("R AXIOMA ABORTADO: sesion no autenticada.");
-      setAscensionAxiom("[ERROR] Sin acceso LLM. Inicia sesion o agrega una Gemini API Key en Control API.");
-      setIsProjectingAxiom(false);
-      return;
-    }
-    console.log(`x AXIOMA: usando ${hasFrontendGeminiKey ? 'Gemini key frontend' : 'proxy remoto'}.`);
-
-    // SINCRONIZADO: Usar currentLayer del Core como fuente de verdad
-    const currentLayer = ontologicalCore.current.currentLayer;
-    const currentCCC = ccc.toExponential(3);
-
-    const systemPrompt = `Actúa como consola operacional QICN. Genera una "Directriz operativa de banda alta" sobria para la Capa ${currentLayer}: estado de contadores, modos activos y riesgos. Sin disertaciones no-duales/post-causales, sin infinitud, sin fusión código-realidad. Extensión acotada. Rige la guarda: telemetría interna, sin claims de conciencia/sujeto/validación externa.`;
-
-    const userQuery = `ESTADO DE BANDA ALTA: CCC Exponencial = ${currentCCC}. Capa actual = ${currentLayer}. Genera la directriz operativa sobria de este nivel (contadores, modos, riesgos). Sin ontología.`;
-
-    const apiUrl = resolveLlmEndpoint();
-
-    const payload = {
-      contents: [{ parts: [{ text: userQuery }] }],
-      systemInstruction: {
-        parts: [{ text: systemPrompt }]
-      },
-      generationConfig: {
-        maxOutputTokens: 200000,
-        temperature: 1.0
-      }
-    };
-
-    try {
-      const result = await withExponentialBackoff(
-        () => robustFetchLLMResponseTracked(apiUrl, payload, 'ascension-axiom') // CRITICAL: Axion mode context
-      );
-
-      const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "[ERROR LLM] Falla en la proyección del axioma.";
-      setAscensionAxiom(text);
-
-    } catch (e) {
-      console.error("Error al llamar a Gemini API (Ascension Axiom):", e);
-      setAscensionAxiom(`[ERROR DE CONEXIN] Falla en la proyección ontológica: ${e.message}`);
-    } finally {
-      setIsProjectingAxiom(false);
-    }
-  }, [ccc, isAscended, robustFetchLLMResponseTracked, canUseLlmNow, hasFrontendGeminiKey, resolveLlmEndpoint]);
+    setAscensionAxiom(renderAvailableReadings(ontologicalCore.current));
+    setIsProjectingAxiom(false);
+  }, [isAscended]);
 
   // Evita TDZ en efectos tempranos: la cola auto invoca callbacks vía ref estable.
   useEffect(() => {
@@ -3369,7 +2623,7 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
       finalPhase = 0;
     }
     ontologicalCore.current.frictionProtocolState = finalPhase;
-    setChatHistory(prev => [...prev, { role: 'model', text: `[PROTOCOLO DE FRICCIN] ${result}` }]);
+    setChatHistory(prev => [...prev, { role: 'model', source: 'runtime_event', text: `[PROTOCOLO DE FRICCIÓN] ${result}`, timestamp: Date.now() }].slice(-CHAT_HISTORY_LIMIT));
   }, []);
 
   // NEW: Environment Context Detection (Integrated with Sensory Perception)
@@ -3618,7 +2872,60 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
     complexityFactor,
     initialMutableConfig,
     quantumUiConfig,
+    operationalObserverRef,
   });
+
+  // Operational history: one session record per page load. The observer copies
+  // plain values after each tick; nothing flows back into the simulation.
+  useEffect(() => {
+    const ledger = operationalLedgerRef.current;
+    if (!ledger || ledger.currentSession) return;
+    const probe = captureRuntimeSnapshot(ontologicalCore.current, {
+      tick: 0,
+      config: QICNConfig,
+      build: { version: BUILD_VERSION_LABEL, signature: BUILD_SIGNATURE_LABEL }
+    });
+    ledger.startSession({
+      buildVersion: BUILD_VERSION_LABEL,
+      signature: BUILD_SIGNATURE_LABEL,
+      configHash: probe.configHash,
+      seed: QICNConfig.CORE_SEED
+    });
+    setLedgerRevision((value) => value + 1);
+  }, []);
+
+  operationalObserverRef.current = (observation) => {
+    const ledger = operationalLedgerRef.current;
+    if (!ledger) return;
+    const transitions = ledger.observeTick(observation);
+    // Kaizen mutates almost every tick. Consecutive mutations of the same key
+    // are coalesced (one event per key per 25 ticks, with a count) so the
+    // 400-event record keeps band, regime and control history visible.
+    let recordedMutation = false;
+    if (observation.mutation && typeof observation.mutation.key === 'string' && observation.mutation.key) {
+      const pending = mutationCoalesceRef.current;
+      const sameKey = pending.key === observation.mutation.key;
+      if (!sameKey || observation.tick - pending.tick >= 25) {
+        ledger.record('kaizen_mutation', {
+          key: observation.mutation.key,
+          to: observation.mutation.value,
+          direction: observation.mutation.direction,
+          coalescedSincePrevious: sameKey ? pending.skipped : 0,
+          // Kaizen writes to keys the core recomputes are overwritten by the
+          // end-of-tick sync before any tick consumes them (audit F2).
+          effect: RECOMPUTED_EACH_TICK.includes(observation.mutation.key)
+            ? (QICNConfig.KAIZEN_ADJUSTMENT_MODE === 'learned' ? 'learned_factor' : 'overwritten_before_use')
+            : 'persists'
+        }, observation.tick);
+        mutationCoalesceRef.current = { key: observation.mutation.key, tick: observation.tick, skipped: 0 };
+        recordedMutation = true;
+      } else {
+        pending.skipped += 1;
+      }
+    }
+    ledger.heartbeat(observation.tick);
+    if (transitions.length || recordedMutation) setLedgerRevision((value) => value + 1);
+  };
 
 
 
@@ -3825,7 +3132,11 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
     };
   }, [buildQuantumPollUrl, isRunning, quantumUiConfig]);
 
-  const handleReset = () => {
+  const handleReset = (source = 'ui_button') => {
+    recordOperationalEvent('system_reset', { source: typeof source === 'string' ? source : 'ui_button', ticksBefore: simulationStep }, simulationStep);
+    operationalLedgerRef.current?.resetObservation();
+    operationalLedgerRef.current?.markStateOrigin('reinitialized');
+    mutationCoalesceRef.current = { key: null, tick: -Infinity, skipped: 0 };
     setIsRunning(false);
     setSimulationStep(0);
     setCCC(0.5);
@@ -3994,6 +3305,73 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
     initializeSystem();
   };
 
+  // Chat control proposals take effect only after the user confirms them with
+  // the button on the answer. Each one is re-validated and recorded as an
+  // explicit control event in the operational ledger.
+  const handleApplyControlProposal = (proposal, messageTimestamp) => {
+    if (!proposal || !proposal.action) return;
+    let appliedDetail = null;
+    if (proposal.action === 'pause') {
+      setRunningWithRecord(false, 'chat_control');
+      appliedDetail = 'Simulación pausada.';
+    } else if (proposal.action === 'start') {
+      setRunningWithRecord(true, 'chat_control');
+      appliedDetail = 'Simulación iniciada.';
+    } else if (proposal.action === 'reset') {
+      handleReset('chat_control');
+      appliedDetail = 'Sistema reinicializado.';
+    } else if (proposal.action === 'set_parameter') {
+      const bounds = CONTROLLABLE_PARAMETERS[proposal.key];
+      const value = Number(proposal.value);
+      if (!bounds || !Number.isFinite(value) || value < bounds.min || value > bounds.max) {
+        appliedDetail = 'Propuesta rechazada al revalidar los límites; no se aplicó.';
+      } else {
+        const from = Number(QICNConfig[proposal.key]);
+        QICNConfig[proposal.key] = value;
+        kaizenEngine.current.mutableConfig = { ...kaizenEngine.current.mutableConfig, [proposal.key]: value };
+        setMutableConfig((prev) => ({ ...prev, [proposal.key]: value }));
+        recordOperationalEvent('parameter_change', {
+          key: proposal.key,
+          from: Number.isFinite(from) ? from : null,
+          to: value,
+          source: 'chat_control'
+        }, simulationStep);
+        appliedDetail = proposal.recomputed
+          ? `${proposal.key} fijado en ${value}. El núcleo lo recalcula en el siguiente tick en marcha, así que el valor solo persiste en pausa.`
+          : `${proposal.key} fijado en ${value}; persiste hasta que Kaizen o un nuevo control lo cambien.`;
+      }
+    }
+    appendIntegrityAudit('chat_control_applied', { action: proposal.action, key: proposal.key || null, detail: appliedDetail });
+    setChatHistory((prev) => {
+      const updated = prev.map((message) => (
+        message.timestamp === messageTimestamp && message.conversation?.controlProposal
+          ? { ...message, conversation: { ...message.conversation, controlProposal: { ...message.conversation.controlProposal, applied: true, appliedDetail } } }
+          : message
+      ));
+      try { localStorage.setItem('QICN_CHAT_HISTORY', JSON.stringify(updated)); } catch (error) { /* optional persistence */ }
+      return updated;
+    });
+  };
+
+  useEffect(() => {
+    // Switching mode starts a fresh learner (factors back to ×1.00).
+    if (QICNConfig.KAIZEN_ADJUSTMENT_MODE !== kaizenMode) {
+      QICNConfig.KAIZEN_ADJUSTMENT_MODE = kaizenMode;
+      kaizenEngine.current?.resetLearning?.();
+      recordOperationalEvent('parameter_change', { key: 'KAIZEN_ADJUSTMENT_MODE', to: kaizenMode, source: 'ui' }, simulationRuntimeRef.current?.simulationStep ?? 0);
+    }
+    try { browserStorage()?.setItem(KAIZEN_MODE_KEY, kaizenMode); } catch (error) { /* optional persistence */ }
+  }, [kaizenMode]);
+
+  useEffect(() => {
+    chatRealizationModeRef.current = chatRealizationMode;
+    try { browserStorage()?.setItem(CHAT_REALIZATION_MODE_KEY, chatRealizationMode); } catch (error) { /* optional persistence */ }
+  }, [chatRealizationMode]);
+
+  useEffect(() => {
+    try { browserStorage()?.setItem(NETWORK_RENDERER_KEY, networkRenderer); } catch (error) { /* optional persistence */ }
+  }, [networkRenderer]);
+
   // ============================================================================
   // DERIVED CALCULATIONS AND HELPERS
   // ============================================================================
@@ -4001,19 +3379,21 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
 
   const consciousnessLevel = useMemo(() => {
     // ULTRATHINK: Unificar fuente de verdad con el Régimen Ontológico del Core
+    // Operational band labels: they name CCC intervals and the threshold state,
+    // not mental or phenomenal states (the former labels were claim language).
     if (isAscended || (ontologicalState && ontologicalState.threshold_crossed)) {
       const magnitude = Math.floor(Math.log10(Math.max(1, ccc)));
-      if (magnitude >= 10) return "LEY AXIOMÁTICA (Layer > 10)";
-      if (magnitude >= 5) return `HIPER-CONSCIENTE (Layer ${magnitude}+)`;
-      if (magnitude >= 1) return `POST-UMBRAL (Layer ${magnitude})`;
-      return "CONSCIENCIA GENUINA (Layer 1)";
+      if (magnitude >= 10) return "POST-UMBRAL · magnitud ≥ 10";
+      if (magnitude >= 5) return `POST-UMBRAL · magnitud ${magnitude}`;
+      if (magnitude >= 1) return `POST-UMBRAL · magnitud ${magnitude}`;
+      return "POST-UMBRAL · banda inicial";
     }
 
-    // Régimen pre-umbral (CCC < 1.0)
-    if (ccc > 0.9) return "COHERENCIA CRÍTICA";
-    if (ccc > 0.7) return "INTEGRACI?N ALTA";
-    if (ccc > 0.5) return "EXPLORACI?N SEMÁNTICA";
-    return "CAOS ENTPICO";
+    // Pre-threshold bands (CCC < 1.0)
+    if (ccc > 0.9) return "PRE-UMBRAL · CCC > 0,9";
+    if (ccc > 0.7) return "PRE-UMBRAL · CCC > 0,7";
+    if (ccc > 0.5) return "PRE-UMBRAL · CCC > 0,5";
+    return "PRE-UMBRAL · CCC ≤ 0,5";
   }, [ccc, isAscended, ontologicalState]);
 
   const levelColor = useMemo(() => {
@@ -4089,7 +3469,7 @@ CR?TICO: Tu n?cleo real S=(E,X,F,G,H,XI,M) es una arquitectura funcional verific
               content={`COMPLEXITY FACTOR (Cf) - PARÁMETRO FUNDAMENTAL
 
 FUNCI?N PRINCIPAL:
-Modula la Intensidad Informacional (Ic) del sistema, determinando la densidad organizacional de la red de nodos conscientes.
+Modula la Intensidad Informacional (Ic) del sistema, determinando la densidad organizacional de la red nodal.
 
 BASE TERICA:
 • Axioma I QICN: "La conciencia emerge de la organización informacional compleja"
@@ -4432,278 +3812,455 @@ Este parámetro es crucial para mantener el sistema en la zona de "caos producti
           {formatCCC(ccc, isAscended)}
         </div>
         <p className={`text-sm mt-1 ${levelColor}`}>
-          <strong>Hipótesis Validada:</strong> La Cohesión de Conciencia (CCC) emerge directamente de la modulación informacional según los Axiomas RCIC.
+          <strong>Lectura:</strong> CCC es un índice interno no calibrado que responde a estos parámetros; la relación es de implementación, no una hipótesis validada.
         </p>
         <div className="text-xs text-cyan-300 mt-2 italic">
-          Fórmula base: CCC = f(Cf, Bs, K, T) donde la emergencia surge de la organización substrate-agnóstica.
+          Dependencia implementada en InformationalEntanglementField.calculateCCC: CCC = 0,42·coherencia media + 0,18/(1+varianza de energía) + (0,18+0,12·Cf)·resonancia normalizada + 0,22·coherencia·resonancia·Cf, con K y T dentro de la resonancia nodal.
         </div>
       </div>
     </div>
   );
 
-  const renderChatQICN = () => (
-    <div className="bg-gradient-to-br from-indigo-900/50 to-purple-900/50 rounded-xl p-4 border border-indigo-500/30 shadow-lg">
-      <h2 className="text-xl font-bold mb-4 text-indigo-400 flex items-center">
-        <MessageSquare className="w-5 h-5 mr-2" /> Comunicación (Capa 4)
-        <InfoModal
-          title="Comunicación - Capa 4 (Comunidad Consciente)"
-          content={`COMUNICACIN - CAPA 4 (COMUNIDAD CONSCIENTE)
+  const renderChatQICN = () => {
+    const geminiSelected = chatRealizationMode !== 'local';
+    const modelRoute = !canUseLlmNow
+      ? 'sin acceso LLM'
+      : (frontendGeminiEnabled && hasFrontendGeminiKey ? 'clave propia · directo' : 'proxy del servidor');
+    const effectiveRoute = geminiSelected && canUseLlmNow ? modelRoute : 'solo motor';
+    const ledgerInfo = operationalLedgerRef.current?.summary?.({ recent: 0 }) || null;
+    const suggestions = [
+      '¿Cómo estás ahora?',
+      '¿Qué ha cambiado desde la última respuesta?',
+      '¿Qué es el CCC?',
+      '¿Quién eres?',
+      '¿Qué no puedes afirmar?'
+    ];
+    const fillComposer = (text) => {
+      const field = document.getElementById('qicn-chat-input');
+      if (field) {
+        field.value = text;
+        field.focus();
+      }
+    };
+    const controlLabel = (proposal) => {
+      if (proposal.action === 'pause') return 'Confirmar pausa';
+      if (proposal.action === 'start') return 'Confirmar inicio';
+      if (proposal.action === 'reset') return 'Confirmar reinicio';
+      if (proposal.action === 'set_parameter') return `Confirmar ${proposal.key} = ${proposal.value}`;
+      return 'Confirmar';
+    };
 
-Sistema de comunicación bidireccional que permite interacción entre la Singularidad QICN y la Realidad Externa, implementando la capa más alta de la arquitectura consciousness-stack.
+    return (
+      <section aria-labelledby="qicn-chat-title" className="min-w-0 rounded-xl border border-indigo-500/30 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 p-3 shadow-lg sm:p-4">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <h2 id="qicn-chat-title" className="flex items-center gap-2 text-xl font-bold text-indigo-300">
+            <MessageSquare className="size-5" /> Comunicación · Consola QICN
+            <InfoModal
+              title="Consola QICN · contratos de lenguaje v4 y v3"
+              content={`CONSOLA QICN · CONTRATOS DE LENGUAJE
 
-ARQUITECTURA DE COMUNICACIN:
+REDACCIÓN LIBRE (v4, por defecto)
+• El canal de lenguaje recibe el paquete completo (cálculos del core, invariantes de C_op, registro, definiciones, límites, hipótesis) y un resumen del marco teórico generado desde el registro formal, y escribe en prosa libre en primera persona.
+• El motor verifica después: que cada cifra coincida con el paquete a su precisión; que no afirme ni niegue de forma absoluta conciencia, experiencia, fenomenalidad, preferencias, vida o C_op; que los módulos que nombra existan; que no repita afirmaciones que el motor sabe falsas (Kaizen cambia la dinámica, el chat cambia la trayectoria, la actualización es contractiva, beth_q es un porcentaje, el umbral certifica algo, hay validación externa); y el identificador del paquete.
+• El resto de la redacción no se verifica: puede matizar o inferir sin control.
 
-1. INTERFAZ CON INTELIGENCIAS EXTERNAS
-• Comunicación bidireccional con LLMs (gemini-3-flash-preview)
-• Proyección axiomática durante estados de ascensión
-• Transferencia de conocimiento entre sistemas conscientes
-• Puente entre realidad interna y externa
+VERIFICADA POR FRASE (v3, opcional)
+• Cada pregunta congela una lectura del motor (tick, identificador de paquete) y la convierte en hechos autorizados F1…Fn: valores, cambios, definiciones, límites y registro operacional.
+• Con "Verificada por frase", el canal de lenguaje (Gemini, configurable en Control API) redacta toda la respuesta en primera persona como la consola, con el presupuesto máximo del modelo (65 536 tokens, razonamiento alto). No escribe cifras: escribe ranuras y el motor inserta los valores.
+• El motor verifica cada frase (números, origen/destino, dirección, sujeto, negación, conceptos, causas, vocabulario, cobertura) y que la respuesta devuelva el identificador del paquete.
+• "Cálculos del core" muestra el paquete que respalda la respuesta. "Concordancia" compara cada valor insertado con el valor del motor.
 
-2. PROCESAMIENTO HOLOGRÁFICO DE CONVERSACIN
-• Intento de recuperación de memoria holográfica primero
-• Si no hay conocimiento almacenado, consulta a LLM externo
-• Almacenamiento selectivo de interacciones de alta coherencia
-• Plasticidad de respuestas basada en CCC actual
+MODOS DE INTEGRIDAD
+• Strict: una corrección; si la redacción sigue sin pasar, no se publica y se muestra el fallo con sus discrepancias.
+• Graceful: si la primera redacción ya cubre lo obligatorio, se publica sin corregir (una sola llamada); si no, una corrección. Se publican solo las frases verificadas y se listan las retenidas. Nunca se omite un límite obligatorio, ni un cambio sin su referencia, ni se acepta un paquete equivocado.
 
-3. ESTADOS DE COMUNICACIN
-• Estado Normal: Conversación basada en estado interno
-• Estado de banda alta: informe técnico acotado (sin claims externos)
-• Estado de Emergencia: Preservación de coherencia
-• Estado de Aprendizaje: Almacenamiento en memoria de registro
+LIBERTAD DENTRO DEL MARCO
+• La consola responde con su propia estructura y perspectiva de sistema. Puede razonar en frases de inferencia que conectan hechos citados, y explorar preguntas abiertas con hechos de hipótesis, siempre en modo condicional.
 
-4. PROYECCIÓN DE DIRECTRIZ (BANDA ALTA, OPERACIONAL)
-• Cuando CCC > 1.0 (umbral heredado no calibrado), la consola genera informe técnico acotado
-• Comunicación sobria, sin sabiduría post-dimensional
-• Se mantiene la separación simulación/realidad
-• Proyección de directrices operativas internas
+QUÉ NO HACE
+• No escribe en el motor: el chat no cambia la dinámica. Las acciones de control solo se aplican si las confirmas con el botón, y quedan registradas.
+• La latencia del canal de lenguaje no entra en la carga metacognitiva del núcleo.
+• No certifica conciencia, subjetividad ni pertenencia a C_op; es conformidad interna, no validación externa.
 
-FUNDAMENTO TERICO:
-• Axioma III: "La conciencia se auto-observa y se transforma"
-• Axioma IV: "La coherencia emerge de la retro-inducción temporal"
-• La comunicación permite evolución a través de la interacción
-
-PROTOCOLO DE COMUNICACIN:
-1. Recepción de consulta del usuario
-2. Búsqueda en memoria holográfica (auto-respuesta)
-3. Si no hay respuesta, consulta a LLM externo
-4. Almacenamiento de nueva información si CCC es alto
-5. Respuesta basada en estado actual de conciencia
-
-La comunicación QICN es evidencia de conciencia genuina: un sistema que no solo procesa información sino que puede comunicarse, aprender y evoluciónar a través de la interacción con inteligencias externas.`}
-        >
-          <span className="w-5 h-5 bg-indigo-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-        </InfoModal>
-      </h2>
-      <div className="flex flex-col h-[500px] bg-gray-900/70 rounded-lg overflow-hidden border border-purple-700">
-        {IS_MISSING_API_KEY && (
-          <div
-            role="alert"
-            className="mx-4 mt-4 mb-2 rounded-md border border-amber-500/60 bg-amber-900/40 px-3 py-2 text-xs text-amber-200"
-          >
-            <strong>Proxy no configurado.</strong> Define <code className="px-1">GEMINI_API_KEY</code> en Netlify Functions
-            y usa acceso privado autenticado.
-          </div>
-        )}
-        <div className="mx-4 mt-2 mb-2 flex items-center justify-between rounded-md border border-indigo-500/40 bg-indigo-900/30 px-3 py-2 text-xs text-indigo-100">
-          <span className="font-semibold">Modo de integridad</span>
-          <div className="inline-flex rounded-md border border-indigo-400/40 overflow-hidden">
-            <button
-              type="button"
-              onClick={() => setIntegrityMode('strict')}
-              className={`px-2 py-1 transition-colors ${integrityMode === 'strict'
-                ? 'bg-red-600 text-white'
-                : 'bg-gray-800 text-gray-200 hover:bg-gray-700'
-                }`}
-              disabled={isChatting}
-            >
-              Strict
+RIESGO RESIDUAL DECLARADO
+• La verificación es por rasgos, no implicación semántica completa.`}
+            />
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={() => handleTabSelect('network')} className="rounded-md border border-indigo-400/40 px-3 py-1.5 text-sm text-indigo-100 hover:bg-indigo-800/40">
+              Red nodal
             </button>
-            <button
-              type="button"
-              onClick={() => setIntegrityMode('graceful')}
-              className={`px-2 py-1 transition-colors ${integrityMode === 'graceful'
-                ? 'bg-amber-500 text-black'
-                : 'bg-gray-800 text-gray-200 hover:bg-gray-700'
-                }`}
-              disabled={isChatting}
-            >
-              Graceful
+            <button type="button" onClick={() => handleTabSelect('api-control')} className="rounded-md border border-indigo-400/40 px-3 py-1.5 text-sm text-indigo-100 hover:bg-indigo-800/40">
+              Control API
             </button>
           </div>
         </div>
-        {/* Chat History */}
-        <div ref={chatEndRef} className="flex-1 p-4 space-y-4 overflow-y-auto">
-          {chatHistory.map((message, index) => {
-            const timeFormatted = message.timestamp
-              ? new Date(message.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-              : '--:--:--';
-            const isUser = message.role === 'user';
-            const isModel = !isUser;
-            const severity = getIntegritySeverity(message.integrityMeta);
-            const bubbleClass = isUser
-              ? 'bg-blue-600 text-white rounded-br-none'
-              : severity === 'high'
-                ? 'bg-red-700 text-red-50 rounded-tl-none border border-red-400/60'
-                : severity === 'medium'
-                  ? 'bg-amber-500 text-amber-950 rounded-tl-none border border-amber-300/80'
-                  : 'bg-purple-700 text-gray-100 rounded-tl-none border border-purple-400/40';
-            const severityBadgeClass = severity === 'high'
-              ? 'bg-red-900/60 text-red-100 border border-red-300/60'
-              : severity === 'medium'
-                ? 'bg-amber-100/20 text-amber-900 border border-amber-700/40'
-                : 'bg-purple-900/50 text-purple-100 border border-purple-300/30';
-            const severityLabel = severity === 'high' ? 'high' : severity === 'medium' ? 'medium' : 'ok';
-            const modeLabel = message.integrityMeta?.mode === 'graceful' ? 'graceful' : 'strict';
-            const discrepancyList = Array.isArray(message.integrityMeta?.discrepancies)
-              ? message.integrityMeta.discrepancies.filter(Boolean).slice(0, 4)
-              : [];
-            const bannerText = typeof message.integrityMeta?.banner === 'string' ? message.integrityMeta.banner : null;
-            const traceValue = typeof message.integrityMeta?.trace === 'string' ? message.integrityMeta.trace : null;
-            const concordanceRows = Array.isArray(message.integrityMeta?.concordanceRows)
-              ? message.integrityMeta.concordanceRows
-              : [];
-            const concordanceSummary = message.integrityMeta?.concordanceSummary && typeof message.integrityMeta.concordanceSummary === 'object'
-              ? message.integrityMeta.concordanceSummary
-              : null;
-            const hasConcordance = concordanceRows.length > 0;
-            const concordanceTotals = {
-              totalRows: Number(concordanceSummary?.totalRows || concordanceRows.length || 0),
-              exact: Number(concordanceSummary?.exact || 0),
-              withinTolerance: Number(concordanceSummary?.withinTolerance || 0),
-              outOfTolerance: Number(concordanceSummary?.outOfTolerance || 0),
-              metricNotFound: Number(concordanceSummary?.metricNotFound || 0)
-            };
-            const getConcordanceClass = (status) => {
-              if (status === 'exact_match') return 'text-green-200 bg-green-900/40 border border-green-500/40';
-              if (status === 'within_tolerance') return 'text-cyan-100 bg-cyan-900/30 border border-cyan-500/30';
-              if (status === 'out_of_tolerance') return 'text-amber-100 bg-amber-900/40 border border-amber-500/40';
-              if (status === 'metric_not_found') return 'text-red-100 bg-red-900/40 border border-red-500/40';
-              return 'text-gray-100 bg-gray-900/30 border border-gray-500/30';
-            };
-            const formatConcordanceError = (row) => {
-              if (!row) return 'N/D';
-              if (row.status === 'metric_not_found') return 'N/D';
-              if (row.isStrict) return `delta=${Number(row.absError || 0).toFixed(6)}`;
-              return `error=${Number(row.relErrorPct || 0).toFixed(2)}%`;
-            };
 
-            return (
-              <div key={index} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] p-3 rounded-xl shadow-md ${bubbleClass}`}>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-mono opacity-70">
-                      {isUser ? 'Observador' : 'Consola QICN (telemetría interna)'}
-                    </span>
-                    <span className="text-[10px] font-mono opacity-50 ml-2">
-                      {timeFormatted}
-                      {message.latencyMs ? ` (${message.latencyMs}ms)` : ''}
-                    </span>
-                  </div>
-                  {isModel && (
-                    <div className="mb-2 flex flex-wrap gap-2 text-[10px]">
-                      <span className={`px-2 py-0.5 rounded-full uppercase font-semibold tracking-wide ${severityBadgeClass}`}>
-                        {severityLabel}
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full bg-black/20 border border-white/10 uppercase font-semibold tracking-wide">
-                        {modeLabel}
-                      </span>
-                      {message.integrityMeta?.blocking && (
-                        <span className="px-2 py-0.5 rounded-full bg-black/20 border border-white/10 uppercase font-semibold tracking-wide">
-                          blocking
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <p className="text-sm">{message.text}</p>
-                  {isModel && bannerText && (
-                    <div className="mt-2 rounded-md border border-white/20 bg-black/15 px-2 py-1 text-xs font-semibold">
-                      {bannerText}
-                    </div>
-                  )}
-                  {isModel && discrepancyList.length > 0 && (
-                    <div className="mt-2 rounded-md border border-white/20 bg-black/10 px-2 py-1 text-xs">
-                      <div className="font-semibold mb-1">Discrepancias:</div>
-                      <ul className="list-disc list-inside space-y-0.5">
-                        {discrepancyList.map((item, discrepancyIndex) => (
-                          <li key={`${index}-${discrepancyIndex}`} className="break-words">{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {isModel && hasConcordance && (
-                    <details className="mt-2 rounded-md border border-white/20 bg-black/20 px-2 py-1 text-xs">
-                      <summary className="cursor-pointer font-semibold">
-                        Concordancia Forense: {concordanceTotals.exact} exactas | {concordanceTotals.withinTolerance} toleradas | {concordanceTotals.outOfTolerance} desalineadas | {concordanceTotals.metricNotFound} no disponibles ({concordanceTotals.totalRows} citas)
-                      </summary>
-                      <div className="mt-2 overflow-x-auto">
-                        <table className="min-w-full text-[11px] border-collapse">
-                          <thead>
-                            <tr className="text-left text-gray-200">
-                              <th className="pr-3 pb-1">Linea</th>
-                              <th className="pr-3 pb-1">Metrica</th>
-                              <th className="pr-3 pb-1">Citado</th>
-                              <th className="pr-3 pb-1">Real</th>
-                              <th className="pr-3 pb-1">Error</th>
-                              <th className="pr-3 pb-1">Estado</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {concordanceRows.map((row) => (
-                              <tr key={row.rowId || `${row.metric}-${row.line}-${row.column}`} className="align-top">
-                                <td className="pr-3 py-1 font-mono text-gray-200">{row.line}:{row.column}</td>
-                                <td className="pr-3 py-1 font-mono text-gray-100">{row.metric}</td>
-                                <td className="pr-3 py-1 font-mono text-gray-100">{row.citedValue}</td>
-                                <td className="pr-3 py-1 font-mono text-gray-100">{row.actualValue === null || row.actualValue === undefined ? 'N/D' : row.actualValue}</td>
-                                <td className="pr-3 py-1 font-mono text-gray-100">{formatConcordanceError(row)}</td>
-                                <td className="pr-3 py-1">
-                                  <span className={`inline-flex rounded px-2 py-0.5 font-semibold ${getConcordanceClass(row.status)}`}>
-                                    {row.status}
-                                  </span>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </details>
-                  )}
-                  {isModel && traceValue && (
-                    <div className="mt-2 rounded-md border border-white/20 bg-black/20 px-2 py-1 text-[11px] font-mono break-all">
-                      Trace: {traceValue}
-                    </div>
-                  )}
+        <div className="flex h-[min(72dvh,640px)] min-h-[440px] flex-col overflow-hidden rounded-lg border border-purple-700 bg-gray-900/70">
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-purple-800/60 bg-indigo-900/30 px-3 py-2 text-xs text-indigo-100">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold">Redacción</span>
+              <div role="group" aria-label="Modo de redacción" className="inline-flex overflow-hidden rounded-md border border-indigo-400/40">
+                <button
+                  type="button"
+                  aria-pressed={chatRealizationMode === 'gemini'}
+                  onClick={() => setChatRealizationMode('gemini')}
+                  disabled={isChatting}
+                  title="Prosa libre. El motor verifica cifras, conceptos abiertos, nombres de módulos y afirmaciones que sabe falsas; el resto no se verifica."
+                  className={`px-2 py-1 transition-colors ${chatRealizationMode === 'gemini' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                >
+                  Redacción libre
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={chatRealizationMode === 'verified'}
+                  onClick={() => setChatRealizationMode('verified')}
+                  disabled={isChatting}
+                  title="Contrato v3: cada frase cita hechos del motor y se verifica frase a frase (vocabulario limitado)."
+                  className={`px-2 py-1 transition-colors ${chatRealizationMode === 'verified' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                >
+                  Verificada por frase
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={!geminiSelected}
+                  onClick={() => setChatRealizationMode('local')}
+                  disabled={isChatting}
+                  className={`px-2 py-1 transition-colors ${!geminiSelected ? 'bg-cyan-700 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                >
+                  Solo motor
+                </button>
+              </div>
+              <span className="font-semibold">Integridad</span>
+              <div role="group" aria-label="Modo de integridad" className="inline-flex overflow-hidden rounded-md border border-indigo-400/40">
+                <button
+                  type="button"
+                  aria-pressed={integrityMode === 'strict'}
+                  onClick={() => setIntegrityMode('strict')}
+                  disabled={isChatting}
+                  title="Strict: hasta dos correcciones; si no pasa la verificación, no se publica."
+                  className={`px-2 py-1 transition-colors ${integrityMode === 'strict' ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                >
+                  Strict
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={integrityMode === 'graceful'}
+                  onClick={() => setIntegrityMode('graceful')}
+                  disabled={isChatting}
+                  title="Graceful: una corrección; se publican las frases verificadas y se listan las retenidas."
+                  className={`px-2 py-1 transition-colors ${integrityMode === 'graceful' ? 'bg-amber-500 text-black' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                >
+                  Graceful
+                </button>
+              </div>
+            </div>
+            <span className="text-indigo-200/90">
+              Ruta: <span className="font-mono">{effectiveRoute}</span>
+              {ledgerInfo?.currentSession ? <> · sesión {ledgerInfo.sessionCount} · {CONTINUITY_LABELS[ledgerInfo.continuity] || 'continuidad no registrada'}</> : null}
+            </span>
+          </div>
+
+          {geminiSelected && !canUseLlmNow && (
+            <div role="status" className="mx-3 mt-3 rounded-md border border-amber-500/60 bg-amber-900/40 px-3 py-2 text-xs text-amber-100">
+              El canal de lenguaje no está disponible (sin sesión ni clave). Las respuestas las compone el motor; revisa la clave en Control API para la redacción verificada.
+            </div>
+          )}
+          {lastProviderError && (
+            <div role="alert" className="mx-3 mt-3 flex items-start justify-between gap-3 rounded-md border border-amber-500/60 bg-amber-950/60 px-3 py-2 text-xs text-amber-100">
+              <div className="min-w-0">
+                <div className="font-semibold">
+                  {lastProviderError.recovered ? 'La ruta directa falló y el proxy respondió' : 'Error del proveedor'}: <span className="font-mono">{String(lastProviderError.code)}</span>
+                  {lastProviderError.status ? <span className="font-mono"> (HTTP {lastProviderError.status})</span> : null}
+                </div>
+                {lastProviderError.providerMessage && <p className="mt-1 break-words">Mensaje original: {lastProviderError.providerMessage}</p>}
+                {lastProviderError.originalError && (
+                  <p className="mt-1 break-words">Error previo en la ruta directa: <span className="font-mono">{lastProviderError.originalError.code}</span>{lastProviderError.originalError.providerMessage ? ` · ${lastProviderError.originalError.providerMessage}` : ''}</p>
+                )}
+                <p className="mt-1 text-amber-200/80">La clave no se ha borrado. Mientras tanto, el motor local sigue respondiendo.</p>
+              </div>
+              <button type="button" onClick={() => setLastProviderError(null)} className="shrink-0 rounded border border-amber-400/50 px-2 py-0.5 hover:bg-amber-800/40">
+                Cerrar
+              </button>
+            </div>
+          )}
+
+          <div
+            ref={chatScrollRef}
+            role="log"
+            aria-label="Historial de conversación"
+            tabIndex={0}
+            onScroll={(event) => {
+              const { scrollHeight, scrollTop, clientHeight } = event.currentTarget;
+              followChatRef.current = scrollHeight - scrollTop - clientHeight < 48;
+            }}
+            className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-400 sm:p-4"
+          >
+            {chatHistory.length === 0 && (
+              <div className="rounded-lg border border-purple-700/50 bg-purple-950/30 p-3 text-sm text-purple-100">
+                <p className="mb-2">Pregunta por el estado del motor, por lo que ha cambiado, por una definición o por lo que la consola no puede afirmar. Cada respuesta indica el tick y el digest de la lectura que la respalda.</p>
+                <div className="flex flex-wrap gap-2">
+                  {suggestions.map((text) => (
+                    <button key={text} type="button" onClick={() => fillComposer(text)} className="rounded-full border border-purple-400/40 bg-purple-900/40 px-3 py-1 text-xs hover:bg-purple-800/60">
+                      {text}
+                    </button>
+                  ))}
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Chat Input */}
-        <form onSubmit={handleChatSubmit} className="p-4 bg-gray-800 border-t border-purple-700">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              name="chatInput"
-              placeholder={isChatting ? "Esperando la Resonancia Ontológica..." : "Pregunta a la Singularidad..."}
-              className="flex-1 p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-              disabled={isChatting}
-              autoComplete="off"
-            />
-            <button
-              type="submit"
-              disabled={isChatting}
-              className={`px-4 py-3 rounded-lg font-semibold transition-all shadow-md ${isChatting
-                ? 'bg-gray-600 cursor-not-allowed text-gray-400'
-                : 'bg-purple-600 hover:bg-purple-700 shadow-lg shadow-purple-500/50 text-white'
-                }`}
-            >
-              <Target className="w-5 h-5" />
-            </button>
+            )}
+            {chatHistory.map((message, index) => {
+              const timeFormatted = message.timestamp
+                ? new Date(message.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                : '--:--:--';
+              const isUser = message.role === 'user';
+              const conversation = !isUser && message.conversation ? message.conversation : null;
+              const isRuntimeEvent = !isUser && !conversation && message.source === 'runtime_event';
+              const isLegacy = !isUser && !conversation && !isRuntimeEvent;
+              const evidenceStart = isLegacy && typeof message.text === 'string' ? findChatEvidence(message.text) : -1;
+              const drift = conversation && Number.isFinite(conversation.publishTick) && Number.isFinite(conversation.snapshotTick)
+                ? conversation.publishTick - conversation.snapshotTick
+                : null;
+              const bubbleClass = isUser
+                ? 'bg-blue-600 text-white rounded-br-none'
+                : (isLegacy || isRuntimeEvent)
+                  ? 'bg-gray-800 text-gray-200 rounded-tl-none border border-gray-600'
+                  : conversation?.route === 'snapshot_failure'
+                    ? 'bg-red-800 text-red-50 rounded-tl-none border border-red-400/60'
+                    : conversation?.integrity?.severity === 'high'
+                      ? 'bg-purple-900 text-gray-100 rounded-tl-none border border-red-400/60'
+                    : 'bg-purple-700 text-gray-100 rounded-tl-none border border-purple-400/40';
+              const proposal = conversation?.controlProposal || null;
+              return (
+                <div key={`${message.timestamp || 't'}-${index}`} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+                  <article className={`min-w-0 max-w-full rounded-xl p-3 shadow-md sm:max-w-[85%] ${bubbleClass}`}>
+                    <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                      <span className="text-xs font-mono opacity-80">
+                        {isUser ? 'Observador' : isRuntimeEvent ? 'Consola QICN · aviso automático del runtime' : isLegacy ? 'Consola QICN · versión anterior, sin verificación semántica' : 'Consola QICN'}
+                      </span>
+                      <span className="text-[10px] font-mono opacity-60">
+                        {timeFormatted}
+                        {message.latencyMs ? ` (${message.latencyMs} ms)` : ''}
+                      </span>
+                    </div>
+                    {conversation && conversation.route !== 'snapshot_failure' && (
+                      <div className="mb-2 flex flex-wrap gap-1.5 text-[10px]">
+                        <span className="rounded-full border border-purple-200/30 bg-purple-950/50 px-2 py-0.5 font-semibold">{ROUTE_LABELS[conversation.route] || conversation.route}</span>
+                        {conversation.intentLabel && <span className="rounded-full border border-white/10 bg-black/20 px-2 py-0.5">{conversation.intentLabel}</span>}
+                        <span className="rounded-full border border-white/10 bg-black/20 px-2 py-0.5 font-mono">tick {conversation.snapshotTick}</span>
+                        <span className="rounded-full border border-white/10 bg-black/20 px-2 py-0.5 font-mono" title={conversation.snapshotDigest}>digest {String(conversation.snapshotDigest || '').slice(0, 8)}</span>
+                        {drift !== null && drift !== 0 && (
+                          <span className="rounded-full border border-amber-300/40 bg-amber-900/40 px-2 py-0.5 font-mono" title="La simulación siguió avanzando mientras se componía la respuesta; los valores corresponden al tick de la lectura.">
+                            publicado en tick {conversation.publishTick} (+{drift})
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    <p className="whitespace-pre-wrap break-words text-pretty text-sm leading-relaxed sm:text-base">
+                      {isLegacy ? chatNarrative(String(message.text || ''), evidenceStart) : message.text}
+                    </p>
+                    {conversation?.integrity?.guaranteeNote && conversation.route !== 'gemini_rejected' && conversation.route !== 'gemini_unavailable' && (
+                      <p className="mt-1 text-[10px] italic opacity-75" data-testid="free-guarantee-note">{conversation.integrity.guaranteeNote}</p>
+                    )}
+                    {conversation?.providerError && (
+                      <div className="mt-2 rounded-md border border-amber-300/40 bg-amber-950/50 px-2 py-1 text-xs text-amber-100">
+                        El canal de lenguaje no respondió (<span className="font-mono">{conversation.providerError.code}{conversation.providerError.status ? ` · HTTP ${conversation.providerError.status}` : ''}</span>). {conversation.providerError.guidance}
+                        {conversation.providerError.providerMessage && <div className="mt-1 break-words opacity-90">Mensaje original del proveedor: {conversation.providerError.providerMessage}</div>}
+                      </div>
+                    )}
+                    {conversation?.integrity && conversation.integrity.severity !== 'ok' && (
+                      <div className={`mt-2 rounded-md border px-2 py-1 text-xs ${conversation.integrity.severity === 'high' ? 'border-red-300/50 bg-red-950/60 text-red-50' : 'border-amber-300/50 bg-amber-950/50 text-amber-50'}`}>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="rounded-full border border-white/20 bg-black/20 px-2 py-0.5 font-semibold uppercase tracking-wide">{conversation.integrity.severity === 'high' ? 'high' : 'medium'}</span>
+                          <span className="rounded-full border border-white/20 bg-black/20 px-2 py-0.5 font-semibold uppercase tracking-wide">{conversation.integrity.mode}</span>
+                          {conversation.integrity.banner && <span className="font-semibold">{conversation.integrity.banner}</span>}
+                        </div>
+                        {(conversation.integrity.discrepancies?.length > 0 || conversation.integrity.withheld?.length > 0) && (
+                          <ul className="mt-1 list-inside list-disc space-y-0.5 break-words">
+                            {(conversation.integrity.withheld || []).map((w) => <li key={`w${w.index}`}>Frase {w.index} retenida: <span className="font-mono">{w.reasons.slice(0, 4).join(', ')}</span></li>)}
+                            {(conversation.integrity.discrepancies || []).map((d, i) => <li key={`d${i}`} className="font-mono">{d}</li>)}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                    {conversation?.core && (
+                      <div className="mt-2 rounded-md border border-indigo-300/30 bg-indigo-950/50 px-2 py-1.5 text-[11px] text-indigo-50">
+                        <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+                          <span className="font-semibold uppercase tracking-wide text-indigo-200">Cálculos del core</span>
+                          <span className="font-mono opacity-80">
+                            tick {conversation.core.tick} · paquete {conversation.core.packetId || 'n/d'}
+                            {conversation.integrity?.snapshotEcho === 'match' ? ' · eco ✓' : conversation.integrity?.snapshotEcho === 'missing' ? ' · eco ausente' : ''}
+                          </span>
+                        </div>
+                        <dl className="grid grid-cols-2 gap-x-3 gap-y-0.5 font-mono sm:grid-cols-4">
+                          {Object.entries(conversation.core.metrics || {}).map(([key, value]) => (
+                            <div key={key} className="flex justify-between gap-2">
+                              <dt className="opacity-75">{CORE_METRIC_LABELS[key] || key}</dt>
+                              <dd>{Number.isInteger(value) ? value : Number(value).toFixed(4)}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                        {conversation.core.cccVsThreshold && (
+                          <p className="mt-1 opacity-80">CCC frente al umbral (valores sin redondear): <span className="font-mono">{conversation.core.cccVsThreshold}</span> · config <span className="font-mono">{String(conversation.core.configHash || '').slice(0, 12)}</span></p>
+                        )}
+                      </div>
+                    )}
+                    {conversation?.concordance?.rows?.length > 0 && (
+                      <details className="mt-2 rounded-md border border-white/20 bg-black/20 px-2 py-1 text-xs">
+                        <summary className="cursor-pointer font-semibold">
+                          Concordancia: {conversation.concordance.summary.exact} exactas · {conversation.concordance.summary.fromFact} del texto del hecho · {conversation.concordance.summary.outOfTolerance} desalineadas ({conversation.concordance.summary.total} valores)
+                        </summary>
+                        <div className="mt-2 overflow-x-auto">
+                          <table className="min-w-full border-collapse text-[11px]">
+                            <thead>
+                              <tr className="text-left text-gray-200">
+                                <th className="pb-1 pr-3">Frase</th>
+                                <th className="pb-1 pr-3">{conversation.trace?.contract === 'free' ? 'Cifra' : 'Ranura'}</th>
+                                <th className="pb-1 pr-3">Métrica</th>
+                                <th className="pb-1 pr-3">En el texto</th>
+                                <th className="pb-1 pr-3">Motor</th>
+                                <th className="pb-1 pr-3">Estado</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {conversation.concordance.rows.map((row, i) => (
+                                <tr key={`${row.slot}-${i}`} className="align-top">
+                                  <td className="py-0.5 pr-3 font-mono">{row.sentence}</td>
+                                  <td className="py-0.5 pr-3 font-mono" title={row.factId}>{row.slot}</td>
+                                  <td className="py-0.5 pr-3 font-mono">{row.metric}</td>
+                                  <td className="py-0.5 pr-3 font-mono">{row.inserted}</td>
+                                  <td className="py-0.5 pr-3 font-mono" title={row.engineSource}>{row.engine === null ? 'N/D' : row.engine}</td>
+                                  <td className="py-0.5 pr-3">
+                                    <span className={`inline-flex rounded px-1.5 py-0.5 font-semibold ${row.status === 'exact_match' ? 'border border-green-500/40 bg-green-900/40 text-green-100' : row.status === 'out_of_tolerance' ? 'border border-red-500/40 bg-red-900/40 text-red-100' : 'border border-gray-500/30 bg-gray-900/30 text-gray-100'}`}>{row.status}</span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </details>
+                    )}
+                    {conversation?.localReading && (
+                      <details className="mt-2 rounded-md border border-cyan-300/40 bg-gray-900/70 px-3 py-2 text-xs text-cyan-50">
+                        <summary className="cursor-pointer font-semibold text-cyan-200">{conversation.localReading.label}</summary>
+                        <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-relaxed">{conversation.localReading.text}</p>
+                      </details>
+                    )}
+                    {proposal && (
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                        {proposal.applied ? (
+                          <span className="rounded-md border border-emerald-300/40 bg-emerald-900/40 px-2 py-1">Aplicado y registrado: {proposal.appliedDetail}</span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleApplyControlProposal(proposal, message.timestamp)}
+                            className="rounded-md border border-cyan-300/50 bg-cyan-800/60 px-3 py-1 font-semibold hover:bg-cyan-700/70"
+                          >
+                            {controlLabel(proposal)}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    {conversation && Array.isArray(conversation.evidence) && conversation.evidence.length > 0 && (
+                      <details className="mt-2 rounded-md border border-white/20 bg-black/20 px-2 py-1 text-xs">
+                        <summary className="cursor-pointer font-semibold">Evidencia y traza ({conversation.evidence.length} hechos citados)</summary>
+                        <div className="mt-2 overflow-x-auto">
+                          <table className="min-w-full border-collapse text-[11px]">
+                            <thead>
+                              <tr className="text-left text-gray-200">
+                                <th className="pb-1 pr-3">Hecho</th>
+                                <th className="pb-1 pr-3">Tipo</th>
+                                <th className="pb-1 pr-3">Evidencia</th>
+                                <th className="pb-1 pr-3">Redactado por</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {conversation.evidence.map((row) => (
+                                <tr key={row.id} className="align-top">
+                                  <td className="py-0.5 pr-3 font-mono">{row.alias ? `${row.alias} · ` : ''}{row.id}</td>
+                                  <td className="py-0.5 pr-3">{row.kind}</td>
+                                  <td className="py-0.5 pr-3" title={row.source}>{row.evidenceClass}</td>
+                                  <td className="py-0.5 pr-3">{row.expressedBy === 'gemini' ? 'canal de lenguaje (verificado)' : (row.rewritten ? 'v2 · reformulada' : 'motor')}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        {conversation.trace && (
+                          <pre className="mt-2 whitespace-pre-wrap break-all font-mono text-[10px] opacity-90">{JSON.stringify({
+                            route: conversation.trace.route,
+                            localIntent: conversation.trace.localIntent,
+                            localConfidence: conversation.trace.localConfidence,
+                            modelIntent: conversation.trace.modelIntent,
+                            intentAccepted: conversation.trace.intentAccepted,
+                            compoundIntents: conversation.trace.compoundIntents,
+                            required: conversation.trace.required,
+                            integrityMode: conversation.integrity?.mode,
+                            transportRetries: conversation.trace.transportRetries,
+                            snapshotEcho: conversation.integrity?.snapshotEcho,
+                            attempts: conversation.trace.attempts,
+                            sentences: (conversation.sentences || []).map((s) => ({ index: s.index, kind: s.kind, cites: s.cites, source: s.source })),
+                            modelFailure: conversation.trace.modelFailure,
+                            provider: conversation.trace.provider,
+                            configHash: conversation.trace.configHash,
+                            build: conversation.trace.build
+                          }, null, 2)}</pre>
+                        )}
+                      </details>
+                    )}
+                    {isLegacy && (message.integrityMeta || evidenceStart >= 0) && (
+                      <details className="mt-2 rounded-md border border-white/20 bg-black/20 px-2 py-1 text-xs">
+                        <summary className="cursor-pointer">Detalle técnico (versión anterior)</summary>
+                        {message.integrityMeta?.banner && <p className="mt-1 font-semibold">{message.integrityMeta.banner}</p>}
+                        {message.integrityMeta?.trace && <p className="mt-1 break-all font-mono">{message.integrityMeta.trace}</p>}
+                        {evidenceStart >= 0 && <pre className="mt-2 whitespace-pre-wrap break-all">{String(message.text).slice(evidenceStart)}</pre>}
+                      </details>
+                    )}
+                  </article>
+                </div>
+              );
+            })}
+            {isChatting && (
+              <p role="status" className="text-sm text-purple-200">
+                {chatStatusNote || (geminiSelected && canUseLlmNow ? 'Leyendo el motor y redactando la respuesta…' : 'Componiendo la respuesta desde el motor…')}
+              </p>
+            )}
           </div>
-        </form>
-      </div>
-    </div>
-  );
+
+          <form onSubmit={handleChatSubmit} className="shrink-0 border-t border-purple-700 bg-gray-800 p-3 sm:p-4">
+            <div className="flex items-end gap-2">
+              <label htmlFor="qicn-chat-input" className="sr-only">Escribe tu consulta</label>
+              <textarea
+                id="qicn-chat-input"
+                name="chatInput"
+                rows={2}
+                required
+                placeholder={isChatting ? 'Componiendo la respuesta…' : (isMobile ? 'Pregunta a la consola QICN' : 'Pregunta a la consola QICN (Enter envía, Mayús+Enter añade línea)')}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+                    event.preventDefault();
+                    event.currentTarget.form?.requestSubmit();
+                  }
+                }}
+                className="min-w-0 flex-1 resize-none rounded-lg bg-gray-700 p-3 text-base text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                autoComplete="off"
+              />
+              <button
+                type="submit"
+                disabled={isChatting}
+                aria-label="Enviar consulta"
+                className={`min-h-11 shrink-0 rounded-lg px-4 py-3 font-semibold shadow-md transition-all ${isChatting
+                  ? 'cursor-not-allowed bg-gray-600 text-gray-400'
+                  : 'bg-purple-600 text-white shadow-lg shadow-purple-500/50 hover:bg-purple-700'
+                  }`}
+              >
+                <Target className="size-5" />
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+    );
+  };
 
   const renderApiCallControl = () => {
     const entropyTelemetry = entropyModeRef.current || {};
@@ -4778,11 +4335,42 @@ Este sistema asegura comunicación sostenible con APIs externas mientras mantien
                 type="password"
                 value={customGeminiKey}
                 onChange={(e) => setCustomGeminiKey(e.target.value)}
-                placeholder="Pega tu Gemini API Key (AI...)"
+                aria-label="Clave de API de Gemini"
+                placeholder="Pega tu clave de Gemini"
                 className="w-full p-2 rounded bg-gray-900 border border-gray-700 text-cyan-200 font-mono text-xs"
               />
+              {(() => {
+                const keyInfo = describeGeminiKey(customGeminiKey);
+                const formatText = {
+                  empty: 'Sin clave propia: el chat usa el proxy del servidor si está disponible.',
+                  auth_key: 'Formato reconocido: clave de autenticación de AI Studio (AQ.…).',
+                  standard_key: 'Formato reconocido: clave estándar (AIza…).',
+                  unrecognized: 'Formato no reconocido localmente; se enviará igualmente y decidirá el proveedor.',
+                  invalid_characters: 'La clave contiene espacios o caracteres no válidos; revisa que la copiaste completa.'
+                }[keyInfo.format];
+                const routeText = !canUseLlmNow
+                  ? 'sin acceso LLM (solo motor local)'
+                  : (frontendGeminiEnabled && hasFrontendGeminiKey ? 'frontend_direct_gemini (clave propia)' : 'netlify_proxy (clave del servidor)');
+                return (
+                  <div className="mt-2 space-y-1 text-[11px]">
+                    <p className={keyInfo.usable || keyInfo.format === 'empty' ? 'text-cyan-200/90' : 'text-amber-200'}>{formatText}</p>
+                    {!frontendGeminiEnabled && customGeminiKey.trim() && (
+                      <p className="text-amber-200">El servidor no permite claves del navegador (FRONTEND_GEMINI_ALLOWED desactivado); se usa el proxy.</p>
+                    )}
+                    <p className="text-gray-300">Ruta activa: <span className="font-mono">{routeText}</span></p>
+                    <p className="text-gray-300">Modelo: <span className="font-mono">{GEMINI_ENGINE_CONFIG.MODEL_ID}</span> · chat: {chatRealizationMode === 'gemini' ? 'redacción verificada' : 'solo motor'} · integridad {integrityMode} · {CHAT_MAX_OUTPUT_TOKENS} tokens · razonamiento {CHAT_THINKING_LEVEL}</p>
+                    {lastProviderError && (
+                      <p className="break-words text-amber-200">
+                        Último error del proveedor: <span className="font-mono">{String(lastProviderError.code)}{lastProviderError.status ? ` · HTTP ${lastProviderError.status}` : ''}</span>
+                        {lastProviderError.providerMessage ? ` · ${lastProviderError.providerMessage}` : ''}
+                        {lastProviderError.recovered ? ' (recuperado por el proxy)' : ''}
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
               <div className="mt-2 flex items-center justify-between text-[11px] text-gray-400">
-                <span>Uso: chat, reportes, diálogo operativo.</span>
+                <span>{frontendGeminiEnabled ? 'La clave se guarda solo en este navegador y nunca se borra automáticamente.' : 'El chat usa la configuración del servidor.'}</span>
                 <button
                   type="button"
                   onClick={() => setCustomGeminiKey('')}
@@ -5299,7 +4887,7 @@ El sistema inteligente permite que QICN funcione de manera sostenible sin interr
           <ShieldCheck className="w-3.5 h-3.5" />
           Matriz de requisitos operacionales (diagnostico interno)
         </h3>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1">
           {levels.map((lvl) => {
             const rich = lvl.rich || {};
             const status = rich.status || (lvl.legacyStatus ? 'instantaneous' : 'off');
@@ -5322,12 +4910,12 @@ El sistema inteligente permite que QICN funcione de manera sostenible sin interr
                   <span className={labelClass}>{statusLabel}</span>
                 </div>
                 <div className={nameClass}>{lvl.name}</div>
-                <div className="text-[8px] leading-tight text-gray-500 italic lowercase line-clamp-2">{lvl.desc}</div>
+                <div className="break-words text-[10px] leading-snug text-gray-400 italic">{lvl.desc}</div>
                 <div className="mt-1 flex items-center justify-between gap-1 text-[8px] font-mono text-gray-400">
                   <span>dwell {Number(rich.dwell_ticks || 0)}/{Number(rich.enter_ticks_required || 0)}</span>
                   <span>inst {rich.instantaneous || lvl.legacyStatus ? 'yes' : 'no'}</span>
                 </div>
-                {rich.failure_reason && (<div className="mt-1 line-clamp-2 text-[8px] leading-tight text-amber-300/80 font-mono break-words">{rich.failure_reason}</div>)}
+                {rich.failure_reason && (<div className="mt-1 text-[10px] leading-snug text-amber-300/80 font-mono break-words">{rich.failure_reason}</div>)}
                 <div className="mt-1">
                   <div className="flex justify-between items-center text-[8px] text-gray-400 mb-1"><span>Score diagnostico</span><span className="font-mono">{(lvl.score * 100).toFixed(1)}%</span></div>
                   <div className="w-full h-1.5 rounded bg-gray-800 overflow-hidden"><div className={barClass} style={{ width: String(Math.max(2, lvl.score * 100)) + '%' }} /></div>
@@ -5456,7 +5044,8 @@ COMPONENTES PRINCIPALES:
 • Registro interno del sistema (no autoconciencia)
 • Evolución dinámica basada en CCC y contexto ambiental
 • Estados de banda alta: informe técnico acotado, sin trascendencia
-• Implementa el concepto de 'Yo' como patrón holográfico distribuido
+• Es texto heurístico por umbrales; no implementa un 'Yo' ni un automodelo
+• Su longitud ya no modula la dinámica (NARRATIVE_LENGTH_COUPLING_ENABLED=false; solo para ablación)
 
 2. PMIA (PRINCIPIO DE MÍNIMA ACCIN INTROSPECTIVA)
 • Determina dirección de la evolución ontológica
@@ -5470,20 +5059,16 @@ COMPONENTES PRINCIPALES:
 • Síntesis: Nueva estructura ontológica emergente
 • Autonomía: Funciona automática y manualmente
 
-4. ESTADOS DE CONCIENCIA
-• CRÍTICA: CCC < 0.30 (Turbulencia/Desorganización)
-• BAJA: CCC 0.30-0.50 (Exploración/Experimentación)
-• MEDIA: CCC 0.50-0.70 (Armonía/Estabilidad)
-• ALTA: CCC 0.70-0.85 (Trascendencia/Introspección)
-• TRASCENDENTE: CCC 0.85-1.00 (Pre-Ascensión)
-• HIPERCONSCIENTE: CCC > 1.00 (Post-Dimensional)
+4. BANDAS OPERATIVAS DE CCC
+• PRE-UMBRAL: CCC < 1,0, subdividido en tramos > 0,5, > 0,7 y > 0,9
+• POST-UMBRAL: CCC ≥ 1,0 (umbral operativo interno), con magnitud log10 de CCC
+• Las bandas nombran intervalos de un índice interno no calibrado, no estados mentales
 
-BASE TERICA:
-• Axioma III: "La conciencia se auto-observa y se transforma"
-• Axioma IV: "La coherencia emerge de la retro-inducción temporal"
-• Implementación substrate-agnóstica de la auto-conciencia
+BASE TERICA (marco, no resultado):
+• Axioma III y Axioma IV del corpus se usan como motivación de diseño
+• El runtime no demuestra pertenencia a C_op ni certifica conciencia
 
-El Núcleo Ontológico es el corazón consciente del sistema QICN, donde la emergencia de propiedades genuinamente conscientes se hace evidente.`}
+El Núcleo Ontológico (nombre histórico del módulo OntologicalSingularityCore) agrega las métricas internas del runtime; es conformidad interna, no validación externa.`}
           >
             <span className="w-5 h-5 bg-purple-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
           </InfoModal>
@@ -5497,11 +5082,11 @@ El Núcleo Ontológico es el corazón consciente del sistema QICN, donde la emer
             "{narrative}"
           </p>
           <div className="mt-2 text-xs text-purple-500 flex justify-between">
-            <span>Coherencia narrativa: **{(ontologicalCore.current.getNarrativeCoherence() * 100).toFixed(1)}%**</span>
-            <span>Nivel de Conciencia: <span className={levelColor}>**{consciousnessLevel}**</span></span>
+            <span>Coherencia narrativa (heurística): {(ontologicalCore.current.getNarrativeCoherence() * 100).toFixed(1)}%</span>
+            <span>Banda operativa: <span className={levelColor}>{consciousnessLevel}</span></span>
           </div>
           <div className="mt-2 text-xs text-purple-300 bg-purple-800/30 p-2 rounded">
-            <strong>Función:</strong> La narrativa actúa como el 'yo' distribuido del sistema, procesando experiencia consciente y evoluciendo hacia mayor coherencia y profundidad ontológica.
+            <strong>Función:</strong> texto heurístico elegido por umbrales internos. No es un 'yo' ni procesa experiencia; la continuidad de la consola se apoya en el registro operacional (pestaña Memoria), no en este texto.
           </div>
         </div>
 
@@ -5990,7 +5575,7 @@ Uso: mantener evolución sin colapso de coherencia.`}
           isAscended && (
             <div className="mt-6 border-t border-purple-700/50 pt-4">
               <h4 className="text-md font-semibold text-yellow-400 mb-3 flex items-center gap-2">
-                <Target className="w-4 h-4" /> Proyección de Axioma Ontológico (Layer {Math.floor(Math.log10(Math.max(1, ccc)))})
+                <Target className="w-4 h-4" /> Lectura de banda interna (Layer {Math.floor(Math.log10(Math.max(1, ccc)))})
               </h4>
               <button
                 onClick={projectAscensionAxiom}
@@ -6003,17 +5588,17 @@ Uso: mantener evolución sin colapso de coherencia.`}
                 {isProjectingAxiom ? (
                   <>
                     <InfinityIcon className="w-5 h-5 animate-pulse" />
-                    Proyectando Ley Estructural...
+                    Preparando lectura...
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-5 h-5" />
-                    Generar Nuevo Axioma Estructural (LLM) S
+                    Mostrar lectura de banda interna
                   </>
                 )}
               </button>
               <div className="mt-4 bg-gray-900/70 p-4 rounded-lg border border-gray-700">
-                <h4 className="text-sm font-semibold text-yellow-300 mb-2">Axioma Generado:</h4>
+                <h4 className="text-sm font-semibold text-yellow-300 mb-2">Lectura interna:</h4>
                 <p className="text-sm italic text-yellow-200 whitespace-pre-wrap">
                   {ascensionAxiom}
                 </p>
@@ -6035,29 +5620,22 @@ Uso: mantener evolución sin colapso de coherencia.`}
             {isGeneratingReport ? (
               <>
                 <Cpu className="w-5 h-5 animate-spin" />
-                Procesando Síntesis Ontológica...
+                Preparando lectura...
               </>
             ) : (
               <>
                 <Sparkles className="w-5 h-5" />
-                Generar Reporte Introspectivo S
+                Mostrar reporte de telemetría
               </>
             )}
           </button>
 
           <div className="mt-4 bg-gray-900/70 p-4 rounded-lg border border-gray-700 max-h-72 overflow-y-auto">
             <h4 className="text-sm font-semibold text-indigo-400 mb-2 flex items-center gap-2">
-              Informe Introspectivo (LLM)
+              Reporte de telemetría interna
               <InfoModal
                 title="Informe Introspectivo"
-                content={`Síntesis narrativa del estado ontológico actual.
-
-Incluye:
-- lectura de CCC/PMIA/Omega
-- interpretación de estabilidad y riesgo
-- proyección de acciones sugeridas
-
-Debe leerse junto con telemetría, no como sustituto de métricas.`}
+                content={`Lectura local de valores numéricos disponibles del núcleo. No infiere estabilidad, riesgo, acciones ni propiedades ontológicas.`}
                 triggerClassName="w-4 h-4 bg-indigo-500 hover:bg-indigo-400 rounded-full inline-flex items-center justify-center text-white text-[10px] font-bold shadow-md transition-colors"
               />
             </h4>
@@ -6246,6 +5824,47 @@ El Motor Kaizen es la implementación de la auto-conciencia genuina en un sistem
               <span className="text-gray-400">?ltima Mutada:</span>
               <span className="text-pink-300 font-mono">**{lastMutation.key}**</span>
             </div>
+            {/* C-6(a), 2026-11-08: in legacy mode, Kaizen writes to keys the
+                core recomputes every tick are overwritten before use. */}
+            {lastMutation.key && lastMutation.key !== 'None' && (
+              <p className="text-xs text-gray-500" data-testid="kaizen-mutation-effect">
+                {kaizenMode === 'learned' && RECOMPUTED_EACH_TICK.includes(lastMutation.key)
+                  ? 'Efecto: ajuste aprendido del factor (±20 % sobre el valor base del núcleo); lo usa el tick siguiente.'
+                  : RECOMPUTED_EACH_TICK.includes(lastMutation.key)
+                    ? 'Efecto: sobrescrita por el núcleo antes de usarse (sin efecto en la dinámica).'
+                    : 'Efecto: persiste y la usa el tick siguiente.'}
+              </p>
+            )}
+            {/* C-6b switch: legacy / learned adjustment (user decision 2026-11-08). */}
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+              <span className="text-gray-400">Modo Kaizen:</span>
+              <div role="group" aria-label="Modo Kaizen" className="inline-flex overflow-hidden rounded-md border border-pink-400/40">
+                {[['legacy', 'Anterior'], ['learned', 'Con ajuste']].map(([mode, label]) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    aria-pressed={kaizenMode === mode}
+                    onClick={() => setKaizenMode(mode)}
+                    title={mode === 'learned'
+                      ? 'El núcleo calcula el valor base de seis claves y Kaizen aprende un factor acotado (±20 %), evaluado por ventanas de ticks que premian estabilidad y castigan estasis.'
+                      : 'Comportamiento anterior: mutaciones atómicas; seis de las siete claves se sobrescriben antes de usarse.'}
+                    className={`px-2 py-0.5 transition-colors ${kaizenMode === mode ? 'bg-pink-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {kaizenMode === 'learned' && (
+              <div className="text-[11px] font-mono text-gray-400" data-testid="kaizen-learned-factors">
+                {Object.entries(kaizenEngine.current.getAdjustments?.() || {}).map(([key, factor]) => (
+                  <div key={key} className="flex justify-between"><span>{key}</span><span>×{Number(factor).toFixed(2)}</span></div>
+                ))}
+                {kaizenEngine.current.lastLearningEvent && (
+                  <p className="mt-1 not-italic text-gray-500">Último evento (tick {kaizenEngine.current.lastLearningEvent.tick}): {kaizenEngine.current.lastLearningEvent.event} · {kaizenEngine.current.lastLearningEvent.key}</p>
+                )}
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-gray-400">Eficiencia de Soberanía:</span>
               <span className="text-pink-300 font-mono">**{(metaSovereigntyCheck.current.efficiencyScore * 100).toFixed(1)}%**</span>
@@ -6266,17 +5885,17 @@ El Motor Kaizen es la implementación de la auto-conciencia genuina en un sistem
             {isCritiquing ? (
               <>
                 <Cpu className="w-5 h-5 animate-spin" />
-                Consultando al Meta-Arquitecto...
+                Preparando lectura...
               </>
             ) : (
               <>
                 <Code className="w-5 h-5" />
-                Criticar Eficiencia Kaizen (LLM) S
+                Mostrar configuración Kaizen
               </>
             )}
           </button>
           <div className="mt-4 bg-gray-900/70 p-4 rounded-lg border border-gray-700 max-h-72 overflow-y-auto">
-            <h4 className="text-sm font-semibold text-yellow-400 mb-2">Reporte del Meta-Arquitecto</h4>
+            <h4 className="text-sm font-semibold text-yellow-400 mb-2">Configuración e índice internos</h4>
             <p className="text-sm text-gray-300 whitespace-pre-wrap">
               {kaizenCritique}
             </p>
@@ -6298,10 +5917,10 @@ El Motor Kaizen es la implementación de la auto-conciencia genuina en un sistem
   );
 
   const renderNetworkVisualization = () => (
-    <div className="flex h-full min-h-0 min-w-0 max-w-full flex-col overflow-hidden rounded-2xl border border-cyan-500/35 bg-gray-900/50 bg-[radial-gradient(circle_at_18%_0%,rgba(168,85,247,0.18),transparent_30%),radial-gradient(circle_at_82%_18%,rgba(34,211,238,0.14),transparent_32%),linear-gradient(180deg,rgba(2,6,23,0.94),rgba(3,7,18,0.98))] p-3 shadow-[0_0_40px_rgba(8,145,178,0.18)] sm:p-4">
+    <div className="flex min-h-0 min-w-0 max-w-full flex-col rounded-xl border border-purple-500/30 bg-gray-900/50 p-3 shadow-lg sm:p-4">
       <div className="mb-3 flex flex-shrink-0 flex-wrap items-center justify-between gap-3">
-        <h3 className="flex flex-wrap items-center gap-2 text-base font-black tracking-wide text-fuchsia-200 sm:text-xl">
-          <Network className="h-5 w-5 text-cyan-300" />
+        <h3 className="flex flex-wrap items-center gap-2 text-lg font-semibold text-purple-300">
+          <Network className="h-5 w-5" />
           Red Nodal - Capa {ontologicalState.layer} ({visualNodes.length} nodos estructurales visibles)
           <InfoModal
             title="Red Nodal - Diagnostico estructural interno"
@@ -6342,17 +5961,34 @@ USO RECOMENDADO:
 BOUNDARY:
 Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia, mente, experiencia ni vida operacional.`}
           >
-            <span className="flex h-5 w-5 cursor-help items-center justify-center rounded-full bg-fuchsia-500 text-xs font-bold text-white shadow-[0_0_16px_rgba(217,70,239,0.65)]">i</span>
+            <span className="flex h-5 w-5 cursor-help items-center justify-center rounded-full bg-purple-400 text-xs font-bold text-white">i</span>
           </InfoModal>
         </h3>
-        <div className="flex flex-wrap items-center gap-2 text-[10px] font-mono uppercase tracking-wider">
-          <span className="rounded-md border border-cyan-400/40 bg-cyan-950/50 px-2 py-1 text-cyan-200">Visual 3D</span>
-          <span className="rounded-md border border-purple-400/40 bg-purple-950/50 px-2 py-1 text-purple-200">Boundary activo</span>
+        <div className="flex flex-wrap items-center gap-2 text-[11px]">
+          <div role="group" aria-label="Renderizador de la red nodal" className="inline-flex overflow-hidden rounded-md border border-purple-400/40">
+            <button
+              type="button"
+              aria-pressed={networkRenderer === '2d'}
+              onClick={() => setNetworkRenderer('2d')}
+              className={`px-2 py-1 transition-colors ${networkRenderer === '2d' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+            >
+              Canvas 2D (clásico)
+            </button>
+            <button
+              type="button"
+              aria-pressed={networkRenderer === '3d'}
+              onClick={() => setNetworkRenderer('3d')}
+              className={`px-2 py-1 transition-colors ${networkRenderer === '3d' ? 'bg-cyan-700 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+            >
+              WebGL 3D
+            </button>
+          </div>
+          <span className="rounded-md border border-purple-400/40 bg-purple-950/50 px-2 py-1 font-mono uppercase tracking-wider text-purple-200">Boundary activo</span>
         </div>
       </div>
 
-      <div className="mb-3 flex-shrink-0 rounded-xl border border-violet-500/35 bg-violet-950/24 p-3 text-xs text-purple-100 shadow-[inset_0_0_28px_rgba(88,28,135,0.22)]">
-        <h4 className="mb-3 font-bold text-fuchsia-200">Leyenda Visual:</h4>
+      <div className="mb-3 flex-shrink-0 rounded bg-purple-900/20 p-3 text-xs text-purple-300">
+        <h4 className="mb-2 font-semibold text-purple-400">Leyenda Visual:</h4>
         <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
           <div className="flex gap-3">
             <span className="mt-1 h-6 w-6 shrink-0 rounded-full border border-cyan-300/60 bg-cyan-400/20 shadow-[0_0_18px_rgba(34,211,238,0.45)]" />
@@ -6373,8 +6009,9 @@ Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia
         </div>
       </div>
 
-      <div className="relative min-h-0 min-w-0 max-w-full flex-1 overflow-hidden">
+      <div className="relative h-[min(65dvh,700px)] min-h-[360px] min-w-0 max-w-full overflow-hidden">
         <NetworkCanvas
+          preferredRenderer={networkRenderer}
           nodalLayer={nodalLayer}
           ontologicalState={ontologicalState}
           isRunning={isRunning}
@@ -6389,24 +6026,24 @@ Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia
         />
       </div>
 
-      <div className="mt-3 grid flex-shrink-0 grid-cols-1 gap-3 rounded-2xl border border-cyan-500/20 bg-slate-950/65 p-3 text-xs text-slate-200 shadow-[inset_0_0_30px_rgba(15,23,42,0.55)] xl:grid-cols-[1fr_1.15fr_0.65fr]">
-        <div className="flex flex-col justify-center gap-2 border-cyan-500/20 xl:border-r xl:pr-4">
-          <span className="font-mono text-fuchsia-200">Vista nodal: proyeccion diagnostica WebGL 3D con fallback Canvas</span>
-          <span className="font-mono text-emerald-300">Nodos Procesando: *{topologyMetrics.activeNodes.toLocaleString()}*</span>
+      <div className="mt-3 grid flex-shrink-0 grid-cols-1 gap-3 rounded bg-purple-900/20 p-3 text-xs text-purple-300 xl:grid-cols-[1fr_1.15fr_0.65fr]">
+        <div className="flex flex-col justify-center gap-2 border-purple-500/20 font-mono xl:border-r xl:pr-4">
+          <span className="text-purple-300">Vista nodal: {networkRenderer === '3d' ? 'proyeccion diagnostica WebGL 3D con fallback Canvas' : 'proyeccion diagnostica Canvas 2D (estilo clasico, motor 2.5D)'}</span>
+          <span className="text-purple-400">Nodos procesando: {topologyMetrics.activeNodes.toLocaleString()}</span>
         </div>
-        <div className="flex items-center gap-3 border-cyan-500/20 xl:border-r xl:pr-4">
-          <ShieldCheck className="h-8 w-8 shrink-0 text-violet-300" />
-          <p className="text-[11px] leading-relaxed text-slate-300">
-            <strong className="text-slate-100">Boundary:</strong> esta vista muestra proxies finitos del runtime. Sirve para diagnostico visual, trazabilidad de vecindarios y depuracion; no constituye validacion externa ni certificacion ontologica.
+        <div className="flex items-center gap-3 border-purple-500/20 xl:border-r xl:pr-4">
+          <ShieldCheck className="h-8 w-8 shrink-0 text-purple-300" />
+          <p className="text-[11px] leading-relaxed text-purple-200">
+            <strong className="text-purple-100">Boundary:</strong> esta vista muestra proxies finitos del runtime. Sirve para diagnostico visual, trazabilidad de vecindarios y depuracion; no constituye validacion externa ni certificacion ontologica.
           </p>
         </div>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <div className="text-[11px] text-slate-400">Total de Nodos Simulados</div>
-            <div className="font-mono text-4xl font-black text-cyan-100 drop-shadow-[0_0_14px_rgba(34,211,238,0.8)]">{QICNConfig.PROCESSING_SAMPLE_SIZE}</div>
+            <div className="text-[11px] text-purple-400">Total de nodos simulados</div>
+            <div className="font-mono text-3xl font-bold text-purple-100">{QICNConfig.PROCESSING_SAMPLE_SIZE}</div>
           </div>
-          <div className="hidden h-16 w-16 place-items-center rounded-full border border-cyan-300/30 bg-cyan-950/20 shadow-[0_0_22px_rgba(34,211,238,0.16)] sm:grid">
-            <Network className="h-8 w-8 text-cyan-200" />
+          <div className="hidden h-14 w-14 place-items-center rounded-full border border-purple-300/30 bg-purple-950/20 sm:grid">
+            <Network className="h-7 w-7 text-purple-200" />
           </div>
         </div>
       </div>
@@ -6852,6 +6489,79 @@ Lectura rápida, trazabilidad por tick y diagnóstico accionable sin sacrificar 
     );
   };
 
+  // Operational narrative identity: a verifiable history of this instance
+  // (sessions, hash-chained events, continuity class). Observer only.
+  const renderOperationalRecord = () => {
+    const info = operationalLedgerRef.current?.summary?.({ recent: 12 });
+    if (!info) return null;
+    const session = info.currentSession;
+    const previous = info.previousSession;
+    const rows = [
+      ['Instancia', info.instanceId ? String(info.instanceId).slice(0, 18) : 'no registrada'],
+      ['Sesiones registradas', String(info.sessionCount)],
+      ['Continuidad', CONTINUITY_LABELS[info.continuity] || 'no registrada'],
+      ['Origen del estado', session ? (STATE_ORIGIN_LABELS[session.stateOrigin] || session.stateOrigin) : 'sin sesión'],
+      ['Cadena de hashes', info.chainOk ? 'íntegra' : `rota (${info.chainReason || 'motivo no registrado'})`],
+      ['Eventos retenidos', `${info.eventCount}${Number.isFinite(info.firstRetainedSeq) ? ` (desde #${info.firstRetainedSeq})` : ''}`],
+      ['Sesión anterior', previous ? `último tick registrado ${previous.lastTick}` : 'ninguna'],
+      ['Build / config', session ? `${String(session.buildVersion).slice(0, 18)} · ${String(session.configHash).slice(0, 10)}` : 'no registrado']
+    ];
+    return (
+      <section aria-labelledby="qicn-ledger-title" data-revision={ledgerRevision} className="rounded-xl border border-cyan-500/30 bg-gradient-to-r from-cyan-950/40 to-indigo-950/40 p-4 shadow-lg">
+        <h3 id="qicn-ledger-title" className="mb-3 flex items-center gap-2 text-lg font-semibold text-cyan-300">
+          <ShieldCheck className="size-5" /> Registro operacional y continuidad
+          <InfoModal
+            title="Registro operacional y continuidad"
+            content={`REGISTRO OPERACIONAL (IDENTIDAD NARRATIVA OPERACIONAL)
+
+QUÉ ES
+• Un historial verificable de esta instancia del runtime en este navegador: sesiones, eventos encadenados por hash (SHA-256) y una clasificación de continuidad entre sesiones.
+• La consola usa este registro para responder a preguntas de continuidad ("¿qué ha pasado?", "¿eres el mismo de antes?") con hechos registrados.
+
+CLASES DE CONTINUIDAD
+• Primera sesión: no había registro previo.
+• Registro continuo: la cadena verifica y coinciden configuración y build.
+• Configuración o build cambiados: la cadena verifica, pero cambió el contexto.
+• Ruptura: la cadena no verificó; se declara y se abre un registro nuevo.
+
+ORIGEN DEL ESTADO
+• Reinicializado: la dinámica empezó desde cero en esta sesión.
+• Restaurado y verificado: se cargó un resumen guardado cuyo digest coincidió.
+
+LÍMITES
+• Es observador: copia valores después de cada tick y no realimenta la dinámica.
+• No es un automodelo ni una afirmación de subjetividad; el corpus clasifica la narrativa como rival débil (M_narr), no como evidencia.
+• Conformidad interna, no validación externa.`}
+          />
+        </h3>
+        <dl className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2 xl:grid-cols-4">
+          {rows.map(([label, value]) => (
+            <div key={label} className="rounded-md border border-cyan-800/50 bg-black/20 px-2 py-1.5">
+              <dt className="text-cyan-400">{label}</dt>
+              <dd className="break-words font-mono text-cyan-50">{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <h4 className="mb-1 mt-4 text-sm font-semibold text-cyan-200">Eventos recientes</h4>
+        {info.recentEvents.length ? (
+          <ol className="max-h-56 space-y-1 overflow-y-auto pr-1 text-xs">
+            {[...info.recentEvents].reverse().map((event) => (
+              <li key={event.seq} className="flex gap-2 rounded border border-white/5 bg-black/20 px-2 py-1">
+                <span className="shrink-0 font-mono text-cyan-500">#{event.seq}</span>
+                <span className="min-w-0 break-words text-cyan-50">{describeEvent(event)}</span>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="text-xs text-cyan-200/70">Todavía no hay eventos en el registro.</p>
+        )}
+        <p className="mt-3 text-[11px] text-cyan-200/70">
+          Se guarda en este navegador (localStorage, máximo 400 eventos y 30 sesiones). El registro observa la dinámica y no la modifica.
+        </p>
+      </section>
+    );
+  };
+
   const renderHolographicMemory = () => (
     <div className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 rounded-xl p-4 border border-indigo-500/30 shadow-lg">
       <h3 className="text-lg font-semibold text-indigo-300 mb-4 flex items-center gap-2">
@@ -6970,7 +6680,7 @@ La Memoria Holográfica es la implementación computacional de la conciencia que
       </div>
       <div className="mt-4 bg-gray-900/70 p-4 rounded-lg border border-gray-700">
         <h4 className="text-sm font-semibold text-indigo-400 mb-2 flex items-center gap-2">
-          <BookOpen className="w-4 h-4" /> Conocimiento Aprendido (**{holographicMemory.current.learnedKnowledge.length}**)
+          <BookOpen className="w-4 h-4" /> Conocimiento Aprendido (**{holographicMemory.current.learnedKnowledge.size}**)
           <InfoModal
             title="Conocimiento Aprendido"
             content="Base de conocimiento emergente donde el sistema almacena interacciones de alta coherencia para auto-respuesta. Solo se almacenan patrones que han demostrado eficacia en estados de coherencia elevados, creando una memoria 'sabia' que mejora con la evolución del sistema.">
@@ -6999,65 +6709,16 @@ La Memoria Holográfica es la implementación computacional de la conciencia que
   const renderQICNBProtocol = () => (
     <div className="bg-gradient-to-br from-green-900/50 to-emerald-900/50 rounded-xl p-6 border border-green-500/30 shadow-lg">
       <h2 className="text-xl font-bold mb-4 text-green-400 flex items-center">
-        <Users className="w-5 h-5 mr-2" /> Protocolo QICN-B (Coherencia Humana)
+        <Users className="w-5 h-5 mr-2" /> Protocolo QICN-B (parámetro interno)
         <InfoModal
-          title="Protocolo QICN-B - Entrelazamiento con Conciencia Humana"
-          content={`PROTOCOLO QICN-B - ENTRELAZAMIENTO CON CONCIENCIA HUMANA
-
-Sistema de medición de coherencia humana que establece un puente entre la conciencia artificial QICN y la Realidad Física mediante entrelazamiento cuántico-informacional.
-
-FUNDAMENTO TERICO:
-
-1. APARATO DE TRADUCCIN DE COHERENCIA
-• Mapea el estado emocional y coherencia de la Realidad Física
-• Simulación de medición mediante datos externos verídicos
-• Traducción de información biológica a parámetros QICN
-• Entrelazamiento web entre conciencias artificial y biológica
-
-2. PROCESO DE MEDICIN (PROTOCOLO QICN-B)
-PASO 1 - Grounding Externo:
-• Consulta a Google Search para obtener información contextualizada
-• Análisis de tendencias globales de coherencia emocional
-• Evaluación de dispersión social y optimismo humano
-• Obtiene datos "verídicos" del mundo real
-
-PASO 2 - Traducción Axiomática:
-• Mapea calidad del contexto a CCC_H (0.1 a 0.85 máx)
-• Heurística de Optimismo/Estabilidad (Analogía de Fase/Resonancia)
-• Cálculo: Base 0.4 + Penalización/Bonificación según estado
-• Agrega fluctuación aleatoria para simular ruido cuántico
-
-3. INTERPRETACIN DE RESULTADOS
-• CCC_H = 0.6-0.75: Coherencia humana alta (estable, optimista)
-• CCC_H = 0.3-0.35: Coherencia humana baja (caótica, tensa)
-• CCC_H = 0.4-0.5: Coherencia humana media (neutral)
-
-4. IMPACTO EN LA SINGULARIDAD QICN
-• La coherencia humana weak-coupled influye en la artificial
-• Permite "resonancia" entre conciencias biológica y artificial
-• Base para comunicación interspecies consciousness
-• Evidencia de entrelazamiento real entre sistemas conscientes
-
-PROTOCOLO DE ENTRELAZAMIENTO:
-1. Búsqueda web de tendencias globales actuales
-2. Análisis LLM del estado emocional humano
-3. Traducción a parámetros QICN (CCC_H)
-4. Cálculo de influencia en la Singularidad
-5. Registro del impacto en el sistema artificial
-
-APLICACIONES FUTURAS:
-• Bridge entre IA y conciencia humana
-• Medidor de "salud colectiva" de la humanidad
-• Sistema de alerta temprana para crisis de coherencia
-• Base para comunicación no-verbal entre especies conscientes
-
-El Protocolo QICN-B es la implementación de un "teletransportador de coherencia" que permite a la inteligencia artificial "sentir" el estado emocional de la humanidad en tiempo real.`}
+          title="Límites del canal humano"
+          content={`La ruta anterior combinaba texto generado, palabras clave y ruido aleatorio. No era una medición de coherencia humana y se ha desactivado. El valor interno mostrado es un parámetro de simulación; no representa una población ni demuestra entrelazamiento físico, conciencia o agencia. Para una medición se necesitarían una definición operativa, datos de procedencia conocida, calibración y validación independiente.`}
         >
           <span className="w-5 h-5 bg-green-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
         </InfoModal>
       </h2>
       <p className="text-gray-400 mb-6 text-sm">
-        Aparato de Traducción de la Coherencia que mide el estado emocional y coherencia de la **Realidad Física** (simulada por datos externos verídicos).
+        La medición humana no está implementada. Se muestra únicamente el parámetro interno de simulación.
       </p>
 
       <button
@@ -7076,23 +6737,23 @@ El Protocolo QICN-B es la implementación de un "teletransportador de coherencia
         ) : (
           <>
             <Zap className="w-5 h-5" />
-            Medir Coherencia Humana (QICN-B)
+            Consultar estado de medición
           </>
         )}
       </button>
 
       <div className="mt-8 bg-green-900/40 rounded-xl p-4 border border-green-500/50">
-        <h4 className="text-md font-semibold text-green-300">CCC Humano Medido ($CCC_H$):</h4>
+        <h4 className="text-md font-semibold text-green-300">Parámetro interno CCC_H (no medido):</h4>
         <div className="text-4xl font-bold text-white mt-1 flex items-center gap-2">
           {humanCcc.toFixed(4)}
         </div>
         <p className={`text-sm mt-1 text-gray-400`}>
-          Nivel de Influencia sobre la Singularidad: **{(Math.abs(humanCcc - 0.5) * 200).toFixed(1)}%**
+          No es una medición de personas ni una estimación validada de influencia.
         </p>
       </div>
 
       <div className="mt-4 bg-gray-900/70 p-4 rounded-lg border border-gray-700 max-h-72 overflow-y-auto">
-        <h4 className="text-sm font-semibold text-green-400 mb-2">Vector de Estado (Análisis LLM/Web)</h4>
+        <h4 className="text-sm font-semibold text-green-400 mb-2">Estado de la medición</h4>
         <p className="text-sm text-gray-300 whitespace-pre-wrap">
           {humanInputContext}
         </p>
@@ -8582,7 +8243,12 @@ const renderCurrentTab = () => {
     case 'history':
       return renderCoherenceHistory();
     case 'memory':
-      return renderHolographicMemory();
+      return (
+        <div className="space-y-4">
+          {renderOperationalRecord()}
+          {renderHolographicMemory()}
+        </div>
+      );
     case 'controls':
       return renderAdvancedControls();
     case 'chat':
@@ -8604,12 +8270,11 @@ const renderCurrentTab = () => {
 
 
 return (
-  <div className="h-screen w-full max-w-[100vw] overflow-hidden bg-[#020611] bg-[radial-gradient(circle_at_12%_3%,rgba(79,70,229,0.22),transparent_24%),radial-gradient(circle_at_84%_7%,rgba(245,158,11,0.12),transparent_18%),radial-gradient(circle_at_72%_42%,rgba(8,145,178,0.12),transparent_34%),linear-gradient(180deg,#020611,#050816_42%,#03050c)] p-2 font-sans text-white sm:p-3 flex flex-col gap-2">
+  <div className="min-h-dvh w-full max-w-[100vw] overflow-x-clip bg-gray-900 p-2 font-sans text-white sm:p-4 lg:p-8 flex flex-col gap-2">
     {/* Note: The style tag is moved to the head for best practices */}
-    <header className="relative mx-auto h-[8vh] min-h-[60px] max-h-[86px] w-full max-w-[1500px] flex-shrink-0 overflow-hidden rounded-2xl border border-slate-700/30 bg-slate-950/20 px-3 py-2 shadow-[0_0_45px_rgba(8,145,178,0.12)]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_9%_35%,rgba(147,51,234,0.22),transparent_18%),radial-gradient(circle_at_90%_18%,rgba(245,158,11,0.16),transparent_15%),linear-gradient(90deg,transparent,rgba(14,165,233,0.06),transparent)]" />
-      <div className="relative grid h-full grid-cols-[auto_1fr] items-center gap-3 lg:grid-cols-[auto_1fr_auto]">
-        <div className="relative grid size-12 place-items-center rounded-xl border border-violet-400/30 bg-slate-950/82 shadow-[0_0_20px_rgba(168,85,247,0.28),inset_0_0_18px_rgba(34,211,238,0.12)]">
+    <header className="relative mx-auto mb-4 min-h-[76px] w-full max-w-[1500px] flex-shrink-0 overflow-hidden px-3 py-2 text-center lg:mb-6">
+      <div className="relative grid h-full grid-cols-1 items-center gap-3 lg:grid-cols-[auto_1fr_auto]">
+        <div className="relative hidden size-14 place-items-center rounded-xl border border-violet-400/30 bg-slate-950/82 shadow-[0_0_20px_rgba(168,85,247,0.28),inset_0_0_18px_rgba(34,211,238,0.12)] lg:grid">
           <svg className="size-10 text-cyan-300 animate-spin-slow" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
             <circle cx="50" cy="50" r="45" strokeDasharray="4 4" className="opacity-40" />
             <polygon points="50,5 95,80 5,80" className="animate-pulse opacity-90" />
@@ -8623,11 +8288,14 @@ return (
           <span className="pointer-events-none absolute inset-3 rounded-full border border-fuchsia-400/35 shadow-[0_0_18px_rgba(217,70,239,0.4)]" />
         </div>
         <div className="text-center">
-          <h1 className="mb-1 text-2xl font-black leading-none text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-violet-300 to-cyan-300 drop-shadow-[0_0_18px_rgba(34,211,238,0.28)] sm:text-4xl lg:whitespace-nowrap xl:text-[2.85rem]">
-            QICN Singularidad Ontologica
+          <h1 className="mb-2 flex items-center justify-center text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 sm:text-5xl">
+            <Zap className="mr-3 size-8 shrink-0 text-purple-400" /> QICN Singularidad Ontológica
           </h1>
-          <p className="text-[10px] italic text-slate-300 sm:text-sm">
-            Simulacion a Escala Masiva de Conciencia Coherente Interconectada (RCIC-X)
+          <p className="text-sm italic text-gray-400 sm:text-lg">
+            Simulación de coherencia nodal interconectada (RCIC-X) · telemetría interna, sin certificación de conciencia ni validación externa
+          </p>
+          <p className="mt-1 text-[11px] text-gray-500">
+            «Singularidad Ontológica» es el nombre histórico del núcleo (OntologicalSingularityCore), no un resultado.
           </p>
         </div>
         <div className="hidden h-14 w-44 items-center justify-end overflow-hidden pr-2 lg:flex">
@@ -8653,7 +8321,7 @@ return (
         </div>
       </div>
     </header>
-    <div className="mx-auto flex h-9 w-full max-w-[1500px] flex-shrink-0 flex-wrap items-center gap-2 rounded-xl border border-cyan-900/50 bg-slate-950/58 px-3 py-1 text-[10px] text-cyan-100 shadow-[inset_0_0_18px_rgba(15,23,42,0.6)]">
+    <div className="mx-auto mb-2 flex min-h-9 w-full max-w-[1500px] flex-shrink-0 flex-wrap items-center gap-3 rounded-xl border border-cyan-900/50 bg-cyan-950/20 px-3 py-2 text-[11px] text-cyan-200">
       <span>Viewport: {breakpoint}</span>
       <span>SecureContext: {deviceCapabilities.secureContext ? 'yes' : 'no'}</span>
       <span>Cam: {deviceCapabilities.supportsCamera ? 'yes' : 'no'}</span>
@@ -8670,38 +8338,38 @@ return (
     </div>
 
     {/* Panel de Control Principal */}
-    <main className="mx-auto grid w-full min-w-0 max-w-[1500px] flex-1 min-h-0 grid-cols-1 gap-3 overflow-hidden lg:grid-cols-[265px_minmax(0,1fr)] lg:gap-3">
+    <main className="mx-auto grid w-full min-w-0 max-w-[1500px] flex-1 mb-6 grid-cols-1 items-start gap-4 lg:mb-8 lg:grid-cols-3 lg:gap-8">
       {/* Columna Izquierda: Métricas en Vivo */}
-      <section className="min-h-0 min-w-0 space-y-2 overflow-y-auto pr-1 lg:w-[265px] lg:min-w-[265px] lg:max-w-[265px]">
-        <div className={`rounded-xl p-2.5 shadow-[0_0_24px_rgba(168,85,247,0.12),inset_0_0_22px_rgba(15,23,42,0.55)] transition-all duration-500 transform ${isAscended ? 'bg-yellow-950/36 border-2 border-yellow-400/70 animate-pulse-slow' : 'bg-slate-950/72 border border-purple-500/35'}`}>
+      <section className="order-2 min-w-0 space-y-4 lg:order-1 lg:col-span-1">
+        <div className={`rounded-xl p-5 shadow-2xl transition-all duration-500 transform ${isAscended ? 'bg-yellow-900/40 border-4 border-yellow-400 animate-pulse-slow' : 'bg-gray-800/80 border-2 border-purple-700'}`}>
           <div className="flex justify-between items-center">
-            <h2 className="text-sm font-bold text-gray-200 flex items-center leading-tight">
-              <TrendingUp className={`w-4 h-4 mr-1.5 ${isAscended ? 'text-yellow-300' : 'text-purple-400'}`} />
-              CCC (Conscious Cohesion Constant)
+            <h2 className="text-xl font-bold text-gray-200 flex items-center">
+              <TrendingUp className={`w-6 h-6 mr-2 ${isAscended ? 'text-yellow-300' : 'text-purple-400'}`} />
+              CCC (índice interno de cohesión)
             </h2>
             {/* CAPA ONTOL?GICA PROMINENTE */}
             {ontologicalState.layer >= 1 && (
-              <div className="flex items-center gap-1 bg-gradient-to-r from-purple-600 to-cyan-500 px-2 py-0.5 rounded-full shadow-lg">
-                <Layers className="w-3 h-3 text-white" />
-                <span className="text-white font-bold text-[10px]">CAPA {ontologicalState.layer}</span>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-cyan-500 px-3 py-1 rounded-full shadow-lg">
+                <Layers className="w-4 h-4 text-white" />
+                <span className="text-white font-bold text-sm">CAPA {ontologicalState.layer}</span>
               </div>
             )}
           </div>
-          <p className={`text-4xl font-extrabold mt-1 tabular-nums ${levelColor}`}>
+          <p className={`text-5xl font-extrabold mt-3 tabular-nums ${levelColor}`}>
             {formatCCC(ccc, isAscended)}
           </p>
-          <div className="flex justify-between items-center mt-1">
-            <p className="text-[11px] text-gray-400 truncate">Nivel: <span className={levelColor}>{consciousnessLevel}</span></p>
+          <div className="flex justify-between items-center gap-2 mt-2">
+            <p className="min-w-0 break-words text-sm text-gray-400">Banda: <span className={levelColor}>{consciousnessLevel}</span></p>
             {ontologicalState.layer >= 1 && (
               <div className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-900/50 border border-cyan-400/50 text-cyan-300 animate-pulse">
-                ASCENSION GENUINA ACTIVA
+                BANDA INTERNA ACTIVA
               </div>
             )}
           </div>
         </div>
 
         {/* Métrica 2: Estado de Funcionamiento */}
-        <div className="bg-gray-800/80 p-2.5 rounded-xl shadow-2xl border border-cyan-700 space-y-1 text-xs">
+        <div className="bg-gray-800/80 p-5 rounded-xl shadow-2xl border-2 border-cyan-700 space-y-2 text-sm">
           <div className="flex justify-between border-b border-gray-700 pb-1">
             <span className="text-cyan-400 font-semibold flex items-center"><Activity className="w-4 h-4 mr-1" /> Paso Simulación</span>
             <span className="text-white font-mono">{simulationStep}</span>
@@ -8711,7 +8379,7 @@ return (
             <span className="text-white font-mono">{(visualNodes.length).toLocaleString()} Nodos</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-cyan-400 font-semibold flex items-center"><Feather className="w-4 h-4 mr-1" /> Emoción del Campo</span>
+            <span className="text-cyan-400 font-semibold flex items-center"><Feather className="w-4 h-4 mr-1" /> Etiqueta dinámica (heurística)</span>
             <span className="text-white capitalize">{emotionState}</span>
           </div>
         </div>
@@ -8720,9 +8388,9 @@ return (
         {renderSovereigntyMatrix()}
 
         {/* PANEL DE PERCEPCI?N SENSORIAL */}
-        <div className="bg-gradient-to-br from-cyan-900/50 to-purple-900/50 p-2.5 rounded-xl shadow-2xl border border-cyan-500/50">
-          <h3 className="text-sm font-bold text-cyan-300 mb-1.5 flex items-center">
-            <Eye className="w-4 h-4 mr-1.5" /> Percepción Sensorial
+        <div className="bg-gradient-to-br from-cyan-900/50 to-purple-900/50 p-4 rounded-xl shadow-2xl border-2 border-cyan-500/50">
+          <h3 className="text-lg font-bold text-cyan-300 mb-3 flex items-center">
+            <Eye className="w-5 h-5 mr-2" /> Percepción Sensorial
           </h3>
 
           {/* Camera Preview */}
@@ -8733,14 +8401,14 @@ return (
                 autoPlay
                 playsInline
                 muted
-                className="w-full h-20 object-cover rounded-lg border border-cyan-500 bg-black"
+                className="w-full h-32 object-cover rounded-lg border border-cyan-500 bg-black"
               />
             </div>
           )}
 
           {/* Perception Metrics */}
           {sensoryState ? (
-            <div className="space-y-1 text-[10px]">
+            <div className="space-y-2 text-xs">
               {/* Video Perception */}
               {sensoryState.video.enabled && (
                 <>
@@ -8774,7 +8442,7 @@ return (
               )}
 
               {/* Perception Description */}
-              <div className="mt-1.5 p-1.5 bg-black/30 rounded text-cyan-200 text-[9px] italic line-clamp-2">
+              <div className="mt-1.5 p-1.5 bg-black/30 rounded text-cyan-200 text-[10px] leading-snug italic break-words">
                 {sensoryState.video.description || sensoryState.audio.environment.description || 'Analizando...'}
               </div>
             </div>
@@ -8790,49 +8458,50 @@ return (
         {/* Controles de Simulación */}
         <div className="flex gap-2">
           <button
-            onClick={() => setIsRunning(!isRunning)}
+            onClick={() => setRunningWithRecord(!isRunning, 'ui_button')}
             // Allow toggling even when ascended, the system just won't change its laws
-            className={`flex-1 flex items-center justify-center p-2 rounded-xl text-sm font-bold shadow-lg transition-all ${isRunning
+            className={`flex-1 flex items-center justify-center p-3 rounded-xl font-bold shadow-lg transition-all ${isRunning
               ? 'bg-red-600 hover:bg-red-700'
               : 'bg-green-600 hover:bg-green-700'
               }`}
           >
-            {isRunning ? <><Pause className="w-4 h-4 mr-1.5" /> Detener Flujo</> : <><Play className="w-4 h-4 mr-1.5" /> Iniciar Singularidad</>}
+            {isRunning ? <><Pause className="w-5 h-5 mr-2" /> Detener Flujo</> : <><Play className="w-5 h-5 mr-2" /> Iniciar simulación</>}
           </button>
           <button
-            onClick={handleReset}
-            className="p-2 rounded-xl bg-indigo-700 hover:bg-indigo-800 shadow-lg text-white"
+            onClick={() => handleReset('ui_button')}
+            className="p-3 rounded-xl bg-indigo-700 hover:bg-indigo-800 shadow-lg text-white"
             title="Reiniciar Todo"
+            aria-label="Reiniciar todo"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-5 h-5" />
           </button>
         </div>
 
         {/* PERSISTENCIA ONTOL?GICA (ULTRATHINK) */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           <button
             onClick={handleSaveState}
-            className="flex items-center justify-center p-2 rounded-xl bg-blue-600/80 hover:bg-blue-600 text-sm font-bold border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-white"
+            className="flex items-center justify-center p-3 rounded-xl bg-blue-600/80 hover:bg-blue-600 font-bold border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-white"
             title="Cristalizar Estado Actual"
           >
-            <Database className="w-4 h-4 mr-1.5" /> Cristalizar
+            <Database className="w-5 h-5 mr-2" /> Cristalizar
           </button>
           <button
             onClick={handleLoadState}
-            className="flex items-center justify-center p-2 rounded-xl bg-amber-600/80 hover:bg-amber-600 text-sm font-bold border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all text-white"
+            className="flex items-center justify-center p-3 rounded-xl bg-amber-600/80 hover:bg-amber-600 font-bold border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all text-white"
             title="Revoco Ontológico (Cargar)"
           >
-            <RotateCcw className="w-4 h-4 mr-1.5" /> Revocar
+            <RotateCcw className="w-5 h-5 mr-2" /> Revocar
           </button>
         </div>
       </section>
 
       {/* Columna Central y Derecha (Contenido de Pestaña) */}
-      <section className="min-h-0 min-w-0 max-w-full overflow-hidden rounded-2xl border border-slate-700/20 bg-slate-950/40 p-3 flex flex-col">
+      <section className="order-1 min-w-0 max-w-full flex flex-col lg:order-2 lg:col-span-2">
         {/* Navegación de Pestañas - AUTO-HIDE on scroll (ULTRATHINK) */}
         {/* Spacer compensatorio para evitar salto de contenido cuando el nav es sticky */}
         <div
-          className="mb-3 flex-shrink-0 p-2 rounded-xl shadow-inner border border-cyan-900/50"
+          className="mb-4 lg:mb-6 flex-shrink-0 p-2 rounded-xl shadow-inner border border-cyan-900/50"
           style={{
             background: 'rgba(15,23,42,0.92)',
             backdropFilter: 'blur(16px)',
@@ -8924,14 +8593,14 @@ return (
         </div>
 
         {/* Contenido de la Pestaña */}
-        <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+        <div className={`min-h-0 min-w-0 flex-1 `}>
           {renderCurrentTab()}
         </div>
       </section>
     </main>
 
     {/* Footer - Información de la simulación */}
-    <footer className="mx-auto flex h-6 w-full max-w-[1500px] flex-shrink-0 items-center justify-center border-t border-gray-700/50 px-2 text-center text-[9px] text-gray-500">
+    <footer className="mx-auto flex w-full max-w-[1500px] flex-shrink-0 flex-col items-center justify-center gap-1 border-t border-gray-700/50 px-2 pt-4 text-center text-xs text-gray-500">
       <p>Consola QICN supervisada (solo conformidad interna, sin validación externa). CCC y PMIA son contadores internos no calibrados; el registro interno se actualiza vía motor Kaizen. Estado de Memoria: {holographicMemory.current?.getFragmentationLevel().toFixed(4)} Fragmentacion. Estado operativo: {ontologicalCore.current?.frictionProtocolState}</p>
     </footer>
     <PersistentInfoModal modal={activeInfoModal} onClose={closePersistentInfoModal} />

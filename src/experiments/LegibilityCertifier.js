@@ -109,7 +109,9 @@ export const computeNoiseRobustness = (decoder, samples = [], noiseStdDev = 0.01
     const baseline = decoder(vector);
     for (let trial = 0; trial < safeTrials; trial += 1) {
       const noisy = vector.map((value, componentIndex) => finite(value, 0) + deterministicNoise(sampleIndex, trial, componentIndex, noiseStdDev));
-      if (decoder(noisy) === baseline) stableAssignments += 1;
+      if (vector.length > 0 && vector.every((value) => typeof value === 'number' && Number.isFinite(value)) &&
+          baseline !== null && baseline !== undefined && baseline !== '' &&
+          (!sample?.label || sample.label === baseline) && decoder(noisy) === baseline) stableAssignments += 1;
       total += 1;
     }
   });
@@ -133,6 +135,11 @@ export const computePersistenceWindow = (assignments = [], tauMin = 5, intervent
   assignments.forEach((item, index) => {
     const label = typeof item === 'string' ? item : item?.label;
     const tick = typeof item === 'string' ? index : finite(item?.tick, index);
+    if (typeof label !== 'string' || !label.trim()) {
+      currentRun = 0;
+      previous = null;
+      return;
+    }
     if (interventionTicks.has(tick)) {
       currentRun = 1;
       previous = label;
@@ -154,11 +161,11 @@ export const computePersistenceWindow = (assignments = [], tauMin = 5, intervent
 };
 
 export const computeInterventionFidelity = (interventions = []) => {
-  const usable = interventions.filter((item) => item && item.expected_change !== undefined);
-  const correct = usable.filter((item) => Boolean(item.expected_change) === Boolean(item.observed_change)).length;
-  const rate = usable.length ? correct / usable.length : 1;
+  const usable = interventions.filter((item) => item && typeof item.expected_change === 'boolean' && typeof item.observed_change === 'boolean');
+  const correct = usable.filter((item) => item.expected_change === item.observed_change).length;
+  const rate = usable.length ? correct / usable.length : null;
   return {
-    l4_intervention_fidelity: rate >= 0.95,
+    l4_intervention_fidelity: usable.length === interventions.length && rate !== null && rate >= 0.95,
     intervention_fidelity_rate: rate,
     interventions_tested: usable.length,
     interpretation_boundary: 'Finite certified-intervention fidelity check; not causal completeness over all intervention schedules.'
@@ -166,10 +173,11 @@ export const computeInterventionFidelity = (interventions = []) => {
 };
 
 export const computeNegativeControlCoverage = (controls = []) => {
-  const usable = controls.filter((item) => item && typeof item.pass === 'boolean');
+  const usable = controls.filter((item) => item && typeof item.control === 'string' && item.control.trim() && typeof item.pass === 'boolean');
   const passRate = usable.length ? usable.filter((item) => item.pass).length / usable.length : 0;
+  const distinct = new Set(usable.map((item) => item.control.trim().toUpperCase()));
   return {
-    l5_negative_controls: usable.length >= 7 && passRate === 1,
+    l5_negative_controls: usable.length === controls.length && usable.length >= 7 && distinct.size === usable.length && passRate === 1,
     negative_control_pass_rate: passRate,
     controls_tested: usable.length,
     interpretation_boundary: 'Internal negative-control coverage only; passing controls are falsification routes, not proof routes.'
@@ -190,6 +198,72 @@ export const computeCompressibility = (historyVectors = [], compressionRatio = 0
     compression_ratio: ratio,
     structure_correlation: structureCorrelation,
     interpretation_boundary: 'Finite structural-compression check over supplied histories; not a Kolmogorov or universal coding theorem.'
+  };
+};
+
+import { F, ZERO, vecEq } from '../simulation/tower/ExactFraction.js';
+import {
+  ALTERNATING,
+  PROFILES,
+  SITES,
+  createState,
+  distance as towerDistance,
+  prefix,
+  readout,
+  referenceBit,
+  step
+} from '../simulation/tower/WritablePrefixTower.js';
+
+export const verifyTowerLegibilityHorizon = () => {
+  let trialCount = 0;
+  for (const profile of PROFILES) {
+    for (const site of SITES) {
+      for (const depth of [7, 10, 12]) {
+        let sham = createState(profile, ZERO, ALTERNATING, ZERO);
+        let target = step(sham, { write: [site, 1 - referenceBit(site)] });
+        const reference = prefix(sham.code, depth);
+        const resolution = F(1n, 3n ** BigInt(depth));
+        const eta = resolution.div(4);
+        const maxSteps = depth - site + 4;
+
+        for (let t = 0; t < maxSteps; t += 1) {
+          const gap = target.code.sub(sham.code).abs();
+          const expectedGap = F(2n, 3n ** BigInt(site + t));
+          if (!gap.eq(expectedGap) || !towerDistance(target, sham).eq(gap)) {
+            throw new Error(`Exact legibility horizon D_{${site},${t}} mismatch`);
+          }
+          if (!vecEq(readout(target).slice(0, 3), readout(sham).slice(0, 3))) {
+            throw new Error('Phase readouts must match on pure tape write');
+          }
+          if (gap.gte(resolution) !== (t <= depth - site)) {
+            throw new Error('Resolution threshold equivalence failed');
+          }
+          for (const error of [eta.neg(), ZERO, eta]) {
+            if (!vecEq(prefix(sham.code.add(error), depth), reference)) {
+              throw new Error('Sham prefix under bounded noise changed');
+            }
+            const differs = !vecEq(prefix(target.code.add(error), depth), reference);
+            if (differs !== (t <= depth - site)) {
+              throw new Error('Noisy target legibility horizon equivalence failed');
+            }
+          }
+          const midpoint = target.code.add(sham.code).div(2);
+          if (midpoint.sub(sham.code).abs().lte(eta) !== (t >= depth + 2 - site)) {
+            throw new Error('Midpoint collision horizon failed');
+          }
+          sham = step(sham);
+          target = step(target);
+        }
+        trialCount += 1;
+      }
+    }
+  }
+  return {
+    passed: true,
+    trialsVerified: trialCount,
+    horizonFormula: 'D_{j,t} = 2 * 3^-(j+t)',
+    exactHorizonEquivalence: 't <= depth - site',
+    midpointCollisionHorizon: 't >= depth + 2 - site'
   };
 };
 
@@ -221,11 +295,14 @@ export const buildLegibilityCertificate = ({
     + (Number(l6.l6_compressibility) * 0.14)
   );
 
+  const towerHorizon = verifyTowerLegibilityHorizon();
+
   return {
     score: Number(clamp01(score).toFixed(12)),
     clauses: { L1: l1, L2: l2, L3: l3, L4: l4, L5: l5, L6: l6 },
     clauses_passed: [l1.l1_separability, l2.l2_noise_robustness, l3.l3_persistence_window, l4.l4_intervention_fidelity, l5.l5_negative_controls, l6.l6_compressibility]
       .filter(Boolean).length,
-    interpretation_boundary: 'Finite six-clause operational legibility certificate; not semantic transparency or external claim closure.'
+    tower_legibility_horizon: towerHorizon,
+    interpretation_boundary: 'Finite six-clause operational legibility certificate plus exact single-trajectory prefix horizon D_{j,t}=2*3^-(j+t); not semantic transparency or external claim closure.'
   };
 };

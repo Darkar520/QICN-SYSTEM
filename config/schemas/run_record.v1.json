@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "run_record.v1.2.1",
+  "type": "object",
+  "required": ["runId", "tick", "t_ms", "versionHash", "configHash", "metrics", "render_trace_hash", "integrity", "intervention", "sensors", "observability"],
+  "$defs": {
+    "runtime_use_admissibility": {
+      "type": "object",
+      "required": [
+        "measured_state_space",
+        "estimator_or_update_rule",
+        "finite_horizon",
+        "calibration_regime",
+        "failure_controls",
+        "claim_class"
+      ],
+      "properties": {
+        "measured_state_space": { "type": "string", "minLength": 1 },
+        "estimator_or_update_rule": { "type": "string", "minLength": 1 },
+        "finite_horizon": { "type": ["string", "number", "object"] },
+        "calibration_regime": { "type": "string", "minLength": 1 },
+        "failure_controls": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "claim_class": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "properties": {
+    "runId": { "type": "string" },
+    "tick": { "type": "integer", "minimum": 0 },
+    "t_ms": { "type": "number", "minimum": 0 },
+    "versionHash": { "type": "string" },
+    "configHash": { "type": "string" },
+    "metrics": { "type": "object" },
+    "render_trace_hash": { "type": ["string", "null"] },
+    "integrity": {
+      "type": "object",
+      "required": ["event_present", "C2_ok", "echo_sig", "nonce", "requestId"],
+      "properties": {
+        "event_present": { "type": "boolean" },
+        "C2_ok": { "type": ["boolean", "null"] },
+        "echo_sig": { "type": ["string", "null"] },
+        "nonce": { "type": ["string", "null"] },
+        "requestId": { "type": ["string", "null"] }
+      }
+    },
+    "intervention": {
+      "type": "object",
+      "required": ["active", "tag", "params"],
+      "properties": {
+        "active": { "type": "boolean" },
+        "tag": { "type": ["string", "null"] },
+        "params": { "type": ["object", "null"] }
+      }
+    },
+    "sensors": {
+      "type": "object",
+      "required": ["mode", "summary"],
+      "properties": {
+        "mode": { "enum": ["mock", "live", "off"] },
+        "summary": { "type": "object" }
+      }
+    },
+    "observability": {
+      "type": "object",
+      "required": ["modules_active", "wm_pred_error", "planner_cost", "self_state_stub"],
+      "properties": {
+        "modules_active": { "type": "array", "items": { "type": "string" } },
+        "wm_pred_error": { "type": ["number", "null"] },
+        "planner_cost": { "type": ["number", "null"] },
+        "self_state_stub": {
+          "type": "object",
+          "required": ["wm_enabled", "planner_enabled", "sensors_mode", "entropy_mode"],
+          "properties": {
+            "wm_enabled": { "type": ["boolean", "null"] },
+            "planner_enabled": { "type": ["boolean", "null"] },
+            "sensors_mode": { "enum": ["mock", "live", "off"] },
+            "entropy_mode": { "type": ["string", "null"] }
+          }
+        }
+      }
+    }
+  }
+}

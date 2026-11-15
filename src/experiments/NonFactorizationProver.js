@@ -1,6 +1,94 @@
 // @ts-check
 
 import { sha256Hex } from '../utils/integrity.js';
+import { F, ZERO, ONE, fMin, fMax } from '../simulation/tower/ExactFraction.js';
+import {
+  ALTERNATING,
+  CONTEXTS,
+  KAPPA,
+  LAMBDA,
+  PROFILES,
+  RETENTION,
+  SAFE,
+  SITES,
+  TAP,
+  circle,
+  createState,
+  distance as towerDistance,
+  prefix,
+  referenceBit,
+  signedTurn,
+  step,
+  writePrefix
+} from '../simulation/tower/WritablePrefixTower.js';
+
+export const verifyTowerCommonPlantAndInteractionNonFactorization = () => {
+  const weights = [ONE, F(1, 3), F(1, 9)];
+  let minGap = ONE;
+  for (let a = 0; a < PROFILES.length; a += 1) {
+    for (let b = a + 1; b < PROFILES.length; b += 1) {
+      const p = PROFILES[a];
+      const r = PROFILES[b];
+      let pairMax = ZERO;
+      for (let i = 0; i < 3; i += 1) {
+        for (let j = i + 1; j < 3; j += 1) {
+          const wFactor = weights[i].mul(weights[j]).div(weights[i].add(weights[j]));
+          const val = wFactor.mul(p[i].sub(r[i]).sub(p[j].sub(r[j])).abs());
+          if (val.gt(pairMax)) pairMax = val;
+        }
+      }
+      if (pairMax.lt(minGap)) minGap = pairMax;
+    }
+  }
+  if (!minGap.eq(F(1, 80))) {
+    throw new Error(`Expected profile gap 1/80, got ${minGap}`);
+  }
+  if (!weights[2].mul(LAMBDA).div(2).eq(F(1, 216)) || !LAMBDA.div(2).eq(F(1, 24))) {
+    throw new Error('Split-readout non-factorization bounds [1/216, 1/24] mismatch');
+  }
+  const contractionConstant = fMax([
+    F(5, 9),
+    RETENTION.add(LAMBDA.mul(3).div(4)),
+    LAMBDA.mul(3),
+    KAPPA.mul(4).add(TAP.mul(F(3n ** 7n)))
+  ]);
+  if (!contractionConstant.eq(F(9, 16))) {
+    throw new Error(`Expected contraction constant 9/16, got ${contractionConstant}`);
+  }
+
+  // Mixed 2x2 role-probe interaction non-factorization (check_differentiation)
+  const roleResponse = (profileRole, probeRole, lesion) => {
+    let state = createState(CONTEXTS[profileRole], ZERO, ALTERNATING, ZERO);
+    state = step(state, { write: [3, referenceBit(3) ^ (lesion ? 1 : 0)] });
+    const transported = step(state);
+    return signedTurn(step(transported, { probe: [4, probeRole] }).phase);
+  };
+  const contrasts = [];
+  for (const pRole of [0, 1]) {
+    for (const qRole of [0, 1]) {
+      contrasts.push(
+        roleResponse(pRole, qRole, false).sub(roleResponse(pRole, qRole, true))
+      );
+    }
+  }
+  const mixedDiff = contrasts[0].sub(contrasts[1]).sub(contrasts[2]).add(contrasts[3]);
+  if (!mixedDiff.eq(TAP.mul(2))) {
+    throw new Error('Mixed interaction difference must equal 2*TAP');
+  }
+  const additiveErrorExact = TAP.div(2);
+  const noisyAdditiveLowerBound = TAP.mul(3).div(8);
+
+  return {
+    passed: true,
+    profileSeparationGap: minGap.toString(),
+    splitReadoutErrorLowerBound: '1/216',
+    splitReadoutErrorUpperBound: '1/24',
+    fiberContractionConstant: contractionConstant.toString(),
+    mixedInteractionDifference: mixedDiff.toString(),
+    additiveApproximationErrorExact: additiveErrorExact.toString(),
+    noisyAdditiveErrorLowerBound256Corners: noisyAdditiveLowerBound.toString()
+  };
+};
 
 const DEFAULT_BASELINE = Object.freeze({
   ccc: 0.72,
@@ -231,14 +319,16 @@ export const verifyNonFactorization = (nodeGraph, baselineMetrics, candidateOpti
     };
   });
   const factorizations = results.filter((result) => result.is_factorization);
+  const towerNonFactorization = verifyTowerCommonPlantAndInteractionNonFactorization();
 
   return {
-    non_factorizable: factorizations.length === 0,
+    non_factorizable: factorizations.length === 0 && towerNonFactorization.passed,
     candidates_tested: results.length,
     factorizations_found: factorizations.length,
     baseline_metrics: baseline,
     tolerance: options.tolerance,
     results,
-    interpretation_boundary: 'Empirical non-factorization over finite candidate partitions; not a proof over all possible partitions of the node graph.'
+    tower_non_factorization_certificate: towerNonFactorization,
+    interpretation_boundary: 'Empirical non-factorization over finite candidate partitions plus exact WritablePrefixTower split-readout bounds [1/216, 1/24] and 2x2 mixed interaction defect 2*TAP; not a proof over all possible partitions of an arbitrary graph.'
   };
 };

@@ -3,6 +3,10 @@ import path from 'path';
 
 import { SUBJECTIVITY_THRESHOLDS } from './SubjectivityThresholdRegistry.js';
 import { SUBJECTIVITY_RIVAL_FAMILY } from './SubjectivityRivalFamilyRegistry.js';
+import {
+  runInformedReserveSuite,
+  runSelectiveAddressLesionSuite
+} from './InformedReserveEvaluator.js';
 
 const PAPER_SOURCE = Object.freeze({
   paper_id: 'paper8_first_person_subjectivity',
@@ -1122,6 +1126,13 @@ export class SubjectivityReducibilityComparator {
         control_mode: controlMode
       },
       schema_ref: REDUCIBILITY_SCHEMA_REF
+    };
+  }
+
+  evaluateTowerReserveSeparation() {
+    return {
+      informed_reserve: runInformedReserveSuite(),
+      selective_address_lesions: runSelectiveAddressLesionSuite()
     };
   }
 

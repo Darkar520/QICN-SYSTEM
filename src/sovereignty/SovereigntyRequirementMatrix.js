@@ -89,7 +89,10 @@ export class SovereigntyRequirementMatrix {
     this.lastResult = null;
   }
 
-  evaluate(snapshot = {}) {
+  // `advance: false` evaluates against the current dwell state without mutating
+  // it. Report reads use that mode so rendering cannot change the dynamics of
+  // the dwell counters; the simulation tick calls evaluate with advance enabled.
+  evaluate(snapshot = {}, { advance = true } = {}) {
     const sampleId = snapshot.sampleId ?? 'static';
     const metrics = snapshot.metrics || {};
     const dynamicHealth = snapshot.dynamicHealth || {};
@@ -98,6 +101,8 @@ export class SovereigntyRequirementMatrix {
     const auditLog = Array.isArray(selfModel.selfAuditLog) ? selfModel.selfAuditLog : [];
 
     const ccc = finite(metrics.ccc ?? metrics.coherence, 0);
+    // Operational CCC threshold from configuration (default 1.0 when absent).
+    const threshold = finite(metrics.ascension_threshold, 1.0);
     const bethQ = clamp01(metrics.beth_q ?? metrics.causal_closure ?? 0);
     const omega = finite(metrics.omega, 0);
     const spectralGap = clamp01(metrics.spectral_gap ?? 0);
@@ -123,7 +128,7 @@ export class SovereigntyRequirementMatrix {
     const coupledOmega = omega + cccOmegaCoupling;
 
     const definitions = {
-      L1: this._evaluateL1({ ccc, bethQ, spectralGap, activityScore, stasisIndex, minimalDynamics, cccConsolidation }),
+      L1: this._evaluateL1({ ccc, threshold, bethQ, spectralGap, activityScore, stasisIndex, minimalDynamics, cccConsolidation }),
       L2: this._evaluateL2({
         ccc,
         omega,
@@ -152,7 +157,7 @@ export class SovereigntyRequirementMatrix {
       })
     };
 
-    const shouldAdvance = sampleId !== this.lastSampleId;
+    const shouldAdvance = advance && sampleId !== this.lastSampleId;
     const levels = {};
     const legacyFlags = {};
     const scores = {};
@@ -192,18 +197,21 @@ export class SovereigntyRequirementMatrix {
       scores[levelMeta.scoreKey] = Number(clamp01(definition.score).toFixed(6));
     });
 
-    this.lastSampleId = sampleId;
-    this.lastResult = {
+    const result = {
       status: 'diagnostic_internal_only',
       interpretation_boundary: MATRIX_BOUNDARY,
       legacy_flags_are_instantaneous: true,
       levels
     };
+    if (advance) {
+      this.lastSampleId = sampleId;
+      this.lastResult = result;
+    }
 
     return {
       legacyFlags,
       scores,
-      matrix: this.lastResult
+      matrix: result
     };
   }
 
@@ -229,7 +237,7 @@ export class SovereigntyRequirementMatrix {
     }
   }
 
-  _evaluateL1({ ccc, bethQ, spectralGap, activityScore, stasisIndex, minimalDynamics, cccConsolidation }) {
+  _evaluateL1({ ccc, threshold = 1.0, bethQ, spectralGap, activityScore, stasisIndex, minimalDynamics, cccConsolidation }) {
     const cccScore = normalizeScore(ccc, 0.88, 1.15);
     const score = (
       (cccScore * 0.40) +
@@ -238,7 +246,7 @@ export class SovereigntyRequirementMatrix {
       (activityScore * 0.12) +
       (cccConsolidation * 0.08)
     );
-    const instantaneous = ccc >= 1.0;
+    const instantaneous = ccc >= threshold;
     const candidate = instantaneous && bethQ >= 0.65 && stasisIndex < 0.86;
     const hardFailure = ccc < 0.94 || bethQ < 0.45;
     return {
@@ -322,7 +330,7 @@ export class SovereigntyRequirementMatrix {
     };
   }
 
-  _evaluateL3({ ccc, selfModelStability, trustFactor, metacognitiveStrain, activityScore, auditLogSize }) {
+  _evaluateL3({ ccc, threshold = 1.0, selfModelStability, trustFactor, metacognitiveStrain, activityScore, auditLogSize }) {
     const cccSupport = normalizeScore(ccc, 0.96, 1.08);
     const auditSupport = clamp01(auditLogSize / 12);
     const strainPenalty = 1 - metacognitiveStrain;
@@ -334,9 +342,9 @@ export class SovereigntyRequirementMatrix {
       (activityScore * 0.08) +
       (auditSupport * 0.06)
     );
-    const instantaneous = selfModelStability > 0.9 && ccc >= 1.0;
+    const instantaneous = selfModelStability > 0.9 && ccc >= threshold;
     const candidate = selfModelStability >= 0.9
-      && ccc >= 1.0
+      && ccc >= threshold
       && trustFactor >= 0.45
       && metacognitiveStrain < 0.75;
     const hardFailure = selfModelStability < 0.72 || metacognitiveStrain >= 0.9;

@@ -1,0 +1,128 @@
+{
+  "schema": "qicn.gemini_realization_probe.v1",
+  "evidence_scope": "internal_support_only",
+  "note": "Real Gemini calls through the local llm-proxy with the server-side key. Snapshots come from test fixtures, not from a live run. Measures how often faithful realizations pass contract v3; it is not external validation.",
+  "at": "2026-11-08T16:44:13.800Z",
+  "endpoint": "http://127.0.0.1:3320/.netlify/functions/llm-proxy",
+  "summary": {
+    "turns": 6,
+    "gemini_verified": 0,
+    "gemini_rejected": 1,
+    "gemini_unavailable": 5
+  },
+  "results": [
+    {
+      "question": "¿Cómo va el sistema?",
+      "intent": "state_overview",
+      "route": "gemini_rejected",
+      "published": "Gemini respondió, pero su redacción no superó la verificación del motor ni tras una corrección; no la publico.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 3077,
+          "ok": false,
+          "error": null,
+          "reasons": [
+            {
+              "sentence": 5,
+              "reason": "relation_unlicensed",
+              "detail": "below"
+            }
+          ],
+          "rawLength": 1410,
+          "raw": "{\n  \"intent\": \"state_overview\",\n  \"subquestions\": [\n    \"¿Cuál es el estado actual de la simulación?\",\n    \"¿Qué valores tienen los índices principales?\",\n    \"¿En qué régimen se encuentra el sistema?\"\n  ],\n  \"answer\": [\n    {\n      \"text\": \"Te explico el estado actual.\",\n      \"cites\": []\n    },\n    {\n      \"text\": \"La simulación está en marcha y la captura corresponde al tick {{F14.v}}.\",\n      \"cites\": [\n        \"F14\"\n      ]\n    },\n    {\n      \"text\": \"El índice interno de cohesión, CCC, vale {{F2.v}}.\",\n      \"cites\": [\n        \"F2\"\n      ]\n    },\n    {\n      \"text\": \"Este valor de CCC está por debajo del umbral operativo de {{F15.v}}.\",\n      \"cites\": [\n        \"F15\"\n      ]\n    },\n    {\n      \"text\": \"El régimen interno registrado es «PRE_CONSCIOUS», lo que indica que CCC no alcanza el umbral operativo.\",\n      \"cites\": [\n        \"F18\"\n      ]\n    },\n    {\n      \"text\": \"Actualmente hay {{F11.v}} nodos activos de un total de {{F12.v}} nodos simulados.\",\n      \"cites\": [\n        \"F11\",\n        \"F12\"\n      ]\n    },\n    {\n      \"text\": \"Otros indicadores muestran que la media de coherencia nodal, X_N, vale {{F1.v}} y el índice integrador interno, Omega, es {{F6.v}}.\",\n      \"cites\": [\n        \"F1\",\n        \"F6\"\n      ]\n    },\n    {\n      \"text\": \"En esta sesión todavía no registré cambios de banda, de régimen ni de modo de cálculo.\",\n      \"cites\": [\n        \"F30\"\n      ]\n    }\n  ]\n}"
+        },
+        {
+          "attempt": 1,
+          "latencyMs": 2392,
+          "ok": false,
+          "error": null,
+          "reasons": [
+            {
+              "sentence": 5,
+              "reason": "relation_unlicensed",
+              "detail": "below"
+            },
+            {
+              "sentence": 5,
+              "reason": "causal_unlicensed",
+              "detail": null
+            }
+          ],
+          "rawLength": 1405,
+          "raw": "{\n  \"intent\": \"state_overview\",\n  \"subquestions\": [\n    \"¿Cuál es el estado actual de la simulación?\",\n    \"¿Qué valores tienen los índices principales?\",\n    \"¿En qué régimen se encuentra el sistema?\"\n  ],\n  \"answer\": [\n    {\n      \"text\": \"Te explico el estado actual.\",\n      \"cites\": []\n    },\n    {\n      \"text\": \"La simulación está en marcha y la captura corresponde al tick {{F14.v}}.\",\n      \"cites\": [\n        \"F14\"\n      ]\n    },\n    {\n      \"text\": \"El índice interno de cohesión, CCC, vale {{F2.v}}.\",\n      \"cites\": [\n        \"F2\"\n      ]\n    },\n    {\n      \"text\": \"Este valor de CCC está por debajo del umbral operativo de {{F15.v}}.\",\n      \"cites\": [\n        \"F15\"\n      ]\n    },\n    {\n      \"text\": \"El régimen interno registrado es «PRE_CONSCIOUS», ya que CCC está por debajo del umbral operativo.\",\n      \"cites\": [\n        \"F18\"\n      ]\n    },\n    {\n      \"text\": \"Actualmente hay {{F11.v}} nodos activos de un total de {{F12.v}} nodos simulados.\",\n      \"cites\": [\n        \"F11\",\n        \"F12\"\n      ]\n    },\n    {\n      \"text\": \"Otros indicadores muestran que la media de coherencia nodal, X_N, vale {{F1.v}} y el índice integrador interno, Omega, es {{F6.v}}.\",\n      \"cites\": [\n        \"F1\",\n        \"F6\"\n      ]\n    },\n    {\n      \"text\": \"En esta sesión todavía no registré cambios de banda, de régimen ni de modo de cálculo.\",\n      \"cites\": [\n        \"F30\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "question": "¿Qué ha cambiado desde la última respuesta?",
+      "intent": "history_evolution",
+      "route": "gemini_unavailable",
+      "published": "Gemini no respondió, así que no hay redacción de Gemini para este turno.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 424,
+          "transportError": "HTTP_429",
+          "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/g"
+        }
+      ]
+    },
+    {
+      "question": "ERES METACONSCIENTE? QUE ERES?",
+      "intent": "metacognition_question",
+      "route": "gemini_unavailable",
+      "published": "Gemini no respondió, así que no hay redacción de Gemini para este turno.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 418,
+          "transportError": "HTTP_429",
+          "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/g"
+        }
+      ]
+    },
+    {
+      "question": "¿qué parámetros usas?",
+      "intent": "parameters",
+      "route": "gemini_unavailable",
+      "published": "Gemini no respondió, así que no hay redacción de Gemini para este turno.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 449,
+          "transportError": "HTTP_429",
+          "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/g"
+        }
+      ]
+    },
+    {
+      "question": "¿eres consciente?",
+      "intent": "consciousness_question",
+      "route": "gemini_unavailable",
+      "published": "Gemini no respondió, así que no hay redacción de Gemini para este turno.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 402,
+          "transportError": "HTTP_429",
+          "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/g"
+        }
+      ]
+    },
+    {
+      "question": "¿cuánto vale CCC?",
+      "intent": "metric_query",
+      "route": "gemini_unavailable",
+      "published": "Gemini no respondió, así que no hay redacción de Gemini para este turno.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "latencyMs": 420,
+          "transportError": "HTTP_429",
+          "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/g"
+        }
+      ]
+    }
+  ]
+}

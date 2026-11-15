@@ -10,16 +10,26 @@ try {
   const partial = classifyCCRApproximation({
     finiteStability: true,
     projectionCompatibility: true,
-    lowerBoundGrowth: true,
+    upperBoundGrowth: true,
     negativeControlsPassed: true
   });
   assert.ok(partial.level < CCR_LEVELS.CCR_APPROXIMATION_CANDIDATE, 'CASE 1 FAIL: missing perturbation resistance must block candidate.');
+
+  const level4 = classifyCCRApproximation({
+    finiteStability: true,
+    perturbationResistance: true,
+    projectionCompatibility: true,
+    upperBoundGrowth: true,
+    negativeControlsPassed: false
+  });
+  assert.equal(level4.level, CCR_LEVELS.FAMILY_UPPER_BOUND_GROWTH);
+  assert.equal(level4.label, 'family_upper_bound_growth');
 
   const candidate = classifyCCRApproximation({
     finiteStability: true,
     perturbationResistance: true,
     projectionCompatibility: true,
-    lowerBoundGrowth: true,
+    upperBoundGrowth: true,
     negativeControlsPassed: true
   });
   assert.equal(candidate.level, CCR_LEVELS.CCR_APPROXIMATION_CANDIDATE);

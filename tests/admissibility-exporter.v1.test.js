@@ -99,6 +99,23 @@ const writeArtifact = ({ root, runId, schemaValidation = 'permissive', rows = []
   assert(fs.existsSync(path.join(exportInfo.outDir, 'tables.tex')), 'CASE 6 FAIL: tables.tex missing');
   assert(fs.existsSync(path.join(exportInfo.outDir, 'figures_data.json')), 'CASE 6 FAIL: figures_data.json missing');
 
+  // CASE 7: BaseCore §06 runtime_use_admissibility validation rejects overclaiming or missing fields
+  const badRuaDir = writeArtifact({ root, runId: 'run_bad_rua', rows: Array.from({ length: 5 }, (_, i) => baseRecord(i)) });
+  const badHeaderPath = path.join(badRuaDir, 'run_header.json');
+  const badHeader = JSON.parse(fs.readFileSync(badHeaderPath, 'utf8'));
+  badHeader.runtime_use_admissibility = {
+    measured_state_space: 'finite_state',
+    estimator_or_update_rule: 'rule_v1',
+    finite_horizon: 5,
+    calibration_regime: 'uncalibrated',
+    failure_controls: ['nc1'],
+    claim_class: 'external_validation'
+  };
+  fs.writeFileSync(badHeaderPath, `${JSON.stringify(badHeader, null, 2)}\n`, 'utf8');
+  const v7 = engine.evaluateRun({ artifactDir: badRuaDir, flakeStatuses: [0, 0] }).verdict;
+  assert(v7.status === 'DISCARDED', 'CASE 7 FAIL: overclaiming runtime_use_admissibility must be DISCARDED');
+  assert(v7.reasons.includes('DSC_RUNTIME_USE_ADMISSIBILITY_INVALID'), 'CASE 7 FAIL: DSC_RUNTIME_USE_ADMISSIBILITY_INVALID reason missing');
+
   console.log('OK: admissibility-exporter.v1 tests passed');
 })().catch((error) => {
   console.error('FAIL: admissibility-exporter.v1 tests failed:', error.message);

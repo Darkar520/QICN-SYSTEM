@@ -212,4 +212,19 @@ if (!containsValue(paperRow.source_artifact, 'roeo_enforcement_report.json')) {
   fail('GR_paper_admissibility_status must declare roeo_enforcement_report.json');
 }
 
+const invariantRow = registry.rows.find((row) => row.id === 'I_runtime_invariant_family');
+if (!invariantRow) fail('missing I_runtime_invariant_family row');
+for (const synthetic of [
+  'persistence_certificate.forward_invariance',
+  'persistence_certificate.min_collapse_distance',
+  'integration.non_factorizable',
+  'integration.factorization_candidates_tested',
+  'integration.factorizations_found',
+  'legibility_certificate.L1_L6'
+]) {
+  if (containsValue(invariantRow.source_signals, synthetic)) {
+    fail(`I_runtime_invariant_family must not present ${synthetic} as recorded run evidence`);
+  }
+}
+
 console.log(`[descriptor-registry] OK: ${registry.rows.length} rows validated from ${path.relative(root, registryPath)}`);

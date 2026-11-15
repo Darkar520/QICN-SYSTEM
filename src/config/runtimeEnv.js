@@ -6,6 +6,12 @@ const asBool = (value, fallback = false) => {
   return fallback;
 };
 
+const asNumber = (value, fallback) => {
+  if (value === undefined || value === null || String(value).trim() === '') return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
 const processEnv =
   typeof globalThis !== 'undefined' &&
   globalThis.process &&
@@ -49,13 +55,13 @@ export const runtimeEnv = {
   QUANTUM_PROVIDER_DEFAULT: getEnv('QUANTUM_PROVIDER_DEFAULT', 'custom'),
   QUANTUM_ENTROPY_TTL_MS: Number(getEnv('QUANTUM_ENTROPY_TTL_MS')) || 60000,
   QUANTUM_POLL_INTERVAL_MS: Number(getEnv('QUANTUM_POLL_INTERVAL_MS')) || 10000,
-  QUANTUM_REQUIRED_QUALITY_MIN: Number(getEnv('QUANTUM_REQUIRED_QUALITY_MIN')) || 0.2,
+  QUANTUM_REQUIRED_QUALITY_MIN: asNumber(getEnv('QUANTUM_REQUIRED_QUALITY_MIN'), 0.2),
   QUANTUM_BUFFER_CAPACITY_CHUNKS: Number(getEnv('QUANTUM_BUFFER_CAPACITY_CHUNKS')) || 8,
-  QUANTUM_BUFFER_LOW_WATERMARK_CHUNKS: Number(getEnv('QUANTUM_BUFFER_LOW_WATERMARK_CHUNKS')) || 2,
+  QUANTUM_BUFFER_LOW_WATERMARK_CHUNKS: asNumber(getEnv('QUANTUM_BUFFER_LOW_WATERMARK_CHUNKS'), 2),
   QUANTUM_BUFFER_REFILL_TARGET_CHUNKS: Number(getEnv('QUANTUM_BUFFER_REFILL_TARGET_CHUNKS')) || 6,
   QUANTUM_PROVIDER_TIMEOUT_MS: Number(getEnv('QUANTUM_PROVIDER_TIMEOUT_MS')) || 4500,
-  QUANTUM_PROVIDER_RETRY_COUNT: Number(getEnv('QUANTUM_PROVIDER_RETRY_COUNT')) || 1,
-  QUANTUM_PROVIDER_RETRY_BACKOFF_MS: Number(getEnv('QUANTUM_PROVIDER_RETRY_BACKOFF_MS')) || 300,
+  QUANTUM_PROVIDER_RETRY_COUNT: asNumber(getEnv('QUANTUM_PROVIDER_RETRY_COUNT'), 1),
+  QUANTUM_PROVIDER_RETRY_BACKOFF_MS: asNumber(getEnv('QUANTUM_PROVIDER_RETRY_BACKOFF_MS'), 300),
   QUANTUM_PROVIDER_FALLBACK_ENABLED: asBool(getEnv('QUANTUM_PROVIDER_FALLBACK_ENABLED'), true),
   QUANTUM_LOG_LEVEL: getEnv('QUANTUM_LOG_LEVEL', 'warn'),
   QUANTUM_EXPERIMENT_CONDITION: getEnv('QUANTUM_EXPERIMENT_CONDITION', 'baseline'),

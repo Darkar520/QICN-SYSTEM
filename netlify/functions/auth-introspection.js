@@ -1,4 +1,6 @@
-﻿const asJson = (statusCode, payload) => ({
+﻿import { requireUser } from './lib/auth-user.js';
+
+const asJson = (statusCode, payload) => ({
   statusCode,
   headers: {
     'Content-Type': 'application/json',
@@ -7,41 +9,13 @@
   body: JSON.stringify(payload)
 });
 
-const decodeJwtPayload = (token) => {
-  try {
-    const parts = String(token || '').split('.');
-    if (parts.length < 2) return null;
-    const normalized = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-    const json = Buffer.from(normalized, 'base64').toString('utf8');
-    return JSON.parse(json);
-  } catch {
-    return null;
-  }
-};
-
 const resolveUserFromContext = (event, context) => {
-  const netlifyUser = context?.clientContext?.user;
-  if (netlifyUser) {
-    return {
-      id: netlifyUser?.sub || netlifyUser?.id || null,
-      email: netlifyUser?.email || '',
-      role: Array.isArray(netlifyUser?.app_metadata?.roles) ? netlifyUser.app_metadata.roles.join(',') : ''
-    };
-  }
-
-  const authHeader = event?.headers?.authorization || event?.headers?.Authorization || '';
-  if (!authHeader.startsWith('Bearer ')) return null;
-  const token = authHeader.slice(7).trim();
-  const payload = decodeJwtPayload(token);
-  if (!payload) return null;
-
-  const now = Math.floor(Date.now() / 1000);
-  if (payload.exp && payload.exp < now) return null;
-
+  const user = requireUser(event, context);
+  if (!user) return null;
   return {
-    id: payload.sub || null,
-    email: payload.email || '',
-    role: Array.isArray(payload?.app_metadata?.roles) ? payload.app_metadata.roles.join(',') : ''
+    id: user.sub || user.id,
+    email: user.email || '',
+    role: Array.isArray(user?.app_metadata?.roles) ? user.app_metadata.roles.join(',') : ''
   };
 };
 

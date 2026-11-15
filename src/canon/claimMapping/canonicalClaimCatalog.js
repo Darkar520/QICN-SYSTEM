@@ -3,7 +3,7 @@ export const CANON_INVARIANT_CATALOG = Object.freeze([
     id: 'I_per',
     name: 'structural_persistence',
     runtimeSignals: ['metrics.stasis_index', 'flags.monotonic_violation', 'flags.io_partial'],
-    maturity: 'FULL_NATIVE'
+    maturity: 'PARTIAL_RUNTIME_PATH'
   },
   {
     id: 'I_ri',
@@ -15,7 +15,7 @@ export const CANON_INVARIANT_CATALOG = Object.freeze([
     id: 'I_int',
     name: 'causal_integration',
     runtimeSignals: ['metrics.pmia', 'metrics.spectral_gap', 'metrics.beth_q', 'metrics.causal_dependency', 'metrics.pmia_guardrail_ok_frac', 'metrics.wm_pred_error_mean'],
-    maturity: 'FULL_NATIVE'
+    maturity: 'PARTIAL_RUNTIME_PATH'
   },
   {
     id: 'I_cont',
@@ -33,7 +33,7 @@ export const CANON_INVARIANT_CATALOG = Object.freeze([
     id: 'I_leg',
     name: 'operational_legibility',
     runtimeSignals: ['metrics.operational_determinism_score', 'metrics.critical_observables_deterministic_frac', 'metrics.critical_state_hash_semantic_stability', 'metrics.pmia_guardrail_ok_frac', 'flags.schema_drift', 'flags.hash_drift', 'flags.io_partial'],
-    maturity: 'FULL_NATIVE'
+    maturity: 'PARTIAL_RUNTIME_PATH'
   }
 ]);
 
@@ -69,8 +69,8 @@ export const CANON_CLAIM_CATALOG = Object.freeze([
   {
     claimId: 'P5-05',
     name: 'complexity_only_failure',
-    status: 'ROBUST_INTERNAL_SUPPORT',
-    runtimePath: 'RUNTIME_READY',
+    status: 'NOT_RECORDED',
+    runtimePath: 'PARTIAL_RUNTIME_PATH',
     judgeDependency: 'negative_controls_runner'
   },
   {

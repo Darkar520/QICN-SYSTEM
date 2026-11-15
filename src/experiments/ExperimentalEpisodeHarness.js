@@ -18,6 +18,46 @@ const pct = (arr, p) => {
 };
 const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
 
+export const RUNTIME_USE_ADMISSIBILITY_REQUIRED_FIELDS = Object.freeze([
+  'measured_state_space',
+  'estimator_or_update_rule',
+  'finite_horizon',
+  'calibration_regime',
+  'failure_controls',
+  'claim_class'
+]);
+
+export const buildRuntimeUseAdmissibilityDeclaration = (overrides = {}, context = {}) => {
+  const src = isObj(overrides) ? overrides : {};
+  const failureControls = Array.isArray(src.failure_controls) && src.failure_controls.length > 0
+    ? src.failure_controls.map((item) => String(item))
+    : [
+      'schema_violation_gate',
+      'hash_drift_tamper_gate',
+      'c2_integrity_gate',
+      'tick_budget_gate',
+      'negative_controls_nc1_nc4'
+    ];
+  return {
+    measured_state_space: typeof src.measured_state_space === 'string' && src.measured_state_space.trim()
+      ? src.measured_state_space.trim()
+      : 'finite_runtime_observables_and_tick_records_v1',
+    estimator_or_update_rule: typeof src.estimator_or_update_rule === 'string' && src.estimator_or_update_rule.trim()
+      ? src.estimator_or_update_rule.trim()
+      : String(context.mode || 'episode_harness_v1.2.1'),
+    finite_horizon: src.finite_horizon !== undefined && src.finite_horizon !== null && String(src.finite_horizon).trim() !== ''
+      ? src.finite_horizon
+      : 'finite_episode_tick_window',
+    calibration_regime: typeof src.calibration_regime === 'string' && src.calibration_regime.trim()
+      ? src.calibration_regime.trim()
+      : (context.deterministic ? 'uncalibrated_deterministic_simulation' : 'uncalibrated_runtime_simulation'),
+    failure_controls: failureControls,
+    claim_class: typeof src.claim_class === 'string' && src.claim_class.trim()
+      ? src.claim_class.trim()
+      : 'internal_support_only'
+  };
+};
+
 export class ExperimentalEpisodeHarness {
   constructor({ runMeta, schemaPath, baseDir = process.cwd() }) {
     this.runMeta = runMeta || {};
@@ -68,6 +108,14 @@ export class ExperimentalEpisodeHarness {
       freezeRef: typeof this.runMeta.freezeRef === 'string' ? this.runMeta.freezeRef : null,
       thresholdAuthorityRef: typeof this.runMeta.thresholdAuthorityRef === 'string' ? this.runMeta.thresholdAuthorityRef : null,
       sourceOfTruth: typeof this.runMeta.sourceOfTruth === 'string' ? this.runMeta.sourceOfTruth : 'src',
+      runtime_use_admissibility: buildRuntimeUseAdmissibilityDeclaration(
+        this.runMeta.runtime_use_admissibility,
+        {
+          deterministic: Boolean(this.runMeta.deterministic),
+          sensorsMode: String(this.runMeta.sensorsMode || 'mock'),
+          mode: String(this.runMeta.mode || 'episode_harness_v1.2.1')
+        }
+      ),
       lineage: buildCanonicalLineage({
         freezeRef: this.runMeta.freezeRef || null,
         thresholdAuthorityRef: this.runMeta.thresholdAuthorityRef || null
@@ -145,6 +193,7 @@ export class ExperimentalEpisodeHarness {
   recordDirectMetricSeries(metrics = {}) {
     if (!isObj(metrics)) return;
     const directMetricKeys = [
+      'stasis_index_post_threshold',
       'stasis_index',
       'pmia',
       'beth_q',

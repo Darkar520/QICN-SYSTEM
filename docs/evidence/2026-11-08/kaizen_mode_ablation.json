@@ -1,0 +1,279 @@
+{
+  "schema": "qicn.kaizen_mode_ablation.v1",
+  "generatedAt": "2026-11-08T22:40:49.293Z",
+  "evidenceScope": "internal_support_only",
+  "boundary": "Internal comparison of two engineering modes of Kaizen over the full simulation cycle with seeded RNG and stepped clocks. It does not validate any claim about consciousness, identity, subjectivity or the framework.",
+  "parameters": {
+    "ticks": 480,
+    "seeds": [
+      11,
+      23,
+      37,
+      41,
+      53
+    ],
+    "nodes": 300,
+    "warmupDiscarded": "25 %"
+  },
+  "learnedReproducible": true,
+  "summary": {
+    "legacy": {
+      "cccMean": 0.9273748015296345,
+      "cccSd": 0.07270969787245625,
+      "oscRms": 0.035634898743087215,
+      "stasisMean": 0,
+      "crossings": 85.6,
+      "omegaMax": 14.9799085443438,
+      "trials": 0,
+      "trialsKept": 0
+    },
+    "learned": {
+      "cccMean": 0.9261479026321494,
+      "cccSd": 0.0726955098948789,
+      "oscRms": 0.03269197273297222,
+      "stasisMean": 0,
+      "crossings": 85.2,
+      "omegaMax": 13.645866885606,
+      "trials": 9,
+      "trialsKept": 1
+    }
+  },
+  "rows": [
+    {
+      "seed": 11,
+      "legacy": {
+        "threw": null,
+        "cccMean": 0.9498485820087836,
+        "cccSd": 0.0801965911293644,
+        "oscRms": 0.057893189216913866,
+        "stasisMean": 0,
+        "crossings": 101,
+        "omegaMin": 0.009489361103,
+        "omegaMax": 16.32078439654,
+        "kaizenSteps": 77,
+        "autonomyActions": 64,
+        "adjustments": {
+          "BASE_LEARNING_RATE": 1,
+          "HEBBIAN_FACTOR": 1,
+          "PLASTICITY_DECAY": 1,
+          "RETRO_FLUX_WEIGHT": 1,
+          "BOLTZMANN_ANALOG_K": 1,
+          "INFORMATIONAL_TEMP_T": 1
+        },
+        "trials": 0,
+        "trialsKept": 0
+      },
+      "learned": {
+        "threw": null,
+        "cccMean": 0.91310837047173,
+        "cccSd": 0.07738779853876124,
+        "oscRms": 0.03859145988413574,
+        "stasisMean": 0,
+        "crossings": 73,
+        "omegaMin": 0.001455590412,
+        "omegaMax": 17.200029998409,
+        "kaizenSteps": 62,
+        "autonomyActions": 52,
+        "adjustments": {
+          "BASE_LEARNING_RATE": 1,
+          "HEBBIAN_FACTOR": 1,
+          "PLASTICITY_DECAY": 1.2,
+          "RETRO_FLUX_WEIGHT": 0.88,
+          "BOLTZMANN_ANALOG_K": 1,
+          "INFORMATIONAL_TEMP_T": 0.98
+        },
+        "trials": 9,
+        "trialsKept": 0
+      }
+    },
+    {
+      "seed": 23,
+      "legacy": {
+        "threw": null,
+        "cccMean": 0.8530856131765359,
+        "cccSd": 0.06848601565289296,
+        "oscRms": 0.030632732527717695,
+        "stasisMean": 0,
+        "crossings": 8,
+        "omegaMin": 0.000232418789,
+        "omegaMax": 14.143850685062,
+        "kaizenSteps": 77,
+        "autonomyActions": 64,
+        "adjustments": {
+          "BASE_LEARNING_RATE": 1,
+          "HEBBIAN_FACTOR": 1,
+          "PLASTICITY_DECAY": 1,
+          "RETRO_FLUX_WEIGHT": 1,
+          "BOLTZMANN_ANALOG_K": 1,
+          "INFORMATIONAL_TEMP_T": 1
+        },
+        "trials": 0,
+        "trialsKept": 0
+      },
+      "learned": {
+        "threw": null,
+        "cccMean": 0.9168542775835609,
+        "cccSd": 0.07988044218522555,
+        "oscRms": 0.041371471332043094,
+        "stasisMean": 0,
+        "crossings": 65,
+        "omegaMin": 0.000680190354,
+        "omegaMax": 17.080812294961,
+        "kaizenSteps": 70,
+        "autonomyActions": 60,
+        "adjustments": {
+          "BASE_LEARNING_RATE": 1,
+          "HEBBIAN_FACTOR": 1,
+          "PLASTICITY_DECAY": 1.2,
+          "RETRO_FLUX_WEIGHT": 0.96,
+          "BOLTZMANN_ANALOG_K": 1,
+          "INFORMATIONAL_TEMP_T": 0.98
+        },
+        "trials": 9,
+        "trialsKept": 0
+      }
+    },
+    {
+      "seed": 37,
+      "legacy": {
+        "threw": null,
+        "cccMean": 0.9372882471124866,
+        "cccSd": 0.07801991785680397,
+        "oscRms": 0.04414968198389427,
+        "stasisMean": 0,
+        "crossings": 104,
+        "omegaMin": 0.000006315744,
+        "omegaMax": 17.196924939433,
+        "kaizenSteps": 77,
+        "autonomyActions": 64,
+        "adjustments": {
+          "BASE_LEARNING_RATE": 1,
+          "HEBBIAN_FACTOR": 1,
+          "PLASTICITY_DECAY": 1,
+          "RETRO_FLUX_WEIGHT": 1,
+          "BOLTZMANN_ANALOG_K": 1,
+          "INFORMATIONAL_TEMP_T": 1
+        },
+        "trials": 0,
+        "trialsKept": 0
+      },
+      "learned": {
+        "threw": null,
+        "cccMean": 0.9667428303227678,
+        "cccSd": 0.07629747647146162,
+        "oscRms": 0.03099884220714661,
+        "stasisMean": 0,
+        "crossings": 135,
+        "omegaMin": 4.479e-7,
+        "omegaMax": 12.123989591794,
+        "kaizenSteps": 65,
+        "autonomyActions": 55,
+        "adjustments": {
+          "BASE_LEARNING_RATE": 1,
+          "HEBBIAN_FACTOR": 1,
+          "PLASTICITY_DECAY": 1.2,
+          "RETRO_FLUX_WEIGHT": 0.9,
+          "BOLTZMANN_ANALOG_K": 1.02,
+          "INFORMATIONAL_TEMP_T": 1.04
+        },
+        "trials": 9,
+        "trialsKept": 3
+      }
+    },
+    {
+      "seed": 41,
+      "legacy": {
+        "threw": null,
+        "cccMean": 0.9703258463552109,
+        "cccSd": 0.06739907820652233,
+        "oscRms": 0.016778040562384532,
+        "stasisMean": 0,
+        "crossings": 134,
+        "omegaMin": 0.015994426168,
+        "omegaMax": 12.137352961658,
+        "kaizenSteps": 77,
+        "autonomyActions": 64,
+        "adjustments": {
+          "BASE_LEARNING_RATE": 1,
+          "HEBBIAN_FACTOR": 1,
+          "PLASTICITY_DECAY": 1,
+          "RETRO_FLUX_WEIGHT": 1,
+          "BOLTZMANN_ANALOG_K": 1,
+          "INFORMATIONAL_TEMP_T": 1
+        },
+        "trials": 0,
+        "trialsKept": 0
+      },
+      "learned": {
+        "threw": null,
+        "cccMean": 0.9628582508778694,
+        "cccSd": 0.08043568134511038,
+        "oscRms": 0.030184351085030568,
+        "stasisMean": 0,
+        "crossings": 151,
+        "omegaMin": 0.685096467809,
+        "omegaMax": 11.159646421392,
+        "kaizenSteps": 73,
+        "autonomyActions": 63,
+        "adjustments": {
+          "BASE_LEARNING_RATE": 0.98,
+          "HEBBIAN_FACTOR": 1,
+          "PLASTICITY_DECAY": 1.2,
+          "RETRO_FLUX_WEIGHT": 0.8,
+          "BOLTZMANN_ANALOG_K": 0.98,
+          "INFORMATIONAL_TEMP_T": 1
+        },
+        "trials": 9,
+        "trialsKept": 1
+      }
+    },
+    {
+      "seed": 53,
+      "legacy": {
+        "threw": null,
+        "cccMean": 0.9263257189951557,
+        "cccSd": 0.06944688651669761,
+        "oscRms": 0.028720849424525702,
+        "stasisMean": 0,
+        "crossings": 81,
+        "omegaMin": 9.96511e-7,
+        "omegaMax": 15.100629739026,
+        "kaizenSteps": 77,
+        "autonomyActions": 64,
+        "adjustments": {
+          "BASE_LEARNING_RATE": 1,
+          "HEBBIAN_FACTOR": 1,
+          "PLASTICITY_DECAY": 1,
+          "RETRO_FLUX_WEIGHT": 1,
+          "BOLTZMANN_ANALOG_K": 1,
+          "INFORMATIONAL_TEMP_T": 1
+        },
+        "trials": 0,
+        "trialsKept": 0
+      },
+      "learned": {
+        "threw": null,
+        "cccMean": 0.871175783904819,
+        "cccSd": 0.04947615093383568,
+        "oscRms": 0.022313739156505086,
+        "stasisMean": 0,
+        "crossings": 2,
+        "omegaMin": 0.287193686049,
+        "omegaMax": 10.664856121474,
+        "kaizenSteps": 46,
+        "autonomyActions": 36,
+        "adjustments": {
+          "BASE_LEARNING_RATE": 1,
+          "HEBBIAN_FACTOR": 1,
+          "PLASTICITY_DECAY": 1.2,
+          "RETRO_FLUX_WEIGHT": 1.02,
+          "BOLTZMANN_ANALOG_K": 1,
+          "INFORMATIONAL_TEMP_T": 1.04
+        },
+        "trials": 9,
+        "trialsKept": 1
+      }
+    }
+  ],
+  "wallMs": 82104
+}

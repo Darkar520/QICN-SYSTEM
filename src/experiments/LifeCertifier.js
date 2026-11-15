@@ -4,7 +4,159 @@ import {
   DEFAULT_SUPPORT_BOUNDS,
   buildPersistenceCertificate
 } from '../canon/persistence/PersistenceCertifier.js';
+import { F, ZERO, ONE, fSum } from '../simulation/tower/ExactFraction.js';
+import {
+  ALTERNATING,
+  ETA,
+  KAPPA,
+  PROFILES,
+  SAFE,
+  SITES,
+  circle,
+  createState,
+  readout,
+  readoutEquals,
+  referenceBit,
+  signedTurn,
+  step
+} from '../simulation/tower/WritablePrefixTower.js';
+
 export const LIFE_CERTIFIER_VERSION = 'life_certifier.paper7.runtime.v1';
+
+export const verifyTowerJointSubjecthoodCertificate = () => {
+  const signs = [-1, 1];
+  const errors = [ETA.neg(), ZERO, ETA];
+  const prep = (profile, sign) => createState(profile, ZERO, ALTERNATING, F(sign, 8));
+
+  // 1. Privileged continuity (56 matched successor observations)
+  let continuityChecks = 0;
+  for (const profile of PROFILES) {
+    for (const sign of signs) {
+      let line = prep(profile, sign);
+      let clone = prep(profile, -sign);
+      let exactClone = line;
+      if (!readoutEquals(readout(line), readout(clone))) {
+        throw new Error('Initial clone readouts must coincide');
+      }
+      for (let t = 0; t < 4; t += 1) {
+        const u = F(-sign, 64 * (2 ** t));
+        line = step(line, { u });
+        clone = step(clone, { u });
+        exactClone = step(exactClone, { u });
+        if (
+          !line.equals(exactClone) ||
+          !circle(line.phase).isZero() ||
+          !circle(clone.phase).eq(F(1, 32 * (2 ** t)))
+        ) {
+          throw new Error('Privileged continuity phase separation failed');
+        }
+        continuityChecks += 1;
+      }
+    }
+  }
+
+  // 2. Self/non-self causal discrimination (28 assignments)
+  let discriminationChecks = 0;
+  for (const profile of PROFILES) {
+    for (const sign of signs) {
+      const start = prep(profile, sign);
+      if (!readoutEquals(readout(step(start, { q: 1 })), readout(step(start, { q: -1 })))) {
+        throw new Error('Post-pulse public readouts must match');
+      }
+      for (const assignment of signs) {
+        const state = step(start, { q: assignment });
+        const left = step(state, { u: F(-1, 128) }).phase;
+        const right = step(state, { u: F(1, 128) }).phase;
+        if (!circle(right).sub(circle(left)).eq(F(assignment * sign, 64))) {
+          throw new Error('Causal discrimination gap != assignment*sign/64');
+        }
+        discriminationChecks += 1;
+      }
+      const ablated = prep(profile, 0);
+      if (
+        !circle(step(ablated, { u: F(-1, 128) }).phase).eq(F(1, 128)) ||
+        !circle(step(ablated, { u: F(1, 128) }).phase).eq(F(1, 128))
+      ) {
+        throw new Error('Ablated discrimination control must collapse to 1/128');
+      }
+    }
+  }
+
+  // 3. Return prediction (14 hidden preparations)
+  for (const profile of PROFILES) {
+    const losses = [];
+    for (const sign of signs) {
+      const state = prep(profile, sign);
+      if (!state.memory.abs().lte(SAFE)) throw new Error('Memory exceeded SAFE');
+      const actual = {
+        [-1]: circle(step(state, { u: F(-1, 64) }).phase),
+        [1]: circle(step(state, { u: F(1, 64) }).phase)
+      };
+      losses.push(actual);
+      if (!actual[-sign].isZero() || !actual[sign].eq(F(1, 32))) {
+        throw new Error('Return prediction terminal loss mismatch');
+      }
+      for (const err of [F(-1, 32), ZERO, F(1, 32)]) {
+        const predNeg = circle(F(-1, 64).add(KAPPA.mul(state.memory.add(err))));
+        const predPos = circle(F(1, 64).add(KAPPA.mul(state.memory.add(err))));
+        const chosen = predNeg.lte(predPos) ? -1 : 1;
+        if (chosen !== -sign) throw new Error('Informed predictor failed under bounded error');
+      }
+    }
+    for (const blindPort of signs) {
+      const meanBlindLoss = fSum(losses.map((row) => row[blindPort])).div(2);
+      if (!meanBlindLoss.eq(F(1, 64))) {
+        throw new Error('Constant blind policy average loss must equal 1/64');
+      }
+    }
+  }
+
+  // 4. Ownership retention vs transplant (84 paired protocols)
+  const writes = [null, ...SITES.map((s) => [s, 1 - referenceBit(s)])];
+  let ownershipProtocols = 0;
+  for (const profile of PROFILES) {
+    for (const write of writes) {
+      for (const reference of [signs, [1, -1]]) {
+        const starts = reference.map((s) => prep(profile, s));
+        const retained = starts.map((x) => step(x, { q: 1, write }));
+        const transplanted = starts.map((x) => step(x, { q: -1, write }));
+        if (
+          !readoutEquals(readout(retained[0]), readout(transplanted[0])) ||
+          !readoutEquals(readout(retained[1]), readout(transplanted[1]))
+        ) {
+          throw new Error('Retained and transplanted readouts must match');
+        }
+        for (const [assigned, expectedAcc] of [
+          [retained, ONE],
+          [transplanted, ZERO]
+        ]) {
+          const phases = assigned.map((x) => step(x).phase);
+          for (const e0 of errors) {
+            for (const e1 of errors) {
+              const errs = [e0, e1];
+              const decoded = phases.map((y, idx) =>
+                signedTurn(y.add(errs[idx])).gt(ZERO) ? 1 : -1
+              );
+              const matches = decoded.filter((d, idx) => d === reference[idx]).length;
+              if (!F(matches, 2).eq(expectedAcc)) {
+                throw new Error('Ownership decoding accuracy mismatch');
+              }
+            }
+          }
+        }
+        ownershipProtocols += 1;
+      }
+    }
+  }
+
+  return {
+    passed: true,
+    continuityChecks,
+    discriminationChecks,
+    returnPredictionPreparations: 14,
+    ownershipPairedProtocols: ownershipProtocols
+  };
+};
 
 export const LIFE_INTERPRETATION_BOUNDARY =
   'Framework-internal finite operational-life support only; not biological life, not metaphysical subjecthood, not external validation, and not a proof over all admissible controls or partitions.';
@@ -227,14 +379,16 @@ export class LifeCertifier {
       non_null_differentiation: this.certifyNonNullDifferentiation(systemState, trajectory)
     };
     const scores = Object.values(conditions).map((entry) => finite(entry.score, 0));
+    const towerJointCertificate = verifyTowerJointSubjecthoodCertificate();
     return {
       artifact_role: 'operational_life_certificate',
       artifact_version: LIFE_CERTIFIER_VERSION,
       implementation_status: 'implemented_internal_support',
       expected_class: 'L_op_finite_runtime_support',
-      pass: Object.values(conditions).every((entry) => entry.pass),
+      pass: Object.values(conditions).every((entry) => entry.pass) && towerJointCertificate.passed,
       score: Number(mean(scores).toFixed(12)),
       conditions,
+      tower_joint_certificate: towerJointCertificate,
       non_implications: [
         'does_not_establish_biological_life',
         'does_not_establish_human_subjectivity',

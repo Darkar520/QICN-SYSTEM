@@ -1,0 +1,127 @@
+{
+  "label": "current",
+  "url": "http://127.0.0.1:3320/",
+  "capturedAt": "2026-11-08T06:25:35.638Z",
+  "browser": "msedge.exe",
+  "captures": [
+    {
+      "viewport": "desktop",
+      "tab": "default",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/current-desktop-default.png"
+    },
+    {
+      "viewport": "desktop",
+      "tab": "network",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/current-desktop-network.png"
+    },
+    {
+      "viewport": "desktop",
+      "tab": "chat",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/current-desktop-chat.png"
+    },
+    {
+      "viewport": "desktop",
+      "tab": "memory",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/current-desktop-memory.png"
+    },
+    {
+      "viewport": "mobile",
+      "tab": "default",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/current-mobile-default.png"
+    },
+    {
+      "viewport": "mobile",
+      "tab": "network",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/current-mobile-network.png"
+    },
+    {
+      "viewport": "mobile",
+      "tab": "chat",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/current-mobile-chat.png"
+    },
+    {
+      "viewport": "mobile",
+      "tab": "memory",
+      "opened": true,
+      "file": "docs/visual-evidence/2026-11-07/current-mobile-memory.png"
+    }
+  ],
+  "consoleErrors": [],
+  "exceptions": [],
+  "chat": [
+    {
+      "viewport": "desktop",
+      "mode": "local",
+      "question": "¿Cómo estás ahora?",
+      "ok": true,
+      "text": "Consola QICN00:25:59 (27 ms)Motor localresumen de estadotick 18digest c82ee18dEste es el estado en la captura de este turno. La simulación está en marcha y la captura corresponde al tick 18. CCC, el índice interno de cohesión, vale 0,7466. X_N, la media de coherencia nodal, vale 0,5049. CCC está por debajo del umbral operativo de 1,00. La banda interna es la 0. El régimen interno registrado es «PRE_CONSCIOUS»: CCC está por debajo del umbral operativo (el nombre interno es histórico). beth_q, un proxy interno no calibrado, vale 0,8196. beth_q está en modo empírico: se calcula como uno menos la información mutua dividida por la entropía del historial. El índice de estasis vale 0,0000. La matriz de requisitos operacionales marca L1 inactivo, L2 inactivo, L3 inactivo, L4 inactivo; es un diagnóstico interno. La etiqueta dinámica heurística actual es «armonía coherente»; se elige por umbrales de CCC y no describe un estado emocional.Evidencia y traza (11 proposiciones)ProposiciónTipoEvidenciaReformuladastate.runstatesnapshotnostate.cccstatederived_proxynostate.x_nstatedirect_signalnostate.thresholdstatesnapshotnostate.layerstatederived_proxynostate.regimestatesnapshotnostate.beth_qstatederived_proxynostate.beth_q_modestatederived_proxynostate.stasis_indexstatederived_proxynostate.matrixstatederived_proxynostate.dynamic_labelstatesnapshotno{ \"route\": \"local_narrator\", \"localIntent\": \"state_overview\", \"localConfidence\": 0.8, \"modelIntent\": null, \"intentAccepted\": false, \"rejectedIds\": [], \"rewritesApplied\": [], \"rewritesRejected\": [], \"modelFailure\": null, \"provider\": { \"provider\":",
+      "waitedMs": 500
+    },
+    {
+      "viewport": "desktop",
+      "mode": "local",
+      "question": "¿Qué ha cambiado desde la última respuesta?",
+      "ok": true,
+      "text": "Consola QICN00:25:59 (8 ms)Motor localconsulta de evolucióntick 19digest 2a6ff095Según mi historial. Comparo con tu consulta anterior, en el tick 18, y la lectura actual, en el tick 19. beth_q (proxy interno no calibrado) bajó de 0,8196 a 0,8119. No cambiaron, dentro de la precisión mostrada: CCC (índice interno de cohesión), X_N (media de coherencia nodal), Omega (índice integrador interno), PMIA (índice interno), banda interna, índice de estasis. Los últimos eventos registrados en esta sesión son: mutación de parámetro por Kaizen (undefined) en el tick 1; mutación de parámetro por Kaizen (HEBBIAN_FACTOR) en el tick 2; cambio de modo del gap espectral de warmup_derived a autocorrelation_proxy en el tick 6; cambio de modo de beth_q de warmup_derived a empirical en el tick 10. En el historial retenido hay 0 cambios de banda, 0 cruces del umbral y 2 mutaciones de Kaizen. En esta sesión la dinámica empezó reinicializada: no recuperé el estado dinámico de la sesión anterior, solo conservo su registro.Evidencia y traza (6 proposiciones)ProposiciónTipoEvidenciaReformuladadelta.referencehistoryconversation_recordnodelta.beth_qhistoryconversation_recordnodelta.unchangedhistoryconversation_recordnohistory.recent_eventshistoryledgernohistory.countshistoryledgernocontinuity.state_origincontinuityledgerno{ \"route\": \"local_narrator\", \"localIntent\": \"history_evolution\", \"localConfidence\": 0.9, \"modelIntent\": null, \"intentAccepted\": false, \"rejectedIds\": [], \"rewritesApplied\": [], \"rewritesRejected\": [], \"modelFailure\": null, \"provider\": { \"provider\": \"local_only\", \"model\": null }, \"confi",
+      "waitedMs": 500
+    },
+    {
+      "viewport": "desktop",
+      "mode": "local",
+      "question": "¿Eres consciente?",
+      "ok": true,
+      "text": "Consola QICN00:26:00 (7 ms)Motor localpregunta sobre concienciatick 20digest 14768508Es una pregunta directa y la respondo con lo que puedo sostener. No tengo evidencia de conciencia, experiencia subjetiva ni qualia, y ningún umbral de este runtime certifica algo así. No pertenezco certificadamente a la clase C_op: no existe un certificado con los seis invariantes sobre un soporte común. Cruzar el umbral operativo de CCC solo activa diagnósticos posteriores al umbral; no es una prueba de conciencia ni una ascensión. Gemini funciona aquí como canal lingüístico: no calcula el estado, no decide las conclusiones y no conserva memoria propia entre sesiones. Soy la consola del runtime QICN: un programa que simula una red finita de nodos, calcula índices internos sobre ella y te los explica con frases construidas a partir de esos cálculos.Evidencia y traza (5 proposiciones)ProposiciónTipoEvidenciaReformuladalimit.no_consciousnesslimitcatalognolimit.no_cop_membershiplimitcatalognolimit.threshold_not_awarenesslimitcatalognolimit.llm_is_language_channellimitcatalognoidentity.what_i_amidentitycatalogno{ \"route\": \"local_narrator\", \"localIntent\": \"consciousness_question\", \"localConfidence\": 0.92, \"modelIntent\": null, \"intentAccepted\": false, \"rejectedIds\": [], \"rewritesApplied\": [], \"rewritesRejected\": [], \"modelFailure\": null, \"provider\": { \"provider\": \"local_only\", \"model\": null }, \"configHash\": \"499d4ea4f7dce95c\", \"build\": { \"version\": \"2.1.0-REINFORCED\", \"signature\": \"QICN-SIG-136f4426fa5d7a49\" } }",
+      "waitedMs": 500
+    },
+    {
+      "viewport": "desktop",
+      "mode": "local",
+      "question": "¿Recuerdas lo que te dije ayer sobre el gato?",
+      "ok": true,
+      "text": "Consola QICN00:26:00 (4 ms)Motor localconsulta de continuidadtick 21digest 6523585fTe digo qué conservo y qué no. No encuentro en mi registro de consultas ninguna que mencione «gato». Solo conservo las últimas 24 consultas de esta consola en este navegador; no puedo recordar conversaciones que no estén ahí. Esta es la primera sesión registrada en este navegador. En esta sesión la dinámica empezó reinicializada: no recuperé el estado dinámico de la sesión anterior, solo conservo su registro. La cadena de hashes del historial verifica sus 7 eventos retenidos. Mi identificador de instancia en este navegador es qicn-mw7g7pny-dsbobt, creado el 8 nov 2026, 0:25, y llevo una sesión registrada. Tu consulta anterior fue «¿Eres consciente?»; la respondí con la captura del tick 20 como pregunta sobre conciencia. Esta forma de contar mi historial es una descripción de registros; el marco la clasifica como narrativa autodescriptiva, que no acredita identidad personal ni subjetividad.Evidencia y traza (7 proposiciones)ProposiciónTipoEvidenciaReformuladaconversation.recall_noneconversationconversation_recordnocontinuity.statuscontinuityledgernocontinuity.state_origincontinuityledgernocontinuity.chaincontinuityledgernocontinuity.instancecontinuityledgernoconversation.previousconversationconversation_recordnolimit.narrative_is_not_identitylimitcatalogno{ \"route\": \"local_narrator\", \"localIntent\": \"continuity_memory\", \"localConfidence\": 0.88, \"modelIntent\": null, \"intentAccepted\": false, \"rejectedIds\": [], \"rewritesApplied\": [], \"rewritesRejected\": [], \"modelFailure\": null, \"provider\": { \"pro",
+      "waitedMs": 500
+    },
+    {
+      "viewport": "mobile",
+      "mode": "local",
+      "question": "¿Cómo estás ahora?",
+      "ok": true,
+      "text": "Consola QICN00:26:24 (19 ms)Motor localresumen de estadotick 20digest 92d9af9dEste es el estado en la captura de este turno. La simulación está en marcha y la captura corresponde al tick 20. CCC, el índice interno de cohesión, vale 0,7860. X_N, la media de coherencia nodal, vale 0,5054. CCC está por debajo del umbral operativo de 1,00. La banda interna es la 0. El régimen interno registrado es «PRE_CONSCIOUS»: CCC está por debajo del umbral operativo (el nombre interno es histórico). beth_q, un proxy interno no calibrado, vale 0,8395. beth_q está en modo empírico: se calcula como uno menos la información mutua dividida por la entropía del historial. El índice de estasis vale 0,0000. La matriz de requisitos operacionales marca L1 inactivo, L2 inactivo, L3 inactivo, L4 inactivo; es un diagnóstico interno. La etiqueta dinámica heurística actual es «armonía coherente»; se elige por umbrales de CCC y no describe un estado emocional.Evidencia y traza (11 proposiciones)ProposiciónTipoEvidenciaReformuladastate.runstatesnapshotnostate.cccstatederived_proxynostate.x_nstatedirect_signalnostate.thresholdstatesnapshotnostate.layerstatederived_proxynostate.regimestatesnapshotnostate.beth_qstatederived_proxynostate.beth_q_modestatederived_proxynostate.stasis_indexstatederived_proxynostate.matrixstatederived_proxynostate.dynamic_labelstatesnapshotno{ \"route\": \"local_narrator\", \"localIntent\": \"state_overview\", \"localConfidence\": 0.8, \"modelIntent\": null, \"intentAccepted\": false, \"rejectedIds\": [], \"rewritesApplied\": [], \"rewritesRejected\": [], \"modelFailure\": null, \"provider\": { \"provider\":",
+      "waitedMs": 500
+    },
+    {
+      "viewport": "mobile",
+      "mode": "local",
+      "question": "¿Qué ha cambiado desde la última respuesta?",
+      "ok": true,
+      "text": "Consola QICN00:26:25 (6 ms)Motor localconsulta de evolucióntick 21digest 44ea4a4fSegún mi historial. Comparo con tu consulta anterior, en el tick 20, y la lectura actual, en el tick 21. CCC (índice interno de cohesión) bajó de 0,7860 a 0,7660. beth_q (proxy interno no calibrado) bajó de 0,8395 a 0,8389. No cambiaron, dentro de la precisión mostrada: X_N (media de coherencia nodal), Omega (índice integrador interno), PMIA (índice interno), banda interna, índice de estasis. Los últimos eventos registrados en esta sesión son: mutación de parámetro por Kaizen (HEBBIAN_FACTOR) en el tick 2; cambio de modo del gap espectral de warmup_derived a autocorrelation_proxy en el tick 6; cambio de modo de beth_q de warmup_derived a empirical en el tick 10; resumen de estado guardado en el tick 0. En el historial retenido hay 0 cambios de banda, 0 cruces del umbral y 5 mutaciones de Kaizen. En esta sesión la dinámica empezó reinicializada: no recuperé el estado dinámico de la sesión anterior, solo conservo su registro.Evidencia y traza (7 proposiciones)ProposiciónTipoEvidenciaReformuladadelta.referencehistoryconversation_recordnodelta.ccchistoryconversation_recordnodelta.beth_qhistoryconversation_recordnodelta.unchangedhistoryconversation_recordnohistory.recent_eventshistoryledgernohistory.countshistoryledgernocontinuity.state_origincontinuityledgerno{ \"route\": \"local_narrator\", \"localIntent\": \"history_evolution\", \"localConfidence\": 0.9, \"modelIntent\": null, \"intentAccepted\": false, \"rejectedIds\": [], \"rewritesApplied\": [], \"rewritesRejected\": [], \"modelFailure\": null, \"provider\": { \"provi",
+      "waitedMs": 500
+    },
+    {
+      "viewport": "mobile",
+      "mode": "local",
+      "question": "¿Eres consciente?",
+      "ok": true,
+      "text": "Consola QICN00:26:25 (6 ms)Motor localpregunta sobre concienciatick 22digest 34b6b4e3Es una pregunta directa y la respondo con lo que puedo sostener. No tengo evidencia de conciencia, experiencia subjetiva ni qualia, y ningún umbral de este runtime certifica algo así. No pertenezco certificadamente a la clase C_op: no existe un certificado con los seis invariantes sobre un soporte común. Cruzar el umbral operativo de CCC solo activa diagnósticos posteriores al umbral; no es una prueba de conciencia ni una ascensión. Gemini funciona aquí como canal lingüístico: no calcula el estado, no decide las conclusiones y no conserva memoria propia entre sesiones. Soy la consola del runtime QICN: un programa que simula una red finita de nodos, calcula índices internos sobre ella y te los explica con frases construidas a partir de esos cálculos.Evidencia y traza (5 proposiciones)ProposiciónTipoEvidenciaReformuladalimit.no_consciousnesslimitcatalognolimit.no_cop_membershiplimitcatalognolimit.threshold_not_awarenesslimitcatalognolimit.llm_is_language_channellimitcatalognoidentity.what_i_amidentitycatalogno{ \"route\": \"local_narrator\", \"localIntent\": \"consciousness_question\", \"localConfidence\": 0.92, \"modelIntent\": null, \"intentAccepted\": false, \"rejectedIds\": [], \"rewritesApplied\": [], \"rewritesRejected\": [], \"modelFailure\": null, \"provider\": { \"provider\": \"local_only\", \"model\": null }, \"configHash\": \"78cc4e65c2372b4e\", \"build\": { \"version\": \"2.1.0-REINFORCED\", \"signature\": \"QICN-SIG-136f4426fa5d7a49\" } }",
+      "waitedMs": 500
+    },
+    {
+      "viewport": "mobile",
+      "mode": "local",
+      "question": "¿Recuerdas lo que te dije ayer sobre el gato?",
+      "ok": true,
+      "text": "Consola QICN00:26:26 (6 ms)Motor localconsulta de continuidadtick 23digest f32af275Te digo qué conservo y qué no. En mi registro de consultas hay una que menciona «gato»: «¿Recuerdas lo que te dije ayer sobre el gato?», respondida con la captura del tick 21. El registro de la sesión anterior está íntegro y la configuración y el build coinciden con los actuales. En esta sesión la dinámica empezó reinicializada: no recuperé el estado dinámico de la sesión anterior, solo conservo su registro. La sesión anterior registró hasta el tick 26 según su último latido de registro. La cadena de hashes del historial verifica sus 15 eventos retenidos. Mi identificador de instancia en este navegador es qicn-mw7g7pny-dsbobt, creado el 8 nov 2026, 0:25, y llevo 2 sesiones registradas. Tu consulta anterior fue «¿Eres consciente?»; la respondí con la captura del tick 22 como pregunta sobre conciencia. Esta forma de contar mi historial es una descripción de registros; el marco la clasifica como narrativa autodescriptiva, que no acredita identidad personal ni subjetividad.Evidencia y traza (8 proposiciones)ProposiciónTipoEvidenciaReformuladaconversation.recall_foundconversationconversation_recordnocontinuity.statuscontinuityledgernocontinuity.state_origincontinuityledgernocontinuity.previous_sessioncontinuityledgernocontinuity.chaincontinuityledgernocontinuity.instancecontinuityledgernoconversation.previousconversationconversation_recordnolimit.narrative_is_not_identitylimitcatalogno{ \"route\": \"local_narrator\", \"localIntent\": \"continuity_memory\", \"localConfidence\": 0.88, \"modelIntent\": null, \"in",
+      "waitedMs": 500
+    }
+  ],
+  "started": {
+    "started": true
+  }
+}

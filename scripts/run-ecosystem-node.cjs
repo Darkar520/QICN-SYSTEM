@@ -16,6 +16,8 @@ const resolveReleaseRoot = () => {
   const envOverride = process.env.ECO_RELEASE_ROOT;
   if (envOverride) return path.resolve(envOverride);
   const candidates = [
+    'qicn-framework-ordenado',
+    path.join('qicn-framework-ordenado', 'rigid-identity-framework'),
     'QICN-RELEASE',
     'QUICN-RELEASE',
     'release_repo_qicn_2026-03-01'

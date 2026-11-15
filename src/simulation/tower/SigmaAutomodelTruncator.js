@@ -40,11 +40,27 @@ export function truncateTowerState(state, depth = 6) {
 }
 
 /**
+ * Exact theoretical uniform state approximation bound for depth `d`:
+ * sup_x d(T_d(x), x) <= 3^-d
+ */
+export function analyticalApproximationBound(depth = 6) {
+  return F(1n, 3n ** BigInt(depth));
+}
+
+/**
  * Exact theoretical upper bound on the commutation defect for depth `d`:
  * epsilon_d = 2 * 3^-(d+1)
  */
 export function analyticalCommutationDefectBound(depth = 6) {
   return F(2n, 3n ** BigInt(depth + 1));
+}
+
+/**
+ * Exact theoretical fixed-point displacement bound for depth `d` with L = 9/16:
+ * epsilon_d / (1 - L) = (32 / 7) * 3^-(d+1)
+ */
+export function analyticalFixedPointDisplacementBound(depth = 6) {
+  return analyticalCommutationDefectBound(depth).div(ONE.sub(TOWER_LIPSCHITZ));
 }
 
 /**

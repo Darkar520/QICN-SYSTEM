@@ -16,8 +16,26 @@ const run = async () => {
   const validation = specModule.validateCognitiveEmergenceSpec();
   const hashes = specModule.computeCognitiveEmergenceSpecHashes();
 
+  let generatedAt = new Date().toISOString();
+  let existingChecksum = null;
+  if (!process.argv.includes('--write') && fs.existsSync(OUTPUT_PATH)) {
+    try {
+      const existing = JSON.parse(fs.readFileSync(OUTPUT_PATH, 'utf8'));
+      if (
+        existing?.generatedAt
+        && existing.specHash === hashes.specHash
+        && existing.actuatorSetHash === hashes.actuatorSetHash
+      ) {
+        generatedAt = existing.generatedAt;
+        existingChecksum = existing.preregChecksum || null;
+      }
+    } catch {
+      // Regenerate timestamp if unreadable
+    }
+  }
+
   const payload = {
-    generatedAt: new Date().toISOString(),
+    generatedAt,
     specVersion: specModule.COGNITIVE_EMERGENCE_SPEC_VERSION,
     preregistrationId: specModule.COGNITIVE_EMERGENCE_PREREGISTRATION_ID,
     frozenActuatorSetVersion: specModule.COGNITIVE_EMERGENCE_ACTUATOR_SET_VERSION,
@@ -51,7 +69,9 @@ const run = async () => {
     .update(JSON.stringify(payload))
     .digest('hex');
 
-  fs.writeFileSync(OUTPUT_PATH, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  if (existingChecksum !== payload.preregChecksum) {
+    fs.writeFileSync(OUTPUT_PATH, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  }
   console.log(`[cognitive-prereg] wrote ${OUTPUT_PATH}`);
   console.log(`[cognitive-prereg] spec valid: ${validation.valid}`);
   console.log(`[cognitive-prereg] compatibility valid: ${compatibility.valid}`);

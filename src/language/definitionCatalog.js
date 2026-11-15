@@ -89,8 +89,23 @@ export const DEFINITIONS = Object.freeze({
   },
   sigma_defect_bound: {
     title: 'cota de defecto del automodelo Σ',
-    text: 'La cota de defecto del automodelo Σ (sigma_defect_bound) vale 2·3^{-(d+1)} (2/2187 ≈ 0,000914 a profundidad d = 6) y acota el defecto de conmutación ‖T_d∘F_core − F_d∘T_d‖_∞ en SigmaAutomodelTruncator.',
+    text: 'El truncamiento proyectivo de automodelo (SigmaAutomodelTruncator, T_d a profundidad d = 6) tiene cota uniforme de aproximación 3^{-d} = 1/729, acota el defecto de conmutación de un paso ‖T_d∘F_core − F_d∘T_d‖_∞ por 2·3^{-(d+1)} = 2/2187 (≈ 0,000914) y acota el desplazamiento del punto fijo por (32/7)·3^{-(d+1)} = 32/15309.',
     source: 'src/simulation/tower/SigmaAutomodelTruncator.js; paper_bridge_operational_subjecthood thm:sigma-approximate-displacement'
+  },
+  basecore_spectrum: {
+    title: 'régimen espectral de BaseCore (thm:spectrum y thm:relaxation)',
+    text: 'El evaluador exacto de BaseCore (evaluateBaseCoreSpectralRegime) distingue los tres regímenes de control u ∈ [0, 1] del operador 2×2 en (x̃, m̃): interior regular 0 ≤ u < 1/2 (diferenciable Fréchet, espectro {0, 1/2}, ρ = 1/2, Δ_state = 1/2), esquina no diferenciable u = 1/2 (no diferenciable Fréchet por ∂_+ B_1(0) = 0 ≠ −1/2 = ∂_- B_1(0), sin espectro jacobiano asignado pero con contracción geométrica global 2^{-n} y tasa 1/2) y exterior regular 1/2 < u ≤ 1 (ρ = 1/(1+2u), Δ_state = 2u/(1+2u); p. ej. 2/5 y 3/5 en u = 3/4, y 1/3 y 2/3 en u = 1). En cambio, en la red continua de 1500 nodos el gap espectral es un proxy de autocorrelación lag-1.',
+    source: 'src/canon/finite_horizon/FiniteProjectionEvaluator.js; basecore 06_structural_classes_and_dynamics.tex thm:spectrum, thm:relaxation'
+  },
+  ontological_mass: {
+    title: 'estimador C-11 de masa ontológica M_Ω',
+    text: 'Según la restricción C-11 de Paper I (thm:lml, prop:ontological-mass-divergence), sobre cualquier subfamilia finita el ínfimo de d(F(x,w), F(x,w′))/d_W(w,w′) con d_W(w,w′) > 0 sólo proporciona una cota superior sobre la subfamilia muestreada (family_upper_bound, UPPER_BOUND_SUPPORT), nunca una cota inferior de M_Ω sobre el espacio completo ni un certificado de M_Ω = ∞ o de rigidez CCR; los pares con d_w = 0 se excluyen del dominio.',
+    source: 'src/canon/ontological_mass/OntologicalMassEstimator.js; src/canon/boundaries/CCRApproximationBoundary.js; Paper I thm:lml'
+  },
+  finite_cut_instantiation: {
+    title: 'instanciación por cortes finitos en un procesador ordinario',
+    text: 'Un procesador binario finito no instancia directamente la torre infinita proj lim S_t ni certifica globalmente M_Ω, C_op o CCR, pero sí realiza constructivamente y sin pérdida cada corte proyectivo finito T_d en aritmética racional exacta (ExactFraction): la contracción 9/16 de WritablePrefixTower, el truncamiento T_d a d = 6 (cotas 1/729, 2/2187 y 32/15309), las 6 cargas locales D/V/W/A/E/T de BodyWorldTower (margen 13/96, rango 6 y empate 0 frente al rival híbrido compartido), la reserva privada de Paper VIII (Φ⁷ = 1/48), el corte espectral 2×2 de BaseCore y la cota superior finita C-11 de M_Ω.',
+    source: 'src/simulation/OntologicalSingularityCore.js; src/canon/finite_horizon/FiniteProjectionEvaluator.js; docs/THEORY_SYSTEM_INTERFACE.md'
   },
   body_valence_norm: {
     title: 'norma de valencia corporal',

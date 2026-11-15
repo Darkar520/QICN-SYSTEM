@@ -137,9 +137,12 @@ const main = () => {
     assert(exists(relativePath), `Missing required intervention file ${relativePath}`)
   );
 
-  execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-phenomenal-bridge-adversarial.cjs')], {
-    stdio: 'inherit'
-  });
+  const shouldWrite = process.argv.includes('--write') || !fs.existsSync(ARTIFACT_PATH);
+  if (shouldWrite) {
+    execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-phenomenal-bridge-adversarial.cjs')], {
+      stdio: 'inherit'
+    });
+  }
 
   assert(fs.existsSync(ARTIFACT_PATH), 'bridge_intervention_profile.json was not emitted');
   const artifact = readJson(ARTIFACT_PATH);

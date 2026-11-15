@@ -86,6 +86,22 @@ export class PhenomenalBridgeSurfaceBuilder {
     for (const [key, fileName] of Object.entries(PHENOMENAL_BRIDGE_REPORT_OUTPUTS)) {
       const report = reports[key];
       const filePath = path.join(outputDir, fileName);
+      if (fs.existsSync(filePath)) {
+        try {
+          const existing = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+          const existingGenAt = existing?.provenance?.generated_at;
+          if (existingGenAt && report?.provenance) {
+            const candidate = { ...report, provenance: { ...report.provenance, generated_at: existingGenAt } };
+            if (JSON.stringify(existing) === JSON.stringify(candidate)) {
+              report.provenance.generated_at = existingGenAt;
+              outputs[key] = filePath;
+              continue;
+            }
+          }
+        } catch {
+          // Rewrite if unreadable
+        }
+      }
       writeJson(filePath, report);
       outputs[key] = filePath;
     }

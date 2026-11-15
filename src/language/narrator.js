@@ -46,6 +46,7 @@ export function planAnswer(intentResult, props) {
     else if (metric === 'sigma_defect_bound') push('state.sigma_automodel', 'definition.sigma_defect_bound');
     else if (['body_valence_norm', 'world_state_norm', 'body_world_tower'].includes(metric)) push('state.body_world_ports', 'definition.body_world_tower', 'limit.shared_hybrid_tie');
     else if (metric === 'informed_reserve') push('definition.informed_reserve');
+    else if (['basecore_spectrum', 'ontological_mass', 'finite_cut_instantiation'].includes(metric)) push('state.constructive_finite_cuts', `definition.${metric}`);
     else push(`missing.${metric}`);
     if (metric === 'beth_q') push('state.beth_q_mode');
     if (metric === 'spectral_gap') push('state.spectral_gap_mode');

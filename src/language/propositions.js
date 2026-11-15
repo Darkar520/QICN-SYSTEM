@@ -254,7 +254,7 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
     add(make({
       id: 'state.sigma_automodel',
       kind: 'state',
-      template: `El truncamiento proyectivo de automodelo SigmaAutomodelTruncator a profundidad d = ${tw.sigma_truncation_depth ?? 7} verifica el teorema de conmutación con defecto de paso exacto ${tw.sigma_exact_defect || '0'} acotado por sigma_defect_bound = {{sigma_defect_bound}} (${tw.sigma_defect_bound_rational || '2/2187'}) y cota de desplazamiento de punto fijo ${tw.sigma_fixed_point_bound || '16/15309'}.`,
+      template: `El truncamiento proyectivo de automodelo SigmaAutomodelTruncator a profundidad d = ${tw.sigma_truncation_depth ?? 6} verifica el teorema de conmutación con cota uniforme de aproximación ${tw.sigma_approximation_bound || '1/729'}, defecto de paso exacto ${tw.sigma_exact_defect || '0'} acotado por sigma_defect_bound = {{sigma_defect_bound}} (${tw.sigma_defect_bound_rational || '2/2187'}) y cota de desplazamiento de punto fijo ${tw.sigma_fixed_point_bound || '32/15309'}.`,
       values: {
         sigma_defect_bound: formatMetricValue('sigma_defect_bound', tw.sigma_defect_bound)
       },
@@ -278,6 +278,21 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
       paraphrasable: true,
       evidence: { ...snapshotEvidence, class: 'direct_signal', source: `BodyWorldTower; ${snapshotEvidence.source}` }
     }));
+    if (tw.constructive_cuts && typeof tw.constructive_cuts === 'object') {
+      const bc = tw.constructive_cuts.basecore_spectral_cut || {};
+      const mc = tw.constructive_cuts.ontological_mass_cut || {};
+      add(make({
+        id: 'state.constructive_finite_cuts',
+        kind: 'state',
+        template: `En los cortes proyectivos finitos constructivos, el operador 2×2 de BaseCore (thm:spectrum y thm:relaxation) evaluado en u = ${bc.active_u ?? '0'} opera en régimen ${bc.active_regime ?? 'interior_regular'} con radio espectral ρ = ${bc.spectral_radius_rho ?? 'no asignable en esquina u=1/2'} y brecha espectral Δ_state = ${bc.spectral_gap_delta_state ?? '1/2'} (esquina no diferenciable en u = 1/2 con contracción geométrica global 1/2; exterior u = 3/4 con ρ = 2/5, Δ_state = 3/5 y u = 1 con ρ = 1/3, Δ_state = 2/3), mientras que el estimador C-11 de masa ontológica M_Ω sobre subfamilia finita reporta ${mc.status || 'UPPER_BOUND_SUPPORT'} con cota superior family_upper_bound = {{family_upper_bound}} (${mc.sample_count ?? 0} muestras con d_w > 0, ${mc.excluded_count ?? 0} excluidas por d_w = 0).`,
+        values: {
+          family_upper_bound: formatMetricValue('ccc', mc.family_upper_bound ?? 0)
+        },
+        subjects: ['basecore_spectrum', 'ontological_mass', 'finite_cut_instantiation'],
+        paraphrasable: true,
+        evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `FiniteProjectionEvaluator + OntologicalMassEstimator; ${snapshotEvidence.source}` }
+      }));
+    }
   }
 
   // --- Configuration values captured with the snapshot ---------------------
@@ -383,11 +398,14 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
       }));
     }
     const origin = ledger.currentSession?.stateOrigin;
+    const restoreMeta = ledger.currentSession?.restore || ledger.currentSession?.stateOriginMeta || null;
     add(make({
       id: 'continuity.state_origin',
       kind: 'continuity',
       template: origin === 'restored_verified'
-        ? 'En esta sesión restauré un resumen de estado guardado cuyo digest coincidió; la red nodal y los historiales internos no forman parte de ese resumen.'
+        ? (restoreMeta && restoreMeta.schema === 'v2'
+          ? 'En esta sesión restauré un resumen de estado guardado cuyo digest coincidió; la red nodal y los historiales internos no forman parte de ese resumen.'
+          : 'En esta sesión restauré el estado dinámico interno completo guardado (red nodal, memoria, Kaizen, torres acopladas e historiales internos) tras verificar su digest SHA-256; el estado externo (Math.random(), reloj de pared y sensores en vivo) no se restaura.')
         : 'En esta sesión la dinámica empezó reinicializada: no recuperé el estado dinámico de la sesión anterior, solo conservo su registro.',
       evidence: ledgerEvidence
     }));

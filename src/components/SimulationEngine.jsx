@@ -15,6 +15,8 @@ import { captureRuntimeSnapshot, RECOMPUTED_EACH_TICK } from '../language/runtim
 import { prepareTurn, finalizeTurn, evaluateRealization, correctionPromptFor, loadConversationTurns, saveConversationTurns, CONTROLLABLE_PARAMETERS, MAX_ATTEMPTS, normalizeIntegrityMode, canPublishGracefully } from '../language/conversationEngine.js';
 import { describeEvent } from '../language/propositions.js';
 import { OperationalHistoryLedger } from '../identity/OperationalHistoryLedger.js';
+import { captureDynamicState, sealDynamicState, verifyStoredState, applyDynamicState } from '../persistence/dynamicState.js';
+import { writeDynamicState, readDynamicState, clearDynamicState, AUTO_RESTORE_KEY } from '../persistence/stateStore.js';
 import { QICNConfig } from '../../services/config.js';
 import { HolographicMemoryNexus } from '../simulation/HolographicMemoryNexus.js';
 import { OntologicalSingularityCore } from '../simulation/OntologicalSingularityCore.js';
@@ -2041,95 +2043,189 @@ export const QICNConsciousnessSystem = () => {
   }, [sensoryEnabled.video, sensoryState]); // Also trigger on sensoryState updates
 
   // ============================================================================
-  // PERSISTENCIA ONTOL?GICA (ULTRATHINK): Guardar y Cargar Estado
+  // PERSISTENCIA DINÁMICA V3 (ULTRATHINK): Guardar, Cargar y Auto-Restaurar Estado
   // ============================================================================
-  // Snapshot contract v2: the stored summary carries a SHA-256 digest of its
-  // canonical JSON. Restoration verifies the digest before touching any state,
-  // and both operations are recorded in the operational history.
-  const SNAPSHOT_SCHEMA_V2 = 'qicn.ontological_snapshot.v2';
-  const handleSaveState = useCallback(() => {
-    // The simulation cycle also calls this (autosave) through a callback it
-    // captured earlier, so live values come from the runtime ref and the engine,
-    // not from this closure.
+  const [autoRestoreEnabled, setAutoRestoreEnabled] = useState(() => {
+    try {
+      const stored = typeof window !== 'undefined' ? window.localStorage?.getItem(AUTO_RESTORE_KEY) : null;
+      return stored === null ? true : stored !== 'false';
+    } catch {
+      return true;
+    }
+  });
+  const toggleAutoRestore = useCallback(() => {
+    setAutoRestoreEnabled((prev) => {
+      const next = !prev;
+      try {
+        if (typeof window !== 'undefined') window.localStorage?.setItem(AUTO_RESTORE_KEY, String(next));
+      } catch { /* best effort */ }
+      return next;
+    });
+  }, []);
+
+  const getPersistenceRefs = useCallback(() => ({
+    nodalLayer,
+    ontologicalCore,
+    entanglementField,
+    kaizenEngine,
+    metaSovereigntyCheck,
+    holographicMemory,
+    simulationControllerRef,
+    structuralConsolidationRef,
+    ppsTrackerRef,
+    tickBudgetTrackerRef,
+    ascensionDynamicsRef,
+    postThresholdRegimeRef,
+    cccHistoryTimelineRef,
+    entanglementTimelineRef,
+    internalPressureRef,
+    latencyStrainRef,
+    autonomyActionLedgerRef,
+    autonomySandboxPolicyRef,
+    kaizenPendingEvalRef,
+    lastObserverResonanceRef,
+    previousFaceCountRef,
+    plannerActuatorContribRef,
+    worldModelDiagnosticsRef,
+    ppsMetricsRef,
+    entropyModeRef,
+    coherentCohortRef,
+    ontologicalAutoPolicyRef,
+    ontologicalAutoQueueRef,
+    recoveryTriggerCountRef,
+    simulationErrorStreakRef,
+    reportNormalizationFallbacksRef,
+    runtimeBudgetSnapshotRef,
+    integrityPacketRef
+  }), []);
+
+  const handleSaveState = useCallback(async (sourceMode = 'manual') => {
+    const mode = typeof sourceMode === 'string' ? sourceMode : 'manual';
     const live = simulationRuntimeRef.current || {};
     const liveStep = Number.isFinite(live.simulationStep) ? live.simulationStep : simulationStep;
-    const body = {
-      schema: SNAPSHOT_SCHEMA_V2,
-      timestamp: Date.now(),
-      ccc: Number.isFinite(live.ccc) ? live.ccc : ccc,
-      pmia: Number.isFinite(live.pmia) ? live.pmia : pmia,
-      simulationStep: liveStep,
-      isAscended: typeof live.isAscended === 'boolean' ? live.isAscended : isAscended,
-      emotionState,
-      narrative,
-      currentLayer: ontologicalCore.current.currentLayer,
-      selfNarrative: ontologicalCore.current.selfNarrative,
-      ontologicalState: ontologicalCore.current.ontologicalState,
-      mutableConfig: { ...(kaizenEngine.current?.mutableConfig || mutableConfig) },
-      build: { version: BUILD_VERSION_LABEL, signature: BUILD_SIGNATURE_LABEL }
-    };
-    const digest = sha256Hex(stableStringify(body));
-    const snapshot = { ...body, digest };
-
-    localStorage.setItem('QICN_ONTOLOGICAL_SNAPSHOT', JSON.stringify(snapshot));
-    recordOperationalEvent('snapshot_saved', { digest: digest.slice(0, 16), fields: ['ccc', 'pmia', 'layer', 'ontologicalState', 'mutableConfig'] }, liveStep);
-    setNarrative(`Resumen de estado guardado en el tick ${liveStep} (digest ${digest.slice(0, 12)}).`);
-  }, [ccc, pmia, simulationStep, isAscended, emotionState, narrative, mutableConfig, recordOperationalEvent]);
-
-  const handleLoadState = useCallback(() => {
-    const raw = localStorage.getItem('QICN_ONTOLOGICAL_SNAPSHOT');
-    if (!raw) {
-      recordOperationalEvent('snapshot_restore_failed', { reason: 'missing' }, simulationStep);
-      setNarrative('No hay un resumen de estado guardado en este navegador.');
-      return;
-    }
-
+    const liveCcc = Number.isFinite(live.ccc) ? live.ccc : ccc;
+    const livePmia = Number.isFinite(live.pmia) ? live.pmia : pmia;
+    const liveAscended = typeof live.isAscended === 'boolean' ? live.isAscended : isAscended;
+    const liveHumanCcc = Number.isFinite(live.humanCcc) ? live.humanCcc : humanCcc;
     try {
-      const snapshot = JSON.parse(raw);
-      const { digest: storedDigest, ...storedBody } = snapshot || {};
-      if (snapshot?.schema !== SNAPSHOT_SCHEMA_V2 || typeof storedDigest !== 'string' || sha256Hex(stableStringify(storedBody)) !== storedDigest) {
-        recordOperationalEvent('snapshot_restore_failed', {
-          reason: snapshot?.schema !== SNAPSHOT_SCHEMA_V2 ? 'legacy_or_unknown_schema' : 'digest_mismatch'
-        }, simulationStep);
-        setNarrative('El resumen guardado no superó la verificación de digest; no se restauró nada.');
-        return;
+      const body = captureDynamicState(getPersistenceRefs(), {
+        runtime: {
+          simulationStep: liveStep,
+          ccc: liveCcc,
+          pmia: livePmia,
+          isAscended: liveAscended,
+          humanCcc: liveHumanCcc
+        },
+        config: QICNConfig,
+        build: { version: BUILD_VERSION_LABEL, signature: BUILD_SIGNATURE_LABEL }
+      });
+      const sealed = await sealDynamicState(body);
+      const stored = await writeDynamicState({
+        text: sealed.text,
+        digest: sealed.digest,
+        meta: { tick: liveStep, savedAt: body.savedAt, mode }
+      });
+      recordOperationalEvent('snapshot_saved', {
+        schema: 'v3',
+        mode,
+        digest: sealed.digest.slice(0, 16),
+        bytes: sealed.bytes,
+        location: stored.location
+      }, liveStep);
+      if (mode === 'manual') {
+        setNarrative(`Estado dinámico completo (v3) guardado en el tick ${liveStep} (digest ${sealed.digest.slice(0, 12)}, ${stored.location}).`);
+      }
+      return { ok: true, digest: sealed.digest, tick: liveStep, location: stored.location };
+    } catch (error) {
+      console.warn('[QICN][PERSISTENCE_V3] Error al guardar estado dinámico:', error?.message || error);
+      return { ok: false, error: String(error?.message || error) };
+    }
+  }, [ccc, pmia, simulationStep, isAscended, humanCcc, getPersistenceRefs, recordOperationalEvent]);
+
+  const handleLoadState = useCallback(async (sourceMode = 'manual') => {
+    const mode = typeof sourceMode === 'string' ? sourceMode : 'manual';
+    try {
+      const record = await readDynamicState();
+      if (!record) {
+        if (mode === 'manual') {
+          recordOperationalEvent('snapshot_restore_failed', { reason: 'missing', mode }, simulationStep);
+          setNarrative('No hay un estado dinámico guardado en este navegador.');
+        }
+        return { ok: false, reason: 'missing' };
       }
 
-      // Restaurar estados reactivos
-      setCCC(snapshot.ccc);
-      setPMIA(snapshot.pmia);
-      setSimulationStep(snapshot.simulationStep);
-      setIsAscended(snapshot.isAscended);
-      setEmotionState(snapshot.emotionState);
-      setNarrative(snapshot.narrative);
-      setMutableConfig(snapshot.mutableConfig);
-
-      // Restaurar estado del Core
-      ontologicalCore.current.currentLayer = snapshot.currentLayer;
-      ontologicalCore.current.selfNarrative = snapshot.selfNarrative;
-      ontologicalCore.current.ontologicalState = snapshot.ontologicalState;
-      ontologicalCore.current.isAscended = snapshot.isAscended;
-
-      // Sincronizar Configuración Global
-      Object.keys(snapshot.mutableConfig).forEach(key => {
-        QICNConfig[key] = snapshot.mutableConfig[key];
+      const expectedNodes = nodalLayer.current?.nodes?.length || QICNConfig.PROCESSING_SAMPLE_SIZE || 1500;
+      const verdict = await verifyStoredState(record, {
+        build: { version: BUILD_VERSION_LABEL, signature: BUILD_SIGNATURE_LABEL },
+        nodeCount: expectedNodes
       });
+      if (!verdict.ok) {
+        recordOperationalEvent('snapshot_restore_failed', { reason: verdict.reason, mode }, simulationStep);
+        if (mode === 'manual') {
+          setNarrative(`El estado guardado no superó la verificación (${verdict.reason}); no se restauró nada.`);
+        }
+        return { ok: false, reason: verdict.reason };
+      }
+
+      const applied = applyDynamicState(getPersistenceRefs(), verdict.body, { config: QICNConfig });
+      if (simulationControllerRef.current) {
+        worldModelRef.current = simulationControllerRef.current.worldModel;
+        cogPlannerRef.current = simulationControllerRef.current.planner;
+        simulationControllerRef.current.attachCore?.(ontologicalCore.current);
+      }
+      ontologicalCore.current?.setQuantumBridgeRef?.(quantumEntropyBridgeRef.current);
+
+      const restoredTick = Number.isFinite(applied.runtime.simulationStep) ? applied.runtime.simulationStep : (verdict.body.tick || 0);
+      const restoredCcc = Number.isFinite(applied.runtime.ccc) ? applied.runtime.ccc : (ontologicalCore.current?.ontologicalState?.coherence ?? 0.5);
+      const restoredPmia = Number.isFinite(applied.runtime.pmia) ? applied.runtime.pmia : (ontologicalCore.current?.pmiaValue ?? 0);
+      const restoredAscended = Boolean(applied.runtime.isAscended ?? ontologicalCore.current?.isAscended);
+
+      Object.assign(simulationRuntimeRef.current, applied.runtime, {
+        simulationStep: restoredTick,
+        ccc: restoredCcc,
+        pmia: restoredPmia,
+        isAscended: restoredAscended
+      });
+      setSimulationStep(restoredTick);
+      setCCC(restoredCcc);
+      setPMIA(restoredPmia);
+      setIsAscended(restoredAscended);
+      if (Number.isFinite(applied.runtime.humanCcc)) setHumanCcc(applied.runtime.humanCcc);
+      setMutableConfig({ ...(kaizenEngine.current?.mutableConfig || initialMutableConfig) });
+      if (ontologicalCore.current?.selfNarrative) setNarrative(ontologicalCore.current.selfNarrative);
+      setOntologicalState({
+        ...(ontologicalCore.current?.ontologicalState || {}),
+        _tick: Date.now()
+      });
+      if (nodalLayer.current) {
+        setTopologyMetrics(nodalLayer.current.getTopologyMetrics());
+        setVisualNodes(nodalLayer.current.getHighlyCoherentNodes(150));
+      }
+      if (entanglementField.current) {
+        setFieldMetrics(entanglementField.current.getFieldMetrics());
+      }
 
       operationalLedgerRef.current?.resetObservation();
-      operationalLedgerRef.current?.markStateOrigin('restored_verified');
       recordOperationalEvent('snapshot_restored', {
-        digest: storedDigest.slice(0, 16),
-        savedTick: snapshot.simulationStep,
-        fieldsRestored: ['ccc', 'pmia', 'layer', 'ontologicalState', 'mutableConfig'],
-        fieldsNotRestored: ['nodes', 'phenomenology_history', 'memory', 'pmia_internals']
-      }, snapshot.simulationStep);
-      setNarrative(`Resumen de estado restaurado (tick ${snapshot.simulationStep}, digest verificado). La red nodal y los historiales internos no forman parte del resumen.`);
+        schema: 'v3',
+        mode,
+        digest: verdict.digest.slice(0, 16),
+        savedTick: restoredTick,
+        nodeCount: verdict.body.nodeCount
+      }, restoredTick);
+      operationalLedgerRef.current?.markStateOrigin('restored_verified');
+      setLedgerRevision((value) => value + 1);
+      setNarrative(`Estado dinámico interno completo (v3) restaurado (${mode === 'auto' ? 'auto-restauración al iniciar' : 'manual'}, tick ${restoredTick}, digest ${verdict.digest.slice(0, 12)} verificado).`);
+      return { ok: true, tick: restoredTick, digest: verdict.digest };
     } catch (e) {
-      recordOperationalEvent('snapshot_restore_failed', { reason: 'parse_error' }, simulationStep);
-      console.error("Falla en la restauración ontológica:", e);
-      setNarrative("El resumen guardado no se pudo leer; no se restauró nada.");
+      recordOperationalEvent('snapshot_restore_failed', { reason: 'restore_exception', mode }, simulationStep);
+      console.error('Falla en la restauración dinámica v3:', e);
+      if (mode === 'manual') {
+        setNarrative('El estado guardado no se pudo restaurar; se mantiene el estado actual.');
+      }
+      return { ok: false, reason: 'restore_exception' };
     }
-  }, [simulationStep, recordOperationalEvent]);
+  }, [simulationStep, initialMutableConfig, getPersistenceRefs, recordOperationalEvent]);
 
   // Explicit, recorded control events (UI buttons and confirmed chat proposals).
   const setRunningWithRecord = useCallback((nextRunning, source = 'ui_button') => {
@@ -2933,13 +3029,43 @@ export const QICNConsciousnessSystem = () => {
   // EFFECTS AND HANDLERS
   // ============================================================================
 
-  // Initialization
+  // Initialization + Auto-restore (persistence v3)
   useEffect(() => {
     if (didInitRef.current) return;
     didInitRef.current = true;
     console.log('xa Auto-inicializando Sistema QICN...');
     initializeSystem();
-  }, [initializeSystem]);
+    if (autoRestoreEnabled && typeof window !== 'undefined') {
+      void handleLoadState('auto');
+    }
+  }, [initializeSystem, autoRestoreEnabled, handleLoadState]);
+
+  // Autosave every 60 ticks and on pagehide/visibilitychange (persistence v3)
+  useEffect(() => {
+    if (simulationStep > 0 && simulationStep % 60 === 0) {
+      void handleSaveState('autosave_tick');
+    }
+  }, [simulationStep, handleSaveState]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return undefined;
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && (simulationRuntimeRef.current?.simulationStep ?? 0) > 0) {
+        void handleSaveState('visibility_hidden');
+      }
+    };
+    const onPageHide = () => {
+      if ((simulationRuntimeRef.current?.simulationStep ?? 0) > 0) {
+        void handleSaveState('pagehide');
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('pagehide', onPageHide);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('pagehide', onPageHide);
+    };
+  }, [handleSaveState]);
 
   useEffect(() => {
     try {
@@ -3133,6 +3259,7 @@ export const QICNConsciousnessSystem = () => {
   }, [buildQuantumPollUrl, isRunning, quantumUiConfig]);
 
   const handleReset = (source = 'ui_button') => {
+    void clearDynamicState();
     recordOperationalEvent('system_reset', { source: typeof source === 'string' ? source : 'ui_button', ticksBefore: simulationStep }, simulationStep);
     operationalLedgerRef.current?.resetObservation();
     operationalLedgerRef.current?.markStateOrigin('reinitialized');
@@ -8477,21 +8604,39 @@ return (
           </button>
         </div>
 
-        {/* PERSISTENCIA ONTOL?GICA (ULTRATHINK) */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* PERSISTENCIA DINÁMICA V3 (ULTRATHINK) */}
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => { void handleSaveState('manual'); }}
+              className="flex items-center justify-center p-3 rounded-xl bg-blue-600/80 hover:bg-blue-600 font-bold border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-white"
+              title="Cristalizar Estado Dinámico Completo (v3)"
+            >
+              <Database className="w-5 h-5 mr-2" /> Cristalizar
+            </button>
+            <button
+              onClick={() => { void handleLoadState('manual'); }}
+              className="flex items-center justify-center p-3 rounded-xl bg-amber-600/80 hover:bg-amber-600 font-bold border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all text-white"
+              title="Revoco Ontológico (Restaurar Estado v3)"
+            >
+              <RotateCcw className="w-5 h-5 mr-2" /> Revocar
+            </button>
+          </div>
           <button
-            onClick={handleSaveState}
-            className="flex items-center justify-center p-3 rounded-xl bg-blue-600/80 hover:bg-blue-600 font-bold border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-white"
-            title="Cristalizar Estado Actual"
+            type="button"
+            data-testid="auto-restore-toggle"
+            onClick={toggleAutoRestore}
+            className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold border transition-all ${
+              autoRestoreEnabled
+                ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-200 hover:bg-emerald-900/60'
+                : 'bg-slate-800/70 border-slate-600/60 text-slate-300 hover:bg-slate-700/70'
+            }`}
+            title="Restaurar automáticamente el último estado dinámico verificado (v3) al cargar la sesión"
           >
-            <Database className="w-5 h-5 mr-2" /> Cristalizar
-          </button>
-          <button
-            onClick={handleLoadState}
-            className="flex items-center justify-center p-3 rounded-xl bg-amber-600/80 hover:bg-amber-600 font-bold border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all text-white"
-            title="Revoco Ontológico (Cargar)"
-          >
-            <RotateCcw className="w-5 h-5 mr-2" /> Revocar
+            <span>Auto-restaurar al iniciar (v3)</span>
+            <span className={`px-2 py-0.5 rounded font-mono text-[10px] ${autoRestoreEnabled ? 'bg-emerald-600/40 text-emerald-100' : 'bg-slate-700 text-slate-300'}`}>
+              {autoRestoreEnabled ? 'ACTIVO' : 'INACTIVO'}
+            </span>
           </button>
         </div>
       </section>

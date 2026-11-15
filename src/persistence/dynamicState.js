@@ -21,7 +21,17 @@
 // a manual list. Node references anywhere outside the node array are encoded
 // by id. Browser objects (EventTarget), functions and excluded keys are skipped.
 
+import { Frac } from '../simulation/tower/ExactFraction.js';
+import { TowerState } from '../simulation/tower/WritablePrefixTower.js';
+import { ExtendedTowerState } from '../simulation/tower/BodyWorldTower.js';
+
 export const DYNAMIC_STATE_SCHEMA = 'qicn.dynamic_state.v3';
+
+const FROZEN_VALUE_CLASSES = Object.freeze({
+  Frac,
+  TowerState,
+  ExtendedTowerState
+});
 
 // Instance components restored in place, in capture order (nodal layer first
 // so node references elsewhere resolve to node ids).
@@ -38,6 +48,14 @@ export const PLAIN_REFS = Object.freeze([
   'ontologicalAutoQueueRef', 'recoveryTriggerCountRef', 'simulationErrorStreakRef', 'reportNormalizationFallbacksRef',
   'runtimeBudgetSnapshotRef', 'integrityPacketRef'
 ]);
+// Refs passed to useSimulationCycle that are intentionally not restored directly
+// (either aliased to simulationControllerRef, ephemeral UI/API telemetry, or external bridges/observers).
+export const INTENTIONALLY_UNRESTORED_REFS = Object.freeze([
+  'apiCallLog', 'canvasTelemetryRef', 'cogPlannerRef', 'worldModelRef',
+  'interventionScheduleAbortRef', 'interventionSchedulerMetaRef', 'interventionSchedulerRef',
+  'lastSaveTimestampRef', 'quantumEntropyBridgeRef', 'sensoryEngine',
+  'simulationRuntimeRef', 'operationalObserverRef'
+]);
 // QICNConfig keys written by the cycle (applyPhenomenologicalFeedback) and Kaizen.
 export const CONFIG_KEYS = Object.freeze([
   'BOLTZMANN_ANALOG_K', 'RETRO_FLUX_WEIGHT', 'INFORMATIONAL_TEMP_T', 'COHERENCE_THRESHOLD',
@@ -45,7 +63,7 @@ export const CONFIG_KEYS = Object.freeze([
 ]);
 export const RUNTIME_KEYS = Object.freeze(['simulationStep', 'ccc', 'pmia', 'isAscended', 'humanCcc']);
 // Keys never captured: provider bridges, credentials, browser and logging objects.
-const EXCLUDED_KEY = /^(quantumBridge\w*|quantumEntropyBridge\w*|sensoryEngine|sensory\w*|apiKey\w*|logger|sink|attachedCore)$/;
+const EXCLUDED_KEY = /^(quantumBridge\w*|quantumEntropyBridge\w*|sensoryEngine|apiKey\w*|logger|sink|attachedCore)$/;
 
 const SKIP = Symbol('skip');
 const isPlainObject = (v) => {
@@ -103,7 +121,7 @@ function decodeValue(enc, existing, ctx, path) {
     const prev = Array.isArray(existing) ? existing : [];
     const out = reg([]);
     enc.__arr.forEach((e, i) => { out[i] = e && e.__skip ? prev[i] : decodeValue(e, prev[i], ctx, `${path}[${i}]`); });
-    return out;
+    return existing && Object.isFrozen(existing) ? Object.freeze(out) : out;
   }
   if (enc.__set) {
     const target = reg(existing instanceof Set ? existing : new Set());
@@ -123,9 +141,19 @@ function decodeValue(enc, existing, ctx, path) {
     return target;
   }
   if (enc.__obj) {
+    const FrozenClass = FROZEN_VALUE_CLASSES[enc.__class];
+    if (FrozenClass || (existing && typeof existing === 'object' && Object.isFrozen(existing))) {
+      const proto = existing && typeof existing === 'object'
+        ? Object.getPrototypeOf(existing)
+        : FrozenClass.prototype;
+      const clone = Object.create(proto);
+      reg(clone);
+      restoreFields(clone, enc.__obj, ctx, path, existing);
+      return Object.freeze(clone);
+    }
     if (existing && typeof existing === 'object') {
       reg(existing);
-      restoreFields(existing, enc.__obj, ctx, path);
+      restoreFields(existing, enc.__obj, ctx, path, existing);
       return existing;
     }
     ctx.unrestored.push(`${path} (${enc.__class}: no fresh instance)`);
@@ -141,10 +169,10 @@ function decodeValue(enc, existing, ctx, path) {
   return enc;
 }
 
-function restoreFields(target, fields, ctx, path) {
+function restoreFields(target, fields, ctx, path, sourceForDefaults = target) {
   for (const [key, value] of Object.entries(fields)) {
     try {
-      target[key] = decodeValue(value, target[key], ctx, `${path}.${key}`);
+      target[key] = decodeValue(value, sourceForDefaults?.[key], ctx, `${path}.${key}`);
     } catch (error) {
       ctx.unrestored.push(`${path}.${key} (${error?.message || 'error'})`);
     }

@@ -174,7 +174,13 @@ const readGitHeadState = (repoRoot) => {
 const resolveReleaseRoot = () => {
   const envOverride = process.env.ECO_RELEASE_ROOT;
   if (envOverride) return path.resolve(envOverride);
-  for (const candidate of ['QICN-RELEASE', 'QUICN-RELEASE', 'release_repo_qicn_2026-03-01']) {
+  for (const candidate of [
+    path.join('qicn-framework-ordenado', 'rigid-identity-framework'),
+    'qicn-framework-ordenado',
+    'QICN-RELEASE',
+    'QUICN-RELEASE',
+    'release_repo_qicn_2026-03-01'
+  ]) {
     const target = path.join(WORKSPACE_ROOT, candidate);
     if (
       exists(path.join(target, '.git'))

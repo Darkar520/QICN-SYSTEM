@@ -148,7 +148,8 @@ export function captureRuntimeSnapshot(core, context = {}) {
     spectral_gap_mode: readSpectralGapMode(core),
     regime: text(state.regime),
     phenomenology_class: text(state.phenomenology_class),
-    dynamic_label: text(context.dynamicLabel)
+    dynamic_label: text(context.dynamicLabel),
+    kaizen_mode: text(config.KAIZEN_ADJUSTMENT_MODE) || 'legacy'
   };
   for (const [id, value] of Object.entries(modeValues)) {
     if (value !== null) modes[id] = value;
@@ -177,15 +178,17 @@ export function captureRuntimeSnapshot(core, context = {}) {
     active_retention: roundTo(finite(towerTel.activeRetention), 4),
     passive_retention: roundTo(finite(towerTel.passiveRetention), 4),
     active_recovery_advantage: roundTo(finite(towerTel.activeRecoveryAdvantage), 4),
-    sigma_truncation_depth: finite(towerTel.sigmaTruncationDepth) ?? 7,
+    sigma_truncation_depth: finite(towerTel.sigmaTruncationDepth) ?? 6,
+    sigma_approximation_bound: text(towerTel.sigmaApproximationBound) || '1/729',
     sigma_exact_defect: text(towerTel.sigmaExactDefect) || '0',
     sigma_defect_bound_rational: text(towerTel.sigmaDefectBound) || '2/2187',
-    sigma_fixed_point_bound: text(towerTel.sigmaFixedPointBound) || '16/15309',
+    sigma_fixed_point_bound: text(towerTel.sigmaFixedPointBound) || '32/15309',
     sigma_theorem_verified: Boolean(towerTel.sigmaTheoremVerified),
     body_v_pos: roundTo(finite(towerTel.body?.[0]), 6),
     body_v_neg: roundTo(finite(towerTel.body?.[1]), 6),
     world_w_fast: roundTo(finite(towerTel.world?.[0]), 6),
-    world_w_slow: roundTo(finite(towerTel.world?.[1]), 6)
+    world_w_slow: roundTo(finite(towerTel.world?.[1]), 6),
+    constructive_cuts: towerTel.constructiveFiniteCuts || state.constructive_finite_cuts || null
   } : null;
 
   const body = {

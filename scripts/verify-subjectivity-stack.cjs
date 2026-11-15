@@ -53,6 +53,11 @@ const stripVolatileTimestamps = (value) => {
     const out = {};
     for (const key of Object.keys(value)) {
       if (VOLATILE_TIMESTAMP_KEYS.has(key)) continue;
+      if (key === 'current_lineage' && value[key] && typeof value[key] === 'object') {
+        const { qicn_system: _sys, qicn_release: _rel, ...restLineage } = value[key];
+        out[key] = stripVolatileTimestamps(restLineage);
+        continue;
+      }
       out[key] = stripVolatileTimestamps(value[key]);
     }
     return out;

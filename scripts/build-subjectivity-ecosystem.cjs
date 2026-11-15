@@ -50,11 +50,16 @@ async function buildSubjectivityEcosystem() {
     const currentLineage = integrator.captureCurrentLineage();
     const existingCandidateProjection = readJson(outputPaths.candidate_projection);
     const existingVerificationMatrix = readJson(outputPaths.verification_matrix);
+    const stripVolatileLineageGit = (lineage) => {
+      if (!lineage || typeof lineage !== 'object') return null;
+      const { qicn_system: _sys, qicn_release: _rel, ...contentHashes } = lineage;
+      return contentHashes;
+    };
     const lineageMatches =
-      stable(existingCandidateProjection.provenance?.current_lineage || null) ===
-        stable(currentLineage)
-      && stable(existingVerificationMatrix.provenance?.current_lineage || null) ===
-        stable(currentLineage);
+      stable(stripVolatileLineageGit(existingCandidateProjection.provenance?.current_lineage)) ===
+        stable(stripVolatileLineageGit(currentLineage))
+      && stable(stripVolatileLineageGit(existingVerificationMatrix.provenance?.current_lineage)) ===
+        stable(stripVolatileLineageGit(currentLineage));
 
     if (lineageMatches) {
       const existingCampaignSummary = readJson(outputPaths.campaign_summary);

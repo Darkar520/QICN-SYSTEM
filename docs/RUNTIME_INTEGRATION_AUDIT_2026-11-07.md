@@ -136,7 +136,7 @@ Kaizen (24 pasos), autonomía (24 acciones) y sensores (120 tramas) estuvieron a
 
 ## 6. Interfaz
 
-Capturas en `docs/visual-evidence/2026-11-08/`:
+Capturas históricas de referencia de `docs/visual-evidence/2026-11-08/` (preservadas externamente en `E:\QICN-PRESERVACION\visual-evidence-backup-2026-11-15` y retiradas del árbol versionado del repositorio de ingeniería el 2026-11-15 para eliminar ruido binario de capturas de navegador):
 
 - `current-gemini-desktop-chat.png`: ruta `gemini_rejected` / `gemini_unavailable` con error del proveedor (429) visible y lectura local rotulada «no redactada por Gemini».
 - `current-local-{desktop,mobile}-{chat,memory,network}.png`: modo «Solo motor local» explícito, etiqueta de ruta, evidencia y traza plegables. 0 excepciones y 0 errores de consola.

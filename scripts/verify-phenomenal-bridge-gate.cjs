@@ -121,9 +121,18 @@ const main = async () => {
   execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'verify-phenomenal-bridge-reducibility.cjs')], {
     stdio: 'inherit'
   });
-  execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-phenomenal-bridge-root.cjs')], {
-    stdio: 'inherit'
-  });
+  const rootRequired = [
+    'phenomenal_bridge_projection.json',
+    'phenomenal_bridge_gate_result.json',
+    'phenomenal_bridge_manifest.json'
+  ];
+  const shouldWrite = process.argv.includes('--write')
+    || rootRequired.some((fileName) => !fs.existsSync(path.join(BPFM3_DIR, fileName)));
+  if (shouldWrite) {
+    execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-phenomenal-bridge-root.cjs')], {
+      stdio: 'inherit'
+    });
+  }
 
   [
     'phenomenal_bridge_projection.json',

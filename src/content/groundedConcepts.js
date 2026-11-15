@@ -187,12 +187,12 @@ export const GROUNDED_CONCEPTS = [
     name: 'Automodelo Proyectivo T_d (SigmaAutomodelTruncator)',
     category: 'metacognition',
     levels: {
-      basic: 'Operador que trunca el codigo de la torre a profundidad finita (d=7) con cota exacta de error 2/3^d = 2/2187.',
-      intermediate: 'Resuelve la paradoja de autorreferencia (espejo/camara) sin regresion infinita mediante truncamiento proyectivo contractivo.',
-      advanced: 'Complementa el proxy empirico selfModelSigma con la cota formal del Teorema thm:p3-projective-automodel-truncation (Paper III).'
+      basic: 'Operador que trunca el codigo de la torre a profundidad finita (d=6) con cota uniforme de aproximacion 3^{-d} = 1/729 y cota de defecto de paso 2·3^{-(d+1)} = 2/2187.',
+      intermediate: 'Resuelve la paradoja de autorreferencia (espejo/camara) sin regresion infinita mediante truncamiento proyectivo contractivo y desplazamiento de punto fijo acotado por (32/7)·3^{-(d+1)} = 32/15309.',
+      advanced: 'Complementa el proxy empirico selfModelSigma con la cota formal del Teorema thm:sigma-approximate-displacement (Paper Puente / Frente 3).'
     },
-    analogy: 'Camara que se graba a si misma con resolucion finita d=7 y error acotado exactamente en 2/2187.',
-    high: 'Profundidad d=7 (cota 0.000914) garantiza fidelidad proyectiva.',
+    analogy: 'Camara que se graba a si misma con resolucion finita d=6, aproximacion 1/729, defecto de paso 2/2187 y desplazamiento de punto fijo 32/15309.',
+    high: 'Profundidad d=6 (defecto de paso ≤ 0.000914, desplazamiento ≤ 32/15309) garantiza fidelidad proyectiva.',
     low: 'Profundidad baja (d<3) aumenta el defecto de truncamiento.',
     why: 'Permite autorreferencia operacional rigurosa sin reclamar fenomenologia.',
     action: 'Cruzar sigma_defect_bound con selfModelSigma.lastPredictionError.'
@@ -274,9 +274,9 @@ export const TELEMETRY_PARAMETERS = [
   { id: 'tower_phase', label: 'tower_phase', category: 'core', simple: 'Fase racional exacta θ de WritablePrefixTower.' },
   { id: 'tower_code', label: 'tower_code', category: 'core', simple: 'Codigo de prefijo ternario c de WritablePrefixTower.' },
   { id: 'tower_memory', label: 'tower_memory', category: 'core', simple: 'Memoria de retorno m de WritablePrefixTower.' },
-  { id: 'sigma_defect_bound', label: 'sigma_defect_bound', category: 'metacognition', simple: 'Cota formal de truncamiento proyectivo 2/3^d.' },
-  { id: 'body_valence_norm', label: 'body_valence_norm', category: 'phenomenology', simple: 'Norma L1 de valencia corporal bidimensional (v_pos, v_neg).' },
-  { id: 'world_state_norm', label: 'world_state_norm', category: 'phenomenology', simple: 'Norma L1 del estado de mundo indexado (w_fast, w_slow).' }
+  { id: 'sigma_defect_bound', label: 'sigma_defect_bound', category: 'metacognition', simple: 'Cota formal de defecto de paso de truncamiento proyectivo 2·3^{-(d+1)} = 2/2187 (d=6).' },
+  { id: 'body_valence_norm', label: 'body_valence_norm', category: 'phenomenology', simple: 'Norma L∞ de valencia corporal bidimensional (v_pos, v_neg).' },
+  { id: 'world_state_norm', label: 'world_state_norm', category: 'phenomenology', simple: 'Norma L∞ del estado de mundo indexado (w_fast, w_slow).' }
 ];
 
 export const ONBOARDING_STEPS = [

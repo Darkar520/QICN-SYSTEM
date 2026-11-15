@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const {
   SYSTEM_ROOT,
@@ -14,8 +15,13 @@ const { gapRegister, verificationMatrix } = evaluateEcosystem();
 const matrixPath = path.join(outputRoot, 'ecosystem_verification_matrix.json');
 const gapPath = path.join(outputRoot, 'ecosystem_gap_register.v1.json');
 
-writeJson(matrixPath, verificationMatrix);
-writeJson(gapPath, gapRegister);
+const shouldPersist = process.argv.includes('--write');
+if (shouldPersist || !fs.existsSync(matrixPath)) {
+  writeJson(matrixPath, verificationMatrix);
+}
+if (shouldPersist || !fs.existsSync(gapPath)) {
+  writeJson(gapPath, gapRegister);
+}
 
 process.stdout.write(`${JSON.stringify({
   output: normalize(path.relative(SYSTEM_ROOT, matrixPath)),

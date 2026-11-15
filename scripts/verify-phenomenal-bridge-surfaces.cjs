@@ -205,15 +205,18 @@ const verifyRuntimeImport = async () => {
 };
 
 const writeAndVerifyRealReports = async () => {
-  const bridge = await import(pathToFileURL(path.join(ROOT, 'src', 'phenomenal_bridge', 'index.js')).href);
-  const builder = bridge.createPhenomenalBridgeSurfaceBuilder();
-  const result = builder.writeReports(loadRealBundle(), BRIDGE_DIR);
-  REQUIRED_REPORTS.forEach((fileName) =>
-    assert(fs.existsSync(path.join(BRIDGE_DIR, fileName)), `Missing emitted bridge report ${fileName}`)
-  );
-  Object.values(result.outputs).forEach((filePath) => {
+  const shouldWrite = process.argv.includes('--write')
+    || REQUIRED_REPORTS.some((fileName) => !fs.existsSync(path.join(BRIDGE_DIR, fileName)));
+  if (shouldWrite) {
+    const bridge = await import(pathToFileURL(path.join(ROOT, 'src', 'phenomenal_bridge', 'index.js')).href);
+    const builder = bridge.createPhenomenalBridgeSurfaceBuilder();
+    builder.writeReports(loadRealBundle(), BRIDGE_DIR);
+  }
+  REQUIRED_REPORTS.forEach((fileName) => {
+    const filePath = path.join(BRIDGE_DIR, fileName);
+    assert(fs.existsSync(filePath), `Missing emitted bridge report ${fileName}`);
     const report = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    verifyReport(report, path.basename(filePath));
+    verifyReport(report, fileName);
   });
 };
 

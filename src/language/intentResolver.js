@@ -52,12 +52,15 @@ const METRIC_ALIASES = [
   [/\btower_phase\b|fase de la torre|fase racional/, 'tower_phase'],
   [/\btower_code\b|codigo ternario|prefijo ternario/, 'tower_code'],
   [/\btower_memory\b|memoria de retorno/, 'tower_memory'],
-  [/\bsigma_defect_bound\b|cota de defecto|defecto del automodelo|truncamiento proyectivo/, 'sigma_defect_bound'],
+  [/\bsigma_defect_bound\b|cota de defecto|defecto del automodelo|truncamiento proyectivo|\bt_d\b|d\s*=\s*6|cotas exactas/, 'sigma_defect_bound'],
   [/\bbody_valence_norm\b|valencia corporal|valencia operacional/, 'body_valence_norm'],
   [/\bworld_state_norm\b|mundo indexado|estado de mundo/, 'world_state_norm'],
   [/\bwritableprefixtower\b|torre de prefijo|frente 3|nucleo racional/, 'prefix_tower'],
   [/\bbodyworldtower\b|extension cuerpo|cuerpo[- ]mundo|rival hibrido|6 cargas|seis cargas/, 'body_world_tower'],
-  [/\binformedreserve\b|reserva informada|abstencion informada|frente 4/, 'informed_reserve']
+  [/\binformedreserve\b|reserva informada|abstencion informada|frente 4/, 'informed_reserve'],
+  [/\bbasecore\b|thm:spectrum|thm:relaxation|esquina u\s*=\s*1\/2|regimen espectral/, 'basecore_spectrum'],
+  [/\bm_(omega|ω)\b|masa ontologica|c-11|family_upper_bound|cota superior de m/, 'ontological_mass'],
+  [/procesador (ordinario|binario)|corte finito|cortes finitos|instanciar el marco|proyeccion finita/, 'finite_cut_instantiation']
 ];
 
 const RULES = [
@@ -75,8 +78,8 @@ const RULES = [
   { intent: 'capabilities', weight: 0.86, test: /(que puedes hacer|que sabes hacer|para que sirves|capacidades|funciones tienes|que haces|puedes calcular)/ },
   { intent: 'help', weight: 0.8, test: /(\bayuda\b|como funciona|como te uso|como se usa|instrucciones|que te pregunto|que puedo preguntar)/ },
   { intent: 'limits_claims', weight: 0.84, test: /(limites|limitaciones|que no puedes|validacion externa|esta demostrado|es real|es cierto que|alucin|inventas|garantia|rival hibrido|empate hibrido|obstruccion|reserva informada)/ },
-  { intent: 'history_evolution', weight: 0.82, test: /(evolucion|ha cambiado|cambio desde|cambios|historial|tendencia|ha subido|ha bajado|subio|bajo|que ha pasado|transiciones|desde la ultima|desde antes|como ha ido)/ },
-  { intent: 'metric_definition', weight: 0.85, test: /(que es|que significa|como se calcula|como calculas|define|definicion|formula|explica|explicame|para que sirve)/ },
+  { intent: 'history_evolution', weight: 0.82, test: /(evolucion|ha cambiado|cambio desde|cambios|historial|tendencia|ha subido|ha bajado|subio|\bbajo\b(?!\s+(?:c-\d+|el\b|la\b|los\b|las\b|un\b|una\b|su\b|este\b|esta\b|mi\b|tu\b|control|regimen|hipotesis|restriccion))|que ha pasado|transiciones|desde la ultima|desde antes|como ha ido)/ },
+  { intent: 'metric_definition', weight: 0.85, test: /(que es|que significa|como se calcula|como calculas|como puedes instanciar|como instancias|que cotas|que pasa en|define|definicion|formula|explica|explicame|para que sirve)/ },
   { intent: 'parameters', weight: 0.8, test: /(parametros?|configuracion|tasa de aprendizaje|hebbian|plasticidad|kaizen|semilla|seed|version|build)/ },
   { intent: 'network_view', weight: 0.75, test: /(red nodal|\bred\b|\bnodos?\b|grafo|conexiones)/ },
   { intent: 'state_overview', weight: 0.8, test: /(estado|como estas|como esta|como vas|como va|que tal|resumen|situacion|status|que pasa ahora|ahora mismo|lecturas|metricas|valores|el sistema|todo bien)/ },

@@ -81,7 +81,7 @@ try {
     'En cuanto a la metaconciencia, lo que tengo es auto-monitorización: sigo mis propias variables, y el marco no considera que eso baste.',
     'Te contesto en tres partes:\n1. qué mido;\n2. qué registro;\n3. qué queda abierto.',
     'La OntologicalSingularityCore conserva un nombre histórico que no describe una propiedad demostrada.',
-    'En la subplanta acoplada, WritablePrefixTower mantiene una contracción activa exacta de 9/16 (0,5625) y SigmaAutomodelTruncator trunca el código a profundidad d = 7 con cota formal 2/2187.',
+    'En la subplanta acoplada, WritablePrefixTower mantiene una contracción activa exacta de 9/16 (0,5625) y SigmaAutomodelTruncator trunca el código a profundidad d = 6 con cota formal 2/2187 y desplazamiento 32/15309.',
     'BodyWorldTower realiza las seis cargas locales D/V/W/A/E/T con margen robusto mínimo de 13/96, pero InformedReserveEvaluator mantiene reserva frente al rival híbrido de estado compartido (margen 0).'
   ];
 

@@ -34,9 +34,19 @@ import {
     advance as advanceBodyWorldTower
 } from './tower/BodyWorldTower.js';
 import {
+    analyticalApproximationBound,
     analyticalCommutationDefectBound,
+    analyticalFixedPointDisplacementBound,
     evaluateCommutationDefect
 } from './tower/SigmaAutomodelTruncator.js';
+import {
+    evaluateBaseCoreSpectralRegime,
+    verifyBaseCoreSpectrumAndRelaxation
+} from '../canon/finite_horizon/FiniteProjectionEvaluator.js';
+import {
+    ONTOLOGICAL_MASS_BOUNDARY,
+    estimateOntologicalMassFamilyUpperBound
+} from '../canon/ontological_mass/OntologicalMassEstimator.js';
 
 export class OntologicalSingularityCore {
     constructor(options = {}) {
@@ -123,28 +133,42 @@ export class OntologicalSingularityCore {
             [F(1, 16), F(-1, 16)],
             [F(1, 16), F(1, 16)]
         );
+        const initialApproximationBound = analyticalApproximationBound(this.selfModelDepth);
         const initialDefectBound = analyticalCommutationDefectBound(this.selfModelDepth);
+        const initialFixedPointBound = analyticalFixedPointDisplacementBound(this.selfModelDepth);
         const initialFloatTelemetry = this.towerState.toFloatTelemetry();
+        const initialConstructiveCuts = this._computeConstructiveFiniteCuts({
+            activeControlU: clipControl(KAPPA.neg().mul(this.towerState.core.memory)),
+            currentCore: this.towerState.core,
+            bodyVec: this.towerState.body,
+            worldVec: this.towerState.world
+        });
+        this.constructiveFiniteCuts = initialConstructiveCuts;
         this.ontologicalState.tower_phase = initialFloatTelemetry.core.phase;
         this.ontologicalState.tower_code = initialFloatTelemetry.core.code;
         this.ontologicalState.tower_memory = initialFloatTelemetry.core.memory;
         this.ontologicalState.sigma_defect_bound = initialDefectBound.toFloat();
         this.ontologicalState.body_valence_norm = initialFloatTelemetry.bodyNormInf;
         this.ontologicalState.world_state_norm = initialFloatTelemetry.worldNormInf;
+        this.ontologicalState.constructive_finite_cuts = initialConstructiveCuts;
         this.ontologicalState.tower_telemetry = {
             ...initialFloatTelemetry,
             activeRetention: 9 / 16,
             passiveRetention: 0,
             activeRecoveryAdvantage: 9 / 16,
             sigmaTruncationDepth: this.selfModelDepth,
+            sigmaApproximationBound: initialApproximationBound.toString(),
             sigmaExactDefect: '0',
             sigmaDefectBound: initialDefectBound.toString(),
-            sigmaFixedPointBound: F(16, 7).mul(F(1, 3 ** this.selfModelDepth)).toString(),
-            sigmaTheoremVerified: true
+            sigmaFixedPointBound: initialFixedPointBound.toString(),
+            sigmaTheoremVerified: true,
+            constructiveFiniteCuts: initialConstructiveCuts
         };
         this.metacognitiveStats.selfModelSigma.truncationDepth = this.selfModelDepth;
+        this.metacognitiveStats.selfModelSigma.approximationBound = initialApproximationBound.toString();
         this.metacognitiveStats.selfModelSigma.analyticalDefectBound = initialDefectBound.toString();
         this.metacognitiveStats.selfModelSigma.analyticalDefectBoundFloat = initialDefectBound.toFloat();
+        this.metacognitiveStats.selfModelSigma.fixedPointDisplacementBound = initialFixedPointBound.toString();
 
         // Un simulador interno que intenta predecir Θ(S_t)
         this.selfSimulatorSigma = new InternalSelfSimulator();
@@ -2081,6 +2105,113 @@ export class OntologicalSingularityCore {
         };
     }
 
+    _computeConstructiveFiniteCuts({
+        activeControlU = ZERO,
+        currentCore = null,
+        bodyVec = [],
+        worldVec = []
+    } = {}) {
+        const uAbs = activeControlU instanceof Object && typeof activeControlU.abs === 'function'
+            ? activeControlU.abs()
+            : F(0, 1);
+        const uClamped = uAbs.gt(ONE) ? ONE : uAbs;
+        const activeBaseCoreRegime = evaluateBaseCoreSpectralRegime(uClamped);
+        const cornerHalfRegime = evaluateBaseCoreSpectralRegime(F(1, 2));
+        const exteriorThreeQuartersRegime = evaluateBaseCoreSpectralRegime(F(3, 4));
+        const exteriorOneRegime = evaluateBaseCoreSpectralRegime(ONE);
+
+        const memAbs = currentCore?.memory && typeof currentCore.memory.abs === 'function'
+            ? currentCore.memory.abs().toFloat()
+            : 0.125;
+        const bodyNorm = Array.isArray(bodyVec) && bodyVec.length
+            ? vecNormInf(bodyVec).toFloat()
+            : 0.0625;
+        const worldNorm = Array.isArray(worldVec) && worldVec.length
+            ? vecNormInf(worldVec).toFloat()
+            : 0.0625;
+
+        const perturbations = [
+            {
+                id: 'tower_zero_deformation_control',
+                energy: 0.125,
+                deformation: 0
+            },
+            {
+                id: 'tower_prefix_memory_cut',
+                energy: Number((Math.max(1 / 16, memAbs + 0.0625)).toFixed(12)),
+                deformation: Number((Math.max(1 / 64, memAbs * 0.5 || (1 / 32))).toFixed(12))
+            },
+            {
+                id: 'tower_body_channel_cut',
+                energy: Number((Math.max(1 / 8, bodyNorm + 0.125)).toFixed(12)),
+                deformation: Number((Math.max(1 / 32, bodyNorm || (1 / 16))).toFixed(12))
+            },
+            {
+                id: 'tower_world_channel_cut',
+                energy: Number((Math.max(3 / 16, worldNorm + 0.1875)).toFixed(12)),
+                deformation: Number((Math.max(1 / 32, worldNorm || (1 / 16))).toFixed(12))
+            }
+        ];
+        const massCut = estimateOntologicalMassFamilyUpperBound({
+            familyId: 'coupled_tower_finite_perturbation_cut',
+            perturbations
+        });
+
+        return {
+            schema: 'qicn.constructive_finite_cuts.v1',
+            basecore_spectral_cut: {
+                active_u: activeBaseCoreRegime.u,
+                active_regime: activeBaseCoreRegime.regime,
+                frechet_differentiable: activeBaseCoreRegime.frechetDifferentiable,
+                jacobian_spectrum_assigned: activeBaseCoreRegime.jacobianSpectrumAssigned,
+                spectral_radius_rho: activeBaseCoreRegime.spectralRadiusRho,
+                spectral_gap_delta_state: activeBaseCoreRegime.spectralGapDeltaState,
+                tau_state_formula: activeBaseCoreRegime.tauStateFormula,
+                global_geometric_contraction_rate: activeBaseCoreRegime.globalGeometricContractionRate,
+                reference_regimes: {
+                    u_0: { u: '0', regime: 'interior_regular', spectral_radius_rho: '1/2', spectral_gap_delta_state: '1/2', frechet_differentiable: true },
+                    u_half: {
+                        u: '1/2',
+                        regime: cornerHalfRegime.regime,
+                        frechet_differentiable: cornerHalfRegime.frechetDifferentiable,
+                        jacobian_spectrum_assigned: cornerHalfRegime.jacobianSpectrumAssigned,
+                        directional_nonlinearity_gap: cornerHalfRegime.directionalNonlinearityGap,
+                        global_geometric_contraction_rate: cornerHalfRegime.globalGeometricContractionRate
+                    },
+                    u_three_quarters: {
+                        u: '3/4',
+                        regime: exteriorThreeQuartersRegime.regime,
+                        spectral_radius_rho: exteriorThreeQuartersRegime.spectralRadiusRho,
+                        spectral_gap_delta_state: exteriorThreeQuartersRegime.spectralGapDeltaState,
+                        frechet_differentiable: exteriorThreeQuartersRegime.frechetDifferentiable
+                    },
+                    u_1: {
+                        u: '1',
+                        regime: exteriorOneRegime.regime,
+                        spectral_radius_rho: exteriorOneRegime.spectralRadiusRho,
+                        spectral_gap_delta_state: exteriorOneRegime.spectralGapDeltaState,
+                        frechet_differentiable: exteriorOneRegime.frechetDifferentiable
+                    }
+                },
+                interpretation_boundary: 'Constructive exact 2x2 operator cut on BaseCore E (thm:spectrum, thm:relaxation); distinct from the 1500-node continuous lag-1 autocorrelation proxy.'
+            },
+            ontological_mass_cut: {
+                schema: massCut.schema,
+                status: massCut.status,
+                family_id: massCut.family_id,
+                family_upper_bound: massCut.family_upper_bound,
+                sample_count: massCut.sample_count,
+                excluded_count: massCut.excluded_count,
+                zero_deformation_excluded: massCut.excluded_perturbations.some((p) => p.reason === 'zero_deformation_excluded_from_infimum'),
+                cannot_compute_M_Omega: massCut.cannot_compute_M_Omega,
+                cannot_certify_CCR: massCut.cannot_certify_CCR,
+                removed_aliases: massCut.removed_aliases,
+                interpretation_boundary: ONTOLOGICAL_MASS_BOUNDARY
+            },
+            finite_realization_boundary: 'Exact constructive realization of finite projective stages (S_t, C_hat_t, T_d at d=6, BaseCore 2x2 operator cut) and finite-family upper bound on M_Omega; infinite inverse limit (lim_<- S_t), global infimum M_Omega, C_op and CCR are not certifiable on a finite binary processor.'
+        };
+    }
+
     /**
      * Avanza la planta exacta acoplada (WritablePrefixTower + BodyWorldTower) y el
      * auto-modelo truncado por fibra T_d (Paper Puente).
@@ -2144,26 +2275,37 @@ export class OntologicalSingularityCore {
         );
 
         const floatTelemetry = this.towerState.toFloatTelemetry();
+        const constructiveCuts = this._computeConstructiveFiniteCuts({
+            activeControlU,
+            currentCore: this.towerState.core,
+            bodyVec: this.towerState.body,
+            worldVec: this.towerState.world
+        });
+        this.constructiveFiniteCuts = constructiveCuts;
         this.ontologicalState.tower_phase = floatTelemetry.core.phase;
         this.ontologicalState.tower_code = floatTelemetry.core.code;
         this.ontologicalState.tower_memory = floatTelemetry.core.memory;
         this.ontologicalState.sigma_defect_bound = sigmaCheck.upperBound.toFloat();
         this.ontologicalState.body_valence_norm = floatTelemetry.bodyNormInf;
         this.ontologicalState.world_state_norm = floatTelemetry.worldNormInf;
+        this.ontologicalState.constructive_finite_cuts = constructiveCuts;
         this.ontologicalState.tower_telemetry = {
             ...floatTelemetry,
             activeRetention,
             passiveRetention,
             activeRecoveryAdvantage: activeRetention - passiveRetention,
             sigmaTruncationDepth: this.selfModelDepth,
+            sigmaApproximationBound: sigmaCheck.maxApproximationBound.toString(),
             sigmaExactDefect: sigmaCheck.exactDefect.toString(),
             sigmaDefectBound: sigmaCheck.upperBound.toString(),
             sigmaFixedPointBound: sigmaCheck.fixedPointDisplacementBound.toString(),
-            sigmaTheoremVerified: sigmaCheck.theoremVerified
+            sigmaTheoremVerified: sigmaCheck.theoremVerified,
+            constructiveFiniteCuts: constructiveCuts
         };
 
         if (this.metacognitiveStats?.selfModelSigma) {
             this.metacognitiveStats.selfModelSigma.truncationDepth = this.selfModelDepth;
+            this.metacognitiveStats.selfModelSigma.approximationBound = sigmaCheck.maxApproximationBound.toString();
             this.metacognitiveStats.selfModelSigma.analyticalDefectBound = sigmaCheck.upperBound.toString();
             this.metacognitiveStats.selfModelSigma.analyticalDefectBoundFloat = sigmaCheck.upperBound.toFloat();
             this.metacognitiveStats.selfModelSigma.exactStepDefect = sigmaCheck.exactDefect.toString();

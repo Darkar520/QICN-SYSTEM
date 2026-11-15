@@ -93,7 +93,7 @@ const OVERLAYS = {
   'paper10:thm:stationary-ar1-likelihood-gls': 'Frente 4: verosimilitud gaussiana estacionaria AR(1) exacta y estimador GLS (4/5 ≠ media muestral 2/3)',
   'bridge:prop:sigma-not-entailed': 'Frente 4: obstrucción condicional a la autorreferencia exacta dentro de C_op y separación frente a sujeto operacional',
   'bridge:thm:sigma-chain': 'Frente 4: cadena de automodelos aproximados Σ_approx(d, ε_d) no trivial sobre la torre con truncamiento proyectivo T_d',
-  'bridge:thm:sigma-approximate-displacement': 'Frente 4: defecto de un paso Δ_step(d) ≤ 2·3^{-d} y desplazamiento de punto fijo ≤ (16/7)·3^{-d} verificados en Lean y en el runtime',
+  'bridge:thm:sigma-approximate-displacement': 'Frente 4: cota de aproximación uniforme ≤ 3^{-d} (= 1/729 para d = 6), defecto de conmutación de un paso Δ_step(d) ≤ 2·3^{-(d+1)} (= 2/2187 para d = 6) y desplazamiento de punto fijo ≤ (32/7)·3^{-(d+1)} (= 32/15309 para d = 6) verificados en Lean y en el runtime',
   'bridge:prop:weak-phi': 'C_op induce fenomenología operacional débil no nula relativa al testigo',
   'bridge:prop:qop-well-defined-bridge': 'Q_op(S) bien definido bajo cierre transitivo explícito de los invariantes de C_op'
 };
@@ -176,7 +176,7 @@ lines.push('## Síntesis constructiva (Frentes 1–5 y Extensión Cuerpo–Mundo
 lines.push('1. Frente 1 (BaseCore y Papers I–II): compatibilidad asintótica controlada con módulo de escala fija ω_T(r)=r² sobre la torre ternaria (4032 pares verificados), separación causal intervencional frente a observacional con latente oculto U_t, y acuerdo proyectivo exacto en cortes finitos.');
 lines.push('2. Frente 2 (Papers V–VIII, WritablePrefixTower): planta común escribible S¹ × {0,1}^N × [−1,1] (implementada en WritablePrefixTower.js) con ganancia común g=1/80, margen de lectura dividida [1/216, 1/24], defecto de interacción mixta 2·TAP, contracción activa 9/16 frente a pasiva, horizonte de legibilidad D_{j,t}=2·3^{-(j+t)}, certificado conjunto de sujeto operacional (Paper VII) y cinco lesiones selectivas en los sitios 3..7 con funcional Φ⁷ = 1/48 (Paper VIII).');
 lines.push('3. Frente 3 (Papers VIII–IX, reserva informada y transporte): obstrucción de información pública en retorno (empate forzado 1/2 en 84 estratos balanceados; pérdida con cobertura c igual a 1/2 + (1−c)/4), separación por señal privada en el sitio 2 con pérdida bayesiana (1−TV)/2 y riesgo minimax asimétrico 1/3 (InformedReserveEvaluator.js), y clasificación de transporte coherente vs obstruido en ciclos XOR de 3 nodos por paridad de holonomía.');
-lines.push('4. Frente 4 (Papers IV, X y Puente): automodelo aproximado Σ_approx(d, ε_d) sobre la torre mediante truncamiento proyectivo T_d (SigmaAutomodelTruncator.js) con defecto de un paso Δ_step(d) ≤ 2·3^{-d} y desplazamiento de punto fijo ≤ (16/7)·3^{-d}; test exacto de signo por bloques (tamaño 5425/262144 a B=20, k=15), cotas de fuga sensibles a cobertura c, contraejemplo de 8 átomos y estimador GLS estacionario AR(1) 4/5 ≠ media muestral 2/3 (StatisticalAdjudicationEngine.js).');
+lines.push('4. Frente 4 (Papers IV, X y Puente): automodelo aproximado Σ_approx(d, ε_d) sobre la torre mediante truncamiento proyectivo T_d (SigmaAutomodelTruncator.js, profundidad por defecto d = 6) con cota uniforme de aproximación de estado ≤ 3^{-d} (= 1/729), defecto de conmutación de un paso Δ_step(d) ≤ 2·3^{-(d+1)} (= 2/2187) y desplazamiento de punto fijo ≤ (32/7)·3^{-(d+1)} (= 32/15309); test exacto de signo por bloques (tamaño 5425/262144 a B=20, k=15), cotas de fuga sensibles a cobertura c, contraejemplo de 8 átomos y estimador GLS estacionario AR(1) 4/5 ≠ media muestral 2/3 (StatisticalAdjudicationEngine.js).');
 lines.push('5. Frente 5 (Lean 4): 27 módulos Lean 4 compilados sin sorry con reproducción verificada en frío (commit 5769ecf, incluyendo QICNBaseSufficiency, QICNAtomicSwap y QICNFourRootContrast).');
 lines.push('6. Extensión Cuerpo–Mundo y Planta Cuártica Indexada (Paper IX, BodyWorldTower.js y BridgeTransportAndBurdensEvaluator.js): realiza simultáneamente las 6 cargas locales D/V/W/A/E/T con margen robusto mínimo 13/96 y rango 6 de lesión (con empate 0 frente al rival híbrido compartido lineal), y en la planta cuártica indexada (def:bridge-indexed-quartic-plant, thm:bridge-four-root-identification) certifica contracción 13/16, integración global e_* >= 1/39366, separación en t=6 > 1/64 y brecha de ancestría propia de 4 raíces 4*xi_4 = 1/262144 con noise_cost_margin >= 1019*xi_4/256 > 3*xi_4 (empate <= 0 ante réplica de 4 raíces de igual costo; estado provisional y no confirmatorio).');
 lines.push('');
@@ -193,6 +193,7 @@ const meta = {
   frameworkDirtyPaths: dirty,
   registrySha256: sha(registryBuf).slice(0, 16),
   registryEntries: rows.length,
+  leanSourcesCount: 27,
   sourceHashes,
   stats,
   missingOverlays,

@@ -127,7 +127,7 @@ const STAGE2_CLOSURE_SOURCE_PATHS = new Set([
   'src/comparative_program/Paper10ComparativeReadinessGateBuilder.js',
   'src/comparative_program/ComparativeClosureBuilder.js',
   'scripts/build-comparative-program-runtime.cjs',
-  'scripts/build-comparative-program-operational.cjs',
+  'scripts/build-comparative-program-operationalization.cjs',
   'scripts/build-comparative-program-closure.cjs'
 ]);
 const STAGE2_CLOSURE_INPUT_PREFIXES = [

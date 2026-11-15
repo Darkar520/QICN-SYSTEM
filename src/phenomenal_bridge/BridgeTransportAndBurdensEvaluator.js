@@ -71,8 +71,11 @@ import {
   fibreMatrix,
   fibreUpdate,
   nativeReadout,
-  roleFrame
+  roleFrame,
+  verifyIndexedQuarticPlantAndFourRootClosure
 } from '../simulation/tower/BodyWorldTower.js';
+
+export { verifyIndexedQuarticPlantAndFourRootClosure };
 
 export const BITS = Object.freeze([0, 1]);
 export const PHASE_NOISE = TAP.div(16);
@@ -575,10 +578,12 @@ export function runFullBodyWorldBridgeVerification() {
   }
 
   const transportResult = verifyBinaryCycleTransport();
+  const indexedQuarticPlantAndFourRootClosure = verifyIndexedQuarticPlantAndFourRootClosure();
 
   return {
     passed: true,
     transportResult,
+    indexedQuarticPlantAndFourRootClosure,
     safetyChecks,
     sixBurdensJointCertificate: baselineCerts,
     lesionSignatures: expectedLesions,
@@ -592,6 +597,9 @@ export function runFullBodyWorldBridgeVerification() {
     motorLateReturnSeparation: '1/128',
     temporalOrderGapH0: '1/384',
     sharedHybridObstructionDocumented: true,
+    provisional_non_confirmatory: true,
+    external_support_certified: false,
+    status_classification: 'provisional and non-confirmatory',
     sharedHybridObstructionSummary:
       'A 5-state shared hybrid with a 3-bit readout matches the six local port summaries unless a 7th cross-port burden ties internal tape probes directly to body-world fiber coordinates (prop:bridge-shared-hybrid-obstruction).'
   };

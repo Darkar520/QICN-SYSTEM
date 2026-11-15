@@ -27,7 +27,8 @@ import { verifyTowerJointSubjecthoodCertificate } from '../src/experiments/LifeC
 import { verifyTowerCommonPlantAndInteractionNonFactorization } from '../src/experiments/NonFactorizationProver.js';
 import {
   runInformedReserveSuite,
-  runSelectiveAddressLesionSuite
+  runSelectiveAddressLesionSuite,
+  verifySubjectivityCoreTheoremsAndNegativeControls
 } from '../src/subjectivity/InformedReserveEvaluator.js';
 import { runFullBodyWorldBridgeVerification } from '../src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js';
 import { runFullStatisticalAdjudicationSuite } from '../src/comparative_program/StatisticalAdjudicationEngine.js';
@@ -38,6 +39,20 @@ export function runAllTowerMathematicsChecks() {
   const f1 = evaluateFoundationalFront1();
   assert.equal(f1.passed, true, 'Frente 1 (Paper I + Projective Tape) failed');
   assert.equal(f1.ternaryPairsChecked, 4032);
+  assert.equal(f1.baseCoreSufficiencyAndBridge.passed, true);
+  assert.equal(f1.baseCoreSufficiencyAndBridge.h5NotDerivedFromH1ToH4Verified, true);
+  assert.equal(
+    f1.baseCoreSufficiencyAndBridge.coupledEnergyPhaseBridge.nonCollapseMarginGammaForNGe2,
+    '90097/1572608'
+  );
+  assert.equal(
+    f1.baseCoreSufficiencyAndBridge.coupledEnergyPhaseBridge.negativeControlNEquals1FailsNonCollapse,
+    true
+  );
+  assert.equal(f1.weightedTailAndCoercivity.passed, true);
+  assert.equal(f1.weightedTailAndCoercivity.unboundedMetricPartialSumAtT8, '255/2');
+  assert.equal(f1.weightedTailAndCoercivity.discreteScaledMinDistanceBetweenDistinctHistories, '1');
+  assert.equal(f1.weightedTailAndCoercivity.uniformCoerciveInfimumCStar, '1/2');
 
   const viability = runTowerViabilityAndBoundaryControls();
   assert.equal(viability.passed, true, 'Tower viability & boundary controls failed');
@@ -58,6 +73,17 @@ export function runAllTowerMathematicsChecks() {
   assert.equal(nonFact.passed, true, 'Non-factorization prover checks failed');
   assert.equal(nonFact.profileSeparationGap, '1/80');
   assert.equal(nonFact.fiberContractionConstant, '9/16');
+  assert.equal(nonFact.responseAtomicFactorizationSwap.passed, true);
+  assert.equal(nonFact.responseAtomicFactorizationSwap.bijectiveEncodingsChecked, 24);
+  assert.equal(nonFact.responseAtomicFactorizationSwap.minimaxUniformError, '1/2');
+  assert.equal(
+    nonFact.responseAtomicFactorizationSwap.negativeControls.swapReplacedByHoldInfimalError,
+    '0'
+  );
+  assert.equal(
+    nonFact.responseAtomicFactorizationSwap.negativeControls.crossStateMessageSwapError,
+    '0'
+  );
 
   const sigma = verifySigmaApproximateAutomodels();
   assert.equal(sigma.passed, true, 'Frente 4 Paper Puente Sigma Automodels failed');
@@ -74,18 +100,66 @@ export function runAllTowerMathematicsChecks() {
   assert.equal(lesions.trials, 30);
   assert.equal(lesions.productGateCoordinate, '1/48');
 
+  const subjectivityCore = verifySubjectivityCoreTheoremsAndNegativeControls();
+  assert.equal(subjectivityCore.passed, true, 'Paper VIII Core Theorems & Negative Controls failed');
+  assert.equal(subjectivityCore.selfIndexEmergence.negativeControl1TieZero.activationAlpha, '0');
+  assert.equal(subjectivityCore.ownershipNonTransfer.negativeControl2ParentTransplant.root1After, '0');
+  assert.equal(
+    subjectivityCore.fiveFieldReduction.negativeControl3BoundaryDiscontinuity.discontinuousAtZeroClearance,
+    true
+  );
+  assert.equal(
+    subjectivityCore.fiveFieldReduction.negativeControl4SamePrimaryFibre.minPrimaryOnlyReconstructionError,
+    '1/2'
+  );
+
   const bodyWorld = runFullBodyWorldBridgeVerification();
   assert.equal(bodyWorld.passed, true, 'Body-World Extension & Paper IX Bridge failed');
   assert.deepEqual(bodyWorld.sixBurdensJointCertificate, [1, 1, 1, 1, 1, 1]);
   assert.equal(bodyWorld.lesionMatrixRank, 6);
   assert.equal(bodyWorld.minimumCertificateMargin, '13/96');
   assert.equal(bodyWorld.sharedHybridObstructionDocumented, true);
+  assert.equal(bodyWorld.indexedQuarticPlantAndFourRootClosure.passed, true);
+  assert.equal(bodyWorld.indexedQuarticPlantAndFourRootClosure.commonIndexFiberContractionBound, '13/16');
+  assert.equal(bodyWorld.indexedQuarticPlantAndFourRootClosure.bodyNormBoundOnSupportA, '61/64');
+  assert.equal(bodyWorld.indexedQuarticPlantAndFourRootClosure.productIntegrationLowerBoundEStar, '1/39366');
+  assert.equal(bodyWorld.indexedQuarticPlantAndFourRootClosure.sixTransitionProbe.readoutStep, 6);
+  assert.equal(
+    bodyWorld.indexedQuarticPlantAndFourRootClosure.fourRootProperAncestryClosure.fourthSignedContrast,
+    '1/262144'
+  );
+  assert.equal(
+    bodyWorld.indexedQuarticPlantAndFourRootClosure.fourRootProperAncestryClosure.noise_cost_margin,
+    '1019/268435456'
+  );
+  assert.equal(
+    bodyWorld.indexedQuarticPlantAndFourRootClosure.equalCostFourRootReplicaNegativeControl.nonpositiveMarginVerified,
+    true
+  );
+  assert.equal(bodyWorld.indexedQuarticPlantAndFourRootClosure.provisional_non_confirmatory, true);
+  assert.equal(bodyWorld.indexedQuarticPlantAndFourRootClosure.external_support_certified, false);
 
   const front5 = runFullStatisticalAdjudicationSuite();
   assert.equal(front5.passed, true, 'Frente 5 Statistical Adjudication (Papers IV & X) failed');
   assert.equal(front5.paper4CampaignControls.exactSize, '5425/262144');
   assert.equal(front5.paper10AdjudicationControls.multinomialLawsVerified, 112);
   assert.equal(front5.paper10AdjudicationControls.stationaryAr1GlsEstimate, '4/5');
+  assert.deepEqual(
+    front5.paper10AdjudicationControls.blockLabelPermutationAndAbstention.coveredErrorCounts,
+    [0, 1, 1, 1, 1, 2]
+  );
+  assert.equal(
+    front5.paper10AdjudicationControls.blockLabelPermutationAndAbstention.meanPermutationRisk,
+    '5/8'
+  );
+  assert.equal(
+    front5.paper10AdjudicationControls.blockLabelPermutationAndAbstention.zeroCoveredErrorTailProbability,
+    '1/6'
+  );
+  assert.equal(
+    front5.paper10AdjudicationControls.blockLabelPermutationAndAbstention.cheapAbstentionRejected,
+    true
+  );
   assert.equal(front5.external_support_certified, false);
 
   // Runtime core coupling & signed language snapshot check
@@ -116,6 +190,7 @@ export function runAllTowerMathematicsChecks() {
     sigma,
     reserve,
     lesions,
+    subjectivityCore,
     bodyWorld,
     front5,
     runtimeTowerSnapshotDigest: snap.digest,

@@ -240,7 +240,7 @@ export const buildInverseLimitWitness = (states = [], epsilon = COMPATIBILITY_EP
   };
 };
 
-import { F, ZERO, ONE, fSum } from '../../simulation/tower/ExactFraction.js';
+import { F, ZERO, ONE, fSum, fMin, fMax } from '../../simulation/tower/ExactFraction.js';
 import {
   ALTERNATING,
   CONTEXTS,
@@ -353,6 +353,9 @@ export const evaluateFoundationalFront1 = () => {
     throw new Error('Omitted-bit control at site 7 failed');
   }
 
+  const baseCoreSufficiencyAndBridge = verifyBaseCoreSufficiencyAndCoupledBridge();
+  const weightedTailAndCoercivity = verifyWeightedTailAndChannelCoercivity();
+
   return {
     passed: true,
     fixedScaleModulusVerified: true,
@@ -363,7 +366,124 @@ export const evaluateFoundationalFront1 = () => {
       interventionalSensitiveAtOne: '3/4'
     },
     projectiveCutAgreements: projectedAgreements,
-    omittedBitSite7PhaseGap: TAP.toString()
+    omittedBitSite7PhaseGap: TAP.toString(),
+    baseCoreSufficiencyAndBridge,
+    weightedTailAndCoercivity
+  };
+};
+
+export const verifyBaseCoreSufficiencyAndCoupledBridge = () => {
+  // 1. prop:minimal & prop:h5-not-derived (QICNBaseSufficiency)
+  // On [0, 1]^2, T_zero(u) = (u_1 / 2 + 1 / 4, u_2 / 2 + 1 / 4) satisfies H1..H4 with q = 1/2
+  // and unique fixed point u_* = (1/2, 1/2) on the constant subspace where H5 spatial spread = 0.
+  const qZeroData = F(1, 2);
+  const fixedPointZeroData = [F(1, 2), F(1, 2)];
+  const stepZeroData = (u) => u.map((coord) => F(coord).div(2).add(F(1, 4)));
+  const steppedFixed = stepZeroData(fixedPointZeroData);
+  const spatialSpreadZeroData = fMax(steppedFixed).sub(fMin(steppedFixed));
+  if (
+    !steppedFixed[0].eq(F(1, 2)) ||
+    !steppedFixed[1].eq(F(1, 2)) ||
+    !spatialSpreadZeroData.isZero()
+  ) {
+    throw new Error('prop:h5-not-derived zero-data constant fixed point check failed');
+  }
+
+  // 2. prop:coupled-energy-phase-bridge (nu=1, kappa=1/4, a(s)=s/4, u in [0,1/4], e(s)=phi(s)=s/64)
+  // Contraction q <= 2048 / 8191 < 1, equilibrium shift <= 8191 / (256 * 6143) = 8191 / 1572608,
+  // non-collapse margin gamma = 90097 / 1572608 > 0 for N >= 2, and negative control N = 1 (spread = 0).
+  const qCoupled = F(2048, 8191);
+  const oneMinusQ = ONE.sub(qCoupled); // 6143 / 8191
+  const perturbationBound = F(1, 256);
+  const equilibriumShiftBound = perturbationBound.div(oneMinusQ); // 8191 / 1572608
+  const unperturbedSpread = F(1, 16); // 98304 / 1572608
+  const nonCollapseMarginGamma = unperturbedSpread.sub(equilibriumShiftBound); // 90097 / 1572608
+  if (
+    !qCoupled.lt(ONE) ||
+    !equilibriumShiftBound.eq(F(8191, 1572608)) ||
+    !nonCollapseMarginGamma.eq(F(90097, 1572608)) ||
+    !nonCollapseMarginGamma.gt(ZERO)
+  ) {
+    throw new Error('prop:coupled-energy-phase-bridge exact rational bounds mismatch');
+  }
+
+  // Negative control N = 1: single-node state has only 1 spatial coordinate -> max - min = 0
+  const singleNodeState = [F(1, 8)];
+  const singleNodeSpread = fMax(singleNodeState).sub(fMin(singleNodeState));
+  if (!singleNodeSpread.isZero()) {
+    throw new Error('Negative control N=1 spatial spread must be 0');
+  }
+
+  return {
+    passed: true,
+    zeroDataFixedPoint: fixedPointZeroData.map((x) => x.toString()),
+    zeroDataContractionFactor: qZeroData.toString(),
+    h5NotDerivedFromH1ToH4Verified: spatialSpreadZeroData.isZero(),
+    coupledEnergyPhaseBridge: {
+      contractionBoundQ: qCoupled.toString(),
+      equilibriumShiftBound: equilibriumShiftBound.toString(),
+      nonCollapseMarginGammaForNGe2: nonCollapseMarginGamma.toString(),
+      negativeControlNEquals1Spread: singleNodeSpread.toString(),
+      negativeControlNEquals1FailsNonCollapse: singleNodeSpread.isZero()
+    }
+  };
+};
+
+export const verifyWeightedTailAndChannelCoercivity = () => {
+  // 1. ex:weighted-tail-failures:
+  // (a) Unbounded non-truncated metric d_t = 4^t |s - u| with w_t = 2^-t gives partial sum (2^(T+1) - 2)|s - u| -> +infinity
+  const sMinusU = F(1, 4);
+  const unboundedPartialSums = [];
+  const truncatedPartialSums = [];
+  let unbSum = ZERO;
+  let truncSum = ZERO;
+  for (let t = 1; t <= 8; t += 1) {
+    const wT = F(1n, 1n << BigInt(t));
+    const dT = F(1n << BigInt(2 * t)).mul(sMinusU);
+    unbSum = unbSum.add(wT.mul(dT));
+    const dTrunc = dT.lte(ONE) ? dT : ONE;
+    truncSum = truncSum.add(wT.mul(dTrunc));
+    unboundedPartialSums.push(unbSum);
+    truncatedPartialSums.push(truncSum);
+  }
+  const closedFormT8 = F((1 << 9) - 2).mul(sMinusU); // 510 * 1/4 = 255/2
+  if (
+    !unboundedPartialSums[7].eq(closedFormT8) ||
+    !unboundedPartialSums[7].gt(F(100)) ||
+    !truncatedPartialSums[7].lte(ONE)
+  ) {
+    throw new Error('ex:weighted-tail-failures unbounded divergence vs truncated convergence check failed');
+  }
+
+  // (b) Discrete scaled metric d_t(x, y) = 2^t * 1_{x != y} on S_t = {0,1}^t gives w_t * d_t = 1 -> noncompact discrete topology
+  const discreteScaledStepContributions = [];
+  for (let t = 1; t <= 6; t += 1) {
+    const wT = F(1n, 1n << BigInt(t));
+    const dT = F(1n << BigInt(t));
+    const contrib = wT.mul(dT);
+    if (!contrib.eq(ONE)) {
+      throw new Error('Discrete scaled metric step contribution w_t * 2^t must equal 1');
+    }
+    discreteScaledStepContributions.push(contrib);
+  }
+
+  // 2. prop:weighted-history: global channel coercivity inf_n (v_n c_n / w_n) > 0 vs coordinatewise Lipschitz
+  // Harmonic ratio v_n c_n / w_n = 1/n has positive coordinatewise c_n > 0 but decays to 0
+  const harmonicRatios = Array.from({ length: 16 }, (_, idx) => F(1, idx + 1));
+  const harmonicMinAt16 = fMin(harmonicRatios);
+  const uniformCoerciveRatios = Array.from({ length: 16 }, () => F(1, 2));
+  const uniformCoerciveInfimum = fMin(uniformCoerciveRatios);
+  if (!harmonicMinAt16.eq(F(1, 16)) || !uniformCoerciveInfimum.eq(F(1, 2))) {
+    throw new Error('Global channel coercivity ratio check failed');
+  }
+
+  return {
+    passed: true,
+    unboundedMetricPartialSumAtT8: unboundedPartialSums[7].toString(),
+    truncatedMetricPartialSumAtT8: truncatedPartialSums[7].toString(),
+    discreteScaledMinDistanceBetweenDistinctHistories: '1',
+    harmonicCoercivityRatioAtN16: harmonicMinAt16.toString(),
+    uniformCoerciveInfimumCStar: uniformCoerciveInfimum.toString()
   };
 };
 

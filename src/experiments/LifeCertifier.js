@@ -395,6 +395,8 @@ export class LifeCertifier {
         'does_not_establish_metaphysical_subjecthood',
         'does_not_establish_external_validation'
       ],
+      witness_scope_boundary:
+        'Ablating or defeating a concrete (witness, margin) tuple invalidates only that candidate tuple; global non-existence requires failure across all admissible candidates (prop:ablation-prediction, prop:complexity-only-negative-control).',
       interpretation_boundary: LIFE_INTERPRETATION_BOUNDARY
     };
   }

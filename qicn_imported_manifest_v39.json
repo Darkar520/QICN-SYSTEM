@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-06-24T05:42:14",
-  "source_root": "C:/Users/irisp/OneDrive/Escritorio/QICN-FRAMEWORK/rigid-identity-framework",
+  "source_root": "C:/Users/irisp/OneDrive/Escritorio/qicn-framework-ordenado/rigid-identity-framework",
   "destination_root": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM",
   "mode": "non_destructive_quarantine_import",
   "files_total": 193,
@@ -130,8 +130,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_scripts/scripts/build-monolithic-volume.js",
       "source_relative": "scripts/build-monolithic-volume.js",
       "destination_relative": "qicn_imported_scripts/scripts/build-monolithic-volume.js",
-      "sha256_source": "055f64034e54a663c20d4e1290c966ad049da74297d872a544c93b1f86ef97f5",
-      "sha256_destination": "055f64034e54a663c20d4e1290c966ad049da74297d872a544c93b1f86ef97f5",
+      "sha256_source": "2780ecefef113c483ac7cee3065208a5dc187cc5ba16689d3403f22e17576277",
+      "sha256_destination": "2780ecefef113c483ac7cee3065208a5dc187cc5ba16689d3403f22e17576277",
       "hash_match": true
     },
     {
@@ -346,8 +346,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_scripts/scripts/registry-lib.js",
       "source_relative": "scripts/registry-lib.js",
       "destination_relative": "qicn_imported_scripts/scripts/registry-lib.js",
-      "sha256_source": "c9b0ac29aed191c0458b86f49ef88b2fb18ad98479663f33c1b5c7662e5bd4e5",
-      "sha256_destination": "c9b0ac29aed191c0458b86f49ef88b2fb18ad98479663f33c1b5c7662e5bd4e5",
+      "sha256_source": "ceb6f2c257d0753cc807d1253d1523cb50a644be7489a89761adcbb8d774190a",
+      "sha256_destination": "ceb6f2c257d0753cc807d1253d1523cb50a644be7489a89761adcbb8d774190a",
       "hash_match": true
     },
     {
@@ -859,8 +859,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/CORPUS_HEALTH_REPORT.md",
       "source_relative": "docs/reports/CORPUS_HEALTH_REPORT.md",
       "destination_relative": "qicn_imported_reports/reports/CORPUS_HEALTH_REPORT.md",
-      "sha256_source": "f4d8e79a78a053391bcbbbdcde4126e8c19aec17db338212a74ead10aec99364",
-      "sha256_destination": "f4d8e79a78a053391bcbbbdcde4126e8c19aec17db338212a74ead10aec99364",
+      "sha256_source": "392844dbc6d42aa1681a82950934177d11c54a4ae3bf122e86f51a725de9233b",
+      "sha256_destination": "392844dbc6d42aa1681a82950934177d11c54a4ae3bf122e86f51a725de9233b",
       "hash_match": true
     },
     {
@@ -868,8 +868,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/DEPENDENCY_GRAPH.dot",
       "source_relative": "docs/reports/DEPENDENCY_GRAPH.dot",
       "destination_relative": "qicn_imported_reports/reports/DEPENDENCY_GRAPH.dot",
-      "sha256_source": "6ee36a3bce4537b45f16cfe1b4a4e5d1841f99de8176b3a5fbf2eaf7cbae52aa",
-      "sha256_destination": "6ee36a3bce4537b45f16cfe1b4a4e5d1841f99de8176b3a5fbf2eaf7cbae52aa",
+      "sha256_source": "552d1c4fae2e507c50cc1a8b13c2088231df1dcdf452371411fae56e790548ce",
+      "sha256_destination": "552d1c4fae2e507c50cc1a8b13c2088231df1dcdf452371411fae56e790548ce",
       "hash_match": true
     },
     {
@@ -886,8 +886,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/EPISTEMIC_RISK_HEATMAP.md",
       "source_relative": "docs/reports/EPISTEMIC_RISK_HEATMAP.md",
       "destination_relative": "qicn_imported_reports/reports/EPISTEMIC_RISK_HEATMAP.md",
-      "sha256_source": "9721743dd0e7e9c3ef9dad23d51d5e413358bce6d33d02f8237d4236d986f8d6",
-      "sha256_destination": "9721743dd0e7e9c3ef9dad23d51d5e413358bce6d33d02f8237d4236d986f8d6",
+      "sha256_source": "852cf94d21d364ea11bee6bb32580924dc289dafbb49be196957517ab334d39d",
+      "sha256_destination": "852cf94d21d364ea11bee6bb32580924dc289dafbb49be196957517ab334d39d",
       "hash_match": true
     },
     {
@@ -904,8 +904,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/EXTRACTOR_REPRODUCIBILITY_AUDIT.md",
       "source_relative": "docs/reports/EXTRACTOR_REPRODUCIBILITY_AUDIT.md",
       "destination_relative": "qicn_imported_reports/reports/EXTRACTOR_REPRODUCIBILITY_AUDIT.md",
-      "sha256_source": "6580e84b4eea04ef0044075114fe7fe9adac5556f045505f8769515fe8d132ac",
-      "sha256_destination": "6580e84b4eea04ef0044075114fe7fe9adac5556f045505f8769515fe8d132ac",
+      "sha256_source": "1f6da38221fe53b587c9ce2124be42e19ae98f66e1debcbd0c465a4f68b3864d",
+      "sha256_destination": "1f6da38221fe53b587c9ce2124be42e19ae98f66e1debcbd0c465a4f68b3864d",
       "hash_match": true
     },
     {
@@ -1084,8 +1084,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/I_INT_CURATION_OVERLAY_v1.json",
       "source_relative": "docs/reports/I_INT_CURATION_OVERLAY_v1.json",
       "destination_relative": "qicn_imported_reports/reports/I_INT_CURATION_OVERLAY_v1.json",
-      "sha256_source": "d7a316617fabdf2992721d6981f0bb39af80352a39f6d50300f50504010c9163",
-      "sha256_destination": "d7a316617fabdf2992721d6981f0bb39af80352a39f6d50300f50504010c9163",
+      "sha256_source": "9bf2a2128112ebc2f35c06976ade08b04f28cfd45bd01d11867686c5f5f3f546",
+      "sha256_destination": "9bf2a2128112ebc2f35c06976ade08b04f28cfd45bd01d11867686c5f5f3f546",
       "hash_match": true
     },
     {
@@ -1129,8 +1129,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/MACRO_COLLISION_REPORT.md",
       "source_relative": "docs/reports/MACRO_COLLISION_REPORT.md",
       "destination_relative": "qicn_imported_reports/reports/MACRO_COLLISION_REPORT.md",
-      "sha256_source": "c868ba640d6fbf180eac7d7ffa1fed2b8f8253dff818cb91ed838e119ea8e9db",
-      "sha256_destination": "c868ba640d6fbf180eac7d7ffa1fed2b8f8253dff818cb91ed838e119ea8e9db",
+      "sha256_source": "3c12b59996c1cea65c2597e676839e860283993a27453b57530d93b263abbc4b",
+      "sha256_destination": "3c12b59996c1cea65c2597e676839e860283993a27453b57530d93b263abbc4b",
       "hash_match": true
     },
     {
@@ -1138,8 +1138,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/MONOLITHIC_BUILD_QUALITY_GATE_v20.json",
       "source_relative": "docs/reports/MONOLITHIC_BUILD_QUALITY_GATE_v20.json",
       "destination_relative": "qicn_imported_reports/reports/MONOLITHIC_BUILD_QUALITY_GATE_v20.json",
-      "sha256_source": "c48a6cbc732a4300135e34d141741038e5b7d3fcadc6ad2aac85703fde5f2a85",
-      "sha256_destination": "c48a6cbc732a4300135e34d141741038e5b7d3fcadc6ad2aac85703fde5f2a85",
+      "sha256_source": "656b108dec6ef27bc3e38f1f6e5de7c6f99f57cfe8ca5717b56f8fdc4a3061ca",
+      "sha256_destination": "656b108dec6ef27bc3e38f1f6e5de7c6f99f57cfe8ca5717b56f8fdc4a3061ca",
       "hash_match": true
     },
     {
@@ -1147,8 +1147,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/MONOLITHIC_BUILD_REPORT.md",
       "source_relative": "docs/reports/MONOLITHIC_BUILD_REPORT.md",
       "destination_relative": "qicn_imported_reports/reports/MONOLITHIC_BUILD_REPORT.md",
-      "sha256_source": "5114397cf6243e3346f7e75f5152d19b1da4edc7f902e673e19b1250fae207e8",
-      "sha256_destination": "5114397cf6243e3346f7e75f5152d19b1da4edc7f902e673e19b1250fae207e8",
+      "sha256_source": "93635abb7e1954e58392426ca745643abbb098249c39dff8a09c63e5ff7b35e0",
+      "sha256_destination": "93635abb7e1954e58392426ca745643abbb098249c39dff8a09c63e5ff7b35e0",
       "hash_match": true
     },
     {
@@ -1156,8 +1156,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/MONOLITHIC_COMPILE_RISK_AUDIT.md",
       "source_relative": "docs/reports/MONOLITHIC_COMPILE_RISK_AUDIT.md",
       "destination_relative": "qicn_imported_reports/reports/MONOLITHIC_COMPILE_RISK_AUDIT.md",
-      "sha256_source": "f354c8300e90e6e01b44e829fa3a187789ffd4111012fb55e65fc138eb9032f2",
-      "sha256_destination": "f354c8300e90e6e01b44e829fa3a187789ffd4111012fb55e65fc138eb9032f2",
+      "sha256_source": "ca7869297a7423f2f0e95234ed9b199ce02cbdce9952cb0ded8a1d20aa26bac5",
+      "sha256_destination": "ca7869297a7423f2f0e95234ed9b199ce02cbdce9952cb0ded8a1d20aa26bac5",
       "hash_match": true
     },
     {
@@ -1561,8 +1561,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/THEOREM_ATLAS.md",
       "source_relative": "docs/reports/THEOREM_ATLAS.md",
       "destination_relative": "qicn_imported_reports/reports/THEOREM_ATLAS.md",
-      "sha256_source": "cbc2f31052228022882f9fa1c0d4084913afa8ecd8d510e872afe06cfe85e08f",
-      "sha256_destination": "cbc2f31052228022882f9fa1c0d4084913afa8ecd8d510e872afe06cfe85e08f",
+      "sha256_source": "06f4eea6cfe46c411ea782079eff2f2bbedc92311e6781d0f33d33a09e76cbb5",
+      "sha256_destination": "06f4eea6cfe46c411ea782079eff2f2bbedc92311e6781d0f33d33a09e76cbb5",
       "hash_match": true
     },
     {
@@ -1570,8 +1570,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/THEORY_DEPENDENCY_GRAPH_v1_REPORT.md",
       "source_relative": "docs/reports/THEORY_DEPENDENCY_GRAPH_v1_REPORT.md",
       "destination_relative": "qicn_imported_reports/reports/THEORY_DEPENDENCY_GRAPH_v1_REPORT.md",
-      "sha256_source": "96034b83ab97ad523dc200a411cf1e3957f763f48a00070c7417b08a820bece7",
-      "sha256_destination": "96034b83ab97ad523dc200a411cf1e3957f763f48a00070c7417b08a820bece7",
+      "sha256_source": "b781f673940114355625bdb9d51f74b0d0ee3a5e4e605cdf6cffdc08e00c77b1",
+      "sha256_destination": "b781f673940114355625bdb9d51f74b0d0ee3a5e4e605cdf6cffdc08e00c77b1",
       "hash_match": true
     },
     {
@@ -1678,8 +1678,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_reports/reports/V35_ALL_LEGACY_VERIFICATION.json",
       "source_relative": "docs/reports/V35_ALL_LEGACY_VERIFICATION.json",
       "destination_relative": "qicn_imported_reports/reports/V35_ALL_LEGACY_VERIFICATION.json",
-      "sha256_source": "689edb0fd93843c9ff1ba6e6fd8b093b2b914b004cabef638df4121f886dd23a",
-      "sha256_destination": "689edb0fd93843c9ff1ba6e6fd8b093b2b914b004cabef638df4121f886dd23a",
+      "sha256_source": "ce2e059b23303519e51e3dfc2bd6cb305b5e8665277ccb1749cc1030376e6d0d",
+      "sha256_destination": "ce2e059b23303519e51e3dfc2bd6cb305b5e8665277ccb1749cc1030376e6d0d",
       "hash_match": true
     },
     {
@@ -1705,8 +1705,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_registry/registry/macros.jsonl",
       "source_relative": "registry/macros.jsonl",
       "destination_relative": "qicn_imported_registry/registry/macros.jsonl",
-      "sha256_source": "c9054e0988abba49ac09ffdcee36790435c166da2372be690de392c6758a5746",
-      "sha256_destination": "c9054e0988abba49ac09ffdcee36790435c166da2372be690de392c6758a5746",
+      "sha256_source": "511aedfd43c2b6b573a74151e4f255939b522b01bf9c99064d5614392e4fa33b",
+      "sha256_destination": "511aedfd43c2b6b573a74151e4f255939b522b01bf9c99064d5614392e4fa33b",
       "hash_match": true
     },
     {
@@ -1741,8 +1741,8 @@
       "destination": "C:/Users/irisp/OneDrive/Escritorio/QICN-SYSTEM/qicn_imported_registry/registry/theorems.jsonl",
       "source_relative": "registry/theorems.jsonl",
       "destination_relative": "qicn_imported_registry/registry/theorems.jsonl",
-      "sha256_source": "af57c85fc3458abb4158484e5e220025197134491b7ffe68d35a7d562ea96c3f",
-      "sha256_destination": "af57c85fc3458abb4158484e5e220025197134491b7ffe68d35a7d562ea96c3f",
+      "sha256_source": "667e8006ab13220c694e46f82ca5c5949c2f0b26b919bb45a642e20267dbd9ef",
+      "sha256_destination": "667e8006ab13220c694e46f82ca5c5949c2f0b26b919bb45a642e20267dbd9ef",
       "hash_match": true
     }
   ]

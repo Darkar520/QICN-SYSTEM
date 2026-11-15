@@ -68,9 +68,11 @@ Verified alignment facts from those release-candidate surfaces:
 ## Pinning Outcome
 
 - Current cross-repo alignment target:
-  `QICN-RELEASE/main@92d5d2c3ea91c65e29dc8e102bed504866cffd2d` with `BaseCore`
+  `QICN-RELEASE/main@5769ecf418a2bb92f1c338bc8b11c7fa09405b65` (`docs/bridge_pin.v1.json` pin `5769ecf`) with `BaseCore`
   as active base layer, `canonical_core_legacy` as preserved legacy, and
-  Papers I-IX as downstream public packages.
+  Papers I-X + Bridge as downstream public packages.
+- Local Stage-3 handoff / scaffold boundary (Point 6):
+  `paper9_phenomenal_bridge_organization/` and `paper10_external_adjudication_and_human_comparators/` in `QICN-SYSTEM` are local Stage-3 handoff and Stage-3-0 scaffold artifacts consumed by `verify:paper9-handoff-readiness`, `verify:stage3-opening-readiness`, and `verify:stage3-0-scaffold`; the authoritative mathematical manuscripts for Paper IX and Paper X live in `qicn-framework-ordenado/rigid-identity-framework/` at commit `5769ecf418a2bb92f1c338bc8b11c7fa09405b65`.
 - Historical public freeze provenance retained:
   `canonical-freeze-2026-03-01` -> `2d7504be95ca33af5941e30abf7059dc2774edca`.
 - Separate direct upstream theory working-tree pin for the original private

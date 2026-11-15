@@ -5,7 +5,8 @@ import {
   generateDegreePartition,
   generateRandomBalancedPartition,
   metricsDistance,
-  verifyNonFactorization
+  verifyNonFactorization,
+  verifyResponseAtomicFactorizationSwap
 } from '../src/experiments/NonFactorizationProver.js';
 import {
   runCoherencePartitionFactorizationControl,
@@ -93,6 +94,13 @@ const testGraph = Array.from({ length: 48 }, (_, index) => ({
   assert.ok(!integrationInvariant.runtimeSignals.includes('integration.non_factorizable'));
   assert.equal(integrationInvariant.maturity, 'PARTIAL_RUNTIME_PATH');
   assert.equal(buildCanonicalInvariantPackage({}).invariants.I_int.score, 0, 'missing runtime data cannot create an integration score');
+
+  const atomicSwap = verifyResponseAtomicFactorizationSwap();
+  assert.equal(atomicSwap.passed, true);
+  assert.equal(atomicSwap.bijectiveEncodingsChecked, 24);
+  assert.equal(atomicSwap.minimaxUniformError, '1/2');
+  assert.equal(atomicSwap.negativeControls.swapReplacedByHoldInfimalError, '0');
+  assert.equal(atomicSwap.negativeControls.crossStateMessageSwapError, '0');
 
   console.log('OK: non-factorization tests passed');
 })();

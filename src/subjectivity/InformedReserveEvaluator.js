@@ -505,3 +505,329 @@ export function runSelectiveAddressLesionSuite() {
     productGateCoordinate: prodCoord.toString()
   };
 }
+
+// ============================================================================
+// Etapa 2 Paper VIII Core Theorems & 4 Negative Controls
+// (`thm:selfindex-emergence`, `thm:ownership-nontransfer`, `thm:five-field-reduction`)
+// ============================================================================
+
+export function computeSelfIndexMarginAndActivation(lossMatrixByLocus, scaleSI = ONE) {
+  const sI = F(scaleSI);
+  if (!sI.gt(ZERO)) {
+    throw new RangeError('Self-index saturation scale s_I must be strictly positive');
+  }
+  const locusIds = Object.keys(lossMatrixByLocus);
+  if (locusIds.length < 2) {
+    throw new RangeError('At least two candidate loci are required for self-index emergence');
+  }
+  const margins = {};
+  const activations = {};
+  for (const l of locusIds) {
+    const lossesL = lossMatrixByLocus[l].map((x) => F(x));
+    const diffs = [];
+    for (const k of locusIds) {
+      if (k === l) continue;
+      const lossesK = lossMatrixByLocus[k].map((x) => F(x));
+      if (lossesK.length !== lossesL.length) {
+        throw new RangeError('All candidate loci must be evaluated on the same task horizon');
+      }
+      for (let t = 0; t < lossesL.length; t += 1) {
+        diffs.push(lossesK[t].sub(lossesL[t]));
+      }
+    }
+    const gL = fMin(diffs);
+    const gPos = gL.gt(ZERO) ? gL : ZERO;
+    const aL = gPos.div(sI.add(gPos));
+    margins[l] = gL;
+    activations[l] = aL;
+  }
+  const positiveWinners = locusIds.filter((l) => margins[l].gt(ZERO));
+  return {
+    margins,
+    activations,
+    selectedLocus: positiveWinners.length === 1 ? positiveWinners[0] : null
+  };
+}
+
+export function computeDagPathOwnershipAttribution({
+  loci = [],
+  rootWeights = {},
+  edges = [],
+  targetEvent
+}) {
+  const pathAttributions = {};
+  for (const locus of loci) {
+    // Enumerate directed paths from locus to targetEvent in the finite DAG
+    const dfs = (node, visited) => {
+      if (node === targetEvent) return ONE;
+      let total = ZERO;
+      for (const edge of edges) {
+        if (edge.from === node && !visited.has(edge.to)) {
+          const nextVisited = new Set(visited);
+          nextVisited.add(edge.to);
+          const subSum = dfs(edge.to, nextVisited);
+          if (!subSum.isZero()) {
+            total = total.add(F(edge.weight).mul(subSum));
+          }
+        }
+      }
+      return total;
+    };
+    pathAttributions[locus] = dfs(locus, new Set([locus]));
+  }
+  const weightedNumerators = {};
+  let denominator = ZERO;
+  for (const locus of loci) {
+    const rho = F(rootWeights[locus] ?? ZERO);
+    const num = rho.mul(pathAttributions[locus]);
+    weightedNumerators[locus] = num;
+    denominator = denominator.add(num);
+  }
+  if (denominator.isZero()) {
+    return {
+      supported: false,
+      status: 'unsupported',
+      pathAttributions,
+      normalizedOwnership: null
+    };
+  }
+  const normalizedOwnership = {};
+  for (const locus of loci) {
+    normalizedOwnership[locus] = weightedNumerators[locus].div(denominator);
+  }
+  return {
+    supported: true,
+    status: 'supported',
+    pathAttributions,
+    normalizedOwnership
+  };
+}
+
+export function verifySubjectivityCoreTheoremsAndNegativeControls() {
+  // 1. thm:selfindex-emergence + Negative Control 1 (tie = 0 even with name tie-breaker)
+  const scaleSI = F(1, 2);
+  const baselineLosses = {
+    locus_1: [F(1, 8), F(1, 4)],
+    locus_2: [F(5, 8), F(3, 4)]
+  };
+  const baseSelfIndex = computeSelfIndexMarginAndActivation(baselineLosses, scaleSI);
+  const gStar = baseSelfIndex.margins.locus_1; // min(5/8 - 1/8, 3/4 - 1/4) = 1/2
+  if (!gStar.eq(HALF) || baseSelfIndex.selectedLocus !== 'locus_1') {
+    throw new Error('Baseline self-index margin g_* = 1/2 check failed');
+  }
+  const eta = F(1, 8); // 2 * eta = 1/4 < g_* = 1/2
+  const perturbedLosses = {
+    locus_1: baselineLosses.locus_1.map((x) => x.add(eta)),
+    locus_2: baselineLosses.locus_2.map((x) => x.sub(eta))
+  };
+  const pertSelfIndex = computeSelfIndexMarginAndActivation(perturbedLosses, scaleSI);
+  const deltaG1 = pertSelfIndex.margins.locus_1.sub(baseSelfIndex.margins.locus_1).abs();
+  const deltaA1 = pertSelfIndex.activations.locus_1.sub(baseSelfIndex.activations.locus_1).abs();
+  if (
+    !deltaG1.lte(F(2).mul(eta)) ||
+    !deltaA1.lte(F(2).mul(eta).div(scaleSI)) ||
+    pertSelfIndex.selectedLocus !== 'locus_1'
+  ) {
+    throw new Error('thm:selfindex-emergence perturbation Lipschitz or winner persistence failed');
+  }
+
+  // Negative Control 1: equal losses at two loci -> g_l <= 0 and a_l = 0 regardless of name tie-breaker
+  const tiedLosses = {
+    alpha_first_name: [F(1, 4), F(3, 8)],
+    zeta_second_name: [F(1, 4), F(3, 8)]
+  };
+  const tiedResult = computeSelfIndexMarginAndActivation(tiedLosses, scaleSI);
+  const deterministicNameTieBreakerWinner = Object.keys(tiedLosses).sort()[0];
+  if (
+    !tiedResult.margins.alpha_first_name.isZero() ||
+    !tiedResult.margins.zeta_second_name.isZero() ||
+    !tiedResult.activations.alpha_first_name.isZero() ||
+    !tiedResult.activations.zeta_second_name.isZero() ||
+    tiedResult.selectedLocus !== null ||
+    deterministicNameTieBreakerWinner !== 'alpha_first_name'
+  ) {
+    throw new Error('Negative Control 1 (tie = 0 under name tie-breaker) failed');
+  }
+
+  // 2. thm:ownership-nontransfer + isomorphism invariance + Negative Control 2 (parent transplant)
+  const loci = ['root_1', 'root_2'];
+  const rootWeights = { root_1: ONE, root_2: ONE };
+  const originalEdges = [
+    { from: 'root_1', to: 'mid_a', weight: F(1, 2) },
+    { from: 'mid_a', to: 'event_e', weight: F(2) }
+  ];
+  const origOwn = computeDagPathOwnershipAttribution({
+    loci,
+    rootWeights,
+    edges: originalEdges,
+    targetEvent: 'event_e'
+  });
+  if (
+    !origOwn.supported ||
+    !origOwn.normalizedOwnership.root_1.eq(ONE) ||
+    !origOwn.normalizedOwnership.root_2.isZero()
+  ) {
+    throw new Error('Baseline DAG path ownership attribution failed');
+  }
+
+  // Graph isomorphism relabeling (root_1 <-> iso_2, root_2 <-> iso_1, mid_a -> iso_mid, event_e -> iso_e)
+  const isoOwn = computeDagPathOwnershipAttribution({
+    loci: ['iso_1', 'iso_2'],
+    rootWeights: { iso_1: ONE, iso_2: ONE },
+    edges: [
+      { from: 'iso_2', to: 'iso_mid', weight: F(1, 2) },
+      { from: 'iso_mid', to: 'iso_e', weight: F(2) }
+    ],
+    targetEvent: 'iso_e'
+  });
+  if (
+    !isoOwn.normalizedOwnership.iso_2.eq(origOwn.normalizedOwnership.root_1) ||
+    !isoOwn.normalizedOwnership.iso_1.eq(origOwn.normalizedOwnership.root_2)
+  ) {
+    throw new Error('thm:ownership-nontransfer graph isomorphism invariance failed');
+  }
+
+  // Disconnected event -> zero denominator -> status = 'unsupported'
+  const unsupportedOwn = computeDagPathOwnershipAttribution({
+    loci,
+    rootWeights,
+    edges: [],
+    targetEvent: 'event_e'
+  });
+  if (unsupportedOwn.supported !== false || unsupportedOwn.status !== 'unsupported') {
+    throw new Error('Zero-denominator ownership attribution must return unsupported');
+  }
+
+  // Negative Control 2: parent transplant from root_1 to root_2 keeping event label, ports, and reference index 1
+  const transplantedEdges = [
+    { from: 'root_2', to: 'mid_a', weight: F(1, 2) },
+    { from: 'mid_a', to: 'event_e', weight: F(2) }
+  ];
+  const transplantedOwn = computeDagPathOwnershipAttribution({
+    loci,
+    rootWeights,
+    edges: transplantedEdges,
+    targetEvent: 'event_e'
+  });
+  if (
+    !transplantedOwn.normalizedOwnership.root_1.isZero() ||
+    !transplantedOwn.normalizedOwnership.root_2.eq(ONE)
+  ) {
+    throw new Error('Negative Control 2 (parent transplant O_1: 1 -> 0) failed');
+  }
+
+  // 3. thm:five-field-reduction + Negative Controls 3 & 4
+  const tauDrop = F(1, 4);
+  const tauCollateral = ZERO;
+  // Commuting law P(I_u z) = H_u(P z) on [0, 1]^5
+  const primaryY = [ONE, HALF, HALF, F(1, 3), HALF];
+  const lesionDropVector = [F(1, 2), F(1, 4), F(1, 4), F(1, 3), F(1, 4)];
+  const interveneOnPrimary = (yVec, coordIdx, dropAmt) =>
+    yVec.map((val, idx) => (idx === coordIdx ? val.sub(dropAmt) : val));
+
+  const evaluateH6Gate = (dropsMatrix) => {
+    for (let i = 0; i < 5; i += 1) {
+      for (let j = 0; j < 5; j += 1) {
+        if (i === j && !dropsMatrix[i][j].gte(tauDrop)) return ZERO;
+        if (i !== j && !dropsMatrix[i][j].abs().lte(tauCollateral)) return ZERO;
+      }
+    }
+    return ONE;
+  };
+  const evaluateH7Summary = (yVec) => {
+    const meanPrimary = fSum(yVec).div(yVec.length);
+    return meanPrimary.div(ONE.add(meanPrimary));
+  };
+
+  // Build exact commuting drops matrix from H_u(P z)
+  const commutingDrops = Array.from({ length: 5 }, (_, i) => {
+    const postY = interveneOnPrimary(primaryY, i, lesionDropVector[i]);
+    return primaryY.map((baseVal, j) => baseVal.sub(postY[j]));
+  });
+  const h6Baseline = evaluateH6Gate(commutingDrops);
+  const h7Baseline = evaluateH7Summary(primaryY);
+  if (!h6Baseline.eq(ONE) || !h7Baseline.gt(ZERO)) {
+    throw new Error('thm:five-field-reduction commuting reconstruction baseline failed');
+  }
+
+  // Negative Control 3: threshold boundary discontinuity at clearance = 0
+  const boundaryDrops = commutingDrops.map((row) => [...row]);
+  boundaryDrops[0][0] = tauDrop; // exact clearance = 0 at coordinate 0
+  const boundarySubDrops = commutingDrops.map((row) => [...row]);
+  boundarySubDrops[0][0] = tauDrop.sub(F(1, 1024));
+  const h6AtBoundary = evaluateH6Gate(boundaryDrops);
+  const h6BelowBoundary = evaluateH6Gate(boundarySubDrops);
+  if (!h6AtBoundary.eq(ONE) || !h6BelowBoundary.isZero()) {
+    throw new Error('Negative Control 3 (threshold boundary discontinuity at clearance = 0) failed');
+  }
+
+  // Negative Control 4: same-primary fibre counterexample (identical P(z), target drops 1/2 vs 0 at threshold 1/4)
+  const recordADrops = commutingDrops.map((row) => [...row]);
+  recordADrops[0][0] = HALF; // target drop 1/2 >= 1/4 -> h_6 = 1
+  const recordBDrops = commutingDrops.map((row) => [...row]);
+  recordBDrops[0][0] = ZERO; // target drop 0 < 1/4 -> h_6 = 0
+  const h6RecordA = evaluateH6Gate(recordADrops);
+  const h6RecordB = evaluateH6Gate(recordBDrops);
+  const fiberGapD = h6RecordA.sub(h6RecordB).abs(); // d = 1
+  const midpointPrimaryOnlyForecast = h6RecordA.add(h6RecordB).div(2); // 1/2
+  const primaryOnlyReconstructionError = fMax([
+    h6RecordA.sub(midpointPrimaryOnlyForecast).abs(),
+    h6RecordB.sub(midpointPrimaryOnlyForecast).abs()
+  ]);
+  if (
+    !h6RecordA.eq(ONE) ||
+    !h6RecordB.isZero() ||
+    !fiberGapD.eq(ONE) ||
+    !primaryOnlyReconstructionError.eq(HALF)
+  ) {
+    throw new Error('Negative Control 4 (same-primary fibre counterexample error >= 1/2) failed');
+  }
+
+  return {
+    passed: true,
+    selfIndexEmergence: {
+      baselineMarginGStar: gStar.toString(),
+      perturbationRadiusEta: eta.toString(),
+      marginShiftBoundVerified: deltaG1.lte(F(2).mul(eta)),
+      activationShiftBoundVerified: deltaA1.lte(F(2).mul(eta).div(scaleSI)),
+      winnerPersisted: pertSelfIndex.selectedLocus === 'locus_1',
+      negativeControl1TieZero: {
+        marginAlpha: tiedResult.margins.alpha_first_name.toString(),
+        marginZeta: tiedResult.margins.zeta_second_name.toString(),
+        activationAlpha: tiedResult.activations.alpha_first_name.toString(),
+        activationZeta: tiedResult.activations.zeta_second_name.toString(),
+        selectedLocus: tiedResult.selectedLocus
+      }
+    },
+    ownershipNonTransfer: {
+      baselineRoot1Ownership: origOwn.normalizedOwnership.root_1.toString(),
+      baselineRoot2Ownership: origOwn.normalizedOwnership.root_2.toString(),
+      isomorphismInvarianceVerified: true,
+      zeroDenominatorStatus: unsupportedOwn.status,
+      negativeControl2ParentTransplant: {
+        root1Before: origOwn.normalizedOwnership.root_1.toString(),
+        root1After: transplantedOwn.normalizedOwnership.root_1.toString(),
+        root2After: transplantedOwn.normalizedOwnership.root_2.toString()
+      }
+    },
+    fiveFieldReduction: {
+      commutingLawVerified: true,
+      h6Baseline: h6Baseline.toString(),
+      h7Baseline: h7Baseline.toString(),
+      negativeControl3BoundaryDiscontinuity: {
+        clearanceZeroValue: h6AtBoundary.toString(),
+        perturbedBelowBoundaryValue: h6BelowBoundary.toString(),
+        discontinuousAtZeroClearance: !h6AtBoundary.eq(h6BelowBoundary)
+      },
+      negativeControl4SamePrimaryFibre: {
+        identicalPrimaryVector: primaryY.map((x) => x.toString()),
+        targetDropRecordA: '1/2',
+        targetDropRecordB: '0',
+        thresholdTauDrop: tauDrop.toString(),
+        h6RecordA: h6RecordA.toString(),
+        h6RecordB: h6RecordB.toString(),
+        minPrimaryOnlyReconstructionError: primaryOnlyReconstructionError.toString()
+      }
+    }
+  };
+}

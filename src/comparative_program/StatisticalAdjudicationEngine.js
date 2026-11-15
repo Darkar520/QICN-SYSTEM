@@ -180,6 +180,87 @@ export function evaluateQuadraticForm(matrix, vector) {
   return sum;
 }
 
+export function verifyBlockLabelPermutationAndAbstentionControls() {
+  // prop:block-label-permutation: 4 blocks, 2 'h' and 2 'm', positive guesses on blocks 0,1 and abstention on blocks 2,3
+  const balancedLabelPermutations = [
+    ['h', 'h', 'm', 'm'],
+    ['h', 'm', 'h', 'm'],
+    ['h', 'm', 'm', 'h'],
+    ['m', 'h', 'h', 'm'],
+    ['m', 'h', 'm', 'h'],
+    ['m', 'm', 'h', 'h']
+  ];
+  const fixedDecisions = ['h', 'h', 'abstain', 'abstain'];
+  const gamma = F(3, 4);
+  const coveredErrorCounts = [];
+  const permutationRisks = [];
+
+  for (const labels of balancedLabelPermutations) {
+    let coveredErrors = 0;
+    let totalLoss = ZERO;
+    for (let i = 0; i < 4; i += 1) {
+      if (fixedDecisions[i] === 'abstain') {
+        totalLoss = totalLoss.add(gamma);
+      } else if (fixedDecisions[i] !== labels[i]) {
+        coveredErrors += 1;
+        totalLoss = totalLoss.add(ONE);
+      }
+    }
+    coveredErrorCounts.push(coveredErrors);
+    permutationRisks.push(totalLoss.div(4));
+  }
+
+  const sortedErrors = [...coveredErrorCounts].sort((a, b) => a - b);
+  const expectedErrors = [0, 1, 1, 1, 1, 2];
+  if (
+    sortedErrors.length !== 6 ||
+    sortedErrors.some((val, idx) => val !== expectedErrors[idx])
+  ) {
+    throw new Error(`Expected covered-error counts [0,1,1,1,1,2], got ${sortedErrors}`);
+  }
+  const meanRisk = fSum(permutationRisks).div(6);
+  if (!meanRisk.eq(F(5, 8))) {
+    throw new Error(`Expected mean permutation risk 5/8 at gamma=3/4, got ${meanRisk}`);
+  }
+  const zeroErrorCount = coveredErrorCounts.filter((c) => c === 0).length;
+  const zeroErrorTailProb = F(zeroErrorCount, balancedLabelPermutations.length);
+  if (!zeroErrorTailProb.eq(F(1, 6))) {
+    throw new Error(`Expected exact lower-tail probability 1/6 for zero covered errors, got ${zeroErrorTailProb}`);
+  }
+
+  // Abstention negative controls:
+  // 1) always-abstain (C = 0) gives risk R_gamma = gamma regardless of conditional error e
+  const alwaysAbstainRisks = [ZERO, HALF, ONE].map((condError) => {
+    const coverage = ZERO;
+    return coverage.mul(condError).add(ONE.sub(coverage).mul(gamma));
+  });
+  if (alwaysAbstainRisks.some((r) => !r.eq(gamma))) {
+    throw new Error('Always-abstain risk must equal gamma regardless of e');
+  }
+
+  // 2) cheap abstention (gamma < 1/2) beats random guessing (1/2) with zero information and must be rejected
+  const cheapGamma = F(1, 4);
+  const randomGuessRisk = HALF;
+  const cheapAbstentionBeatsGuessing = cheapGamma.lt(randomGuessRisk);
+  const admissibleGammaFloor = HALF;
+  const cheapAbstentionRejected = cheapGamma.lt(admissibleGammaFloor) && gamma.gte(admissibleGammaFloor);
+  if (!cheapAbstentionBeatsGuessing || !cheapAbstentionRejected) {
+    throw new Error('Cheap abstention (gamma < 1/2) rejection check failed');
+  }
+
+  return {
+    passed: true,
+    blockCount: 4,
+    permutationCount: 6,
+    coveredErrorCounts: sortedErrors,
+    abstentionCostGamma: gamma.toString(),
+    meanPermutationRisk: meanRisk.toString(),
+    zeroCoveredErrorTailProbability: zeroErrorTailProb.toString(),
+    alwaysAbstainRiskAtZeroCoverage: gamma.toString(),
+    cheapAbstentionRejected
+  };
+}
+
 export function runPaper10AdjudicationControls() {
   // 1. Multinomial & Clopper-Pearson block sampling controls (112 laws)
   const alpha = F(1, 5);
@@ -296,6 +377,8 @@ export function runPaper10AdjudicationControls() {
     throw new Error(`Expected stationary GLS estimate 4/5, got ${glsEstimate}`);
   }
 
+  const blockPermutationControls = verifyBlockLabelPermutationAndAbstentionControls();
+
   return {
     passed: true,
     multinomialLawsVerified: multinomialCases,
@@ -308,6 +391,7 @@ export function runPaper10AdjudicationControls() {
     },
     stationaryAr1GlsEstimate: glsEstimate.toString(),
     naiveSampleMeanEstimate: sampleMean.toString(),
+    blockLabelPermutationAndAbstention: blockPermutationControls,
     external_support_certified: false
   };
 }

@@ -4,7 +4,8 @@ import path from 'path';
 import { createSubjectiveValuationEngine } from './SubjectiveValuationEngine.js';
 import {
   runInformedReserveSuite,
-  runSelectiveAddressLesionSuite
+  runSelectiveAddressLesionSuite,
+  verifySubjectivityCoreTheoremsAndNegativeControls
 } from './InformedReserveEvaluator.js';
 
 const PAPER_SOURCE = Object.freeze({
@@ -231,6 +232,7 @@ export class SubjectivityInterventionHarness {
           .filter((run) => run.profile_status === 'control_confounded_perturbation')
           .map((run) => `${run.intervention_name}:control_confounded`)
       ],
+      heuristic_proxy_only: true,
       interpretation_boundary: INTERVENTION_BOUNDARY,
       provenance: {
         generated_at: new Date().toISOString(),
@@ -246,7 +248,9 @@ export class SubjectivityInterventionHarness {
   runTowerSelectiveLesionAndReserveControls() {
     return {
       selective_address_lesions: runSelectiveAddressLesionSuite(),
-      informed_reserve: runInformedReserveSuite()
+      informed_reserve: runInformedReserveSuite(),
+      core_theorems_and_negative_controls:
+        verifySubjectivityCoreTheoremsAndNegativeControls()
     };
   }
 

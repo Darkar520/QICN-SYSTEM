@@ -5,7 +5,8 @@ import { SUBJECTIVITY_THRESHOLDS } from './SubjectivityThresholdRegistry.js';
 import { SUBJECTIVITY_RIVAL_FAMILY } from './SubjectivityRivalFamilyRegistry.js';
 import {
   runInformedReserveSuite,
-  runSelectiveAddressLesionSuite
+  runSelectiveAddressLesionSuite,
+  verifySubjectivityCoreTheoremsAndNegativeControls
 } from './InformedReserveEvaluator.js';
 
 const PAPER_SOURCE = Object.freeze({
@@ -1108,6 +1109,7 @@ export class SubjectivityReducibilityComparator {
         'Comparator support is partial and does not constitute final irreducibility proof.',
         'Human equivalence, phenomenality, and final subjectivity closure remain out of scope.'
       ],
+      heuristic_proxy_only: true,
       interpretation_boundary: REDUCIBILITY_BOUNDARY,
       provenance: {
         generated_at: new Date().toISOString(),
@@ -1132,7 +1134,9 @@ export class SubjectivityReducibilityComparator {
   evaluateTowerReserveSeparation() {
     return {
       informed_reserve: runInformedReserveSuite(),
-      selective_address_lesions: runSelectiveAddressLesionSuite()
+      selective_address_lesions: runSelectiveAddressLesionSuite(),
+      core_theorems_and_negative_controls:
+        verifySubjectivityCoreTheoremsAndNegativeControls()
     };
   }
 

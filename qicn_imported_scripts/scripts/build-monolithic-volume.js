@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const childProcess = require("child_process");
+const crypto = require("crypto");
 
 const ROOT = path.resolve(__dirname, "..");
 const MONO_DIR = path.join(ROOT, "monolithic");
@@ -16,98 +17,213 @@ function ensureDir(dirPath) {
 const SOURCES = [
   {
     kind: "basecore",
-    title: "BaseCore",
+    title: "Mathematical Foundations for Controlled Projective Systems",
     relPath: "basecore/BASECORE.tex",
     sectionName: "01-basecore.tex"
   },
   {
     kind: "paper",
     number: 1,
-    title: "Rigid Identity as an Inverse Limit in Observable Channels",
+    title: "Projective Compatibility and Sectorial Deformation Resistance",
     relPath: "paper1/main.tex",
     sectionName: "02-rigid-identity-as-an-inverse-limit-in-observable-channels.tex"
   },
   {
     kind: "paper",
     number: 2,
-    title: "Phenomenological Regimes Induced by Structural Identity",
+    title: "Controlled Structural Assignments on Projective Limits",
     relPath: "paper2/main.tex",
     sectionName: "03-phenomenological-regimes-induced-by-structural-identity.tex"
   },
   {
     kind: "paper",
     number: 3,
-    title: "Structural Instability of the Phenomenological Null Regime in Causally Rigid Channels",
+    title: "Witness-Relative Exclusion of Joint Null Readouts",
     relPath: "paper3/main.tex",
     sectionName: "04-structural-instability-of-the-phenomenological-null-regime.tex"
   },
   {
     kind: "paper",
     number: 4,
-    title: "Falsifiable Predictions Under Forensic Constraints",
+    title: "Reproducible Intervention and Comparator Protocols",
     relPath: "paper4/main.tex",
     sectionName: "05-falsifiable-predictions-under-forensic-constraints.tex"
   },
   {
     kind: "paper",
     number: 5,
-    title: "A Structural Criterion for Substrate-Invariant Operational Consciousness",
+    title: "A Six-Predicate Operational Criterion and Certified Response Classes",
     relPath: "paper5_operational_consciousness/main.tex",
     sectionName: "06-structural-criterion-for-substrate-invariant-operational-consciousness.tex"
   },
   {
     kind: "paper",
     number: 6,
-    title: "Predictions, Discriminators, and Failure Modes for the Causally Rigid Operational Consciousness Framework",
+    title: "Prediction Contracts, Controls, and Evidence Status",
     relPath: "paper6_predictions_falsation/main.tex",
     sectionName: "07-predictions-discriminators-and-failure-modes.tex"
   },
   {
     kind: "paper",
     number: 7,
-    title: "Operational Life, Structural Class, and Subjecthood in a Causally Rigid Framework",
+    title: "Viability, Active Recovery, and Operational Descriptors",
     relPath: "paper7_operational_life_subjecthood/main.tex",
     sectionName: "08-operational-life-structural-class-and-subjecthood.tex"
   },
   {
     kind: "paper",
     number: 8,
-    title: "First-Person Indexed Subjectivity",
+    title: "Indexed Operational Certificates and Matched Model Comparisons",
     relPath: "paper8_first_person_subjectivity/main.tex",
     sectionName: "09-first-person-indexed-subjectivity.tex"
   },
   {
     kind: "paper",
     number: 9,
-    title: "Phenomenal Bridge Organization",
+    title: "Cross-Mode Transport, Interaction, and Comparison Obligations",
     relPath: "paper9_phenomenal_bridge_organization/main.tex",
     sectionName: "10-phenomenal-bridge-organization.tex"
   },
   {
     kind: "paper",
     number: 10,
-    title: "External Adjudication of Bridge-Formalized Machine Subjectivity",
+    title: "Blind Adjudication Protocols and Coverage-Aware Risk Bounds",
     relPath: "paper10_external_adjudication/main.tex",
     sectionName: "11-external-adjudication-of-bridge-formalized-machine-subjectivity.tex"
   },
   {
     kind: "recovery",
-    title: "Operational Consciousness to Operational Subjecthood Bridge",
+    title: "Dependencies between Operational Criteria and Indexed Certificates",
     relPath: "paper_bridge_operational_subjecthood/main.tex",
     sectionName: "12-operational-consciousness-to-operational-subjecthood-bridge.tex",
     fallbackSectionName: "12-bridge-paper.tex"
   }
 ];
 
-const EDITORIAL_PREFACE = String.raw`\chapter*{Editorial Preface and Claim Boundary}
-\addcontentsline{toc}{chapter}{Editorial Preface and Claim Boundary}
-\markboth{Editorial Preface and Claim Boundary}{Editorial Preface and Claim Boundary}
+const READING_PARTS = [
+  { title: "Mathematical Foundations and Structural Dynamics", paths: ["basecore/BASECORE.tex", "paper1/main.tex", "paper2/main.tex", "paper3/main.tex"] },
+  { title: "Operational Criteria, Indexed Subjectivity, and Theoretical Bridge", paths: ["paper5_operational_consciousness/main.tex", "paper7_operational_life_subjecthood/main.tex", "paper8_first_person_subjectivity/main.tex", "paper9_phenomenal_bridge_organization/main.tex", "paper_bridge_operational_subjecthood/main.tex"] },
+  { title: "Experimental Contracts, Falsification, and Blind Adjudication", paths: ["paper4/main.tex", "paper6_predictions_falsation/main.tex", "paper10_external_adjudication/main.tex"] }
+];
+let volumeChapter = 0;
+for (const part of READING_PARTS) for (const relPath of part.paths) {
+  const source = SOURCES.find(item => item.relPath === relPath);
+  if (!source) throw new Error("Unknown reading-order source: " + relPath);
+  if (source.kind !== "basecore") source.volumeChapter = ++volumeChapter;
+}
 
-This monolithic volume is an editorial consolidation of the QICN rigid-identity corpus. BaseCore is treated as the foundational layer of the framework rather than as Paper 0. The downstream works are indexed in the table of contents by their direct research titles; internal labels such as paper numbers are retained only as provenance handles where the source text itself requires them.
+const EDITORIAL_PREFACE = String.raw`\chapter*{Scope and Methodological Approach}
+\addcontentsline{toc}{chapter}{Scope and Methodological Approach}
+\markboth{Scope and Methodological Approach}{Scope and Methodological Approach}
 
-The claims in this volume remain conditional, formal, and operational. The volume does not assert biological consciousness, phenomenal consciousness, agency, moral status, identity transfer, or external validation. Runtime measurements, finite estimators, and internal support artifacts are implementation evidence only when explicitly marked as such; they are not substitutes for theorem proof or externally reproduced empirical adjudication.
+QICN studies projective structures, controlled dynamics and operational
+certificates. Its mathematical conclusions hold under their stated hypotheses;
+explicit constructions and counterexamples delimit those conclusions.
+Identifying an artificial or biological realization requires observation,
+intervention and calibration contracts. Whether sufficiently realized
+structures correspond to phenomenal experience remains deliberately open as
+an independent bridge hypothesis, subject to further empirical and philosophical
+criteria. Normative interpretation likewise requires its own premises.
+The current external-evidence status is
+\texttt{external\_support\_certified=false}.
 
-The editorial policy is conservative: preserve source content, expose dependency order, avoid title-level bookkeeping labels, and keep ontology, mathematical model, implementation, language, and interpretation separated.`;
+\section*{Architecture and Reading Guide}
+\addcontentsline{toc}{section}{Architecture and Reading Guide}
+The volume separates mathematical derivation from empirical identification.
+Part~I contains BaseCore and the original Papers I--III: controlled dynamics,
+projective compatibility and witness-relative structural conclusions.
+Part~II contains the original Papers V, VII--IX and the theoretical bridge:
+joint operational criteria, viability, indexed organization and transport.
+Part~III contains the original Papers IV, VI and X: experimental contracts,
+falsification and blind adjudication. The original paper numbers identify
+publications; book chapters follow this reading order.
+
+\begin{center}\small
+\begin{tabular}{ll}
+\toprule Original unit & Book location \\ \midrule
+BaseCore & Foundational chapter, section prefix B \\
+I, II, III & Chapters 1, 2, 3 \\
+V, VII, VIII, IX & Chapters 4, 5, 6, 7 \\
+Theoretical bridge & Chapter 8 \\
+IV, VI, X & Chapters 9, 10, 11 \\ \bottomrule
+\end{tabular}
+\end{center}
+
+Proofs in Parts~I and II retain their axioms independently of whether a
+physical experiment in Part~III has been executed. Some protocol theorems
+in Part~III, including risk bounds, are also mathematical results. Empirical
+work tests an identified realization and its predictions; a pending campaign
+is therefore distinct from a missing mathematical proof.
+
+\paragraph{Constructive results.}
+BaseCore Proposition~\ref{mono:basecore:prop:base-wedge-metric-sector} and
+Chapter~1 Theorem~\ref{mono:p01:thm:wedge-bilipschitz-gap} specify the metric
+sector and bounded-distortion gap of the Hilbert wedge. The common infinite
+plant is defined in~\ref{mono:p05:def:asymmetric-native-plant}; its six-predicate
+certificate is Theorem~\ref{mono:p05:thm:asymmetric-native-six}. The same plant
+supports Propositions~\ref{mono:p07:prop:asymmetric-native-life}
+and~\ref{mono:p07:prop:asymmetric-native-subject}, followed by the indexed class
+of Theorem~\ref{mono:p08:thm:native-nonempty-subfp} under its specified causal
+grammar. Corollary~\ref{mono:bridge:cor:native-indexed-selfreference-boundary}
+retains the obstruction to exact global self-reference. The coherent and
+incoherent transport extensions in~\ref{mono:p09:prop:bridge-transport-cycle}
+separate local certification from the additional cross-mode requirements.
+
+\clearpage
+\section*{Comparative Positioning and Mathematical Contribution}
+\addcontentsline{toc}{section}{Comparative Positioning and Mathematical Contribution}
+This map compares the cited formulations and the objects explicitly studied
+here. Classical ingredients are distinguished from the joint constructions
+proposed for review. The comparison specifies research questions rather than
+asserting priority over every formulation of a theory.
+
+\begingroup\small
+\begin{longtable}{@{}p{0.22\linewidth}p{0.31\linewidth}p{0.39\linewidth}@{}}
+\toprule Comparison axis & Established ingredient or target & QICN construction and comparison obligation \\ \midrule
+\endfirsthead
+\toprule Comparison axis & Established ingredient or target & QICN construction and comparison obligation \\ \midrule
+\endhead
+Inverse limits and categories \cite{maclane1998,ribes} & Compatibility and universal constructions. & A specified weighted metric, sectorial deformation cost and product-separation bounds, with explicit distortion and nondegeneracy assumptions. \\ \addlinespace
+Contractive dynamics \cite{banach,katok1995} & Fixed points and convergence under declared contraction hypotheses. & Parameterized persistence, qualified energy-barrier exclusions and controls where distortion or factor size degenerates. Physical irreversibility requires a separate identification argument. \\ \addlinespace
+IIT, 2004 formulation \cite{tononi2004} & A proposed relation between information integration and consciousness. & A conjunction of distinct identity, causal, viability and indexing certificates. Its assignment and integration objects must be compared by their domains and tasks, not by sharing a symbol. \\ \addlinespace
+GWT, Baars formulation \cite{baars1988} & A workspace account of cognitive architecture. & Architecture is a model choice to be identified; certification then uses stated observation and intervention contracts. No architectural comparison is supplied by a name alone. \\ \addlinespace
+HOT, Rosenthal formulation \cite{rosenthal1986} & Higher-order awareness as a condition on conscious states. & Indexed response and ownership contracts, with a separate conditional self-reference layer. Relating those objects to the higher-order condition requires a specified model and matched test. \\ \bottomrule
+\end{longtable}
+\endgroup
+
+The joint realization is the concrete comparison target: non-finite
+projective identity, causal nonfactorization, viable recovery and indexed
+asymmetry are assessed on the declared plant and protocols. The indexed
+margin is relative to its explicit causal grammar and budget. Admitting an
+unrestricted emulator at the same information and cost removes that margin;
+IIT, GWT and HOT are not automatically members of the tested weak family.
+
+\paragraph{Evidence and remaining mathematical interfaces.}
+Analytical arguments in the manuscripts include infinite constructions and
+topological obstructions. Lean~4.31.0 checks identified algebraic, ordered and
+finite kernels; exact rational controls check reproducible instances. These
+evidence surfaces have different scopes. In the discrete-to-continuous bridge,
+Theorem~\ref{mono:basecore:thm:bridge} fixes auxiliary energy/phase coordinates;
+a coupled evolution needs an additional theorem. The calibration quantities
+of~\ref{mono:p03:nonthm:estimator-gap}, the complete bridge comparator class and
+empirical identification remain explicit research obligations.
+`;
+
+const AUTHORIAL_NOTE = String.raw`% BEGIN_AUTHORIAL_NOTE
+\section*{Authorial Note and Methodological Provenance}
+\addcontentsline{toc}{section}{Authorial Note and Methodological Provenance}
+The conception, theoretical direction, mathematical architecture, development,
+and integration of the QICN research programme were undertaken by a single
+independent researcher, Johnny Andrey P\'erez Ram\'irez, over more than one year.
+This account of provenance is supplied by the author. Several artificial
+intelligence systems and formal verification tools assisted with technical
+drafting, proof exploration, consistency checks, and mechanized kernels under
+his direction. The author retains intellectual responsibility for the
+programme, its claims, and any remaining errors. Analytical manuscript proofs,
+machine-checked kernels, and internal tests have distinct scopes; independent
+mathematical review and empirical validation remain separate obligations.
+\texttt{external\_support\_certified=false}.
+% END_AUTHORIAL_NOTE`;
 
 function bodyOf(content) {
   const begin = content.indexOf("\\begin{document}");
@@ -152,14 +268,15 @@ function expandLocalInputs(content, relPath, seen = new Set()) {
 }
 
 function stripEncodingNoise(content) {
-  return content.replace(/^\uFEFF/u, "").replace(/^ï»¿/u, "");
+  return content.replace(/^\uFEFF/u, "").replace(/^ï»¿/u, "").replace(/\r\n/g, "\n");
 }
 
 function rewriteAppendixForMonolithic(content) {
   return content.replace(/\\appendix\b/g, [
-    "\\section*{Appendix}",
-    "\\addcontentsline{toc}{section}{Appendix}",
-    "\\markright{Appendix}"
+    "\\setcounter{section}{0}",
+    "\\setcounter{subsection}{0}",
+    "\\setcounter{subsubsection}{0}",
+    "\\renewcommand{\\thesection}{\\thechapter.\\Alph{section}}"
   ].join("\n"));
 }
 
@@ -298,6 +415,22 @@ function fitWideTablesForMonolithic(content) {
 }
 
 function applyMonolithicLayoutTransforms(content, relPath) {
+  // BaseCore's article divisions are local headings, not volume-level parts.
+  if (relPath === "basecore/BASECORE.tex")
+    content = content.replace(/\\part\{([^}]+)\}/g, "\\section*{$1}");
+  // Appendix contract tables keep the standalone row spacing in the volume.
+  if (relPath === "paper10_external_adjudication/main.tex")
+    content = content.replaceAll("\\begingroup\\small\n\\setlength{\\tabcolsep}{5pt}", "\\begingroup\\small\n\\renewcommand{\\arraystretch}{1}\n\\setlength{\\tabcolsep}{5pt}");
+  // Equivalent binomial typography: avoid the obsolete TeX primitive warning.
+  content = content.replaceAll("{n\\choose j}", "\\binom{n}{j}");
+  // Article-level scope notes are consolidated into the volume's opening scope.
+  const scopes = content.match(/% BEGIN_OPERATIONAL_SCOPE[\s\S]*?% END_OPERATIONAL_SCOPE/g) || [];
+  if (scopes.length !== 1) throw new Error("Expected one operational scope in " + relPath);
+  content = content.replace(scopes[0], "");
+  // Authorial provenance is printed once after the collected bibliography.
+  const notes = content.match(/% BEGIN_AUTHORIAL_NOTE[\s\S]*?% END_AUTHORIAL_NOTE/g) || [];
+  if (notes.length !== 1) throw new Error("Expected one authorial note in " + relPath);
+  content = content.replace(notes[0], "");
   return fitWideTablesForMonolithic(
     fitLongDisplayMathForMonolithic(
       splitKnownAlignedChainsForMonolithic(
@@ -400,6 +533,7 @@ function paperNumberingPrefix(number) {
     "\\setcounter{section}{0}",
     "\\setcounter{subsection}{0}",
     "\\setcounter{subsubsection}{0}",
+    "\\setcounter{theorem}{0}",
     "\\renewcommand{\\thechapter}{\\arabic{chapter}}",
     "\\renewcommand{\\thesection}{\\thechapter.\\arabic{section}}",
     "\\renewcommand{\\thesubsection}{\\thesection.\\arabic{subsection}}",
@@ -419,6 +553,7 @@ function wrapSection(source, content) {
       "\\chapter*{BaseCore}",
       "\\addcontentsline{toc}{chapter}{BaseCore}",
       "\\markboth{BaseCore}{BaseCore}",
+      "\\renewcommand{\\thechapter}{B}",
       "\\setcounter{section}{0}",
       "\\setcounter{subsection}{0}",
       "\\setcounter{subsubsection}{0}",
@@ -434,17 +569,15 @@ function wrapSection(source, content) {
   }
   if (source.kind === "paper") {
     return [
-      paperNumberingPrefix(source.number),
+      paperNumberingPrefix(source.volumeChapter || source.number),
       `\\chapter{${source.title}}`,
       content,
       "\\clearpage"
     ].join("\n");
   }
   return [
-    "\\clearpage",
-    "\\chapter*{Operational Consciousness to Operational Subjecthood Bridge}",
-    "\\addcontentsline{toc}{chapter}{Operational Consciousness to Operational Subjecthood Bridge}",
-    "\\markboth{Operational Consciousness to Operational Subjecthood Bridge}{Operational Consciousness to Operational Subjecthood Bridge}",
+    paperNumberingPrefix(source.volumeChapter || 11),
+    "\\chapter{Dependencies between Operational Criteria and Indexed Certificates}",
     ...hyperAnchorPrefixLines("mono.bridge."),
     content.replace(/^\\chapter\{Bridge Paper\}\s*/u, ""),
     "\\clearpage"
@@ -521,17 +654,17 @@ function build() {
     }
   });
 
-  if (!fs.existsSync(path.join(PREAMBLE_DIR, "packages.tex"))) {
-    fs.writeFileSync(path.join(PREAMBLE_DIR, "packages.tex"), `${dedupePackages(packages).join("\n")}\n`, "utf8");
+  const contractPath = path.join(PREAMBLE_DIR, "source-contract.json");
+  if (!fs.existsSync(contractPath)) throw new Error("Missing audited preamble contract; restore the versioned preamble inputs.");
+  const contract = JSON.parse(fs.readFileSync(contractPath,"utf8"));
+  const digest = text => crypto.createHash("sha256").update(text.replace(/\r\n/g,"\n")).digest("hex");
+  for (const source of SOURCES) {
+    const preamble = fs.readFileSync(path.join(ROOT,source.relPath),"utf8").split("\\begin{document}")[0];
+    if (digest(preamble)!==contract.sources[source.relPath]) throw new Error("Preamble drift in "+source.relPath+"; review packages/macros and explicitly update the audited contract.");
   }
-  if (!fs.existsSync(path.join(PREAMBLE_DIR, "setup.tex"))) {
-    fs.writeFileSync(
-      path.join(PREAMBLE_DIR, "setup.tex"),
-      `${uniqueLines(setup)
-        .filter((line) => !line.includes("\\AuthorVisible") && !line.includes("\\AuthorMetadata"))
-        .join("\n")}\n`,
-      "utf8"
-    );
+  for (const name of ["packages.tex","setup.tex"]) {
+    const file=path.join(PREAMBLE_DIR,name);
+    if(!fs.existsSync(file)||digest(fs.readFileSync(file,"utf8"))!==contract.customizations[name]) throw new Error("Missing or changed audited preamble customization: "+name);
   }
 
   const root = [
@@ -539,14 +672,14 @@ function build() {
     "\\input{preamble/packages}",
     "\\input{preamble/setup}",
     "% --- Document metadata ---",
-    "\\title{\\textbf{QICN: A Rigid Identity Framework}}",
+    "\\title{\\textbf{QICN: Projective Structures and Operational Certificates}}",
     "\\author{Johnny Andrey P{\\'e}rez Ram{\\'i}rez}",
     "\\date{2026}",
     "\\hypersetup{%",
-    "  pdftitle={QICN: A Rigid Identity Framework},%",
-    "  pdfauthor={Johnny Andrey Perez Ramirez},%",
-    "  pdfsubject={Operational Identity, Category Theory, Consciousness},%",
-    "  pdfkeywords={rigid identity, inverse limit, ontological mass, CCR, falsifiability},%",
+    "  pdftitle={QICN: Projective Structures and Operational Certificates},%",
+    "  pdfauthor={Johnny Andrey P{\\'e}rez Ram{\\'i}rez},%",
+    "  pdfsubject={Projective structures, controlled dynamics and operational certificates},%",
+    "  pdfkeywords={inverse limit, sectorial resistance, multiscale robustness, controlled dynamics, certified response classes},%",
     "  pdfcreator={pdfLaTeX}%",
     "}",
     "\\begin{document}",
@@ -555,9 +688,18 @@ function build() {
     EDITORIAL_PREFACE,
     "\\tableofcontents",
     "\\mainmatter",
-    ...sections.map((section) => `\\input{build/sections/${section.sectionName}}`),
+    ...READING_PARTS.flatMap(part => [
+      `\\part{${part.title}}`,
+      ...part.paths.map(relPath => {
+        const section = sections.find(item => item.relPath === relPath);
+        if (!section) throw new Error("Missing assembled source: " + relPath);
+        return `\\input{build/sections/${section.sectionName}}`;
+      })
+    ]),
     "\\backmatter",
     "\\printbibliography[heading=bibintoc]",
+    "\\clearpage",
+    AUTHORIAL_NOTE,
     "\\end{document}",
     ""
   ].join("\n");

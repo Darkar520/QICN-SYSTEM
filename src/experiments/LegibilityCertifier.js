@@ -303,6 +303,8 @@ export const buildLegibilityCertificate = ({
     clauses_passed: [l1.l1_separability, l2.l2_noise_robustness, l3.l3_persistence_window, l4.l4_intervention_fidelity, l5.l5_negative_controls, l6.l6_compressibility]
       .filter(Boolean).length,
     tower_legibility_horizon: towerHorizon,
+    witness_scope_boundary:
+      'Defeating a specific (decoder, schedule, margin) witness tuple invalidates only that concrete certificate tuple; global non-legibility requires failure across all admissible decoders and schedules (prop:nc1..prop:nc4).',
     interpretation_boundary: 'Finite six-clause operational legibility certificate plus exact single-trajectory prefix horizon D_{j,t}=2*3^-(j+t); not semantic transparency or external claim closure.'
   };
 };

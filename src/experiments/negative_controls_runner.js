@@ -202,7 +202,11 @@ export const runNegativeControlsBatch = ({ preregPath, batchId, outputRoot = 'ar
   const report = {
     batchId,
     prereg_hash: sha256Hex(stableStringify(prereg)),
-    controls
+    controls,
+    witness_scope_boundary:
+      'Defeating or failing a concrete negative-control or certificate tuple invalidates only that evaluated tuple; global non-existence requires failure across all admissible candidates (prop:nc1..prop:nc4, prop:ablation-prediction).',
+    interpretation_boundary:
+      'Internal batch negative-control audit surface (NC1..NC4); passing controls are falsification gates, not external validation or proof of global claim closure.'
   };
   const outPath = path.join(root, 'negative_controls_report.json');
   fs.writeFileSync(outPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');

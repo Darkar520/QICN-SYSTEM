@@ -11,10 +11,10 @@
                                     "qicn-group/QICN-SYSTEM"
                                 ]
                 },
-    "generated_at":  "2026-06-23",
-    "reconciliation":  "Re-import ejecutado 2026-06-23. Drift = 0. Allowlist activa pero sin entries activas.",
+    "generated_at":  "2026-11-15",
+    "reconciliation":  "Re-import ejecutado 2026-11-15 contra 5769ecf418a2bb92f1c338bc8b11c7fa09405b65. Drift = 0. Allowlist activa pero sin entries activas.",
     "import_snapshot":  {
-                            "generated_at":  "2026-06-23T15:36:16",
+                            "generated_at":  "2026-11-15T13:05:00",
                             "status_vs_pin":  "IN_SYNC",
                             "files_total":  193,
                             "known_drift":  [
@@ -23,11 +23,11 @@
                             "manifest":  "qicn_imported_manifest_v39.json"
                         },
     "framework":  {
-                      "pin_date":  "2026-06-23",
-                      "pin_commit":  "64ba23f0029bba73c64c0bb9f24d3c781c47a84a",
+                      "pin_date":  "2026-11-15",
+                      "pin_commit":  "5769ecf418a2bb92f1c338bc8b11c7fa09405b65",
                       "subproject":  "rigid-identity-framework",
                       "repo":  "QICN-FRAMEWORK (origin: Darkar520/QICN-RELEASE)",
-                      "pin_commit_short":  "64ba23f"
+                      "pin_commit_short":  "5769ecf"
                   },
     "schema":  "bridge_pin.v1",
     "description":  "Pin del commit del framework que el runtime QICN-SYSTEM declara seguir. Fase 0 del puente. No certifica nada externamente."

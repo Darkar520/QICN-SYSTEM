@@ -106,12 +106,14 @@ const KEY_STATEMENTS = [
   'basecore:basecore:definition:mean-coherence-observable-l19', 'basecore:ass:discrete-regularity',
   'paper1:def:internal-external', 'paper1:def:emp-mass',
   'paper4:thm:campaign-block-sign-test',
-  'paper5:def:qop', 'paper5:def:cop', 'paper5:thm:circle-prefix-cofinal-margin', 'paper5:prop:writable-tower-legibility-horizon',
-  'paper7:paper7:definition:operational-life-l310', 'paper7:paper7:definition:operational-subjecthood-l369',
+  'paper5:def:qop', 'paper5:def:cop', 'paper5:thm:circle-prefix-cofinal-margin', 'paper5:prop:writable-tower-legibility-horizon', 'paper5:thm:response-atomic-factorization',
+  'paper7:def:operational-life', 'paper7:def:operational-subjecthood',
   'paper7:prop:common-tower-phase-repair', 'paper7:prop:writable-tower-joint-certificate',
+  'paper8:thm:selfindex-emergence', 'paper8:thm:ownership-nontransfer', 'paper8:thm:five-field-reduction',
   'paper8:prop:writable-tower-selective-lesions', 'paper8:thm:writable-tower-public-return-tie', 'paper8:thm:writable-tower-private-return-separation',
   'paper9:prop:bridge-certified-tower-transport', 'paper9:thm:bridge-typed-valence', 'paper9:prop:bridge-indexed-world', 'paper9:thm:bridge-motor-closure', 'paper9:prop:bridge-shared-hybrid-obstruction',
-  'paper10:thm:coverage-sensitive-leakage', 'paper10:thm:stationary-ar1-likelihood-gls',
+  'paper9:def:bridge-indexed-quartic-plant', 'paper9:thm:bridge-four-root-identification',
+  'paper10:thm:coverage-sensitive-leakage', 'paper10:thm:stationary-ar1-likelihood-gls', 'paper10:prop:block-label-permutation',
   'bridge:def:sigma-op', 'bridge:def:phi-op', 'bridge:def:subbridge', 'bridge:thm:sigma-approximate-displacement', 'bridge:prop:sigma-tower-defect-floor'
 ];
 
@@ -175,11 +177,11 @@ lines.push('1. Frente 1 (BaseCore y Papers I–II): compatibilidad asintótica c
 lines.push('2. Frente 2 (Papers V–VIII, WritablePrefixTower): planta común escribible S¹ × {0,1}^N × [−1,1] (implementada en WritablePrefixTower.js) con ganancia común g=1/80, margen de lectura dividida [1/216, 1/24], defecto de interacción mixta 2·TAP, contracción activa 9/16 frente a pasiva, horizonte de legibilidad D_{j,t}=2·3^{-(j+t)}, certificado conjunto de sujeto operacional (Paper VII) y cinco lesiones selectivas en los sitios 3..7 con funcional Φ⁷ = 1/48 (Paper VIII).');
 lines.push('3. Frente 3 (Papers VIII–IX, reserva informada y transporte): obstrucción de información pública en retorno (empate forzado 1/2 en 84 estratos balanceados; pérdida con cobertura c igual a 1/2 + (1−c)/4), separación por señal privada en el sitio 2 con pérdida bayesiana (1−TV)/2 y riesgo minimax asimétrico 1/3 (InformedReserveEvaluator.js), y clasificación de transporte coherente vs obstruido en ciclos XOR de 3 nodos por paridad de holonomía.');
 lines.push('4. Frente 4 (Papers IV, X y Puente): automodelo aproximado Σ_approx(d, ε_d) sobre la torre mediante truncamiento proyectivo T_d (SigmaAutomodelTruncator.js) con defecto de un paso Δ_step(d) ≤ 2·3^{-d} y desplazamiento de punto fijo ≤ (16/7)·3^{-d}; test exacto de signo por bloques (tamaño 5425/262144 a B=20, k=15), cotas de fuga sensibles a cobertura c, contraejemplo de 8 átomos y estimador GLS estacionario AR(1) 4/5 ≠ media muestral 2/3 (StatisticalAdjudicationEngine.js).');
-lines.push('5. Frente 5 (Lean 4): 24 módulos Lean 4 compilados sin sorry con reproducción verificada en frío (commit ceb7b91).');
-lines.push('6. Extensión Cuerpo–Mundo (Paper IX, BodyWorldTower.js y BridgeTransportAndBurdensEvaluator.js): añade 4 variables mínimas (2 corporales v_pos, v_neg y 2 de mundo w_fast, w_slow) con proyección exacta al núcleo. Realiza simultáneamente las 6 cargas locales D/V/W/A/E/T en la misma planta con margen robusto normalizado mínimo 13/96 y matriz de efectos de lesión 6×6 de rango 6 (valencia operacional 2D no conservativa separada de gradientes de potencial en malla de Hermite, mundo indexado con matriz de Hankel de rango 4, y retorno motor tardío ±1/256 en tick 3 conservando ticks 1..2). Límite decisivo demostrado: dos canales escalares que comparten estado y suman sus fuerzas (rival híbrido compartido) reproducen exactamente el mecanismo y empatan con margen global 0 mientras no se impongan restricciones físicas/causales adicionales de información o presupuesto.');
+lines.push('5. Frente 5 (Lean 4): 27 módulos Lean 4 compilados sin sorry con reproducción verificada en frío (commit 5769ecf, incluyendo QICNBaseSufficiency, QICNAtomicSwap y QICNFourRootContrast).');
+lines.push('6. Extensión Cuerpo–Mundo y Planta Cuártica Indexada (Paper IX, BodyWorldTower.js y BridgeTransportAndBurdensEvaluator.js): realiza simultáneamente las 6 cargas locales D/V/W/A/E/T con margen robusto mínimo 13/96 y rango 6 de lesión (con empate 0 frente al rival híbrido compartido lineal), y en la planta cuártica indexada (def:bridge-indexed-quartic-plant, thm:bridge-four-root-identification) certifica contracción 13/16, integración global e_* >= 1/39366, separación en t=6 > 1/64 y brecha de ancestría propia de 4 raíces 4*xi_4 = 1/262144 con noise_cost_margin >= 1019*xi_4/256 > 3*xi_4 (empate <= 0 ante réplica de 4 raíces de igual costo; estado provisional y no confirmatorio).');
 lines.push('');
 lines.push('## Estado global');
-lines.push('Registro formal: 863 entradas; suites matemáticas: 25/25 PASS; Lean 4: 24 fuentes compiladas para Frentes 1–5 (la extensión cuerpo–mundo aún no está mecanizada en Lean). Veredictos científicos internos: v25/v26 INTERNAL_DIAGNOSTIC_PASS_SYNTHETIC_ONLY, v27/v28/v30 BLOCKED_MULTIPLE_GATES, v31 BLOCKED_FOUNDATION_FIRST_GATES, external_support_certified = false. Ningún resultado interno certifica conciencia fenomenológica ni validación externa.');
+lines.push(`Registro formal: ${rows.length} entradas; suites matemáticas: PASS; Lean 4: 27 fuentes compiladas sin sorry en QICNLean (commit 5769ecf). Veredictos científicos internos: v25/v26 INTERNAL_DIAGNOSTIC_PASS_SYNTHETIC_ONLY, v27/v28/v30 BLOCKED_MULTIPLE_GATES, v31 BLOCKED_FOUNDATION_FIRST_GATES, external_support_certified = false. Ningún resultado interno certifica conciencia fenomenológica ni validación externa.`);
 
 const missingOverlays = Object.keys(OVERLAYS).filter((k) => !usedOverlays.has(k));
 const missingStatements = KEY_STATEMENTS.filter((k) => !rows.some((r) => keyOf(r) === k));

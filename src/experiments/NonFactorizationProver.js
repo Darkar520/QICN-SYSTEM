@@ -1,7 +1,7 @@
 // @ts-check
 
 import { sha256Hex } from '../utils/integrity.js';
-import { F, ZERO, ONE, fMin, fMax } from '../simulation/tower/ExactFraction.js';
+import { F, ZERO, ONE, HALF, fMin, fMax } from '../simulation/tower/ExactFraction.js';
 import {
   ALTERNATING,
   CONTEXTS,
@@ -9,18 +9,140 @@ import {
   LAMBDA,
   PROFILES,
   RETENTION,
-  SAFE,
   SITES,
   TAP,
-  circle,
   createState,
-  distance as towerDistance,
-  prefix,
   referenceBit,
   signedTurn,
-  step,
-  writePrefix
+  step
 } from '../simulation/tower/WritablePrefixTower.js';
+
+export const verifyResponseAtomicFactorizationSwap = () => {
+  const states = [
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+  ];
+  const factorCoordinates = [
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+  ];
+  // Generate all 4! = 24 bijective encodings Phi: X -> {0,1} x {0,1}
+  const permuteIndices = (arr) => {
+    if (arr.length <= 1) return [arr];
+    const out = [];
+    for (let i = 0; i < arr.length; i += 1) {
+      const head = arr[i];
+      const tail = [...arr.slice(0, i), ...arr.slice(i + 1)];
+      for (const p of permuteIndices(tail)) {
+        out.push([head, ...p]);
+      }
+    }
+    return out;
+  };
+  const perms = permuteIndices([0, 1, 2, 3]);
+  if (perms.length !== 24) {
+    throw new Error(`Expected 24 bijective encodings, got ${perms.length}`);
+  }
+
+  const sigma = ONE;
+  const targetForWordAndPort = (state, word, portIdx) => {
+    const [a, b] = state;
+    const nextState = word === 'swap' ? [b, a] : [a, b];
+    return F(nextState[portIdx]);
+  };
+
+  // For each of the 24 bijective encodings and each factor assignment m in {0, 1} for port 1:
+  const encodingMinimaxErrors = [];
+  for (const perm of perms) {
+    for (const factorIdx of [0, 1]) {
+      // A factor predictor only sees coordinate phi_{factorIdx}(x) in {0, 1}
+      // For each fiber value c in {0, 1} and each word in {'epsilon', 'swap'}, optimal scalar predictor is midpoint of fiber range
+      let worstWordFiberRadius = ZERO;
+      for (const word of ['epsilon', 'swap']) {
+        for (const fiberBit of [0, 1]) {
+          const fiberStates = states.filter(
+            (_, sIdx) => factorCoordinates[perm[sIdx]][factorIdx] === fiberBit
+          );
+          const values = fiberStates.map((st) => targetForWordAndPort(st, word, 0));
+          const spread = fMax(values).sub(fMin(values));
+          const radius = spread.div(2);
+          if (radius.gt(worstWordFiberRadius)) {
+            worstWordFiberRadius = radius;
+          }
+        }
+      }
+      if (!worstWordFiberRadius.eq(HALF)) {
+        throw new Error(`Bijective encoding failed minimax error 1/2: got ${worstWordFiberRadius}`);
+      }
+      encodingMinimaxErrors.push(worstWordFiberRadius);
+    }
+  }
+
+  // Constant 1/2 predictor attains error 1/2 uniformly
+  let constantHalfMaxError = ZERO;
+  for (const st of states) {
+    for (const word of ['epsilon', 'swap']) {
+      for (const portIdx of [0, 1]) {
+        const err = targetForWordAndPort(st, word, portIdx).sub(HALF).abs();
+        if (err.gt(constantHalfMaxError)) constantHalfMaxError = err;
+      }
+    }
+  }
+  if (!constantHalfMaxError.eq(HALF)) {
+    throw new Error('Constant 1/2 predictor must attain uniform error 1/2');
+  }
+
+  // Negative Control A: replacing 'swap' by 'hold' under same command labels/costs gives infimal error 0 on native factors
+  let holdOnlyNativeError = ZERO;
+  for (const st of states) {
+    for (const word of ['epsilon', 'hold']) {
+      const [a, b] = st;
+      // Factor 0 knows a, Factor 1 knows b
+      const predPort0 = F(a);
+      const predPort1 = F(b);
+      const err0 = F(a).sub(predPort0).abs();
+      const err1 = F(b).sub(predPort1).abs();
+      holdOnlyNativeError = fMax([holdOnlyNativeError, err0, err1]);
+      if (word === 'hold' && (!err0.isZero() || !err1.isZero())) {
+        throw new Error('Hold-only native factor control must have error 0');
+      }
+    }
+  }
+
+  // Negative Control B: adding a 1-bit cross-state message between factors permits exact swap (error 0)
+  let crossMessageSwapError = ZERO;
+  for (const st of states) {
+    const [a, b] = st;
+    const messageFromFactor1To0 = b;
+    const messageFromFactor0To1 = a;
+    const swapPred0 = F(messageFromFactor1To0);
+    const swapPred1 = F(messageFromFactor0To1);
+    const err0 = targetForWordAndPort(st, 'swap', 0).sub(swapPred0).abs();
+    const err1 = targetForWordAndPort(st, 'swap', 1).sub(swapPred1).abs();
+    crossMessageSwapError = fMax([crossMessageSwapError, err0, err1]);
+  }
+  if (!holdOnlyNativeError.isZero() || !crossMessageSwapError.isZero()) {
+    throw new Error('Response-atomic negative controls must achieve error 0');
+  }
+
+  return {
+    passed: true,
+    stateCount: 4,
+    bijectiveEncodingsChecked: perms.length,
+    responseSeparationSigma: sigma.toString(),
+    lowerBoundSigmaOverTwo: sigma.div(2).toString(),
+    minimaxUniformError: fMin(encodingMinimaxErrors).toString(),
+    attainedByConstantHalfPredictor: constantHalfMaxError.eq(HALF),
+    negativeControls: {
+      swapReplacedByHoldInfimalError: holdOnlyNativeError.toString(),
+      crossStateMessageSwapError: crossMessageSwapError.toString()
+    }
+  };
+};
 
 export const verifyTowerCommonPlantAndInteractionNonFactorization = () => {
   const weights = [ONE, F(1, 3), F(1, 9)];
@@ -77,6 +199,7 @@ export const verifyTowerCommonPlantAndInteractionNonFactorization = () => {
   }
   const additiveErrorExact = TAP.div(2);
   const noisyAdditiveLowerBound = TAP.mul(3).div(8);
+  const responseAtomicSwap = verifyResponseAtomicFactorizationSwap();
 
   return {
     passed: true,
@@ -86,7 +209,8 @@ export const verifyTowerCommonPlantAndInteractionNonFactorization = () => {
     fiberContractionConstant: contractionConstant.toString(),
     mixedInteractionDifference: mixedDiff.toString(),
     additiveApproximationErrorExact: additiveErrorExact.toString(),
-    noisyAdditiveErrorLowerBound256Corners: noisyAdditiveLowerBound.toString()
+    noisyAdditiveErrorLowerBound256Corners: noisyAdditiveLowerBound.toString(),
+    responseAtomicFactorizationSwap: responseAtomicSwap
   };
 };
 

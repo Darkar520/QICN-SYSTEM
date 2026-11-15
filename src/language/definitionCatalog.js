@@ -3,8 +3,8 @@
 // Entries are canonical sentences authored by the runtime team; the language
 // model may select them but never rewrites them (they are not paraphrasable).
 //
-// Corpus references point to QICN-FRAMEWORK/rigid-identity-framework at
-// HEAD 64ba23f (see docs/THEORY_SOURCE_COVERAGE_2026-11-07.md).
+// Corpus references point to qicn-framework-ordenado/rigid-identity-framework at
+// HEAD 5769ecf (see docs/CANON_SOURCE_OF_TRUTH.md and docs/bridge_pin.v1.json).
 
 export const DEFINITIONS = Object.freeze({
   ccc: {
@@ -109,8 +109,8 @@ export const DEFINITIONS = Object.freeze({
   },
   body_world_tower: {
     title: 'extensión cuerpo–mundo',
-    text: 'La extensión cuerpo–mundo (BodyWorldTower y BridgeTransportAndBurdensEvaluator) añade cuatro variables mínimas (dos corporales v_pos, v_neg y dos de mundo w_fast, w_slow) con proyección exacta al núcleo: realiza simultáneamente las seis cargas locales D/V/W/A/E/T de Paper IX con margen robusto normalizado mínimo de 13/96 y matriz de efectos de lesión 6×6 de rango 6, y documenta el empate exacto (margen 0) frente al rival híbrido de estado compartido.',
-    source: 'src/simulation/tower/BodyWorldTower.js; src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js; Paper IX'
+    text: 'La extensión cuerpo–mundo (BodyWorldTower y BridgeTransportAndBurdensEvaluator) añade cuatro variables mínimas (dos corporales v_pos, v_neg y dos de mundo w_fast, w_slow) con proyección exacta al núcleo: realiza las seis cargas locales D/V/W/A/E/T de Paper IX con margen mínimo 13/96 y rango 6 (con empate 0 frente al rival híbrido compartido lineal), y en la planta cuártica indexada certifica contracción 13/16, integración e_* ≥ 1/39366, separación en t = 6 mayor que 1/64 y brecha de ancestría propia de 4 raíces 4·ξ₄ = 1/262144 (provisional y no confirmatorio, con margen ≤ 0 frente a una réplica de 4 raíces de igual costo).',
+    source: 'src/simulation/tower/BodyWorldTower.js; src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js; Paper IX def:bridge-indexed-quartic-plant, thm:bridge-four-root-identification'
   },
   informed_reserve: {
     title: 'reserva informada',
@@ -193,8 +193,8 @@ export const LIMITS = Object.freeze({
     source: 'rigid-identity-framework/INSTRUCCIONES.md §6.1'
   },
   shared_hybrid_tie: {
-    text: 'En la extensión cuerpo–mundo realizo localmente las seis cargas D/V/W/A/E/T con margen mínimo 13/96 y rango 6 de lesión, pero dos canales escalares que comparten estado reproducen exactamente el mecanismo (margen global 0), y la evaluación operacional bidimensional no demuestra valencia sentida.',
-    source: 'paper9_phenomenal_bridge_organization prop:bridge-shared-hybrid-obstruction, thm:bridge-typed-valence; src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js'
+    text: 'En la extensión cuerpo–mundo realizo localmente las seis cargas D/V/W/A/E/T con margen mínimo 13/96 y rango 6 de lesión, pero dos canales escalares que comparten estado reproducen el mecanismo lineal (margen 0), y en la planta cuártica indexada la separación de 4 raíces (4·ξ₄ = 1/262144) es provisional y no confirmatoria, desaparece ante una réplica de 4 raíces de igual costo (margen ≤ 0) y no demuestra valencia sentida.',
+    source: 'paper9_phenomenal_bridge_organization prop:bridge-shared-hybrid-obstruction, thm:bridge-four-root-identification; src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js'
   }
 });
 

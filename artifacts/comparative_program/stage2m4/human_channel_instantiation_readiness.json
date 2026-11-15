@@ -308,7 +308,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; human-channel instantiation readiness records whether legitimate human-channel protocols could be opened under current governance and contract structure. It does not instantiate human evidence, does not authorize equivalence, and does not open external adjudication.",
   "provenance": {
-    "generated_at": "2026-04-24T21:00:00.406Z",
+    "generated_at": "2026-11-15T20:08:25.955Z",
     "stage2_m2_comparator_ref": "artifacts/comparative_program/stage2m2/human_comparator_assessment.json",
     "stage2_m3_pathway_ref": "artifacts/comparative_program/stage2m3/human_channel_pathway_assessment.json",
     "stage2_m3_counterpart_ref": "artifacts/comparative_program/stage2m3/counterpart_artifact_contract_assessment.json",
@@ -318,48 +318,48 @@
       "estimator_version": "comparative_closure_builder.stage2_m4.v1",
       "comparator_protocol": {
         "ref": "docs/human_comparator_protocol.v1.json",
-        "sha256": "6b71d69d114ce4662a45cce25f36148e8f8da1106f7cdba401b3dee2d3c1d0c6"
+        "sha256": "c62b3f15e561630dbf1c400a7411edbe4e53614c092723a4f0d9dbc1418f2e47"
       },
       "equivalence_ladder": {
         "ref": "docs/human_equivalence_ladder.v1.json",
-        "sha256": "6541ce52c03404562ddbf75b2ef275f2f0cef61ac33f2aa84d3910dea424670f"
+        "sha256": "f3468012854105a2a1b89d664b419f857e2742e36c4638369cd9001f14f7c177"
       },
       "transport_protocol": {
         "ref": "docs/cross_substrate_transport_protocol.v1.json",
-        "sha256": "ed099176336b3b4a3e139506a43c9f55053889239ffbee6b6769f6d14508b761"
+        "sha256": "bb116f0594fd2c8392491635d6fbe090ca0e18587264eba2a8a785fad49628ae"
       },
       "human_channel_requirements": {
         "ref": "docs/human_channel_requirements.v1.json",
-        "sha256": "9b8e05fc033aca8806a93dd78d64bc84799534bf9530f7eae0ea52a18412be85"
+        "sha256": "66d17811e1f16ef10496539c8bb3e888efb21e76b1b1adbdfdcfc3c6f6571f9d"
       },
       "burden_matrix": {
         "ref": "docs/comparator_burden_matrix.v1.json",
-        "sha256": "97ea0be5967d367ce6f015af079fbc6c8cd5816ee0a881076b0585fa77e7f7f3"
+        "sha256": "a79e7e5947dcfdfd60752a16a9590524a80105db37564587c89b93ece851887f"
       },
       "artifact_schema": {
         "ref": "docs/comparative_program_artifact_schema.v1.json",
-        "sha256": "0c6b04c73620e8d774f6b08f39c3d1e6105409b1ffb682fc872dbb8065c3a734"
+        "sha256": "e3a230b1656ae1efb06949e202446f856576ce3cdabe5744e9361b5066f5084f"
       },
       "surface_policy": {
         "ref": "docs/comparative_program_surface_policy.v1.json",
-        "sha256": "a7259dbd6094a113f9ef5b70376b533f8166b892911ea5daacc3f776cc4f9a66"
+        "sha256": "589fa04e4e5f6c6c94505d57b30d26c190fb61cd063e31db2a0fa07b34496b15"
       },
       "root_schema_hashes": {
         "comparative_program_manifest.json": {
           "ref": "src/comparative_program/schemas/comparative_program_manifest.v1.json",
-          "sha256": "d99f84496b843e45519650d144bf1205b88b896887e4907f709830791cd0644d"
+          "sha256": "4e9778dc329075477043d2fd544191ca68b642a5e9171a7e431b5e0b95122653"
         },
         "human_comparator_assessment.json": {
           "ref": "src/comparative_program/schemas/human_comparator_assessment.v1.json",
-          "sha256": "0f349d5421a43701dbe25eaf7d414f7b34ff3480a9e1d19ad3f823f88fb73ef7"
+          "sha256": "d15cbbdf9a20a71aadaf6a6f4dfecb382603ba1501ece6f5f06e14b54a340c36"
         },
         "human_equivalence_assessment.json": {
           "ref": "src/comparative_program/schemas/human_equivalence_assessment.v1.json",
-          "sha256": "089674f38b35fc2587f02262db7e14276608b882f5e82e4ea3cf3cee4f5de823"
+          "sha256": "efd318261f8abbc13a5adb2630cac58111844d0c16a6c872fa8c6d6aadc02f24"
         },
         "cross_substrate_transport_assessment.json": {
           "ref": "src/comparative_program/schemas/cross_substrate_transport_assessment.v1.json",
-          "sha256": "5b979a3ec6ebd4ebc6caa08b66dccf0863de9558ac7cf933b32eaf7ecffbd8de"
+          "sha256": "3ba6c79ad06d4b46b75c6cc63f67d649af370d19a4524e3c0b9681e27618407a"
         },
         "human_channel_pathway_assessment.json": {
           "ref": "src/comparative_program/schemas/human_channel_pathway_assessment.v1.json",
@@ -395,38 +395,38 @@
         },
         "comparative_program_verification_matrix.json": {
           "ref": "src/comparative_program/schemas/comparative_program_verification_matrix.v1.json",
-          "sha256": "6cab7c9939a0615cdd857969f567fd51eb16187c7cbba9f36d802a9a02cae26a"
+          "sha256": "7683b479c485339dce7643af0e3574837700bf7260d24628bc2a353383caf211"
         },
         "comparative_program_readiness_gate.json": {
           "ref": "src/comparative_program/schemas/comparative_program_readiness_gate.v1.json",
-          "sha256": "3ed99a108a467c01b51cb7215bec7f0d2e20dace5bc31deb967747aae871150f"
+          "sha256": "898d2ee2aa88c41d546525749501d46cc3ec314ec87039bdc5287417609299f8"
         },
         "comparative_burden_fulfillment.json": {
           "ref": "src/comparative_program/schemas/comparative_burden_fulfillment.v1.json",
-          "sha256": "3227da16baed5d5205133bce35c1a770dbf0bf42170b5595a2b33c17250ff52c"
+          "sha256": "2ed9823d20a82990b4d0614f82c000c16079bb2a79192d4d193628daaf7d8f7f"
         },
         "stage3_opening_readiness.json": {
           "ref": "src/comparative_program/schemas/stage3_opening_readiness.v1.json",
-          "sha256": "d680945e1e5bf59529fb722d33d6de19dee12bd9662ca050b620a0fbb99021ba"
+          "sha256": "ede8fb8c8bdb55c85691a634489919ce0fc72112fba61f1808bf8f619ba768eb"
         },
         "paper9_handoff_alignment.json": {
           "ref": "src/comparative_program/schemas/paper9_handoff_alignment.v1.json",
-          "sha256": "a1b9a0ec8febc7ffe06cf600b0acee3fdef442f67976a56e9c74d62474639150"
+          "sha256": "bf2ceed2bbd59c0e25e04eccfa319b55028de1af87fa19af3925970fb7ee283b"
         },
         "stage3_opening_gate.json": {
           "ref": "src/comparative_program/schemas/stage3_opening_gate.v1.json",
-          "sha256": "c3715967e68f33cddc23b6e1fb5cfae5b6d03ba040f2f8870bc78bb70f1e8a46"
+          "sha256": "a7800d1db3df35cca6eaf37b238dc41fabce9cb64a3658313ec410b3244a0c43"
         }
       },
       "qicn_system": {
-        "branch": "main",
-        "head": "5f2c5085406db07f5dfb81607569f920777909ea",
-        "upstream": "origin/main"
+        "branch": "codex/align-theory-5769ecf",
+        "head": "235dbb5462fb8d13779837314d17a254724615b1",
+        "upstream": null
       },
       "qicn_release": {
-        "branch": "main",
-        "head": "92d5d2c3ea91c65e29dc8e102bed504866cffd2d",
-        "upstream": "origin/main"
+        "branch": "unknown_branch",
+        "head": "unknown_commit",
+        "upstream": null
       },
       "human_channel_pathways": {
         "ref": "docs/human_channel_pathways.v1.json",
@@ -446,7 +446,7 @@
       },
       "external_adjudication_opening_criteria": {
         "ref": "docs/external_adjudication_opening_criteria.v1.json",
-        "sha256": "1cf0d442259181de78924044a5dc00fc59297815a9b93699d9cefdb6cdc86cb2"
+        "sha256": "8a8ce9205e012b38f9dac91c2db333edacfa65033606af05bf5e65aeeee1cffc"
       },
       "stage2_m2_readiness_state": "comparative_runtime_open_but_human_blocked",
       "stage2_m3_operational_state": "comparative_runtime_homologation_ready_but_counterpart_absent"

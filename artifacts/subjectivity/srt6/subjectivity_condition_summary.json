@@ -32,7 +32,7 @@
   ],
   "interpretation_boundary": "Framework-internal only; subjectivity condition summary is an internal aggregation object, not externally validated, not claim-facing evidence, not phenomenality closure, and not human equivalence.",
   "provenance": {
-    "generated_at": "2026-05-25T23:19:26.189Z",
+    "generated_at": "2026-11-15T20:10:24.107Z",
     "source_trace_ref": "subjectivity_inputs/srt6_ecosystem_baseline",
     "input_profile": "srt6_ecosystem_integration_baseline",
     "current_lineage": {
@@ -75,9 +75,9 @@
         "sha256": "6e59c17b212ac94092c13e4718a6e4adb5899ed3d13c4c0ec46f09285a904fec"
       },
       "qicn_system": {
-        "branch": "main",
-        "head": "1b32b9a5442fe6a3564278469b42527e9ead1114",
-        "upstream": "origin/main"
+        "branch": "codex/align-theory-5769ecf",
+        "head": "235dbb5462fb8d13779837314d17a254724615b1",
+        "upstream": null
       },
       "qicn_release": {
         "branch": "unknown_branch",

@@ -259,9 +259,10 @@
     "Comparator support is partial and does not constitute final irreducibility proof.",
     "Human equivalence, phenomenality, and final subjectivity closure remain out of scope."
   ],
+  "heuristic_proxy_only": true,
   "interpretation_boundary": "Framework-internal only; partial reducibility comparator over SRT-4 available coordinates, not externally validated, not final proof of irreducibility, limited to SRT-4 available coordinates, not sufficient for final subjectivity closure.",
   "provenance": {
-    "generated_at": "2026-05-25T23:19:25.726Z",
+    "generated_at": "2026-11-15T20:10:23.301Z",
     "protocol_ref": "docs/subjectivity_protocol.v1.json",
     "rival_family_ref": "docs/subjectivity_rival_family.v1.json",
     "thresholds_ref": "docs/subjectivity_thresholds.v1.json",

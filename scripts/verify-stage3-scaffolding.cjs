@@ -6,9 +6,26 @@ const cp = require('child_process');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const RELEASE_ROOT = process.env.ECO_RELEASE_ROOT
-  ? path.resolve(process.env.ECO_RELEASE_ROOT)
-  : path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01');
+
+const resolveFrameworkGitRoot = () => {
+  const candidates = [
+    process.env.ECO_RELEASE_ROOT,
+    process.env.QICN_FRAMEWORK_ROOT,
+    path.resolve(ROOT, '..', 'qicn-framework-ordenado'),
+    path.resolve(ROOT, '..', 'QICN-RELEASE'),
+    path.resolve(ROOT, '..', 'release_repo_qicn_2026-03-01')
+  ].filter(Boolean);
+
+  for (const candidate of candidates) {
+    const resolved = path.resolve(candidate);
+    if (fs.existsSync(path.join(resolved, '.git'))) return resolved;
+    const parent = path.dirname(resolved);
+    if (fs.existsSync(path.join(parent, '.git'))) return parent;
+  }
+  return path.resolve(ROOT, '..', 'qicn-framework-ordenado');
+};
+
+const RELEASE_ROOT = resolveFrameworkGitRoot();
 const LOCAL_PATH_PATTERN =
   /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|QICN-FRAMEWORK|Sistema Canon Sandbox|rigid-identity-framework/i;
 const BANNED_PATTERNS = [
@@ -162,16 +179,47 @@ const verifyRuntimeImport = async () => {
   assert(stage3.paper10_final_authorized === false, 'Stage3 layer must keep Paper 10 final blocked');
 };
 
-const verifyReleaseUnchanged = () => {
-  assert(fs.existsSync(path.join(RELEASE_ROOT, '.git')), 'QICN-RELEASE repo root missing for unchanged-state verification');
+const snapshotReleaseState = () => {
+  assert(
+    fs.existsSync(path.join(RELEASE_ROOT, '.git')),
+    `Framework/release git root missing for unchanged-state verification: ${RELEASE_ROOT}`
+  );
+  const head = cp.execFileSync('git', ['rev-parse', 'HEAD'], {
+    cwd: RELEASE_ROOT,
+    encoding: 'utf8'
+  }).trim();
   const status = cp.execFileSync('git', ['status', '--short'], {
     cwd: RELEASE_ROOT,
     encoding: 'utf8'
   }).trim();
-  assert(status === '', 'QICN-RELEASE changed during Stage3-0 scaffolding');
+  return { head, status };
+};
+
+const verifyReleaseUnchanged = (beforeSnapshot) => {
+  const afterSnapshot = snapshotReleaseState();
+  assert(
+    afterSnapshot.head === beforeSnapshot.head,
+    'Framework/release git HEAD changed during Stage3-0 scaffolding'
+  );
+  assert(
+    afterSnapshot.status === beforeSnapshot.status,
+    'Framework/release git working tree status changed during Stage3-0 scaffolding'
+  );
+};
+
+const ensureStage3ReadinessArtifacts = () => {
+  const burdenPath = path.join(ROOT, 'artifacts', 'comparative_program', 'stage3_readiness', 'comparative_burden_fulfillment.json');
+  const handoffPath = path.join(ROOT, 'artifacts', 'comparative_program', 'stage3_readiness', 'paper9_handoff_alignment.json');
+  if (!fs.existsSync(burdenPath) || !fs.existsSync(handoffPath)) {
+    cp.execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-stage3-readiness-fulfillment.cjs')], {
+      cwd: ROOT,
+      stdio: 'pipe'
+    });
+  }
 };
 
 const verifyDependentScriptsPass = () => {
+  ensureStage3ReadinessArtifacts();
   cp.execFileSync('node', [path.join(ROOT, 'scripts', 'verify-stage3-opening-readiness.cjs')], {
     cwd: ROOT,
     stdio: 'pipe'
@@ -182,10 +230,23 @@ const verifyDependentScriptsPass = () => {
       stdio: 'pipe'
     });
   }
+  const sotPath = path.join(ROOT, 'artifacts', 'runtime_source_of_truth_check.json');
+  const sotBeforeRaw = fs.existsSync(sotPath) ? fs.readFileSync(sotPath, 'utf8') : null;
   cp.execFileSync('node', [path.join(ROOT, 'scripts', 'verify-source-of-truth.cjs')], {
     cwd: ROOT,
     stdio: 'pipe'
   });
+  if (sotBeforeRaw !== null && fs.existsSync(sotPath)) {
+    try {
+      const beforeJson = JSON.parse(sotBeforeRaw);
+      const afterJson = JSON.parse(fs.readFileSync(sotPath, 'utf8'));
+      if (JSON.stringify(beforeJson) === JSON.stringify(afterJson)) {
+        fs.writeFileSync(sotPath, sotBeforeRaw, 'utf8');
+      }
+    } catch {
+      // Leave newly emitted diagnostics if non-JSON.
+    }
+  }
 };
 
 const main = async () => {
@@ -214,8 +275,9 @@ const main = async () => {
   verifyPaper10();
   verifyArtifacts();
   await verifyRuntimeImport();
-  verifyReleaseUnchanged();
+  const releaseBefore = snapshotReleaseState();
   verifyDependentScriptsPass();
+  verifyReleaseUnchanged(releaseBefore);
 
   console.log('PASS verify-stage3-scaffolding');
 };

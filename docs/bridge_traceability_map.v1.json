@@ -14,7 +14,9 @@
       "runtime_module": "src/canon/projection/MetricProjectionOperator.js",
       "runtime_estimator": "finite projection diagnostics over declared constraints",
       "gap_ledger_status": "finite proxy",
-      "tests": ["tests/metric-projection-operator.v1.test.js"],
+      "tests": [
+        "tests/metric-projection-operator.v1.test.js"
+      ],
       "invariant_id": null,
       "forbidden_claim": "runtime instantiates separable Hilbert space"
     },
@@ -24,7 +26,9 @@
       "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
       "runtime_estimator": "non-collapse proxy via I_diff (beth_q, phen, omega_mean)",
       "gap_ledger_status": "finite proxy",
-      "tests": ["tests/verifiable-report-shape.test.js"],
+      "tests": [
+        "tests/verifiable-report-shape.test.js"
+      ],
       "invariant_id": "I_diff",
       "forbidden_claim": "H5 is instantiated in runtime (it is a structural hypothesis)"
     },
@@ -34,7 +38,10 @@
       "runtime_module": "src/simulation/OntologicalSingularityCore.js",
       "runtime_estimator": "tick-level attractor convergence (stasis_index)",
       "gap_ledger_status": "finite proxy",
-      "tests": ["tests/projection.test.js", "tests/determinism.test.js"],
+      "tests": [
+        "tests/projection.test.js",
+        "tests/determinism.test.js"
+      ],
       "invariant_id": "I_per",
       "forbidden_claim": "Banach fixed point theorem is implemented"
     },
@@ -44,7 +51,10 @@
       "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
       "runtime_estimator": "finite tower compatibility + truncation-error bounds",
       "gap_ledger_status": "finite witness",
-      "tests": ["tests/finite-horizon-approximation-barrier.v1.test.js", "tests/inverse-limit-formal.test.js"],
+      "tests": [
+        "tests/finite-horizon-approximation-barrier.v1.test.js",
+        "tests/inverse-limit-formal.test.js"
+      ],
       "invariant_id": "I_ri",
       "forbidden_claim": "full inverse-limit preservation"
     },
@@ -54,7 +64,10 @@
       "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
       "runtime_estimator": "I_diff > threshold (non-null differentiation)",
       "gap_ledger_status": "finite proxy",
-      "tests": ["tests/verifiable-report-shape.test.js", "tests/null-regime-instability.test.js"],
+      "tests": [
+        "tests/verifiable-report-shape.test.js",
+        "tests/null-regime-instability.test.js"
+      ],
       "invariant_id": "I_diff",
       "forbidden_claim": "non-collapse is proved in runtime"
     },
@@ -64,7 +77,9 @@
       "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
       "runtime_estimator": "six-invariant internal support (I_per, I_ri, I_int, I_cont, I_diff, I_leg)",
       "gap_ledger_status": "internal support",
-      "tests": ["tests/run-episode-admissibility.v58.test.js"],
+      "tests": [
+        "tests/run-episode-admissibility.v58.test.js"
+      ],
       "invariant_id": null,
       "forbidden_claim": "external consciousness validation"
     },
@@ -74,7 +89,10 @@
       "runtime_module": "src/experiments/NonFactorizationProver.js",
       "runtime_estimator": "finite non-factorization candidate diagnostics (NC9-NC12)",
       "gap_ledger_status": "finite proxy",
-      "tests": ["tests/non-factorization.test.js", "tests/negative-controls-expanded.v1.test.js"],
+      "tests": [
+        "tests/non-factorization.test.js",
+        "tests/negative-controls-expanded.v1.test.js"
+      ],
       "invariant_id": "I_int",
       "forbidden_claim": "Iint is computed or infinite"
     },
@@ -84,7 +102,9 @@
       "runtime_module": "src/canon/ontological_mass/OntologicalMassEstimator.js",
       "runtime_estimator": "finite family-specific resistance upper bound on M_Omega (C-11, d_w > 0)",
       "gap_ledger_status": "family upper-bound support",
-      "tests": ["tests/ontological-mass-estimator.v1.test.js"],
+      "tests": [
+        "tests/ontological-mass-estimator.v1.test.js"
+      ],
       "invariant_id": null,
       "forbidden_claim": "M_Omega is computed, globally lower-bounded, or infinite"
     },
@@ -94,7 +114,9 @@
       "runtime_module": "src/canon/ccr/CCRApproximationBoundary.js",
       "runtime_estimator": "non-certifying approximation ladder",
       "gap_ledger_status": "finite proxy",
-      "tests": ["tests/ccr-approximation-boundary.v1.test.js"],
+      "tests": [
+        "tests/ccr-approximation-boundary.v1.test.js"
+      ],
       "invariant_id": null,
       "forbidden_claim": "closed-causal-rigidity verified in runtime"
     },
@@ -104,9 +126,1085 @@
       "runtime_module": "src/canon/coupling/CCCOmegaCouplingProtocol.js",
       "runtime_estimator": "finite coupling support under controls",
       "gap_ledger_status": "stress-tested proxy",
-      "tests": ["tests/ccc-omega-coupling-protocol.v1.test.js"],
+      "tests": [
+        "tests/ccc-omega-coupling-protocol.v1.test.js"
+      ],
       "invariant_id": null,
       "forbidden_claim": "CCC proves Omega"
+    },
+    {
+      "framework_id": "basecore:hypothesis:hyp-h2",
+      "framework_object": "H2: Contraction operator K with ||K|| < 1",
+      "runtime_module": "src/tools/BridgeMathematicalVerifier.js",
+      "runtime_estimator": "finite pair operator Lipschitz and single-trajectory contraction proxy",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/bridge-mathematical-verifier.v1.test.js",
+        "tests/discrete-bridge-runtime-bounds.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "infinite-dimensional bounded operator norm ||K|| < 1 is proved in runtime",
+      "notes": "Runtime operational proxy over finite state pairs and trajectories; does not close infinite-dimensional operator norm."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-projection",
+      "framework_object": "Existence and uniqueness of convex projection aleph(Psi)",
+      "runtime_module": "src/canon/projection/MetricProjectionOperator.js",
+      "runtime_estimator": "finite-dimensional constrained metric projection diagnostic",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/metric-projection-operator.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "Hilbert-space projection existence/uniqueness theorem is proved in runtime",
+      "notes": "Finite-dimensional operational projection estimator over declared constraints; infinite-dimensional Hilbert projection remains analytical."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-contraction",
+      "framework_object": "Strict contraction T_u with Lipschitz constant <= ||K||",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "exact rational contraction bound q <= 2048/8191 < 1 in verifyBaseCoreSufficiencyAndCoupledBridge plus finite pair Lipschitz proxy",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/bridge-mathematical-verifier.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "global infinite-dimensional contractivity of T_u is proved in runtime",
+      "notes": "Constructive finite-model witness (exact rational coupled bridge) + runtime finite-pair Lipschitz estimator; general Hilbert contractivity is analytical."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-spectrum",
+      "framework_object": "State spectral gap of typed computable witness",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "spectral_gap proxy in PhenomenologyCore.js + finite-model spectral check (verifyBaseCoreSpectrumAndRelaxation in scripts/verify_tower_mathematics_integration.js)",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/basecore-spectral-relaxation.v1.test.js",
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/spectral-falsification.test.js"
+      ],
+      "invariant_id": "I_int",
+      "forbidden_claim": "infinite-dimensional Frechet derivative spectral gap theorem is closed in runtime",
+      "notes": "Lote 4: constructive finite-witness verification via verifyBaseCoreSpectrumAndRelaxation() (tests/basecore-spectral-relaxation.v1.test.js, scripts/verify_tower_mathematics_integration.js) plus operational spectral_gap proxy and boundary metadata in src/simulation/PhenomenologyCore.js."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-relaxation",
+      "framework_object": "Exponential relaxation-time bound ||T_u^n f - f_u*||_inf <= 2^-n ||f - f_u*||_inf",
+      "runtime_module": "src/simulation/PhenomenologyCore.js",
+      "runtime_estimator": "relaxation_time = 1/|ln(1 - spectral_gap)| proxy + finite-horizon relaxation checks (verifyBaseCoreSpectrumAndRelaxation in scripts/verify_tower_mathematics_integration.js)",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/basecore-spectral-relaxation.v1.test.js",
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/spectral-falsification.test.js",
+        "tests/persistence-forward-invariance.test.js"
+      ],
+      "invariant_id": "I_cont",
+      "forbidden_claim": "asymptotic infinite-horizon relaxation-time bound is proved in runtime",
+      "notes": "Lote 4: constructive finite-witness verification via verifyBaseCoreSpectrumAndRelaxation() (tests/basecore-spectral-relaxation.v1.test.js, scripts/verify_tower_mathematics_integration.js) plus operational relaxation_time proxy and boundary metadata in src/simulation/PhenomenologyCore.js and FiniteProjectionEvaluator.js."
+    },
+    {
+      "framework_id": "basecore:hypothesis:hyp-topo",
+      "framework_object": "Topological regularity: compact Hausdorff stages S_t and continuous surjective bonding maps",
+      "runtime_module": "src/canon/finite_horizon/ProjectiveTowerAuditor.js",
+      "runtime_estimator": "finite projective tower compatibility audit over recorded traces",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/projective-tower-auditor.v1.test.js"
+      ],
+      "invariant_id": "I_ri",
+      "forbidden_claim": "infinite inverse-system compact Hausdorff topology is verified in runtime",
+      "notes": "Finite-horizon structural compatibility proxy; topological regularity over infinite stages is an analytical assumption."
+    },
+    {
+      "framework_id": "basecore:hypothesis:hyp-nfd",
+      "framework_object": "NFD: Non-finite determination (canonical projection p_t non-injective)",
+      "runtime_module": "src/canon/finite_horizon/ProjectiveTowerAuditor.js",
+      "runtime_estimator": "probeFiniteNFD divergent-extension score over finite prefixes",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/projective-tower-auditor.v1.test.js"
+      ],
+      "invariant_id": "I_ri",
+      "forbidden_claim": "non-finite determination over all infinite histories is proved in runtime",
+      "notes": "Constructive finite-prefix witness detecting divergent compatible extensions; infinite NFD remains analytical."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-non-simulability",
+      "framework_object": "Finite-budget obstruction by response separation (|A| <= 2^B)",
+      "runtime_module": "src/canon/finite_horizon/ApproximationBarrierReport.js",
+      "runtime_estimator": "finite-horizon approximation barrier and resource profile scope guard",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/finite-horizon-approximation-barrier.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "universal computational non-simulability is proved in runtime",
+      "notes": "Runtime boundary/barrier enforcement for finite-horizon approximations; general finite-budget theorem is analytical."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-e1-necessary",
+      "framework_object": "Controlled compatibility (E1) is sufficient for limit existence with error bound",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "computeInverseLimitScore + verifyCategoricalCompatibility over finite windows",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/inverse-limit-formal.test.js",
+        "tests/inverse-limit.test.js"
+      ],
+      "invariant_id": "I_ri",
+      "forbidden_claim": "full infinite-limit convergence under E1 is proved in runtime",
+      "notes": "Finite-window compatibility score and truncation bound estimator; infinite-limit convergence is analytical."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-ternary-regime-realization",
+      "framework_object": "Ternary realization of E0-E2 on {0,1}^N with 3^-(j+1) metric",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "exact rational verification of 4032 distinct 6-bit ternary pairs in evaluateFoundationalFront1",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "infinite Cantor-ternary limit realization is closed in runtime",
+      "notes": "Constructive exact-rational finite witness (6-bit prefix, 4032 pairs); infinite sequence limit is analytical."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-finite-cut-minimax",
+      "framework_object": "Sharp finite-cut approximation error minimax bound",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "boundFiniteApproximationError + exact prefix cut agreements in evaluateFoundationalFront1",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/finite-horizon-approximation-barrier.v1.test.js",
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "global minimax infimum over all infinite decoders is proved in runtime",
+      "notes": "Constructive finite-cut error bound and prefix-cut witness; supremum over infinite histories is analytical."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-joint-transport-readout",
+      "framework_object": "Joint realization of transport and controlled readouts on circle-prefix stages",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "projective tape cuts and cofinal probe verification in evaluateFoundationalFront1",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "infinite circle-prefix tower transport theorem is closed in runtime",
+      "notes": "Constructive exact-rational verification on finite projective tape cuts (depths 1..6) and site-7 probe."
+    },
+    {
+      "framework_id": "basecore:hypothesis:hyp-h3-metric",
+      "framework_object": "H3-metric: structural readout space E admits a metric d_E",
+      "runtime_module": "src/canon/metrics/BehavioralPseudometric.js",
+      "runtime_estimator": "computeBehavioralDistance and computeInterventionResponseDistance",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/behavioral-pseudometric.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "abstract metric completeness on E is verified in runtime",
+      "notes": "Operational finite pseudometric over recorded behavioral/intervention vectors."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-h3-necessary",
+      "framework_object": "Metric data required by quantitative fragmentation and loss formulas",
+      "runtime_module": "src/canon/metrics/BehavioralPseudometric.js",
+      "runtime_estimator": "estimateDistanceUncertainty + distance computation over finite readout vectors",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/behavioral-pseudometric.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "necessity of metric data in abstract readout spaces is proved in runtime",
+      "notes": "Operational distance calculation enforcing metric inputs on finite runtime trajectories."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-forced-continuity",
+      "framework_object": "Continuity and conditional perturbation invariance under E1",
+      "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
+      "runtime_estimator": "I_cont operational continuity score over trajectory perturbations",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/continuity-formal.test.js"
+      ],
+      "invariant_id": "I_cont",
+      "forbidden_claim": "uniform continuity of infinite-limit readout Phi is proved in runtime",
+      "notes": "Runtime operational continuity invariant I_cont; asymptotic E1 continuity theorem is analytical."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-phenomenological-instability",
+      "framework_object": "Conditional null separation under positive displacement",
+      "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
+      "runtime_estimator": "I_diff non-null differentiation and null-regime instability checks",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/null-regime-instability.test.js"
+      ],
+      "invariant_id": "I_diff",
+      "forbidden_claim": "asymptotic null-separation theorem is proved in runtime",
+      "notes": "Runtime operational separation proxy via I_diff and null-regime tests; general theorem is analytical."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-null-simulation-lower-bound",
+      "framework_object": "Finite-prefix simulation lower bound err_N = 1/(2*3^(N+1))",
+      "runtime_module": "src/simulation/tower/SigmaAutomodelTruncator.js",
+      "runtime_estimator": "analyticalCommutationDefectBound and depth-d fiber truncation checks",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "asymptotic simulation lower bound for arbitrary decoders is proved in runtime",
+      "notes": "Constructive exact-rational verification of depth-d truncation defect bounds (depths 1..8)."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-rupture",
+      "framework_object": "Rupture by invariant loss: loss of any critical invariant excludes S from C_op",
+      "runtime_module": "src/experiments/AdmissibilityEngine.js",
+      "runtime_estimator": "run-level admissibility and invariant-rupture gating over six invariants",
+      "gap_ledger_status": "internal support",
+      "tests": [
+        "tests/run-episode-admissibility.v58.test.js",
+        "tests/null-regime-instability.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "external falsification or ontological rupture is proved",
+      "notes": "Operational gate enforcement rejecting runs with invariant loss; internal admissibility support only."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-discrete-contraction",
+      "framework_object": "Discrete operator contractivity under discrete regularity",
+      "runtime_module": "src/tools/DiscreteBridgeRuntimeBounds.js",
+      "runtime_estimator": "buildDiscreteBridgeRuntimeBounds + BridgeMathematicalVerifier operator Lipschitz checks",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/discrete-bridge-runtime-bounds.v1.test.js",
+        "tests/discrete-bridge-contraction-counterexample.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "global discrete operator contractivity is proved in runtime",
+      "notes": "Finite runtime bounds and negative-control counterexample checks; general discrete contractivity is analytical."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-bridge",
+      "framework_object": "Hilbert-Discrete bridge approximation theorem",
+      "runtime_module": "src/tools/DiscreteBridgeRuntimeBounds.js",
+      "runtime_estimator": "Galerkin relative residual, fixed-point drift bound, and coupled bridge rational bounds",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/discrete-bridge-runtime-bounds.v1.test.js",
+        "tests/bridge-mathematical-verifier.v1.test.js",
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "asymptotic Hilbert-discrete convergence theorem is proved in runtime",
+      "notes": "Explicitly bounded as finite diagnostic proxy (DISCRETE_BRIDGE_BOUNDS_BOUNDARY); asymptotic convergence is analytical."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-realized-nonconstant-bridge",
+      "framework_object": "Realized contractive bridge with nonconstant equilibria",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "verifyBaseCoreSufficiencyAndCoupledBridge exact rational non-collapse margin gamma = 90097/1572608",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": "I_diff",
+      "forbidden_claim": "general existence of nonconstant equilibria in infinite-dimensional bridges is proved in runtime",
+      "notes": "Constructive exact-rational witness for N >= 2 plus N = 1 negative control."
+    },
+    {
+      "framework_id": "basecore:theorem:thm-projective-dissipation",
+      "framework_object": "Contractive projective evolution and equilibrium transport on circle-prefix tower",
+      "runtime_module": "src/simulation/tower/WritablePrefixTower.js",
+      "runtime_estimator": "exact rational step/readout evolution and contraction verification on WritablePrefixTower",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/language-free-contract.v4.test.mjs"
+      ],
+      "invariant_id": "I_per",
+      "forbidden_claim": "infinite-tower projective dissipation is closed in runtime",
+      "notes": "Constructive finite-prefix exact-rational tower implementation and integration checks."
+    },
+    {
+      "framework_id": "bridge:theorem:thm-sigma-common-fixed-point",
+      "framework_object": "Exact commutation requires a common fixed point",
+      "runtime_module": "src/simulation/tower/SigmaAutomodelTruncator.js",
+      "runtime_estimator": "evaluateCommutationDefect + OntologicalSingularityCore.stepCoupledTower sigmaTheoremVerified telemetry",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "common fixed point on infinite complete metric spaces is proved in runtime",
+      "notes": "Constructive finite-depth commutation defect check and runtime coupled-tower telemetry."
+    },
+    {
+      "framework_id": "bridge:theorem:thm-sigma-approximate-displacement",
+      "framework_object": "Fixed-point displacement bound under approximate commutation <= e_u(p)/(1-L)",
+      "runtime_module": "src/simulation/tower/SigmaAutomodelTruncator.js",
+      "runtime_estimator": "verifySigmaApproximateAutomodels: exact rational saturation and 144 T_d fiber checks",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/language-free-contract.v4.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "universal infinite-dimensional approximate commutation bound is proved in runtime",
+      "notes": "Constructive exact-rational witness verifying rational saturation and depth 1..8 fiber truncation bounds."
+    },
+    {
+      "framework_id": "paper1:hypothesis:hyp-topo",
+      "framework_object": "Topological regularity of inverse system stages",
+      "runtime_module": "src/canon/finite_horizon/ProjectiveTowerAuditor.js",
+      "runtime_estimator": "finite projective tower audit over recorded trace stages",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/projective-tower-auditor.v1.test.js"
+      ],
+      "invariant_id": "I_ri",
+      "forbidden_claim": "compact Hausdorff inverse-system topology is verified in runtime",
+      "notes": "Finite-horizon stage compatibility proxy; infinite topological regularity is analytical."
+    },
+    {
+      "framework_id": "paper1:hypothesis:hyp-h1",
+      "framework_object": "H1: Surjectivity / lifting of stage projections pi_{t+1->t}",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "projectionMorphism and finite-window lifting compatibility check",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/inverse-limit-formal.test.js"
+      ],
+      "invariant_id": "I_ri",
+      "forbidden_claim": "surjectivity of all infinite-tower projections is proved in runtime",
+      "notes": "Finite-window projection morphism check; global surjectivity is an analytical hypothesis."
+    },
+    {
+      "framework_id": "paper1:hypothesis:hyp-h2",
+      "framework_object": "H2: Compact Polish metric structure on stages S_t",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "verifyWeightedTailAndChannelCoercivity truncated vs unbounded metric check",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "Polish completeness of infinite inverse-limit stages is proved in runtime",
+      "notes": "Constructive finite check distinguishing truncated compact metrics from divergent/discrete metrics."
+    },
+    {
+      "framework_id": "paper1:theorem:thm-detectability",
+      "framework_object": "Finite witnesses for deformation resistance",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "causal-rigid interventional separation and omitted-bit site-7 witness in evaluateFoundationalFront1",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": "I_ri",
+      "forbidden_claim": "general deformation resistance across all intervention sectors is proved in runtime",
+      "notes": "Constructive exact-rational finite witness for interventional vs observational separation."
+    },
+    {
+      "framework_id": "paper1:theorem:thm-spectral-coupling",
+      "framework_object": "Positive separation at a fixed scale",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "fixed-scale separation modulus omega_T(r) = r^2 check in evaluateFoundationalFront1",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "global injective spectral coupling on infinite compact metric spaces is proved in runtime",
+      "notes": "Constructive exact-rational finite witness for fixed-scale modulus omega_T(r) = r^2."
+    },
+    {
+      "framework_id": "paper1:theorem:thm-info-isolation",
+      "framework_object": "Finite-prefix recovery and information isolation",
+      "runtime_module": "src/canon/finite_horizon/ProjectiveTowerAuditor.js",
+      "runtime_estimator": "probeFiniteNFD + projective cut agreement checks in evaluateFoundationalFront1",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/projective-tower-auditor.v1.test.js",
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": "I_ri",
+      "forbidden_claim": "exact recovery over infinite histories is closed in runtime",
+      "notes": "Finite-prefix witness for prefix recovery and divergent tail extensions."
+    },
+    {
+      "framework_id": "paper1:theorem:thm-non-simulability",
+      "framework_object": "Conditional non-simulability from a finite-cost witness",
+      "runtime_module": "src/canon/coupling/CCCOmegaCouplingProtocol.js",
+      "runtime_estimator": "finite coupling control protocol and approximation barrier scope enforcement",
+      "gap_ledger_status": "stress-tested proxy",
+      "tests": [
+        "tests/ccc-omega-coupling-protocol.v1.test.js",
+        "tests/finite-horizon-approximation-barrier.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "unconditional non-simulability against arbitrary simulators is proved in runtime",
+      "notes": "Runtime stress-tested proxy and barrier guard; formal non-simulability theorem is analytical."
+    },
+    {
+      "framework_id": "paper2:theorem:thm-e1-necessary",
+      "framework_object": "Controlled compatibility (E1) is sufficient for limit existence",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "computeInverseLimitScore and verifyCategoricalCompatibility over finite traces",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/inverse-limit-formal.test.js",
+        "tests/inverse-limit.test.js"
+      ],
+      "invariant_id": "I_ri",
+      "forbidden_claim": "infinite-limit convergence under E1 is proved in runtime",
+      "notes": "Finite-window compatibility score proxy; asymptotic E1 convergence is analytical."
+    },
+    {
+      "framework_id": "paper2:theorem:thm-ternary-regime-realization",
+      "framework_object": "Ternary realization of E0-E2",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "exact rational verification of 4032 6-bit ternary pairs in evaluateFoundationalFront1",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "infinite ternary limit realization is closed in runtime",
+      "notes": "Constructive exact-rational finite witness (6-bit prefix, 4032 pairs)."
+    },
+    {
+      "framework_id": "paper2:theorem:thm-finite-cut-minimax",
+      "framework_object": "Sharp finite-cut approximation error minimax",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "boundFiniteApproximationError + finite projective cut checks",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/finite-horizon-approximation-barrier.v1.test.js",
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "global minimax infimum over infinite decoders is proved in runtime",
+      "notes": "Constructive finite-cut error bound and prefix-cut witness."
+    },
+    {
+      "framework_id": "paper2:theorem:thm-joint-transport-readout",
+      "framework_object": "Joint realization of transport and controlled readouts",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "projective tape cuts and cofinal probe verification in evaluateFoundationalFront1",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "infinite circle-prefix transport theorem is closed in runtime",
+      "notes": "Constructive exact-rational witness on finite projective tape cuts."
+    },
+    {
+      "framework_id": "paper2:hypothesis:hyp-h3",
+      "framework_object": "H3: Metric d_E on structural readout space E",
+      "runtime_module": "src/canon/metrics/BehavioralPseudometric.js",
+      "runtime_estimator": "computeBehavioralDistance over finite readout vectors",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/behavioral-pseudometric.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "completeness of abstract metric space (E, d_E) is proved in runtime",
+      "notes": "Operational finite pseudometric over recorded runtime readouts."
+    },
+    {
+      "framework_id": "paper2:theorem:thm-h3-necessary",
+      "framework_object": "Metric data required by quantitative fragmentation and loss formulas",
+      "runtime_module": "src/canon/metrics/BehavioralPseudometric.js",
+      "runtime_estimator": "computeInterventionResponseDistance and estimateDistanceUncertainty",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/behavioral-pseudometric.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "necessity of metric data in abstract readout spaces is proved in runtime",
+      "notes": "Operational distance calculation enforcing metric inputs on finite runtime trajectories."
+    },
+    {
+      "framework_id": "paper2:theorem:thm-forced-continuity",
+      "framework_object": "Continuity and conditional perturbation invariance under E1",
+      "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
+      "runtime_estimator": "I_cont operational continuity invariant",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/continuity-formal.test.js"
+      ],
+      "invariant_id": "I_cont",
+      "forbidden_claim": "uniform continuity of infinite-limit readout Phi is proved in runtime",
+      "notes": "Runtime operational continuity proxy via I_cont."
+    },
+    {
+      "framework_id": "paper3:theorem:thm-nonsim",
+      "framework_object": "Finite representation budget |A| <= 2^B",
+      "runtime_module": "src/canon/finite_horizon/ApproximationBarrierReport.js",
+      "runtime_estimator": "finite-horizon approximation barrier and resource profile scope guard",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/finite-horizon-approximation-barrier.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "universal representation budget theorem is proved in runtime",
+      "notes": "Runtime finite-horizon barrier guard; general representation bound is analytical."
+    },
+    {
+      "framework_id": "paper3:theorem:thm-spectral",
+      "framework_object": "Audited linear coupling spectral bound",
+      "runtime_module": "src/simulation/PhenomenologyCore.js",
+      "runtime_estimator": "spectral_gap runtime estimator and falsification checks",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/spectral-falsification.test.js",
+        "tests/omega-spectral-cap.v1.test.mjs"
+      ],
+      "invariant_id": "I_int",
+      "forbidden_claim": "general Euclidean linear coupling theorem is proved in runtime",
+      "notes": "Operational spectral_gap proxy and falsification guard in runtime."
+    },
+    {
+      "framework_id": "paper3:theorem:thm-cont",
+      "framework_object": "Continuity under controlled approximation",
+      "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
+      "runtime_estimator": "I_cont operational continuity score",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/continuity-formal.test.js"
+      ],
+      "invariant_id": "I_cont",
+      "forbidden_claim": "uniform limit continuity in complete metric codomains is proved in runtime",
+      "notes": "Runtime operational continuity proxy via I_cont."
+    },
+    {
+      "framework_id": "paper3:theorem:thm-instability",
+      "framework_object": "Conditional null-separation under admissible extension witness",
+      "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
+      "runtime_estimator": "I_diff non-null differentiation and null-regime instability checks",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/null-regime-instability.test.js"
+      ],
+      "invariant_id": "I_diff",
+      "forbidden_claim": "general conditional null-separation theorem is proved in runtime",
+      "notes": "Runtime separation proxy via I_diff and null-regime tests."
+    },
+    {
+      "framework_id": "paper3:theorem:thm-sim-cond",
+      "framework_object": "Simulation lower bound err_N = 1/(2*3^(N+1)) > 0",
+      "runtime_module": "src/simulation/tower/SigmaAutomodelTruncator.js",
+      "runtime_estimator": "analyticalCommutationDefectBound and depth-d fiber truncation checks",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "universal prefix simulation lower bound is proved in runtime",
+      "notes": "Constructive exact-rational verification of depth-d truncation bounds."
+    },
+    {
+      "framework_id": "paper3:theorem:thm-channel-projection-detectability",
+      "framework_object": "Compatible observable channels and detectability",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "verifyWeightedTailAndChannelCoercivity coercivity infimum and harmonic decay witness",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "infinite-tower channel detectability theorem is closed in runtime",
+      "notes": "Constructive exact-rational witness for uniform coercive infimum (1/2) vs harmonic decay (1/n)."
+    },
+    {
+      "framework_id": "paper4:theorem:thm-campaign-block-sign-test",
+      "framework_object": "Exact independent-block sign test size (5425/262144 < 1/20) and power",
+      "runtime_module": "src/comparative_program/StatisticalAdjudicationEngine.js",
+      "runtime_estimator": "runPaper4CampaignControls exact rational binomial tail and pathology inflation checks",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "external campaign data has been collected or adjudicated",
+      "notes": "Constructive exact-rational verification of sign-test size, power, and pseudoreplication/leakage inflation controls."
+    },
+    {
+      "framework_id": "paper5:definition:def-cop",
+      "framework_object": "Six-predicate operational criterion class membership C_op",
+      "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
+      "runtime_estimator": "six-invariant internal support (I_per, I_ri, I_int, I_cont, I_diff, I_leg)",
+      "gap_ledger_status": "internal support",
+      "tests": [
+        "tests/run-episode-admissibility.v58.test.js",
+        "tests/verifiable-report-shape.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "external consciousness validation or full C_op membership",
+      "notes": "Runtime operationalization of the six-invariant criterion; internal support only."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-iint-faithful-factorization-triviality",
+      "framework_object": "Factorization triviality under atomic response separator",
+      "runtime_module": "src/experiments/NonFactorizationProver.js",
+      "runtime_estimator": "verifyTowerCommonPlantAndInteractionNonFactorization and verifyNonFactorization",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/non-factorization.test.js"
+      ],
+      "invariant_id": "I_int",
+      "forbidden_claim": "infinite-dimensional factorization triviality is proved in runtime",
+      "notes": "Constructive finite-model witness for non-factorizability under atomic separator."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-circle-prefix-integration-obstruction",
+      "framework_object": "Exact split at initial projective cut on circle-prefix tower",
+      "runtime_module": "src/experiments/NonFactorizationProver.js",
+      "runtime_estimator": "verifyTowerCommonPlantAndInteractionNonFactorization initial-cut split check",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": "I_int",
+      "forbidden_claim": "infinite circle-prefix integration obstruction is proved in runtime",
+      "notes": "Constructive exact-rational witness on WritablePrefixTower."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-circle-prefix-cofinal-margin",
+      "framework_object": "Positive split-readout margin on cofinal tower (1/80)",
+      "runtime_module": "src/experiments/NonFactorizationProver.js",
+      "runtime_estimator": "verifyTowerCommonPlantAndInteractionNonFactorization profileSeparationGap === 1/80",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": "I_int",
+      "forbidden_claim": "cofinal infinite-tower margin is proved in runtime",
+      "notes": "Constructive exact-rational witness verifying profileSeparationGap = 1/80."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-paired-integration-rupture",
+      "framework_object": "Sharp paired detection of integration loss",
+      "runtime_module": "src/experiments/NonFactorizationProver.js",
+      "runtime_estimator": "paired integration vs factorized control diagnostics (NC9-NC12)",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/non-factorization.test.js",
+        "tests/negative-controls-expanded.v1.test.js"
+      ],
+      "invariant_id": "I_int",
+      "forbidden_claim": "universal paired integration rupture detection is proved in runtime",
+      "notes": "Finite-model negative-control integration rupture diagnostic."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-tower-identity-observation-resolution",
+      "framework_object": "Sharp single-readout resolution of tower identity",
+      "runtime_module": "src/canon/finite_horizon/FiniteProjectionEvaluator.js",
+      "runtime_estimator": "projective cut agreements and omitted-bit control in evaluateFoundationalFront1",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": "I_ri",
+      "forbidden_claim": "infinite-history identity resolution is closed in runtime",
+      "notes": "Constructive finite-prefix exact-rational witness."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-addressable-identity-alternatives",
+      "framework_object": "Identity separation from addressable control interface",
+      "runtime_module": "src/subjectivity/InformedReserveEvaluator.js",
+      "runtime_estimator": "runSelectiveAddressLesionSuite (5 selective address lesions, 30 trials, product gate 1/48)",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": "I_ri",
+      "forbidden_claim": "infinite-history addressable identity separation is proved in runtime",
+      "notes": "Constructive exact-rational verification of 5 selective address lesions."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-integration-all-identity-channels",
+      "framework_object": "Integration with all identity channels (0 < lambda <= 1/9)",
+      "runtime_module": "src/experiments/NonFactorizationProver.js",
+      "runtime_estimator": "verifyTowerCommonPlantAndInteractionNonFactorization fiberContractionConstant === 9/16",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": "I_int",
+      "forbidden_claim": "infinite-channel integration theorem is closed in runtime",
+      "notes": "Constructive exact-rational witness on common plant."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-matched-integration-legibility",
+      "framework_object": "Legibility of matched integration responses",
+      "runtime_module": "src/experiments/LegibilityCertifier.js",
+      "runtime_estimator": "verifyTowerLegibilityHorizon (105 horizon trials) and buildLegibilityCertificate",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/legibility-certifier.test.js"
+      ],
+      "invariant_id": "I_leg",
+      "forbidden_claim": "general matched-response legibility over infinite horizons is proved in runtime",
+      "notes": "Constructive finite-horizon legibility verification (105 trials) + runtime legibility certifier."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-response-atomic-factorization",
+      "framework_object": "Atomic response separation gives product error bound (1/2 minimax over 24 bijections)",
+      "runtime_module": "src/experiments/NonFactorizationProver.js",
+      "runtime_estimator": "verifyResponseAtomicFactorizationSwap (24 bijective encodings, minimax 1/2, hold negative controls)",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": "I_int",
+      "forbidden_claim": "arbitrary-dimension atomic response product bound is proved in runtime",
+      "notes": "Constructive exact-rational exhaustive check over all 24 bijective encodings plus negative controls."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-rupture",
+      "framework_object": "Rupture by invariant loss excludes S from C_op",
+      "runtime_module": "src/experiments/AdmissibilityEngine.js",
+      "runtime_estimator": "run-level admissibility gating on invariant loss",
+      "gap_ledger_status": "internal support",
+      "tests": [
+        "tests/run-episode-admissibility.v58.test.js",
+        "tests/null-regime-instability.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "external falsification is proved",
+      "notes": "Operational gate enforcement rejecting invariant-rupture runs."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-stability",
+      "framework_object": "Approximate stability of C_op under bounded perturbation",
+      "runtime_module": "src/canon/thresholds/P503ThresholdRuntime.js",
+      "runtime_estimator": "P5-03 threshold stability and continuity diagnostics",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/continuity-formal.test.js"
+      ],
+      "invariant_id": "I_cont",
+      "forbidden_claim": "global structural stability of C_op is proved in runtime",
+      "notes": "Localized finite-horizon threshold/continuity proxy."
+    },
+    {
+      "framework_id": "paper5:theorem:thm-substrate",
+      "framework_object": "Substrate invariance of C_op under structural equivalence",
+      "runtime_module": "src/experiments/roeo_signature.js",
+      "runtime_estimator": "ROEO signature equivalence and SNO substrate-neutrality discrimination",
+      "gap_ledger_status": "internal support",
+      "tests": [
+        "tests/roeo.v1.test.js",
+        "tests/sno.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "external biological non-primacy is validated",
+      "notes": "Internal batch-level structural equivalence audit; not external validation."
+    },
+    {
+      "framework_id": "paper7:definition:def-cop",
+      "framework_object": "Six-predicate operational criterion C_op (inherited)",
+      "runtime_module": "src/canon/invariants/CanonicalInvariantPackage.js",
+      "runtime_estimator": "six-invariant internal support package",
+      "gap_ledger_status": "internal support",
+      "tests": [
+        "tests/run-episode-admissibility.v58.test.js",
+        "tests/life-first-person-certifiers.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "external consciousness validation",
+      "notes": "Inherited C_op operationalization in runtime invariant package."
+    },
+    {
+      "framework_id": "paper7:hypothesis:hyp-life-robust",
+      "framework_object": "Viability-and-recovery criterion robustness under admissible perturbations",
+      "runtime_module": "src/canon/persistence/PersistenceCertifier.js",
+      "runtime_estimator": "runTowerViabilityAndBoundaryControls (126 active recoveries, 63 boundary traces) and verifyForwardInvariance",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/persistence-forward-invariance.test.js",
+        "tests/life-first-person-certifiers.v1.test.js"
+      ],
+      "invariant_id": "I_per",
+      "forbidden_claim": "biological life or universal robustness is proved in runtime",
+      "notes": "Constructive finite-tower viability/recovery witness + runtime persistence certifier."
+    },
+    {
+      "framework_id": "paper7:hypothesis:hyp-history",
+      "framework_object": "Historical dependence necessity for genuine operational life",
+      "runtime_module": "src/experiments/LifeCertifier.js",
+      "runtime_estimator": "LifeCertifier 6-condition check and history vs profile reserve separation",
+      "gap_ledger_status": "finite proxy",
+      "tests": [
+        "tests/life-first-person-certifiers.v1.test.js",
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": "I_cont",
+      "forbidden_claim": "biological historical dependence is proved in runtime",
+      "notes": "Operational internal support proxy via LifeCertifier and finite-tower reserve protocols."
+    },
+    {
+      "framework_id": "paper7:hypothesis:hyp-subject-pc",
+      "framework_object": "Indexed continuity-and-control criterion requires privileged continuity",
+      "runtime_module": "src/experiments/LifeCertifier.js",
+      "runtime_estimator": "verifyTowerJointSubjecthoodCertificate (56 matched successor continuity checks)",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/life-first-person-certifiers.v1.test.js"
+      ],
+      "invariant_id": "I_cont",
+      "forbidden_claim": "phenomenal first-person continuity is proved in runtime",
+      "notes": "Constructive exact-rational witness on WritablePrefixTower (56 continuity checks)."
+    },
+    {
+      "framework_id": "paper7:hypothesis:hyp-selfnonself",
+      "framework_object": "Indexed continuity-and-control criterion requires self/non-self asymmetry",
+      "runtime_module": "src/experiments/LifeCertifier.js",
+      "runtime_estimator": "verifyTowerJointSubjecthoodCertificate (28 causal discrimination checks + ablated control)",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/life-first-person-certifiers.v1.test.js"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "philosophical selfhood or consciousness is proved in runtime",
+      "notes": "Constructive exact-rational witness on WritablePrefixTower (28 discrimination checks + ablated control)."
+    },
+    {
+      "framework_id": "paper8:theorem:thm-tower-native-lesion-obstruction",
+      "framework_object": "Connected-fibre obstruction to native discrete lesions",
+      "runtime_module": "src/subjectivity/InformedReserveEvaluator.js",
+      "runtime_estimator": "runSelectiveAddressLesionSuite (5 selective address lesions, 30 trials, product gate 1/48)",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "infinite-fibre connected obstruction theorem is closed in runtime",
+      "notes": "Constructive finite-tower lesion witness (30 trials, product gate 1/48)."
+    },
+    {
+      "framework_id": "paper8:theorem:thm-writable-tower-public-return-tie",
+      "framework_object": "Public information obstruction on writable tower return task (risk tie 1/2)",
+      "runtime_module": "src/subjectivity/InformedReserveEvaluator.js",
+      "runtime_estimator": "runInformedReserveSuite (84 strata, publicTieForcedRisk === 1/2)",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/language-free-contract.v4.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "infinite-horizon public tie theorem is closed beyond the finite model",
+      "notes": "Constructive exact-rational verification across all 84 reserve strata."
+    },
+    {
+      "framework_id": "paper8:theorem:thm-writable-tower-private-return-separation",
+      "framework_object": "Exact separation by an accessible private signal (TV risk gap 1/2)",
+      "runtime_module": "src/subjectivity/InformedReserveEvaluator.js",
+      "runtime_estimator": "runInformedReserveSuite (privateSignalRiskGap === 1/2, Bayes-optimal TV identity)",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs",
+        "tests/language-free-contract.v4.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "phenomenal privacy or consciousness is proved in runtime",
+      "notes": "Constructive exact-rational verification of private-signal Bayes-optimal TV separation."
+    },
+    {
+      "framework_id": "paper9:theorem:thm-bridge-binary-transport-gauge",
+      "framework_object": "Relabeling invariance and cycle criterion for binary transport",
+      "runtime_module": "src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js",
+      "runtime_estimator": "verifyBinaryCycleTransport exact cycle gauge verification",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "general infinite-graph gauge equivalence is proved in runtime",
+      "notes": "Constructive exact-rational verification on finite mode-window triangle graph."
+    },
+    {
+      "framework_id": "paper9:theorem:thm-bridge-port-preservation",
+      "framework_object": "Exact projection, stability and inherited certificates on 4-state body-world extension",
+      "runtime_module": "src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js",
+      "runtime_estimator": "runFullBodyWorldBridgeVerification safetyChecks (active <= 3/4, passive <= 1/2)",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "phenomenal embodiment is proved in runtime",
+      "notes": "Constructive exact-rational verification on BodyWorldTower finite extension."
+    },
+    {
+      "framework_id": "paper9:theorem:thm-bridge-port-minimality",
+      "framework_object": "Four-state minimality of port realization (Hankel rank 4, det t^4, ||H^-1||_inf = 24)",
+      "runtime_module": "src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js",
+      "runtime_estimator": "runFullBodyWorldBridgeVerification world Hankel matrix rank/determinant/inverse-norm check",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "global system-identification minimality over arbitrary nonlinear plants is proved",
+      "notes": "Constructive exact-rational verification of 4x4 block Hankel matrix."
+    },
+    {
+      "framework_id": "paper9:theorem:thm-bridge-typed-valence",
+      "framework_object": "Two-dimensional nonconservative evaluative witness (circulation 1/32, Hermite grid)",
+      "runtime_module": "src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js",
+      "runtime_estimator": "runFullBodyWorldBridgeVerification valuation circulation and Hermite 9-node grid check",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "phenomenal valence or affect is proved in runtime",
+      "notes": "Constructive exact-rational verification of nonconservative 2D evaluative field."
+    },
+    {
+      "framework_id": "paper9:theorem:thm-bridge-motor-closure",
+      "framework_object": "Motor closure with preserved early competence (late separation 1/128)",
+      "runtime_module": "src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js",
+      "runtime_estimator": "runFullBodyWorldBridgeVerification motor closure late-return separation === 1/128",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "biological motor agency is proved in runtime",
+      "notes": "Constructive exact-rational verification on BodyWorldTower."
+    },
+    {
+      "framework_id": "paper9:theorem:thm-bridge-bilinear-safe-extension",
+      "framework_object": "Safe bilinear extension with exact projection and 3/4 / 1/2 contraction",
+      "runtime_module": "src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js",
+      "runtime_estimator": "runFullBodyWorldBridgeVerification 6-burden joint certificate and 6x6 lesion rank 6",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "universal safe extension for arbitrary bilinear plants is proved",
+      "notes": "Constructive exact-rational verification of 6 local bridge burdens and 6x6 lesion matrix."
+    },
+    {
+      "framework_id": "paper9:theorem:thm-bridge-quartic-global-certificate",
+      "framework_object": "Safe quartic extension and global integration certificate (13/16 fibre contraction, E* = 1/39366)",
+      "runtime_module": "src/simulation/tower/BodyWorldTower.js",
+      "runtime_estimator": "verifyIndexedQuarticPlantAndFourRootClosure exact rational bounds",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "external validation or non-provisional confirmation",
+      "notes": "Constructive exact-rational witness (provisional_non_confirmatory=true, external_support_certified=false)."
+    },
+    {
+      "framework_id": "paper9:theorem:thm-bridge-quartic-indexed-inheritance",
+      "framework_object": "Life and indexed-class realization on enlarged quartic plant",
+      "runtime_module": "src/simulation/tower/BodyWorldTower.js",
+      "runtime_estimator": "verifyIndexedQuarticPlantAndFourRootClosure six-transition probe",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "external validation or phenomenal subjecthood",
+      "notes": "Constructive exact-rational witness on enlarged quartic plant."
+    },
+    {
+      "framework_id": "paper9:theorem:thm-bridge-quartic-cubic-gap",
+      "framework_object": "Exact quartic-cubic polynomial forecast gap xi_4/4 = 1/4194304",
+      "runtime_module": "src/simulation/tower/BodyWorldTower.js",
+      "runtime_estimator": "verifyIndexedQuarticPlantAndFourRootClosure quartic-cubic gap check",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "general polynomial approximation lower bound outside declared plant",
+      "notes": "Constructive exact-rational verification of 1/4194304 quartic-cubic gap."
+    },
+    {
+      "framework_id": "paper9:theorem:thm-bridge-four-root-identification",
+      "framework_object": "Exact proper-ancestry gap 4*xi_4 = 1/262144 and noise_cost_margin = 1019/268435456",
+      "runtime_module": "src/simulation/tower/BodyWorldTower.js",
+      "runtime_estimator": "verifyIndexedQuarticPlantAndFourRootClosure fourRootProperAncestryClosure + equal-cost replica negative control",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "external validation or universal ancestry identification",
+      "notes": "Constructive exact-rational verification plus equal-cost four-root replica negative control."
+    },
+    {
+      "framework_id": "paper10:theorem:thm-null-forced",
+      "framework_object": "Null error lower bound under leakage R_gamma(a) >= (1-p)/2",
+      "runtime_module": "src/comparative_program/StatisticalAdjudicationEngine.js",
+      "runtime_estimator": "computeLeakageFloors and runPaper10AdjudicationControls",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "empirical dataset adjudication is complete",
+      "notes": "Constructive exact-rational verification of clean-stratum and coupling null floors."
+    },
+    {
+      "framework_id": "paper10:theorem:thm-coverage-sensitive-leakage",
+      "framework_object": "Sharp leakage bounds at fixed coverage B_clean(C,p) and B_coup(C,p)",
+      "runtime_module": "src/comparative_program/StatisticalAdjudicationEngine.js",
+      "runtime_estimator": "runPaper10AdjudicationControls + verifyBlockLabelPermutationAndAbstentionControls",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "external adjudication campaign is certified",
+      "notes": "Constructive exact-rational verification of coverage-sensitive leakage floors and cheap-abstention rejection."
+    },
+    {
+      "framework_id": "paper10:theorem:thm-independent-block-risk-intervals",
+      "framework_object": "Independent-block risk and coverage inference (Clopper-Pearson / multinomial)",
+      "runtime_module": "src/comparative_program/StatisticalAdjudicationEngine.js",
+      "runtime_estimator": "clopperPearsonContains + 112 multinomial laws in runPaper10AdjudicationControls",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "external human-comparator data has been adjudicated",
+      "notes": "Constructive exact-rational verification of 112 multinomial laws and whole-block permutation tail."
+    },
+    {
+      "framework_id": "paper10:theorem:thm-stationary-ar1-likelihood-gls",
+      "framework_object": "Stationary AR(1) likelihood and GLS precision matrix (estimate 4/5)",
+      "runtime_module": "src/comparative_program/StatisticalAdjudicationEngine.js",
+      "runtime_estimator": "buildAr1PrecisionMatrix, evaluateQuadraticForm, and AR(1) GLS controls in runPaper10AdjudicationControls",
+      "gap_ledger_status": "finite witness",
+      "tests": [
+        "tests/tower-mathematics-integration.v1.test.mjs"
+      ],
+      "invariant_id": null,
+      "forbidden_claim": "asymptotic Gaussian time-series convergence is proved",
+      "notes": "Constructive exact-rational verification of stationary AR(1) precision matrix, Sylvester PD, and GLS estimate 4/5."
     }
   ]
 }

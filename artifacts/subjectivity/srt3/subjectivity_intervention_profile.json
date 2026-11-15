@@ -101,9 +101,10 @@
     "reward_aliasing_control_absorbed",
     "reward_aliasing_control:control_confounded"
   ],
+  "heuristic_proxy_only": true,
   "interpretation_boundary": "Framework-internal only; pre-comparator intervention profile diagnostic, not externally validated, not sufficient for subjectivity claim, not equivalent to a complete intervention family, not equivalent to human valuational life.",
   "provenance": {
-    "generated_at": "2026-05-25T23:19:25.710Z",
+    "generated_at": "2026-11-15T20:10:23.260Z",
     "protocol_ref": "docs/subjectivity_protocol.v1.json",
     "valuation_ref": "subjective_valuation_report.json",
     "source_trace_ref": "subjectivity_inputs/srt3_baseline_trace",

@@ -4,25 +4,51 @@ const cp = require('child_process');
 
 const SYSTEM_ROOT = path.resolve(__dirname, '..');
 const WORKSPACE_ROOT = path.resolve(SYSTEM_ROOT, '..');
+const hasFrameworkMarkers = (dir) =>
+  fs.existsSync(path.join(dir, 'release', 'release_freeze_manifest.json'))
+  || fs.existsSync(path.join(dir, 'release', 'canon_manifest.v1.json'));
+
 const resolveReleaseRoot = () => {
-  const envOverride = process.env.ECO_RELEASE_ROOT;
-  if (envOverride) return path.resolve(envOverride);
+  const envCandidates = [
+    process.env.ECO_RELEASE_ROOT,
+    process.env.QICN_FRAMEWORK_ROOT
+  ].filter(Boolean).map((item) => path.resolve(item));
+
+  for (const candidate of envCandidates) {
+    if (hasFrameworkMarkers(candidate)) return candidate;
+    const parent = path.dirname(candidate);
+    if (hasFrameworkMarkers(parent)) return parent;
+    const nested = path.join(candidate, 'rigid-identity-framework');
+    if (hasFrameworkMarkers(nested)) return nested;
+    if (fs.existsSync(candidate)) return candidate;
+  }
+
   const candidates = [
+    'qicn-framework-ordenado',
+    path.join('qicn-framework-ordenado', 'rigid-identity-framework'),
     'QICN-RELEASE',
     'QUICN-RELEASE',
     'release_repo_qicn_2026-03-01'
   ];
   for (const candidate of candidates) {
     const target = path.join(WORKSPACE_ROOT, candidate);
-    const looksLikeRepo = fs.existsSync(path.join(target, '.git'))
-      || fs.existsSync(path.join(target, 'release', 'release_freeze_manifest.json'));
+    const looksLikeRepo = fs.existsSync(path.join(target, '.git')) || hasFrameworkMarkers(target);
     if (looksLikeRepo) return target;
   }
-  return path.join(WORKSPACE_ROOT, 'release_repo_qicn_2026-03-01');
+  return path.join(WORKSPACE_ROOT, 'qicn-framework-ordenado');
 };
 const RELEASE_ROOT = resolveReleaseRoot();
+
+const resolveReleaseFile = (...segments) => {
+  const candidates = [
+    path.join(RELEASE_ROOT, ...segments),
+    path.join(RELEASE_ROOT, 'rigid-identity-framework', ...segments),
+    path.join(path.dirname(RELEASE_ROOT), ...segments)
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate)) || candidates[0];
+};
 const ECOSYSTEM_ARTIFACT_ROOT = path.join(SYSTEM_ROOT, 'artifacts', 'ecosystem_release_candidate');
-const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
+const LOCAL_PATH_PATTERN = /\/c:\/|[A-Za-z]:\\Users\\|OneDrive[/\\]|Escritorio[/\\]|\.\.[/\\]release_repo_qicn_2026-03-01|\.\.[/\\]rigid-identity-framework/i;
 const NON_BASELINE_GENERATED_ROOTS = [
   'artifacts/internal_release/',
   'artifacts/ecosystem_release_candidate/',
@@ -81,7 +107,7 @@ const git = (cwd, args) => cp.execFileSync(
 const tryGit = (cwd, args) => {
   try {
     return git(cwd, args);
-  } catch (error) {
+  } catch {
     return null;
   }
 };
@@ -293,22 +319,46 @@ const loadSystemBaseline = () => {
 
 const loadReleaseBaseline = () => {
   const freezePath = path.join(RELEASE_ROOT, 'release', 'release_freeze_manifest.json');
-  const claimRegistryPath = path.join(RELEASE_ROOT, 'release', 'claim_registry.v1.json');
+  const canonManifestPath = resolveReleaseFile('release', 'canon_manifest.v1.json');
+  const claimRegistryPath = resolveReleaseFile('release', 'claim_registry.v1.json');
+  const layerBoundariesPath = resolveReleaseFile('release', 'layer_boundaries.v1.json');
+  const interfaceBoundaryPath = resolveReleaseFile('release', 'system_interface_boundary.v1.json');
+  const bridgePinPath = path.join(SYSTEM_ROOT, 'docs', 'bridge_pin.v1.json');
   const integrityPath = path.join(RELEASE_ROOT, '_build', 'canonical_hardening', 'canonical_integrity_check.json');
   const releaseCheckPath = path.join(RELEASE_ROOT, '_build', 'canonical_hardening', 'canonical_release_check.json');
   const bundlePath = getReleaseBundleManifestPath();
+  const freezeManifestPresent = exists(freezePath);
+  const bridgePin = exists(bridgePinPath) ? readJson(bridgePinPath) : null;
+  if (bridgePin?.external_support_certified === true) {
+    throw new Error('bridge_pin.v1.json cannot set external_support_certified=true without verified external freeze');
+  }
+  const externalSupportCertified = false;
+
   return {
     repo_root: RELEASE_ROOT,
     state: getRepoState(RELEASE_ROOT, 'ECO_RELEASE'),
     freeze_path: freezePath,
+    canon_manifest_path: canonManifestPath,
     claim_registry_path: claimRegistryPath,
+    layer_boundaries_path: layerBoundariesPath,
+    system_interface_boundary_path: interfaceBoundaryPath,
+    bridge_pin_path: bridgePinPath,
     integrity_check_path: integrityPath,
     release_check_path: releaseCheckPath,
     bundle_manifest_path: bundlePath,
-    freeze_manifest: readJson(freezePath),
-    claim_registry: readJson(claimRegistryPath),
-    integrity_check: readJson(integrityPath),
-    release_check: readJson(releaseCheckPath),
+    freeze_manifest_present: freezeManifestPresent,
+    freeze_status: freezeManifestPresent
+      ? 'LOCAL_FREEZE_MANIFEST_PRESENT'
+      : 'BLOCKED_EXTERNAL_FREEZE_UNAVAILABLE',
+    external_support_certified: externalSupportCertified,
+    freeze_manifest: freezeManifestPresent ? readJson(freezePath) : null,
+    canon_manifest: exists(canonManifestPath) ? readJson(canonManifestPath) : null,
+    bridge_pin: bridgePin,
+    claim_registry: exists(claimRegistryPath) ? readJson(claimRegistryPath) : null,
+    layer_boundaries: exists(layerBoundariesPath) ? readJson(layerBoundariesPath) : null,
+    system_interface_boundary: exists(interfaceBoundaryPath) ? readJson(interfaceBoundaryPath) : null,
+    integrity_check: exists(integrityPath) ? readJson(integrityPath) : null,
+    release_check: exists(releaseCheckPath) ? readJson(releaseCheckPath) : null,
     bundle_manifest: bundlePath ? readJson(bundlePath) : null
   };
 };
@@ -518,18 +568,30 @@ const buildGapRegister = (model) => {
       closure_requirement: 'Push the canonical baseline or mark it as intentionally local-only.'
     });
   }
-  if (model.release.freeze_manifest.pin_status.upstream_pin_status !== 'resolved') {
+  if (!model.release.freeze_manifest_present) {
+    gaps.push({
+      id: 'release.external_freeze_unavailable',
+      classification: 'external_freeze_gap',
+      freeze_status: model.release.freeze_status,
+      external_support_certified: false,
+      impact: 'External canonical freeze manifest is unavailable on disk; external support remains uncertified (BLOCKED_EXTERNAL_FREEZE_UNAVAILABLE).',
+      affects_internal_release_candidate: true,
+      affects_future_claim_facing_phase: true,
+      evidence: `Missing release/release_freeze_manifest.json; resolved canon_manifest=${Boolean(model.release.canon_manifest)} and bridge_pin=${Boolean(model.release.bridge_pin)} with external_support_certified=false.`,
+      closure_requirement: 'Obtain a verified external canonical freeze manifest without fabricating local freeze artifacts.'
+    });
+  } else if (model.release.freeze_manifest?.pin_status?.upstream_pin_status !== 'resolved') {
     gaps.push({
       id: 'release.upstream_pin_partially_resolved',
       classification: 'unresolved_upstream_reference',
       impact: 'Does not block an internal release candidate, but prevents calling the canonical pin fully resolved upstream.',
       affects_internal_release_candidate: false,
       affects_future_claim_facing_phase: true,
-      evidence: model.release.freeze_manifest.pin_status.remaining_gap,
-      closure_requirement: model.release.freeze_manifest.pin_status.full_resolution_requirement
+      evidence: model.release.freeze_manifest?.pin_status?.remaining_gap || 'upstream_pin_unresolved',
+      closure_requirement: model.release.freeze_manifest?.pin_status?.full_resolution_requirement || 'Resolve upstream canonical pin.'
     });
   }
-  if (Array.isArray(model.release.integrity_check.warnings)
+  if (Array.isArray(model.release.integrity_check?.warnings)
     && model.release.integrity_check.warnings.includes('working_tree_not_clean_at_hardening_start')) {
     gaps.push({
       id: 'release.historical_dirty_start',
@@ -541,7 +603,7 @@ const buildGapRegister = (model) => {
       closure_requirement: 'Retain as provenance warning; no corrective action required for the current baseline.'
     });
   }
-  if (Array.isArray(model.release.integrity_check.provenance_notes)
+  if (Array.isArray(model.release.integrity_check?.provenance_notes)
     && model.release.integrity_check.provenance_notes.includes('working_tree_not_clean_at_hardening_start')) {
     provenanceNotes.push({
       id: 'release.historical_dirty_start',
@@ -811,26 +873,50 @@ const evaluateEcosystem = () => {
     pushed: release.state.pushed,
     upstream: release.state.upstream
   });
-  addCheck('release_canonical_integrity', ['PASS', 'PASS_WITH_WARNINGS'].includes(release.integrity_check.status)
-    && release.integrity_check.checks.non_canonical_material_physically_separated
-    ? (release.integrity_check.status === 'PASS_WITH_WARNINGS' ? 'PASS_WITH_WARNINGS' : 'PASS')
-    : 'FAIL', {
-    manifest: normalize(path.relative(RELEASE_ROOT, release.integrity_check_path)),
-    status: release.integrity_check.status,
-    warnings: release.integrity_check.warnings
-  });
-  addCheck('release_claim_registry', release.claim_registry.entries.length > 0 ? 'PASS' : 'FAIL', {
-    registry: normalize(path.relative(RELEASE_ROOT, release.claim_registry_path)),
-    entries: release.claim_registry.entries.length,
-    family_level_subsets_retained: release.claim_registry.registry_scope.family_level_subsets_retained
-  });
-  addCheck('release_canonical_bundle', release.release_check.status === 'PASS'
-    && Boolean(release.bundle_manifest)
-    && Boolean(release.bundle_manifest.bundle_categories)
-    ? 'PASS' : 'FAIL', {
-    check: normalize(path.relative(RELEASE_ROOT, release.release_check_path)),
-    manifest: release.bundle_manifest_path ? normalize(path.relative(RELEASE_ROOT, release.bundle_manifest_path)) : null
-  });
+  addCheck(
+    'release_canonical_integrity',
+    release.integrity_check
+      ? (['PASS', 'PASS_WITH_WARNINGS'].includes(release.integrity_check.status)
+        && release.integrity_check.checks?.non_canonical_material_physically_separated
+        ? (release.integrity_check.status === 'PASS_WITH_WARNINGS' ? 'PASS_WITH_WARNINGS' : 'PASS')
+        : 'FAIL')
+      : (release.freeze_manifest_present ? 'FAIL' : 'PASS_WITH_WARNINGS'),
+    {
+      manifest: exists(release.integrity_check_path)
+        ? normalize(path.relative(RELEASE_ROOT, release.integrity_check_path))
+        : null,
+      status: release.integrity_check?.status || release.freeze_status,
+      freeze_status: release.freeze_status,
+      external_support_certified: release.external_support_certified,
+      warnings: release.integrity_check?.warnings || (release.freeze_manifest_present ? [] : ['BLOCKED_EXTERNAL_FREEZE_UNAVAILABLE'])
+    }
+  );
+  addCheck(
+    'release_claim_registry',
+    Array.isArray(release.claim_registry?.entries) && release.claim_registry.entries.length > 0 ? 'PASS' : 'FAIL',
+    {
+      registry: exists(release.claim_registry_path)
+        ? normalize(path.relative(RELEASE_ROOT, release.claim_registry_path))
+        : null,
+      entries: release.claim_registry?.entries?.length || 0,
+      family_level_subsets_retained: release.claim_registry?.registry_scope?.family_level_subsets_retained || null
+    }
+  );
+  addCheck(
+    'release_canonical_bundle',
+    release.release_check?.status === 'PASS'
+      && Boolean(release.bundle_manifest)
+      && Boolean(release.bundle_manifest.bundle_categories)
+      ? 'PASS'
+      : (release.freeze_manifest_present ? 'FAIL' : 'PASS_WITH_WARNINGS'),
+    {
+      check: exists(release.release_check_path)
+        ? normalize(path.relative(RELEASE_ROOT, release.release_check_path))
+        : null,
+      manifest: release.bundle_manifest_path ? normalize(path.relative(RELEASE_ROOT, release.bundle_manifest_path)) : null,
+      freeze_status: release.freeze_status
+    }
+  );
   addCheck('ecosystem_interface_contract', interfaceContract.doc_present
     && interfaceContract.json_present
     && Array.isArray(interfaceContract.json.prohibited_inferences)
@@ -930,11 +1016,18 @@ const evaluateEcosystem = () => {
         branch: release.state.branch,
         head: release.state.head,
         upstream: release.state.upstream,
-        freeze_tag: release.freeze_manifest.freeze_reference.local_tag,
-        freeze_commit: release.freeze_manifest.freeze_reference.local_tag_commit,
-        upstream_pin_status: release.freeze_manifest.pin_status.upstream_pin_status,
+        freeze_manifest_present: release.freeze_manifest_present,
+        freeze_status: release.freeze_status,
+        external_support_certified: release.external_support_certified,
+        freeze_tag: release.freeze_manifest?.freeze_reference?.local_tag || null,
+        freeze_commit: release.freeze_manifest?.freeze_reference?.local_tag_commit
+          || release.bridge_pin?.pinned_framework_commit
+          || null,
+        upstream_pin_status: release.freeze_manifest?.pin_status?.upstream_pin_status || release.freeze_status,
         canonical_bundle_manifest: release.bundle_manifest_path ? normalize(path.relative(RELEASE_ROOT, release.bundle_manifest_path)) : null
       },
+      external_support_certified: release.external_support_certified,
+      freeze_status: release.freeze_status,
       interpretation_boundary: 'Cross-repo verification matrix only; internal ecosystem readiness evidence, not external validation, not theory confirmation.',
       warnings: gapRegister.gaps.filter((gap) => gap.classification !== 'blocking_gap').map((gap) => gap.id),
       failures: gapRegister.gaps.filter((gap) => gap.classification === 'blocking_gap').map((gap) => gap.id),

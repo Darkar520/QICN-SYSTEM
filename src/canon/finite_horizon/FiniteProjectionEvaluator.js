@@ -240,7 +240,7 @@ export const buildInverseLimitWitness = (states = [], epsilon = COMPATIBILITY_EP
   };
 };
 
-import { F, ZERO, ONE, fSum, fMin, fMax } from '../../simulation/tower/ExactFraction.js';
+import { F, ZERO, ONE, HALF, Frac, fSum, fMin, fMax, vecAdd, vecEq, vecNormInf, vecSub } from '../../simulation/tower/ExactFraction.js';
 import {
   ALTERNATING,
   CONTEXTS,
@@ -354,6 +354,7 @@ export const evaluateFoundationalFront1 = () => {
   }
 
   const baseCoreSufficiencyAndBridge = verifyBaseCoreSufficiencyAndCoupledBridge();
+  const baseCoreSpectrumAndRelaxation = verifyBaseCoreSpectrumAndRelaxation();
   const weightedTailAndCoercivity = verifyWeightedTailAndChannelCoercivity();
 
   return {
@@ -368,7 +369,335 @@ export const evaluateFoundationalFront1 = () => {
     projectiveCutAgreements: projectedAgreements,
     omittedBitSite7PhaseGap: TAP.toString(),
     baseCoreSufficiencyAndBridge,
+    baseCoreSpectrumAndRelaxation,
     weightedTailAndCoercivity
+  };
+};
+
+const toExactFraction = (value) => {
+  if (value instanceof Frac) return value;
+  if (typeof value === 'bigint') return F(value);
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) throw new RangeError(`Expected finite number, got ${value}`);
+    if (Number.isInteger(value)) return F(value);
+    const text = value.toString();
+    if (!text.includes('e') && !text.includes('E') && text.includes('.')) {
+      const [intPart, fracPart] = text.split('.');
+      const sign = intPart.startsWith('-') ? -1n : 1n;
+      const absInt = intPart.replace(/^[+-]/, '') || '0';
+      const den = 10n ** BigInt(fracPart.length);
+      const num = sign * (BigInt(absInt) * den + BigInt(fracPart));
+      return F(num, den);
+    }
+    throw new TypeError(`Cannot represent floating-point value ${value} as exact decimal fraction; pass Frac or p/q string`);
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed.includes('/')) return F(trimmed);
+    if (trimmed.includes('.')) {
+      const [intPart, fracPart] = trimmed.split('.');
+      const sign = intPart.startsWith('-') ? -1n : 1n;
+      const absInt = intPart.replace(/^[+-]/, '') || '0';
+      const den = 10n ** BigInt(fracPart.length);
+      const num = sign * (BigInt(absInt) * den + BigInt(fracPart));
+      return F(num, den);
+    }
+    return F(trimmed);
+  }
+  return F(value);
+};
+
+/**
+ * Exact BaseCore thm:relaxation spectral e-folding convention:
+ * tau_state = -1 / ln(rho) is defined ONLY for strictly contractive positive spectral radii 0 < rho < 1.
+ * Rejects rho <= 0 or rho >= 1.
+ * @param {Frac | number | string} rhoInput
+ * @returns {number}
+ */
+export const computeBaseCoreRelaxationTime = (rhoInput) => {
+  const rhoNum = rhoInput instanceof Frac ? rhoInput.toFloat() : Number(rhoInput);
+  if (rhoInput instanceof Frac) {
+    if (rhoInput.lte(ZERO) || rhoInput.gte(ONE)) {
+      throw new RangeError(`BaseCore thm:relaxation requires 0 < rho < 1; rejected rho=${rhoInput.toString()}`);
+    }
+  }
+  if (!Number.isFinite(rhoNum) || rhoNum <= 0 || rhoNum >= 1) {
+    throw new RangeError(`BaseCore thm:relaxation requires 0 < rho < 1; rejected rho=${rhoNum}`);
+  }
+  return -1 / Math.log(rhoNum);
+};
+
+/**
+ * Exact one-sided directional derivative on constant subspace j(E) at u = 1/2:
+ * D^+ T_{1/2}(j(e_1); j(h)) = 1/2 * j(A h - e_1 * max(<e_1, A h>, 0)), with e_1 = (1,0), A = I_2 on j(E).
+ * @param {Array<Frac | number | string>} hVector
+ */
+export const computeBaseCoreDirectionalDerivativeAtHalf = (hVector) => {
+  if (!Array.isArray(hVector) || hVector.length !== 2) {
+    throw new TypeError('hVector must be a 2D vector [h1, h2] in E = R^2');
+  }
+  const h1 = toExactFraction(hVector[0]);
+  const h2 = toExactFraction(hVector[1]);
+  const dotE1 = h1;
+  const positivePart = dotE1.gt(ZERO) ? dotE1 : ZERO;
+  return Object.freeze([
+    HALF.mul(h1.sub(positivePart)),
+    HALF.mul(h2)
+  ]);
+};
+
+/**
+ * Evaluates the exact BaseCore thm:spectrum and thm:relaxation regime for u in [0, 1].
+ * @param {Frac | number | string} uInput
+ */
+export const evaluateBaseCoreSpectralRegime = (uInput) => {
+  const u = toExactFraction(uInput);
+  if (u.lt(ZERO) || u.gt(ONE)) {
+    throw new RangeError(`BaseCore parameter u must lie in [0, 1], got ${u.toString()}`);
+  }
+
+  const twoU = u.mul(2);
+  const vStar = Object.freeze([twoU.lte(ONE) ? twoU : ONE, ZERO]);
+  const zU = Object.freeze([vStar[0].div(2).add(u), ZERO]);
+
+  if (u.lt(HALF)) {
+    const rho = HALF;
+    const deltaState = ONE.sub(rho);
+    const tauState = computeBaseCoreRelaxationTime(rho);
+    return {
+      u: u.toString(),
+      regime: 'interior_regular',
+      fixedPointVector: vStar.map((x) => x.toString()),
+      preProjectionPoint: zU.map((x) => x.toString()),
+      frechetDifferentiable: true,
+      jacobianSpectrumAssigned: true,
+      derivativeOperator: '1/2 * j * A',
+      derivativeMatrixOnE: [['1/2', '0'], ['0', '1/2']],
+      spectrum: ['0', '1/2'],
+      spectralRadiusRho: rho.toString(),
+      spectralGapDeltaState: deltaState.toString(),
+      tauStateLinearized: tauState,
+      tauStateFormula: '1/ln(2)',
+      globalGeometricContractionRate: '1/2'
+    };
+  }
+
+  if (u.eq(HALF)) {
+    const dPlus = computeBaseCoreDirectionalDerivativeAtHalf([ONE, ZERO]);
+    const dMinus = computeBaseCoreDirectionalDerivativeAtHalf([ONE.neg(), ZERO]);
+    const nonlinearitySum = vecAdd(dPlus, dMinus);
+    return {
+      u: u.toString(),
+      regime: 'corner_non_differentiable',
+      fixedPointVector: vStar.map((x) => x.toString()),
+      preProjectionPoint: zU.map((x) => x.toString()),
+      frechetDifferentiable: false,
+      jacobianSpectrumAssigned: false,
+      derivativeOperator: null,
+      derivativeMatrixOnE: null,
+      spectrum: null,
+      spectralRadiusRho: null,
+      spectralGapDeltaState: null,
+      tauStateLinearized: null,
+      tauStateFormula: null,
+      directionalDerivativePlusE1: dPlus.map((x) => x.toString()),
+      directionalDerivativeMinusE1: dMinus.map((x) => x.toString()),
+      directionalNonlinearitySum: nonlinearitySum.map((x) => x.toString()),
+      directionalNonlinearityGap: vecNormInf(nonlinearitySum).toString(),
+      globalGeometricContractionRate: '1/2'
+    };
+  }
+
+  // u > 1/2: exterior regular regime
+  const denom = ONE.add(twoU); // 1 + 2u
+  const rho = ONE.div(denom); // 1 / (1 + 2u)
+  const deltaState = ONE.sub(rho); // 2u / (1 + 2u) >= 1/2
+  const tauState = computeBaseCoreRelaxationTime(rho);
+  return {
+    u: u.toString(),
+    regime: 'exterior_regular',
+    fixedPointVector: vStar.map((x) => x.toString()),
+    preProjectionPoint: zU.map((x) => x.toString()),
+    frechetDifferentiable: true,
+    jacobianSpectrumAssigned: true,
+    projectionPerp: 'P_perp(v1, v2) = (0, v2)',
+    derivativeOperator: '1/(1 + 2u) * j * P_perp * A',
+    derivativeMatrixOnE: [['0', '0'], ['0', rho.toString()]],
+    spectrum: ['0', rho.toString()],
+    spectralRadiusRho: rho.toString(),
+    spectralGapDeltaState: deltaState.toString(),
+    tauStateLinearized: tauState,
+    tauStateFormula: `1/ln(${denom.toString()})`,
+    globalGeometricContractionRate: '1/2'
+  };
+};
+
+/**
+ * Assigns linearized Jacobian spectrum only at Fréchet-differentiable parameters u != 1/2.
+ * Rejects u = 1/2 explicitly.
+ * @param {Frac | number | string} uInput
+ */
+export const assignBaseCoreJacobianSpectrum = (uInput) => {
+  const report = evaluateBaseCoreSpectralRegime(uInput);
+  if (!report.frechetDifferentiable || !report.jacobianSpectrumAssigned) {
+    throw new RangeError(
+      `BaseCore thm:spectrum forbids assigning a linear Jacobian spectrum at u = ${report.u} (directional nonlinearity gap = ${report.directionalNonlinearityGap})`
+    );
+  }
+  return report;
+};
+
+/**
+ * Typed computable witness verification for BaseCore thm:spectrum & thm:relaxation.
+ */
+export const verifyBaseCoreSpectrumAndRelaxation = () => {
+  const tauLowerBound = 1 / Math.log(3);
+  const tauUpperBound = 1 / Math.log(2);
+
+  // 1. Interior regular regime: 0 <= u < 1/2 (e.g. u = 0, u = 1/4)
+  const regZero = evaluateBaseCoreSpectralRegime(ZERO);
+  const regQuarter = evaluateBaseCoreSpectralRegime(F(1, 4));
+  for (const reg of [regZero, regQuarter]) {
+    if (
+      reg.frechetDifferentiable !== true ||
+      reg.jacobianSpectrumAssigned !== true ||
+      reg.spectralRadiusRho !== '1/2' ||
+      reg.spectralGapDeltaState !== '1/2' ||
+      reg.spectrum[0] !== '0' ||
+      reg.spectrum[1] !== '1/2' ||
+      Math.abs(reg.tauStateLinearized - tauUpperBound) > 1e-12
+    ) {
+      throw new Error(`BaseCore thm:spectrum interior regular check failed at u=${reg.u}`);
+    }
+  }
+
+  // 2. Non-differentiable corner: u = 1/2
+  const regHalf = evaluateBaseCoreSpectralRegime(HALF);
+  const dPlusE1 = computeBaseCoreDirectionalDerivativeAtHalf([ONE, ZERO]);
+  const dMinusE1 = computeBaseCoreDirectionalDerivativeAtHalf([ONE.neg(), ZERO]);
+  const dSum = vecAdd(dPlusE1, dMinusE1);
+  if (
+    regHalf.frechetDifferentiable !== false ||
+    regHalf.jacobianSpectrumAssigned !== false ||
+    regHalf.tauStateLinearized !== null ||
+    !vecEq(dPlusE1, [ZERO, ZERO]) ||
+    !vecEq(dMinusE1, [HALF.neg(), ZERO]) ||
+    !vecEq(dSum, [HALF.neg(), ZERO]) ||
+    vecEq(dSum, [ZERO, ZERO])
+  ) {
+    throw new Error('BaseCore thm:spectrum corner u=1/2 directional derivative check failed');
+  }
+
+  // Global geometric contraction ||T_{1/2}^n f - f_{1/2}^*||_inf <= 2^-n ||f - f_{1/2}^*||_inf
+  // Verified constructively with exact rationals on both collinear (v0=(0,0), v0=(-1,0)) and
+  // off-axis interior trajectory (v0=(0, 1/2), where ||z_n||_2^2 < 1 for every n >= 1).
+  const fHalfStar = Object.freeze([ONE, ZERO]);
+  const stepHalfOnClosedUnitDiskInteriorOrAxis = (v) => {
+    const z = Object.freeze([v[0].div(2).add(HALF), v[1].div(2)]);
+    const normSq = z[0].pow(2).add(z[1].pow(2));
+    if (normSq.lte(ONE)) return z;
+    if (z[1].isZero()) {
+      return Object.freeze([z[0].gt(ZERO) ? ONE : ONE.neg(), ZERO]);
+    }
+    throw new Error('Test trajectory left exact rational domain of P_E');
+  };
+  const cornerInitialVectors = [
+    [ZERO, ZERO],
+    [ONE.neg(), ZERO],
+    [ZERO, HALF]
+  ];
+  let globalGeometricChecks = 0;
+  for (const v0 of cornerInitialVectors) {
+    const initialErr = vecNormInf(vecSub(v0, fHalfStar));
+    let cur = Object.freeze(v0);
+    for (let n = 0; n <= 6; n += 1) {
+      const err = vecNormInf(vecSub(cur, fHalfStar));
+      const bound = initialErr.mul(F(1n, 1n << BigInt(n)));
+      if (!err.lte(bound)) {
+        throw new Error(`Global geometric bound violated at u=1/2, n=${n}`);
+      }
+      globalGeometricChecks += 1;
+      cur = stepHalfOnClosedUnitDiskInteriorOrAxis(cur);
+    }
+  }
+
+  // 3. Exterior regular regime: u > 1/2 (u = 3/4 and u = 1)
+  const regThreeQuarters = evaluateBaseCoreSpectralRegime(F(3, 4));
+  const regOne = evaluateBaseCoreSpectralRegime(ONE);
+  if (
+    regThreeQuarters.frechetDifferentiable !== true ||
+    regThreeQuarters.spectralRadiusRho !== '2/5' ||
+    regThreeQuarters.spectralGapDeltaState !== '3/5' ||
+    regThreeQuarters.spectrum[0] !== '0' ||
+    regThreeQuarters.spectrum[1] !== '2/5' ||
+    !F(regThreeQuarters.spectralGapDeltaState).gte(HALF) ||
+    regThreeQuarters.tauStateLinearized < tauLowerBound - 1e-12 ||
+    regThreeQuarters.tauStateLinearized > tauUpperBound + 1e-12
+  ) {
+    throw new Error('BaseCore thm:spectrum exterior check failed at u=3/4');
+  }
+  if (
+    regOne.frechetDifferentiable !== true ||
+    regOne.spectralRadiusRho !== '1/3' ||
+    regOne.spectralGapDeltaState !== '2/3' ||
+    regOne.spectrum[0] !== '0' ||
+    regOne.spectrum[1] !== '1/3' ||
+    !F(regOne.spectralGapDeltaState).gte(HALF) ||
+    Math.abs(regOne.tauStateLinearized - tauLowerBound) > 1e-12
+  ) {
+    throw new Error('BaseCore thm:spectrum exterior check failed at u=1');
+  }
+
+  // 4. Mandatory negative controls
+  let cornerJacobianRejected = false;
+  try {
+    assignBaseCoreJacobianSpectrum(HALF);
+  } catch {
+    cornerJacobianRejected = true;
+  }
+  if (!cornerJacobianRejected) {
+    throw new Error('Negative control failed: u=1/2 must reject linear Jacobian spectrum assignment');
+  }
+
+  const invalidRhos = [ZERO, F(-1, 2), ONE, F(3, 2), 0, -0.25, 1, 1.5, Number.NaN];
+  const rejectedRhos = [];
+  for (const rho of invalidRhos) {
+    let rejected = false;
+    try {
+      computeBaseCoreRelaxationTime(rho);
+    } catch {
+      rejected = true;
+    }
+    if (!rejected) {
+      throw new Error(`Negative control failed: non-contractive/non-positive rho=${rho} was not rejected`);
+    }
+    rejectedRhos.push(String(rho));
+  }
+  const nonContractiveRejected = rejectedRhos.length === invalidRhos.length;
+
+  return {
+    passed: true,
+    regimes: {
+      interiorZero: regZero,
+      interiorQuarter: regQuarter,
+      cornerHalf: regHalf,
+      exteriorThreeQuarters: regThreeQuarters,
+      exteriorOne: regOne
+    },
+    cornerGlobalGeometricContractionVerified: true,
+    cornerGlobalGeometricChecks: globalGeometricChecks,
+    tauStateBounds: {
+      minTau: tauLowerBound,
+      maxTau: tauUpperBound,
+      formulaMin: '1/ln(3)',
+      formulaMax: '1/ln(2)'
+    },
+    negativeControls: {
+      cornerJacobianSpectrumRejected: cornerJacobianRejected,
+      directionalNonlinearityGapAtHalf: vecNormInf(dSum).toString(),
+      nonContractiveRejected,
+      rejectedRhos
+    }
   };
 };
 

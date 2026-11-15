@@ -3,10 +3,10 @@
 const fs = require('fs');
 const path = require('path');
 const cp = require('child_process');
+const crypto = require('crypto');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const ARTIFACT_ROOT = path.join(ROOT, 'artifacts', 'comparative_program', 'stage2m4');
 
 const LOCAL_PATH_PATTERN =
   /\/c:\/|[A-Za-z]:\\Users\\|OneDrive|Escritorio|TRADING 3\.0|Sistema Canon Sandbox|rigid-identity-framework/i;
@@ -90,15 +90,100 @@ const gitDiffNames = (cwd, fromRef, toRef) =>
     .map((line) => line.trim())
     .filter(Boolean);
 
-const ARTIFACT_ONLY_FORWARD_PREFIXES = ['artifacts/'];
+const sha256File = (relativePath) =>
+  crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, relativePath))).digest('hex');
 
-const evaluateLineageCompatibility = (recordedHead, currentHead) => {
+const collectLineageRefs = (node, out = []) => {
+  if (!node || typeof node !== 'object') return out;
+  if (typeof node.ref === 'string' && typeof node.sha256 === 'string') {
+    out.push({ ref: node.ref, sha256: node.sha256 });
+  }
+  for (const value of Object.values(node)) {
+    if (value && typeof value === 'object') collectLineageRefs(value, out);
+  }
+  return out;
+};
+
+const ARTIFACT_ONLY_FORWARD_PREFIXES = ['artifacts/'];
+const STAGE2_CLOSURE_SOURCE_PATHS = new Set([
+  'src/comparative_program/ComparativeRuntimeUtils.js',
+  'src/comparative_program/ComparativeProgramSurfacePolicy.js',
+  'src/comparative_program/ComparativeProgramLayer.js',
+  'src/comparative_program/HumanComparatorRegistry.js',
+  'src/comparative_program/HumanComparatorEvaluator.js',
+  'src/comparative_program/HumanEquivalenceRegistry.js',
+  'src/comparative_program/HumanEquivalenceEvaluator.js',
+  'src/comparative_program/CrossSubstrateTransportRegistry.js',
+  'src/comparative_program/CrossSubstrateTransportEvaluator.js',
+  'src/comparative_program/ComparativeRuntimeBuilder.js',
+  'src/comparative_program/HumanChannelPathwayRegistry.js',
+  'src/comparative_program/CounterpartArtifactRegistry.js',
+  'src/comparative_program/HomologationContractRegistry.js',
+  'src/comparative_program/CrossSubstrateTransitionRegistry.js',
+  'src/comparative_program/ComparativeOperationalReadinessBuilder.js',
+  'src/comparative_program/ExternalAdjudicationOpeningCriteriaRegistry.js',
+  'src/comparative_program/HumanChannelInstantiationReadinessEvaluator.js',
+  'src/comparative_program/ComparativeFinalInternalAuditor.js',
+  'src/comparative_program/Paper10ComparativeReadinessGateBuilder.js',
+  'src/comparative_program/ComparativeClosureBuilder.js',
+  'scripts/build-comparative-program-runtime.cjs',
+  'scripts/build-comparative-program-operational.cjs',
+  'scripts/build-comparative-program-closure.cjs'
+]);
+const STAGE2_CLOSURE_INPUT_PREFIXES = [
+  'src/comparative_program/schemas/',
+  'docs/HUMAN_COMPARATOR_',
+  'docs/HUMAN_EQUIVALENCE_',
+  'docs/HUMAN_CHANNEL_',
+  'docs/CROSS_SUBSTRATE_',
+  'docs/COMPARATIVE_',
+  'docs/EXTERNAL_ADJUDICATION_OPENING_',
+  'docs/PAPER10_COMPARATIVE_',
+  'docs/human_',
+  'docs/comparator_',
+  'docs/comparative_program_',
+  'docs/cross_substrate_',
+  'docs/homologation_',
+  'docs/counterpart_',
+  'docs/external_adjudication_opening_'
+];
+
+const isStage2ClosureInputPath = (relativePath) =>
+  STAGE2_CLOSURE_SOURCE_PATHS.has(relativePath)
+  || STAGE2_CLOSURE_INPUT_PREFIXES.some((prefix) => relativePath.startsWith(prefix));
+
+const evaluateLineageCompatibility = (artifactDoc, currentHead) => {
+  const lineage = artifactDoc?.provenance?.current_lineage;
+  const recordedHead = lineage?.qicn_system?.head;
   if (!recordedHead || !currentHead) {
     return {
       pass: false,
       mode: 'missing_lineage',
       changed_files: [],
-      disallowed_files: ['missing_lineage']
+      disallowed_files: ['missing_lineage'],
+      hash_drifted_refs: []
+    };
+  }
+
+  const hashDriftedRefs = [];
+  for (const { ref, sha256 } of collectLineageRefs(lineage)) {
+    if (!exists(ref)) {
+      hashDriftedRefs.push({ ref, reason: 'missing' });
+    } else {
+      const actualSha = sha256File(ref);
+      if (actualSha !== sha256) {
+        hashDriftedRefs.push({ ref, reason: 'sha256_mismatch', expected: sha256, actual: actualSha });
+      }
+    }
+  }
+
+  if (hashDriftedRefs.length > 0) {
+    return {
+      pass: false,
+      mode: 'content_hash_drift',
+      changed_files: [],
+      disallowed_files: hashDriftedRefs.map((entry) => entry.ref),
+      hash_drifted_refs: hashDriftedRefs
     };
   }
 
@@ -107,24 +192,27 @@ const evaluateLineageCompatibility = (recordedHead, currentHead) => {
       pass: true,
       mode: 'exact_head_match',
       changed_files: [],
-      disallowed_files: []
+      disallowed_files: [],
+      hash_drifted_refs: []
     };
   }
 
   const changedFiles = gitDiffNames(ROOT, recordedHead, currentHead);
-  const disallowedFiles = changedFiles.filter(
-    (relativePath) =>
-      !ARTIFACT_ONLY_FORWARD_PREFIXES.some((prefix) => relativePath.startsWith(prefix))
+  const artifactOnly = changedFiles.every((relativePath) =>
+    ARTIFACT_ONLY_FORWARD_PREFIXES.some((prefix) => relativePath.startsWith(prefix))
   );
+  const disallowedFiles = changedFiles.filter(isStage2ClosureInputPath);
+
+  let mode = 'forward_compatible_verified_hashes';
+  if (disallowedFiles.length > 0) mode = 'source_lineage_drift';
+  else if (artifactOnly) mode = 'artifact_only_forward_compatible';
 
   return {
     pass: disallowedFiles.length === 0,
-    mode:
-      disallowedFiles.length === 0
-        ? 'artifact_only_forward_compatible'
-        : 'source_lineage_drift',
+    mode,
     changed_files: changedFiles,
-    disallowed_files: disallowedFiles
+    disallowed_files: disallowedFiles,
+    hash_drifted_refs: []
   };
 };
 
@@ -244,14 +332,9 @@ const verifyArtifacts = () => {
   const instantiationStatusIds = statusIds(criteria.instantiation_status_classes);
   const paper10StatusIds = statusIds(criteria.paper10_status_classes);
   const currentHead = gitHead(ROOT);
-  const stage2m2LineageCompatibility = evaluateLineageCompatibility(
-    stage2m2.provenance.current_lineage.qicn_system.head,
-    currentHead
-  );
-  const stage2m3LineageCompatibility = evaluateLineageCompatibility(
-    stage2m3.provenance.current_lineage.qicn_system.head,
-    currentHead
-  );
+  const stage2m2LineageCompatibility = evaluateLineageCompatibility(stage2m2, currentHead);
+  const stage2m3LineageCompatibility = evaluateLineageCompatibility(stage2m3, currentHead);
+  const stage2m4LineageCompatibility = evaluateLineageCompatibility(readiness, currentHead);
 
   assert(auditStatusIds.has(finalAudit.audit_status), 'Final internal audit status is out of bounds');
   assert(
@@ -319,11 +402,15 @@ const verifyArtifacts = () => {
   );
   assert(
     stage2m2LineageCompatibility.pass,
-    `Stage 2-M2 artifacts must match current local HEAD or differ only by artifact-only forward commits: ${JSON.stringify(stage2m2LineageCompatibility)}`
+    `Stage 2-M2 artifacts must pass content-hash lineage checks without Stage 2 closure source drift: ${JSON.stringify(stage2m2LineageCompatibility)}`
   );
   assert(
     stage2m3LineageCompatibility.pass,
-    `Stage 2-M3 artifacts must match current local HEAD or differ only by artifact-only forward commits: ${JSON.stringify(stage2m3LineageCompatibility)}`
+    `Stage 2-M3 artifacts must pass content-hash lineage checks without Stage 2 closure source drift: ${JSON.stringify(stage2m3LineageCompatibility)}`
+  );
+  assert(
+    stage2m4LineageCompatibility.pass,
+    `Stage 2-M4 artifacts must pass content-hash lineage checks without Stage 2 closure source drift: ${JSON.stringify(stage2m4LineageCompatibility)}`
   );
 };
 

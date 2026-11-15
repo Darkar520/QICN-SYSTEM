@@ -49,6 +49,17 @@ export function runAllTowerMathematicsChecks() {
     f1.baseCoreSufficiencyAndBridge.coupledEnergyPhaseBridge.negativeControlNEquals1FailsNonCollapse,
     true
   );
+  assert.equal(f1.baseCoreSpectrumAndRelaxation.passed, true);
+  assert.equal(f1.baseCoreSpectrumAndRelaxation.regimes.interiorQuarter.spectralRadiusRho, '1/2');
+  assert.equal(f1.baseCoreSpectrumAndRelaxation.regimes.interiorQuarter.spectralGapDeltaState, '1/2');
+  assert.equal(f1.baseCoreSpectrumAndRelaxation.regimes.cornerHalf.frechetDifferentiable, false);
+  assert.equal(f1.baseCoreSpectrumAndRelaxation.regimes.cornerHalf.jacobianSpectrumAssigned, false);
+  assert.equal(f1.baseCoreSpectrumAndRelaxation.regimes.cornerHalf.tauStateLinearized, null);
+  assert.equal(f1.baseCoreSpectrumAndRelaxation.cornerGlobalGeometricContractionVerified, true);
+  assert.equal(f1.baseCoreSpectrumAndRelaxation.regimes.exteriorThreeQuarters.spectralRadiusRho, '2/5');
+  assert.equal(f1.baseCoreSpectrumAndRelaxation.regimes.exteriorOne.spectralRadiusRho, '1/3');
+  assert.equal(f1.baseCoreSpectrumAndRelaxation.negativeControls.cornerJacobianSpectrumRejected, true);
+  assert.equal(f1.baseCoreSpectrumAndRelaxation.negativeControls.nonContractiveRejected, true);
   assert.equal(f1.weightedTailAndCoercivity.passed, true);
   assert.equal(f1.weightedTailAndCoercivity.unboundedMetricPartialSumAtT8, '255/2');
   assert.equal(f1.weightedTailAndCoercivity.discreteScaledMinDistanceBetweenDistinctHistories, '1');

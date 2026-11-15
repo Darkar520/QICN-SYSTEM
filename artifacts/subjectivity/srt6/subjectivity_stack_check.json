@@ -3,6 +3,7 @@
   "schema_version": "1.0.0",
   "layer_id": "subjectivity_runtime_layer.srt6",
   "status": "PASS",
+  "external_support_certified": false,
   "steps": [
     {
       "id": "srt0_scaffolding",
@@ -41,9 +42,15 @@
     }
   ],
   "ecosystem_integrity": {
-    "status": "PASS",
+    "status": "PASS_WITH_WARNINGS",
+    "freeze_status": "LOCAL_FREEZE_MANIFEST_PRESENT",
+    "external_support_certified": false,
     "failures": [],
-    "warnings": []
+    "warnings": [
+      "system_repo_state",
+      "release_repo_state",
+      "system_protocolized_evaluation_phase"
+    ]
   },
   "failed_steps": [],
   "interpretation_boundary": "SRT-0..6 subjectivity stack verification only; internal execution integrity and ecosystem hardening check, not external validation, not phenomenality closure."

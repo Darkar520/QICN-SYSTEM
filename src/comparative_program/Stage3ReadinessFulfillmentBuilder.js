@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 
 import { createComparativeClosureBuilder } from './ComparativeClosureBuilder.js';
@@ -41,6 +42,7 @@ const STAGE3_ARTIFACT_NAMES = Object.freeze([
 
 const STANDARD_FLAGS = Object.freeze({
   framework_internal_only: true,
+  external_support_certified: false,
   not_human_equivalence_support: true,
   not_superiority_support: true,
   not_cross_substrate_equivalence_support: true,
@@ -522,9 +524,24 @@ export class Stage3ReadinessFulfillmentBuilder {
     });
   }
 
-  buildArtifacts(outputDir) {
+  buildArtifacts(outputDir, options = {}) {
     const stage2m4OutputDir = path.join(PROJECT_ROOT, 'artifacts', 'comparative_program', 'stage2m4');
-    createComparativeClosureBuilder().buildArtifacts(stage2m4OutputDir);
+    const requiredUpstreamRefs = [
+      COMPARATIVE_CLOSURE_ARTIFACT_REFS.comparative_final_internal_audit,
+      COMPARATIVE_CLOSURE_ARTIFACT_REFS.human_channel_instantiation_readiness,
+      COMPARATIVE_CLOSURE_ARTIFACT_REFS.readiness_gate,
+      'artifacts/comparative_program/stage2m2/human_comparator_assessment.json',
+      'artifacts/comparative_program/stage2m3/human_channel_pathway_assessment.json',
+      'artifacts/comparative_program/stage2m3/counterpart_artifact_contract_assessment.json',
+      'artifacts/comparative_program/stage2m3/homologation_contract_assessment.json',
+      'artifacts/comparative_program/stage2m3/cross_substrate_transition_contract_assessment.json'
+    ];
+    const missingUpstream = requiredUpstreamRefs.some(
+      (ref) => !fs.existsSync(path.join(PROJECT_ROOT, ref))
+    );
+    if (options.refreshUpstream === true || missingUpstream) {
+      createComparativeClosureBuilder().buildArtifacts(stage2m4OutputDir);
+    }
 
     const finalInternalAudit = readJsonRelative(COMPARATIVE_CLOSURE_ARTIFACT_REFS.comparative_final_internal_audit);
     const instantiationReadiness = readJsonRelative(COMPARATIVE_CLOSURE_ARTIFACT_REFS.human_channel_instantiation_readiness);
@@ -567,10 +584,18 @@ export class Stage3ReadinessFulfillmentBuilder {
       finalInternalAudit,
       currentLineage
     });
-    const paper9HandoffAlignment = createPaper9HandoffAlignmentEvaluator().evaluate({
+    const rawPaper9HandoffAlignment = createPaper9HandoffAlignmentEvaluator().evaluate({
       stage3OpeningReadiness,
       currentLineage
     });
+    const paper9HandoffAlignment = {
+      ...rawPaper9HandoffAlignment,
+      external_support_certified: false,
+      boundary_flags: {
+        ...rawPaper9HandoffAlignment.boundary_flags,
+        external_support_certified: false
+      }
+    };
     const stage3OpeningGate = buildStage3OpeningGate({
       stage3OpeningReadiness,
       paper9HandoffAlignment,

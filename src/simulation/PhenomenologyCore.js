@@ -22,10 +22,16 @@ import { createLogger } from '../utils/logger.js';
 /** Cap of the spectral factor λ1/Δλ in Ω (C-4, user decision 2026-11-08). */
 export const SPECTRAL_FACTOR_MAX = 20;
 
+export const SPECTRAL_INTERPRETATION_BOUNDARY =
+    'Empirical lag-1 autocorrelation proxy on scalar state history; does not compute operator spectral radius rho(DT_u) or piecewise relaxation law tau_state = -1/ln(rho) of BaseCore thm:spectrum / thm:relaxation, and does not assume Frechet differentiability at u = 1/2.';
+
 /**
  * @typedef {Object} PhenomenologyState
  * @property {number} beth_q
  * @property {number} spectral_gap
+ * @property {string} [spectral_estimator_mode]
+ * @property {boolean} [basecore_thm_relaxation_instantiated]
+ * @property {string} [spectral_interpretation_boundary]
  * @property {number} lambda_1
  * @property {number} lambda_2
  * @property {number} raw_winding_number
@@ -64,6 +70,9 @@ export class PhenomenologyCore {
             beth_q: 0.5,              // Cierre causal [0,1]
             beth_q_mode: 'uninitialized', // 'empirical' | 'warmup_derived' | 'deterministic_baseline' | 'uninitialized'
             spectral_gap: 0.5,        // "lambda [0,1]
+            spectral_estimator_mode: 'uninitialized', // 'warmup_ccc_proxy' | 'lag1_autocorrelation_proxy' | 'uninitialized'
+            basecore_thm_relaxation_instantiated: false,
+            spectral_interpretation_boundary: SPECTRAL_INTERPRETATION_BOUNDARY,
             lambda_1: 1.0,            // Autovalor dominante
             lambda_2: 0.5,            // Segundo autovalor
             holonomy_status: 'untested',  // 'trivial' | 'non_trivial' | 'untested'
@@ -349,6 +358,9 @@ export class PhenomenologyCore {
             this.phenomenologyState.spectral_gap = derivedGap;
             this.phenomenologyState.lambda_2 = derivedLambda2;
             this.phenomenologyState.relaxation_time = derivedTau;
+            this.phenomenologyState.spectral_estimator_mode = 'warmup_ccc_proxy';
+            this.phenomenologyState.basecore_thm_relaxation_instantiated = false;
+            this.phenomenologyState.spectral_interpretation_boundary = SPECTRAL_INTERPRETATION_BOUNDARY;
 
             if (this._diagnostics.log_enabled) {
                 console.log(`[SPECTRAL_DERIVED] CCC=${currentCCC.toFixed(4)} ?' gap=${derivedGap.toFixed(4)}, lambda,,=${derivedLambda2.toFixed(4)}`);
@@ -357,7 +369,10 @@ export class PhenomenologyCore {
                 delta_lambda: derivedGap,
                 lambda_1: 1.0,
                 lambda_2: derivedLambda2,
-                tau: derivedTau
+                tau: derivedTau,
+                spectral_estimator_mode: 'warmup_ccc_proxy',
+                basecore_thm_relaxation_instantiated: false,
+                spectral_interpretation_boundary: SPECTRAL_INTERPRETATION_BOUNDARY
             };
         }
 
@@ -378,6 +393,9 @@ export class PhenomenologyCore {
         this.phenomenologyState.lambda_2 = lambda_2;
         this.phenomenologyState.spectral_gap = boundedGap;
         this.phenomenologyState.relaxation_time = tau;
+        this.phenomenologyState.spectral_estimator_mode = 'lag1_autocorrelation_proxy';
+        this.phenomenologyState.basecore_thm_relaxation_instantiated = false;
+        this.phenomenologyState.spectral_interpretation_boundary = SPECTRAL_INTERPRETATION_BOUNDARY;
 
         const t1 = performance.now();
         this._diagnostics.last_execution_times.spectral = t1 - t0;
@@ -390,7 +408,10 @@ export class PhenomenologyCore {
             delta_lambda: this.phenomenologyState.spectral_gap,
             lambda_1,
             lambda_2,
-            tau: this.phenomenologyState.relaxation_time
+            tau: this.phenomenologyState.relaxation_time,
+            spectral_estimator_mode: 'lag1_autocorrelation_proxy',
+            basecore_thm_relaxation_instantiated: false,
+            spectral_interpretation_boundary: SPECTRAL_INTERPRETATION_BOUNDARY
         };
     }
 
@@ -1083,7 +1104,11 @@ export class PhenomenologyCore {
         this.transitionHistory = [];
         this.phenomenologyState = {
             beth_q: 0.5,
+            beth_q_mode: 'uninitialized',
             spectral_gap: 0.5,
+            spectral_estimator_mode: 'uninitialized',
+            basecore_thm_relaxation_instantiated: false,
+            spectral_interpretation_boundary: SPECTRAL_INTERPRETATION_BOUNDARY,
             lambda_1: 1.0,
             lambda_2: 0.5,
             holonomy_status: 'untested',

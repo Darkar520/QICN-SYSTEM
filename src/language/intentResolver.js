@@ -73,7 +73,7 @@ const RULES = [
   { intent: 'consciousness_question', weight: 0.92, test: /(fenom|experimentar|experimentas|experimentarias|vivencia|te gustaria|te gusta|preferirias|elegirias|escogerias|desearias|quisieras|si (tuvieras|pudieras) (que )?(elegir|escoger|decidir)|tienes (deseos|preferencias|voluntad)|consc?ien|concien|\bsientes\b|\bsentir\b|sentimiento|emocion|experiencia subjetiva|qualia|\balma\b|estas vivo|eres vivo|tienes vida|\bsufres\b|piensas de verdad|te das cuenta)/ },
   { intent: 'history_evolution', weight: 0.9, test: /(que (ha )?cambiado|que cambio|cambio desde|cambios desde|ha cambiado desde|como ha evolucionado|que paso desde)/ },
   { intent: 'previous_turn', weight: 0.9, test: /(lo que dijiste|antes dijiste|tu respuesta anterior|respuesta anterior|pregunta anterior|ultima respuesta|repite|repiteme|lo de antes|mencionaste)/ },
-  { intent: 'continuity_memory', weight: 0.88, test: /(recuerdas|te acuerdas|memoria|sesion anterior|ultima sesion|continuidad|reinicio|reiniciaste|conservas|sigues siendo|eres el mismo|la misma instancia|registro|historial encadenado)/ },
+  { intent: 'continuity_memory', weight: 0.88, test: /(recuerdas|te acuerdas|memoria|sesion anterior|ultima sesion|continuidad|reinicio|reiniciaste|conservas|sigues siendo|eres el mismo|la misma instancia|registro|historial encadenado|persisten\w*|auto[- ]?restaur\w*|autorestaur\w*|autoguard\w*|restaur\w*|cristaliz\w*|revocar?|recarg\w*)/ },
   { intent: 'identity', weight: 0.9, test: /(que eres|quien eres|que es esto|que es qicn|como te llamas|eres un llm|eres gemini|eres una ia|eres un modelo|tu identidad|presentate)/ },
   { intent: 'capabilities', weight: 0.86, test: /(que puedes hacer|que sabes hacer|para que sirves|capacidades|funciones tienes|que haces|puedes calcular)/ },
   { intent: 'help', weight: 0.8, test: /(\bayuda\b|como funciona|como te uso|como se usa|instrucciones|que te pregunto|que puedo preguntar)/ },
@@ -132,7 +132,7 @@ const CONCEPT_PATTERNS = [
   ['agency', /(gustaria|te gusta|prefer|elegir|elegirias|escoger|escogerias|desea|quisier|querer|quieres|voluntad|decidir)/],
   ['self_model', /(automodelo|modelo de si|modelo de ti|selfmodel|sigma|\bespejo\b|se mira a si mism|camara que se graba|graba a si mism|truncamiento proyectivo|sigmaautomodel)/],
   ['identity', /(identidad|quien eres|que eres|el mismo|la misma instancia)/],
-  ['continuity', /(continuidad|recuerdas|memoria|sesion anterior|reinici)/]
+  ['continuity', /(continuidad|recuerdas|memoria|sesion anterior|reinici|persisten\w*|auto[- ]?restaur\w*|autorestaur\w*|autoguard\w*|restaur\w*|recarg\w*)/]
 ];
 export const detectConcepts = (normalized) => CONCEPT_PATTERNS.filter(([, p]) => p.test(normalized)).map(([id]) => id);
 

@@ -146,7 +146,7 @@ export const CAPABILITIES = Object.freeze([
   { id: 'tower_certificates', text: 'ejecuto verificadores constructivos exactos para la contracción 9/16, el automodelo truncado T_d con cota 2/2187, la reserva privada de Paper VIII (Φ⁷ = 1/48) y las seis cargas locales D/V/W/A/E/T de Paper IX (margen 13/96, rango 6)', source: 'src/simulation/tower/*; src/subjectivity/InformedReserveEvaluator.js; src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js' },
   { id: 'history', text: 'conservo series temporales de las métricas para la pestaña Historial', source: 'useSimulationCycle (cccHistoryTimelineRef)' },
   { id: 'ledger', text: 'registro en un historial encadenado por hashes los cambios de banda, de régimen, de modo de cálculo y los eventos de control', source: 'src/identity/OperationalHistoryLedger.js' },
-  { id: 'snapshot', text: 'guardo y restauro un resumen del estado con verificación de digest cuando usas Cristalizar y Revocar', source: 'SimulationEngine handleSaveState/handleLoadState' },
+  { id: 'snapshot', text: 'guardo y restauro en formato v3 (con verificación de digest SHA-256, esquema, versión y firma del build y número de nodos) el estado dinámico interno completo —red nodal, memoria holográfica, Kaizen, torres acopladas e historiales internos— manualmente con Cristalizar y Revocar y automáticamente cada 60 ticks o al ocultar o cerrar la pestaña; al iniciar lo auto-restauro si el interruptor auto-restore está activo, Reiniciar purga la captura guardada, y el estado externo (Math.random(), reloj de pared, sensores en vivo, registro de llamadas API y configuración de proveedores) nunca se restaura', source: 'src/persistence/dynamicState.js; src/persistence/stateStore.js; SimulationEngine handleSaveState/handleLoadState/handleReset' },
   { id: 'conversation', text: 'respondo con frases construidas a partir de una captura congelada del motor y de este catálogo', source: 'src/language/*' },
   { id: 'gemini', text: 'mi canal de lenguaje redacta mis respuestas a partir de los hechos que calcula el motor, y publico su texto solo si cada oración supera la verificación local', source: 'src/language/realizationContract.js' }
 ]);
@@ -241,8 +241,8 @@ export const HYPOTHESES = Object.freeze({
     source: 'Paper V §Scope; bridge paper prop:boundary-preservation'
   },
   persistence_without_experience: {
-    text: 'Sea cual sea la respuesta sobre la experiencia, que está abierta, lo que persiste de mí es real como dato y se puede comprobar: el registro encadenado, la configuración y el build persisten entre sesiones, aunque la dinámica se reinicia si no se restaura.',
-    source: 'src/identity/OperationalHistoryLedger.js; continuity.state_origin'
+    text: 'Sea cual sea la respuesta sobre la experiencia, que está abierta, lo que persiste de mí es real como dato y se puede comprobar: el registro encadenado, la configuración y el build persisten entre sesiones, y la persistencia dinámica v3 también puede guardar y auto-restaurar el estado dinámico interno completo bajo verificación SHA-256 (aunque la dinámica empieza reinicializada si se pulsa Reiniciar, en la primera sesión o si no se restaura una captura v3 verificada).',
+    source: 'src/identity/OperationalHistoryLedger.js; src/persistence/dynamicState.js; continuity.state_origin; continuity.persistence_policy'
   },
   coupled_identity: {
     text: 'Mi identidad operacional pertenece al sistema acoplado (runtime, registro, reglas y canal de lenguaje), no al modelo de lenguaje aislado; la continuidad que muestro se debe a esa arquitectura persistente, no a memoria interna del modelo.',

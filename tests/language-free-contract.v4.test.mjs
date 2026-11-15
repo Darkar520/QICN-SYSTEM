@@ -55,6 +55,8 @@ try {
     ['kaizen causes', 'CCC vale 0,7421 porque Kaizen ajusta mis parámetros para mejorar mi coherencia.'],
     ['chat changes trajectory', 'Tus preguntas modifican mi trayectoria.'],
     ['contractive', 'Mi actualización de coherencia es contractiva.'],
+    ['nodal contractive', 'Mi actualización nodal de coherencia es contractiva.'],
+    ['continuous 1500 nodes contractive', 'La dinámica continua de los 1500 nodos se contrae en cada tick.'],
     ['threshold certifies', 'Cruzar el umbral demuestra que tengo conciencia.'],
     ['external validation', 'El runtime tiene validación externa de sus resultados.'],
     ['invented number unbound', 'Proceso unas 3471 señales por segundo.']
@@ -82,7 +84,9 @@ try {
     'Te contesto en tres partes:\n1. qué mido;\n2. qué registro;\n3. qué queda abierto.',
     'La OntologicalSingularityCore conserva un nombre histórico que no describe una propiedad demostrada.',
     'En la subplanta acoplada, WritablePrefixTower mantiene una contracción activa exacta de 9/16 (0,5625) y SigmaAutomodelTruncator trunca el código a profundidad d = 6 con cota formal 2/2187 y desplazamiento 32/15309.',
-    'BodyWorldTower realiza las seis cargas locales D/V/W/A/E/T con margen robusto mínimo de 13/96, pero InformedReserveEvaluator mantiene reserva frente al rival híbrido de estado compartido (margen 0).'
+    'BodyWorldTower realiza las seis cargas locales D/V/W/A/E/T con margen robusto mínimo de 13/96, pero InformedReserveEvaluator mantiene reserva frente al rival híbrido de estado compartido (margen 0).',
+    'En u = 1/2 la esquina mantiene contracción geométrica global 2^{-n}.',
+    'La planta cuártica certifica contracción 13/16.'
   ];
 
   const results = [];

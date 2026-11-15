@@ -2448,7 +2448,13 @@ export const QICNConsciousnessSystem = () => {
         // Effective config of the next tick: the Kaizen object the nodal layer reads.
         effectiveConfig: kaizenEngine.current?.mutableConfig,
         // Recent tick timeline (read only) for the six-invariant readout (v4).
-        tickTimeline: cccHistoryTimelineRef.current?.points
+        tickTimeline: cccHistoryTimelineRef.current?.points,
+        // Live Persistence v3 policy state (included in snapshot SHA-256 digest).
+        persistence: {
+          storageVersion: 'v3',
+          autoRestoreEnabled,
+          autosaveIntervalTicks: 60
+        }
       });
       prepared = prepareTurn({
         question: input,
@@ -2648,6 +2654,7 @@ export const QICNConsciousnessSystem = () => {
     isRunning,
     simulationStep,
     emotionState,
+    autoRestoreEnabled,
     canUseLlmNow,
     hasFrontendGeminiKey,
     frontendGeminiEnabled,

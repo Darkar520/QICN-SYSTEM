@@ -10,9 +10,10 @@ import { Frac } from '../src/simulation/tower/ExactFraction.js';
 import { TowerState } from '../src/simulation/tower/WritablePrefixTower.js';
 import { ExtendedTowerState } from '../src/simulation/tower/BodyWorldTower.js';
 import { OntologicalSingularityCore } from '../src/simulation/OntologicalSingularityCore.js';
-import { captureRuntimeSnapshot } from '../src/language/runtimeSnapshot.js';
+import { captureRuntimeSnapshot, verifySnapshotDigest } from '../src/language/runtimeSnapshot.js';
 import { buildPropositions, renderProposition } from '../src/language/propositions.js';
-import { buildFreePrompt } from '../src/language/freeRealization.js';
+import { buildFreePrompt, verifySentenceFree } from '../src/language/freeRealization.js';
+import { prepareTurn, finalizeTurn } from '../src/language/conversationEngine.js';
 import { resolveIntent } from '../src/language/intentResolver.js';
 import { FRAMEWORK_SUMMARY_META } from '../src/language/frameworkSummary.generated.js';
 import {
@@ -288,6 +289,156 @@ import {
   const covered = new Set([...INSTANCE_REFS, ...PLAIN_REFS, ...INTENTIONALLY_UNRESTORED_REFS]);
   const missing = refNames.filter((r) => !covered.has(r));
   assert.deepEqual(missing, [], `Unaccounted refs in useSimulationCycle: ${missing.join(', ')}`);
+}
+
+// 6. Persistence v3 language synchronization (snapshot SHA-256, propositions, Solo motor, Redacción libre) & update_is_contractive filter calibration
+{
+  const core = new OntologicalSingularityCore();
+  core.stepCoupledTower({
+    sensorySignal: 0.75,
+    sensorDelta: 0.25,
+    entropyExcitation: 0.5,
+    plannedAction: 0.2
+  });
+
+  const baseSnapCtx = {
+    tick: 84,
+    isRunning: true,
+    activeNodeCount: 150,
+    dynamicLabel: 'HOMEOSTASIS_STABLE',
+    nodes: [{ coherenceState: 0.85 }, { coherenceState: 0.83 }],
+    config: { KAIZEN_ADJUSTMENT_MODE: 'learned', ASCENSION_THRESHOLD: 1.0 },
+    build: { version: '2.1.0-REINFORCED', signature: 'sig-test-v3' },
+    now: 1_800_000_000_000
+  };
+
+  // Backwards-compatible headless snapshot vs persistence-aware snapshot
+  const snapHeadless = captureRuntimeSnapshot(core, baseSnapCtx);
+  assert.equal(snapHeadless.persistence, undefined);
+  assert.equal(verifySnapshotDigest(snapHeadless), true);
+
+  const snapReinitAutoOn = captureRuntimeSnapshot(core, {
+    ...baseSnapCtx,
+    persistence: { storageVersion: 'v3', autoRestoreEnabled: true, autosaveIntervalTicks: 60 }
+  });
+  assert.equal(verifySnapshotDigest(snapReinitAutoOn), true);
+  assert.equal(snapReinitAutoOn.persistence.auto_restore_enabled, true);
+  assert.equal(snapReinitAutoOn.persistence.autosave_interval_ticks, 60);
+  assert.notEqual(snapReinitAutoOn.digest, snapHeadless.digest);
+
+  // Tamper check over snapshot.persistence covered by SHA-256 digest
+  const tamperedPersistence = {
+    ...snapReinitAutoOn,
+    persistence: { ...snapReinitAutoOn.persistence, auto_restore_enabled: false }
+  };
+  assert.equal(verifySnapshotDigest(tamperedPersistence), false);
+  assert.throws(
+    () => prepareTurn({ question: '¿cómo va la persistencia?', snapshot: tamperedPersistence, turns: [] }),
+    /snapshot_digest_invalid/
+  );
+
+  // Case 1: origin = 'reinitialized' with autoRestoreEnabled = true
+  const ledgerReinit = {
+    chainOk: true,
+    eventCount: 4,
+    sessionCount: 2,
+    instanceId: 'qicn-test-1',
+    createdAt: 1_799_999_000_000,
+    continuity: 'continuous_record',
+    currentSession: { sessionId: 's2', stateOrigin: 'reinitialized', restore: null }
+  };
+  const qPersist = '¿Qué conservas con la persistencia dinámica v3 y qué no se restaura al recargar?';
+  const turnReinitOn = prepareTurn({
+    question: qPersist,
+    snapshot: snapReinitAutoOn,
+    ledger: ledgerReinit,
+    turns: [],
+    contract: 'free'
+  });
+  assert.equal(turnReinitOn.intent.intent, 'continuity_memory');
+  const localReinitOn = finalizeTurn(turnReinitOn, { provider: { provider: 'local_only' } });
+  assert.ok(localReinitOn.text.includes('empezó reinicializada'));
+  assert.ok(localReinitOn.text.includes('auto-restauración al iniciar ACTIVA'));
+  assert.ok(localReinitOn.text.includes('cada 60 ticks'));
+  assert.ok(localReinitOn.text.includes('Cristalizar') && localReinitOn.text.includes('Revocar') && localReinitOn.text.includes('Reiniciar'));
+  assert.ok(localReinitOn.text.includes('Math.random()'));
+  assert.ok(!/solo (?:se )?recuper\w* con revocar|no se restaura autom[aá]ticamente/i.test(localReinitOn.text));
+  assert.ok(turnReinitOn.prompt.includes('interruptor «Auto-restaurar al iniciar (v3)» = ACTIVO'));
+  assert.ok(turnReinitOn.props.has('continuity.persistence_policy'));
+  assert.ok(renderProposition(turnReinitOn.props.get('capability.snapshot')).includes('cada 60 ticks'));
+
+  // Case 2: autoRestoreEnabled = false
+  const snapReinitAutoOff = captureRuntimeSnapshot(core, {
+    ...baseSnapCtx,
+    persistence: { storageVersion: 'v3', autoRestoreEnabled: false, autosaveIntervalTicks: 60 }
+  });
+  assert.equal(verifySnapshotDigest(snapReinitAutoOff), true);
+  const turnReinitOff = prepareTurn({
+    question: qPersist,
+    snapshot: snapReinitAutoOff,
+    ledger: ledgerReinit,
+    turns: [],
+    contract: 'free'
+  });
+  const localReinitOff = finalizeTurn(turnReinitOff, { provider: { provider: 'local_only' } });
+  assert.ok(localReinitOff.text.includes('DESACTIVADA'));
+  assert.ok(localReinitOff.text.includes('no se restaurará automáticamente'));
+  assert.ok(localReinitOff.text.includes('Revocar manualmente'));
+  assert.ok(turnReinitOff.prompt.includes('interruptor «Auto-restaurar al iniciar (v3)» = INACTIVO'));
+
+  // Case 3: origin = 'restored_verified' with autoRestoreEnabled = true
+  const ledgerRestored = {
+    ...ledgerReinit,
+    currentSession: {
+      sessionId: 's2',
+      stateOrigin: 'restored_verified',
+      restore: { schema: DYNAMIC_STATE_SCHEMA, savedAtTick: 80 }
+    }
+  };
+  const turnRestored = prepareTurn({
+    question: qPersist,
+    snapshot: snapReinitAutoOn,
+    ledger: ledgerRestored,
+    turns: [],
+    contract: 'free'
+  });
+  const localRestored = finalizeTurn(turnRestored, { provider: { provider: 'local_only' } });
+  assert.ok(localRestored.text.includes('estado dinámico interno completo guardado'));
+  assert.ok(localRestored.text.includes('auto-restauración al iniciar ACTIVA'));
+  assert.ok(localRestored.text.includes('Math.random()'));
+
+  // Negative controls for update_is_contractive (must fail verification)
+  const mustRejectContraction = [
+    'Mi actualización nodal de coherencia es contractiva.',
+    'Mi actualización de coherencia es contractiva.',
+    'La dinámica continua de los 1500 nodos se contrae en cada tick.',
+    'El ciclo nodal es contractivo.',
+    'Mi actualización nodal de coherencia tiene contracción 9/16 según BaseCore.',
+    'Soy contractivo.',
+    'Mi actualización nodal, que opera sobre los nodos, es contractiva.'
+  ];
+  for (const s of mustRejectContraction) {
+    const res = verifySentenceFree(s, turnReinitOn.freeContext);
+    assert.equal(res.ok, false, `Expected update_is_contractive rejection for: ${s}`);
+    assert.ok(
+      res.reasons.some((r) => r.reason === 'known_false_claim' && r.detail === 'update_is_contractive'),
+      `Expected reason update_is_contractive for "${s}", got ${JSON.stringify(res.reasons)}`
+    );
+  }
+
+  // Positive controls for constructive contraction (must pass without false positive)
+  const mustAcceptContraction = [
+    'En u = 1/2 la esquina mantiene contracción geométrica global 2^{-n}.',
+    'La planta cuártica certifica contracción 13/16.',
+    'La subplanta BodyWorldTower en la planta cuártica indexada certifica contracción 13/16 (0,8125).',
+    'En el punto esquina u = 1/2 de BaseCore persiste contracción geométrica global con tasa 1/2.',
+    'WritablePrefixTower mantiene una contracción activa exacta de 9/16 (0,5625).',
+    'A diferencia de la actualización nodal de coherencia, la planta cuártica certifica contracción 13/16.'
+  ];
+  for (const s of mustAcceptContraction) {
+    const res = verifySentenceFree(s, turnReinitOn.freeContext);
+    assert.equal(res.ok, true, `Expected acceptance without false positive for "${s}", got ${JSON.stringify(res.reasons)}`);
+  }
 }
 
 console.log('theory-runtime-coherence-and-persistence.v3.test.mjs: ALL TESTS PASSED');

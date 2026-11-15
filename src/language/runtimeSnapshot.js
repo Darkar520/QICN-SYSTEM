@@ -84,7 +84,7 @@ const roundTo = (value, decimals) => {
 /**
  * Capture a frozen snapshot.
  * @param {object} core OntologicalSingularityCore instance (read only)
- * @param {object} context { tick, isRunning, nodes, activeNodeCount, config, build, dynamicLabel, matrixLevels, now }
+ * @param {object} context { tick, isRunning, nodes, activeNodeCount, config, build, dynamicLabel, matrixLevels, persistence, now }
  */
 export function captureRuntimeSnapshot(core, context = {}) {
   const state = core?.ontologicalState || {};
@@ -191,6 +191,13 @@ export function captureRuntimeSnapshot(core, context = {}) {
     constructive_cuts: towerTel.constructiveFiniteCuts || state.constructive_finite_cuts || null
   } : null;
 
+  const persistenceInput = context.persistence && typeof context.persistence === 'object' ? context.persistence : null;
+  const persistence = persistenceInput ? {
+    storage_version: text(persistenceInput.storageVersion ?? persistenceInput.storage_version) || 'v3',
+    auto_restore_enabled: Boolean(persistenceInput.autoRestoreEnabled ?? persistenceInput.auto_restore_enabled),
+    autosave_interval_ticks: finite(persistenceInput.autosaveIntervalTicks ?? persistenceInput.autosave_interval_ticks) ?? 60
+  } : null;
+
   const body = {
     schema: SNAPSHOT_SCHEMA,
     tick: metrics.tick ?? null,
@@ -209,7 +216,8 @@ export function captureRuntimeSnapshot(core, context = {}) {
     modes,
     matrix,
     ...(invariants ? { invariants } : {}),
-    ...(tower ? { tower } : {})
+    ...(tower ? { tower } : {}),
+    ...(persistence ? { persistence } : {})
   };
   const digest = sha256Hex(stableStringify(body));
   return deepFreeze({ ...body, digest });

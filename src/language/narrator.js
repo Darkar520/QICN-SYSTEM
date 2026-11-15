@@ -61,7 +61,7 @@ export function planAnswer(intentResult, props) {
     case 'thanks':
       break;
     case 'identity':
-      push('identity.what_i_am', 'identity.identity_basis', 'identity.build', 'continuity.instance', 'continuity.state_origin', 'identity.name_history', 'limit.no_consciousness');
+      push('identity.what_i_am', 'identity.identity_basis', 'identity.build', 'continuity.instance', 'continuity.state_origin', 'continuity.persistence_policy', 'identity.name_history', 'limit.no_consciousness');
       break;
     case 'consciousness_question':
       if ((intentResult.concepts || []).includes('agency')) push('limit.no_preferences', 'hypothesis.choice_counterfactual');
@@ -72,7 +72,7 @@ export function planAnswer(intentResult, props) {
       push('definition.metacognition', 'definition.self_model', 'state.sigma_automodel', 'state.tower_core', 'state.body_world_ports', 'hypothesis.mirror_self_reference', 'limit.shared_hybrid_tie', 'limit.no_consciousness', 'state.threshold', 'limit.threshold_not_awareness', 'identity.what_i_am');
       break;
     case 'capabilities':
-      push(...[...props.keys()].filter((id) => id.startsWith('capability.')), 'limit.internal_only');
+      push(...[...props.keys()].filter((id) => id.startsWith('capability.')), 'continuity.persistence_policy', 'limit.internal_only');
       break;
     case 'help':
       push('capability.conversation', 'capability.gemini');
@@ -95,11 +95,11 @@ export function planAnswer(intentResult, props) {
       break;
     case 'history_evolution':
       push(...[...props.keys()].filter((id) => id.startsWith('delta.')), 'conversation.none');
-      push('history.recent_events', 'history.counts', 'continuity.state_origin');
+      push('history.recent_events', 'history.counts', 'continuity.state_origin', 'continuity.persistence_policy');
       break;
     case 'continuity_memory':
       push('conversation.recall_found', 'conversation.recall_none');
-      push('continuity.status', 'continuity.state_origin', 'continuity.previous_session', 'continuity.chain', 'continuity.instance', 'conversation.previous', 'limit.narrative_is_not_identity');
+      push('continuity.status', 'continuity.state_origin', 'continuity.persistence_policy', 'continuity.previous_session', 'continuity.chain', 'continuity.instance', 'conversation.previous', 'limit.narrative_is_not_identity');
       break;
     case 'previous_turn':
       push('conversation.recall_found', 'conversation.recall_none');

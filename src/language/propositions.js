@@ -406,7 +406,7 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
         ? (restoreMeta && restoreMeta.schema === 'v2'
           ? 'En esta sesión restauré un resumen de estado guardado cuyo digest coincidió; la red nodal y los historiales internos no forman parte de ese resumen.'
           : 'En esta sesión restauré el estado dinámico interno completo guardado (red nodal, memoria, Kaizen, torres acopladas e historiales internos) tras verificar su digest SHA-256; el estado externo (Math.random(), reloj de pared y sensores en vivo) no se restaura.')
-        : 'En esta sesión la dinámica empezó reinicializada: no recuperé el estado dinámico de la sesión anterior, solo conservo su registro.',
+        : 'En esta sesión la dinámica empezó reinicializada al arrancar (por primera sesión, por haberse pulsado Reiniciar, por estar desactivada la auto-restauración o por no existir una captura v3 verificada para este build): no se cargó estado dinámico previo en este arranque, lo cual describe solo cómo comenzó esta sesión y no deshabilita la política de persistencia v3.',
       evidence: ledgerEvidence
     }));
     if (ledger.previousSession) {
@@ -450,6 +450,24 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
       evidence: ledgerEvidence
     }));
   }
+
+  // --- Persistence v3 policy (separate from current session origin) ---------
+  const pers = snapshot?.persistence || null;
+  const autosaveTicks = Number.isFinite(pers?.autosave_interval_ticks) ? pers.autosave_interval_ticks : 60;
+  const persistenceVersion = pers?.storage_version || 'v3';
+  const persistenceStatusLead = pers
+    ? (pers.auto_restore_enabled
+      ? `La persistencia dinámica ${persistenceVersion} tiene la auto-restauración al iniciar ACTIVA (interruptor «Auto-restaurar al iniciar (v3)» = ACTIVO): `
+      : `La persistencia dinámica ${persistenceVersion} tiene la auto-restauración al iniciar DESACTIVADA (interruptor «Auto-restaurar al iniciar (v3)» = INACTIVO): aunque exista una captura ${persistenceVersion} guardada, al recargar no se restaurará automáticamente a menos que actives el interruptor o pulses Revocar manualmente; `)
+    : `El runtime dispone de persistencia dinámica ${persistenceVersion} (con interruptor «Auto-restaurar al iniciar (v3)» activo por defecto en la interfaz, aunque su estado actual no vino en esta captura headless): `;
+  add(make({
+    id: 'continuity.persistence_policy',
+    kind: 'continuity',
+    template: `${persistenceStatusLead}autoguarda cada ${autosaveTicks} ticks y al ocultar o cerrar la pestaña (visibilitychange / pagehide), además de manualmente con Cristalizar, el estado dinámico interno completo (red nodal, memoria holográfica, Kaizen, torres acopladas e historiales internos) sellado con digest SHA-256, esquema qicn.dynamic_state.v3, versión y firma del build y nodeCount (y revocable manualmente con Revocar). Cuando la auto-restauración está activa y la captura supera la verificación, dicho estado dinámico completo sí se restaura automáticamente al recargar; pulsar Reiniciar purga la captura guardada y reinicializa la dinámica; el estado externo (Math.random(), reloj de pared, sensores en vivo, registro de llamadas API y configuración de proveedores) nunca se captura ni se restaura.`,
+    evidence: pers
+      ? { ...snapshotEvidence, source: `src/persistence/dynamicState.js; src/persistence/stateStore.js; ${snapshotEvidence.source}` }
+      : { class: 'catalog', source: 'src/persistence/dynamicState.js; src/persistence/stateStore.js; SimulationEngine (persistencia dinámica v3)' }
+  }));
 
   // --- Conversation record -------------------------------------------------
   if (previous) {

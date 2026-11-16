@@ -192,6 +192,10 @@ async function runWorker(condition, seed) {
   QICNConfig.PROCESSING_SAMPLE_SIZE = Number(args.nodes || 300);
   // Kaizen mode (C-6b): used by scripts/run-kaizen-mode-ablation.mjs; default unchanged.
   if (args['kaizen-mode']) QICNConfig.KAIZEN_ADJUSTMENT_MODE = String(args['kaizen-mode']);
+  if (args['exogenous-mode']) QICNConfig.EXOGENOUS_REGIME_MODE = String(args['exogenous-mode']);
+  if (args['exogenous-seed']) QICNConfig.EXOGENOUS_REGIME_SEED = Number(args['exogenous-seed']) || QICNConfig.EXOGENOUS_REGIME_SEED;
+  if (args['plasticity'] !== undefined) QICNConfig.HISTORICAL_PLASTICITY_ENABLED = String(args['plasticity']) !== 'false';
+  if (args['freeze-weights'] !== undefined) QICNConfig.FREEZE_WORLD_MODEL = String(args['freeze-weights']) === 'true';
   const { useSimulationCycle } = await import('../src/hooks/useSimulationCycle.js');
   const { HolographicMemoryNexus } = await import('../src/simulation/HolographicMemoryNexus.js');
   const { InformationalEntanglementField } = await import('../src/simulation/InformationalEntanglementField.js');
@@ -204,6 +208,7 @@ async function runWorker(condition, seed) {
   const { PhenomenologyProtocolTracker } = await import('../src/utils/phenomenologyProtocolSuite.js');
   const { BudgetTracker } = await import('../src/utils/cognitiveEmergenceEvaluation.js');
   const { StructuralConsolidationTracker } = await import('../src/runtime/StructuralConsolidationTracker.js');
+  const { ExogenousPerturbationDriver } = await import('../src/experiments/ExogenousPerturbationDriver.js');
   const { AUTONOMY_RUNTIME_DEFAULTS, PMIA_NEGATIVE_DRIVE_DEFAULTS, QUANTUM_RUNTIME_DEFAULTS, QUANTUM_EXPERIMENT_DEFAULTS } = await import('../src/config/simulationDefaults.js');
   const { captureRuntimeSnapshot } = await import('../src/language/runtimeSnapshot.js');
   const { prepareTurn, finalizeTurn, evaluateRealization, correctionPromptFor } = await import('../src/language/conversationEngine.js');
@@ -285,6 +290,7 @@ async function runWorker(condition, seed) {
     entanglementField: ref(new InformationalEntanglementField()),
     entanglementTimelineRef: ref({ points: [], maxPoints: 120, lastTick: -1, lastUiUpdateTs: 0 }),
     entropyModeRef: ref({ mode: 'deterministic_fallback', sampleAgeMs: null, source: 'deterministic_local', reason: QUANTUM_RUNTIME_DEFAULTS.enabled ? 'bridge_unavailable' : 'quantum_disabled', entropyValue: 0.5, jobId: '', channelHealth: { status: QUANTUM_RUNTIME_DEFAULTS.enabled ? 'degraded' : 'disabled', consecutiveFailures: 0, consecutiveValid: 0, droppedSamples: 0, lastError: '', lastUpdateMs: 0 } }),
+    exogenousDriverRef: ref(new ExogenousPerturbationDriver({ mode: QICNConfig.EXOGENOUS_REGIME_MODE || 'off', seed: QICNConfig.EXOGENOUS_REGIME_SEED ?? seed })),
     holographicMemory: ref(new HolographicMemoryNexus()),
     integrityPacketRef: ref(null),
     internalPressureRef: ref({ pressure: 0, state: 'idle', realStasis: false }),
@@ -442,11 +448,37 @@ async function runWorker(condition, seed) {
       const verdict = await verifyStoredState(saved.record, { build: BUILD, nodeCount: nodalLayer.current.nodes.length });
       if (!verdict.ok) throw new Error(`restore_rejected:${verdict.reason}`);
       const applied = applyDynamicState(bag, verdict.body, { config: QICNConfig });
+      if (simulationControllerRef.current?.syncFromCore) {
+        simulationControllerRef.current.syncFromCore(ontologicalCore.current);
+        bag.worldModelRef.current = simulationControllerRef.current.worldModel;
+        bag.cogPlannerRef.current = simulationControllerRef.current.planner;
+      }
       Object.assign(simulationRuntimeRef.current, applied.runtime);
       persistence.unrestored = applied.unrestored;
       rng.state.s = saved.rng; sensorRng.state.s = saved.sensorRng;
       clock = saved.clock; perfClock = saved.perfClock; sensorTick = saved.sensorTick; sensorFrames = saved.sensorFrames;
       startTick = Number(applied.runtime.simulationStep) + 1;
+      if (String(args['erase-history']) === 'true') {
+        bag.worldModelRef.current?.resetHistoricalConsolidation?.();
+        bag.holographicMemory.current?.resetStructuralEngrams?.();
+        kaizenEngine.current?.resetViabilityHistory?.();
+      }
+      if (args['post-restore-exo-mode']) {
+        QICNConfig.EXOGENOUS_REGIME_MODE = String(args['post-restore-exo-mode']);
+        const evalExoSeed = Number(args['post-restore-exo-seed'] || (seed ^ 0x1F3D));
+        QICNConfig.EXOGENOUS_REGIME_SEED = evalExoSeed;
+        bag.exogenousDriverRef.current?.reset?.({
+          mode: QICNConfig.EXOGENOUS_REGIME_MODE,
+          seed: evalExoSeed
+        });
+      }
+      if (args['eval-rng-seed']) {
+        const evalSeed = Number(args['eval-rng-seed']);
+        if (Number.isFinite(evalSeed)) {
+          rng.state.s = evalSeed;
+          sensorRng.state.s = evalSeed ^ 0x5EED;
+        }
+      }
       if (args['dump-out']) await dumpBag(String(args['dump-out']));
     }
     for (let tick = startTick; tick < startTick + TICKS; tick += 1) {
@@ -462,6 +494,8 @@ async function runWorker(condition, seed) {
       }
       const core = ontologicalCore.current;
       const nodes = nodalLayer.current?.getActiveNodes?.() || [];
+      const pl = bag.worldModelRef.current?.getPlasticityProfile?.() || null;
+      const vs = kaizenEngine.current?.viabilityPolicyState?.viabilityStats || null;
       series.push({
         tick,
         ccc: Number(Number(core?.ontologicalState?.coherence ?? captured.setCCC ?? 0).toFixed(12)),
@@ -474,7 +508,14 @@ async function runWorker(condition, seed) {
         autonomyActions: autonomyActionLedgerRef.current.length,
         strain: Number(Number(core?.metacognitiveStrain ?? 0).toFixed(12)),
         observerImpact: Number(Number(core?.metacognitiveStats?.observerImpact ?? 0).toFixed(12)),
-        stasis: Number(Number(core?.getDynamicHealth?.()?.stasisIndex ?? 0).toFixed(12))
+        stasis: Number(Number(core?.getDynamicHealth?.()?.stasisIndex ?? 0).toFixed(12)),
+        maturationIndex: pl ? pl.maturationIndex : 0,
+        surprisalEma: pl ? pl.surprisalEma : 0,
+        sealedCommits: pl ? pl.sealedCommitCount : 0,
+        viabilityInTube: vs ? Boolean(vs.lastInTube) : true,
+        viabilityObjectiveScore: vs ? Number(vs.lastObjectiveScore) : 1,
+        viabilityInTubeRate: vs ? vs.inTubeRate : 1,
+        viabilityPolicyAction: vs ? vs.lastSelectedPolicyAction : 'none'
       });
       if (args['dump-at'] && tick === Number(args['dump-at']) && args['dump-tick-out']) await dumpBag(String(args['dump-tick-out']));
       if (CAPTURE_AT && tick === CAPTURE_AT && args['capture-out']) {
@@ -496,10 +537,55 @@ async function runWorker(condition, seed) {
     threw = { message: String(error?.message || error), stack: String(error?.stack || '').split('\n').slice(0, 6).join('\n') };
   }
   const last = series.at(-1) || {};
+  const MATCHED_PROBE_STATES = [
+    { stasisIndex: 0.72, metacognitiveStrain: 0.22, sensorSignal: 0.35, sensorDelta: 0.05, pmia: 0.10, xDispersion: 0.03, ccc: 0.76 },
+    { stasisIndex: 0.64, metacognitiveStrain: 0.18, sensorSignal: 0.42, sensorDelta: 0.04, pmia: 0.12, xDispersion: 0.02, ccc: 0.75 },
+    { stasisIndex: 0.25, metacognitiveStrain: 0.30, sensorSignal: 0.45, sensorDelta: 0.08, pmia: 0.35, xDispersion: 0.12, ccc: 0.78 },
+    { stasisIndex: 0.18, metacognitiveStrain: 0.28, sensorSignal: 0.40, sensorDelta: 0.10, pmia: 0.42, xDispersion: 0.15, ccc: 0.80 },
+    { stasisIndex: 0.32, metacognitiveStrain: 0.32, sensorSignal: 0.75, sensorDelta: 0.26, pmia: 0.20, xDispersion: 0.05, ccc: 0.77 },
+    { stasisIndex: 0.28, metacognitiveStrain: 0.36, sensorSignal: 0.82, sensorDelta: 0.32, pmia: 0.18, xDispersion: 0.06, ccc: 0.79 },
+    { stasisIndex: 0.35, metacognitiveStrain: 0.56, sensorSignal: 0.55, sensorDelta: 0.12, pmia: 0.22, xDispersion: 0.06, ccc: 0.85 },
+    { stasisIndex: 0.40, metacognitiveStrain: 0.62, sensorSignal: 0.50, sensorDelta: 0.10, pmia: 0.25, xDispersion: 0.05, ccc: 0.88 },
+    { stasisIndex: 0.50, metacognitiveStrain: 0.40, sensorSignal: 0.50, sensorDelta: 0.16, pmia: 0.15, xDispersion: 0.09, ccc: 0.81 },
+    { stasisIndex: 0.45, metacognitiveStrain: 0.45, sensorSignal: 0.60, sensorDelta: 0.20, pmia: 0.28, xDispersion: 0.07, ccc: 0.83 },
+    { stasisIndex: 0.60, metacognitiveStrain: 0.35, sensorSignal: 0.48, sensorDelta: 0.09, pmia: 0.14, xDispersion: 0.04, ccc: 0.77 },
+    { stasisIndex: 0.30, metacognitiveStrain: 0.38, sensorSignal: 0.52, sensorDelta: 0.14, pmia: 0.30, xDispersion: 0.08, ccc: 0.79 }
+  ];
+  const probePlasticity = bag.worldModelRef.current?.getPlasticityProfile?.() || { maturationIndex: 0, surprisalEma: 0, unforeseenEventRate: 0 };
+  const probeDecisions = MATCHED_PROBE_STATES.map((probeState) => {
+    const sVec = bag.holographicMemory.current?.buildStructuralStateVector?.(probeState) || [];
+    const engramCtx = bag.holographicMemory.current?.queryStructuralEngrams?.(sVec) || null;
+    const cluster = kaizenEngine.current?.classifyViabilityCluster?.(probeState) || 'balanced';
+    const sel = kaizenEngine.current?.selectSandboxAction?.(
+      probeState,
+      bag.autonomySandboxPolicyRef.current,
+      {
+        plasticityEnabled: QICNConfig.HISTORICAL_PLASTICITY_ENABLED !== false && !QICNConfig.FREEZE_WORLD_MODEL,
+        maturationIndex: probePlasticity.maturationIndex,
+        surprisalEma: probePlasticity.surprisalEma,
+        unforeseenEventRate: probePlasticity.unforeseenEventRate,
+        engramContext: engramCtx,
+        cluster
+      }
+    );
+    return sel?.actionId || 'none';
+  });
   const result = {
     condition, seed, threw, series, persistence,
     kaizen: { mode: QICNConfig.KAIZEN_ADJUSTMENT_MODE, adjustments: kaizenEngine.current?.getAdjustments?.() || null, history: kaizenEngine.current?.learning?.history || [] },
-    final: { ...last, sensorFrames, apiCallLogEntries: apiCallLog.current.length, engineRandomCalls: counters.random, engineNowCalls: counters.now },
+    final: {
+      ...last,
+      sensorFrames,
+      apiCallLogEntries: apiCallLog.current.length,
+      engineRandomCalls: counters.random,
+      engineNowCalls: counters.now,
+      plasticity: probePlasticity,
+      consolidatedAnchorVector: bag.worldModelRef.current?.getConsolidatedAnchorVector?.() || [],
+      probeDecisions,
+      exogenous: bag.exogenousDriverRef.current?.getDiagnostics?.() || null,
+      viability: kaizenEngine.current?.viabilityPolicyState?.viabilityStats || null,
+      engramCount: bag.holographicMemory.current?.structuralEngrams?.length ?? 0
+    },
     language: condition.startsWith('language_') ? language : null
   };
   realWrite(`${RESULT_MARK}${JSON.stringify(result)}\n`, () => process.exit(threw ? 2 : 0));

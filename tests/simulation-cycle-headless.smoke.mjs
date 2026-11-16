@@ -18,6 +18,7 @@ import runtimeEnv from '../src/config/runtimeEnv.js';
 import { PhenomenologyProtocolTracker } from '../src/utils/phenomenologyProtocolSuite.js';
 import { BudgetTracker } from '../src/utils/cognitiveEmergenceEvaluation.js';
 import { StructuralConsolidationTracker } from '../src/runtime/StructuralConsolidationTracker.js';
+import { ExogenousPerturbationDriver } from '../src/experiments/ExogenousPerturbationDriver.js';
 import { LifeCertifier } from '../src/experiments/LifeCertifier.js';
 import { FirstPersonCertifier } from '../src/subjectivity/FirstPersonCertifier.js';
 import { getInitialIntegrityAuditLog, getInitialIntegrityMode } from '../src/utils/simulationUtils.js';
@@ -88,6 +89,7 @@ const coherentCohortRef = { current: ({
     count: 0
   }) };
 const entanglementField = { current: (new InformationalEntanglementField()) };
+const exogenousDriverRef = { current: (new ExogenousPerturbationDriver()) };
 const entanglementTimelineRef = { current: ({
     points: [],
     maxPoints: 120,
@@ -304,7 +306,7 @@ simulationRuntimeRef.current = {
   timeBasedRateLimit: false
 };
 
-const bag = { apiCallLog, ascensionDynamicsRef, autonomyActionLedgerRef, autonomySandboxPolicyRef, canvasTelemetryRef, cccHistoryTimelineRef, cogPlannerRef, coherentCohortRef, entanglementField, entanglementTimelineRef, entropyModeRef, holographicMemory, integrityPacketRef, internalPressureRef, interventionScheduleAbortRef, interventionSchedulerMetaRef, interventionSchedulerRef, kaizenEngine, kaizenPendingEvalRef, lastObserverResonanceRef, lastSaveTimestampRef, latencyStrainRef, metaSovereigntyCheck, nodalLayer, ontologicalAutoPolicyRef, ontologicalAutoQueueRef, ontologicalCore, plannerActuatorContribRef, postThresholdRegimeRef, ppsMetricsRef, ppsTrackerRef, previousFaceCountRef, quantumEntropyBridgeRef, recoveryTriggerCountRef, reportNormalizationFallbacksRef, runtimeBudgetSnapshotRef, sensoryEngine, simulationControllerRef, simulationErrorStreakRef, simulationRuntimeRef, structuralConsolidationRef, tickBudgetTrackerRef, worldModelDiagnosticsRef, worldModelRef, setApiCallMetrics, setAscensionAxiom, setCCC, setCccHistoryHoverIndex, setChatHistory, setEmotionState, setFieldMetrics, setFrictionCounter, setFrictionProtocolStatus, setHumanCcc, setHumanInputContext, setIsAscended, setIsRunning, setLastMutation, setLastSaveTime, setMetacognitionLevel, setMetacognitiveFlux, setMetamorphosisCounter, setMutableConfig, setNarrative, setOntologicalState, setPMIA, setQuantumUiStatus, setRateLimitExceeded, setSimulationStep, setTopologyMetrics, setVisualNodes, getEnvironmentContext, getPreregisterScheduleDoc, complexityFactor, initialMutableConfig, quantumUiConfig, handleSaveState };
+const bag = { apiCallLog, ascensionDynamicsRef, autonomyActionLedgerRef, autonomySandboxPolicyRef, canvasTelemetryRef, cccHistoryTimelineRef, cogPlannerRef, coherentCohortRef, entanglementField, entanglementTimelineRef, entropyModeRef, exogenousDriverRef, holographicMemory, integrityPacketRef, internalPressureRef, interventionScheduleAbortRef, interventionSchedulerMetaRef, interventionSchedulerRef, kaizenEngine, kaizenPendingEvalRef, lastObserverResonanceRef, lastSaveTimestampRef, latencyStrainRef, metaSovereigntyCheck, nodalLayer, ontologicalAutoPolicyRef, ontologicalAutoQueueRef, ontologicalCore, plannerActuatorContribRef, postThresholdRegimeRef, ppsMetricsRef, ppsTrackerRef, previousFaceCountRef, quantumEntropyBridgeRef, recoveryTriggerCountRef, reportNormalizationFallbacksRef, runtimeBudgetSnapshotRef, sensoryEngine, simulationControllerRef, simulationErrorStreakRef, simulationRuntimeRef, structuralConsolidationRef, tickBudgetTrackerRef, worldModelDiagnosticsRef, worldModelRef, setApiCallMetrics, setAscensionAxiom, setCCC, setCccHistoryHoverIndex, setChatHistory, setEmotionState, setFieldMetrics, setFrictionCounter, setFrictionProtocolStatus, setHumanCcc, setHumanInputContext, setIsAscended, setIsRunning, setLastMutation, setLastSaveTime, setMetacognitionLevel, setMetacognitiveFlux, setMetamorphosisCounter, setMutableConfig, setNarrative, setOntologicalState, setPMIA, setQuantumUiStatus, setRateLimitExceeded, setSimulationStep, setTopologyMetrics, setVisualNodes, getEnvironmentContext, getPreregisterScheduleDoc, complexityFactor, initialMutableConfig, quantumUiConfig, handleSaveState };
 
 // Seed functional-update setters with the component's React initial values
 // (arrays/objects) so functional updaters (e.g. setChatHistory(prev => prev.length))

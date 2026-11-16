@@ -274,7 +274,7 @@ import {
   const match = src.match(/export function useSimulationCycle\(deps\)\s*\{\s*const\s*\{([\s\S]*?)\}\s*=\s*deps;/);
   assert.ok(match, 'useSimulationCycle deps destructuring found');
   const entries = match[1]
-    .split('\n')
+    .split(/\r?\n/)
     .map((line) => line.replace(/\/\/.*$/, '').trim().replace(/,$/, '').trim())
     .filter(Boolean);
   const nonRefs = new Set([

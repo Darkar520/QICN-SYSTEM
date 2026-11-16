@@ -607,8 +607,8 @@ export class OntologicalSingularityCore {
         let plannedDrift = 0;
         let plannerActionMagnitude = 0;
 
-        if (this.worldModelEngine?.observeTick) {
-            this.worldModelEngine.observeTick(planningState);
+        if (this.worldModelEngine?.observeTick && !this.worldModelEngine.externalCycleOwned) {
+            this.worldModelEngine.observeTick(planningState, { sealEnabled: false });
         }
         if (this.cognitivePlanner?.planAction) {
             const plannerRandom = createRng(

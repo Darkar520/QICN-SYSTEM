@@ -34,6 +34,7 @@ import { LifeCertifier } from '../experiments/LifeCertifier.js';
 import { FirstPersonCertifier } from '../subjectivity/FirstPersonCertifier.js';
 import PhenomenalBridgePanel from './PhenomenalBridgePanel.jsx';
 import { StructuralConsolidationTracker } from '../runtime/StructuralConsolidationTracker.js';
+import { ExogenousPerturbationDriver } from '../experiments/ExogenousPerturbationDriver.js';
 import { PARAMETER_SURFACE_REGISTRY } from '../runtime/ParameterSurfaceRegistry.js';
 import preregisterInterventions from '../../config/interventions/preregister.v1.json';
 import { CANON_RUNTIME_SOURCE_OF_TRUTH, CANON_LEGACY_PATH_DECISIONS } from '../canon/sourceOfTruth.js';
@@ -362,6 +363,10 @@ export const QICNConsciousnessSystem = () => {
     lastUiUpdateTs: 0
   });
   const structuralConsolidationRef = useRef(new StructuralConsolidationTracker());
+  const exogenousDriverRef = useRef(new ExogenousPerturbationDriver({
+    mode: QICNConfig.EXOGENOUS_REGIME_MODE || 'off',
+    seed: QICNConfig.EXOGENOUS_REGIME_SEED ?? 0x42A1
+  }));
   const lastObserverResonanceRef = useRef(0);
   const previousFaceCountRef = useRef(0);
   const sensorySovereigntyBootRef = useRef(false);
@@ -2063,6 +2068,15 @@ export const QICNConsciousnessSystem = () => {
     });
   }, []);
 
+  const [exogenousRegimeMode, setExogenousRegimeMode] = useState(() => String(QICNConfig.EXOGENOUS_REGIME_MODE || 'off'));
+  const handleExogenousModeChange = useCallback((nextMode) => {
+    const allowed = ['off', 'non_stationary_regime', 'stationary_iid_sham'];
+    const normalized = allowed.includes(nextMode) ? nextMode : 'off';
+    QICNConfig.EXOGENOUS_REGIME_MODE = normalized;
+    exogenousDriverRef.current?.setMode?.(normalized);
+    setExogenousRegimeMode(normalized);
+  }, []);
+
   const getPersistenceRefs = useCallback(() => ({
     nodalLayer,
     ontologicalCore,
@@ -2096,7 +2110,8 @@ export const QICNConsciousnessSystem = () => {
     simulationErrorStreakRef,
     reportNormalizationFallbacksRef,
     runtimeBudgetSnapshotRef,
-    integrityPacketRef
+    integrityPacketRef,
+    exogenousDriverRef
   }), []);
 
   const handleSaveState = useCallback(async (sourceMode = 'manual') => {
@@ -2169,9 +2184,13 @@ export const QICNConsciousnessSystem = () => {
 
       const applied = applyDynamicState(getPersistenceRefs(), verdict.body, { config: QICNConfig });
       if (simulationControllerRef.current) {
+        simulationControllerRef.current.syncFromCore?.(ontologicalCore.current);
         worldModelRef.current = simulationControllerRef.current.worldModel;
         cogPlannerRef.current = simulationControllerRef.current.planner;
-        simulationControllerRef.current.attachCore?.(ontologicalCore.current);
+      }
+      if (exogenousDriverRef.current?.mode) {
+        QICNConfig.EXOGENOUS_REGIME_MODE = exogenousDriverRef.current.mode;
+        setExogenousRegimeMode(exogenousDriverRef.current.mode);
       }
       ontologicalCore.current?.setQuantumBridgeRef?.(quantumEntropyBridgeRef.current);
 
@@ -2454,7 +2473,11 @@ export const QICNConsciousnessSystem = () => {
           storageVersion: 'v3',
           autoRestoreEnabled,
           autosaveIntervalTicks: 60
-        }
+        },
+        worldModel: worldModelRef.current,
+        holographicMemory: holographicMemory.current,
+        kaizenEngine: kaizenEngine.current,
+        exogenousDriver: exogenousDriverRef.current
       });
       prepared = prepareTurn({
         question: input,
@@ -2909,6 +2932,7 @@ export const QICNConsciousnessSystem = () => {
     entanglementField,
     entanglementTimelineRef,
     entropyModeRef,
+    exogenousDriverRef,
     holographicMemory,
     integrityPacketRef,
     internalPressureRef,
@@ -8645,6 +8669,23 @@ return (
               {autoRestoreEnabled ? 'ACTIVO' : 'INACTIVO'}
             </span>
           </button>
+          <div className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs border bg-slate-900/70 border-slate-700/70 text-slate-200">
+            <label htmlFor="exogenous-regime-select" className="font-semibold text-slate-300 whitespace-nowrap">
+              Entorno exógeno
+            </label>
+            <select
+              id="exogenous-regime-select"
+              data-testid="exogenous-regime-select"
+              value={exogenousRegimeMode}
+              onChange={(e) => handleExogenousModeChange(e.target.value)}
+              className="bg-slate-800 border border-slate-600/80 rounded px-2 py-1 text-[11px] font-mono text-cyan-200 focus:outline-none focus:border-cyan-400"
+              title="Canal reproducible de perturbación exógena (off por defecto; no estacionario vs sham i.i.d.)"
+            >
+              <option value="off">off (línea base)</option>
+              <option value="non_stationary_regime">non_stationary_regime</option>
+              <option value="stationary_iid_sham">stationary_iid_sham</option>
+            </select>
+          </div>
         </div>
       </section>
 

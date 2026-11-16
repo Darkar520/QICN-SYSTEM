@@ -57,16 +57,82 @@ export class SimulationController {
   }
 
   /**
+   * Checks whether a candidate engine already carries live or restored state that
+   * should take precedence over a pristine controller default instance.
+   * @param {unknown} engine
+   * @returns {boolean}
+   */
+  _hasPopulatedModelState(engine) {
+    if (!engine || typeof engine !== 'object') return false;
+    if ((Number(engine.trainingSteps) || 0) > 0) return true;
+    const pl = engine.plasticityState;
+    if (pl && typeof pl === 'object') {
+      if ((Number(pl.maturationIndex) || 0) > 0) return true;
+      if ((Number(pl.sealedCommitCount) || 0) > 0) return true;
+      if ((Number(pl.verifiedPredictionCount) || 0) > 0) return true;
+    }
+    if (Array.isArray(engine.pendingCommits) && engine.pendingCommits.length > 0) return true;
+    if (Array.isArray(engine.resolvedPredictions) && engine.resolvedPredictions.length > 0) return true;
+    return false;
+  }
+
+  /**
+   * Synchronize controller references FROM an already-restored or core-owned
+   * engine without overwriting restored weights or plasticity state.
    * @param {Record<string, unknown>} core
    * @returns {ControllerAttachment|null}
    */
-  attachCore(core) {
+  syncFromCore(core) {
+    if (!core || typeof core !== 'object') {
+      logger.warn('sync_skipped_invalid_core');
+      return null;
+    }
+    if (core.worldModelEngine && typeof core.worldModelEngine === 'object') {
+      this.worldModel = /** @type {WorldModelEngine} */ (core.worldModelEngine);
+    } else {
+      core.worldModelEngine = this.worldModel;
+    }
+    if (core.cognitivePlanner && typeof core.cognitivePlanner === 'object') {
+      this.planner = /** @type {CognitiveEmergencePlanner} */ (core.cognitivePlanner);
+    } else {
+      core.cognitivePlanner = this.planner;
+    }
+    if (this.worldModel && typeof this.worldModel === 'object') {
+      this.worldModel.externalCycleOwned = true;
+    }
+    this.attachedCore = core;
+    logger.info('sync_from_core', {
+      unifiedCoreBinding: core.worldModelEngine === this.worldModel && core.cognitivePlanner === this.planner
+    });
+    return {
+      worldModel: this.worldModel,
+      planner: this.planner
+    };
+  }
+
+  /**
+   * @param {Record<string, unknown>} core
+   * @param {{ preferCore?: boolean }} [options]
+   * @returns {ControllerAttachment|null}
+   */
+  attachCore(core, options = {}) {
     if (!core || typeof core !== 'object') {
       logger.warn('attach_skipped_invalid_core');
       return null;
     }
+    const coreWorldModelPopulated = this._hasPopulatedModelState(core.worldModelEngine);
+    const controllerWorldModelPopulated = this._hasPopulatedModelState(this.worldModel);
+    if (
+      options?.preferCore === true
+      || (core.worldModelEngine && coreWorldModelPopulated && !controllerWorldModelPopulated)
+    ) {
+      return this.syncFromCore(core);
+    }
     core.worldModelEngine = this.worldModel;
     core.cognitivePlanner = this.planner;
+    if (this.worldModel && typeof this.worldModel === 'object') {
+      this.worldModel.externalCycleOwned = true;
+    }
     this.attachedCore = core;
     logger.info('attach_core', {
       unifiedCoreBinding: core.worldModelEngine === this.worldModel && core.cognitivePlanner === this.planner

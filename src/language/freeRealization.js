@@ -24,7 +24,7 @@ import { renderProposition } from './propositions.js';
 import { V3_LEXICAL_INTERNALS as L } from './realizationContract.js';
 import { MODULE_NAMES, MODULE_FILES } from './moduleInventory.generated.js';
 import { FRAMEWORK_SUMMARY_TEXT, FRAMEWORK_SUMMARY_META } from './frameworkSummary.generated.js';
-import { METRIC_SPECS, TOWER_METRIC_SPECS, PROFILE_METRIC_SPECS, formatMetricValue } from './runtimeSnapshot.js';
+import { METRIC_SPECS, TOWER_METRIC_SPECS, PROFILE_METRIC_SPECS, PREDICTION_PLASTICITY_METRIC_SPECS, formatMetricValue } from './runtimeSnapshot.js';
 
 export const FREE_REALIZATION_SCHEMA = 'qicn.language_realization.v4';
 export const MAX_FREE_ANSWER_CHARS = 12000;
@@ -90,6 +90,16 @@ function packetLines({ props, snapshot, previousMetrics }) {
     if (sp.winding_orientation) lines.push(`- orientación de winding = ${sp.winding_orientation}${sp.bifurcation_detected === true ? '; bifurcación detectada = sí' : (sp.bifurcation_detected === false ? '; bifurcación detectada = no' : '')}`);
     if (sp.epistemic_boundary) {
       lines.push(`- frontera epistémica del perfil: external_support_certified = ${sp.epistemic_boundary.external_support_certified ? 'true' : 'false'}; estado fenomenológico = ${sp.epistemic_boundary.phenomenal_bridge_status}; empate frente al rival híbrido compartido = ${sp.epistemic_boundary.shared_hybrid_margin}`);
+    }
+  }
+  const pp = snapshot?.prediction_plasticity || null;
+  if (pp && typeof pp === 'object') {
+    lines.push('Predicción sellada pre-desenlace (SHA-256), plasticidad histórica y viabilidad:');
+    lines.push(`- modo exógeno activo = ${pp.exogenous_regime_mode || 'off'} (régimen ${pp.exogenous_regime_name || 'quiescent'}); plasticidad histórica habilitada = ${pp.historical_plasticity_enabled ? 'sí' : 'no'}.`);
+    for (const [id, spec] of Object.entries(PREDICTION_PLASTICITY_METRIC_SPECS)) {
+      const value = pp[id];
+      if (typeof value !== 'number' || !Number.isFinite(value)) continue;
+      lines.push(`- ${spec.label} = ${formatMetricValue(id, value)} [${spec.kind}; ${spec.source}]`);
     }
   }
   const modes = snapshot?.modes || {};
@@ -299,7 +309,18 @@ const METRIC_TERMS = [
   ['body_l1_norm', /\bbody_l1_norm\b|norma\s+l1\s+corporal/],
   ['body_asymmetry_index', /\bbody_asymmetry_index\b|(?:indice\s+de\s+)?asimetria(?:\s+corporal)?/],
   ['world_temporal_contrast', /\bworld_temporal_contrast\b|contraste\s+temporal(?:\s+del\s+mundo)?|\bw_fast\s*[-−]\s*w_slow\b/],
-  ['world_timescale_balance_index', /\bworld_timescale_balance_index\b|(?:indice\s+de\s+)?balance\s+rapido[-−/\s]*lento/]
+  ['world_timescale_balance_index', /\bworld_timescale_balance_index\b|(?:indice\s+de\s+)?balance\s+rapido[-−/\s]*lento/],
+  ['sealed_commit_count', /\bsealed_commit_count\b|compromisos\s+pre-?desenlace\s+sellados/],
+  ['verified_prediction_count', /\bverified_prediction_count\b|predicciones\s+(?:pre-?desenlace\s+)?verificadas/],
+  ['horizon5_mae', /\bhorizon5_mae\b|error\s+medio\s+sellado\s+en\s+horizonte/],
+  ['surprisal_ema', /\bsurprisal_ema\b|sorpresa\s+informacional/],
+  ['unforeseen_event_rate', /\bunforeseen_event_rate\b|tasa\s+de\s+eventos\s+imprevistos/],
+  ['plasticity_maturation_index', /\bplasticity_maturation_index\b|(?:indice\s+de\s+)?maduracion\s+plastica/],
+  ['anchor_shift_l2', /\banchor_shift_l2\b|desplazamiento\s+l2\s+del\s+atractor/],
+  ['mean_fisher_stiffness', /\bmean_fisher_stiffness\b|rigidez\s+elastica\s+media/],
+  ['consolidated_engram_count', /\bconsolidated_engram_count\b|engramas\s+estructurales/],
+  ['viability_in_tube_rate', /\bviability_in_tube_rate\b|tasa\s+de\s+(?:permanencia\s+en\s+tubo\s+de\s+)?viabilidad/],
+  ['tamper_violation_count', /\btamper_violation_count\b|violaciones\s+de\s+sello/]
 ];
 
 const QUOTING_KINDS = new Set(['definition', 'limit', 'hypothesis', 'identity', 'capability']);
@@ -399,6 +420,8 @@ export function buildNumberContext({ snapshot, previousMetrics, props, question 
   for (const [id, value] of Object.entries(tw)) add(id, value, `tower.${id} (tick ${snapshot?.tick})`);
   const sp = snapshot?.structural_profile || {};
   for (const [id, value] of Object.entries(sp)) add(id, value, `structural_profile.${id} (tick ${snapshot?.tick})`);
+  const pp = snapshot?.prediction_plasticity || {};
+  for (const [id, value] of Object.entries(pp)) add(id, value, `prediction_plasticity.${id} (tick ${snapshot?.tick})`);
   if (Number.isFinite(snapshot?.predicates?.ccc_precise)) add('ccc', snapshot.predicates.ccc_precise, 'predicates.ccc_precise');
   for (const [id, value] of Object.entries(previousMetrics || {})) if (typeof value === 'number') add(id, value, `metrics.${id} (turno anterior)`);
   const config = snapshot?.config || {};
@@ -423,7 +446,8 @@ export function buildNumberContext({ snapshot, previousMetrics, props, question 
   }
   const configTexts = Object.entries(config).map(([k, v]) => `${k}=${v}`);
   const spNums = Object.values(sp).filter((v) => typeof v === 'number' && Number.isFinite(v)).map(String);
-  const packet = collectPacketNumbers([...propTexts, ...configTexts, ...Object.values(m).map(String), ...Object.values(tw).map(String), ...spNums, FRAMEWORK_SUMMARY_TEXT]);
+  const ppNums = Object.values(pp).filter((v) => typeof v === 'number' && Number.isFinite(v)).map(String);
+  const packet = collectPacketNumbers([...propTexts, ...configTexts, ...Object.values(m).map(String), ...Object.values(tw).map(String), ...spNums, ...ppNums, FRAMEWORK_SUMMARY_TEXT]);
   const fromQuestion = collectPacketNumbers([question]).numbers;
   return { byMetric, packetNumbers: packet.numbers, packetPercentages: packet.percentages, fromQuestion };
 }
@@ -651,6 +675,11 @@ const KNOWN_CLAIMS = [
     id: 'structural_profile_is_felt_valence',
     clauseOnly: true,
     test: (c) => /\b(v_pos|v_neg|body_valence_norm|body_net_balance|body_asymmetry_index|w_fast|w_slow|perfil estructural|bodyworldtower)\b/.test(c) && /\b(equivale a|mide|demuestra|indica|es|constituye|revela)\b/.test(c) && /\b(valencia sentida|sentimiento|emocion|placer|dolor|calidez|felicidad|tristeza|sufrimiento|cualidad sentida)\b/.test(c)
+  },
+  {
+    id: 'plasticity_certifies_consciousness',
+    clauseOnly: true,
+    test: (c) => /\b(prediccion(?:es)?\s+sellad\w*|maduracion\s+(?:plastica|historica)|plasticidad\s+historica|engrama(?:s)?\s+estructural\w*|viabilidad\s+objetiva)\b/.test(c) && /\b(demuestra\w*|prueba\s+que|certifica\w*|acredit\w*|implica\s+que)\b/.test(c) && /\b(conciencia|experiencia\s+subjetiva|qualia|fenomenalidad|validacion\s+externa|pertenezco\s+a\s+c_op)\b/.test(c)
   }
 ];
 

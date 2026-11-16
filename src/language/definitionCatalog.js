@@ -141,6 +141,11 @@ export const DEFINITIONS = Object.freeze({
     title: 'red nodal',
     text: 'La red nodal simula un conjunto finito de nodos (PROCESSING_SAMPLE_SIZE) con coherencia, energía, fase y conexiones. La vista dibuja una proyección de un subconjunto de nodos, no la red completa.',
     source: 'src/simulation/NodalProcessingLayer.js; src/index_network_canvas.jsx'
+  },
+  historical_dependence: {
+    title: 'dependencia histórica y predicción sellada pre-desenlace',
+    text: 'La dependencia histórica operacional (Paper VII, def:historical-dependence) evalúa si el modelo del mundo sellado con SHA-256 pre-desenlace, la consolidación elástica asimétrica (ancla W* y rigidez Ω), los engramas estructurales y la política de viabilidad Viab(S, tau) producen divergencia causal duradera ante idéntico estímulo futuro; es soporte interno y no implica conciencia ni validación externa.',
+    source: 'src/simulation/WorldModelEngine.js; src/simulation/HolographicMemoryNexus.js; src/simulation/KaizenMetamorphosisEngine.js; Paper VII def:historical-dependence'
   }
 });
 

@@ -192,6 +192,32 @@ export function captureRuntimeSnapshot(core, context = {}) {
     ? buildInvariantReadout(context.tickTimeline, { beth_q: raw.beth_q })
     : null;
 
+  const wm = context.worldModel || core?.worldModelEngine || null;
+  const wmPlasticity = wm && typeof wm.getPlasticityProfile === 'function' ? wm.getPlasticityProfile() : null;
+  const hmMetrics = context.holographicMemory?.nexusStateMetrics || null;
+  const kzViab = context.kaizenEngine?.viabilityPolicyState?.viabilityStats || null;
+  const exoDiag = context.exogenousDriver?.getDiagnostics?.() || null;
+  const hasPredictionPlasticity = Boolean(
+    wmPlasticity && ((wmPlasticity.sealedCommitCount || 0) > 0 || (wm?.trainingSteps || 0) > 0 || context.predictionPlasticity)
+  );
+  const prediction_plasticity = hasPredictionPlasticity ? {
+    sealed_commit_count: wmPlasticity.sealedCommitCount ?? 0,
+    verified_prediction_count: wmPlasticity.verifiedPredictionCount ?? 0,
+    horizon5_mae: wmPlasticity.sealedHorizonMae5 >= 0 ? roundTo(wmPlasticity.sealedHorizonMae5, 4) : null,
+    surprisal_ema: roundTo(finite(wmPlasticity.surprisalEma) ?? 0, 4),
+    unforeseen_event_rate: roundTo(finite(wmPlasticity.unforeseenEventRate) ?? 0, 4),
+    plasticity_maturation_index: roundTo(finite(wmPlasticity.maturationIndex) ?? 0, 4),
+    anchor_shift_l2: roundTo(finite(wmPlasticity.anchorShiftL2) ?? 0, 4),
+    mean_fisher_stiffness: roundTo(finite(wmPlasticity.meanFisherStiffness) ?? 0, 4),
+    consolidated_engram_count: finite(hmMetrics?.consolidatedEngramCount) ?? 0,
+    viability_in_tube_rate: finite(kzViab?.inTubeRate) !== null ? roundTo(kzViab.inTubeRate, 4) : null,
+    tamper_violation_count: wmPlasticity.tamperViolationCount ?? 0,
+    exogenous_regime_mode: text(exoDiag?.mode) || text(config.EXOGENOUS_REGIME_MODE) || 'off',
+    exogenous_regime_name: text(exoDiag?.regimeName) || 'quiescent',
+    historical_plasticity_enabled: config.HISTORICAL_PLASTICITY_ENABLED !== false,
+    last_commit_digest: text(wmPlasticity.lastCommitDigest)
+  } : null;
+
   const towerTel = state.tower_telemetry && typeof state.tower_telemetry === 'object' ? state.tower_telemetry : null;
   const tower = towerTel ? {
     tower_phase: roundTo(finite(state.tower_phase ?? towerTel.core?.phase), 6),
@@ -291,7 +317,8 @@ export function captureRuntimeSnapshot(core, context = {}) {
     structural_profile,
     ...(invariants ? { invariants } : {}),
     ...(tower ? { tower } : {}),
-    ...(persistence ? { persistence } : {})
+    ...(persistence ? { persistence } : {}),
+    ...(prediction_plasticity ? { prediction_plasticity } : {})
   };
   const digest = sha256Hex(stableStringify(body));
   return deepFreeze({ ...body, digest });
@@ -335,8 +362,22 @@ export const PROFILE_METRIC_SPECS = Object.freeze({
   active_recovery_advantage: { label: 'ventaja de retención activa (active_recovery_advantage)', kind: 'derived_proxy', source: 'WritablePrefixTower (activeRetention - passiveRetention)', decimals: 4 }
 });
 
+export const PREDICTION_PLASTICITY_METRIC_SPECS = Object.freeze({
+  sealed_commit_count: { label: 'compromisos pre-desenlace sellados (sealed_commit_count)', kind: 'direct_signal', source: 'WorldModelEngine.sealedHorizonQueue', decimals: 0 },
+  verified_prediction_count: { label: 'predicciones pre-desenlace verificadas (verified_prediction_count)', kind: 'direct_signal', source: 'WorldModelEngine.settleSealedPredictions', decimals: 0 },
+  horizon5_mae: { label: 'error medio sellado en horizonte k=5 (horizon5_mae)', kind: 'derived_proxy', source: 'WorldModelEngine.getPlasticityProfile (sealedHorizonMae5)', decimals: 4 },
+  surprisal_ema: { label: 'sorpresa informacional normalizada EMA (surprisal_ema)', kind: 'derived_proxy', source: 'WorldModelEngine.getPlasticityProfile (surprisalEma)', decimals: 4 },
+  unforeseen_event_rate: { label: 'tasa de eventos imprevistos verificados (unforeseen_event_rate)', kind: 'derived_proxy', source: 'WorldModelEngine.getPlasticityProfile (unforeseenEventRate)', decimals: 4 },
+  plasticity_maturation_index: { label: 'índice de maduración plástica histórica (plasticity_maturation_index)', kind: 'derived_proxy', source: 'WorldModelEngine.plasticityState (maturationIndex)', decimals: 4 },
+  anchor_shift_l2: { label: 'desplazamiento L2 del atractor consolidado (anchor_shift_l2)', kind: 'derived_proxy', source: 'WorldModelEngine.plasticityState (W* - W_0)', decimals: 4 },
+  mean_fisher_stiffness: { label: 'rigidez elástica media acumulada (mean_fisher_stiffness)', kind: 'derived_proxy', source: 'WorldModelEngine.plasticityState (Omega)', decimals: 4 },
+  consolidated_engram_count: { label: 'engramas estructurales consolidados (consolidated_engram_count)', kind: 'direct_signal', source: 'HolographicMemoryNexus.structuralEngrams', decimals: 0 },
+  viability_in_tube_rate: { label: 'tasa de permanencia en tubo de viabilidad (viability_in_tube_rate)', kind: 'derived_proxy', source: 'KaizenMetamorphosisEngine.evaluateObjectiveViability', decimals: 4 },
+  tamper_violation_count: { label: 'violaciones de sello pre-desenlace detectadas (tamper_violation_count)', kind: 'direct_signal', source: 'WorldModelEngine.settleSealedPredictions', decimals: 0 }
+});
+
 export function formatMetricValue(id, value, decimalsOverride = null) {
-  const spec = METRIC_SPECS[id] || TOWER_METRIC_SPECS[id] || PROFILE_METRIC_SPECS[id];
+  const spec = METRIC_SPECS[id] || TOWER_METRIC_SPECS[id] || PROFILE_METRIC_SPECS[id] || PREDICTION_PLASTICITY_METRIC_SPECS[id];
   if (typeof value !== 'number' || !Number.isFinite(value)) return 'no disponible';
   const decimals = Number.isInteger(decimalsOverride) ? decimalsOverride : (spec ? spec.decimals : 4);
   return value.toLocaleString('es-ES', { minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping: false });

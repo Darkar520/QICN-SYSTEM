@@ -28,6 +28,48 @@ import { ensureCanonicalVersionHash } from '../canon/provenance/CanonicalProvena
 import { ONTOLOGICAL_SIGNATURE, clamp, clamp01, toFiniteNumber, AUTONOMY_RUNTIME_DEFAULTS, PMIA_NEGATIVE_DRIVE_DEFAULTS, QUANTUM_RUNTIME_DEFAULTS, QUANTUM_EXPERIMENT_DEFAULTS } from '../config/simulationDefaults.js';
 import { computeRms, calculateRelaxationTimeDefault } from '../utils/simulationUtils.js';
 import { buildSensorSummaryFromPerception, emitEpisodeHarnessTick, normalizeCausalDependency } from '../utils/integrityHelpers.js';
+import { ExogenousPerturbationDriver } from '../experiments/ExogenousPerturbationDriver.js';
+import { projectAutomodelVector } from '../simulation/tower/SigmaAutomodelTruncator.js';
+
+function computeActiveNodeStats(nodes = []) {
+  if (!Array.isArray(nodes) || nodes.length === 0) {
+    return { mean: 0.5, dispersion: 0 };
+  }
+  let sum = 0;
+  let count = 0;
+  for (let i = 0; i < nodes.length; i += 1) {
+    const val = Number(nodes[i]?.coherenceState);
+    if (!Number.isFinite(val)) continue;
+    sum += val;
+    count += 1;
+  }
+  if (count === 0) return { mean: 0.5, dispersion: 0 };
+  const mean = sum / count;
+  let sq = 0;
+  for (let i = 0; i < nodes.length; i += 1) {
+    const val = Number(nodes[i]?.coherenceState);
+    if (!Number.isFinite(val)) continue;
+    const d = val - mean;
+    sq += d * d;
+  }
+  return { mean, dispersion: Math.sqrt(sq / count) };
+}
+
+function computeExogenousAttenuations(policyId = 'stabilize_learning') {
+  if (policyId === 'stabilize_learning') {
+    return { sens: 1.0, disp: 0.28, stasis: 1.25, strain: 0.96 };
+  }
+  if (policyId === 'anti_stasis_boost') {
+    return { sens: 1.0, disp: 1.18, stasis: 0.22, strain: 0.98 };
+  }
+  if (policyId === 'sensor_load_shed') {
+    return { sens: 0.28, disp: 0.65, stasis: 1.0, strain: 0.38 };
+  }
+  if (policyId === 'llm_pressure_relief') {
+    return { sens: 0.72, disp: 0.70, stasis: 1.0, strain: 0.28 };
+  }
+  return { sens: 1.0, disp: 1.0, stasis: 1.0, strain: 1.0 };
+}
 
 export function useSimulationCycle(deps) {
   const {
@@ -42,6 +84,7 @@ export function useSimulationCycle(deps) {
     entanglementField,
     entanglementTimelineRef,
     entropyModeRef,
+    exogenousDriverRef,
     holographicMemory,
     integrityPacketRef,
     internalPressureRef,
@@ -182,7 +225,17 @@ export function useSimulationCycle(deps) {
     autonomySandboxPolicyRef.current.lastActionAt = 0;
     autonomyActionLedgerRef.current = [];
     const controllerState = simulationControllerRef.current.reset();
-    simulationControllerRef.current.attachCore(ontologicalCore.current);
+    if (exogenousDriverRef) {
+      const driverOpts = {
+        mode: QICNConfig.EXOGENOUS_REGIME_MODE || 'off',
+        seed: QICNConfig.EXOGENOUS_REGIME_SEED ?? 0x42A1
+      };
+      if (!exogenousDriverRef.current?.reset) {
+        exogenousDriverRef.current = new ExogenousPerturbationDriver(driverOpts);
+      } else {
+        exogenousDriverRef.current.reset(driverOpts);
+      }
+    }
     worldModelRef.current = controllerState.worldModel;
     cogPlannerRef.current = controllerState.planner;
     plannerActuatorContribRef.current = {
@@ -267,9 +320,15 @@ export function useSimulationCycle(deps) {
     setCccHistoryHoverIndex(-1);
     previousFaceCountRef.current = 0;
 
-    // Reset core objects
+    // Reset core objects and unify controller attachment cleanly.
     holographicMemory.current = new HolographicMemoryNexus();
-    ontologicalCore.current = new OntologicalSingularityCore();
+    ontologicalCore.current = new OntologicalSingularityCore({
+      worldModelEngine: simulationControllerRef.current.worldModel,
+      cognitivePlanner: simulationControllerRef.current.planner
+    });
+    simulationControllerRef.current.attachCore(ontologicalCore.current);
+    worldModelRef.current = simulationControllerRef.current.worldModel;
+    cogPlannerRef.current = simulationControllerRef.current.planner;
     ontologicalCore.current?.setQuantumBridgeRef?.(quantumEntropyBridgeRef.current);
     entanglementField.current = new InformationalEntanglementField();
 
@@ -624,10 +683,114 @@ export function useSimulationCycle(deps) {
           ? Math.max(...sensoryState.video.faces.map((face) => Number(face?.engagement?.score) || 0))
           : 0;
         const intentConfidence = Number(awarenessSignal?.intentConfidence || 0);
-        const sensoryPulse = clamp01((latestEngagement * 0.5) + (latestFaceConfidence * 0.2) + (intentConfidence * 0.3));
+        const baseSensoryPulse = clamp01((latestEngagement * 0.5) + (latestFaceConfidence * 0.2) + (intentConfidence * 0.3));
+        const exoMode = String(QICNConfig.EXOGENOUS_REGIME_MODE || 'off');
+        const exoSample = exogenousDriverRef?.current?.step
+          ? exogenousDriverRef.current.step(simulationStep, { modeOverride: exoMode })
+          : {
+            active: false,
+            mode: 'off',
+            regimeIndex: 0,
+            regimeName: 'quiescent',
+            signal: 0,
+            shockDelta: 0,
+            sensoryPerturbation: 0,
+            nodalVarianceDrive: 0,
+            strainDrive: 0,
+            stasisDrive: 0,
+            shockImpulse: false
+          };
+        const plasticityEnabled = QICNConfig.HISTORICAL_PLASTICITY_ENABLED !== false;
+        const preNodeStats = computeActiveNodeStats(activeNodes);
+        const preDynamicHealth = ontologicalCore.current?.getDynamicHealth?.() || { stasisIndex: 0 };
+        const preWorldPlasticity = worldModelRef.current?.getPlasticityProfile?.() || {
+          maturationIndex: 0,
+          surprisalEma: 0,
+          unforeseenEventRate: 0
+        };
         const dynamics = ascensionDynamicsRef.current;
         const previousDynamicSample = dynamics.history.length > 0 ? dynamics.history[dynamics.history.length - 1] : null;
+        const basePrevSensory = previousDynamicSample ? (previousDynamicSample.sensorSignal || 0) : 0;
+        const rawSensorDeltaWithExo = clamp01(Math.abs((baseSensoryPulse + exoSample.sensoryPerturbation) - basePrevSensory));
+        const baseStrainNow = metaSovereigntyCheck.current?.getMetacognitiveStrain?.() || 0;
+        const rawStrainWithExo = clamp01(baseStrainNow + (exoSample.strainDrive * 0.85) + (exoSample.stasisDrive * 0.15));
+        const rawStasisWithExo = clamp01(preDynamicHealth.stasisIndex + (exoSample.stasisDrive * 1.15));
+        const preStateVec = holographicMemory.current?.buildStructuralStateVector?.({
+          ccc,
+          x_n: preNodeStats.mean,
+          x_dispersion: preNodeStats.dispersion + (exoSample.nodalVarianceDrive * 0.12),
+          stasisIndex: rawStasisWithExo,
+          metacognitiveStrain: rawStrainWithExo,
+          sensorDelta: rawSensorDeltaWithExo,
+          exo_signal: exoSample.signal
+        }) || [];
+        const preEngramContext = plasticityEnabled
+          ? holographicMemory.current?.queryStructuralEngrams?.(preStateVec)
+          : null;
+        const preCluster = kaizenEngine.current?.classifyViabilityCluster?.({
+          xDispersion: preNodeStats.dispersion + (exoSample.nodalVarianceDrive * 0.12),
+          stasisIndex: rawStasisWithExo,
+          metacognitiveStrain: rawStrainWithExo,
+          sensorDelta: rawSensorDeltaWithExo
+        }) || 'balanced';
+        const activeViabilityDecision = exoSample.active && kaizenEngine.current?.selectSandboxAction
+          ? kaizenEngine.current.selectSandboxAction(
+            {
+              stasisIndex: rawStasisWithExo,
+              stasisPressure: rawStasisWithExo,
+              metacognitiveStrain: rawStrainWithExo,
+              sensorSignal: clamp01(baseSensoryPulse + exoSample.sensoryPerturbation),
+              sensorDelta: rawSensorDeltaWithExo,
+              pmia,
+              xDispersion: preNodeStats.dispersion + (exoSample.nodalVarianceDrive * 0.12),
+              latencyFailureRate: 0,
+              cooldownActive: Boolean(cooldownActive || timeBasedRateLimit)
+            },
+            autonomySandboxPolicyRef.current,
+            {
+              plasticityEnabled,
+              maturationIndex: preWorldPlasticity.maturationIndex,
+              surprisalEma: preWorldPlasticity.surprisalEma,
+              unforeseenEventRate: preWorldPlasticity.unforeseenEventRate,
+              engramContext: preEngramContext,
+              cluster: preCluster,
+              tick: simulationStep,
+              allowExploration: exoSample.active && plasticityEnabled && preWorldPlasticity.maturationIndex < 0.72
+            }
+          )
+          : null;
+        const exoAttenuations = exoSample.active
+          ? computeExogenousAttenuations(activeViabilityDecision?.actionId)
+          : { sens: 1, disp: 1, stasis: 1, strain: 1 };
+        const sensoryPulse = exoSample.active
+          ? clamp01(baseSensoryPulse + (exoSample.sensoryPerturbation * exoAttenuations.sens))
+          : baseSensoryPulse;
         const sensorDelta = previousDynamicSample ? Math.abs(sensoryPulse - (previousDynamicSample.sensorSignal || 0)) : 0;
+        const exoStasisLoad = exoSample.active
+          ? clamp01(exoSample.stasisDrive * exoAttenuations.stasis * 1.45)
+          : 0;
+        if (exoSample.active && activeNodes.length > 0) {
+          const policyId = activeViabilityDecision?.actionId || 'stabilize_learning';
+          const jitterAmp = exoSample.nodalVarianceDrive * exoAttenuations.disp;
+          const stepShift = exoSample.signal * (policyId === 'llm_pressure_relief' ? 0.018 : 0.045);
+          const calmFreezePull = (exoSample.stasisDrive > 0.1 && policyId !== 'anti_stasis_boost')
+            ? (exoSample.stasisDrive * exoAttenuations.stasis * 0.20)
+            : 0;
+          const timeFlip = simulationStep % 2 === 0 ? 1 : -1;
+          for (let idx = 0; idx < activeNodes.length; idx += 1) {
+            const node = activeNodes[idx];
+            const parity = (Number(node.id) || idx) % 2 === 0 ? 1 : -1;
+            const antiStasisKick = (policyId === 'anti_stasis_boost' && exoSample.stasisDrive > 0.1)
+              ? (parity * timeFlip * 0.022)
+              : 0;
+            const relaxRate = policyId === 'stabilize_learning'
+              ? 0.30
+              : Math.max(0.08, calmFreezePull);
+            const stabilizePull = (preNodeStats.mean - node.coherenceState) * relaxRate;
+            const deltaCoh = (parity * timeFlip * jitterAmp * 0.11) + (stepShift * 0.055) + antiStasisKick + stabilizePull;
+            node.coherenceState = Math.max(0.05, Math.min(0.98, node.coherenceState + deltaCoh));
+          }
+        }
         metaSovereigntyCheck.current.updateSensorFeedback({
           faceConfidence: latestFaceConfidence,
           faceCount: sensoryState?.video?.humanPresence?.count ?? 0,
@@ -656,9 +819,13 @@ export function useSimulationCycle(deps) {
           baselineMs: AUTONOMY_RUNTIME_DEFAULTS.LATENCY_STRAIN_BASELINE_MS,
           saturationMs: AUTONOMY_RUNTIME_DEFAULTS.LATENCY_STRAIN_SATURATION_MS
         });
-        let metacognitiveStrain = toFiniteNumber(
-          metaSovereigntyCheck.current.getMetacognitiveStrain?.(),
-          toFiniteNumber(latencyFeedback?.strainEma, 0)
+        let metacognitiveStrain = clamp01(
+          toFiniteNumber(
+            metaSovereigntyCheck.current.getMetacognitiveStrain?.(),
+            toFiniteNumber(latencyFeedback?.strainEma, 0)
+          ) + (exoSample.active
+            ? ((exoSample.strainDrive * exoAttenuations.strain * 0.65) + (exoSample.stasisDrive * exoAttenuations.stasis * 0.18))
+            : 0)
         );
         const latencyStressState = metaSovereigntyCheck.current.getLatencyStressState?.()
           || (metacognitiveStrain >= 0.65 ? 'high' : metacognitiveStrain >= 0.35 ? 'medium' : 'low');
@@ -1134,9 +1301,14 @@ export function useSimulationCycle(deps) {
         if (Number.isFinite(selfModelError)) {
           metaSovereigntyCheck.current.updateCognitiveFeedback?.({ selfModelError });
         }
-        const postModelStrain = toFiniteNumber(
-          metaSovereigntyCheck.current.getMetacognitiveStrain?.(),
-          latencyStrainRef.current?.strain
+        const exoStrainBoost = exoSample.active
+          ? ((exoSample.strainDrive * exoAttenuations.strain * 0.85) + (exoSample.stasisDrive * exoAttenuations.stasis * 0.15))
+          : 0;
+        const postModelStrain = clamp01(
+          toFiniteNumber(
+            metaSovereigntyCheck.current.getMetacognitiveStrain?.(),
+            latencyStrainRef.current?.strain
+          ) + exoStrainBoost
         );
         metacognitiveStrain = postModelStrain;
         latencyStrainRef.current = {
@@ -1306,6 +1478,19 @@ export function useSimulationCycle(deps) {
         };
 
         const entropyExcitationRuntime = entropyDeviation;
+        const postNodeStats = computeActiveNodeStats(activeNodes);
+        const prevPlannerActionForTower = toFiniteNumber(plannerActuatorContribRef.current?.action, 0);
+        ontologicalCore.current?.stepCoupledTower?.({
+          sensorySignal: clamp01(toFiniteNumber(sensoryPulse, 0)),
+          sensorDelta: clamp01(toFiniteNumber(sensorDeltaRmsWindow, sensorDelta)),
+          entropyExcitation: clamp01(toFiniteNumber(entropyExcitationRuntime, 0)),
+          plannedAction: prevPlannerActionForTower,
+          evaluate: true
+        });
+        const towerTelNow = ontologicalCore.current?.ontologicalState?.tower_telemetry || null;
+        const sigmaProjection = ontologicalCore.current?.towerState
+          ? projectAutomodelVector(ontologicalCore.current.towerState, 6)
+          : null;
         const worldModelInput = {
           ccc: toFiniteNumber(finalCCC, 0),
           pmia: toFiniteNumber(finalPMIA, 0),
@@ -1313,10 +1498,25 @@ export function useSimulationCycle(deps) {
           sensorDelta: clamp01(toFiniteNumber(sensorDeltaRmsWindow, sensorDelta)),
           stasisIndex: clamp01(toFiniteNumber(postAscensionDynamicHealth?.stasisIndex, 0)),
           entropyExcitation: clamp01(toFiniteNumber(entropyExcitationRuntime, 0)),
-          energyDispersion: toFiniteNumber(energyVariance, 0)
+          energyDispersion: toFiniteNumber(energyVariance, 0),
+          x_n: toFiniteNumber(postNodeStats.mean, 0.5),
+          x_dispersion: toFiniteNumber(postNodeStats.dispersion, 0),
+          body_v_pos: toFiniteNumber(towerTelNow?.body?.[0], 0),
+          body_v_neg: toFiniteNumber(towerTelNow?.body?.[1], 0),
+          world_w_fast: toFiniteNumber(towerTelNow?.world?.[0], 0),
+          world_w_slow: toFiniteNumber(towerTelNow?.world?.[1], 0),
+          sigma_t6_phase: toFiniteNumber(sigmaProjection?.projectedPhase, 0),
+          exo_signal: toFiniteNumber(exoSample.signal, 0)
         };
         const worldModelStartMs = performance.now();
-        worldModelTickResult = worldModelRef.current?.observeTick?.(worldModelInput) || null;
+        const freezeWeights = Boolean(QICNConfig.FREEZE_WORLD_MODEL);
+        worldModelTickResult = worldModelRef.current?.observeTick?.(worldModelInput, {
+          tick: simulationStep,
+          action: prevPlannerActionForTower,
+          plasticityEnabled: plasticityEnabled && !freezeWeights,
+          freezeWeights,
+          sigmaProjection
+        }) || null;
         tickBudgetTrace.worldModelMs = Math.max(0, performance.now() - worldModelStartMs);
         if (simulationStep % 60 === 0 || toFiniteNumber(worldModelDiagnosticsRef.current?.trainingSteps, 0) === 0) {
           const worldModelDiagnostics = worldModelRef.current?.getDiagnostics?.() || {};
@@ -1326,7 +1526,8 @@ export function useSimulationCycle(deps) {
             lastError: toFiniteNumber(worldModelDiagnostics.lastError, 0),
             horizonMae5: toFiniteNumber(worldModelDiagnostics.horizonMae5, -1),
             horizonMae10: toFiniteNumber(worldModelDiagnostics.horizonMae10, -1),
-            weights: worldModelDiagnostics.weights || {}
+            weights: worldModelDiagnostics.weights || {},
+            sealedPredictions: worldModelDiagnostics.sealedPredictions || null
           };
         }
 
@@ -1478,6 +1679,30 @@ export function useSimulationCycle(deps) {
         const currentBethQForGuards = Number(ontologicalCore.current?.ontologicalState?.beth_q || 0);
         const canRunSandboxByCriticalFloor = Number(finalCCC) >= 0.55 && currentBethQForGuards >= 0.45;
 
+        const postWorldPlasticity = worldModelRef.current?.getPlasticityProfile?.() || {
+          maturationIndex: 0,
+          surprisalEma: 0,
+          unforeseenEventRate: 0
+        };
+        const postStateVec = holographicMemory.current?.buildStructuralStateVector?.({
+          ccc: finalCCC,
+          x_n: postNodeStats.mean,
+          x_dispersion: postNodeStats.dispersion,
+          stasisIndex: postAscensionDynamicHealth.stasisIndex,
+          metacognitiveStrain: entropyPolicyStrain,
+          sensorDelta,
+          exo_signal: exoSample.signal
+        }) || [];
+        const postEngramContext = plasticityEnabled
+          ? holographicMemory.current?.queryStructuralEngrams?.(postStateVec)
+          : null;
+        const postCluster = kaizenEngine.current?.classifyViabilityCluster?.({
+          xDispersion: postNodeStats.dispersion,
+          stasisIndex: postAscensionDynamicHealth.stasisIndex,
+          metacognitiveStrain: entropyPolicyStrain,
+          sensorDelta
+        }) || 'balanced';
+
         if (sandboxPolicy.enabled && canRunSandboxByBudget && canRunSandboxByCooldown && canRunSandboxByCriticalFloor) {
           const selectedSandboxAction = regimeState.transformMode === 'forced_negative'
             ? {
@@ -1493,11 +1718,20 @@ export function useSimulationCycle(deps) {
                 sensorSignal: sensoryPulse,
                 sensorDelta,
                 pmia: finalPMIA,
+                xDispersion: postNodeStats.dispersion,
                 pmiaDeltaRms: postAscensionDynamicHealth.pmiaDeltaRms,
                 latencyFailureRate: failureRate,
                 cooldownActive: Boolean(cooldownActive || timeBasedRateLimit)
               },
-              sandboxPolicy
+              sandboxPolicy,
+              {
+                plasticityEnabled,
+                maturationIndex: postWorldPlasticity.maturationIndex,
+                surprisalEma: postWorldPlasticity.surprisalEma,
+                unforeseenEventRate: postWorldPlasticity.unforeseenEventRate,
+                engramContext: postEngramContext,
+                cluster: postCluster
+              }
             );
 
           if (selectedSandboxAction && selectedSandboxAction.score >= 0.45) {
@@ -1633,6 +1867,48 @@ export function useSimulationCycle(deps) {
               beth_q_drop: bethQDrop
             });
           }
+        }
+
+        // Registro objetivo no circular de viabilidad Viab(S, tau) y consolidación determinista de engramas.
+        const effectivePolicyActionId = autonomyAction !== 'none'
+          ? autonomyAction
+          : (activeViabilityDecision?.actionId || 'stabilize_learning');
+        const dynamicStasisValid = ascensionDynamicsRef.current?.history?.length >= 3;
+        const baseDynamicStasis = dynamicStasisValid ? postAscensionDynamicHealth.stasisIndex : 0;
+        const effectiveObjectiveStasis = clamp01(Math.max(baseDynamicStasis, exoStasisLoad));
+        const tickViabilityRes = kaizenEngine.current?.recordTickViability?.({
+          tick: simulationStep,
+          observableHealth: {
+            x_n: postNodeStats.mean,
+            x_dispersion: postNodeStats.dispersion,
+            stasisIndex: effectiveObjectiveStasis,
+            metacognitiveStrain: entropyPolicyStrain,
+            ccc: finalCCC,
+            ascensionThreshold: QICNConfig.ASCENSION_THRESHOLD
+          },
+          activeActionId: effectivePolicyActionId,
+          cluster: postCluster,
+          plasticityEnabled
+        }) || null;
+
+        const hasUnforeseenSettlement = Array.isArray(worldModelTickResult?.settlements)
+          && worldModelTickResult.settlements.some((s) => s.verified && s.unforeseen);
+        const shouldConsolidateEngram = plasticityEnabled && (
+          (tickViabilityRes?.settledCredits?.length > 0)
+          || hasUnforeseenSettlement
+          || exoSample.shockImpulse
+          || (simulationStep % 15 === 0)
+        );
+        if (shouldConsolidateEngram && holographicMemory.current?.consolidateStructuralEngram) {
+          const credits = tickViabilityRes?.settledCredits || [];
+          const latestCredit = credits.length > 0 ? credits[credits.length - 1] : null;
+          holographicMemory.current.consolidateStructuralEngram(postStateVec, {
+            actionId: latestCredit?.actionId || effectivePolicyActionId,
+            objectiveViabilityGain: latestCredit ? latestCredit.objectiveViabilityGain : 0,
+            surprisal: postWorldPlasticity.surprisalEma,
+            hazardObserved: tickViabilityRes?.evaluation ? (1 - tickViabilityRes.evaluation.objectiveScore) : 0,
+            tick: simulationStep
+          });
         }
 
         if (ontologicalAutoPolicyRef.current.frictionAuto

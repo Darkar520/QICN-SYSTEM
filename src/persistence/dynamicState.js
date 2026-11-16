@@ -37,7 +37,8 @@ const FROZEN_VALUE_CLASSES = Object.freeze({
 // so node references elsewhere resolve to node ids).
 export const INSTANCE_REFS = Object.freeze([
   'nodalLayer', 'ontologicalCore', 'entanglementField', 'kaizenEngine', 'metaSovereigntyCheck',
-  'holographicMemory', 'simulationControllerRef', 'structuralConsolidationRef', 'ppsTrackerRef', 'tickBudgetTrackerRef'
+  'holographicMemory', 'simulationControllerRef', 'structuralConsolidationRef', 'ppsTrackerRef',
+  'tickBudgetTrackerRef', 'exogenousDriverRef'
 ]);
 // Plain refs whose `.current` value is replaced (or updated in place).
 export const PLAIN_REFS = Object.freeze([

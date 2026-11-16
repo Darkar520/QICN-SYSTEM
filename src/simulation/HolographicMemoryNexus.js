@@ -81,6 +81,238 @@ export class HolographicMemoryNexus {
             memoriesReEvaluated: 0, // "Fricción de Memoria"
             ontologicalInsightsGenerated: 0, // "Compresión Ontológica"
         };
+
+        // Canal dinámico determinista de engramas estructurales (separado del caché Q&A y sin Math.random).
+        this.structuralEngrams = [];
+        this.structuralEngramCounter = 0;
+        this.structuralEngramConfig = {
+            maxSlots: 24,
+            matchCosineMin: 0.86,
+            retentionDecay: 0.9985,
+            minWeightFloor: 0.02
+        };
+        this.structuralMemoryMetrics = {
+            totalConsolidations: 0,
+            totalRecalls: 0,
+            meanConsolidationWeight: 0
+        };
+    }
+
+    resetStructuralEngrams() {
+        this.structuralEngrams = [];
+        this.structuralEngramCounter = 0;
+        this.structuralMemoryMetrics = {
+            totalConsolidations: 0,
+            totalRecalls: 0,
+            meanConsolidationWeight: 0
+        };
+    }
+
+    buildStructuralStateVector(state = {}) {
+        const centered = (v, mid, scale) => {
+            const n = Number(v);
+            return Number.isFinite(n) ? Math.max(-2.5, Math.min(2.5, (n - mid) * scale)) : 0;
+        };
+        const bounded = (v, scale) => {
+            const n = Number(v);
+            return Number.isFinite(n) ? Math.max(-2.5, Math.min(2.5, n * scale)) : 0;
+        };
+        return [
+            centered(state.ccc, 0.78, 2.0),
+            centered(state.x_n ?? state.coherenceMean, 0.65, 2.5),
+            centered(state.x_dispersion ?? state.energyVariance, 0.055, 16.0),
+            centered(state.stasisIndex, 0.25, 2.5),
+            centered(state.metacognitiveStrain ?? state.strain, 0.30, 3.5),
+            centered(state.sensorDelta, 0.08, 6.0),
+            bounded(state.exo_signal ?? state.exoSignal, 1.5)
+        ];
+    }
+
+    _cosineSimilarity(a, b) {
+        if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length || a.length === 0) return 0;
+        let dot = 0;
+        let normA = 0;
+        let normB = 0;
+        for (let i = 0; i < a.length; i += 1) {
+            const av = Number(a[i]) || 0;
+            const bv = Number(b[i]) || 0;
+            dot += av * bv;
+            normA += av * av;
+            normB += bv * bv;
+        }
+        if (normA <= 1e-12 || normB <= 1e-12) return 0;
+        return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    consolidateStructuralEngram(stateOrVec, metadata = {}) {
+        const vec = Array.isArray(stateOrVec)
+            ? stateOrVec.map((v) => (Number.isFinite(Number(v)) ? Number(v) : 0))
+            : this.buildStructuralStateVector(stateOrVec);
+        const tick = Math.floor(Number(metadata.tick) || 0);
+        const actionId = typeof metadata.actionId === 'string' && metadata.actionId !== 'none'
+            ? metadata.actionId
+            : null;
+        const viabilityGain = Number.isFinite(Number(metadata.objectiveViabilityGain))
+            ? Math.max(-1, Math.min(1, Number(metadata.objectiveViabilityGain)))
+            : 0;
+        const surprisal = Number.isFinite(Number(metadata.surprisal))
+            ? Math.max(0, Math.min(10, Number(metadata.surprisal)))
+            : 0;
+        const hazardScore = Number.isFinite(Number(metadata.hazardObserved))
+            ? Math.max(0, Math.min(1, Number(metadata.hazardObserved)))
+            : 0;
+
+        let bestIdx = -1;
+        let bestSim = -1;
+        for (let i = 0; i < this.structuralEngrams.length; i += 1) {
+            const sim = this._cosineSimilarity(vec, this.structuralEngrams[i].prototypeVec);
+            if (sim > bestSim) {
+                bestSim = sim;
+                bestIdx = i;
+            }
+        }
+
+        let updatedId = null;
+        if (bestIdx >= 0 && bestSim >= this.structuralEngramConfig.matchCosineMin) {
+            const target = this.structuralEngrams[bestIdx];
+            for (let k = 0; k < target.prototypeVec.length; k += 1) {
+                target.prototypeVec[k] = Number(((0.88 * target.prototypeVec[k]) + (0.12 * vec[k])).toFixed(6));
+            }
+            const weightBoost = 0.04 + (0.04 * Math.min(1, surprisal / 2)) + (Math.max(0, viabilityGain) * 0.05);
+            target.consolidationWeight = Math.max(0, Math.min(1, target.consolidationWeight + weightBoost));
+            target.meanSurprisal = Number(((0.85 * target.meanSurprisal) + (0.15 * surprisal)).toFixed(6));
+            target.hazardPrior = Number(((0.85 * target.hazardPrior) + (0.15 * hazardScore)).toFixed(6));
+            target.hitCount += 1;
+            target.lastUpdatedTick = tick;
+            if (actionId) {
+                target.actionCounts[actionId] = (target.actionCounts[actionId] || 0) + 1;
+                const prevGain = Number.isFinite(target.actionViabilityGain[actionId])
+                    ? target.actionViabilityGain[actionId]
+                    : 0;
+                target.actionViabilityGain[actionId] = Number(((0.75 * prevGain) + (0.25 * viabilityGain)).toFixed(6));
+                let bestAct = target.preferredAction;
+                let bestScore = -Infinity;
+                for (const [act, gain] of Object.entries(target.actionViabilityGain)) {
+                    const supportBonus = Math.min(0.15, (target.actionCounts[act] || 0) * 0.02);
+                    const total = gain + supportBonus;
+                    if (total > bestScore) {
+                        bestScore = total;
+                        bestAct = act;
+                    }
+                }
+                target.preferredAction = bestAct;
+            }
+            updatedId = target.id;
+        } else {
+            const engramId = `eng_${++this.structuralEngramCounter}`;
+            const actionCounts = {};
+            const actionViabilityGain = {};
+            if (actionId) {
+                actionCounts[actionId] = 1;
+                actionViabilityGain[actionId] = Number(viabilityGain.toFixed(6));
+            }
+            const entry = {
+                id: engramId,
+                prototypeVec: vec.map((v) => Number(v.toFixed(6))),
+                meanSurprisal: Number(surprisal.toFixed(6)),
+                hazardPrior: Number(hazardScore.toFixed(6)),
+                preferredAction: actionId,
+                actionCounts,
+                actionViabilityGain,
+                consolidationWeight: Math.max(0.12, Math.min(1, 0.18 + (0.15 * Math.min(1, surprisal / 2)))),
+                hitCount: 1,
+                createdTick: tick,
+                lastUpdatedTick: tick
+            };
+            if (this.structuralEngrams.length >= this.structuralEngramConfig.maxSlots) {
+                let weakestIdx = 0;
+                for (let i = 1; i < this.structuralEngrams.length; i += 1) {
+                    if (this.structuralEngrams[i].consolidationWeight < this.structuralEngrams[weakestIdx].consolidationWeight) {
+                        weakestIdx = i;
+                    }
+                }
+                this.structuralEngrams.splice(weakestIdx, 1);
+            }
+            this.structuralEngrams.push(entry);
+            updatedId = engramId;
+        }
+
+        // Slow asymmetric decay for inactive engrams (partial irreversibility).
+        for (const entry of this.structuralEngrams) {
+            if (entry.id !== updatedId) {
+                entry.consolidationWeight = Math.max(
+                    this.structuralEngramConfig.minWeightFloor,
+                    entry.consolidationWeight * this.structuralEngramConfig.retentionDecay
+                );
+            }
+        }
+        this.structuralMemoryMetrics.totalConsolidations += 1;
+        this.structuralMemoryMetrics.meanConsolidationWeight = this.structuralEngrams.length > 0
+            ? Number((this.structuralEngrams.reduce((s, e) => s + e.consolidationWeight, 0) / this.structuralEngrams.length).toFixed(6))
+            : 0;
+        return updatedId;
+    }
+
+    queryStructuralEngrams(stateOrVec) {
+        if (!Array.isArray(this.structuralEngrams) || this.structuralEngrams.length === 0) {
+            return {
+                matched: false,
+                similarity: 0,
+                bestEngramId: null,
+                historicalHazardPrior: 0,
+                preferredAction: null,
+                preferredActionConfidence: 0,
+                engramActionBiasMap: {},
+                consolidatedEngramCount: 0,
+                meanConsolidationWeight: 0
+            };
+        }
+        const vec = Array.isArray(stateOrVec)
+            ? stateOrVec
+            : this.buildStructuralStateVector(stateOrVec);
+
+        let best = null;
+        let bestScore = -1;
+        const actionBias = {};
+        let totalWeight = 0;
+        let hazardAcc = 0;
+
+        for (const entry of this.structuralEngrams) {
+            const sim = Math.max(0, this._cosineSimilarity(vec, entry.prototypeVec));
+            const weight = sim * entry.consolidationWeight;
+            if (sim > bestScore) {
+                bestScore = sim;
+                best = entry;
+            }
+            if (weight > 0.05) {
+                totalWeight += weight;
+                hazardAcc += weight * (entry.hazardPrior || 0);
+                for (const [act, gain] of Object.entries(entry.actionViabilityGain || {})) {
+                    const reliability = Math.min(1, (entry.actionCounts?.[act] || 0) / 4);
+                    const deltaBias = weight * (gain * 0.6 + reliability * 0.25);
+                    actionBias[act] = (actionBias[act] || 0) + deltaBias;
+                }
+            }
+        }
+
+        if (totalWeight > 0) {
+            for (const act of Object.keys(actionBias)) {
+                actionBias[act] = Number(Math.max(-1, Math.min(1, actionBias[act] / totalWeight)).toFixed(6));
+            }
+        }
+        this.structuralMemoryMetrics.totalRecalls += 1;
+
+        return {
+            matched: Boolean(best && bestScore >= 0.72),
+            similarity: Number(Math.max(0, bestScore).toFixed(6)),
+            bestEngramId: best ? best.id : null,
+            historicalHazardPrior: totalWeight > 0 ? Number((hazardAcc / totalWeight).toFixed(6)) : 0,
+            preferredAction: best?.preferredAction || null,
+            preferredActionConfidence: best ? Number((bestScore * best.consolidationWeight).toFixed(6)) : 0,
+            engramActionBiasMap: actionBias,
+            consolidatedEngramCount: this.structuralEngrams.length,
+            meanConsolidationWeight: this.structuralMemoryMetrics.meanConsolidationWeight
+        };
     }
 
     // --- Métodos Privados de Similitud (Requeridos para retrieveLearnedAnswer) ---
@@ -430,6 +662,9 @@ export class HolographicMemoryNexus {
             // Métricas de alto nivel (conocimiento Q&A)
             learnedKnowledgeCount: this.learnedKnowledge.size,
             ephemeralCacheSize: this.ephemeralCache.size,
+            // Engramas estructurales deterministas
+            consolidatedEngramCount: this.structuralEngrams.length,
+            meanConsolidationWeight: this.structuralMemoryMetrics.meanConsolidationWeight,
         };
     }
 

@@ -54,6 +54,11 @@ const QICNConfig = {
   //   until the user switches it.
   KAIZEN_ADJUSTMENT_MODE: 'legacy',
 
+  // Prediccion sellada pre-desenlace, plasticidad historica dual y driver exogeno
+  HISTORICAL_PLASTICITY_ENABLED: true,
+  EXOGENOUS_REGIME_MODE: 'off',
+  EXOGENOUS_REGIME_SEED: 0x42A1,
+
   // Memoria Holográfica
   HOLOGRAPHIC_FRAGMENTS: 10,
   FRAGMENT_DIMENSION: 20,

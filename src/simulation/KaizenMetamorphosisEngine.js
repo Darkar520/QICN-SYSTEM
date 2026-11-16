@@ -80,6 +80,174 @@ export class KaizenMetamorphosisEngine {
             ];
             this.mutableConfig = initialConfig;
             this.resetLearning();
+            this.resetViabilityHistory();
+          }
+
+          resetViabilityHistory() {
+            const actionIds = this.strategyCatalog.map((entry) => entry.id);
+            const clusters = ['high_dispersion', 'high_stasis', 'high_sensory', 'high_strain', 'balanced'];
+            const createActionStats = () => Object.fromEntries(
+              actionIds.map((id) => [
+                id,
+                {
+                  attempts: 0,
+                  viabilityMaintainedCount: 0,
+                  efficacyEma: 0.5,
+                  meanViabilityDelta: 0,
+                  lastSelectedTick: -1
+                }
+              ])
+            );
+            this.viabilityPolicyState = {
+              actionStats: createActionStats(),
+              clusterActionEfficacy: Object.fromEntries(
+                clusters.map((c) => [c, Object.fromEntries(actionIds.map((id) => [id, 0.5]))])
+              ),
+              clusterActionAttempts: Object.fromEntries(
+                clusters.map((c) => [c, Object.fromEntries(actionIds.map((id) => [id, 0]))])
+              ),
+              pendingCreditQueue: [],
+              viabilityStats: {
+                totalTicksEvaluated: 0,
+                inTubeTicks: 0,
+                inTubeRate: 1,
+                lastObjectiveScore: 1,
+                lastInTube: true,
+                lastCluster: 'balanced',
+                lastSelectedPolicyAction: 'none'
+              },
+              creditHorizonTicks: 2
+            };
+          }
+
+          classifyViabilityCluster(systemState = {}) {
+            const dispersion = Number(systemState.xDispersion ?? systemState.nodalDispersion ?? 0);
+            const stasis = this._clamp01(systemState.stasisIndex);
+            const strain = this._clamp01(systemState.metacognitiveStrain);
+            const sensorDelta = this._clamp01(systemState.sensorDelta);
+            if (dispersion >= 0.068) return 'high_dispersion';
+            if (stasis >= 0.35) return 'high_stasis';
+            if (sensorDelta >= 0.14) return 'high_sensory';
+            if (strain >= 0.35) return 'high_strain';
+            return 'balanced';
+          }
+
+          /**
+           * Pure non-circular objective operational viability criterion Viab(S, tau).
+           * Uses strictly physical/dynamical observables (X_N, dispersion, stasis,
+           * strain, safe CCC homeostasis) and never references predictor error/maturation.
+           */
+          evaluateObjectiveViability(observableHealth = {}) {
+            const xN = Number(observableHealth.x_n ?? observableHealth.xN ?? 0.5);
+            const xDisp = Number(observableHealth.x_dispersion ?? observableHealth.xDispersion ?? 0);
+            const stasis = this._clamp01(observableHealth.stasisIndex);
+            const strain = this._clamp01(observableHealth.metacognitiveStrain);
+            const ccc = Number(observableHealth.ccc ?? 0.7);
+            const upperSafeCcc = Number(observableHealth.cccUpperSafe ?? 1.16);
+
+            const nodalHealthy = xN >= 0.25 && xN <= 0.995 && xDisp <= 0.088;
+            const antiStasisOk = stasis < 0.65;
+            const strainOk = strain < 0.42;
+            const homeostaticCccOk = ccc >= 0.35 && ccc <= upperSafeCcc;
+            const inTube = nodalHealthy && antiStasisOk && strainOk && homeostaticCccOk;
+
+            const dispScore = Math.max(0, 1 - (xDisp / 0.13));
+            const xnMargin = xN >= 0.25 && xN <= 0.995 ? 1 : Math.max(0, 1 - (Math.abs(xN - 0.62) / 0.4));
+            const antiStasisScore = Math.max(0, 1 - (stasis / 0.80));
+            const strainScore = Math.max(0, 1 - (strain / 0.65));
+            const cccScore = homeostaticCccOk ? 1 : Math.max(0, 1 - (Math.max(0.35 - ccc, ccc - upperSafeCcc, 0) * 3));
+            const objectiveScore = Math.max(
+              0,
+              Math.min(
+                1,
+                (0.28 * dispScore) + (0.16 * xnMargin) + (0.20 * antiStasisScore) + (0.26 * strainScore) + (0.10 * cccScore)
+              )
+            );
+            return {
+              inTube,
+              objectiveScore: Number(objectiveScore.toFixed(6)),
+              components: { nodalHealthy, antiStasisOk, strainOk, homeostaticCccOk }
+            };
+          }
+
+          recordTickViability({
+            tick = 0,
+            observableHealth = {},
+            activeActionId = 'none',
+            cluster = 'balanced',
+            plasticityEnabled = true
+          } = {}) {
+            const vp = this.viabilityPolicyState;
+            const evalRes = this.evaluateObjectiveViability(observableHealth);
+            const vs = vp.viabilityStats;
+            vs.totalTicksEvaluated += 1;
+            if (evalRes.inTube) vs.inTubeTicks += 1;
+            vs.inTubeRate = Number((vs.inTubeTicks / Math.max(1, vs.totalTicksEvaluated)).toFixed(6));
+            vs.lastObjectiveScore = evalRes.objectiveScore;
+            vs.lastInTube = evalRes.inTube;
+            vs.lastCluster = cluster;
+            vs.lastSelectedPolicyAction = activeActionId;
+
+            const settled = [];
+            const remaining = [];
+            for (const entry of vp.pendingCreditQueue) {
+              if (tick >= entry.dueTick) {
+                const gain = evalRes.objectiveScore - entry.baselineObjectiveScore;
+                const outcomeTarget = Math.max(
+                  0,
+                  Math.min(1, 0.25 + (evalRes.objectiveScore * 0.45) + (gain * 3.5) + (evalRes.inTube ? 0.22 : -0.22))
+                );
+                const stat = vp.actionStats[entry.actionId];
+                if (stat) {
+                  stat.attempts += 1;
+                  if (evalRes.inTube) stat.viabilityMaintainedCount += 1;
+                  stat.meanViabilityDelta = Number(((0.85 * stat.meanViabilityDelta) + (0.15 * gain)).toFixed(6));
+                  stat.efficacyEma = Number(((0.90 * stat.efficacyEma) + (0.10 * outcomeTarget)).toFixed(6));
+                }
+                const cMap = vp.clusterActionEfficacy[entry.cluster];
+                if (cMap && entry.actionId in cMap) {
+                  cMap[entry.actionId] = Number(((0.82 * cMap[entry.actionId]) + (0.18 * outcomeTarget)).toFixed(6));
+                }
+                const aMap = vp.clusterActionAttempts?.[entry.cluster];
+                if (aMap && entry.actionId in aMap) {
+                  aMap[entry.actionId] += 1;
+                }
+                settled.push({
+                  actionId: entry.actionId,
+                  cluster: entry.cluster,
+                  objectiveViabilityGain: gain,
+                  inTubeAfter: evalRes.inTube
+                });
+              } else {
+                remaining.push(entry);
+              }
+            }
+            vp.pendingCreditQueue = remaining;
+
+            if (plasticityEnabled && activeActionId && activeActionId !== 'none') {
+              vp.pendingCreditQueue.push({
+                issuedTick: tick,
+                dueTick: tick + vp.creditHorizonTicks,
+                actionId: activeActionId,
+                cluster,
+                baselineObjectiveScore: evalRes.objectiveScore
+              });
+              if (vp.pendingCreditQueue.length > 32) {
+                vp.pendingCreditQueue = vp.pendingCreditQueue.slice(-32);
+              }
+              if (vp.actionStats[activeActionId]) {
+                vp.actionStats[activeActionId].lastSelectedTick = tick;
+              }
+            }
+
+            // Very slow asymmetric relaxation across unselected actions
+            if (plasticityEnabled) {
+              for (const stat of Object.values(vp.actionStats)) {
+                stat.efficacyEma = Number(((0.9992 * stat.efficacyEma) + (0.0008 * 0.5)).toFixed(6));
+              }
+            }
+
+            return { evaluation: evalRes, settledCredits: settled };
           }
 
           // --- Learned adjustment mode (C-6b) -------------------------------
@@ -193,7 +361,7 @@ export class KaizenMetamorphosisEngine {
             return Math.max(0, Math.min(1, Number(value) || 0));
           }
 
-          _scoreSandboxAction(actionId, systemState = {}) {
+          _scoreSandboxAction(actionId, systemState = {}, historicalContext = null) {
             const stasisIndex = this._clamp01(systemState.stasisIndex);
             const strain = this._clamp01(systemState.metacognitiveStrain);
             const sensorSignal = this._clamp01(systemState.sensorSignal);
@@ -203,44 +371,103 @@ export class KaizenMetamorphosisEngine {
             const cooldownActive = Boolean(systemState.cooldownActive) ? 1 : 0;
             const stasisPressure = this._clamp01(Number(systemState.stasisPressure) || stasisIndex);
 
+            let baseScore = -Infinity;
+            const dispersionNorm = this._clamp01((Number(systemState.xDispersion) || 0) * 8);
             if (actionId === 'stabilize_learning') {
-              return (strain * 0.45) + (pmiaMagnitude * 0.25) + ((1 - stasisIndex) * 0.15) + ((1 - sensorSignal) * 0.15);
+              baseScore = (strain * 0.34) + (dispersionNorm * 0.24) + (pmiaMagnitude * 0.08) + ((1 - stasisIndex) * 0.08);
+            } else if (actionId === 'anti_stasis_boost') {
+              baseScore = (stasisPressure * 0.56) + ((1 - dispersionNorm) * 0.10) + ((1 - strain) * 0.10);
+            } else if (actionId === 'sensor_load_shed') {
+              baseScore = (strain * 0.22) + (sensorSignal * 0.18) + (sensorDelta * 0.24) + (latencyFailureRate * 0.22);
+            } else if (actionId === 'llm_pressure_relief') {
+              baseScore = (strain * 0.32) + (latencyFailureRate * 0.28) + (cooldownActive * 0.26);
             }
-            if (actionId === 'anti_stasis_boost') {
-              return (stasisPressure * 0.55) + ((1 - strain) * 0.2) + (sensorDelta * 0.15) + ((1 - pmiaMagnitude) * 0.1);
+            if (!Number.isFinite(baseScore)) return -Infinity;
+
+            if (!historicalContext || historicalContext.plasticityEnabled === false) {
+              return baseScore;
             }
-            if (actionId === 'sensor_load_shed') {
-              return (strain * 0.35) + (sensorSignal * 0.25) + (sensorDelta * 0.2) + (latencyFailureRate * 0.2);
+
+            const maturation = this._clamp01(historicalContext.maturationIndex);
+            const surprisal = Math.max(0, Math.min(2, Number(historicalContext.surprisalEma) || 0));
+            const unforeseenRate = this._clamp01(historicalContext.unforeseenEventRate);
+            const cluster = typeof historicalContext.cluster === 'string'
+              ? historicalContext.cluster
+              : this.classifyViabilityCluster(systemState);
+
+            const vp = this.viabilityPolicyState;
+            const stat = vp?.actionStats?.[actionId];
+            const globalEff = Number.isFinite(stat?.efficacyEma) ? stat.efficacyEma : 0.5;
+            const clusterEff = Number.isFinite(vp?.clusterActionEfficacy?.[cluster]?.[actionId])
+              ? vp.clusterActionEfficacy[cluster][actionId]
+              : 0.5;
+            const clusterAttempts = Number(vp?.clusterActionAttempts?.[cluster]?.[actionId] || 0);
+            const clusterExp = Math.min(1, clusterAttempts / 3);
+            const globalExp = stat ? Math.min(1, stat.attempts / 8) : 0;
+            const learnedEffBonus = ((0.75 * (clusterEff - 0.5) * clusterExp) + (0.25 * (globalEff - 0.5) * globalExp))
+              * (0.65 + (1.10 * maturation));
+
+            const engramBiasMap = historicalContext.engramContext?.engramActionBiasMap || {};
+            const engramPref = Number.isFinite(Number(engramBiasMap[actionId])) ? Number(engramBiasMap[actionId]) : 0;
+            const engramConf = this._clamp01(historicalContext.engramContext?.preferredActionConfidence);
+            const engramBonus = engramPref * (0.35 + (0.75 * maturation)) * Math.max(engramConf, clusterExp * 0.5);
+
+            // Deterministic block-held structured exploration during active adaptation when cluster trials < 4
+            let explorationBonus = 0;
+            if (historicalContext.allowExploration === true) {
+              const tickNow = Math.max(0, Math.floor(Number(historicalContext.tick) || 0));
+              const blockIdx = Math.floor(tickNow / 3) % this.strategyCatalog.length;
+              const preferredTrialId = this.strategyCatalog[blockIdx]?.id;
+              if (actionId === preferredTrialId && clusterAttempts < 4) {
+                explorationBonus = 0.85;
+              } else if (clusterAttempts < 3) {
+                explorationBonus = 0.25 * (1 - (clusterAttempts / 3));
+              }
             }
-            if (actionId === 'llm_pressure_relief') {
-              return (strain * 0.5) + (latencyFailureRate * 0.3) + (cooldownActive * 0.2);
+
+            // Surprise / unforeseen dynamic hazard gating: shifts protective policy once matured
+            const hazardDrive = Math.min(1, (0.45 * surprisal) + (0.55 * unforeseenRate));
+            let hazardGate = 0;
+            if (actionId === 'stabilize_learning') {
+              hazardGate = hazardDrive * (cluster === 'high_dispersion' ? 0.36 : 0.02);
+            } else if (actionId === 'sensor_load_shed') {
+              hazardGate = hazardDrive * (cluster === 'high_sensory' ? 0.42 : 0.04);
+            } else if (actionId === 'llm_pressure_relief') {
+              hazardGate = hazardDrive * (cluster === 'high_strain' || cluster === 'balanced' ? 0.38 : 0.05);
+            } else if (actionId === 'anti_stasis_boost') {
+              hazardGate = (cluster === 'high_stasis' ? 0.44 : -0.08) * hazardDrive;
             }
-            return -Infinity;
+            const predictiveBonus = hazardGate * maturation;
+
+            return baseScore + learnedEffBonus + engramBonus + predictiveBonus + explorationBonus;
           }
 
           /**
-           * Selects one deterministic runtime-sandbox action based on system state.
+           * Selects one deterministic runtime-sandbox action based on system state
+           * and optional historical maturation/viability context.
            * No RNG is used in this planner.
            * @param {object} systemState
            * @param {object} policy
-           * @returns {{actionId:string,score:number,reason:string}|null}
+           * @param {object|null} historicalContext
+           * @returns {{actionId:string,score:number,reason:string,cluster?:string}|null}
            */
-          selectSandboxAction(systemState = {}, policy = {}) {
+          selectSandboxAction(systemState = {}, policy = {}, historicalContext = null) {
             const enabled = policy?.enabled !== false;
             if (!enabled) return null;
 
             const allowedIds = Array.isArray(policy?.allowedActions) && policy.allowedActions.length > 0
               ? policy.allowedActions
               : this.strategyCatalog.map((entry) => entry.id);
+            const cluster = this.classifyViabilityCluster(systemState);
 
             let best = null;
             for (let i = 0; i < this.strategyCatalog.length; i++) {
               const entry = this.strategyCatalog[i];
               if (!allowedIds.includes(entry.id)) continue;
-              const score = this._scoreSandboxAction(entry.id, systemState);
+              const score = this._scoreSandboxAction(entry.id, systemState, historicalContext);
               if (!Number.isFinite(score)) continue;
               if (!best || score > best.score + 1e-12) {
-                best = { actionId: entry.id, score, reason: entry.description };
+                best = { actionId: entry.id, score, reason: entry.description, cluster };
               }
             }
 

@@ -180,3 +180,33 @@ export function verifySigmaApproximateAutomodels() {
     fiberChecks
   };
 }
+
+/**
+ * Pure read-only finite-depth projection vector of the tower state (T_d) and its
+ * step defect bound, used by downstream predictive models without altering any
+ * rational tower invariant or BaseCore separation (C-1).
+ */
+export function projectAutomodelVector(towerState, depth = 6, command = {}) {
+  const core = towerState && typeof towerState === 'object' && towerState.core
+    ? towerState.core
+    : towerState;
+  if (!core || typeof core.code === 'undefined') return null;
+  const safeDepth = Math.max(1, Math.min(8, Math.floor(Number(depth) || 6)));
+  const truncatedNow = truncateTowerState(core, safeDepth);
+  const nextCore = step(core, command);
+  const truncatedNext = truncateTowerState(nextCore, safeDepth);
+  const defectCheck = evaluateCommutationDefect(core, safeDepth, command);
+  return {
+    depth: safeDepth,
+    currentTruncatedPhase: truncatedNow.phase.toFloat(),
+    projectedPhase: truncatedNext.phase.toFloat(),
+    projectedCode: truncatedNext.code.toFloat(),
+    projectedMemory: truncatedNext.memory.toFloat(),
+    exactStepDefect: defectCheck.exactDefect.toFloat(),
+    exactStepDefectRational: defectCheck.exactDefect.toString(),
+    defectBoundRational: defectCheck.upperBound.toString(),
+    approximationBoundRational: analyticalApproximationBound(safeDepth).toString(),
+    fixedPointBoundRational: analyticalFixedPointDisplacementBound(safeDepth).toString(),
+    theoremVerified: Boolean(defectCheck.theoremVerified)
+  };
+}

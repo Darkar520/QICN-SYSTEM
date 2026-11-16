@@ -2,7 +2,7 @@
 // A proposition is a sentence the engine authorizes for one turn. It is built
 // from the frozen snapshot, the ledger summary, the conversation record or the
 // verified catalog. Values are inserted locally from those sources only.
-import { METRIC_SPECS, RECOMPUTED_EACH_TICK, formatMetricValue } from './runtimeSnapshot.js';
+import { METRIC_SPECS, PREDICTION_PLASTICITY_METRIC_SPECS, RECOMPUTED_EACH_TICK, formatMetricValue } from './runtimeSnapshot.js';
 import { DEFINITIONS, CAPABILITIES, LIMITS, IDENTITY_STATEMENTS, HYPOTHESES } from './definitionCatalog.js';
 
 const MODE_TEXT = {
@@ -364,6 +364,95 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
     }
   }
 
+  // --- Pre-outcome SHA-256 predictions & historical plasticity ------------
+  const pp = snapshot?.prediction_plasticity || null;
+  if (pp && typeof pp === 'object') {
+    const ppValues = {};
+    const ppSubjects = ['historical_dependence'];
+    const parts = [];
+    if (Number.isFinite(pp.sealed_commit_count)) {
+      parts.push('{{sealed_commit_count}} compromisos pre-desenlace sellados con SHA-256');
+      ppValues.sealed_commit_count = formatMetricValue('sealed_commit_count', pp.sealed_commit_count);
+      ppSubjects.push('sealed_commit_count');
+    }
+    if (Number.isFinite(pp.verified_prediction_count)) {
+      parts.push('{{verified_prediction_count}} predicciones verificadas en su tick objetivo');
+      ppValues.verified_prediction_count = formatMetricValue('verified_prediction_count', pp.verified_prediction_count);
+      ppSubjects.push('verified_prediction_count');
+    }
+    if (Number.isFinite(pp.horizon5_mae)) {
+      parts.push('MAE en horizonte k=5 de {{horizon5_mae}}');
+      ppValues.horizon5_mae = formatMetricValue('horizon5_mae', pp.horizon5_mae);
+      ppSubjects.push('horizon5_mae');
+    }
+    if (Number.isFinite(pp.surprisal_ema)) {
+      parts.push('sorpresa normalizada EMA de {{surprisal_ema}}');
+      ppValues.surprisal_ema = formatMetricValue('surprisal_ema', pp.surprisal_ema);
+      ppSubjects.push('surprisal_ema');
+    }
+    if (Number.isFinite(pp.unforeseen_event_rate)) {
+      parts.push('tasa de eventos imprevistos de {{unforeseen_event_rate}}');
+      ppValues.unforeseen_event_rate = formatMetricValue('unforeseen_event_rate', pp.unforeseen_event_rate);
+      ppSubjects.push('unforeseen_event_rate');
+    }
+    if (Number.isFinite(pp.tamper_violation_count)) {
+      parts.push('{{tamper_violation_count}} violaciones de sello detectadas');
+      ppValues.tamper_violation_count = formatMetricValue('tamper_violation_count', pp.tamper_violation_count);
+      ppSubjects.push('tamper_violation_count');
+    }
+    if (parts.length > 0) {
+      add(make({
+        id: 'state.sealed_predictions',
+        kind: 'state',
+        template: `Predicción pre-desenlace sellada (${pp.exogenous_regime_mode || 'off'} / ${pp.exogenous_regime_name || 'quiescent'}): ${parts.join(', ')}.`,
+        values: ppValues,
+        subjects: ppSubjects,
+        paraphrasable: true,
+        evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `WorldModelEngine sealedHorizonQueue; ${snapshotEvidence.source}` }
+      }));
+    }
+
+    const hpValues = {};
+    const hpSubjects = ['historical_dependence'];
+    const hpParts = [];
+    if (Number.isFinite(pp.plasticity_maturation_index)) {
+      hpParts.push('maduración plástica plasticity_maturation_index = {{plasticity_maturation_index}}');
+      hpValues.plasticity_maturation_index = formatMetricValue('plasticity_maturation_index', pp.plasticity_maturation_index);
+      hpSubjects.push('plasticity_maturation_index');
+    }
+    if (Number.isFinite(pp.anchor_shift_l2)) {
+      hpParts.push('desplazamiento del ancla consolidada anchor_shift_l2 = {{anchor_shift_l2}}');
+      hpValues.anchor_shift_l2 = formatMetricValue('anchor_shift_l2', pp.anchor_shift_l2);
+      hpSubjects.push('anchor_shift_l2');
+    }
+    if (Number.isFinite(pp.mean_fisher_stiffness)) {
+      hpParts.push('rigidez media acumulada mean_fisher_stiffness = {{mean_fisher_stiffness}}');
+      hpValues.mean_fisher_stiffness = formatMetricValue('mean_fisher_stiffness', pp.mean_fisher_stiffness);
+      hpSubjects.push('mean_fisher_stiffness');
+    }
+    if (Number.isFinite(pp.consolidated_engram_count)) {
+      hpParts.push('{{consolidated_engram_count}} engramas estructurales deterministas');
+      hpValues.consolidated_engram_count = formatMetricValue('consolidated_engram_count', pp.consolidated_engram_count);
+      hpSubjects.push('consolidated_engram_count');
+    }
+    if (Number.isFinite(pp.viability_in_tube_rate)) {
+      hpParts.push('tasa de viabilidad objetiva viability_in_tube_rate = {{viability_in_tube_rate}}');
+      hpValues.viability_in_tube_rate = formatMetricValue('viability_in_tube_rate', pp.viability_in_tube_rate);
+      hpSubjects.push('viability_in_tube_rate');
+    }
+    if (hpParts.length > 0 && Object.keys(PREDICTION_PLASTICITY_METRIC_SPECS).length > 0) {
+      add(make({
+        id: 'state.historical_plasticity',
+        kind: 'state',
+        template: `Plasticidad histórica consolidada y viabilidad: ${hpParts.join('; ')}; estas variables reflejan memoria dinámica interna y no equivalen a vivencia subjetiva ni certificación externa (external_support_certified = false).`,
+        values: hpValues,
+        subjects: hpSubjects,
+        paraphrasable: true,
+        evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `WorldModelEngine + HolographicMemoryNexus + KaizenMetamorphosisEngine; ${snapshotEvidence.source}` }
+      }));
+    }
+  }
+
   // --- Configuration values captured with the snapshot ---------------------
   // Effective configuration (F2): the value the next tick uses and its writer.
   for (const [key, value] of Object.entries(snapshot?.config || {})) {
@@ -607,7 +696,21 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
   }
   // Open hypotheses: speculative questions the framework keeps open. Marked
   // `framework_open_question`; they never count as results.
+  const hasVerifiedPredictions = (snapshot?.prediction_plasticity?.verified_prediction_count || 0) > 0;
   for (const [id, entry] of Object.entries(HYPOTHESES)) {
+    if (id === 'unforeseen_dynamics' && hasVerifiedPredictions) {
+      add(make({
+        id: 'hypothesis.unforeseen_dynamics',
+        kind: 'hypothesis',
+        template: 'En esta captura sí opero con predicciones pre-desenlace selladas en memoria con SHA-256 (WorldModelEngine + SigmaAutomodelTruncator) y verificadas al cumplirse el horizonte t+k, así que distingo y mido eventos imprevistos respecto a lo previsto; aun así, ello constituye soporte operacional interno (external_support_certified = false) y no demuestra por sí solo conciencia ni experiencia subjetiva.',
+        hypothetical: false,
+        evidence: {
+          class: 'framework_open_question',
+          source: 'src/simulation/WorldModelEngine.js (compromisos SHA-256 pre-desenlace); SigmaAutomodelTruncator; Paper IV/VI/VII'
+        }
+      }));
+      continue;
+    }
     add(make({ id: `hypothesis.${id}`, kind: 'hypothesis', template: entry.text, hypothetical: Boolean(entry.hypothetical), evidence: { class: 'framework_open_question', source: entry.source } }));
   }
   for (const [id, limit] of Object.entries(LIMITS)) {

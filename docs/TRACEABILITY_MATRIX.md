@@ -108,3 +108,18 @@ All rows below have evidence_scope internal_support_only and external_support_ce
 | Language non-interference | Existing language contracts over restored branches | tests/workbench-language-invariance.v1.test.mjs; full-cycle ablation | cn4_maxAbsDiff=0 and same decisions; optional v5 deferred to B3 |
 
 Source-based cycle guards now read SimulationCycleDriver.js; useSimulationCycle.js retains the React binding. See WORKBENCH_EXECUTION_CONTRACT.md for fields, limitations and entropy audit.
+
+## B3: optional language System B
+
+All new records are artifact_only, evidence_scope internal_support_only and
+external_support_certified=false. Runtime-primary, invariant, claim_projection
+and gate_result contracts are unchanged.
+
+| Surface | Authority/source | Test | Boundary |
+| --- | --- | --- | --- |
+| Typed factual atoms | Full snapshot/ledger binding; metric map in propositions; operation table in definitionCatalog; evidential/factualVerifier | language-factual-verifier.v1 | Availability is not observed causality; bounds are not measurements. |
+| Four-part open reasoning | evidential/claimGrammar, reasoningPlan, epistemicPolicy, realization | language-evidential-contract.v1 | Gemini authors new proposals; valid premises do not certify conclusions. |
+| Optional verified B2 records | evidenceRegistry; pure resultVerifier and trajectoryComparison | language-evidential-contract.v1; language-system-b-compatibility.v1 | Detached copy, not current live trajectory or external support; sham-only interventions are not_recorded. |
+| Compatibility / isolation | Explicit v5 only; original free/verified branches | language-system-b-compatibility.v1; workbench-language-invariance.v1 | v2/v3(87)/v4(95), historical v1 and B4 unchanged; cn4_maxAbsDiff=0. |
+
+Contract and residual semantic limits: LANGUAGE_SYSTEM_B_CONTRACT_V5.md.

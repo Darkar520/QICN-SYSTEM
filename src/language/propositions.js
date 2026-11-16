@@ -2,7 +2,7 @@
 // A proposition is a sentence the engine authorizes for one turn. It is built
 // from the frozen snapshot, the ledger summary, the conversation record or the
 // verified catalog. Values are inserted locally from those sources only.
-import { METRIC_SPECS, PREDICTION_PLASTICITY_METRIC_SPECS, RECOMPUTED_EACH_TICK, formatMetricValue } from './runtimeSnapshot.js';
+import { METRIC_SPECS, TOWER_METRIC_SPECS, PROFILE_METRIC_SPECS, PREDICTION_PLASTICITY_METRIC_SPECS, RECOMPUTED_EACH_TICK, formatMetricValue } from './runtimeSnapshot.js';
 import { DEFINITIONS, CAPABILITIES, LIMITS, IDENTITY_STATEMENTS, HYPOTHESES } from './definitionCatalog.js';
 
 const MODE_TEXT = {
@@ -17,6 +17,22 @@ const MODE_TEXT = {
     autocorrelation_proxy: 'de estimación por autocorrelación del historial reciente'
   }
 };
+
+// v5 opt-in source catalog. Existing v2/v3/v4 proposition construction is intact.
+export const EVIDENTIAL_BOUND_REFS = Object.freeze(['tower.sigma_defect_bound','tower.sigma_defect_bound_rational','tower.sigma_approximation_bound','tower.sigma_fixed_point_bound']);
+export function evidentialMetricCatalog(snapshot) {
+  const result={};
+  for(const [section,specs] of [['metrics',METRIC_SPECS],['tower',TOWER_METRIC_SPECS],['structural_profile',PROFILE_METRIC_SPECS],['prediction_plasticity',PREDICTION_PLASTICITY_METRIC_SPECS]]) {
+    for(const [key,spec] of Object.entries(specs)) {
+      if(Number.isFinite(snapshot[section]?.[key])) result[`${section}.${key}`]={label:spec.label,source:spec.source,evidenceClass:spec.kind};
+    }
+  }
+  for(const key of Object.keys(snapshot.config || {})) if(Number.isFinite(snapshot.config[key])) result[`config.${key}`]={label:key,source:'snapshot.config',evidenceClass:'artifact_only'};
+  for(const key of ['sigma_exact_defect','sigma_defect_bound_rational','sigma_approximation_bound','sigma_fixed_point_bound']) {
+    if(typeof snapshot.tower?.[key]==='string' && /^-?\d+(?:\/\d+)?$/.test(snapshot.tower[key])) result[`tower.${key}`]={label:key,source:'SigmaAutomodelTruncator',evidenceClass:key==='sigma_exact_defect'?'direct_signal':'artifact_only'};
+  }
+  return result;
+}
 
 const REGIME_TEXT = {
   PRE_CONSCIOUS: 'CCC está por debajo del umbral operativo (el nombre interno es histórico)',

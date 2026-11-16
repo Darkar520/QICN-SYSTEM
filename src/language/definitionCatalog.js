@@ -283,3 +283,22 @@ export const STYLE_POLICY = Object.freeze({
   numbers: 'todos los números provienen de la captura congelada del turno',
   uncertainty: 'cuando falta un dato, se dice qué falta y qué operación lo produciría'
 });
+
+// Optional v5 authority: an operation requires this exact module/operation/scope
+// tuple. Inventory membership alone conveys no operation or evidence authority.
+export const EVIDENTIAL_OPERATIONS = Object.freeze([
+  ['WorldModelEngine', 'regularize_predictor', 'linear_predictor_weights', 'src/simulation/WorldModelEngine.js', '_applyGradient', 'regulariza los pesos del predictor lineal mediante ancla consolidada y rigidez Fisher; no regulariza los nodos ni el selector'],
+  ['WorldModelEngine', 'seal_prediction', 'pre_outcome_commitments', 'src/simulation/WorldModelEngine.js', 'issueSealedPredictions', 'sella predicciones pre-desenlace con SHA-256'],
+  ['KaizenMetamorphosisEngine', 'select_action', 'permitted_sandbox_actions', 'src/simulation/KaizenMetamorphosisEngine.js', 'selectSandboxAction', 'puntúa determinísticamente las acciones permitidas de la política de viabilidad'],
+  ['HolographicMemoryNexus', 'consolidate_engram', 'structural_state_vectors', 'src/simulation/HolographicMemoryNexus.js', 'consolidateStructuralEngram', 'consolida engramas estructurales del estado operacional'],
+  ['NodalProcessingLayer', 'step_nodes', 'finite_nodal_layer', 'src/simulation/NodalProcessingLayer.js', 'processSignals', 'procesa una capa finita de nodos'],
+  ['SigmaAutomodelTruncator', 'truncate', 'finite_projective_cut', 'src/simulation/tower/SigmaAutomodelTruncator.js', 'truncateTowerState', 'aplica un truncamiento proyectivo finito; las cotas analíticas no son errores medidos'],
+  ['BodyWorldTower', 'step_body_world', 'rational_body_world_subplant', 'src/simulation/tower/BodyWorldTower.js', 'advance', 'evoluciona la subplanta racional cuerpo-mundo acoplada'],
+  ['OperationalHistoryLedger', 'append_event', 'hash_chained_record', 'src/identity/OperationalHistoryLedger.js', 'record', 'encadena eventos operacionales con hashes; el registro no alimenta la dinámica']
+].map(([module, operation, scope, source, anchor, description]) => Object.freeze({ module, operation, scope, source, anchor, description })));
+
+export const EVIDENTIAL_CATALOG = Object.freeze({
+  internal_scope: Object.freeze({ value: 'internal_support_only', text: 'La evidencia disponible es soporte interno; no constituye validación externa.', source: 'AGENTS.md' }),
+  historical_v1_cn3: Object.freeze({ value: false, text: 'En la reproducción histórica v1 congelada (420/180/250; semillas 11,23,37,41,53), CN-3=false; el Workbench no cambia ese protocolo ni sus umbrales.', source: 'config/workbench/preregister.v1.json:historical_v1.stage0_memory_reproduction' }),
+  predictor_scope: Object.freeze({ value: 'linear_predictor_only', text: 'El ancla EWC y la rigidez Fisher pertenecen al predictor lineal, no a los nodos ni a gradientes del selector de acciones.', source: 'src/simulation/WorldModelEngine.js' })
+});

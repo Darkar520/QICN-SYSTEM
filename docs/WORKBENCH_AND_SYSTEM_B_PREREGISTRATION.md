@@ -158,7 +158,8 @@ is a primary record of the live runtime, claim_projection, or existing gate_resu
 | Opt-in output resolution and legacy bridge parity | implemented_tested | `tests/report-output-policy.v1.test.cjs` |
 | Observational clone and unchanged snapshot digests | implemented_tested | `tests/runtime-snapshot-observational.v1.test.mjs` |
 | Workbench headless/worker execution | implemented_tested | B1-B2 delivery; see WORKBENCH_EXECUTION_CONTRACT.md |
-| Optional System B/v5 and browser UI integration | not_recorded | Separate B3-B4 implementation required |
+| Optional System B/v5 factual/evidential contract | implemented_tested | B3; LANGUAGE_SYSTEM_B_CONTRACT_V5.md and the three new language test anchors |
+| Browser UI integration / worker packaging | not_recorded | Separate B4 implementation required |
 
 The reporting tests exercise actual TEMP outputs and synthetic no-opt-in/default
 paths without writing canonical reports or probing an external source tree.
@@ -203,3 +204,16 @@ The approved B0 checkpoint is 454dcb9a5cd5c4a7728b211cc0d438b80258922e on codex/
 Detailed wire schemas, intervention scopes, test anchors, disabled-provider capture boundary, runtime setter policies and deferred audit writers are recorded in WORKBENCH_EXECUTION_CONTRACT.md. No B3/v5 language implementation or B4 browser packaging is included. Main and git metadata are not written by this delivery.
 
 B1-B2 verification results and final file inventory are recorded in WORKBENCH_B1_B2_DELIVERY_AUDIT.md; acceptance remains subject to the explicit environment and deferred-writer limitations recorded there.
+
+## B3 delivery extension
+
+Checkpoint: codex/workbench-system-b at 5dfddd5b2b101865621c4d10f8177ff260b8813b.
+The optional evidential/v5 contract separates locally checked factual atoms
+from Gemini-authored open proposals, binds the complete digest and tick, and
+consumes verified detached B2 records or records not_recorded. Existing
+v2/v3/v4 paths and defaults remain intact. The guarantee does not certify
+arbitrary prose or philosophical conclusions. Detailed authority, limits and
+verification are in LANGUAGE_SYSTEM_B_CONTRACT_V5.md and
+LANGUAGE_SYSTEM_B_B3_DELIVERY_AUDIT.md. Machine preregistration remains frozen;
+current inventory is IMPLEMENTATION_STATUS.md. This delivery stops before B4
+and writes no git metadata.

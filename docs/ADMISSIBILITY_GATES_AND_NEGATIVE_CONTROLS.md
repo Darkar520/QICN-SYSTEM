@@ -342,3 +342,14 @@ Workbench engineering controls are distinct from NC1-NC12 and from run-level adm
 Mandatory engineering controls cover sham identity, both state-leak directions, reference ownership, global capability traps, controller aliases, full restore continuation, build/tick/protocol mismatches, chain tampering/truncation/reordering, cancellation/timeout, numeric sensitivity and language invariance. Explicit history controls distinguish selector read-blocking, consolidation suspension, predictor freeze and one-time declared reset. Their scopes do not retroactively redefine CN-3 of historical v1. The unchanged 420/180/250 v1 acceptance remains able to report CN-3=false; no threshold changes or held-out seed selection are authorized by Workbench success.
 
 See WORKBENCH_EXECUTION_CONTRACT.md and tests/workbench-*.v1.test.mjs. The legacy nested subjectivity/phenomenal audit writers have not yet gained safe TEMP routing and are not invoked by this Workbench.
+
+## B3 language publication controls
+
+Optional v5 publication (checked/partial/rejected) is a language route, not an
+admissibility gate_result or batch_enforcement. Its typed facts, open proposals,
+scope policy and dependency-safe graceful controls do not change NC1-NC12,
+run_verdict or roeo_enforcement_report.json. Verified B2 interventions remain
+internal copy records; they cannot become external support through a language
+label. Historical v1 CN-3=false remains unchanged. The expanded language
+invariance test covers v5 valid/rejected/corrected/graceful turns with zero
+numeric/state/action/cursor divergence. See LANGUAGE_SYSTEM_B_CONTRACT_V5.md.

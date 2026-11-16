@@ -1,5 +1,15 @@
 # Descriptor Registry
 
+## B3 review: optional language System B
+
+The qicn.language_realization.v5 trace and verified-copy references are
+artifact_only language audit records, evidence_scope internal_support_only,
+external_support_certified=false. Atom source classes do not create new live
+direct signals or registry entries. Publication routes are not gate_result,
+run_verdict or batch_enforcement. The minimum machine registry is unchanged;
+no claim_projection or primary artifact contract changed. See
+LANGUAGE_SYSTEM_B_CONTRACT_V5.md for authority scopes and semantic limitations.
+
 ## A. Purpose
 
 This document is the formal minimum descriptor registry for the current repository. It is documentary only. It does not add a new executable subsystem, change runtime behavior, or redefine the meaning of claims.

@@ -9,12 +9,16 @@ import { planAnswer, composeLocalAnswer } from './narrator.js';
 import { buildFacts, buildRealizationPrompt, buildCorrectionPrompt, parseRealization, verifyRealization, factsById, obligationsFor, DELTA_FRAME_IDS, REQUIRED_BY_INTENT, REALIZATION_SCHEMA } from './realizationContract.js';
 import { verifySnapshotDigest, verifySnapshotStructuralConsistency, RECOMPUTED_EACH_TICK } from './runtimeSnapshot.js';
 import { buildFreePrompt, buildFreeContext, parseFreeRealization, verifyFreeRealization, buildFreeCorrectionPrompt, freeGracefulCandidate, buildFreeConcordance, assembleText, FREE_REALIZATION_SCHEMA, FREE_GUARANTEE_NOTE, KAIZEN_EFFECTIVE_DEFAULT } from './freeRealization.js';
+import { createFactualContext } from './evidential/factualVerifier.js';
+import { createEvidenceRegistry } from './evidential/evidenceRegistry.js';
+import { createReasoningPlan, buildEvidentialPrompt, buildEvidentialCorrectionPrompt } from './evidential/reasoningPlan.js';
+import { evaluateEvidential, evidentialGracefulCandidate, finalizeEvidentialTurn } from './evidential/realization.js';
 
 // Realization contracts (2026-11-08): 'free' = v4 free prose with non-lexical
 // guarantees (chat default); 'verified' = v3 sentence-level verification
 // (optional mode). The API default stays 'verified' for existing callers.
-export const REALIZATION_CONTRACTS = Object.freeze(['free', 'verified']);
-export const normalizeContract = (value) => (value === 'free' ? 'free' : 'verified');
+export const REALIZATION_CONTRACTS = Object.freeze(['free', 'verified', 'evidential']);
+export const normalizeContract = (value) => (['evidential','v5','qicn.language_realization.v5'].includes(value) ? 'evidential' : value === 'free' ? 'free' : 'verified');
 
 export const CONVERSATION_SCHEMA = 'qicn.conversation_turn.v3';
 export const CONVERSATION_STORAGE_KEY = 'QICN_CONVERSATION_TURNS_V2';
@@ -163,13 +167,19 @@ function factPropsFor(props, intentResult) {
   return keep;
 }
 
-export function prepareTurn({ question, snapshot, ledger = null, turns = [], turnIndex = 0, contract = 'verified', kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT }) {
+export function prepareTurn({ question, snapshot, ledger = null, turns = [], turnIndex = 0, contract = 'verified', kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT, ledgerRecord = null, workbenchEvidence = [] }) {
   if (!snapshot || !verifySnapshotDigest(snapshot)) {
     throw new Error('snapshot_digest_invalid');
   }
   const structuralCheck = verifySnapshotStructuralConsistency(snapshot);
   if (!structuralCheck.ok) {
     throw new Error(`snapshot_structural_inconsistent:${structuralCheck.violations.join(',')}`);
+  }
+  if (normalizeContract(contract) === 'evidential') {
+    const evidenceRegistry=createEvidenceRegistry(workbenchEvidence);
+    const evidentialContext=createFactualContext({snapshot,ledgerRecord:ledgerRecord || ledger?.data || null,evidenceRegistry});
+    const reasoningPlan=createReasoningPlan(question,evidentialContext);
+    return {contract:'evidential',question,snapshot:evidentialContext.snapshot,snapshotId:snapshot.digest,intent:resolveIntent(question),evidentialContext,reasoningPlan,prompt:buildEvidentialPrompt(reasoningPlan),turnIndex,sessionId:evidentialContext.ledger?.sessions.at(-1)?.sessionId||null};
   }
   const ledgerSummary = readLedger(ledger);
   const previousTurn = turns.length ? turns[turns.length - 1] : null;
@@ -279,6 +289,7 @@ export function buildConcordance(prepared, publishedSentences) {
  * @returns {{ ok, verification|null, error|null }}
  */
 export function evaluateRealization(prepared, modelText) {
+  if (prepared?.contract === 'evidential') return evaluateEvidential(prepared.evidentialContext,modelText);
   if (prepared?.contract === 'free') {
     try {
       const parsed = parseFreeRealization(modelText);
@@ -298,6 +309,7 @@ export function evaluateRealization(prepared, modelText) {
 }
 
 export function correctionPromptFor(prepared, modelText, evaluation) {
+  if (prepared?.contract === 'evidential') return buildEvidentialCorrectionPrompt(prepared.prompt,modelText,evaluation);
   if (prepared?.contract === 'free') {
     return buildFreeCorrectionPrompt({ basePrompt: prepared.prompt, previousOutput: modelText, verification: evaluation.verification, error: evaluation.verification ? null : (evaluation.error || 'contract_error') });
   }
@@ -351,6 +363,7 @@ export function gracefulCandidate(facts, v, required = []) {
 /** True when graceful mode can publish this evaluation without a correction:
  * a candidate exists and it covers every required fact. */
 export function canPublishGracefully(prepared, evaluation) {
+  if (prepared?.contract === 'evidential') return Boolean(evidentialGracefulCandidate(evaluation?.verification));
   if (!evaluation?.verification) return false;
   if (prepared?.contract === 'free') return Boolean(freeGracefulCandidate(evaluation.verification));
   const candidate = gracefulCandidate(prepared.facts, evaluation.verification, prepared.required);
@@ -369,6 +382,7 @@ export const normalizeIntegrityMode = (mode) => (mode === 'graceful' ? 'graceful
  *   returned separately, labelled as local, never as Gemini text.
  */
 export function finalizeTurn(prepared, { mode = null, attempts = null, modelText = null, modelError = null, provider = null, integrityMode = 'strict', transportRetries = [] } = {}) {
+  if (prepared?.contract === 'evidential') return finalizeEvidentialTurn(prepared,{mode,attempts,modelText,modelError,provider,integrityMode,transportRetries},buildCoreBlock(prepared.snapshot),CONVERSATION_SCHEMA);
   const { intent, props, plan, controlProposal, localText, snapshot, turnIndex, facts } = prepared;
   const integrity = { mode: normalizeIntegrityMode(integrityMode), severity: 'ok', banner: null, discrepancies: [], withheld: [], snapshotEcho: null };
   let bestPartial = null;

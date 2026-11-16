@@ -4,9 +4,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { pathToFileURL } = require('node:url');
+const { readReportOutputArg, resolveReportOutput } = require('./lib/report-output-path.cjs');
 
 const ROOT = path.resolve(__dirname, '..');
-const OUTPUT_PATH = path.join(ROOT, 'docs', 'cognitive_emergence_prereg.v1.json');
+const OUTPUT_PATH = resolveReportOutput({
+  projectRoot: ROOT,
+  defaultPath: path.join(ROOT, 'docs', 'cognitive_emergence_prereg.v1.json'),
+  outputPath: readReportOutputArg(process.argv.slice(2))
+});
 
 const run = async () => {
   const specModule = await import(
@@ -70,6 +75,7 @@ const run = async () => {
     .digest('hex');
 
   if (existingChecksum !== payload.preregChecksum) {
+    fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
     fs.writeFileSync(OUTPUT_PATH, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   }
   console.log(`[cognitive-prereg] wrote ${OUTPUT_PATH}`);

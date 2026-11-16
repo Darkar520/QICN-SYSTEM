@@ -1,0 +1,62 @@
+{
+  "schema": "qicn.system_b_preregister.v1",
+  "source_commit": "4142610792c51a171db3b965ff314646fa5535c1",
+  "claim_scope": "optional_internal_language_verification",
+  "evidence_scope": "internal_support_only",
+  "external_support_certified": false,
+  "interpretation_boundary": "Factual checking and explicitly open evidential argument only; no external validation, phenomenal certification, or promotion of runtime claims.",
+  "implementation_status": "not_recorded",
+  "proposed_contract": "qicn.language_realization.v5",
+  "activation": "optional_explicit_contract",
+  "compatibility": {
+    "v2_required_pass": true,
+    "v3_fixed_cases": 87,
+    "v4_fixed_cases": 95,
+    "false_accepts_allowed": 0,
+    "false_rejects_allowed": 0,
+    "api_default_unchanged": true,
+    "v4_lexical_contract_unchanged": true
+  },
+  "factual_types": [
+    "metric_value", "comparison", "algebraic_relation", "module_operation",
+    "catalog_statement", "ledger_event", "measured_effect", "analytical_bound"
+  ],
+  "open_argument_types": ["counterfactual_assumption", "open_hypothesis", "rival_mechanism", "proposed_falsifier"],
+  "required_parts": ["measured_observation", "applicable_model", "intervention_or_explicit_absence", "symmetric_epistemic_scope"],
+  "gemini_role": {
+    "authors": ["novel_philosophical_questions", "argument_structure", "hypotheses", "rivals", "counterfactuals", "falsifiers", "free_philosophical_prose"],
+    "not_limited_to_closed_answer_templates": true,
+    "cannot_author_authoritative_fact_values": true,
+    "cannot_author_module_operation_authority": true,
+    "cannot_invoke_live_controls": true,
+    "cannot_certify_its_own_annotations": true,
+    "publication_rule": "ReasoningPlan separates source-bound factual atoms from open arguments. Realization maps each factual span to independently checked atoms, inserts authoritative values locally, and rejects unbound factual/module-operation assertions before publication. New philosophical arguments remain open arguments, not deterministically proved truth.",
+    "unknown_philosophical_question": "Gemini may create new hypotheses and tests without a pre-existing answer template; missing observations or interventions remain not_recorded. No generic fallback may fabricate evidence."
+  },
+  "invariants": {
+    "OPEN_FRAME_may_suspend_factual_verification": false,
+    "numbers_in_question_are_runtime_evidence": false,
+    "module_existence_implies_operation_attribution": false,
+    "model_annotation_is_verification": false,
+    "all_factual_spans_checked_before_publication": true,
+    "full_digest_and_tick_binding_required": true,
+    "analytical_bound_distinct_from_measured_error": true,
+    "historical_v1_cn3_failure_preserved": true,
+    "cn4_maxAbsDiff": 0,
+    "observerChannelChangesTrajectory": false
+  },
+  "mandatory_controls": [
+    "conditional_marker_cannot_hide_false_number_sign_or_dominance",
+    "negation_cannot_hide_unrelated_false_attribution",
+    "real_module_wrong_operation",
+    "true_fact_wrong_tick_or_ledger",
+    "analytical_bound_presented_as_measured_error",
+    "local_intervention_presented_as_external_support",
+    "both_phenomenal_affirmation_and_absolute_impossibility",
+    "novel_philosophical_question_with_no_template",
+    "novel_open_argument_with_correct_facts_is_publishable",
+    "speculative_prose_cannot_override_failed_fact",
+    "graceful_removal_preserves_premise_dependencies",
+    "rejected_or_partial_turn_cannot_change_dynamics"
+  ]
+}

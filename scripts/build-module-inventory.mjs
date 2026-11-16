@@ -40,7 +40,8 @@ export const MODULE_FILES = Object.freeze(${JSON.stringify(files)});
 export const MODULE_NAMES = Object.freeze(${JSON.stringify(names)});
 `;
   if (check) {
-    const current = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
+    // Git's Windows autocrlf checkout must not make an unchanged inventory stale.
+    const current = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8').replace(/\r\n/g, '\n') : '';
     if (current !== body) { console.error('[module-inventory] stale; run node scripts/build-module-inventory.mjs'); process.exit(1); }
     console.log('[module-inventory] up to date');
   } else {

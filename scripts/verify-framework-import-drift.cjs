@@ -20,6 +20,9 @@
  *   --self-test            run internal logic tests, exit 0/1
  *   --strict               also fail on un-allowlisted upstream drift
  *   --json-file=<path>     write the full report JSON to <path>
+ *   --out=<path>           alias for --json-file (QICN_REPORT_DIR also opt-in)
+ *   --local-only           never resolve/probe the upstream tree; also enabled
+ *                          by QICN_BRIDGE_LOCAL_ONLY=1. Strict cannot pass here.
  *   --framework-root=<dir> override framework root (else env QICN_FRAMEWORK_ROOT
  *                          or manifest.source_root)
  */
@@ -27,6 +30,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { readReportOutputArg, resolveReportOutput, isBridgeLocalOnly } = require('./lib/report-output-path.cjs');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const MANIFEST = path.join(REPO_ROOT, 'qicn_imported_manifest_v39.json');
@@ -67,7 +71,7 @@ function isAllowlisted(allow, relative, kind) {
 }
 
 /** Core comparison. Pure: takes a fileHash resolver so it is unit-testable. */
-function computeDrift({ manifest, frameworkRoot, repoRoot, allow, hashFn, existsFn }) {
+function computeDrift({ manifest, frameworkRoot, repoRoot, allow, hashFn, existsFn, localOnly = false }) {
   const findings = [];
   const counts = {
     total: 0, in_sync: 0,
@@ -75,11 +79,11 @@ function computeDrift({ manifest, frameworkRoot, repoRoot, allow, hashFn, exists
     upstream_drift: 0, source_missing: 0,
     allowlisted: 0,
   };
+  if (localOnly) counts.local_intact = 0;
 
   for (const entry of manifest.entries) {
     counts.total += 1;
     const destAbs = path.join(repoRoot, ...entry.destination_relative.replace(/\\\\/g, "/").split("/"));
-    const srcAbs = path.join(frameworkRoot, ...entry.source_relative.replace(/\\\\/g, "/").split("/"));
     const rec = { path: normRel(entry.source_relative), status: [], allowlisted: [] };
 
     // (a) local integrity
@@ -92,16 +96,20 @@ function computeDrift({ manifest, frameworkRoot, repoRoot, allow, hashFn, exists
     }
 
     // (b) upstream staleness
-    if (!existsFn(srcAbs)) {
-      rec.status.push('SOURCE_MISSING');
-      counts.source_missing += 1;
-    } else if (hashFn(srcAbs) !== entry.sha256_source) {
-      rec.status.push('UPSTREAM_DRIFT');
-      counts.upstream_drift += 1;
+    if (!localOnly) {
+      const srcAbs = path.join(frameworkRoot, ...entry.source_relative.replace(/\\\\/g, "/").split("/"));
+      if (!existsFn(srcAbs)) {
+        rec.status.push('SOURCE_MISSING');
+        counts.source_missing += 1;
+      } else if (hashFn(srcAbs) !== entry.sha256_source) {
+        rec.status.push('UPSTREAM_DRIFT');
+        counts.upstream_drift += 1;
+      }
     }
 
     if (rec.status.length === 0) {
-      counts.in_sync += 1;
+      if (localOnly) counts.local_intact += 1;
+      else counts.in_sync += 1;
       continue;
     }
     for (const k of rec.status) {
@@ -113,7 +121,7 @@ function computeDrift({ manifest, frameworkRoot, repoRoot, allow, hashFn, exists
   return { counts, findings };
 }
 
-function gateVerdict(counts, findings, strict) {
+function gateVerdict(counts, findings, strict, localOnly = false) {
   const blocking = findings.filter((f) =>
     f.status.some(
       (k) =>
@@ -122,10 +130,13 @@ function gateVerdict(counts, findings, strict) {
         !f.allowlisted.includes(k)
     )
   );
+  if (strict && localOnly) {
+    blocking.push({ path: null, status: ['UPSTREAM_NOT_CHECKED'], allowlisted: [] });
+  }
   const stale = counts.upstream_drift > 0 || counts.source_missing > 0;
   return {
     integrity: blocking.length === 0 ? 'PASS' : 'FAIL',
-    sync_status: stale ? 'STALE' : 'IN_SYNC',
+    sync_status: localOnly ? 'not_recorded' : (stale ? 'STALE' : 'IN_SYNC'),
     blocking_count: blocking.length,
     blocking,
   };
@@ -134,21 +145,31 @@ function gateVerdict(counts, findings, strict) {
 function runReal(argv) {
   const strict = argv.includes('--strict');
   const rootArg = (argv.find((a) => a.startsWith('--framework-root=')) || '').split('=')[1];
-  const jsonOut = (argv.find((a) => a.startsWith('--json-file=')) || '').split('=')[1];
+  const localOnly = argv.includes('--local-only') || isBridgeLocalOnly();
+  const requestedOut = readReportOutputArg(argv, ['json-file']);
+  // Historically the bridge writes no report unless --json-file is passed.
+  const jsonOut = requestedOut !== undefined || process.env.QICN_REPORT_DIR?.trim()
+    ? resolveReportOutput({
+      projectRoot: REPO_ROOT,
+      defaultPath: path.join(REPO_ROOT, 'artifacts', 'bridge_drift_report.v1.json'),
+      outputPath: requestedOut,
+      cwd: REPO_ROOT
+    })
+    : null;
 
   const manifest = readJson(MANIFEST);
   const allow = loadAllowlist();
   const pin = fs.existsSync(PIN) ? readJson(PIN) : null;
-  const frameworkRoot = resolveFrameworkRoot(manifest, rootArg);
+  const frameworkRoot = localOnly ? null : resolveFrameworkRoot(manifest, rootArg);
 
-  const frameworkPresent = fs.existsSync(frameworkRoot);
+  const frameworkPresent = localOnly ? null : fs.existsSync(frameworkRoot);
   const hashFn = (f) => sha256(f);
   const existsFn = (f) => fs.existsSync(f);
 
   const { counts, findings } = computeDrift({
-    manifest, frameworkRoot, repoRoot: REPO_ROOT, allow, hashFn, existsFn,
+    manifest, frameworkRoot, repoRoot: REPO_ROOT, allow, hashFn, existsFn, localOnly,
   });
-  const verdict = gateVerdict(counts, findings, strict);
+  const verdict = gateVerdict(counts, findings, strict, localOnly);
 
   const report = {
     schema: 'bridge_drift_report.v1',
@@ -161,6 +182,12 @@ function runReal(argv) {
     counts,
     verdict,
     findings,
+    ...(localOnly ? {
+      verification_scope: 'local_only',
+      upstream_status: 'not_recorded',
+      evidence_scope: 'internal_support_only',
+      external_support_certified: false
+    } : {}),
   };
 
   if (jsonOut) {
@@ -182,7 +209,9 @@ function runReal(argv) {
     ' sync_status=' + verdict.sync_status +
     ' blocking=' + verdict.blocking_count);
 
-  if (!frameworkPresent) {
+  if (localOnly) {
+    console.log('[bridge:drift] local-only: upstream not queried; sync status not_recorded.');
+  } else if (!frameworkPresent) {
     console.log('[bridge:drift] NOTE: framework root not found; upstream check skipped. ' +
       'Set QICN_FRAMEWORK_ROOT or --framework-root=. Local integrity still evaluated.');
   }

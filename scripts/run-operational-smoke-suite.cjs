@@ -1,6 +1,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { readReportOutputArg, resolveReportOutput } = require('./lib/report-output-path.cjs');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
@@ -74,8 +75,13 @@ const makeEntropySnapshot = ({ value, nowMs, requestId, jobId }) => ({
 
 async function runOperationalSmokeSuite({
   projectRoot = PROJECT_ROOT,
-  outputPath = path.join(projectRoot, 'artifacts', 'operational_smoke_manifest.json')
+  outputPath
 } = {}) {
+  outputPath = resolveReportOutput({
+    projectRoot,
+    defaultPath: path.join(projectRoot, 'artifacts', 'operational_smoke_manifest.json'),
+    outputPath
+  });
   const repoRoot = path.resolve(projectRoot);
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'qicn-operational-smoke-'));
   const steps = [];
@@ -282,7 +288,9 @@ async function runOperationalSmokeSuite({
 if (require.main === module) {
   (async () => {
     try {
-      const result = await runOperationalSmokeSuite();
+      const result = await runOperationalSmokeSuite({
+        outputPath: readReportOutputArg(process.argv.slice(2))
+      });
       process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     } catch (error) {
       console.error(`FAIL run-operational-smoke-suite: ${error.message}`);

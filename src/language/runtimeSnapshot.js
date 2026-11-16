@@ -239,7 +239,7 @@ export function captureRuntimeSnapshot(core, context = {}) {
     body_v_neg: roundTo(finite(towerTel.body?.[1]), 6),
     world_w_fast: roundTo(finite(towerTel.world?.[0]), 6),
     world_w_slow: roundTo(finite(towerTel.world?.[1]), 6),
-    constructive_cuts: towerTel.constructiveFiniteCuts || state.constructive_finite_cuts || null
+    constructive_cuts: cloneSnapshotData(towerTel.constructiveFiniteCuts || state.constructive_finite_cuts || null)
   } : null;
 
   const persistenceInput = context.persistence && typeof context.persistence === 'object' ? context.persistence : null;
@@ -456,7 +456,7 @@ export function formatMetricValue(id, value, decimalsOverride = null) {
  */
 export function captureTowerSnapshot(core) {
   const state = core?.ontologicalState || {};
-  const telemetry = state.tower_telemetry || null;
+  const telemetry = cloneSnapshotData(state.tower_telemetry || null);
   const payload = {
     schema: 'qicn.tower_snapshot.v1',
     tower_phase: finite(state.tower_phase),
@@ -469,6 +469,25 @@ export function captureTowerSnapshot(core) {
   };
   const digest = sha256Hex(stableStringify(payload));
   return deepFreeze({ ...payload, digest });
+}
+
+// Detach observational data before freezing it. Preserve enumerable values,
+// undefined fields and graph sharing, which stableStringify includes in its
+// existing digest semantics. No accessors with runtime side effects are used.
+function cloneSnapshotData(value, seen = new WeakMap()) {
+  if (!value || typeof value !== 'object') return value;
+  if (seen.has(value)) return seen.get(value);
+  const copy = Array.isArray(value) ? new Array(value.length) : {};
+  seen.set(value, copy);
+  for (const key of Object.keys(value)) {
+    Object.defineProperty(copy, key, {
+      value: cloneSnapshotData(value[key], seen),
+      enumerable: true,
+      writable: true,
+      configurable: true
+    });
+  }
+  return copy;
 }
 
 function deepFreeze(value) {

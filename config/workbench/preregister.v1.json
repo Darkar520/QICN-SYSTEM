@@ -1,0 +1,100 @@
+{
+  "schema": "qicn.workbench_preregister.v1",
+  "source_commit": "4142610792c51a171db3b965ff314646fa5535c1",
+  "claim_scope": "internal_engineering_and_isolated_interventions",
+  "evidence_scope": "internal_support_only",
+  "external_support_certified": false,
+  "interpretation_boundary": "Engineering acceptance and isolated-clone experiments only. Not external validation, run admissibility, batch enforcement, or phenomenal claim closure.",
+  "implementation_status": "not_recorded",
+  "historical_v1": {
+    "script": "scripts/run-historical-dependence-ablation.mjs",
+    "seeds": [11, 23, 37, 41, 53],
+    "warmup_ticks": 420,
+    "evaluation_ticks": 180,
+    "nodes": 250,
+    "action_divergence_min": 0.2,
+    "anchor_l2_min": 0.08,
+    "viability_gain_min": 0.03,
+    "required_seeds": 4,
+    "primary_viability_rule": "deltaInTubeRate >= 0.03 OR deltaObjectiveScore >= 0.03",
+    "cn3_rule": "count(deltaMaturedMinusErased >= 0.03) >= 4 AND count(erasedActionDivergenceVsMatured >= 0.20) >= 4 AND every(erasedVsNaiveZeroProbeDivergence === 0)",
+    "stage0_memory_reproduction": {
+      "artifact_role": "diagnostic_summary_not_runtime_primary",
+      "seeds_meeting_action_divergence": 5,
+      "seeds_meeting_anchor_shift": 5,
+      "seeds_meeting_viability_gain": 4,
+      "cn3_seeds_meeting_advantage": 3,
+      "cn3_seeds_meeting_action_divergence": 3,
+      "cn3_erased_history": false,
+      "cn4_maxAbsDiff": 0,
+      "allPreregisteredCriteriaPass": false
+    },
+    "change_policy": "Preserve v1 unchanged. New causal protocols require a distinct version; never tune thresholds or remove seeds to turn this failure into a pass."
+  },
+  "paired_protocol": {
+    "schema": "qicn.workbench_protocol.v1",
+    "diagnostic_seeds": [11, 23, 37, 41, 53],
+    "held_out_seeds": [67, 79, 97, 101, 113],
+    "held_out_policy": "Do not inspect held-out outcomes before implementation and protocol are frozen; no outcome-dependent exclusions.",
+    "execution_profiles": ["legacy_compatibility", "paired_intervention"],
+    "state_partition": ["physical_state", "historical_state", "execution_context"],
+    "future_inputs": "Explicit common per-tick input tape; independent branch-owned RNG streams and virtual clocks; never the future live sensor stream.",
+    "historical_interventions": ["sham", "block_history_read", "suspend_consolidation", "freeze_predictor_weights", "erase_declared_history"],
+    "intervention_policy": "Each intervention declares an exact writable-field set and preserves the original capture and sealed commitments in the experiment provenance."
+  },
+  "engineering_acceptance": {
+    "live_value_mutations": 0,
+    "live_descriptor_mutations": 0,
+    "shared_mutable_references": 0,
+    "unrestored_fields": 0,
+    "global_rng_calls": 0,
+    "real_clock_calls": 0,
+    "sham_maxAbsDiff": 0,
+    "cn4_maxAbsDiff": 0,
+    "observerChannelChangesTrajectory": false,
+    "deterministic_result_digest_equal": true,
+    "legacy_runtime_trajectory_equal": true,
+    "legacy_RECOMPUTED_EACH_TICK_unchanged": true,
+    "tamper_detection_required": true,
+    "scientific_effect_positive_required": false
+  },
+  "mandatory_controls": [
+    "identity_intervention_sham",
+    "host_to_branch_leak_after_capture",
+    "branch_to_host_mutation",
+    "shared_reference_and_deep_freeze_detection",
+    "global_rng_and_clock_traps",
+    "language_local_v3_v4_v5_rejection_correction_invariance",
+    "observer_channel_trajectory_invariance",
+    "positive_detector_sensitivity",
+    "separate_history_read_learning_freeze_consolidation_erasure",
+    "capture_protocol_chain_tamper_truncation_reordering",
+    "mismatched_build_tick_seed_or_input_tape",
+    "cancel_timeout_and_restore_failure",
+    "stale_result_not_current_state"
+  ],
+  "metrics_to_record": [
+    "complete_trajectory_digests", "action_ids", "top_two_action_score_margin",
+    "viability_components", "in_tube_rate", "mean_objective_score",
+    "fast_and_consolidated_weights", "anchor_l2", "fisher_stiffness",
+    "engram_count", "pending_credit_queue", "sensor_cursor", "execution_calendar",
+    "rng_stream_positions", "first_divergent_tick", "maxAbsDiff"
+  ],
+  "entropy_dependency_audit_required": [
+    "src/simulation/QuantumEntropyBridge.js",
+    "src/simulation/EntropyBufferManager.js",
+    "src/simulation/EntropyExperimentController.js",
+    "src/simulation/EntropyHealthMonitor.js",
+    "src/simulation/EntropyProviderClient.js"
+  ],
+  "later_schema_ids": ["qicn.workbench_capture.v1", "qicn.workbench_protocol.v1", "qicn.workbench_result.v1"],
+  "final_checks": [
+    "npm test", "v2", "v3", "v4", "persistence.v3", "lint",
+    "verify:source-of-truth", "verify:descriptor-registry", "verify:claim-surface-boundaries",
+    "verify:policies", "test:tower-math", "bridge:verify", "smoke:operational",
+    "verify:operational-readiness", "verify:subjectivity-stack",
+    "verify:phenomenal-bridge-final-audit", "verify:comparative-program-closure",
+    "node scripts/build-module-inventory.mjs --check", "scoreboard", "npm run build",
+    "restore_and_language_and_historical_ablations_with_TEMP_outputs"
+  ]
+}

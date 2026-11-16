@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 const fs = require('node:fs');
 const path = require('node:path');
+const { readReportOutputArg, resolveReportOutput } = require('./lib/report-output-path.cjs');
 
 const ROOT = path.resolve(__dirname, '..');
 const SRC_ROOT = path.join(ROOT, 'src');
@@ -88,7 +89,11 @@ const payload = {
   status: violations.length === 0 ? 'PASS' : 'FAIL'
 };
 
-const outPath = path.join(ROOT, 'artifacts', 'runtime_source_of_truth_check.json');
+const outPath = resolveReportOutput({
+  projectRoot: ROOT,
+  defaultPath: path.join(ROOT, 'artifacts', 'runtime_source_of_truth_check.json'),
+  outputPath: readReportOutputArg(process.argv.slice(2))
+});
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
 fs.writeFileSync(outPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
 

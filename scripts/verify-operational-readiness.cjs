@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { verifyEnvironmentContract } = require('./verify-env-contract.cjs');
+const { readReportOutputArg, resolveReportOutput } = require('./lib/report-output-path.cjs');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
@@ -68,8 +69,13 @@ const REQUIRED_ENTRYPOINTS = [
 
 function verifyOperationalReadiness({
   projectRoot = PROJECT_ROOT,
-  outputPath = path.join(projectRoot, 'artifacts', 'operational_readiness_manifest.json')
+  outputPath
 } = {}) {
+  outputPath = resolveReportOutput({
+    projectRoot,
+    defaultPath: path.join(projectRoot, 'artifacts', 'operational_readiness_manifest.json'),
+    outputPath
+  });
   const packageJsonPath = path.join(projectRoot, 'package.json');
   const workflowPath = path.join(projectRoot, '.github', 'workflows', 'ci.yml');
   const packageJson = readJson(packageJsonPath);
@@ -77,7 +83,7 @@ function verifyOperationalReadiness({
 
   const envContract = verifyEnvironmentContract({
     projectRoot,
-    outputPath: path.join(projectRoot, 'artifacts', 'operational_readiness', 'environment_contract_manifest.json')
+    outputPath: path.join(path.dirname(outputPath), 'operational_readiness', 'environment_contract_manifest.json')
   });
 
   const missingScripts = REQUIRED_CANONICAL_SCRIPTS.filter((name) => !Object.prototype.hasOwnProperty.call(scripts, name));
@@ -139,7 +145,7 @@ function verifyOperationalReadiness({
 if (require.main === module) {
   try {
     const projectRoot = path.resolve(parseArg('project-root', PROJECT_ROOT));
-    const outputPath = path.resolve(parseArg('output', path.join(projectRoot, 'artifacts', 'operational_readiness_manifest.json')));
+    const outputPath = readReportOutputArg(process.argv.slice(2), ['output']);
     const result = verifyOperationalReadiness({ projectRoot, outputPath });
     if (!result.ok) {
       throw new Error(`Operational readiness verification failed. missingScripts=${result.manifest.missing_canonical_scripts.join(',') || 'none'} missingDocs=${result.manifest.docs_missing.join(',') || 'none'}`);

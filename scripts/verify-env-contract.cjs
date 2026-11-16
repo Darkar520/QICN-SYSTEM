@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { readReportOutputArg, resolveReportOutput } = require('./lib/report-output-path.cjs');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const EXPECTED_NODE_MAJOR = 22;
@@ -52,8 +53,13 @@ function verifyEnvironmentContract({
   projectRoot = PROJECT_ROOT,
   envExamplePath = path.join(projectRoot, '.env.example'),
   envPath = path.join(projectRoot, '.env'),
-  outputPath = path.join(projectRoot, 'artifacts', 'operational_readiness', 'environment_contract_manifest.json')
+  outputPath
 } = {}) {
+  outputPath = resolveReportOutput({
+    projectRoot,
+    defaultPath: path.join(projectRoot, 'artifacts', 'operational_readiness', 'environment_contract_manifest.json'),
+    outputPath
+  });
   if (!fs.existsSync(envExamplePath)) {
     throw new Error(`Missing env example: ${envExamplePath}`);
   }
@@ -117,7 +123,7 @@ function verifyEnvironmentContract({
 if (require.main === module) {
   try {
     const projectRoot = path.resolve(parseArg('project-root', PROJECT_ROOT));
-    const outputPath = path.resolve(parseArg('output', path.join(projectRoot, 'artifacts', 'operational_readiness', 'environment_contract_manifest.json')));
+    const outputPath = readReportOutputArg(process.argv.slice(2), ['output']);
     const result = verifyEnvironmentContract({ projectRoot, outputPath });
     if (!result.ok) {
       throw new Error(`Environment contract verification failed. Node=${result.manifest.actual_node_version}, missingKeys=${result.manifest.required_keys_missing_in_example.join(',') || 'none'}, nvmrcPresent=${result.manifest.nvmrc_present}`);

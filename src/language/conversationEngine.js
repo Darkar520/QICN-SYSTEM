@@ -7,7 +7,7 @@ import { resolveIntent, normalizeText } from './intentResolver.js';
 import { buildPropositions, renderProposition, INTENT_LABELS } from './propositions.js';
 import { planAnswer, composeLocalAnswer } from './narrator.js';
 import { buildFacts, buildRealizationPrompt, buildCorrectionPrompt, parseRealization, verifyRealization, factsById, obligationsFor, DELTA_FRAME_IDS, REQUIRED_BY_INTENT, REALIZATION_SCHEMA } from './realizationContract.js';
-import { verifySnapshotDigest, RECOMPUTED_EACH_TICK } from './runtimeSnapshot.js';
+import { verifySnapshotDigest, verifySnapshotStructuralConsistency, RECOMPUTED_EACH_TICK } from './runtimeSnapshot.js';
 import { buildFreePrompt, buildFreeContext, parseFreeRealization, verifyFreeRealization, buildFreeCorrectionPrompt, freeGracefulCandidate, buildFreeConcordance, assembleText, FREE_REALIZATION_SCHEMA, FREE_GUARANTEE_NOTE, KAIZEN_EFFECTIVE_DEFAULT } from './freeRealization.js';
 
 // Realization contracts (2026-11-08): 'free' = v4 free prose with non-lexical
@@ -166,6 +166,10 @@ function factPropsFor(props, intentResult) {
 export function prepareTurn({ question, snapshot, ledger = null, turns = [], turnIndex = 0, contract = 'verified', kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT }) {
   if (!snapshot || !verifySnapshotDigest(snapshot)) {
     throw new Error('snapshot_digest_invalid');
+  }
+  const structuralCheck = verifySnapshotStructuralConsistency(snapshot);
+  if (!structuralCheck.ok) {
+    throw new Error(`snapshot_structural_inconsistent:${structuralCheck.violations.join(',')}`);
   }
   const ledgerSummary = readLedger(ledger);
   const previousTurn = turns.length ? turns[turns.length - 1] : null;

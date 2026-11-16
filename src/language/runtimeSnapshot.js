@@ -330,6 +330,73 @@ export function verifySnapshotDigest(snapshot) {
   return sha256Hex(stableStringify(body)) === digest;
 }
 
+/**
+ * Verifies algebraic and regime consistency across serialized snapshot sections
+ * (defends against internally contradictory captures even if re-signed).
+ */
+export function verifySnapshotStructuralConsistency(snapshot) {
+  const violations = [];
+  if (!snapshot || typeof snapshot !== 'object') {
+    return { ok: false, violations: ['snapshot_missing'] };
+  }
+  const m = snapshot.metrics || null;
+  const pred = snapshot.predicates || null;
+  const sp = snapshot.structural_profile || null;
+  const tw = snapshot.tower || null;
+  if (!sp || typeof sp !== 'object') {
+    return { ok: true, violations };
+  }
+  const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
+
+  if (tw && isNum(tw.body_v_pos) && isNum(tw.body_v_neg)) {
+    const expectedBalance = tw.body_v_pos - tw.body_v_neg;
+    const expectedL1 = Math.abs(tw.body_v_pos) + Math.abs(tw.body_v_neg);
+    if (isNum(sp.body_net_balance) && Math.abs(sp.body_net_balance - expectedBalance) > 2e-6) {
+      violations.push('body_net_balance_mismatch');
+    }
+    if (isNum(sp.body_l1_norm) && Math.abs(sp.body_l1_norm - expectedL1) > 2e-6) {
+      violations.push('body_l1_norm_mismatch');
+    }
+    if (sp.body_polarity_regime) {
+      if (expectedBalance > 2e-6 && sp.body_polarity_regime !== 'v_pos_dominant') violations.push('body_polarity_regime_inverted');
+      else if (expectedBalance < -2e-6 && sp.body_polarity_regime !== 'v_neg_dominant') violations.push('body_polarity_regime_inverted');
+      else if (expectedL1 === 0 && !['quiescent', 'balanced'].includes(sp.body_polarity_regime)) violations.push('body_polarity_regime_inverted');
+    }
+    if (expectedL1 > 1e-5 && isNum(sp.body_asymmetry_index)) {
+      const expectedAsym = expectedBalance / expectedL1;
+      if (Math.abs(sp.body_asymmetry_index - expectedAsym) > 2e-4) violations.push('body_asymmetry_index_mismatch');
+    }
+  }
+
+  if (tw && isNum(tw.world_w_fast) && isNum(tw.world_w_slow)) {
+    const expectedContrast = tw.world_w_fast - tw.world_w_slow;
+    const expectedWorldL1 = Math.abs(tw.world_w_fast) + Math.abs(tw.world_w_slow);
+    if (isNum(sp.world_temporal_contrast) && Math.abs(sp.world_temporal_contrast - expectedContrast) > 2e-6) {
+      violations.push('world_temporal_contrast_mismatch');
+    }
+    if (sp.world_timescale_regime) {
+      if (expectedContrast > 2e-6 && sp.world_timescale_regime !== 'fast_dominant') violations.push('world_timescale_regime_inverted');
+      else if (expectedContrast < -2e-6 && sp.world_timescale_regime !== 'slow_dominant') violations.push('world_timescale_regime_inverted');
+      else if (expectedWorldL1 === 0 && !['quiescent', 'balanced'].includes(sp.world_timescale_regime)) violations.push('world_timescale_regime_inverted');
+    }
+  }
+
+  if (m && isNum(m.ccc) && isNum(m.ascension_threshold) && isNum(sp.ccc_threshold_margin)) {
+    const cccRef = isNum(pred?.ccc_precise) ? pred.ccc_precise : m.ccc;
+    if (Math.abs(sp.ccc_threshold_margin - (cccRef - m.ascension_threshold)) > 2e-4) {
+      violations.push('ccc_threshold_margin_mismatch');
+    }
+    if (pred?.ccc_vs_threshold === 'above' && sp.ccc_threshold_margin < -1e-9) violations.push('ccc_threshold_sign_inverted');
+    if (pred?.ccc_vs_threshold === 'below' && sp.ccc_threshold_margin > 1e-9) violations.push('ccc_threshold_sign_inverted');
+  }
+  if (m && isNum(m.ccc) && isNum(m.x_n) && isNum(sp.ccc_xn_divergence)) {
+    if (Math.abs(sp.ccc_xn_divergence - (m.ccc - m.x_n)) > 2e-4) {
+      violations.push('ccc_xn_divergence_mismatch');
+    }
+  }
+  return { ok: violations.length === 0, violations };
+}
+
 export const TOWER_METRIC_SPECS = Object.freeze({
   tower_phase: { label: 'fase exacta de la torre (tower_phase)', kind: 'direct_signal', source: 'WritablePrefixTower.phase', decimals: 6 },
   tower_code: { label: 'código ternario de la torre (tower_code)', kind: 'direct_signal', source: 'WritablePrefixTower.code', decimals: 6 },

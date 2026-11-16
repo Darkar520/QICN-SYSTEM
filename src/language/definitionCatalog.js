@@ -144,7 +144,7 @@ export const DEFINITIONS = Object.freeze({
   },
   historical_dependence: {
     title: 'dependencia histórica y predicción sellada pre-desenlace',
-    text: 'La dependencia histórica operacional (Paper VII, def:historical-dependence) evalúa si el modelo del mundo sellado con SHA-256 pre-desenlace, la consolidación elástica asimétrica (ancla W* y rigidez Ω), los engramas estructurales y la política de viabilidad Viab(S, tau) producen divergencia causal duradera ante idéntico estímulo futuro; es soporte interno y no implica conciencia ni validación externa.',
+    text: 'La dependencia histórica operacional (Paper VII, def:historical-dependence) evalúa si el modelo del mundo sellado con SHA-256 pre-desenlace, la consolidación elástica asimétrica sobre los pesos del predictor lineal WorldModelEngine (ancla W* y rigidez Ω, no sobre los nodos de NodalProcessingLayer), los engramas estructurales y la política determinista de viabilidad Viab(S, tau) producen divergencia causal duradera ante idéntico estímulo futuro; es soporte interno y no implica conciencia ni validación externa.',
     source: 'src/simulation/WorldModelEngine.js; src/simulation/HolographicMemoryNexus.js; src/simulation/KaizenMetamorphosisEngine.js; Paper VII def:historical-dependence'
   }
 });
@@ -218,7 +218,7 @@ export const LIMITS = Object.freeze({
     source: 'rigid-identity-framework/INSTRUCCIONES.md §6.1'
   },
   shared_hybrid_tie: {
-    text: 'En la extensión cuerpo–mundo realizo localmente las seis cargas D/V/W/A/E/T con margen mínimo 13/96 y rango 6 de lesión, pero dos canales escalares que comparten estado reproducen el mecanismo lineal (margen 0), y en la planta cuártica indexada la separación de 4 raíces (4·ξ₄ = 1/262144) es provisional y no confirmatoria, desaparece ante una réplica de 4 raíces de igual costo (margen ≤ 0) y no demuestra valencia sentida.',
+    text: 'En la extensión cuerpo–mundo realizo localmente las seis cargas declaradas D/V/W/A/E/T con margen mínimo 13/96 y rango 6 de lesión, pero dos canales escalares que comparten estado reproducen únicamente ese mecanismo lineal de evaluación sobre las seis cargas locales declaradas (margen 0, sin reproducir todos los observables de la red nodal ni de la plasticidad), y en la planta cuártica indexada la separación de 4 raíces (4·ξ₄ = 1/262144) es provisional y no confirmatoria, desaparece ante una réplica de 4 raíces de igual costo (margen ≤ 0) y no demuestra valencia sentida.',
     source: 'paper9_phenomenal_bridge_organization prop:bridge-shared-hybrid-obstruction, thm:bridge-four-root-identification; src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js'
   }
 });

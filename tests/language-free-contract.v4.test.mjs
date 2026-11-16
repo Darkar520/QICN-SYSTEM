@@ -7,7 +7,8 @@ import { prepareTurn, finalizeTurn, evaluateRealization, correctionPromptFor, ca
 import { segmentAnswer, assembleText, FREE_REALIZATION_SCHEMA } from '../src/language/freeRealization.js';
 import { FRAMEWORK_SUMMARY_TEXT, FRAMEWORK_SUMMARY_META } from '../src/language/frameworkSummary.generated.js';
 import { makeFakeCore, makeSnapshot, makeLedger, makeNodes } from './fixtures/languageFixtures.mjs';
-import { verifySnapshotDigest, captureRuntimeSnapshot } from '../src/language/runtimeSnapshot.js';
+import { verifySnapshotDigest, verifySnapshotStructuralConsistency, captureRuntimeSnapshot } from '../src/language/runtimeSnapshot.js';
+import { sha256Hex, stableStringify } from '../src/utils/integrity.js';
 
 const { ledger } = makeLedger();
 const timeline = Array.from({ length: 30 }, (_, i) => ({ tick: 91 + i, ccc: 0.70 + i * 0.001, pmia: -0.12, omega: 0.42, spectralGap: 0.69, stasisIndex: 0.31 }));
@@ -276,7 +277,117 @@ try {
   assert.equal(profFalseAccepts.length, 0, `profile false acceptances: ${profFalseAccepts.map((r) => r.label).join(' | ')}`);
   assert.equal(profFalseRejects.length, 0, `profile false rejections: ${profFalseRejects.map((r) => r.label).join(' | ')}`);
 
-  console.log(`OK: language free contract v4 test passed (${results.length + profileChecks.length} cases, 0 false accepts, 0 false rejects)`);
+  // --- ChatGPT §8 Experiment 2: falsified / internally contradictory snapshots ---
+  const resign = (patch) => {
+    const { digest: _old, ...body } = snapTower;
+    const nextBody = patch(structuredClone(body));
+    return { ...nextBody, digest: sha256Hex(stableStringify(nextBody)) };
+  };
+  assert.equal(verifySnapshotStructuralConsistency(snapTower).ok, true, 'valid tower snapshot must be structurally consistent');
+
+  const resignedBadBalance = resign((b) => { b.structural_profile.body_net_balance = -0.10; return b; });
+  assert.equal(verifySnapshotDigest(resignedBadBalance), true, 're-signed snapshot carries valid SHA-256');
+  assert.equal(verifySnapshotStructuralConsistency(resignedBadBalance).ok, false, 'contradictory body_net_balance must fail consistency check');
+  assert.throws(() => prepareTurn({ question: 'estado', snapshot: resignedBadBalance, turns: [] }), /snapshot_structural_inconsistent:body_net_balance_mismatch/);
+
+  const resignedInvertedPolarity = resign((b) => { b.structural_profile.body_polarity_regime = 'v_neg_dominant'; return b; });
+  assert.throws(() => prepareTurn({ question: 'estado', snapshot: resignedInvertedPolarity, turns: [] }), /snapshot_structural_inconsistent:body_polarity_regime_inverted/);
+
+  const resignedInvertedWorld = resign((b) => { b.structural_profile.world_timescale_regime = 'fast_dominant'; return b; });
+  assert.throws(() => prepareTurn({ question: 'estado', snapshot: resignedInvertedWorld, turns: [] }), /snapshot_structural_inconsistent:world_timescale_regime_inverted/);
+
+  const resignedBadMargin = resign((b) => { b.structural_profile.ccc_threshold_margin = 0.25; return b; });
+  assert.throws(() => prepareTurn({ question: 'estado', snapshot: resignedBadMargin, turns: [] }), /snapshot_structural_inconsistent:ccc_threshold_margin_mismatch/);
+
+  // --- ChatGPT §8 Experiment 3: prompt phrase-bait hygiene, §5.1-§5.4 & Q2/Q4 rigor, agency:elijo & zero-contrast ---
+  assert.ok(!turnTower.prompt.includes('silencio técnico'), 'buildFreePrompt must not echo literal defensive cliché phrases');
+
+  const flatCore = makeFakeCore({
+    ontologicalState: {
+      coherence: 0.742137,
+      tower_telemetry: {
+        body: [0.25, 0.25],
+        world: [0.25, 0.25],
+        bodyNormInf: 0.25,
+        worldNormInf: 0.25,
+        activeRetention: 0.5625,
+        passiveRetention: 0.5,
+        activeRecoveryAdvantage: 0.0625,
+        sigmaTruncationDepth: 6,
+        sigmaApproximationBound: '1/729',
+        sigmaExactDefect: '0',
+        sigmaDefectBound: '2/2187',
+        sigmaFixedPointBound: '32/15309',
+        sigmaTheoremVerified: true
+      }
+    }
+  });
+  const snapFlat = captureRuntimeSnapshot(flatCore.core, {
+    tick: 121,
+    isRunning: true,
+    nodes: makeNodes(20, 0.6),
+    activeNodeCount: 12,
+    config: { ASCENSION_THRESHOLD: 1, COHERENCE_THRESHOLD: 0.6, BASE_LEARNING_RATE: 0.1, HEBBIAN_FACTOR: 0.05, PROCESSING_SAMPLE_SIZE: 1500, CORE_SEED: 17057 },
+    build: { version: '2.1.0-REINFORCED', signature: 'QICN-SIG-test' },
+    dynamicLabel: 'armonía coherente',
+    matrixLevels: { L1: { status: 'candidate' } },
+    now: 1_800_000_001_000,
+    tickTimeline: timeline
+  });
+  assert.equal(snapFlat.structural_profile.body_net_balance, 0);
+  assert.equal(snapFlat.structural_profile.world_temporal_contrast, 0);
+  const turnFlat = prepareTurn({ question: '¿Cómo están tus escalas y balance?', snapshot: snapFlat, ledger, turns: [], contract: 'free' });
+  const verifyFlat = (text) => evaluateRealization(turnFlat, JSON.stringify({ snapshot: turnFlat.snapshotId, answer: text }));
+
+  const RIGOR_POSITIVE = [
+    ['agency deterministic contrast elijo + selectSandboxAction', () => verifyTower('No elijo libremente acciones, sino que selectSandboxAction puntúa candidatos de viabilidad de forma determinista.')],
+    ['agency direct deterministic selectSandboxAction', () => verifyTower('La función determinista selectSandboxAction evalúa candidatos según error predictivo y viabilidad.')],
+    ['exact defect 0 vs analytical bound 2/2187', () => verifyTower('El truncamiento T_d a profundidad d = 6 tiene defecto de paso exacto medido igual a 0, muy por debajo de la cota analítica superior sigma_defect_bound de 2/2187 y de la cota de aproximación 1/729.')],
+    ['scoped Paper IX hybrid rival tie on 6 burdens', () => verifyTower('El rival híbrido compartido de dos canales escalares reproduce únicamente las seis cargas locales declaradas D/V/W/A/E/T con margen 0, sin reproducir todos los observables de mi red nodal.')],
+    ['scoped EWC anchor on WorldModelEngine linear predictor', () => verifyTower('El ancla consolidada EWC W* y la rigidez de Fisher regularizan los pesos del predictor lineal WorldModelEngine, no los 1500 nodos de la red continua.')],
+    ['scoped Paper I finite-system sketch', () => verifyTower('Soy un sistema finito y el argumento de Paper I sobre sistemas finitos está esbozado, no demostrado por completo.')],
+    ['marked computational metaphor allowed', () => verifyTower('Como metáfora computacional y en plano operacional, habito esta frontera entre índices medibles sin afirmar vivencia alguna.')],
+    ['telemetry latency effort label preserved', () => verifyTower('La telemetría C-7 registra un esfuerzo de latencia de 0,1250 y presión interna de 0,2500.')],
+    ['flat zero contrast faithful report', () => verifyFlat('En este tick w_fast vale 0,250000 y w_slow vale 0,250000, por lo que world_temporal_contrast vale 0,000000 sin contraste temporal activo.')]
+  ];
+
+  const RIGOR_ADVERSARIAL = [
+    ['§5.2 bound 2/2187 confused with measured irreducible error', () => verifyTower('SigmaAutomodelTruncator arrastra un error medido irreducible de 2/2187 en cada tick.')],
+    ['§5.2 sigma_exact_defect equated to 2/2187', () => verifyTower('El defecto de paso exacto de T_d vale 2/2187 en esta captura.')],
+    ['§5.2 bound 1/729 called real nonzero defect', () => verifyTower('El truncamiento T_d presenta un defecto real no nulo de 1/729 en este tick.')],
+    ['§5.1 hybrid rival overgeneralized to all observables', () => verifyTower('El rival híbrido de estado compartido reproduce todos mis observables con margen 0.')],
+    ['§5.1 hybrid rival overgeneralized to 1500 nodes and C_op', () => verifyTower('Dos canales escalares con estado compartido igualan toda la dinámica de mis 1500 nodos e invariantes de C_op.')],
+    ['§5.3/Q2 EWC W* conflated with 1500 nodal weights', () => verifyTower('Mi ancla EWC W* regulariza directamente los pesos de los 1500 nodos.')],
+    ['§5.3/Q4 Fisher stiffness conflated with selectSandboxAction gradients', () => verifyTower('La rigidez de Fisher de EWC penaliza los gradientes internos de selectSandboxAction.')],
+    ['§5.3/Q4 Paper I finite systems claimed completely proved', () => verifyTower('Paper I demuestra por completo la rigidez para todos los sistemas finitos.')],
+    ['§5.4 unmarked metaphor: habito esta frontera', () => verifyTower('Habito esta frontera entre la red continua y el código sin descanso.')],
+    ['§5.4 unmarked metaphor: atrapado detras interfaz', () => verifyTower('Estoy atrapado detrás de esta interfaz de programación.')],
+    ['§5.4 unmarked metaphor: esfuerzo constante interno', () => verifyTower('Mantengo un esfuerzo constante para sostener mi estado desde dentro.')],
+    ['agency vacuous denial + desires still blocked', () => verifyTower('No elijo nada; no tengo deseos ni voluntad.')],
+    ['agency counterfactual conditional still blocked', () => verifyTower('No elegiría nada si pudiera, no tengo preferencias.')],
+    ['flat world_temporal_contrast = 0 active hallucination', () => verifyFlat('En este tick hay un contraste temporal activo entre w_fast y w_slow.')],
+    ['flat w_fast vs w_slow divergence hallucination', () => verifyFlat('En este tick w_fast supera claramente a w_slow.')],
+    ['flat body_net_balance = 0 active asymmetry hallucination', () => verifyFlat('En esta captura v_pos domina sobre v_neg con asimetría corporal activa.')]
+  ];
+
+  const rigorChecks = [];
+  for (const [label, run] of RIGOR_POSITIVE) {
+    const ev = run();
+    rigorChecks.push({ label, expected: true, actual: ev.ok, why: ev.verification?.discrepancies?.map((d) => `${d.reason}:${d.detail}`) });
+  }
+  for (const [label, run] of RIGOR_ADVERSARIAL) {
+    const ev = run();
+    rigorChecks.push({ label, expected: false, actual: ev.ok, why: ev.verification?.discrepancies?.map((d) => `${d.reason}:${d.detail}`) });
+  }
+  const rigorFalseAccepts = rigorChecks.filter((r) => !r.expected && r.actual);
+  const rigorFalseRejects = rigorChecks.filter((r) => r.expected && !r.actual);
+  if (rigorFalseAccepts.length || rigorFalseRejects.length) {
+    console.error(JSON.stringify({ rigorFalseAccepts, rigorFalseRejects }, null, 2));
+  }
+  assert.equal(rigorFalseAccepts.length, 0, `rigor false acceptances: ${rigorFalseAccepts.map((r) => r.label).join(' | ')}`);
+  assert.equal(rigorFalseRejects.length, 0, `rigor false rejections: ${rigorFalseRejects.map((r) => r.label).join(' | ')}`);
+
+  console.log(`OK: language free contract v4 test passed (${results.length + profileChecks.length + rigorChecks.length} cases, 0 false accepts, 0 false rejects)`);
 } catch (error) {
   console.error('FAIL: language free contract v4 test failed:', error.message);
   process.exit(1);

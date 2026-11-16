@@ -258,7 +258,7 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
     add(make({
       id: 'state.sigma_automodel',
       kind: 'state',
-      template: `El truncamiento proyectivo de automodelo SigmaAutomodelTruncator a profundidad d = ${tw.sigma_truncation_depth ?? 6} verifica el teorema de conmutación con cota uniforme de aproximación ${tw.sigma_approximation_bound || '1/729'}, defecto de paso exacto ${tw.sigma_exact_defect || '0'} acotado por sigma_defect_bound = {{sigma_defect_bound}} (${tw.sigma_defect_bound_rational || '2/2187'}) y cota de desplazamiento de punto fijo ${tw.sigma_fixed_point_bound || '32/15309'}.`,
+      template: `El truncamiento proyectivo de automodelo SigmaAutomodelTruncator a profundidad d = ${tw.sigma_truncation_depth ?? 6} verifica el teorema de conmutación con defecto de paso exacto medido igual a ${tw.sigma_exact_defect || '0'}, bajo la cota analítica superior sigma_defect_bound = {{sigma_defect_bound}} (${tw.sigma_defect_bound_rational || '2/2187'}), cota uniforme de aproximación ≤ ${tw.sigma_approximation_bound || '1/729'} y cota analítica de desplazamiento de punto fijo ≤ ${tw.sigma_fixed_point_bound || '32/15309'}.`,
       values: {
         sigma_defect_bound: formatMetricValue('sigma_defect_bound', tw.sigma_defect_bound)
       },

@@ -60,7 +60,16 @@ const METRIC_ALIASES = [
   [/\binformedreserve\b|reserva informada|abstencion informada|frente 4/, 'informed_reserve'],
   [/\bbasecore\b|thm:spectrum|thm:relaxation|esquina u\s*=\s*1\/2|regimen espectral/, 'basecore_spectrum'],
   [/\bm_(omega|ω)\b|masa ontologica|c-11|family_upper_bound|cota superior de m/, 'ontological_mass'],
-  [/procesador (ordinario|binario)|corte finito|cortes finitos|instanciar el marco|proyeccion finita/, 'finite_cut_instantiation']
+  [/procesador (ordinario|binario)|corte finito|cortes finitos|instanciar el marco|proyeccion finita/, 'finite_cut_instantiation'],
+  [/\bstructural_profile\b|perfil estructural|perfil fenomenico|organizacion del tick/, 'structural_profile'],
+  [/\bbody_net_balance\b|balance corporal|balance neto corporal/, 'body_net_balance'],
+  [/\bbody_asymmetry_index\b|asimetria corporal|indice de asimetria/, 'body_asymmetry_index'],
+  [/\bworld_temporal_contrast\b|contraste temporal|balance rapido[- ]lento/, 'world_temporal_contrast'],
+  [/\bactive_recovery_advantage\b|ventaja de retencion activa/, 'active_recovery_advantage'],
+  [/\bccc_threshold_margin\b|margen (?:frente |respecto )?al umbral|distancia al umbral/, 'ccc_threshold_margin'],
+  [/\bccc_xn_divergence\b|divergencia ccc[- ]x_?n/, 'ccc_xn_divergence'],
+  [/\bnode_coherence_dispersion\b|dispersion nodal/, 'node_coherence_dispersion'],
+  [/\braw_winding_number\b|winding bruto/, 'raw_winding_number']
 ];
 
 const RULES = [

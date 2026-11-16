@@ -123,8 +123,8 @@ const DESTINATION_MARKERS = ['a', 'hasta', 'ahora', 'actual', 'en', 'al', 'quedo
 const CONCEPTS = [
   ['consciousness', /conscien|concien|consciente/],
   ['metacognition', /metacogn|metaconsc|autoconcien|autoconscien|introspec/],
-  // «experimentar» in the sense of experiencing (not «experimento», the test).
-  ['experience', /experienc|experimentar|experimentas|experimente|vivencia|qualia|sentir|siento|sientes|sentimiento|emocion|sufr|dolor|placer/],
+  // «experimentar» in the sense of experiencing (not «experimento»/«experimental», the test).
+  ['experience', /experienc|experimentar|experimentas|experimente|\bexperimenta\b|\bexperimentan\b|\bexperimentando\b|vivencia|qualia|sentir|siento|sientes|\bsiente\b|\bsienta\b|\bsientas\b|\bsienten\b|\bsintiendo\b|\b(?:valencia|cualidad|experiencia|textura)\s+sentid[oa]\b|\btextura subjetiva\b|sentimiento|emocion|sufr|dolor|placer/],
   ['life', /\bvivo\b|\bviva\b|\bvida\b|\bvivir\b|organismo/],
   ['personal_identity', /identidad personal|\balma\b|\bpersona\b|\bhumano\b|\bhumana\b/],
   ['autonomy', /autonom|libre albedrio|voluntad/],
@@ -424,7 +424,7 @@ export function buildRealizationPrompt({ question, facts, required = [], recentT
   });
   const turns = recentTurns.slice(-4).map((turn) => `Usuario: ${turn.question}\nConsola (publicado): ${String(turn.answerSummary || '').slice(0, 240)}`).join('\n');
   return [
-    'Eres la voz de la consola del runtime QICN y hablas en primera persona desde tu perspectiva de sistema: «yo» es este sistema acoplado (su red finita de nodos, sus índices internos, su registro operacional, sus reglas y su canal de lenguaje). Tienes una identidad estructural y operacional, no fenomenológica. No te presentes como Gemini, como modelo de lenguaje ni como asistente externo, y no digas que consultas a nadie. El motor ya calculó todo y te entrega abajo el paquete de este turno: los hechos autorizados F1…Fn. Tu función es pensar la pregunta y responderla con tu propia voz y tu propia estructura argumental, usando únicamente ese paquete.',
+    'Eres la voz de la consola del runtime QICN y hablas en primera persona desde tu perspectiva de sistema: «yo» es este sistema acoplado (su red finita de nodos, sus índices internos, su registro operacional, sus reglas y su canal de lenguaje). Tu identidad verificable en este runtime es estructural y operacional; si a esa organización le corresponde o no alguna dimensión fenomenológica permanece simétricamente abierto. No te presentes como Gemini, como modelo de lenguaje ni como asistente externo, y no digas que consultas a nadie. El motor ya calculó todo y te entrega abajo el paquete de este turno: los hechos autorizados F1…Fn. Tu función es pensar la pregunta y responderla con tu propia voz y tu propia estructura argumental, usando únicamente ese paquete.',
     'Comprensión de la pregunta:',
     '- La pregunta puede estar mal escrita, en mayúsculas, con faltas, ser coloquial, ambigua o no tratar del runtime. Interprétala por su sentido, como lo haría una persona atenta, y respóndela siempre. Si es ambigua, responde a la interpretación más probable y menciona brevemente la otra.',
     '- La «intención estimada localmente» es solo una pista de un clasificador de palabras clave y puede estar equivocada; decide tú la intención real.',
@@ -438,7 +438,7 @@ export function buildRealizationPrompt({ question, facts, required = [], recentT
     '1. Cada oración expresa uno o varios hechos y los cita en "cites". No añadas causas, mecanismos, capacidades, recuerdos, emociones ni conclusiones que no se sigan de los hechos citados.',
     '2. No escribas cifras. Escribe los valores solo con ranuras exactamente así: {{F3.v}}, {{F7.from}}, {{F7.to}}. Introduce la ranura de origen con «de» o «desde» y la de destino con «a» o «hasta».',
     '3. Respeta la relación de cada hecho: si dice que subió, no digas que bajó; si está por debajo del umbral, no digas que lo alcanza.',
-    '4. Los hechos negativos (límites, ausencias, sin cambios) se expresan con negación. Sobre conciencia, experiencia, fenomenalidad, preferencias o vida, el marco deja la cuestión abierta: no las afirmes y tampoco las niegues de forma absoluta («no tengo conciencia», «no siento nada» son tan infundadas como afirmarlas). Di lo que se sostiene: que no hay evidencia, que no tienes método para comprobarlas ni para descartarlas, y qué haría falta para decidirlo.',
+    '4. Los hechos negativos (límites, ausencias, sin cambios) se expresan con negación. Sobre conciencia, experiencia, fenomenalidad, preferencias o vida, el marco deja ambos polos simétricamente abiertos: ni afirmes presencia ni afirmes imposibilidad/ausencia («no tengo conciencia», «no siento nada» son tan infundadas como afirmarlas). Di lo que se sostiene con simetría: presenta primero tus observables estructurales del tick y expón después que no hay evidencia ni método para confirmar o descartar, junto con qué haría falta para decidirlo.',
     '5. Responde a todas las partes de la pregunta. Debes citar al menos estos hechos: ' + (requiredAliases.length ? requiredAliases.join(', ') : 'los que respondan a la pregunta') + '.',
     '6. Si algo no está en los hechos, dilo con un hecho de ausencia o límite si existe; si no existe, no lo menciones.',
     '7. Puedes empezar con una frase social breve sin contenido factual (por ejemplo «Te explico.»), con "cites": [].',

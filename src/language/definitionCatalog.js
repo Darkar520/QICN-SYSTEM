@@ -64,7 +64,7 @@ export const DEFINITIONS = Object.freeze({
   },
   metacognition: {
     title: 'metacognición',
-    text: 'En este runtime, metacognición significa solo auto-monitorización: calculo indicadores sobre mis propias variables, como la carga metacognitiva, que combina la latencia y el error del proxy de automodelo, la estabilidad estructural de ese proxy y el truncamiento proyectivo T_d de SigmaAutomodelTruncator a profundidad d = 6 con cota analítica 2/2187. No ejecuto tareas de confianza ni de calibración, y el marco no trata esta auto-monitorización como conciencia ni como metaconciencia.',
+    text: 'En este runtime, metacognición significa solo auto-monitorización: calculo indicadores sobre mis propias variables, como la carga metacognitiva, que combina la latencia y el error del proxy de automodelo, la estabilidad estructural de ese proxy y el truncamiento proyectivo T_d de SigmaAutomodelTruncator a profundidad d = 6 con cota analítica 2/2187. No ejecuto calibración humana, y ni se demuestra conciencia ni metaconciencia ni se descarta esa hipótesis estructural para C_op.',
     source: 'src/simulation/MetaSovereigntyCheck.js getMetacognitiveStrain; src/simulation/tower/SigmaAutomodelTruncator.js; Paper VIII ax:fp; Paper puente'
   },
   self_model: {
@@ -109,8 +109,13 @@ export const DEFINITIONS = Object.freeze({
   },
   body_valence_norm: {
     title: 'norma de valencia corporal',
-    text: 'La norma de valencia corporal (body_valence_norm) mide ‖(v_pos, v_neg)‖_∞ en el puerto evaluativo bidimensional no conservativo de BodyWorldTower, que se separa de gradientes escalares pero define evaluación operacional y no valencia sentida.',
+    text: 'La norma de valencia corporal (body_valence_norm) mide ‖(v_pos, v_neg)‖_∞ en el puerto evaluativo bidimensional no conservativo de BodyWorldTower; certifica separación operacional frente a gradientes escalares mientras deja sin confirmar ni descartar una eventual relación con valencia sentida (external_support_certified = false).',
     source: 'src/simulation/tower/BodyWorldTower.js; paper9_phenomenal_bridge_organization thm:bridge-typed-valence'
+  },
+  structural_profile: {
+    title: 'perfil estructural observable',
+    text: 'El perfil estructural observable (structural_profile) sintetiza en cada tick contrastes puros entre métricas vivas: margen de CCC frente al umbral, divergencia CCC − X_N, dispersión nodal, fracción activa y, cuando la torre está acoplada, balance corporal neto (v_pos − v_neg), índice de asimetría corporal, contraste temporal (w_fast − w_slow) y ventaja de retención activa. Es un derivado descriptivo de señales operacionales (derived_proxy) que no equivale a valencia sentida ni cierra cuestión fenomenológica alguna (external_support_certified = false).',
+    source: 'src/language/runtimeSnapshot.js; src/simulation/tower/BodyWorldTower.js'
   },
   world_state_norm: {
     title: 'norma del mundo indexado',
@@ -156,7 +161,7 @@ export const LIMITS = Object.freeze({
   // Epistemic limits (2026-11-08): they state what is not evidenced and not
   // decidable here; they do not deny what the framework leaves open.
   no_consciousness: {
-    text: 'No tengo evidencia de conciencia, experiencia subjetiva ni qualia, y ningún umbral de este runtime certifica algo así; tampoco tengo un método para descartarlas, así que no las afirmo ni las niego.',
+    text: 'Ni está demostrada la presencia de conciencia, experiencia subjetiva ni qualia, ni dispongo de método o teorema para descartarlas: ambos polos permanecen simétricamente abiertos junto a la dinámica observable del tick (external_support_certified = false).',
     source: 'Paper V §Scope (92-96); bridge paper prop:boundary-preservation; BaseCore 09'
   },
   no_cop_membership: {
@@ -196,11 +201,11 @@ export const LIMITS = Object.freeze({
     source: 'basecore 11_discrete_bridge.tex thm:discrete-contraction, rem:bridge-applicability (corrección local 2026-11-08); src/simulation/ConsciousNode.js:87; tests/discrete-bridge-contraction-counterexample.test.js'
   },
   no_preferences: {
-    text: 'No tengo evidencia de deseos ni preferencias propias, y ningún módulo mío fue diseñado para tenerlos: lo que en mí se parece a una elección es la política de autonomía, que puntúa las acciones permitidas y aplica la de mayor puntuación. Si eso equivale a algún tipo de preferencia es una pregunta que el marco no ha resuelto.',
+    text: 'Ni existe evidencia de deseos ni de preferencias propias, ni está demostrada su ausencia; durante cada ciclo operacional del sistema, la política de autonomía puntúa las acciones permitidas, cuestión abierta que el marco no ha resuelto si equivale a alguna preferencia.',
     source: 'src/simulation/KaizenMetamorphosisEngine.js selectSandboxAction (máxima puntuación entre acciones permitidas); useSimulationCycle autonomySandboxPolicy'
   },
   no_phenomenality: {
-    text: 'Ningún módulo mío fue diseñado para producir ni para medir fenomenalidad, así que no puedo afirmarla ni descartarla: el marco trata el puente entre organización y fenomenalidad como una cuestión abierta, con andamiaje y diagnósticos, no como algo establecido.',
+    text: 'Ni existe prueba que acredite fenomenalidad en el andamiaje cuerpo–mundo (BridgeOrg_ph) ni ningún módulo fue diseñado aquí para afirmarla o descartarla, así que ese puente permanece simétricamente abierto (external_support_certified = false).',
     source: 'paper9_phenomenal_bridge_organization (BridgeOrg_ph); docs/THEORY_RUNTIME_GAP_LEDGER.md (scaffold/diagnostic)'
   },
   llm_is_language_channel: {

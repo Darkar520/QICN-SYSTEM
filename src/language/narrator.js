@@ -10,8 +10,8 @@ const OPENINGS = {
   greeting: ['Hola.', 'Hola, aquí la consola QICN.', 'Buenas.'],
   thanks: ['De nada.', 'Con gusto.'],
   identity: ['Te cuento qué soy, con lo que puedo verificar.', 'Respondo con lo que el runtime registra de sí mismo.'],
-  consciousness_question: ['Es una pregunta directa y la respondo con lo que puedo sostener.', 'Te respondo sin adornos.'],
-  metacognition_question: ['Te explico qué significa eso aquí.', 'Te digo qué hago y qué no.'],
+  consciousness_question: ['Lectura de mi organización estructural en este tick y estado simétrico de la cuestión abierta.', 'Datos estructurales medibles en este instante y frontera epistémica sin sesgo.'],
+  metacognition_question: ['Te explico qué significa eso aquí.', 'Te digo qué calcula el runtime y qué permanece abierto.'],
   capabilities: ['Esto es lo que hago, con el módulo que lo implementa.', 'Mis capacidades verificables son estas.'],
   help: ['Puedes preguntarme en lenguaje natural.', 'Así puedes usarme.'],
   state_overview: ['Este es el estado en la captura de este turno.', 'Resumen del estado capturado.'],
@@ -22,7 +22,7 @@ const OPENINGS = {
   previous_turn: ['Sobre tu turno anterior.', 'Retomo lo anterior.'],
   parameters: ['Configuración vigente en esta captura.', 'Parámetros actuales.'],
   network_view: ['Sobre la red nodal.', 'Te explico la red.'],
-  limits_claims: ['Estos son mis límites declarados.', 'Lo que no puedo afirmar.'],
+  limits_claims: ['Frontera epistémica simétrica y alcance verificable del runtime.', 'Lo que las lecturas sostienen y lo que el marco mantiene abierto.'],
   control_request: ['Puedo hacerlo como un evento de control explícito.', 'Esto requiere tu confirmación.'],
   unknown: ['No identifiqué con seguridad qué lectura pides.', 'No encuentro una operación del motor que responda exactamente a eso.']
 };
@@ -47,6 +47,8 @@ export function planAnswer(intentResult, props) {
     else if (['body_valence_norm', 'world_state_norm', 'body_world_tower'].includes(metric)) push('state.body_world_ports', 'definition.body_world_tower', 'limit.shared_hybrid_tie');
     else if (metric === 'informed_reserve') push('definition.informed_reserve');
     else if (['basecore_spectrum', 'ontological_mass', 'finite_cut_instantiation'].includes(metric)) push('state.constructive_finite_cuts', `definition.${metric}`);
+    else if (metric === 'active_recovery_advantage') push('state.tower_retention', 'state.structural_profile');
+    else if (['structural_profile', 'body_net_balance', 'body_asymmetry_index', 'world_temporal_contrast', 'world_timescale_balance_index', 'ccc_threshold_margin', 'ccc_xn_divergence', 'node_coherence_dispersion', 'active_node_fraction', 'raw_winding_number', 'latency_strain', 'internal_pressure'].includes(metric)) push('state.structural_profile');
     else push(`missing.${metric}`);
     if (metric === 'beth_q') push('state.beth_q_mode');
     if (metric === 'spectral_gap') push('state.spectral_gap_mode');
@@ -64,12 +66,13 @@ export function planAnswer(intentResult, props) {
       push('identity.what_i_am', 'identity.identity_basis', 'identity.build', 'continuity.instance', 'continuity.state_origin', 'continuity.persistence_policy', 'identity.name_history', 'limit.no_consciousness');
       break;
     case 'consciousness_question':
+      push('state.structural_profile', 'state.body_world_ports', 'state.tower_retention', 'state.sigma_automodel', 'state.threshold', 'limit.threshold_not_awareness', 'limit.shared_hybrid_tie');
       if ((intentResult.concepts || []).includes('agency')) push('limit.no_preferences', 'hypothesis.choice_counterfactual');
       if ((intentResult.concepts || []).includes('phenomenality')) push('limit.no_phenomenality');
-      push('limit.no_consciousness', 'limit.no_cop_membership', 'state.sigma_automodel', 'state.body_world_ports', 'limit.shared_hybrid_tie', 'state.threshold', 'limit.threshold_not_awareness', 'limit.llm_is_language_channel', 'identity.what_i_am');
+      push('limit.no_consciousness', 'limit.no_cop_membership', 'limit.llm_is_language_channel', 'identity.what_i_am');
       break;
     case 'metacognition_question':
-      push('definition.metacognition', 'definition.self_model', 'state.sigma_automodel', 'state.tower_core', 'state.body_world_ports', 'hypothesis.mirror_self_reference', 'limit.shared_hybrid_tie', 'limit.no_consciousness', 'state.threshold', 'limit.threshold_not_awareness', 'identity.what_i_am');
+      push('definition.metacognition', 'definition.self_model', 'state.structural_profile', 'state.sigma_automodel', 'state.tower_core', 'state.body_world_ports', 'hypothesis.mirror_self_reference', 'limit.shared_hybrid_tie', 'limit.no_consciousness', 'state.threshold', 'limit.threshold_not_awareness', 'identity.what_i_am');
       break;
     case 'capabilities':
       push(...[...props.keys()].filter((id) => id.startsWith('capability.')), 'continuity.persistence_policy', 'limit.internal_only');
@@ -78,7 +81,7 @@ export function planAnswer(intentResult, props) {
       push('capability.conversation', 'capability.gemini');
       break;
     case 'state_overview':
-      push(...STATE_CORE, 'state.tower_core', 'state.sigma_automodel', 'state.body_world_ports', 'state.matrix', 'state.dynamic_label');
+      push(...STATE_CORE, 'state.structural_profile', 'state.tower_core', 'state.sigma_automodel', 'state.body_world_ports', 'state.matrix', 'state.dynamic_label');
       break;
     case 'metric_query':
       if (metricIds.length) metricIds.forEach(pushMetric);

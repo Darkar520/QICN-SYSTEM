@@ -31,7 +31,7 @@ export const makeFakeCore = (overrides = {}) => {
     pmiaValue: overrides.pmiaValue ?? -0.1234,
     currentLayer: overrides.currentLayer ?? 0,
     phenomenologyCore: { transitionHistory: new Array(overrides.transitions ?? 3).fill(0) },
-    getDynamicHealth: () => ({ stasisIndex: 0.31 })
+    getDynamicHealth: overrides.getDynamicHealth || (() => ({ stasisIndex: 0.31 }))
   };
   const watch = (target, path) => new Proxy(target, {
     set(obj, prop, value) { writes.push(`${path}.${String(prop)}`); obj[prop] = value; return true; },

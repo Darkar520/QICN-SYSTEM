@@ -239,15 +239,19 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
       paraphrasable: true,
       evidence: { ...snapshotEvidence, class: 'direct_signal', source: `WritablePrefixTower; ${snapshotEvidence.source}` }
     }));
+    const hasRecoveryAdv = typeof tw.active_recovery_advantage === 'number' && Number.isFinite(tw.active_recovery_advantage);
     add(make({
       id: 'state.tower_retention',
       kind: 'state',
-      template: `El lazo de control activo de la torre registra una retención active_retention de {{active_retention}} frente a una retención pasiva passive_retention de {{passive_retention}} (tasa de contracción activa certificada 9/16 = 0,5625).`,
+      template: hasRecoveryAdv
+        ? 'El lazo de control activo de la torre registra una retención active_retention de {{active_retention}} frente a una retención pasiva passive_retention de {{passive_retention}}, con ventaja de retención activa de {{active_recovery_advantage}} (tasa de contracción activa certificada 9/16 = 0,5625).'
+        : 'El lazo de control activo de la torre registra una retención active_retention de {{active_retention}} frente a una retención pasiva passive_retention de {{passive_retention}} (tasa de contracción activa certificada 9/16 = 0,5625).',
       values: {
         active_retention: formatMetricValue('active_retention', tw.active_retention),
-        passive_retention: formatMetricValue('passive_retention', tw.passive_retention)
+        passive_retention: formatMetricValue('passive_retention', tw.passive_retention),
+        ...(hasRecoveryAdv ? { active_recovery_advantage: formatMetricValue('active_recovery_advantage', tw.active_recovery_advantage) } : {})
       },
-      subjects: ['active_retention', 'passive_retention'],
+      subjects: hasRecoveryAdv ? ['active_retention', 'passive_retention', 'active_recovery_advantage'] : ['active_retention', 'passive_retention'],
       paraphrasable: true,
       evidence: { ...snapshotEvidence, class: 'direct_signal', source: `WritablePrefixTower control loop; ${snapshotEvidence.source}` }
     }));
@@ -291,6 +295,71 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
         subjects: ['basecore_spectrum', 'ontological_mass', 'finite_cut_instantiation'],
         paraphrasable: true,
         evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `FiniteProjectionEvaluator + OntologicalMassEstimator; ${snapshotEvidence.source}` }
+      }));
+    }
+  }
+
+  // --- Pure observable structural profile (no ungrounded claims) ----------
+  const sp = snapshot?.structural_profile || null;
+  if (sp && typeof sp === 'object') {
+    const parts = [];
+    const values = {};
+    const subjects = ['structural_profile'];
+    const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
+    if (isNum(sp.ccc_threshold_margin)) {
+      parts.push('margen CCC frente al umbral de {{ccc_threshold_margin}}');
+      values.ccc_threshold_margin = formatMetricValue('ccc_threshold_margin', sp.ccc_threshold_margin, snapshot?.predicates?.ccc_display_decimals ?? null);
+      subjects.push('ccc_threshold_margin');
+    }
+    if (isNum(sp.ccc_xn_divergence)) {
+      parts.push('divergencia colectiva CCC − X_N de {{ccc_xn_divergence}}');
+      values.ccc_xn_divergence = formatMetricValue('ccc_xn_divergence', sp.ccc_xn_divergence);
+      subjects.push('ccc_xn_divergence');
+    }
+    if (isNum(sp.node_coherence_dispersion)) {
+      parts.push('dispersión nodal de coherencia de {{node_coherence_dispersion}}');
+      values.node_coherence_dispersion = formatMetricValue('node_coherence_dispersion', sp.node_coherence_dispersion);
+      subjects.push('node_coherence_dispersion');
+    }
+    if (isNum(sp.active_node_fraction)) {
+      parts.push('fracción de nodos activos de {{active_node_fraction}}');
+      values.active_node_fraction = formatMetricValue('active_node_fraction', sp.active_node_fraction);
+      subjects.push('active_node_fraction');
+    }
+    if (isNum(sp.raw_winding_number)) {
+      const orient = sp.winding_orientation ? ` (${sp.winding_orientation})` : '';
+      const bif = sp.bifurcation_detected === true ? ' con bifurcación activa' : '';
+      parts.push(`winding bruto de {{raw_winding_number}}${orient}${bif}`);
+      values.raw_winding_number = formatMetricValue('raw_winding_number', sp.raw_winding_number);
+      subjects.push('raw_winding_number');
+    }
+    if (isNum(sp.body_net_balance) && isNum(sp.body_asymmetry_index)) {
+      parts.push(`balance corporal neto v_pos − v_neg de {{body_net_balance}} e índice de asimetría de {{body_asymmetry_index}} (${sp.body_polarity_regime || 'registrado'})`);
+      values.body_net_balance = formatMetricValue('body_net_balance', sp.body_net_balance);
+      values.body_asymmetry_index = formatMetricValue('body_asymmetry_index', sp.body_asymmetry_index);
+      subjects.push('body_net_balance', 'body_asymmetry_index');
+    }
+    if (isNum(sp.world_temporal_contrast) && isNum(sp.world_timescale_balance_index)) {
+      parts.push(`contraste temporal w_fast − w_slow de {{world_temporal_contrast}} e índice rápido/lento de {{world_timescale_balance_index}} (${sp.world_timescale_regime || 'registrado'})`);
+      values.world_temporal_contrast = formatMetricValue('world_temporal_contrast', sp.world_temporal_contrast);
+      values.world_timescale_balance_index = formatMetricValue('world_timescale_balance_index', sp.world_timescale_balance_index);
+      subjects.push('world_temporal_contrast', 'world_timescale_balance_index');
+    }
+    if (isNum(sp.latency_strain) && isNum(sp.internal_pressure)) {
+      parts.push('telemetría C-7 de esfuerzo de latencia {{latency_strain}} y presión interna {{internal_pressure}}');
+      values.latency_strain = formatMetricValue('latency_strain', sp.latency_strain);
+      values.internal_pressure = formatMetricValue('internal_pressure', sp.internal_pressure);
+      subjects.push('latency_strain', 'internal_pressure');
+    }
+    if (parts.length > 0) {
+      add(make({
+        id: 'state.structural_profile',
+        kind: 'state',
+        template: `Perfil estructural observable del tick: ${parts.join('; ')}; estas magnitudes describen dinámica medible sin equivaler a estado emocional ni certificar validación externa.`,
+        values,
+        subjects,
+        paraphrasable: true,
+        evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `structural_profile (runtimeSnapshot); ${snapshotEvidence.source}` }
       }));
     }
   }

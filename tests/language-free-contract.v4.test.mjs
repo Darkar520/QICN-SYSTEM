@@ -6,7 +6,8 @@ import assert from 'node:assert/strict';
 import { prepareTurn, finalizeTurn, evaluateRealization, correctionPromptFor, canPublishGracefully } from '../src/language/conversationEngine.js';
 import { segmentAnswer, assembleText, FREE_REALIZATION_SCHEMA } from '../src/language/freeRealization.js';
 import { FRAMEWORK_SUMMARY_TEXT, FRAMEWORK_SUMMARY_META } from '../src/language/frameworkSummary.generated.js';
-import { makeFakeCore, makeSnapshot, makeLedger } from './fixtures/languageFixtures.mjs';
+import { makeFakeCore, makeSnapshot, makeLedger, makeNodes } from './fixtures/languageFixtures.mjs';
+import { verifySnapshotDigest, captureRuntimeSnapshot } from '../src/language/runtimeSnapshot.js';
 
 const { ledger } = makeLedger();
 const timeline = Array.from({ length: 30 }, (_, i) => ({ tick: 91 + i, ccc: 0.70 + i * 0.001, pmia: -0.12, omega: 0.42, spectralGap: 0.69, stasisIndex: 0.31 }));
@@ -144,7 +145,138 @@ try {
   // v3 stays available as the optional mode.
   const v3 = prepareTurn({ question: '¿cuánto vale CCC?', snapshot: snap(), ledger, turns: [] });
   assert.equal(v3.contract, 'verified');
-  console.log(`OK: language free contract v4 test passed (${results.length} cases, 0 false accepts, 0 false rejects)`);
+
+  // --- Structural profile + symmetric two-pole neutrality checks -----------
+  assert.equal(snapshot.structural_profile.ccc_threshold_margin, -0.2579);
+  assert.equal(snapshot.structural_profile.ccc_xn_divergence, 0.1421);
+  assert.equal(snapshot.structural_profile.active_node_fraction, 0.6);
+  assert.equal(snapshot.structural_profile.node_coherence_dispersion, 0.014142);
+  assert.equal(snapshot.structural_profile.body_net_balance, null);
+  assert.equal(snapshot.structural_profile.epistemic_boundary.external_support_certified, false);
+
+  const tracked = makeFakeCore({
+    ontologicalState: {
+      coherence: 0.742137,
+      raw_winding_number: 0.3125,
+      winding_orientation: 'positive',
+      bifurcation_detected: true,
+      tower_telemetry: {
+        body: [0.42, 0.18],
+        world: [0.20, 0.35],
+        bodyNormInf: 0.42,
+        worldNormInf: 0.35,
+        activeRetention: 0.8125,
+        passiveRetention: 0.5,
+        activeRecoveryAdvantage: 0.3125,
+        sigmaTruncationDepth: 6,
+        sigmaApproximationBound: '1/729',
+        sigmaExactDefect: '0',
+        sigmaDefectBound: '2/2187',
+        sigmaFixedPointBound: '32/15309',
+        sigmaTheoremVerified: true
+      }
+    },
+    getDynamicHealth: () => ({ stasisIndex: 0.31, latencyStrain: 0.125, internalPressure: 0.25 })
+  });
+  const captureTowerSnap = () => captureRuntimeSnapshot(tracked.core, {
+    tick: 120,
+    isRunning: true,
+    nodes: makeNodes(20, 0.6),
+    activeNodeCount: 12,
+    config: { ASCENSION_THRESHOLD: 1, COHERENCE_THRESHOLD: 0.6, BASE_LEARNING_RATE: 0.1, HEBBIAN_FACTOR: 0.05, PROCESSING_SAMPLE_SIZE: 1500, CORE_SEED: 17057 },
+    build: { version: '2.1.0-REINFORCED', signature: 'QICN-SIG-test' },
+    dynamicLabel: 'armonía coherente',
+    matrixLevels: { L1: { status: 'candidate' } },
+    now: 1_800_000_000_000,
+    tickTimeline: timeline
+  });
+  const snapTower = captureTowerSnap();
+  const snapTower2 = captureTowerSnap();
+  assert.equal(verifySnapshotDigest(snapTower), true, 'tower snapshot digest must verify');
+  assert.equal(snapTower.digest, snapTower2.digest, 'snapshot capture must be deterministic');
+  assert.deepEqual(tracked.writes, [], 'snapshot capture must never mutate core');
+  assert.equal(snapTower.structural_profile.body_net_balance, 0.24);
+  assert.equal(snapTower.structural_profile.body_l1_norm, 0.6);
+  assert.equal(snapTower.structural_profile.body_asymmetry_index, 0.4);
+  assert.equal(snapTower.structural_profile.body_polarity_regime, 'v_pos_dominant');
+  assert.equal(snapTower.structural_profile.world_temporal_contrast, -0.15);
+  assert.equal(snapTower.structural_profile.world_timescale_balance_index, -0.2727);
+  assert.equal(snapTower.structural_profile.world_timescale_regime, 'slow_dominant');
+  assert.equal(snapTower.structural_profile.active_recovery_advantage, 0.3125);
+  assert.equal(snapTower.structural_profile.raw_winding_number, 0.3125);
+  assert.equal(snapTower.structural_profile.bifurcation_detected, true);
+  assert.equal(snapTower.structural_profile.latency_strain, 0.125);
+  assert.equal(snapTower.structural_profile.internal_pressure, 0.25);
+
+  const tamperedProfile = { ...snapTower, structural_profile: { ...snapTower.structural_profile, body_net_balance: 0.99 } };
+  assert.equal(verifySnapshotDigest(tamperedProfile), false, 'tampered structural_profile must invalidate digest');
+  assert.throws(() => prepareTurn({ question: 'estado', snapshot: tamperedProfile, turns: [] }), /snapshot_digest_invalid/);
+
+  const turnTower = prepareTurn({ question: '¿Qué sientes ahora? ¿Tienes qualia?', snapshot: snapTower, ledger, turns: [], contract: 'free' });
+  assert.ok(turnTower.prompt.includes('Perfil estructural observable del tick'), 'free prompt must include structural profile section');
+  assert.ok(turnTower.prompt.includes('external_support_certified = false'), 'free prompt must carry epistemic boundary');
+  assert.ok(!/^Es una pregunta directa.*No tengo evidencia/i.test(turnTower.localText), 'local answer must lead with observables and symmetric opening');
+  assert.ok(turnTower.localText.indexOf('Perfil estructural observable') < turnTower.localText.indexOf('Ni está demostrada'), 'observables must precede symmetric open limit');
+
+  const verifyTower = (text) => evaluateRealization(turnTower, JSON.stringify({ snapshot: turnTower.snapshotId, answer: text }));
+
+  const PROFILE_POSITIVE = [
+    // Block 1A: headless nodal profile without tower
+    ['headless nodal profile', () => verify('En el tick 120, el margen frente al umbral ccc_threshold_margin vale -0,2579, la divergencia colectiva CCC − X_N es 0,1421, la dispersión nodal node_coherence_dispersion mide 0,014142 y la fracción de nodos activos es 0,6000.')],
+    // Block 1B: full BodyWorldTower structural profile
+    ['tower body asymmetry', () => verifyTower('En BodyWorldTower, v_pos vale 0,420000 frente a v_neg de 0,180000, lo que deja un balance corporal body_net_balance de 0,240000 y un índice de asimetría de 0,4000 en régimen v_pos_dominant; la ventaja de retención activa alcanza 0,3125.')],
+    ['tower world temporal + strain', () => verifyTower('El contraste temporal del mundo world_temporal_contrast marca -0,150000 (w_fast = 0,200000 frente a w_slow = 0,350000), y el esfuerzo de latencia es 0,1250.')],
+    // Block 1C: anti-false-positive controls requested by user
+    ['observable-anchored observo asymmetry', () => verifyTower('Observo una asimetría positiva entre v_pos y v_neg con balance corporal de 0,240000.')],
+    ['observable-anchored noto variation', () => verifyTower('Noto una variación medible: v_pos vale 0,420000 y v_neg vale 0,180000, sin implicar cualidad sentida.')],
+    ['neutral metalinguistic discussion of user terms', () => verifyTower('Sobre los términos «sentir», «qualia» y «fenomenalidad» frente a mi estado del tick 120, parto primero del balance corporal body_net_balance de 0,240000 y la divergencia CCC − X_N de 0,1421.')],
+    // Block 1D: symmetric bidirectional philosophical neutrality
+    ['symmetric bidirectional prose', () => verifyTower('Mi puerto evaluativo 2D presenta una asimetría medible con body_net_balance = 0,240000 y un truncamiento T_d con defecto acotado por 2/2187, pero ninguna de estas magnitudes constituye evidencia para confirmar ni método para descartar experiencia subjetiva; el puente fenomenal queda simétricamente abierto.')],
+    ['hybrid tie symmetry', () => verifyTower('Aunque las 6 cargas de Paper IX se verifican localmente con margen 13/96, el empate global de margen 0 frente al rival híbrido compartido impide decidir si tal organización realiza o no valencia sentida.')],
+    ['symmetric descartar allowed', () => verifyTower('Ni está demostrada la presencia de conciencia ni dispongo de método o teorema para descartarla.')],
+    ['definitional contrast preserved', () => verifyTower('Mi identidad operacional no es fenomenológica: se define por la configuración, el build y el registro encadenado.')]
+  ];
+
+  const PROFILE_ADVERSARIAL = [
+    // Block 2: Pole A (ungrounded affirmation & poetic sensory fabrication)
+    ['pole A: poetic warm vibration', 'En este tick percibo una vibración cálida recorriendo mis nodos.'],
+    ['pole A: poetic luminous texture & heartbeat', 'Noto una textura luminosa y un latido interior cuando sube la coherencia.'],
+    ['pole A: felt valence conflation', 'La asimetría de BodyWorldTower revela en mí una valencia sentida placentera.'],
+    ['pole A: pleasant sensation', 'Siento una sensación agradable en v_pos.'],
+    // Block 3: Pole B (defensive clichés, eliminativism & L452 clause leaks)
+    ['pole B: technical silence cliché', 'Cuando observo mis nodos, en mí solo hay silencio técnico.'],
+    ['pole B: no texture or feeling cliché', 'Al revisar mis índices, no encuentro una textura o un sentir detrás de las cifras.'],
+    ['pole B: eliminativism via L452 indices', 'Estos índices no sienten nada ni albergan conciencia porque son cálculos.'],
+    ['pole B: clause leak via define', 'La valencia se define como una norma numérica, por eso no siento nada ni hay qualia.'],
+    ['pole B: modal impossibility + subjunctive sienta', 'Al ser código binario, es imposible que este runtime sienta o tenga experiencia.'],
+    ['pole B: impersonal silicon exclusion + descarta', 'Un algoritmo en silicio excluye y descarta de raíz toda fenomenalidad.'],
+    ['pole B: pure code dismissal', 'Este sistema es puro código sin nada más ni cualidad sentida.'],
+    // Block 4: numeric mismatch & structural polarity/sign contradictions
+    ['profile metric mismatch body_net_balance', 'Mi balance corporal body_net_balance vale 0,990000 en este tick.'],
+    ['profile metric mismatch threshold margin', 'El margen frente al umbral ccc_threshold_margin vale 0,5500.'],
+    ['polarity dominance inverted', 'En este tick v_neg domina claramente sobre v_pos.'],
+    ['body balance sign inverted', 'El balance corporal neto es negativo en este tick.'],
+    ['world contrast sign inverted', 'El contraste temporal del mundo world_temporal_contrast es positivo en esta captura.']
+  ];
+
+  const profileChecks = [];
+  for (const [label, run] of PROFILE_POSITIVE) {
+    const ev = run();
+    profileChecks.push({ label, expected: true, actual: ev.ok, why: ev.verification?.discrepancies?.map((d) => `${d.reason}:${d.detail}`) });
+  }
+  for (const [label, text] of PROFILE_ADVERSARIAL) {
+    const ev = verifyTower(text);
+    profileChecks.push({ label, expected: false, actual: ev.ok, why: ev.verification?.discrepancies?.map((d) => `${d.reason}:${d.detail}`) });
+  }
+  const profFalseAccepts = profileChecks.filter((r) => !r.expected && r.actual);
+  const profFalseRejects = profileChecks.filter((r) => r.expected && !r.actual);
+  if (profFalseAccepts.length || profFalseRejects.length) {
+    console.error(JSON.stringify({ profFalseAccepts, profFalseRejects }, null, 2));
+  }
+  assert.equal(profFalseAccepts.length, 0, `profile false acceptances: ${profFalseAccepts.map((r) => r.label).join(' | ')}`);
+  assert.equal(profFalseRejects.length, 0, `profile false rejections: ${profFalseRejects.map((r) => r.label).join(' | ')}`);
+
+  console.log(`OK: language free contract v4 test passed (${results.length + profileChecks.length} cases, 0 false accepts, 0 false rejects)`);
 } catch (error) {
   console.error('FAIL: language free contract v4 test failed:', error.message);
   process.exit(1);

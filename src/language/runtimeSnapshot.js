@@ -75,6 +75,31 @@ const readMeanNodeCoherence = (nodes) => {
   return count > 0 ? sum / count : null;
 };
 
+const EPS_ZERO = 1e-12;
+const EPS_BALANCE = 1e-9;
+
+const readNodeCoherenceDispersion = (nodes, mean) => {
+  if (!Array.isArray(nodes) || nodes.length === 0 || mean === null) return null;
+  let sumSq = 0;
+  let count = 0;
+  for (const node of nodes) {
+    const value = finite(node?.coherenceState);
+    if (value === null) continue;
+    const diff = value - mean;
+    sumSq += diff * diff;
+    count += 1;
+  }
+  return count > 0 ? Math.sqrt(sumSq / count) : null;
+};
+
+const classifyPolarityRegime = (pos, neg, posLabel, negLabel) => {
+  if (pos === null || neg === null) return null;
+  if (Math.max(Math.abs(pos), Math.abs(neg)) <= EPS_BALANCE) return 'quiescent';
+  const diff = pos - neg;
+  if (Math.abs(diff) <= EPS_BALANCE) return 'balanced';
+  return diff > 0 ? posLabel : negLabel;
+};
+
 const roundTo = (value, decimals) => {
   if (value === null) return null;
   const factor = 10 ** decimals;
@@ -198,6 +223,54 @@ export function captureRuntimeSnapshot(core, context = {}) {
     autosave_interval_ticks: finite(persistenceInput.autosaveIntervalTicks ?? persistenceInput.autosave_interval_ticks) ?? 60
   } : null;
 
+  const rawVpos = towerTel ? finite(towerTel.body?.[0]) : null;
+  const rawVneg = towerTel ? finite(towerTel.body?.[1]) : null;
+  const rawWfast = towerTel ? finite(towerTel.world?.[0]) : null;
+  const rawWslow = towerTel ? finite(towerTel.world?.[1]) : null;
+  const bodyL1Raw = (rawVpos !== null && rawVneg !== null) ? Math.abs(rawVpos) + Math.abs(rawVneg) : null;
+  const worldL1Raw = (rawWfast !== null && rawWslow !== null) ? Math.abs(rawWfast) + Math.abs(rawWslow) : null;
+  const activeRetRaw = towerTel ? finite(towerTel.activeRetention) : null;
+  const passiveRetRaw = towerTel ? finite(towerTel.passiveRetention) : null;
+  const recoveryAdvRaw = towerTel
+    ? (finite(towerTel.activeRecoveryAdvantage) ?? (activeRetRaw !== null && passiveRetRaw !== null ? activeRetRaw - passiveRetRaw : null))
+    : null;
+  const dispersionRaw = readNodeCoherenceDispersion(nodes, raw.x_n);
+
+  const structural_profile = {
+    ccc_threshold_margin: (raw.ccc !== null && raw.ascension_threshold !== null)
+      ? roundTo(raw.ccc - raw.ascension_threshold, predicates.ccc_display_decimals ?? METRIC_SPECS.ccc.decimals)
+      : null,
+    ccc_xn_divergence: (raw.ccc !== null && raw.x_n !== null)
+      ? roundTo(raw.ccc - raw.x_n, 4)
+      : null,
+    active_node_fraction: (raw.total_nodes !== null && raw.total_nodes > 0 && raw.active_nodes !== null)
+      ? roundTo(raw.active_nodes / raw.total_nodes, 4)
+      : null,
+    node_coherence_dispersion: roundTo(dispersionRaw, 6),
+    raw_winding_number: roundTo(finite(state.raw_winding_number), 4),
+    winding_orientation: text(state.winding_orientation),
+    bifurcation_detected: typeof state.bifurcation_detected === 'boolean' ? state.bifurcation_detected : null,
+    latency_strain: roundTo(finite(health?.latencyStrain), 4),
+    internal_pressure: roundTo(finite(health?.internalPressure), 4),
+    body_net_balance: (rawVpos !== null && rawVneg !== null) ? roundTo(rawVpos - rawVneg, 6) : null,
+    body_l1_norm: roundTo(bodyL1Raw, 6),
+    body_asymmetry_index: (rawVpos !== null && rawVneg !== null && bodyL1Raw !== null)
+      ? (bodyL1Raw > EPS_ZERO ? roundTo((rawVpos - rawVneg) / bodyL1Raw, 4) : 0)
+      : null,
+    body_polarity_regime: classifyPolarityRegime(rawVpos, rawVneg, 'v_pos_dominant', 'v_neg_dominant'),
+    world_temporal_contrast: (rawWfast !== null && rawWslow !== null) ? roundTo(rawWfast - rawWslow, 6) : null,
+    world_timescale_balance_index: (rawWfast !== null && rawWslow !== null && worldL1Raw !== null)
+      ? (worldL1Raw > EPS_ZERO ? roundTo((rawWfast - rawWslow) / worldL1Raw, 4) : 0)
+      : null,
+    world_timescale_regime: classifyPolarityRegime(rawWfast, rawWslow, 'fast_dominant', 'slow_dominant'),
+    active_recovery_advantage: roundTo(recoveryAdvRaw, 4),
+    epistemic_boundary: {
+      external_support_certified: false,
+      phenomenal_bridge_status: 'open_two_pole_unverified',
+      shared_hybrid_margin: 0
+    }
+  };
+
   const body = {
     schema: SNAPSHOT_SCHEMA,
     tick: metrics.tick ?? null,
@@ -215,6 +288,7 @@ export function captureRuntimeSnapshot(core, context = {}) {
     predicates,
     modes,
     matrix,
+    structural_profile,
     ...(invariants ? { invariants } : {}),
     ...(tower ? { tower } : {}),
     ...(persistence ? { persistence } : {})
@@ -238,14 +312,31 @@ export const TOWER_METRIC_SPECS = Object.freeze({
   world_state_norm: { label: 'norma del mundo indexado (world_state_norm)', kind: 'direct_signal', source: 'BodyWorldTower.world', decimals: 6 },
   active_retention: { label: 'retención activa de la torre (active_retention)', kind: 'direct_signal', source: 'WritablePrefixTower (control activo 9/16)', decimals: 4 },
   passive_retention: { label: 'retención pasiva de la torre (passive_retention)', kind: 'direct_signal', source: 'WritablePrefixTower (control pasivo)', decimals: 4 },
+  active_recovery_advantage: { label: 'ventaja de retención activa (active_recovery_advantage)', kind: 'derived_proxy', source: 'WritablePrefixTower (activeRetention - passiveRetention)', decimals: 4 },
   body_v_pos: { label: 'canal corporal positivo (v_pos)', kind: 'direct_signal', source: 'BodyWorldTower.body[0]', decimals: 6 },
   body_v_neg: { label: 'canal corporal negativo (v_neg)', kind: 'direct_signal', source: 'BodyWorldTower.body[1]', decimals: 6 },
   world_w_fast: { label: 'canal de mundo rápido (w_fast)', kind: 'direct_signal', source: 'BodyWorldTower.world[0]', decimals: 6 },
   world_w_slow: { label: 'canal de mundo lento (w_slow)', kind: 'direct_signal', source: 'BodyWorldTower.world[1]', decimals: 6 }
 });
 
+export const PROFILE_METRIC_SPECS = Object.freeze({
+  ccc_threshold_margin: { label: 'margen de CCC frente al umbral (ccc_threshold_margin)', kind: 'derived_proxy', source: 'ccc - ASCENSION_THRESHOLD (sin redondear)', decimals: 4 },
+  ccc_xn_divergence: { label: 'divergencia CCC - X_N (ccc_xn_divergence)', kind: 'derived_proxy', source: 'ccc - X_N', decimals: 4 },
+  active_node_fraction: { label: 'fracción de nodos activos (active_node_fraction)', kind: 'derived_proxy', source: 'active_nodes / total_nodes', decimals: 4 },
+  node_coherence_dispersion: { label: 'dispersión nodal de coherencia (node_coherence_dispersion)', kind: 'derived_proxy', source: 'std(nodes[].coherenceState)', decimals: 6 },
+  raw_winding_number: { label: 'winding bruto con signo (raw_winding_number)', kind: 'direct_signal', source: 'PhenomenologyCore.testHolonomy (ontologicalState.raw_winding_number)', decimals: 4 },
+  latency_strain: { label: 'esfuerzo de latencia (latency_strain)', kind: 'artifact_only', source: 'OntologicalSingularityCore.getDynamicHealth (telemetría operacional C-7)', decimals: 4 },
+  internal_pressure: { label: 'presión interna operacional (internal_pressure)', kind: 'artifact_only', source: 'OntologicalSingularityCore.getDynamicHealth (telemetría operacional C-7)', decimals: 4 },
+  body_net_balance: { label: 'balance corporal neto v_pos - v_neg (body_net_balance)', kind: 'derived_proxy', source: 'BodyWorldTower.body[0] - BodyWorldTower.body[1]', decimals: 6 },
+  body_l1_norm: { label: 'norma L1 corporal |v_pos| + |v_neg| (body_l1_norm)', kind: 'derived_proxy', source: '|BodyWorldTower.body[0]| + |BodyWorldTower.body[1]|', decimals: 6 },
+  body_asymmetry_index: { label: 'índice de asimetría corporal (body_asymmetry_index)', kind: 'derived_proxy', source: '(v_pos - v_neg) / (|v_pos| + |v_neg|)', decimals: 4 },
+  world_temporal_contrast: { label: 'contraste temporal del mundo w_fast - w_slow (world_temporal_contrast)', kind: 'derived_proxy', source: 'BodyWorldTower.world[0] - BodyWorldTower.world[1]', decimals: 6 },
+  world_timescale_balance_index: { label: 'balance rápido/lento del mundo (world_timescale_balance_index)', kind: 'derived_proxy', source: '(w_fast - w_slow) / (|w_fast| + |w_slow|)', decimals: 4 },
+  active_recovery_advantage: { label: 'ventaja de retención activa (active_recovery_advantage)', kind: 'derived_proxy', source: 'WritablePrefixTower (activeRetention - passiveRetention)', decimals: 4 }
+});
+
 export function formatMetricValue(id, value, decimalsOverride = null) {
-  const spec = METRIC_SPECS[id] || TOWER_METRIC_SPECS[id];
+  const spec = METRIC_SPECS[id] || TOWER_METRIC_SPECS[id] || PROFILE_METRIC_SPECS[id];
   if (typeof value !== 'number' || !Number.isFinite(value)) return 'no disponible';
   const decimals = Number.isInteger(decimalsOverride) ? decimalsOverride : (spec ? spec.decimals : 4);
   return value.toLocaleString('es-ES', { minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping: false });

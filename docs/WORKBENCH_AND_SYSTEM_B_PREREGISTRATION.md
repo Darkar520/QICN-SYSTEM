@@ -157,7 +157,8 @@ is a primary record of the live runtime, claim_projection, or existing gate_resu
 | --- | --- | --- |
 | Opt-in output resolution and legacy bridge parity | implemented_tested | `tests/report-output-policy.v1.test.cjs` |
 | Observational clone and unchanged snapshot digests | implemented_tested | `tests/runtime-snapshot-observational.v1.test.mjs` |
-| Workbench execution and optional System B/v5 | not_recorded | Separate B1-B4 implementation required |
+| Workbench headless/worker execution | implemented_tested | B1-B2 delivery; see WORKBENCH_EXECUTION_CONTRACT.md |
+| Optional System B/v5 and browser UI integration | not_recorded | Separate B3-B4 implementation required |
 
 The reporting tests exercise actual TEMP outputs and synthetic no-opt-in/default
 paths without writing canonical reports or probing an external source tree.
@@ -194,3 +195,11 @@ repository. Their current entrypoints must not be run with an assumed --out
 flag or falsely reported as passed. Keep those final checks pending until
 their complete execution paths can respect TEMP-only reports and the forbidden
 surfaces, preserving all default contracts.
+
+## B1-B2 delivery extension
+
+The approved B0 checkpoint is 454dcb9a5cd5c4a7728b211cc0d438b80258922e on codex/workbench-system-b. The user independently verified the full 176-test B0 suite outside the sandbox with EXIT=0; the loopback restriction was environmental and its test remains intact. B1-B2 implements the common imperative driver, owned entropy capabilities, detached v3 restore and independent experimental records. The original preregistration JSON remains frozen as the starting protocol; its not_recorded field is not the current implementation inventory. Current implementation inventory is IMPLEMENTATION_STATUS.md.
+
+Detailed wire schemas, intervention scopes, test anchors, disabled-provider capture boundary, runtime setter policies and deferred audit writers are recorded in WORKBENCH_EXECUTION_CONTRACT.md. No B3/v5 language implementation or B4 browser packaging is included. Main and git metadata are not written by this delivery.
+
+B1-B2 verification results and final file inventory are recorded in WORKBENCH_B1_B2_DELIVERY_AUDIT.md; acceptance remains subject to the explicit environment and deferred-writer limitations recorded there.

@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "qicn.workbench_result.v1",
+  "required": [
+    "schema",
+    "digest",
+    "evidence_scope",
+    "external_support_certified",
+    "executionStatus",
+    "captureDigest",
+    "protocolDigest",
+    "sourceTick",
+    "profile",
+    "ticks",
+    "originalArchive",
+    "branches",
+    "comparisons"
+  ],
+  "properties": {
+    "schema": {
+      "const": "qicn.workbench_result.v1"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "evidence_scope": {
+      "const": "internal_support_only"
+    },
+    "external_support_certified": {
+      "const": false
+    },
+    "executionStatus": {
+      "const": "COMPLETED"
+    },
+    "captureDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "protocolDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceTick": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "profile": {
+      "enum": [
+        "legacy_compatibility",
+        "paired_intervention"
+      ]
+    },
+    "ticks": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "originalArchive": {
+      "type": "object",
+      "required": [
+        "dynamicRecordDigest",
+        "ledgerHeadHash"
+      ],
+      "properties": {
+        "dynamicRecordDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "ledgerHeadHash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "branches": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "intervention",
+          "unrestored",
+          "trajectory",
+          "chain"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "intervention": {
+            "type": "object"
+          },
+          "unrestored": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "trajectory": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1000
+          },
+          "chain": {
+            "type": "object",
+            "required": [
+              "records",
+              "headHash"
+            ],
+            "properties": {
+              "records": {
+                "type": "array",
+                "minItems": 2
+              },
+              "headHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "comparisons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16
+    }
+  },
+  "additionalProperties": false
+}

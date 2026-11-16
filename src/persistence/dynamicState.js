@@ -186,6 +186,14 @@ export function encodeForDiff(value) {
   return enc === SKIP ? null : enc;
 }
 
+// Separate execution-context codec for an isolated Workbench. This does not
+// change the v3 body, its registry, serializer, digest or storage contract.
+export function applyExecutionComponent(existing, encoded) {
+  const ctx = { byId: new Map(), unrestored: [] };
+  const value = decodeValue(encoded, existing, ctx, 'execution_context');
+  return { value, unrestored: ctx.unrestored };
+}
+
 /**
  * Capture the dynamic state.
  * @param {object} refs React refs by name (the useSimulationCycle bag names)

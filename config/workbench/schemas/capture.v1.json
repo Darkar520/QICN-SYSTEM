@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "qicn.workbench_capture.v1",
+  "required": [
+    "schema",
+    "digest",
+    "evidence_scope",
+    "external_support_certified",
+    "sourceCommit",
+    "ledgerHeadHash",
+    "sourceTick",
+    "nodeCount",
+    "sourceBuild",
+    "dynamicRecord",
+    "configuration",
+    "execution",
+    "runtimeInputs",
+    "extraComponents",
+    "externalStatePolicy"
+  ],
+  "properties": {
+    "schema": {
+      "const": "qicn.workbench_capture.v1"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "evidence_scope": {
+      "const": "internal_support_only"
+    },
+    "external_support_certified": {
+      "const": false
+    },
+    "sourceCommit": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ledgerHeadHash": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceTick": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nodeCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1500
+    },
+    "sourceBuild": {
+      "type": "object",
+      "required": [
+        "version",
+        "signature"
+      ],
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "dynamicRecord": {
+      "type": "object",
+      "required": [
+        "text",
+        "digest"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "configuration": {
+      "type": "object"
+    },
+    "execution": {
+      "type": "object",
+      "required": [
+        "profile",
+        "seed",
+        "setterPolicy",
+        "environmentState",
+        "sensorState",
+        "schedule",
+        "runtimePolicy"
+      ],
+      "properties": {
+        "profile": {
+          "enum": [
+            "legacy_compatibility",
+            "paired_intervention"
+          ]
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "setterPolicy": {
+          "enum": [
+            "capture_only",
+            "react_commit"
+          ]
+        },
+        "environmentState": {
+          "type": "object"
+        },
+        "sensorState": {
+          "type": "object"
+        },
+        "schedule": {
+          "type": "object"
+        },
+        "runtimePolicy": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "runtimeInputs": {
+      "type": "object"
+    },
+    "extraComponents": {
+      "type": "object"
+    },
+    "externalStatePolicy": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

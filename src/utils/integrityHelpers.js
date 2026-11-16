@@ -4,7 +4,7 @@
  * Extraídas como parte del refactor de descomposición (Fase 1).
  */
 import { toFiniteNumber } from '../config/simulationDefaults.js';
-import { stableStringify } from './integrity';
+import { stableStringify } from './integrity.js';
 
 // ============================================================================
 // INTEGRITY PACKET HELPERS

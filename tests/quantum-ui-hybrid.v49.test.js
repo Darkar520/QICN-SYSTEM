@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import assert from 'node:assert/strict';
+import { QuantumEntropyBridge } from '../src/simulation/QuantumEntropyBridge.js';
+import { createDeterministicEnvironment } from '../src/runtime/ExecutionEnvironment.js';
 
 const indexPath = path.resolve('src/components/SimulationEngine.jsx');
 const bridgePath = path.resolve('src/simulation/QuantumEntropyBridge.js');
@@ -15,7 +17,9 @@ assert.ok(indexText.includes("appendIntegrityAudit('quantum_ui_config_change'"),
 assert.ok(indexText.includes("appendIntegrityAudit('quantum_connection_test'"), 'CASE 5 FAIL: quantum_connection_test audit missing.');
 
 assert.ok(bridgeText.includes('setConfig(partialConfig = {})'), 'CASE 6 FAIL: QuantumEntropyBridge.setConfig missing.');
-assert.ok(bridgeText.includes('getConnectionDiagnostics(nowMs = Date.now())'), 'CASE 7 FAIL: QuantumEntropyBridge.getConnectionDiagnostics missing.');
+const bridge = new QuantumEntropyBridge({ enabled: false }, createDeterministicEnvironment());
+assert.equal(typeof bridge.getConnectionDiagnostics, 'function', 'CASE 7 FAIL: QuantumEntropyBridge.getConnectionDiagnostics missing.');
+assert.equal(typeof bridge.getConnectionDiagnostics(1234), 'object', 'CASE 7 FAIL: diagnostics must execute with the injected clock.');
 assert.ok(bridgeText.includes('async testConnection(config = {}, options = {})'), 'CASE 8 FAIL: QuantumEntropyBridge.testConnection missing.');
 
 console.log('ok quantum-ui-hybrid.v49');

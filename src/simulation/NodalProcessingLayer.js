@@ -1,8 +1,10 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 import { QICNConfig } from '../../services/config.js';
 import { ConsciousNode } from './ConsciousNode.js';
 
 export class NodalProcessingLayer {
-          constructor() {
+          constructor(executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
             this.nodes = [];
             this.activeNodeIds = new Set();
             this.signalBuffer = [];
@@ -10,29 +12,29 @@ export class NodalProcessingLayer {
 
           initializeNodes(mutableConfig) {
             // Only initialize a small sample (PROCESSING_SAMPLE_SIZE)
-            this.nodes = Array.from({ length: QICNConfig.PROCESSING_SAMPLE_SIZE }, (_, i) =>
-              new ConsciousNode(i, mutableConfig)
+            this.nodes = Array.from({ length: executionEnvironmentFor(this).config.PROCESSING_SAMPLE_SIZE }, (_, i) =>
+              new ConsciousNode(i, mutableConfig, executionEnvironmentFor(this))
             );
 
             // Create connections
             this.nodes.forEach(node => {
-              const numConnections = QICNConfig.NODE_CONNECTION_MIN +
-                Math.floor(Math.random() * (QICNConfig.NODE_CONNECTION_MAX - QICNConfig.NODE_CONNECTION_MIN));
+              const numConnections = executionEnvironmentFor(this).config.NODE_CONNECTION_MIN +
+                Math.floor(executionEnvironmentFor(this).random() * (executionEnvironmentFor(this).config.NODE_CONNECTION_MAX - executionEnvironmentFor(this).config.NODE_CONNECTION_MIN));
 
               for (let i = 0; i < numConnections; i++) {
-                const targetId = Math.floor(Math.random() * QICNConfig.PROCESSING_SAMPLE_SIZE);
+                const targetId = Math.floor(executionEnvironmentFor(this).random() * executionEnvironmentFor(this).config.PROCESSING_SAMPLE_SIZE);
                 if (targetId !== node.id &&
                     !node.connections.find(c => c.targetId === targetId)) {
                   node.connections.push({
                     targetId: targetId,
-                    weight: 0.5 + Math.random() * 0.5,
+                    weight: 0.5 + executionEnvironmentFor(this).random() * 0.5,
                   });
                 }
               }
             });
 
             // Activate initial nodes
-            this.activateRandomNodes(QICNConfig.PROCESSING_SAMPLE_SIZE);
+            this.activateRandomNodes(executionEnvironmentFor(this).config.PROCESSING_SAMPLE_SIZE);
 
             return this.nodes;
           }
@@ -40,10 +42,10 @@ export class NodalProcessingLayer {
           // Simulation of Lazy Loading over the 10M potential nodes
           activateRandomNodes(count) {
             this.activeNodeIds.clear();
-            const nodesToActivate = Math.min(count, QICNConfig.PROCESSING_SAMPLE_SIZE);
+            const nodesToActivate = Math.min(count, executionEnvironmentFor(this).config.PROCESSING_SAMPLE_SIZE);
 
             while (this.activeNodeIds.size < nodesToActivate) {
-              const randomId = Math.floor(Math.random() * QICNConfig.PROCESSING_SAMPLE_SIZE);
+              const randomId = Math.floor(executionEnvironmentFor(this).random() * executionEnvironmentFor(this).config.PROCESSING_SAMPLE_SIZE);
               this.activeNodeIds.add(randomId);
             }
           }
@@ -81,11 +83,11 @@ export class NodalProcessingLayer {
 
             return {
               activeNodes: activeNodes.length,
-              totalNodes: QICNConfig.TOTAL_NODES,
-              activeLimit: QICNConfig.ACTIVE_NODES_LIMIT,
+              totalNodes: executionEnvironmentFor(this).config.TOTAL_NODES,
+              activeLimit: executionEnvironmentFor(this).config.ACTIVE_NODES_LIMIT,
               averageConnections: totalConnections / (activeNodes.length || 1),
               signalBufferSize: this.signalBuffer.length,
-              activationDensity: this.activeNodeIds.size / QICNConfig.TOTAL_NODES
+              activationDensity: this.activeNodeIds.size / executionEnvironmentFor(this).config.TOTAL_NODES
             };
           }
 

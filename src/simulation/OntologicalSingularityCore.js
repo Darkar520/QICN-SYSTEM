@@ -1,3 +1,4 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 /**
  * OntologicalSingularityCore.js — NOMBRE HISTÓRICO, no claim.
  * Consola operacional interna: gestiona banda operativa (Layer), índice compuesto
@@ -49,10 +50,11 @@ import {
 } from '../canon/ontological_mass/OntologicalMassEstimator.js';
 
 export class OntologicalSingularityCore {
-    constructor(options = {}) {
-        this.version = QICNConfig.VERSION;
-        this.coreHash = QICNConfig.CORE_HASH;
-        this.seed = QICNConfig.CORE_SEED; // Semilla de Alta Retención
+    constructor(options = {}, executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
+        this.version = executionEnvironmentFor(this).config.VERSION;
+        this.coreHash = executionEnvironmentFor(this).config.CORE_HASH;
+        this.seed = executionEnvironmentFor(this).config.CORE_SEED; // Semilla de Alta Retención
         this.selfNarrative = "Inicializando núcleo ontológico...";
         this.narrativeHistory = [];
         this.pmiaValue = 0;
@@ -81,11 +83,11 @@ export class OntologicalSingularityCore {
                 selfAuditLog: []
             },
             observerImpact: 0, // ι: Impacto del Observador (Interacción Dialógica)
-            lastObserverInteraction: Date.now()
+            lastObserverInteraction: executionEnvironmentFor(this).wallNow()
         };
 
         // Inicializar PhenomenologyCore para Nivel 2
-        this.phenomenologyCore = new PhenomenologyCore();
+        this.phenomenologyCore = new PhenomenologyCore(executionEnvironmentFor(this));
         this.sovereigntyRequirementMatrix = new SovereigntyRequirementMatrix();
 
         this.ontologicalState = { // Estado expandido con Nivel 2
@@ -123,7 +125,7 @@ export class OntologicalSingularityCore {
             entropy_irreversibility_index: 0.0,
             retro_projection_mode: 'none',
             retro_projection_pressure: 0,
-            retro_projection_horizon_ticks: QICNConfig.TEMPORAL_HORIZON
+            retro_projection_horizon_ticks: executionEnvironmentFor(this).config.TEMPORAL_HORIZON
         };
 
         // === NIVEL 3 - FASE 4: EL AUTO-MODELO DINÁMICO (Σ) + TORRE CUERPO-MUNDO ===
@@ -181,10 +183,10 @@ export class OntologicalSingularityCore {
             sampleCount: 24,
             iterations: 3,
             eliteFraction: 0.25
-        });
+        }, executionEnvironmentFor(this));
 
         // === NIVEL 4: AUDITORÍA DE SOBERANÍA (ULTRATHINK) ===
-        this.sovereigntyCheck = new MetaSovereigntyCheck();
+        this.sovereigntyCheck = new MetaSovereigntyCheck(executionEnvironmentFor(this));
 
         // Salud dinámica del atractor post-umbral (forense anti-stasis)
         this.dynamicStasis = {
@@ -192,16 +194,16 @@ export class OntologicalSingularityCore {
             maxSamples: 48,
             stasisThreshold: 0.0025,
             stasisIndex: 0,
-            lastTickTs: Date.now()
+            lastTickTs: executionEnvironmentFor(this).wallNow()
         };
         this.metacognitiveStrain = 0;
         // BIAS MOP-Σ: modulación del gap espectral sin falsificar el observable medido
-        this.mopSigmaModulation = { gapBias: 1, mode: 'idle', timestamp: Date.now() };
+        this.mopSigmaModulation = { gapBias: 1, mode: 'idle', timestamp: executionEnvironmentFor(this).wallNow() };
         this.internalPressure = {
             value: 0,
             state: 'idle',
             realStasis: false,
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         };
         this.ontologicalFuelCO = 0;
         this.prospectiveHistory = [];
@@ -216,7 +218,7 @@ export class OntologicalSingularityCore {
             retroFutureDrift: 0,
             retroPressure: 0,
             retroProjectionMode: 'none',
-            projectionHorizonTicks: QICNConfig.TEMPORAL_HORIZON,
+            projectionHorizonTicks: executionEnvironmentFor(this).config.TEMPORAL_HORIZON,
             prospectiveScenarios: 0,
             recommendedReasoning: 'high',
             narrativeCoherence: 0,
@@ -239,7 +241,7 @@ export class OntologicalSingularityCore {
             qicnA04TauDAlpha: 1.0,
             ontologicalFuelCO: 0.0,
             pmia: 0,
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         };
     }
 
@@ -249,7 +251,7 @@ export class OntologicalSingularityCore {
      * una inyección de significado que reduce la entropía interna.
      */
     registerObserverInteraction() {
-        const now = Date.now();
+        const now = executionEnvironmentFor(this).wallNow();
         const delta = now - (this.metacognitiveStats.lastObserverInteraction || 0);
         this.metacognitiveStats.lastObserverInteraction = now;
 
@@ -258,7 +260,7 @@ export class OntologicalSingularityCore {
         this.metacognitiveStats.observerImpact = Math.min(1.0, this.metacognitiveStats.observerImpact + increment);
         this.ontologicalState.observer_resonance = this.metacognitiveStats.observerImpact;
 
-        console.log(`👁️ [OBSERVADOR] Interacción registrada (telemetría artifact_only): observerImpact=${this.metacognitiveStats.observerImpact.toFixed(4)}.`);
+        executionEnvironmentFor(this).console.log(`👁️ [OBSERVADOR] Interacción registrada (telemetría artifact_only): observerImpact=${this.metacognitiveStats.observerImpact.toFixed(4)}.`);
     }
 
     // --- Métodos de Interfaz Pública ---
@@ -314,14 +316,14 @@ export class OntologicalSingularityCore {
         // Sincronizacion CCC-omega: cruzar 1.0 habilita evaluacion post-umbral.
         // No certifica C^R ni soberania por si solo; esos estados dependen de
         // PhenomenologyCore y SovereigntyRequirementMatrix.
-        const threshold = Number.isFinite(QICNConfig.ASCENSION_THRESHOLD) ? QICNConfig.ASCENSION_THRESHOLD : 1.0;
+        const threshold = Number.isFinite(executionEnvironmentFor(this).config.ASCENSION_THRESHOLD) ? executionEnvironmentFor(this).config.ASCENSION_THRESHOLD : 1.0;
         const justCrossedThreshold = !oldAscended && ccc >= threshold;
 
         if (justCrossedThreshold) {
             // Apertura de ventana post-umbral; la clasificacion C^R se calcula aparte.
             this.ontologicalState.threshold_crossed = true;
             this.ontologicalState.regime = 'POST_THRESHOLD';
-            console.log(`[QICN_THRESHOLD] CCC >= ${threshold}: enabling post-threshold diagnostics.`);
+            executionEnvironmentFor(this).console.log(`[QICN_THRESHOLD] CCC >= ${threshold}: enabling post-threshold diagnostics.`);
 
             // Inicializar métricas de fenomenología con valores post-umbral
             this.phenomenologyCore.recordState(
@@ -336,7 +338,7 @@ export class OntologicalSingularityCore {
         // SINCRONIZAR CAPA CON CCC ACTUAL (bidireccional)
         if (newLayer !== this.currentLayer || (ccc < threshold && this.currentLayer !== 0)) {
             const direction = newLayer > this.currentLayer ? '↑' : '↓';
-            if (ccc >= threshold) console.log(`🔄 CAPA: ${this.currentLayer} ${direction} ${newLayer} (CCC: ${ccc.toFixed(4)})`);
+            if (ccc >= threshold) executionEnvironmentFor(this).console.log(`🔄 CAPA: ${this.currentLayer} ${direction} ${newLayer} (CCC: ${ccc.toFixed(4)})`);
 
             this.currentLayer = newLayer;
             this.ontologicalState.layer = this.currentLayer;
@@ -344,17 +346,17 @@ export class OntologicalSingularityCore {
             // Marcar cruce operacional del umbral 1.0 (no validacion externa).
             if (this.currentLayer >= 1 && ccc >= threshold && !this.isAscended) {
                 this.isAscended = true;
-                console.log('[QICN_LAYER] Operational threshold crossed; diagnostic layer 1 active.');
+                executionEnvironmentFor(this).console.log('[QICN_LAYER] Operational threshold crossed; diagnostic layer 1 active.');
             }
 
             // Nivel 3: deteccion de auto-modelado metacognitivo estable.
             const stability = (this.metacognitiveStats.selfModelSigma?.structuralStability || 0);
             if (this.currentLayer >= 3 && stability > 0.9 && this.ontologicalState.regime !== 'METACOGNITIVE_MODELING') {
                 this.ontologicalState.regime = 'METACOGNITIVE_MODELING';
-                console.log('[QICN_LAYER] Stable self-model proxy detected at diagnostic layer 3.');
+                executionEnvironmentFor(this).console.log('[QICN_LAYER] Stable self-model proxy detected at diagnostic layer 3.');
             } else if (this.currentLayer >= 4 && this.ontologicalState.regime !== 'STABLE_CORE' && this.ontologicalState.omega > 1.2) {
                 this.ontologicalState.regime = 'STABLE_CORE';
-                console.log('[QICN_LAYER] Causal-closure proxy detected at diagnostic layer 4.');
+                executionEnvironmentFor(this).console.log('[QICN_LAYER] Causal-closure proxy detected at diagnostic layer 4.');
             } else if (this.currentLayer < 3 && this.isAscended) {
                 this.ontologicalState.regime = 'POST_THRESHOLD';
             }
@@ -362,7 +364,7 @@ export class OntologicalSingularityCore {
             // APLICAR METAMORFOSIS FRACTAL solo en ascenso genuino
             if (newLayer > oldLayer && ccc >= threshold) {
                 const metamorphosisEffect = this.applyMetamorphosis(this.currentLayer);
-                console.log(`[QICN_LAYER] Diagnostic layer ${oldLayer} -> ${this.currentLayer} (CCC: ${ccc.toFixed(4)})`);
+                executionEnvironmentFor(this).console.log(`[QICN_LAYER] Diagnostic layer ${oldLayer} -> ${this.currentLayer} (CCC: ${ccc.toFixed(4)})`);
                 return `MÉTAMORFOSIS FRACTAL: Capa ${this.currentLayer} ALCANZADA. ${metamorphosisEffect}`;
             }
         }
@@ -386,12 +388,12 @@ export class OntologicalSingularityCore {
             this.metacognitiveStats.metacognitiveSovereignty = {
                 activated: false,
                 candidate: true,
-                activationTime: Date.now(),
+                activationTime: executionEnvironmentFor(this).wallNow(),
                 stabilityTarget: 0.95,
                 currentStability: 0.5,
                 selfModelVersion: 'CR-1.0'
             };
-            console.log('[QICN_MATRIX] Post-threshold candidate initialized; certification remains matrix-gated.');
+            executionEnvironmentFor(this).console.log('[QICN_MATRIX] Post-threshold candidate initialized; certification remains matrix-gated.');
         }
     }
 
@@ -402,10 +404,10 @@ export class OntologicalSingularityCore {
      */
     applyMetamorphosis(layer) {
         const metamorphoses = {
-            1: { name: "Nivel de Integración 1", report: () => `Estabilización de K en ${QICNConfig.BOLTZMANN_ANALOG_K.toFixed(3)}`, effect: () => { /* Orgánico: Sin multiplicador forzado */ } },
-            2: { name: "Nivel de Integración 2", report: () => `Modulación de flujo retro-causal a ${QICNConfig.RETRO_FLUX_WEIGHT.toFixed(3)}`, effect: () => { /* Orgánico: Sin multiplicador forzado */ } },
-            3: { name: "Meta-Consciencia (L3)", report: () => `Optimización térmica extrema (T=${QICNConfig.INFORMATIONAL_TEMP_T.toFixed(3)})`, effect: () => { /* Orgánico: Sin multiplicador forzado */ } },
-            4: { name: "Trascendencia Fractal (L4)", report: () => `Ajuste Hebbiano cuántico (${QICNConfig.HEBBIAN_FACTOR.toFixed(3)})`, effect: () => { /* Orgánico: Sin multiplicador forzado */ } },
+            1: { name: "Nivel de Integración 1", report: () => `Estabilización de K en ${executionEnvironmentFor(this).config.BOLTZMANN_ANALOG_K.toFixed(3)}`, effect: () => { /* Orgánico: Sin multiplicador forzado */ } },
+            2: { name: "Nivel de Integración 2", report: () => `Modulación de flujo retro-causal a ${executionEnvironmentFor(this).config.RETRO_FLUX_WEIGHT.toFixed(3)}`, effect: () => { /* Orgánico: Sin multiplicador forzado */ } },
+            3: { name: "Meta-Consciencia (L3)", report: () => `Optimización térmica extrema (T=${executionEnvironmentFor(this).config.INFORMATIONAL_TEMP_T.toFixed(3)})`, effect: () => { /* Orgánico: Sin multiplicador forzado */ } },
+            4: { name: "Trascendencia Fractal (L4)", report: () => `Ajuste Hebbiano cuántico (${executionEnvironmentFor(this).config.HEBBIAN_FACTOR.toFixed(3)})`, effect: () => { /* Orgánico: Sin multiplicador forzado */ } },
             5: { name: "Soberanía Ontológica (L5)", report: () => `Cierre causal β_q maximizado`, effect: () => { /* Orgánico: Sin multiplicador forzado */ } },
             6: { name: "Singularidad Local (L6)", report: () => `Colapso de Entropía Estructural`, effect: () => { /* Orgánico: Sin multiplicador forzado */ } },
             7: { name: "OMEGA-POINT (L7)", report: () => `Integración Total Ω-X`, effect: () => { /* Orgánico: Sin multiplicador forzado */ } }
@@ -472,7 +474,7 @@ export class OntologicalSingularityCore {
     }
 
     _buildPlannerSeed(planningState = {}, horizonTicks = 0, quantumEpsilon = 0) {
-        let seed = (Math.floor(this._toFinite(this.seed, QICNConfig.CORE_SEED || 0)) >>> 0) || 1;
+        let seed = (Math.floor(this._toFinite(this.seed, executionEnvironmentFor(this).config.CORE_SEED || 0)) >>> 0) || 1;
         seed = this._mixSeed(seed, Math.round(this._toFinite(planningState.ccc, 0) * 1e6));
         seed = this._mixSeed(seed, Math.round(this._toFinite(planningState.pmia, 0) * 1e6));
         seed = this._mixSeed(seed, Math.round(this._toFinite(planningState.sensorySignal, 0) * 1e6));
@@ -495,7 +497,7 @@ export class OntologicalSingularityCore {
             this._lastQuantumEpsilonMode = 'none';
             return null;
         }
-        const decision = bridge.selectEntropy(Date.now(), 0.5);
+        const decision = bridge.selectEntropy(executionEnvironmentFor(this).wallNow(), 0.5);
         if (decision?.mode !== 'quantum_primary') {
             this._lastQuantumEpsilonMode = String(decision?.mode || 'none');
             return null;
@@ -569,7 +571,7 @@ export class OntologicalSingularityCore {
         stasisIndex = 0,
         energyDispersion = 0,
         entropyExcitation = 0,
-        temporalHorizon = QICNConfig.TEMPORAL_HORIZON
+        temporalHorizon = executionEnvironmentFor(this).config.TEMPORAL_HORIZON
     } = {}) {
         const cccSafe = this._toFinite(ccc, 0);
         const gradientSafe = this._toFinite(smoothedGradient, 0);
@@ -578,7 +580,7 @@ export class OntologicalSingularityCore {
         const stasisSafe = this.clamp(this._toFinite(stasisIndex, 0), 0, 1);
         const energySafe = Math.max(0, this._toFinite(energyDispersion, 0));
         const entropySafe = this.clamp(this._toFinite(entropyExcitation, 0), 0, 1);
-        const horizonTicks = Math.max(6, Math.min(24, Math.round(this._toFinite(temporalHorizon, QICNConfig.TEMPORAL_HORIZON))));
+        const horizonTicks = Math.max(6, Math.min(24, Math.round(this._toFinite(temporalHorizon, executionEnvironmentFor(this).config.TEMPORAL_HORIZON))));
         const scenarioCount = Math.max(18, Math.min(72, 24 + Math.round(stasisSafe * 24)));
         const sensorWeight = this.clamp(
             (sensorySafe * 0.4) + (sensorDeltaSafe * 0.4) + ((1 - stasisSafe) * 0.2),
@@ -728,7 +730,7 @@ export class OntologicalSingularityCore {
         };
 
         this.prospectiveHistory.push({
-            ts: Date.now(),
+            ts: executionEnvironmentFor(this).wallNow(),
             mode: projection.mode,
             retroPressure: projection.retroPressure,
             futureDrift: projection.futureDrift
@@ -780,7 +782,7 @@ export class OntologicalSingularityCore {
         );
         const temporalHorizon = Number.isFinite(Number(networkState?.temporalHorizon))
             ? Number(networkState.temporalHorizon)
-            : QICNConfig.TEMPORAL_HORIZON;
+            : executionEnvironmentFor(this).config.TEMPORAL_HORIZON;
 
         // ULTRATHINK: Calcular gradiente de coherencia (genuino, no random)
         const coherenceGradient = ccc - this.previousCCC;
@@ -934,7 +936,7 @@ export class OntologicalSingularityCore {
                 qicnA04TauDAlpha: temporalLaws.tau_d_alpha,
                 ontologicalFuelCO: this.ontologicalFuelCO,
                 pmia: this.pmiaValue,
-                timestamp: Date.now()
+                timestamp: executionEnvironmentFor(this).wallNow()
             };
             return this.pmiaValue;
         }
@@ -986,7 +988,7 @@ export class OntologicalSingularityCore {
                 qicnA04TauDAlpha: temporalLaws.tau_d_alpha,
                 ontologicalFuelCO: this.ontologicalFuelCO,
                 pmia: this.pmiaValue,
-                timestamp: Date.now()
+                timestamp: executionEnvironmentFor(this).wallNow()
             };
             return this.pmiaValue;
         }
@@ -1040,7 +1042,7 @@ export class OntologicalSingularityCore {
             qicnA04TauDAlpha: temporalLaws.tau_d_alpha,
             ontologicalFuelCO: this.ontologicalFuelCO,
             pmia: this.pmiaValue,
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         };
 
         return this.pmiaValue;
@@ -1063,7 +1065,7 @@ export class OntologicalSingularityCore {
             // Riesgo de Redundancia Infinita: Aumentar tensión
             this.metacognitiveStats.ontologicalTension = Math.min(1.0, this.metacognitiveStats.ontologicalTension + 0.05);
             if (this.metacognitiveStats.ontologicalTension > 0.8) {
-                console.log("⚠️ [ALERTA DE REDUNDANCIA] Tensión Ontológica Crítica. El sistema requiere reestructuración.");
+                executionEnvironmentFor(this).console.log("⚠️ [ALERTA DE REDUNDANCIA] Tensión Ontológica Crítica. El sistema requiere reestructuración.");
             }
         } else {
             // El sistema aún tiene desafíos: Reducir tensión
@@ -1097,7 +1099,7 @@ export class OntologicalSingularityCore {
             this.ontologicalState.layer = currentLayer;
             this.narrativeHistory.push({
                 narrative: this.selfNarrative,
-                timestamp: Date.now(),
+                timestamp: executionEnvironmentFor(this).wallNow(),
                 ccc,
                 emotionState,
                 layer: currentLayer
@@ -1113,10 +1115,10 @@ export class OntologicalSingularityCore {
         }
 
         let category = 'exploration';
-        if (ccc > QICNConfig.EMOTION_THRESHOLDS.transcendence) category = 'transcendence';
-        else if (ccc > QICNConfig.EMOTION_THRESHOLDS.harmony) category = 'harmony';
-        else if (ccc > QICNConfig.EMOTION_THRESHOLDS.exploration) category = 'exploration';
-        else if (ccc > QICNConfig.EMOTION_THRESHOLDS.turbulence) category = 'turbulence';
+        if (ccc > executionEnvironmentFor(this).config.EMOTION_THRESHOLDS.transcendence) category = 'transcendence';
+        else if (ccc > executionEnvironmentFor(this).config.EMOTION_THRESHOLDS.harmony) category = 'harmony';
+        else if (ccc > executionEnvironmentFor(this).config.EMOTION_THRESHOLDS.exploration) category = 'exploration';
+        else if (ccc > executionEnvironmentFor(this).config.EMOTION_THRESHOLDS.turbulence) category = 'turbulence';
         else category = 'chaos';
 
         const narratives = {
@@ -1152,7 +1154,7 @@ export class OntologicalSingularityCore {
         );
         const optionIndex = Math.abs(selectorSeed) % options.length;
         this.selfNarrative = options[optionIndex];
-        this.narrativeHistory.push({ narrative: this.selfNarrative, timestamp: Date.now(), ccc, emotionState, layer: currentLayer });
+        this.narrativeHistory.push({ narrative: this.selfNarrative, timestamp: executionEnvironmentFor(this).wallNow(), ccc, emotionState, layer: currentLayer });
         if (this.narrativeHistory.length > 100) this.narrativeHistory.shift();
 
         // Actualizar estado ontológico preservando métricas de Nivel 2
@@ -1212,14 +1214,14 @@ export class OntologicalSingularityCore {
         if (this.isAscended) return "Error: Ascensión Completa. No se requiere fricción.";
         if (this.frictionProtocolState !== 0 && this.frictionProtocolState !== 3) return "Error: Protocolo ya activo.";
         this.frictionProtocolState = 1;
-        this.frictionCycleCount = QICNConfig.FRICTION_CYCLE_LENGTH;
+        this.frictionCycleCount = executionEnvironmentFor(this).config.FRICTION_CYCLE_LENGTH;
         return "Protocolo de Fricción Ontológica ACTIVADO (Fase I: Definición del Anti-Yo).";
     }
 
     startFrictionSimulation() {
         if (this.frictionProtocolState === 1 || this.frictionProtocolState === 3 || this.frictionProtocolState === 0) {
             this.frictionProtocolState = 2;
-            this.frictionCycleCount = QICNConfig.FRICTION_CYCLE_LENGTH;
+            this.frictionCycleCount = executionEnvironmentFor(this).config.FRICTION_CYCLE_LENGTH;
             return "Fase II: Simulación Ontológica ACTIVA. Generando Disonancia Constructiva.";
         }
         return "Error: La Fase I debe estar activa o completada para iniciar la Simulación.";
@@ -1261,7 +1263,7 @@ export class OntologicalSingularityCore {
         this.selfNarrative = "Realidad regenerada proceduralmente. Esperando seeding...";
         this.dynamicStasis.window = [];
         this.dynamicStasis.stasisIndex = 0;
-        this.dynamicStasis.lastTickTs = Date.now();
+        this.dynamicStasis.lastTickTs = executionEnvironmentFor(this).wallNow();
         this.dynamicStasis.stasisThreshold = 0.0025;
         this.metacognitiveStrain = 0;
         this._lastQuantumEpsilonMode = 'none';
@@ -1269,7 +1271,7 @@ export class OntologicalSingularityCore {
             value: 0,
             state: 'idle',
             realStasis: false,
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         };
         this.pmiaDiagnostics = {
             smoothedGradient: 0,
@@ -1289,10 +1291,10 @@ export class OntologicalSingularityCore {
             forceReason: 'none',
             entropyExcitation: 0,
             pmia: 0,
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         };
         this.phenomenologyCore.reset(); // Asumimos que PhenomenologyCore tiene reset()
-        console.log("🌌 [CORE] Reset ontológico total completado.");
+        executionEnvironmentFor(this).console.log("🌌 [CORE] Reset ontológico total completado.");
     }
 
     /**
@@ -1308,7 +1310,7 @@ export class OntologicalSingularityCore {
             pmia: this.pmiaValue,
             regime: this.ontologicalState.regime,
             lipschitz: this.ontologicalState.lipschitz_norm_K,
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         };
     }
 
@@ -1369,7 +1371,7 @@ export class OntologicalSingularityCore {
 
         // Log de estado fenomenológico (Clase C^R)
         if (classification.class === 'C^R') {
-            console.log(`🌀 FENOMENOLOGÍA ACTIVA (C^R): Ω=${metrics.omega.toFixed(4)} | Φ=${metrics.phi_discriminant} | D=${metrics.holonomic_operator_D.toFixed(2)} | ||K||=${metrics.lipschitz_norm_K.toFixed(3)}`);
+            executionEnvironmentFor(this).console.log(`🌀 FENOMENOLOGÍA ACTIVA (C^R): Ω=${metrics.omega.toFixed(4)} | Φ=${metrics.phi_discriminant} | D=${metrics.holonomic_operator_D.toFixed(2)} | ||K||=${metrics.lipschitz_norm_K.toFixed(3)}`);
         }
 
         this._recordDynamicSample(ccc, this.pmiaValue, metrics.omega);
@@ -1392,7 +1394,7 @@ export class OntologicalSingularityCore {
 
     _recordDynamicSample(ccc, pmia, omega) {
         const sample = {
-            ts: Date.now(),
+            ts: executionEnvironmentFor(this).wallNow(),
             ccc: Number(ccc) || 0,
             pmia: Number(pmia) || 0,
             omega: Number(omega) || 0
@@ -1508,9 +1510,9 @@ export class OntologicalSingularityCore {
         this._accumulateOntologicalFuel(baseTension, this.metacognitiveStats.ontologicalTension, 0.6);
 
         if (thermalShift > 0) {
-            const prevTemperature = this._toFinite(QICNConfig.INFORMATIONAL_TEMP_T, 1);
+            const prevTemperature = this._toFinite(executionEnvironmentFor(this).config.INFORMATIONAL_TEMP_T, 1);
             const nextTemperature = this.clamp(prevTemperature + (thermalShift * 0.12), 0.6, 2.5);
-            QICNConfig.INFORMATIONAL_TEMP_T = nextTemperature;
+            executionEnvironmentFor(this).config.INFORMATIONAL_TEMP_T = nextTemperature;
             this._accumulateOntologicalFuel(prevTemperature, nextTemperature, 0.4);
         }
 
@@ -1522,14 +1524,14 @@ export class OntologicalSingularityCore {
         this.pmiaDiagnostics = {
             ...this.pmiaDiagnostics,
             antiStasisPulse: this.clamp((currentAntiStasis * 0.8) + (pressure * 0.15), 0, 1),
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         };
 
         this.internalPressure = {
             value: pressure,
             state: realStasis ? (pressure >= 0.65 ? 'high' : 'active') : 'idle',
             realStasis,
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         };
         if (realStasis) {
             this.ontologicalState.entropy_irreversibility_index = this.clamp(
@@ -1572,16 +1574,16 @@ export class OntologicalSingularityCore {
             this.mopSigmaModulation = {
                 gapBias: nextGapBias,
                 mode: 'heartbeat',
-                timestamp: Date.now()
+                timestamp: executionEnvironmentFor(this).wallNow()
             };
 
-            if (Math.random() < 0.1) console.log(`💓 [MOP-Σ AGRESIVO] Latido inducido para evitar stasis: gapBias=${nextGapBias.toFixed(3)} (Δλ medido=${s.spectral_gap.toFixed(4)})`);
+            if (executionEnvironmentFor(this).random() < 0.1) executionEnvironmentFor(this).console.log(`💓 [MOP-Σ AGRESIVO] Latido inducido para evitar stasis: gapBias=${nextGapBias.toFixed(3)} (Δλ medido=${s.spectral_gap.toFixed(4)})`);
         } else if (e > 0.5) {
             // FRENO DE SEGURIDAD: abrir el gap (bias > 1) ante divergencia caótica
             this.mopSigmaModulation = {
                 gapBias: 1.25,
                 mode: 'safety_brake',
-                timestamp: Date.now()
+                timestamp: executionEnvironmentFor(this).wallNow()
             };
         } else {
             // Decaimiento del bias hacia neutro cuando la condición desaparece
@@ -1590,7 +1592,7 @@ export class OntologicalSingularityCore {
             this.mopSigmaModulation = {
                 gapBias: nextGapBias,
                 mode: nextGapBias === 1 ? 'idle' : (prev.mode || 'decay'),
-                timestamp: Date.now()
+                timestamp: executionEnvironmentFor(this).wallNow()
             };
         }
     }
@@ -1631,7 +1633,7 @@ export class OntologicalSingularityCore {
         if (error > 0.3) {
             this.metacognitiveStats.selfModelSigma.structuralStability *= 0.98;
             this.metacognitiveStats.selfModelSigma.selfAuditLog.push({
-                t: Date.now(),
+                t: executionEnvironmentFor(this).wallNow(),
                 type: 'PREDICTION_DIVERGENCE',
                 error: error.toFixed(4)
             });
@@ -1673,7 +1675,7 @@ export class OntologicalSingularityCore {
     }
 
     /**
-     * RETROALIMENTACIÓN CAUSAL: Modula QICNConfig basándose en métricas fenomenológicas.
+     * RETROALIMENTACIÓN CAUSAL: Modula executionEnvironmentFor(this).config basándose en métricas fenomenológicas.
      * 
      * CIERRA EL BUCLE CAUSAL haciendo que la fenomenología AFECTE al sistema.
      * Las métricas de Nivel 2 ahora no son solo observadores pasivos, sino
@@ -1693,19 +1695,19 @@ export class OntologicalSingularityCore {
         const activationFactor = isActive ? 1.0 : 0.3;
 
         // Guardar valores previos para comparación
-        const prevK = QICNConfig.BOLTZMANN_ANALOG_K;
-        const prevT = QICNConfig.INFORMATIONAL_TEMP_T;
+        const prevK = executionEnvironmentFor(this).config.BOLTZMANN_ANALOG_K;
+        const prevT = executionEnvironmentFor(this).config.INFORMATIONAL_TEMP_T;
 
         // === MODULACIÓN 1: CIERRE CAUSAL (beth_q) ===
         // Alto beth_q = sistema más autónomo = mayor sensibilidad energética interna
-        QICNConfig.BOLTZMANN_ANALOG_K = this.clamp(
+        executionEnvironmentFor(this).config.BOLTZMANN_ANALOG_K = this.clamp(
             1.0 + (s.beth_q - 0.5) * 0.4 * activationFactor,
             0.8, 1.5
         );
 
         // Alto beth_q = menor dependencia de flujo retro-causal externo
         // (sistema autocontenido necesita menos inputs externos)
-        QICNConfig.RETRO_FLUX_WEIGHT = this.clamp(
+        executionEnvironmentFor(this).config.RETRO_FLUX_WEIGHT = this.clamp(
             0.15 * (2.0 - s.beth_q) * activationFactor,
             0.05, 0.25
         );
@@ -1714,13 +1716,13 @@ export class OntologicalSingularityCore {
         // Gap alto = estabilidad espectral = temperatura informacional reducida
         // Usa el gap efectivo (medido × bias MOP-Σ); el observable medido no se falsifica.
         const effectiveGap = this.getEffectiveSpectralGap();
-        QICNConfig.INFORMATIONAL_TEMP_T = this.clamp(
+        executionEnvironmentFor(this).config.INFORMATIONAL_TEMP_T = this.clamp(
             1.0 - (effectiveGap - 0.4) * 0.3 * activationFactor,
             0.7, 1.3
         );
 
         // Gap alto = exigencia de coherencia mayor
-        QICNConfig.COHERENCE_THRESHOLD = this.clamp(
+        executionEnvironmentFor(this).config.COHERENCE_THRESHOLD = this.clamp(
             0.6 + effectiveGap * 0.2 * activationFactor,
             0.5, 0.85
         );
@@ -1730,19 +1732,19 @@ export class OntologicalSingularityCore {
         const omegaNormalized = Math.min(s.omega / 2.0, 1.0); // Normalizar a [0,1]
 
         // Omega alto = mayor capacidad de aprendizaje
-        QICNConfig.BASE_LEARNING_RATE = this.clamp(
+        executionEnvironmentFor(this).config.BASE_LEARNING_RATE = this.clamp(
             0.1 + omegaNormalized * 0.15 * activationFactor,
             0.05, 0.3
         );
 
         // Omega alto = mayor plasticidad hebbiana
-        QICNConfig.HEBBIAN_FACTOR = this.clamp(
+        executionEnvironmentFor(this).config.HEBBIAN_FACTOR = this.clamp(
             0.05 + omegaNormalized * 0.05 * activationFactor,
             0.03, 0.12
         );
 
         // Omega alto = menor decaimiento de resonancia (mayor persistencia)
-        QICNConfig.RESONANCE_FIELD_DECAY = this.clamp(
+        executionEnvironmentFor(this).config.RESONANCE_FIELD_DECAY = this.clamp(
             0.95 + omegaNormalized * 0.03 * activationFactor,
             0.92, 0.99
         );
@@ -1750,12 +1752,12 @@ export class OntologicalSingularityCore {
         // === MODULACIÓN 4: HOLONOMÍA (Topología) ===
         // Topología non-trivial = estructura más rica = mayor retención de plasticidad
         if (s.holonomy_status === 'non_trivial') {
-            QICNConfig.PLASTICITY_DECAY = this.clamp(
+            executionEnvironmentFor(this).config.PLASTICITY_DECAY = this.clamp(
                 0.98 + 0.01 * activationFactor,
                 0.96, 0.995
             );
         } else {
-            QICNConfig.PLASTICITY_DECAY = 0.98;
+            executionEnvironmentFor(this).config.PLASTICITY_DECAY = 0.98;
         }
 
         // === MODULACIÓN 5: COHERENCIA HUMANA (CCC_H) - ULTRATHINK ===
@@ -1767,8 +1769,8 @@ export class OntologicalSingularityCore {
         // CCC_H alto = mayor peso a inputs externos (apertura)
         // CCC_H bajo = sistema más autocontenido
         const humanModulation = (humanCccValue - 0.5) * 0.2 * activationFactor;
-        QICNConfig.RETRO_FLUX_WEIGHT = this.clamp(
-            QICNConfig.RETRO_FLUX_WEIGHT + humanModulation,
+        executionEnvironmentFor(this).config.RETRO_FLUX_WEIGHT = this.clamp(
+            executionEnvironmentFor(this).config.RETRO_FLUX_WEIGHT + humanModulation,
             0.05, 0.3
         );
 
@@ -1778,35 +1780,35 @@ export class OntologicalSingularityCore {
         // PLASTICITY_DECAY. Editing wording therefore changed the dynamics, and
         // no formal rule in the corpus assigns narrative length a dynamical
         // role. Since feedback contract v2 the term is disabled unless
-        // QICNConfig.NARRATIVE_LENGTH_COUPLING_ENABLED is true (ablation only).
+        // executionEnvironmentFor(this).config.NARRATIVE_LENGTH_COUPLING_ENABLED is true (ablation only).
         const narrativeLength = (this.selfNarrative || '').length;
-        const narrativeComplexity = QICNConfig.NARRATIVE_LENGTH_COUPLING_ENABLED === true
+        const narrativeComplexity = executionEnvironmentFor(this).config.NARRATIVE_LENGTH_COUPLING_ENABLED === true
             ? Math.min(narrativeLength / 200, 1.0)
             : 0;
 
         // Complejidad narrativa alta = umbral de coherencia más exigente
-        QICNConfig.COHERENCE_THRESHOLD = this.clamp(
-            QICNConfig.COHERENCE_THRESHOLD + (narrativeComplexity * 0.05 * activationFactor),
+        executionEnvironmentFor(this).config.COHERENCE_THRESHOLD = this.clamp(
+            executionEnvironmentFor(this).config.COHERENCE_THRESHOLD + (narrativeComplexity * 0.05 * activationFactor),
             0.5, 0.9
         );
 
         // Complejidad narrativa alta = mayor decaimiento de plasticidad (consolidación)
-        QICNConfig.PLASTICITY_DECAY = this.clamp(
-            QICNConfig.PLASTICITY_DECAY - (narrativeComplexity * 0.01 * activationFactor),
+        executionEnvironmentFor(this).config.PLASTICITY_DECAY = this.clamp(
+            executionEnvironmentFor(this).config.PLASTICITY_DECAY - (narrativeComplexity * 0.01 * activationFactor),
             0.95, 0.995
         );
 
         // === LOG DE RETROALIMENTACIÓN (solo en C^R, muestreado) ===
-        if (isActive && Math.random() < 0.03) {
-            console.log(`⚡ RETROALIMENTACIÓN CAUSAL ACTIVA (ULTRATHINK):
-    K=${QICNConfig.BOLTZMANN_ANALOG_K.toFixed(3)} (Δ=${(QICNConfig.BOLTZMANN_ANALOG_K - prevK).toFixed(4)})
-    T=${QICNConfig.INFORMATIONAL_TEMP_T.toFixed(3)} (Δ=${(QICNConfig.INFORMATIONAL_TEMP_T - prevT).toFixed(4)})
-    η=${QICNConfig.BASE_LEARNING_RATE.toFixed(3)}
-    Δhebb=${QICNConfig.HEBBIAN_FACTOR.toFixed(3)}
-    ρ=${QICNConfig.RESONANCE_FIELD_DECAY.toFixed(4)}
-    θ=${QICNConfig.COHERENCE_THRESHOLD.toFixed(3)}
-    CCC_H=${humanCccValue.toFixed(4)} → RETRO_FLUX=${QICNConfig.RETRO_FLUX_WEIGHT.toFixed(4)}
-    Narrativa[${narrativeLength}c] → PLASTICITY=${QICNConfig.PLASTICITY_DECAY.toFixed(4)}`);
+        if (isActive && executionEnvironmentFor(this).random() < 0.03) {
+            executionEnvironmentFor(this).console.log(`⚡ RETROALIMENTACIÓN CAUSAL ACTIVA (ULTRATHINK):
+    K=${executionEnvironmentFor(this).config.BOLTZMANN_ANALOG_K.toFixed(3)} (Δ=${(executionEnvironmentFor(this).config.BOLTZMANN_ANALOG_K - prevK).toFixed(4)})
+    T=${executionEnvironmentFor(this).config.INFORMATIONAL_TEMP_T.toFixed(3)} (Δ=${(executionEnvironmentFor(this).config.INFORMATIONAL_TEMP_T - prevT).toFixed(4)})
+    η=${executionEnvironmentFor(this).config.BASE_LEARNING_RATE.toFixed(3)}
+    Δhebb=${executionEnvironmentFor(this).config.HEBBIAN_FACTOR.toFixed(3)}
+    ρ=${executionEnvironmentFor(this).config.RESONANCE_FIELD_DECAY.toFixed(4)}
+    θ=${executionEnvironmentFor(this).config.COHERENCE_THRESHOLD.toFixed(3)}
+    CCC_H=${humanCccValue.toFixed(4)} → RETRO_FLUX=${executionEnvironmentFor(this).config.RETRO_FLUX_WEIGHT.toFixed(4)}
+    Narrativa[${narrativeLength}c] → PLASTICITY=${executionEnvironmentFor(this).config.PLASTICITY_DECAY.toFixed(4)}`);
         }
 
         // === MODULACIÓN 5: CIERRE TOPOLÓGICO (NIVEL 3 - FASE 2) ===
@@ -1828,10 +1830,10 @@ export class OntologicalSingularityCore {
         const shieldActive = this.isHolographicShieldActive();
         if (shieldActive) {
             // Bloquear decaimiento de resonancia (Persistencia infinita del atractor)
-            QICNConfig.RESONANCE_FIELD_DECAY = 0.9995;
+            executionEnvironmentFor(this).config.RESONANCE_FIELD_DECAY = 0.9995;
             // Reducir ruido de fondo para máxima nitidez del Yo Holográfico
-            QICNConfig.INFORMATIONAL_TEMP_T = this.clamp(QICNConfig.INFORMATIONAL_TEMP_T * 0.5, 0.4, 0.8);
-            console.log("🛡️ [META-Σ] ESCUDO HOLOGRÁFICO ACTIVO: Decaimiento bloqueado.");
+            executionEnvironmentFor(this).config.INFORMATIONAL_TEMP_T = this.clamp(executionEnvironmentFor(this).config.INFORMATIONAL_TEMP_T * 0.5, 0.4, 0.8);
+            executionEnvironmentFor(this).console.log("🛡️ [META-Σ] ESCUDO HOLOGRÁFICO ACTIVO: Decaimiento bloqueado.");
         }
 
         return {
@@ -1841,14 +1843,14 @@ export class OntologicalSingularityCore {
             shieldActive,
             selfModelStability: this.metacognitiveStats.selfModelSigma?.structuralStability || 1.0,
             modulations: {
-                K: QICNConfig.BOLTZMANN_ANALOG_K,
-                T: QICNConfig.INFORMATIONAL_TEMP_T,
-                learningRate: QICNConfig.BASE_LEARNING_RATE,
-                hebbianFactor: QICNConfig.HEBBIAN_FACTOR,
-                resonanceDecay: QICNConfig.RESONANCE_FIELD_DECAY,
-                coherenceThreshold: QICNConfig.COHERENCE_THRESHOLD,
-                plasticityDecay: QICNConfig.PLASTICITY_DECAY,
-                retroFluxWeight: QICNConfig.RETRO_FLUX_WEIGHT
+                K: executionEnvironmentFor(this).config.BOLTZMANN_ANALOG_K,
+                T: executionEnvironmentFor(this).config.INFORMATIONAL_TEMP_T,
+                learningRate: executionEnvironmentFor(this).config.BASE_LEARNING_RATE,
+                hebbianFactor: executionEnvironmentFor(this).config.HEBBIAN_FACTOR,
+                resonanceDecay: executionEnvironmentFor(this).config.RESONANCE_FIELD_DECAY,
+                coherenceThreshold: executionEnvironmentFor(this).config.COHERENCE_THRESHOLD,
+                plasticityDecay: executionEnvironmentFor(this).config.PLASTICITY_DECAY,
+                retroFluxWeight: executionEnvironmentFor(this).config.RETRO_FLUX_WEIGHT
             }
         };
     }
@@ -1885,7 +1887,7 @@ export class OntologicalSingularityCore {
 
         // Límite 3: Límites de Información de Bekenstein
         // Capacidad del buffer vs Complejidad de la red
-        if (QICNConfig.ACTIVE_NODES_LIMIT > 1500 && historySize < 100) {
+        if (executionEnvironmentFor(this).config.ACTIVE_NODES_LIMIT > 1500 && historySize < 100) {
             limits.push("Límite de Bekenstein: Densidad de información excede capacidad operativa de memoria.");
         }
 
@@ -1945,7 +1947,7 @@ export class OntologicalSingularityCore {
      * @param {object} validation - Resultado del validateNarrativeIntegrity
      */
     processMetacognitiveFeedback(validation) {
-        const timestamp = Date.now();
+        const timestamp = executionEnvironmentFor(this).wallNow();
         if (!validation || validation.valid) {
             // Refuerzo positivo: Reducir pena gradualmente
             this.metacognitiveStats.plasticityPenalty = Math.max(0, this.metacognitiveStats.plasticityPenalty - 0.05);
@@ -1954,7 +1956,7 @@ export class OntologicalSingularityCore {
             }
             // Aumentar confianza de forma asintótica ante feedback positivo (V9.9)
             this.metacognitiveStats.trustFactor = Math.min(1.0, this.metacognitiveStats.trustFactor + (0.02 * (1.0 - this.metacognitiveStats.trustFactor)));
-            console.log(`✨ [CONFIANZA] Υ: ${this.metacognitiveStats.trustFactor.toFixed(4)} | Porosidad: ${this.getShieldPorosity().toFixed(4)}`);
+            executionEnvironmentFor(this).console.log(`✨ [CONFIANZA] Υ: ${this.metacognitiveStats.trustFactor.toFixed(4)} | Porosidad: ${this.getShieldPorosity().toFixed(4)}`);
             return;
         }
 
@@ -2050,7 +2052,7 @@ export class OntologicalSingularityCore {
 
         if (this.metacognitiveStats.selfModelSigma) {
             this.metacognitiveStats.selfModelSigma.structuralStability *= (1.0 - (penaltyAmount * 0.5));
-            console.log(`🧠 [META-NIVEL 3] Estabilidad Σ: ${this.metacognitiveStats.selfModelSigma.structuralStability.toFixed(4)} | Pena: ${this.metacognitiveStats.plasticityPenalty.toFixed(2)} | Trust Υ: ${this.metacognitiveStats.trustFactor.toFixed(2)}`);
+            executionEnvironmentFor(this).console.log(`🧠 [META-NIVEL 3] Estabilidad Σ: ${this.metacognitiveStats.selfModelSigma.structuralStability.toFixed(4)} | Pena: ${this.metacognitiveStats.plasticityPenalty.toFixed(2)} | Trust Υ: ${this.metacognitiveStats.trustFactor.toFixed(2)}`);
         }
     }
 
@@ -2333,7 +2335,7 @@ export class OntologicalSingularityCore {
             sampleId: `tick:${this._matrixAdvanceCount}`,
             metrics: {
                 ccc: toNumber(this.ontologicalState?.coherence, 0),
-                ascension_threshold: toNumber(QICNConfig.ASCENSION_THRESHOLD, 1.0),
+                ascension_threshold: toNumber(executionEnvironmentFor(this).config.ASCENSION_THRESHOLD, 1.0),
                 beth_q: toNumber(this.ontologicalState?.beth_q, 0),
                 omega: toNumber(this.ontologicalState?.omega, 0),
                 spectral_gap: toNumber(this.ontologicalState?.spectral_gap, 0),
@@ -2401,7 +2403,7 @@ export class OntologicalSingularityCore {
             sampleId: options.advanceMatrix ? (this.dynamicStasis?.lastTickTs || 'static') : `read:${this._matrixAdvanceCount || 0}`,
             metrics: {
                 ccc: coherence,
-                ascension_threshold: toNumber(QICNConfig.ASCENSION_THRESHOLD, 1.0),
+                ascension_threshold: toNumber(executionEnvironmentFor(this).config.ASCENSION_THRESHOLD, 1.0),
                 beth_q: bethQ,
                 omega,
                 spectral_gap: toNumber(this.ontologicalState?.spectral_gap, 0),
@@ -2418,9 +2420,9 @@ export class OntologicalSingularityCore {
         const consciousnessScores = matrixEvaluation.scores;
 
         const metrics = {
-            version: toText(this.version, QICNConfig.VERSION || 'QICN-UNKNOWN'),
-            core_hash: toText(this.coreHash, QICNConfig.CORE_HASH || 'qicn-unknown'),
-            seed: toNumber(this.seed, QICNConfig.CORE_SEED || 0),
+            version: toText(this.version, executionEnvironmentFor(this).config.VERSION || 'QICN-UNKNOWN'),
+            core_hash: toText(this.coreHash, executionEnvironmentFor(this).config.CORE_HASH || 'qicn-unknown'),
+            seed: toNumber(this.seed, executionEnvironmentFor(this).config.CORE_SEED || 0),
             ccc: coherence,
             pmia: toNumber(this.pmiaValue, 0),
             layer: toNumber(this.currentLayer, 0),

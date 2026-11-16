@@ -16,7 +16,7 @@ const smoothSeriesReference = (values, windowSize) => {
 
 try {
   const sourcePath = path.join(process.cwd(), 'src', 'components', 'SimulationEngine.jsx');
-  const source = fs.readFileSync(sourcePath, 'utf8') + '\n' + fs.readFileSync(path.join(process.cwd(), 'src', 'hooks', 'useSimulationCycle.js'), 'utf8');
+  const source = fs.readFileSync(sourcePath, 'utf8') + '\n' + fs.readFileSync(path.join(process.cwd(), 'src', 'runtime', 'SimulationCycleDriver.js'), 'utf8');
 
   // CASE 1: timeline v4.3 acotado a 240 y con trim
   assert.ok(/cccHistoryTimelineRef\s*=\s*useRef\(\{\s*points:\s*\[\],\s*maxPoints:\s*240/s.test(source), 'CASE 1 FAIL: cccHistoryTimelineRef maxPoints=240 missing.');

@@ -1,5 +1,7 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 export class MetaSovereigntyCheck {
-    constructor() {
+    constructor(executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
         this.mutationHistory = [];
         this.efficiencyScore = 0.5;
         this.lastSensorFeedback = null;
@@ -53,7 +55,7 @@ export class MetaSovereigntyCheck {
         if (!Number.isFinite(num) || num < rule.min || num > rule.max) {
             this.integrityStats.violationsDetected += 1;
             this.integrityStats.lastDriftMagnitude = Number.isFinite(num) ? Math.abs(num) : 0;
-            console.error(
+            executionEnvironmentFor(this).console.error(
                 `[SOVEREIGNTY_VIOLATION] Metric '${name}' out of physical range: ${value}. Expected: [${rule.min}, ${rule.max}]`
             );
             return false;
@@ -89,7 +91,7 @@ export class MetaSovereigntyCheck {
             result,
             deltaCCC,
             deltaOmega,
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         });
 
         if (this.mutationHistory.length > 20) {
@@ -101,12 +103,12 @@ export class MetaSovereigntyCheck {
         this.efficiencyScore = successes / 10;
 
         if (result === "success") {
-            console.log(
+            executionEnvironmentFor(this).console.log(
                 `%c✅ [KAIZEN] Mutacion exitosa: ${mutation.mutatedKey} | ΔCCC: ${deltaCCC.toFixed(6)} | ΔΩ: ${deltaOmega.toFixed(4)} | Eficiencia: ${(this.efficiencyScore * 100).toFixed(0)}%`,
                 "color: #00ff88;"
             );
         } else {
-            console.log(
+            executionEnvironmentFor(this).console.log(
                 `%c🔴 [KAIZEN] Mutacion fallida: ${mutation.mutatedKey} | ΔCCC: ${deltaCCC.toFixed(6)} | Eficiencia: ${(this.efficiencyScore * 100).toFixed(0)}%`,
                 "color: #ff6644;"
             );
@@ -126,7 +128,7 @@ export class MetaSovereigntyCheck {
             engagement: sensorData.engagement ?? 0,
             intentConfidence: sensorData.intentConfidence ?? 0,
             dynamicSignal: Number.isFinite(sensorData.dynamicSignal) ? sensorData.dynamicSignal : null,
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         };
     }
 
@@ -136,7 +138,7 @@ export class MetaSovereigntyCheck {
      */
     getSensorFeedbackScore() {
         if (!this.lastSensorFeedback) return 0.5;
-        const timeSinceFeedback = Date.now() - this.lastSensorFeedback.timestamp;
+        const timeSinceFeedback = executionEnvironmentFor(this).wallNow() - this.lastSensorFeedback.timestamp;
         if (timeSinceFeedback > 5000) return 0.5;
         const clamp01 = (value) => Math.max(0, Math.min(1, Number(value) || 0));
         const face = clamp01(this.lastSensorFeedback.faceConfidence);
@@ -180,7 +182,7 @@ export class MetaSovereigntyCheck {
             cooldownActive,
             strainRaw,
             strainEma: clamp01(strainEma),
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         };
         return this.lastLatencyFeedback;
     }
@@ -206,7 +208,7 @@ export class MetaSovereigntyCheck {
             selfModelError: rawError,
             strainRaw,
             strainEma: clamp01(strainEma),
-            timestamp: Date.now()
+            timestamp: executionEnvironmentFor(this).wallNow()
         };
         return this.lastCognitiveFeedback;
     }

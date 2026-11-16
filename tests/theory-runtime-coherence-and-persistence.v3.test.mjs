@@ -270,9 +270,10 @@ import {
 
 // 5. Complete accounting of useSimulationCycle refs in INSTANCE_REFS, PLAIN_REFS, or INTENTIONALLY_UNRESTORED_REFS
 {
-  const src = fs.readFileSync(path.resolve('src/hooks/useSimulationCycle.js'), 'utf8');
-  const match = src.match(/export function useSimulationCycle\(deps\)\s*\{\s*const\s*\{([\s\S]*?)\}\s*=\s*deps;/);
-  assert.ok(match, 'useSimulationCycle deps destructuring found');
+  const src = fs.readFileSync(path.resolve('src/runtime/SimulationCycleDriver.js'), 'utf8');
+  assert.ok(src.includes('export function createSimulationCycleDriver(deps,'), 'common driver entry found');
+  const match = src.match(/const\s*\{([\s\S]*?)\}\s*=\s*deps;/);
+  assert.ok(match, 'common driver deps destructuring found');
   const entries = match[1]
     .split(/\r?\n/)
     .map((line) => line.replace(/\/\/.*$/, '').trim().replace(/,$/, '').trim())

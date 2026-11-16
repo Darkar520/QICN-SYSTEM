@@ -1,3 +1,4 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 const toFinite = (value, fallback = 0) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
 const asPositiveInt = (value, fallback, minimum = 1) => Math.max(minimum, Math.floor(toFinite(value, fallback)));
 
@@ -12,7 +13,8 @@ const computeFingerprint = (text) => {
 };
 
 export class EntropyBufferManager {
-  constructor(config = {}) {
+  constructor(config = {}, executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
     this.queue = [];
     this.auditLog = [];
     this.chunkCounter = 0;
@@ -87,7 +89,7 @@ export class EntropyBufferManager {
 
   _appendAudit(entry) {
     this.auditLog.push({
-      ts: entry.ts ?? Date.now(),
+      ts: entry.ts ?? executionEnvironmentFor(this).wallNow(),
       ...entry
     });
     if (this.auditLog.length > this.config.auditTrailLimit) {
@@ -95,7 +97,7 @@ export class EntropyBufferManager {
     }
   }
 
-  clear(reason = 'buffer_cleared', nowMs = Date.now()) {
+  clear(reason = 'buffer_cleared', nowMs = executionEnvironmentFor(this).wallNow()) {
     if (this.queue.length > 0) {
       this._appendAudit({
         type: 'buffer_cleared',
@@ -107,7 +109,7 @@ export class EntropyBufferManager {
     this.queue = [];
   }
 
-  _pruneStale(nowMs = Date.now()) {
+  _pruneStale(nowMs = executionEnvironmentFor(this).wallNow()) {
     let removed = 0;
     while (this.queue.length > 0) {
       const oldest = this.queue[0];
@@ -130,7 +132,7 @@ export class EntropyBufferManager {
     return removed;
   }
 
-  getRefillPlan(nowMs = Date.now()) {
+  getRefillPlan(nowMs = executionEnvironmentFor(this).wallNow()) {
     const stalePrunedCount = this._pruneStale(nowMs);
     const occupancyChunks = this.queue.length;
     const requestedChunks = occupancyChunks <= this.config.lowWatermarkChunks
@@ -144,7 +146,7 @@ export class EntropyBufferManager {
     };
   }
 
-  ingestSample(sample, metadata = {}, nowMs = Date.now()) {
+  ingestSample(sample, metadata = {}, nowMs = executionEnvironmentFor(this).wallNow()) {
     this._pruneStale(nowMs);
     while (this.queue.length >= this.config.capacityChunks) {
       const dropped = this.queue.shift();
@@ -213,7 +215,7 @@ export class EntropyBufferManager {
     };
   }
 
-  consumeChunk(nowMs = Date.now()) {
+  consumeChunk(nowMs = executionEnvironmentFor(this).wallNow()) {
     const stalePrunedCount = this._pruneStale(nowMs);
     if (this.queue.length === 0) {
       return {
@@ -246,7 +248,7 @@ export class EntropyBufferManager {
     };
   }
 
-  snapshot(nowMs = Date.now()) {
+  snapshot(nowMs = executionEnvironmentFor(this).wallNow()) {
     const occupancyChunks = this.queue.length;
     const oldestChunk = occupancyChunks > 0 ? this.queue[0] : null;
     const newestChunk = occupancyChunks > 0 ? this.queue[this.queue.length - 1] : null;

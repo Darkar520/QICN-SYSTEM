@@ -245,3 +245,9 @@ This document prepares, but does not implement:
 - future integration with canon pinning and stronger audit workflows
 
 No such subsystem is introduced in this phase.
+
+## B1-B2 Workbench classification review
+
+The new workbench capture/protocol/result envelopes, per-tick diagnostics and experimental chain are artifact_only records of isolated-copy execution. Their emitted evidence_scope is internal_support_only and external_support_certified is false. They are not added as direct_metric, invariant, claim_projection or gate_result rows in the minimum machine registry. No existing registry row, run-primary contract, descriptor computation or gate dependency changes. Physical values observed in a clone must not be presented as live runtime-primary signals.
+
+SimulationCycleDriver.js is the common implementation behind the React adapter; ExecutionEnvironment.js supplies ownership without serializing capabilities into dynamic_state.v3. Complete wire contracts and test anchors are documented in WORKBENCH_EXECUTION_CONTRACT.md and TRACEABILITY_MATRIX.md.

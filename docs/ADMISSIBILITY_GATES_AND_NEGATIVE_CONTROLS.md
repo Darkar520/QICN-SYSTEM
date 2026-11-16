@@ -334,3 +334,11 @@ NC5–NC12 and planning helpers are standalone functions; absent injected inputs
 ## 2026-11-08: chat language contract v3 is not an admissibility gate
 
 The realization contract (`src/language/realizationContract.js`) decides whether a Gemini-written chat answer is published. Its outcomes (`gemini_verified`, `gemini_rejected`, `gemini_unavailable`, `local_narrator`) are chat routes, not `run_verdict` or `batch_status` values, and must not be read as `gate_result`. The chat call uses `dynamicsCoupling:false`, so its latency stays out of the metacognitive strain. The full-cycle ablation (`docs/evidence/2026-11-08/full_cycle_language_ablation.json`) is a non-interference check for this channel, not a negative control in the NC1–NC12 family. No run-level or batch-level gate semantics changed.
+
+## B1-B2 isolated micro-experiment controls
+
+Workbench engineering controls are distinct from NC1-NC12 and from run-level admissibility/batch_enforcement. COMPLETED only means a detached execution finished with a verified record chain; it does not mean ADMISSIBLE or PAPER_ADMISSIBLE. All workbench records remain evidence_scope internal_support_only, external_support_certified=false, and artifact_only with respect to the live runtime. Existing harness, run_verdict.json and roeo_enforcement_report.json contracts are unchanged.
+
+Mandatory engineering controls cover sham identity, both state-leak directions, reference ownership, global capability traps, controller aliases, full restore continuation, build/tick/protocol mismatches, chain tampering/truncation/reordering, cancellation/timeout, numeric sensitivity and language invariance. Explicit history controls distinguish selector read-blocking, consolidation suspension, predictor freeze and one-time declared reset. Their scopes do not retroactively redefine CN-3 of historical v1. The unchanged 420/180/250 v1 acceptance remains able to report CN-3=false; no threshold changes or held-out seed selection are authorized by Workbench success.
+
+See WORKBENCH_EXECUTION_CONTRACT.md and tests/workbench-*.v1.test.mjs. The legacy nested subjectivity/phenomenal audit writers have not yet gained safe TEMP routing and are not invoked by this Workbench.

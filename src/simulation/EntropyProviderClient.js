@@ -1,3 +1,4 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 const clamp01 = (value) => Math.max(0, Math.min(1, Number(value) || 0));
 const toFinite = (value, fallback = 0) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
 const asString = (value, fallback = '') => {
@@ -24,18 +25,18 @@ const normalizeByte = (value) => {
 
 const ANU_QRNG_DEFAULT_ENDPOINT = 'https://qrng.anu.edu.au/API/jsonI.php?length=16&type=uint8';
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, Math.max(0, ms)));
+const sleep = (ms, environment) => new Promise((resolve) => environment.setTimeout(resolve, Math.max(0, ms)));
 
-const fetchWithTimeout = async (fetchImpl, url, options = {}, timeoutMs = 4500) => {
-  const abortController = new AbortController();
-  const timeoutId = setTimeout(() => abortController.abort(), Math.max(250, timeoutMs));
+const fetchWithTimeout = async (fetchImpl, url, options = {}, timeoutMs = 4500, environment) => {
+  const abortController = environment.abortController();
+  const timeoutId = environment.setTimeout(() => abortController.abort(), Math.max(250, timeoutMs));
   try {
     return await fetchImpl(url, {
       ...options,
       signal: abortController.signal
     });
   } finally {
-    clearTimeout(timeoutId);
+    environment.clearTimeout(timeoutId);
   }
 };
 
@@ -74,7 +75,8 @@ const buildRequestUrl = ({ endpoint, provider, mode, ttlMs, pendingJobId }) => {
 };
 
 export class EntropyProviderClient {
-  constructor(config = {}) {
+  constructor(config = {}, executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
     this.config = {
       defaultTimeoutMs: 4500,
       retryCount: 1,
@@ -104,7 +106,7 @@ export class EntropyProviderClient {
         return { ...lastResult, attempts: attempt };
       }
       if (attempt < maxAttempts) {
-        await sleep(this.config.retryBackoffMs * attempt);
+        await sleep(this.config.retryBackoffMs * attempt, executionEnvironmentFor(this));
       }
     }
     return { ...(lastResult || {}), attempts: maxAttempts };
@@ -113,7 +115,7 @@ export class EntropyProviderClient {
   async fetchAnuChunk(options = {}) {
     const fetchImpl = typeof options.fetchImpl === 'function'
       ? options.fetchImpl
-      : (typeof fetch === 'function' ? fetch.bind(globalThis) : null);
+      : executionEnvironmentFor(this).fetch;
     if (!fetchImpl) {
       return {
         ok: false,
@@ -123,12 +125,12 @@ export class EntropyProviderClient {
     }
 
     const endpoint = asString(options.endpoint, ANU_QRNG_DEFAULT_ENDPOINT) || ANU_QRNG_DEFAULT_ENDPOINT;
-    const fetchStartMs = Date.now();
+    const fetchStartMs = executionEnvironmentFor(this).wallNow();
     try {
       const response = await fetchWithTimeout(fetchImpl, endpoint, {
         method: 'GET',
         headers: { Accept: 'application/json' }
-      }, Math.max(1000, toFinite(options.timeoutMs, this.config.defaultTimeoutMs)));
+      }, Math.max(1000, toFinite(options.timeoutMs, this.config.defaultTimeoutMs)), executionEnvironmentFor(this));
       if (!response.ok) {
         return {
           ok: false,
@@ -137,8 +139,8 @@ export class EntropyProviderClient {
           requestMeta: {
             provider: 'anu_qrng',
             fetchStartMs,
-            fetchEndMs: Date.now(),
-            latencyMs: Math.max(0, Date.now() - fetchStartMs),
+            fetchEndMs: executionEnvironmentFor(this).wallNow(),
+            latencyMs: Math.max(0, executionEnvironmentFor(this).wallNow() - fetchStartMs),
             requestId: `anu_req_${++this.requestCounter}`
           }
         };
@@ -153,8 +155,8 @@ export class EntropyProviderClient {
           requestMeta: {
             provider: 'anu_qrng',
             fetchStartMs,
-            fetchEndMs: Date.now(),
-            latencyMs: Math.max(0, Date.now() - fetchStartMs),
+            fetchEndMs: executionEnvironmentFor(this).wallNow(),
+            latencyMs: Math.max(0, executionEnvironmentFor(this).wallNow() - fetchStartMs),
             requestId: `anu_req_${++this.requestCounter}`
           }
         };
@@ -168,7 +170,7 @@ export class EntropyProviderClient {
           reason: 'anu_invalid_entropy'
         };
       }
-      const fetchEndMs = Date.now();
+      const fetchEndMs = executionEnvironmentFor(this).wallNow();
       return {
         ok: true,
         status: 'ok',
@@ -209,8 +211,8 @@ export class EntropyProviderClient {
         requestMeta: {
           provider: 'anu_qrng',
           fetchStartMs,
-          fetchEndMs: Date.now(),
-          latencyMs: Math.max(0, Date.now() - fetchStartMs),
+          fetchEndMs: executionEnvironmentFor(this).wallNow(),
+          latencyMs: Math.max(0, executionEnvironmentFor(this).wallNow() - fetchStartMs),
           requestId: `anu_req_${++this.requestCounter}`
         }
       };
@@ -220,7 +222,7 @@ export class EntropyProviderClient {
   async fetchHttpChunk(options = {}) {
     const fetchImpl = typeof options.fetchImpl === 'function'
       ? options.fetchImpl
-      : (typeof fetch === 'function' ? fetch.bind(globalThis) : null);
+      : executionEnvironmentFor(this).fetch;
     if (!fetchImpl) {
       return {
         ok: false,
@@ -250,12 +252,12 @@ export class EntropyProviderClient {
     if (options.apiKeyRef) {
       headers['x-api-key'] = String(options.apiKeyRef);
     }
-    const fetchStartMs = Date.now();
+    const fetchStartMs = executionEnvironmentFor(this).wallNow();
     try {
       const response = await fetchWithTimeout(fetchImpl, requestUrl, {
         method: 'GET',
         headers
-      }, Math.max(1000, toFinite(options.timeoutMs, this.config.defaultTimeoutMs)));
+      }, Math.max(1000, toFinite(options.timeoutMs, this.config.defaultTimeoutMs)), executionEnvironmentFor(this));
       if (!response.ok) {
         return {
           ok: false,
@@ -265,8 +267,8 @@ export class EntropyProviderClient {
             provider,
             requestUrl,
             fetchStartMs,
-            fetchEndMs: Date.now(),
-            latencyMs: Math.max(0, Date.now() - fetchStartMs),
+            fetchEndMs: executionEnvironmentFor(this).wallNow(),
+            latencyMs: Math.max(0, executionEnvironmentFor(this).wallNow() - fetchStartMs),
             requestId: `provider_req_${++this.requestCounter}`
           }
         };
@@ -278,8 +280,8 @@ export class EntropyProviderClient {
         provider,
         requestUrl,
         fetchStartMs,
-        fetchEndMs: Date.now(),
-        latencyMs: Math.max(0, Date.now() - fetchStartMs),
+        fetchEndMs: executionEnvironmentFor(this).wallNow(),
+        latencyMs: Math.max(0, executionEnvironmentFor(this).wallNow() - fetchStartMs),
         requestId: asString(payload?.sample?.jobId || payload?.jobId, `provider_req_${++this.requestCounter}`)
       };
       if (payloadMode === 'upstream_pending') {
@@ -318,8 +320,8 @@ export class EntropyProviderClient {
           provider,
           requestUrl,
           fetchStartMs,
-          fetchEndMs: Date.now(),
-          latencyMs: Math.max(0, Date.now() - fetchStartMs),
+          fetchEndMs: executionEnvironmentFor(this).wallNow(),
+          latencyMs: Math.max(0, executionEnvironmentFor(this).wallNow() - fetchStartMs),
           requestId: `provider_req_${++this.requestCounter}`
         }
       };

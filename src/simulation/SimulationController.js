@@ -1,3 +1,4 @@
+import { bindExecutionEnvironment, executionEnvironmentFor, hasExecutionEnvironment } from '../runtime/ExecutionEnvironment.js';
 // @ts-check
 
 import { WorldModelEngine } from './WorldModelEngine.js';
@@ -48,11 +49,12 @@ export class SimulationController {
     plannerConfig = DEFAULT_PLANNER_CONFIG,
     worldModel = null,
     planner = null
-  } = {}) {
+  } = {}, executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
     this.worldModelConfig = { ...worldModelConfig };
     this.plannerConfig = { ...plannerConfig };
     this.worldModel = worldModel || new WorldModelEngine(this.worldModelConfig);
-    this.planner = planner || new CognitiveEmergencePlanner(this.plannerConfig);
+    this.planner = planner || new CognitiveEmergencePlanner(this.plannerConfig, executionEnvironmentFor(this));
     this.attachedCore = null;
   }
 
@@ -84,7 +86,7 @@ export class SimulationController {
    */
   syncFromCore(core) {
     if (!core || typeof core !== 'object') {
-      logger.warn('sync_skipped_invalid_core');
+      (hasExecutionEnvironment(this) ? executionEnvironmentFor(this).logger : logger).warn('sync_skipped_invalid_core');
       return null;
     }
     if (core.worldModelEngine && typeof core.worldModelEngine === 'object') {
@@ -101,7 +103,7 @@ export class SimulationController {
       this.worldModel.externalCycleOwned = true;
     }
     this.attachedCore = core;
-    logger.info('sync_from_core', {
+    (hasExecutionEnvironment(this) ? executionEnvironmentFor(this).logger : logger).info('sync_from_core', {
       unifiedCoreBinding: core.worldModelEngine === this.worldModel && core.cognitivePlanner === this.planner
     });
     return {
@@ -117,7 +119,7 @@ export class SimulationController {
    */
   attachCore(core, options = {}) {
     if (!core || typeof core !== 'object') {
-      logger.warn('attach_skipped_invalid_core');
+      (hasExecutionEnvironment(this) ? executionEnvironmentFor(this).logger : logger).warn('attach_skipped_invalid_core');
       return null;
     }
     const coreWorldModelPopulated = this._hasPopulatedModelState(core.worldModelEngine);
@@ -134,7 +136,7 @@ export class SimulationController {
       this.worldModel.externalCycleOwned = true;
     }
     this.attachedCore = core;
-    logger.info('attach_core', {
+    (hasExecutionEnvironment(this) ? executionEnvironmentFor(this).logger : logger).info('attach_core', {
       unifiedCoreBinding: core.worldModelEngine === this.worldModel && core.cognitivePlanner === this.planner
     });
     return {
@@ -148,9 +150,9 @@ export class SimulationController {
    */
   reset() {
     this.worldModel = new WorldModelEngine(this.worldModelConfig);
-    this.planner = new CognitiveEmergencePlanner(this.plannerConfig);
+    this.planner = new CognitiveEmergencePlanner(this.plannerConfig, executionEnvironmentFor(this));
     if (this.attachedCore) this.attachCore(this.attachedCore);
-    logger.info('reset_controller', {
+    (hasExecutionEnvironment(this) ? executionEnvironmentFor(this).logger : logger).info('reset_controller', {
       reattached: Boolean(this.attachedCore)
     });
     return {

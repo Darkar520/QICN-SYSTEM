@@ -772,7 +772,7 @@ export class WorldModelEngine {
         this._extendedFeatureVector(prevExt, plannedAction),
         meanSettledSurprisal,
         anyUnforeseen,
-        { plasticityEnabled }
+        { plasticityEnabled: plasticityEnabled && options.consolidationEnabled !== false }
       );
     } else {
       this.lastObservedState = copyState(currentExt);

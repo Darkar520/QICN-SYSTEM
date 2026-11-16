@@ -94,3 +94,17 @@ All rows are `artifact_only` or engineering parameters. None is a descriptor, cl
 | `LC_module_inventory` | `language_channel` | `artifact_only` | file and class names under `src/` | `none` | `src/language/moduleInventory.generated.js` | `none` | `scripts/build-module-inventory.mjs` | `--check` mode | `runtime_derived` | `none` | Attribution check only. | — |
 | `RT_omega_spectral_cap` | `simulation` | engineering parameter | `λ1`, `Δλ` | `spectral_factor`, `spectral_factor_raw`, `spectral_factor_capped` | `phenomenologyState` | `SPECTRAL_FACTOR_MAX = 20` | `src/simulation/PhenomenologyCore.js` | `tests/omega-spectral-cap.v1.test.mjs` | `runtime_derived` | `none` | Design cap, not a theoretical bound (C-4). | Changes Ω when Δλ < 0.05. |
 | `RT_kaizen_learned_mode` | `simulation` | engineering parameter | core base values of 6 keys, CCC, stasis, strain | factor per key in [0.8, 1.2], window score | `kaizenEngine.adjustments`, audit `kaizen_learned_adjustment` | `QICNConfig.KAIZEN_ADJUSTMENT_MODE` (`legacy` default) | `src/simulation/KaizenMetamorphosisEngine.js`, `src/hooks/useSimulationCycle.js` | `tests/kaizen-learned-adjustment.v1.test.mjs`, `scripts/run-kaizen-mode-ablation.mjs` | `runtime_derived` | `none` | The score rewards a target CCC change rate and penalises stasis and strain; it does not reward the CCC level. | C-6b. Behind a UI switch. |
+
+## B1-B2: isolated Workbench engineering traceability
+
+All rows below have evidence_scope internal_support_only and external_support_certified=false. They are artifact_only execution diagnostics, not live runtime-primary evidence or existing gate_result values.
+
+| Surface | Source | Contract / test anchor | Boundary |
+| --- | --- | --- | --- |
+| Shared imperative tick, owned config/RNG/clocks | src/runtime/SimulationCycleDriver.js; ExecutionEnvironment.js; React adapter | tests/simulation-cycle-driver-equivalence.v1.test.mjs; tests/execution-environment-entropy.v1.test.mjs | Frozen B0 comparison includes full v3 bytes and cursors; not external validation |
+| Detached capture and restored aliases | src/experiments/workbench/capture.js; restore.js; persistence execution-component codec | tests/workbench-isolation.v1.test.mjs; tests/workbench-determinism.v1.test.mjs | Required fields and unrestored.length===0; no apply-back or live callbacks |
+| Declared history interventions and objective diagnostics | src/experiments/workbench/interventions.js; metrics.js | tests/workbench-interventions.v1.test.mjs; tests/workbench-history-controls.v1.test.mjs | Read-block, consolidation suspension, freeze and one-time reset are separate; historical v1 unchanged |
+| Independent experimental SHA-256 chain | src/experiments/workbench/contracts.js; recordChain.js; runner.js | tests/workbench-integrity.v1.test.mjs | Wire integrity only; no ledger writes, run verdict or batch enforcement |
+| Language non-interference | Existing language contracts over restored branches | tests/workbench-language-invariance.v1.test.mjs; full-cycle ablation | cn4_maxAbsDiff=0 and same decisions; optional v5 deferred to B3 |
+
+Source-based cycle guards now read SimulationCycleDriver.js; useSimulationCycle.js retains the React binding. See WORKBENCH_EXECUTION_CONTRACT.md for fields, limitations and entropy audit.

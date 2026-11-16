@@ -1,3 +1,4 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 import { EntropyProviderClient } from './EntropyProviderClient.js';
 import { EntropyBufferManager } from './EntropyBufferManager.js';
 import { EntropyHealthMonitor } from './EntropyHealthMonitor.js';
@@ -26,7 +27,8 @@ const FALLBACK_RESPONSE_MODES = new Set(['simulated_fallback', 'local_entropy'])
 const LOG_LEVELS = ['silent', 'error', 'warn', 'info', 'debug'];
 
 export class QuantumEntropyBridge {
-  constructor(options = {}) {
+  constructor(options = {}, executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
     this._pollTimer = null;
     this._pollInFlight = false;
     this._pollFetchImpl = null;
@@ -93,17 +95,17 @@ export class QuantumEntropyBridge {
       defaultTimeoutMs: this.config.requestTimeoutMs,
       retryCount: this.config.retryCount,
       retryBackoffMs: this.config.retryBackoffMs
-    });
-    this.experimentController = new EntropyExperimentController(this.config.experimentalCondition || { mode: 'baseline' });
+    }, executionEnvironmentFor(this));
+    this.experimentController = new EntropyExperimentController(this.config.experimentalCondition || { mode: 'baseline' }, executionEnvironmentFor(this));
     this.bufferManager = new EntropyBufferManager({
       capacityChunks: this.config.bufferCapacityChunks,
       lowWatermarkChunks: this.config.lowWatermarkChunks,
       refillTargetChunks: this.config.refillTargetChunks
-    });
-    this.healthMonitor = new EntropyHealthMonitor({ enabled: this.config.enabled });
+    }, executionEnvironmentFor(this));
+    this.healthMonitor = new EntropyHealthMonitor({ enabled: this.config.enabled }, executionEnvironmentFor(this));
     this.configWarnings = [];
     this.channelHealth = this.healthMonitor.snapshot();
-    this._applyRuntimeConfig(Date.now(), 'constructor');
+    this._applyRuntimeConfig(executionEnvironmentFor(this).wallNow(), 'constructor');
   }
 
   buildConfig(nextConfig = {}, baseConfig = this.config) {
@@ -153,7 +155,7 @@ export class QuantumEntropyBridge {
 
     this.config = this.buildConfig(nextConfig, this.config);
     this.experimentController.configure(this.config.experimentalCondition || { mode: 'baseline' });
-    this._applyRuntimeConfig(Date.now(), 'configure');
+    this._applyRuntimeConfig(executionEnvironmentFor(this).wallNow(), 'configure');
 
     const providerSurfaceChanged =
       previousProvider !== this.config.provider ||
@@ -164,9 +166,9 @@ export class QuantumEntropyBridge {
     if (!this.config.enabled) {
       this.stopPolling();
       this.clearRuntimeRefillContext();
-      this.bufferManager.clear('quantum_disabled', Date.now());
+      this.bufferManager.clear('quantum_disabled', executionEnvironmentFor(this).wallNow());
       this.pendingProviderJobId = '';
-      this.healthMonitor.setEnabled(false, Date.now());
+      this.healthMonitor.setEnabled(false, executionEnvironmentFor(this).wallNow());
       this._syncChannelHealth();
       this.lastDecision = {
         ...this.lastDecision,
@@ -192,7 +194,7 @@ export class QuantumEntropyBridge {
         providerSurfaceChanged
           ? 'provider_surface_changed'
           : (experimentSurfaceChanged ? 'experimental_condition_changed' : 'bridge_reenabled'),
-        Date.now()
+        executionEnvironmentFor(this).wallNow()
       );
       this.pendingProviderJobId = '';
       this.lastSample = null;
@@ -214,7 +216,7 @@ export class QuantumEntropyBridge {
     return { ...this.config };
   }
 
-  _applyRuntimeConfig(nowMs = Date.now(), source = 'runtime') {
+  _applyRuntimeConfig(nowMs = executionEnvironmentFor(this).wallNow(), source = 'runtime') {
     this.providerClient.configure({
       defaultTimeoutMs: this.config.requestTimeoutMs,
       retryCount: this.config.retryCount,
@@ -242,7 +244,7 @@ export class QuantumEntropyBridge {
     this.channelHealth = this.healthMonitor.snapshot();
   }
 
-  _emitEvent(type, payload = {}, level = 'info', nowMs = Date.now()) {
+  _emitEvent(type, payload = {}, level = 'info', nowMs = executionEnvironmentFor(this).wallNow()) {
     switch (type) {
       case 'provider_error':
         this.forensicsCounters.providerErrors += 1;
@@ -285,12 +287,12 @@ export class QuantumEntropyBridge {
     const eventLevel = LOG_LEVELS.indexOf(level);
     if (currentLevel >= 0 && eventLevel >= 0 && eventLevel <= currentLevel && typeof console !== 'undefined') {
       const message = `[QICN][QUANTUM_ENTROPY] ${JSON.stringify(entry)}`;
-      if (level === 'error' && typeof console.error === 'function') {
-        console.error(message);
-      } else if (level === 'warn' && typeof console.warn === 'function') {
-        console.warn(message);
-      } else if (typeof console.info === 'function') {
-        console.info(message);
+      if (level === 'error' && typeof executionEnvironmentFor(this).console.error === 'function') {
+        executionEnvironmentFor(this).console.error(message);
+      } else if (level === 'warn' && typeof executionEnvironmentFor(this).console.warn === 'function') {
+        executionEnvironmentFor(this).console.warn(message);
+      } else if (typeof executionEnvironmentFor(this).console.info === 'function') {
+        executionEnvironmentFor(this).console.info(message);
       }
     }
   }
@@ -312,7 +314,7 @@ export class QuantumEntropyBridge {
 
   _clearScheduledReactiveRefill() {
     if (this._scheduledRefillTimer) {
-      clearTimeout(this._scheduledRefillTimer);
+      executionEnvironmentFor(this).clearTimeout(this._scheduledRefillTimer);
       this._scheduledRefillTimer = null;
     }
   }
@@ -335,7 +337,7 @@ export class QuantumEntropyBridge {
 
   _buildConsumedChunkForensics(chunk, consumedAtMs) {
     if (!chunk || typeof chunk !== 'object') return null;
-    const safeConsumedAtMs = Math.max(0, toFinite(consumedAtMs, Date.now()));
+    const safeConsumedAtMs = Math.max(0, toFinite(consumedAtMs, executionEnvironmentFor(this).wallNow()));
     return {
       chunkId: String(chunk.chunkId || ''),
       provider: String(chunk.provider || ''),
@@ -364,7 +366,7 @@ export class QuantumEntropyBridge {
     };
   }
 
-  _scheduleReactiveRefill(reason = 'low_watermark', nowMs = Date.now()) {
+  _scheduleReactiveRefill(reason = 'low_watermark', nowMs = executionEnvironmentFor(this).wallNow()) {
     if (!this.config.enabled || this._pollInFlight || this._scheduledRefillTimer) return false;
     const context = this.runtimeRefillContext;
     if (!context?.fetchImpl) return false;
@@ -374,15 +376,15 @@ export class QuantumEntropyBridge {
     const plan = this.bufferManager.getRefillPlan(nowMs);
     if (!plan.needed) return false;
 
-    this._scheduledRefillTimer = setTimeout(async () => {
+    this._scheduledRefillTimer = executionEnvironmentFor(this).setTimeout(async () => {
       this._scheduledRefillTimer = null;
-      this._lastReactiveRefillAtMs = Date.now();
+      this._lastReactiveRefillAtMs = executionEnvironmentFor(this).wallNow();
       try {
         await this.refillFromProvider({
           ...context
         });
       } catch (error) {
-        this.reportBridgeFailure(error?.message || 'reactive_refill_failed', Date.now());
+        this.reportBridgeFailure(error?.message || 'reactive_refill_failed', executionEnvironmentFor(this).wallNow());
       }
     }, minimumGapMs);
 
@@ -430,20 +432,20 @@ export class QuantumEntropyBridge {
       });
     };
     poll();
-    this._pollTimer = setInterval(poll, pollMs);
+    this._pollTimer = executionEnvironmentFor(this).setInterval(poll, pollMs);
     return { started: true, pollMs };
   }
 
   stopPolling() {
     if (this._pollTimer) {
-      clearInterval(this._pollTimer);
+      executionEnvironmentFor(this).clearInterval(this._pollTimer);
       this._pollTimer = null;
     }
     this._clearScheduledReactiveRefill();
     this._pollInFlight = false;
   }
 
-  normalizeSample(sample, nowMs = Date.now(), configOverride = this.config) {
+  normalizeSample(sample, nowMs = executionEnvironmentFor(this).wallNow(), configOverride = this.config) {
     if (!sample || typeof sample !== 'object') {
       return { valid: false, reason: 'invalid_payload' };
     }
@@ -492,7 +494,7 @@ export class QuantumEntropyBridge {
     };
   }
 
-  reportBridgeFailure(reason = 'bridge_unavailable', nowMs = Date.now()) {
+  reportBridgeFailure(reason = 'bridge_unavailable', nowMs = executionEnvironmentFor(this).wallNow()) {
     this.healthMonitor.markFailure(reason, this.bufferManager.snapshot(nowMs), nowMs);
     this._syncChannelHealth();
     this.lastConnectionTest = {
@@ -506,7 +508,7 @@ export class QuantumEntropyBridge {
     }, 'warn', nowMs);
   }
 
-  ingestSample(sample, nowMs = Date.now(), context = {}) {
+  ingestSample(sample, nowMs = executionEnvironmentFor(this).wallNow(), context = {}) {
     const normalized = this.normalizeSample(sample, nowMs, this.config);
     if (!normalized.valid) {
       this.healthMonitor.markDropped(normalized.reason, this.bufferManager.snapshot(nowMs), nowMs);
@@ -558,7 +560,7 @@ export class QuantumEntropyBridge {
   }
 
   async refillFromProvider(options = {}) {
-    const nowMs = Date.now();
+    const nowMs = executionEnvironmentFor(this).wallNow();
     if (!this.config.enabled) {
       return {
         ok: false,
@@ -612,14 +614,14 @@ export class QuantumEntropyBridge {
         if (this.experimentController.usesSyntheticSource()) {
           result = this.experimentController.materializeSyntheticChunk({
             ttlMs: this.config.defaultTtlMs,
-            nowMs: Date.now()
+            nowMs: executionEnvironmentFor(this).wallNow()
           });
           if (result.ok) {
             this._emitEvent('experimental_source_selected', {
               mode: experimentSnapshot.mode,
               interventionSurface: this.experimentController.getInterventionSurface(),
               sequenceCursor: this.experimentController.snapshot().cursor
-            }, 'info', Date.now());
+            }, 'info', executionEnvironmentFor(this).wallNow());
           }
         } else {
           result = await this.providerClient.fetchChunk({
@@ -635,15 +637,15 @@ export class QuantumEntropyBridge {
             pendingJobId: this.pendingProviderJobId,
             buildRequestUrl: options.buildRequestUrl
           });
-          result = await this.experimentController.applyPostFetchControls(result, Date.now());
+          result = await this.experimentController.applyPostFetchControls(result, executionEnvironmentFor(this).wallNow());
           if (result?.experimentalControl?.mode === 'delayed_entropy') {
             this._emitEvent('experimental_delay_applied', {
               mode: 'delayed_entropy',
               delayAppliedMs: Number(result.experimentalControl.delayAppliedMs || 0)
-            }, 'info', Date.now());
+            }, 'info', executionEnvironmentFor(this).wallNow());
           }
           if (result?.status === 'dropped' && result?.reason === 'experimental_dropout') {
-            this.healthMonitor.markDropped('experimental_dropout', this.bufferManager.snapshot(Date.now()), Date.now());
+            this.healthMonitor.markDropped('experimental_dropout', this.bufferManager.snapshot(executionEnvironmentFor(this).wallNow()), executionEnvironmentFor(this).wallNow());
             this._syncChannelHealth();
             this.lastConnectionTest = {
               ...this.lastConnectionTest,
@@ -657,7 +659,7 @@ export class QuantumEntropyBridge {
               mode: 'dropout',
               dropoutRate: Number(result?.experimentalControl?.dropoutRate || 0),
               draw: Number(result?.experimentalControl?.draw || 0)
-            }, 'warn', Date.now());
+            }, 'warn', executionEnvironmentFor(this).wallNow());
             continue;
           }
         }
@@ -668,12 +670,12 @@ export class QuantumEntropyBridge {
           this.pendingProviderJobId = asString(result.pendingJobId, this.pendingProviderJobId);
           lastPendingJobId = this.pendingProviderJobId;
           if (result.sample && typeof result.sample === 'object') {
-            this.ingestSample(result.sample, Date.now(), {
+            this.ingestSample(result.sample, executionEnvironmentFor(this).wallNow(), {
               ...(result.requestMeta || {}),
               responseMode: result.responseMode || 'upstream_pending'
             });
           }
-          this.healthMonitor.markPending(lastReason, this.pendingProviderJobId, this.bufferManager.snapshot(Date.now()), Date.now());
+          this.healthMonitor.markPending(lastReason, this.pendingProviderJobId, this.bufferManager.snapshot(executionEnvironmentFor(this).wallNow()), executionEnvironmentFor(this).wallNow());
           this._syncChannelHealth();
           this.lastConnectionTest = {
             ...this.lastConnectionTest,
@@ -685,13 +687,13 @@ export class QuantumEntropyBridge {
           this._emitEvent('provider_pending', {
             pendingJobId: this.pendingProviderJobId,
             reason: lastReason
-          }, 'info', Date.now());
+          }, 'info', executionEnvironmentFor(this).wallNow());
           break;
         }
 
         if (!result.ok || !result.sample) {
           lastReason = result.reason || 'bridge_unavailable';
-          this.reportBridgeFailure(lastReason, Date.now());
+          this.reportBridgeFailure(lastReason, executionEnvironmentFor(this).wallNow());
           break;
         }
 
@@ -711,7 +713,7 @@ export class QuantumEntropyBridge {
             }
           }
           : result.sample;
-        const ingestResult = this.ingestSample(sampleForIngest, Date.now(), {
+        const ingestResult = this.ingestSample(sampleForIngest, executionEnvironmentFor(this).wallNow(), {
           ...(result.requestMeta || {}),
           responseMode: result.responseMode || 'upstream_quantum'
         });
@@ -722,7 +724,7 @@ export class QuantumEntropyBridge {
         acceptedChunks += 1;
       }
     } finally {
-      const endMs = Date.now();
+      const endMs = executionEnvironmentFor(this).wallNow();
       const bufferSnapshot = this.bufferManager.snapshot(endMs);
       this.healthMonitor.markRefillEnd({
         acceptedChunks,
@@ -748,12 +750,12 @@ export class QuantumEntropyBridge {
       requestedChunks: plan.requestedChunks,
       lastReason,
       pendingJobId: lastPendingJobId,
-      diagnostics: this.getConnectionDiagnostics(Date.now())
+      diagnostics: this.getConnectionDiagnostics(executionEnvironmentFor(this).wallNow())
     };
   }
 
   selectEntropy(nowMs, deterministicValue) {
-    const timestampMs = Math.max(0, toFinite(nowMs, Date.now()));
+    const timestampMs = Math.max(0, toFinite(nowMs, executionEnvironmentFor(this).wallNow()));
     const fallbackEntropy = clamp01(deterministicValue);
 
     if (!this.config.enabled) {
@@ -853,7 +855,7 @@ export class QuantumEntropyBridge {
     return this.lastDecision;
   }
 
-  _deriveEffectiveDelivery(nowMs = Date.now()) {
+  _deriveEffectiveDelivery(nowMs = executionEnvironmentFor(this).wallNow()) {
     if (!this.config.enabled) {
       return {
         connectionState: 'disabled',
@@ -918,8 +920,8 @@ export class QuantumEntropyBridge {
     };
   }
 
-  getTelemetry(nowMs = Date.now()) {
-    const timestampMs = Math.max(0, toFinite(nowMs, Date.now()));
+  getTelemetry(nowMs = executionEnvironmentFor(this).wallNow()) {
+    const timestampMs = Math.max(0, toFinite(nowMs, executionEnvironmentFor(this).wallNow()));
     const ageMs = this.lastSample
       ? Math.max(0, timestampMs - Math.max(0, toFinite(this.lastSample.receivedAtMs, timestampMs)))
       : null;
@@ -963,8 +965,8 @@ export class QuantumEntropyBridge {
     };
   }
 
-  getConnectionDiagnostics(nowMs = Date.now()) {
-    const timestampMs = Math.max(0, toFinite(nowMs, Date.now()));
+  getConnectionDiagnostics(nowMs = executionEnvironmentFor(this).wallNow()) {
+    const timestampMs = Math.max(0, toFinite(nowMs, executionEnvironmentFor(this).wallNow()));
     const lastSampleAgeMs = this.lastSample
       ? Math.max(0, timestampMs - Math.max(0, toFinite(this.lastSample.receivedAtMs, timestampMs)))
       : null;
@@ -1005,8 +1007,8 @@ export class QuantumEntropyBridge {
     };
   }
 
-  getForensicSnapshot(nowMs = Date.now()) {
-    const timestampMs = Math.max(0, toFinite(nowMs, Date.now()));
+  getForensicSnapshot(nowMs = executionEnvironmentFor(this).wallNow()) {
+    const timestampMs = Math.max(0, toFinite(nowMs, executionEnvironmentFor(this).wallNow()));
     const effectiveDelivery = this._deriveEffectiveDelivery(timestampMs);
     const decisionProvenance = this.lastDecision.mode === 'quantum_primary'
       && this.lastConsumedChunk
@@ -1061,7 +1063,7 @@ export class QuantumEntropyBridge {
     };
   }
 
-  getBufferSnapshot(nowMs = Date.now()) {
+  getBufferSnapshot(nowMs = executionEnvironmentFor(this).wallNow()) {
     return this.bufferManager.snapshot(nowMs);
   }
 
@@ -1086,7 +1088,7 @@ export class QuantumEntropyBridge {
         ok: false,
         connectionState: 'error',
         lastReason: 'missing_endpoint',
-        diagnostics: this.getConnectionDiagnostics(Date.now())
+        diagnostics: this.getConnectionDiagnostics(executionEnvironmentFor(this).wallNow())
       };
     }
 
@@ -1123,7 +1125,7 @@ export class QuantumEntropyBridge {
         lastMode: 'quantum_pending',
         lastReason: result.reason || 'upstream_pending',
         lastJobId: pendingJobId,
-        diagnostics: this.getConnectionDiagnostics(Date.now())
+        diagnostics: this.getConnectionDiagnostics(executionEnvironmentFor(this).wallNow())
       };
     }
 
@@ -1138,7 +1140,7 @@ export class QuantumEntropyBridge {
         ok: false,
         connectionState: 'error',
         lastReason: reason,
-        diagnostics: this.getConnectionDiagnostics(Date.now())
+        diagnostics: this.getConnectionDiagnostics(executionEnvironmentFor(this).wallNow())
       };
     }
 
@@ -1152,11 +1154,11 @@ export class QuantumEntropyBridge {
         ok: false,
         connectionState: 'error',
         lastReason: 'provider_fallback_disabled',
-        diagnostics: this.getConnectionDiagnostics(Date.now())
+        diagnostics: this.getConnectionDiagnostics(executionEnvironmentFor(this).wallNow())
       };
     }
 
-    const normalized = this.normalizeSample(result.sample, Date.now(), probeConfig);
+    const normalized = this.normalizeSample(result.sample, executionEnvironmentFor(this).wallNow(), probeConfig);
     if (!normalized.valid) {
       this.lastConnectionTest = {
         ...this.lastConnectionTest,
@@ -1167,18 +1169,18 @@ export class QuantumEntropyBridge {
         ok: false,
         connectionState: 'error',
         lastReason: normalized.reason,
-        diagnostics: this.getConnectionDiagnostics(Date.now())
+        diagnostics: this.getConnectionDiagnostics(executionEnvironmentFor(this).wallNow())
       };
     }
 
-    const mode = normalized.receivedAtMs + normalized.ttlMs >= Date.now()
+    const mode = normalized.receivedAtMs + normalized.ttlMs >= executionEnvironmentFor(this).wallNow()
       ? 'quantum_primary'
       : 'quantum_stale';
     const reason = mode === 'quantum_primary' ? 'connection_ok' : 'sample_stale';
     this.lastConnectionTest = {
       ...this.lastConnectionTest,
       connectionState: mode === 'quantum_primary' ? 'ok' : 'error',
-      lastSampleAtMs: Date.now(),
+      lastSampleAtMs: executionEnvironmentFor(this).wallNow(),
       lastMode: mode,
       lastReason: reason,
       lastJobId: normalized.jobId || ''
@@ -1189,7 +1191,7 @@ export class QuantumEntropyBridge {
       lastMode: mode,
       lastReason: reason,
       lastJobId: normalized.jobId || '',
-      diagnostics: this.getConnectionDiagnostics(Date.now())
+      diagnostics: this.getConnectionDiagnostics(executionEnvironmentFor(this).wallNow())
     };
   }
 }

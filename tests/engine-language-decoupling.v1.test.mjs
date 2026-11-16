@@ -76,7 +76,7 @@ try {
   // CASE 3: chat latency is tagged and filtered out of the strain computation.
   {
     const engine = fs.readFileSync(path.join(ROOT, 'src/components/SimulationEngine.jsx'), 'utf8');
-    const cycle = fs.readFileSync(path.join(ROOT, 'src/hooks/useSimulationCycle.js'), 'utf8');
+    const cycle = fs.readFileSync(path.join(ROOT, 'src/runtime/SimulationCycleDriver.js'), 'utf8');
     assert.ok(/'chat-conversation', \{\s*integrityEnvelope: chatIntegrityEnvelope,\s*dynamicsCoupling: false,?(\s*timeoutMs: CHAT_REQUEST_TIMEOUT_MS)?\s*\}/.test(engine), 'CASE 3 FAIL: chat call must include C2 integrityEnvelope and opt out of dynamics coupling.');
     assert.ok(engine.includes('if (dynamicsCoupled) {'), 'CASE 3 FAIL: strain update must be gated by dynamicsCoupled.');
     assert.ok(cycle.includes('call.dynamicsCoupled !== false'), 'CASE 3 FAIL: tick strain must exclude uncoupled calls.');

@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import { matureFixture } from './lib/workbench-fixtures.mjs';
+import { createWorkbenchProtocol } from '../src/experiments/workbench/contracts.js';
+import { runWorkbench } from '../src/experiments/workbench/runner.js';
+
+const {capture}=await matureFixture({warmup:55});
+const types=['sham','block_history_read','suspend_consolidation','freeze_predictor_weights','erase_declared_history'];
+const result=await runWorkbench(capture,createWorkbenchProtocol({ticks:10,branches:types.map((intervention,index)=>({id:`branch${index}`,intervention}))}));
+const [normal,blocked,suspended,frozen,erased]=result.branches.map(branch=>branch.trajectory);
+assert.ok(normal.some(point=>point.policyDiagnostic?.historicalReadEnabled));
+assert.ok(blocked.every(point=>point.policyDiagnostic?.historicalReadEnabled===false));
+assert.ok(blocked.at(-1).plasticity.maturationIndex>0,'blocking selector history must not erase consolidation');
+assert.deepEqual(suspended.at(-1).anchorVector,suspended[0].anchorVector,'consolidation continued');
+assert.notDeepEqual(suspended.at(-1).predictorWeights,suspended[0].predictorWeights,'fast gradients incorrectly frozen');
+assert.deepEqual(frozen.at(-1).predictorWeights,frozen[0].predictorWeights,'predictor weights changed while frozen');
+assert.ok(frozen.at(-1).plasticity.verifiedPredictionCount>frozen[0].plasticity.verifiedPredictionCount,'frozen control stopped settlement accounting');
+assert.ok(erased[0].plasticity.maturationIndex<normal[0].plasticity.maturationIndex);
+assert.ok(erased.at(-1).plasticity.sealedCommitCount>erased[0].plasticity.sealedCommitCount);
+assert.ok(normal.every(point=>Number.isFinite(point.policyDiagnostic?.topTwoMargin)),'diagnostic score margins missing');
+assert.ok(normal.every(point=>Object.values(point.viabilityEvaluation.components).every(value=>typeof value==='boolean')),'viability components missing');
+assert.ok(normal.every(point=>point.viabilityEvaluation.objectiveScore===point.values.viabilityObjectiveScore));
+console.log('OK: history read, consolidation suspension, frozen predictor and one-time erasure are distinct; margins recorded');

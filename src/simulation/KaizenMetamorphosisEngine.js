@@ -1,3 +1,4 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 import { QICNConfig } from '../../services/config.js';
 
 // Learned adjustment mode (C-6b, user decision 2026-11-08). The six keys the
@@ -20,7 +21,7 @@ export const KAIZEN_LEARNING_DEFAULTS = Object.freeze({
   stasisWeight: 0.5,
   strainWeight: 0.25
 });
-export const isKaizenLearned = () => QICNConfig.KAIZEN_ADJUSTMENT_MODE === 'learned';
+export const isKaizenLearned = (config = QICNConfig) => config.KAIZEN_ADJUSTMENT_MODE === 'learned';
 // Keys the window learner tries. PLASTICITY_DECAY is excluded: no active code
 // path reads it from the Kaizen config (only the legacy Node.js class reads
 // QICNConfig.PLASTICITY_DECAY), so any "improvement" on it would be noise
@@ -46,7 +47,8 @@ export function kaizenWindowScore(samples, cfg = KAIZEN_LEARNING_DEFAULTS) {
 }
 
 export class KaizenMetamorphosisEngine {
-          constructor(initialConfig) {
+          constructor(initialConfig, executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
             this.transformationSteps = 0;
             this.lastChangeRate = 0;
             this.transformationCoherence = 0.5;
@@ -191,7 +193,9 @@ export class KaizenMetamorphosisEngine {
             const settled = [];
             const remaining = [];
             for (const entry of vp.pendingCreditQueue) {
-              if (tick >= entry.dueTick) {
+              if (executionEnvironmentFor(this).controls.consolidation === false) {
+                remaining.push(entry);
+              } else if (tick >= entry.dueTick) {
                 const gain = evalRes.objectiveScore - entry.baselineObjectiveScore;
                 const outcomeTarget = Math.max(
                   0,
@@ -224,7 +228,7 @@ export class KaizenMetamorphosisEngine {
             }
             vp.pendingCreditQueue = remaining;
 
-            if (plasticityEnabled && activeActionId && activeActionId !== 'none') {
+            if (plasticityEnabled && executionEnvironmentFor(this).controls.consolidation !== false && activeActionId && activeActionId !== 'none') {
               vp.pendingCreditQueue.push({
                 issuedTick: tick,
                 dueTick: tick + vp.creditHorizonTicks,
@@ -241,7 +245,7 @@ export class KaizenMetamorphosisEngine {
             }
 
             // Very slow asymmetric relaxation across unselected actions
-            if (plasticityEnabled) {
+            if (plasticityEnabled && executionEnvironmentFor(this).controls.consolidation !== false) {
               for (const stat of Object.values(vp.actionStats)) {
                 stat.efficacyEma = Number(((0.9992 * stat.efficacyEma) + (0.0008 * 0.5)).toFixed(6));
               }
@@ -461,16 +465,26 @@ export class KaizenMetamorphosisEngine {
             const cluster = this.classifyViabilityCluster(systemState);
 
             let best = null;
+            const diagnosticScores = [];
             for (let i = 0; i < this.strategyCatalog.length; i++) {
               const entry = this.strategyCatalog[i];
               if (!allowedIds.includes(entry.id)) continue;
               const score = this._scoreSandboxAction(entry.id, systemState, historicalContext);
+              diagnosticScores.push({ actionId: entry.id, score });
               if (!Number.isFinite(score)) continue;
               if (!best || score > best.score + 1e-12) {
                 best = { actionId: entry.id, score, reason: entry.description, cluster };
               }
             }
 
+            if (executionEnvironmentFor(this).diagnostics) {
+              const ranked = diagnosticScores.filter(e => Number.isFinite(e.score)).sort((a,b) => b.score-a.score);
+              executionEnvironmentFor(this).diagnostics.policy = {
+                state: structuredClone(systemState), cluster,
+                scores: ranked, topTwoMargin: ranked.length > 1 ? ranked[0].score-ranked[1].score : null,
+                historicalReadEnabled: Boolean(historicalContext && historicalContext.plasticityEnabled !== false)
+              };
+            }
             return best;
           }
 
@@ -537,7 +551,7 @@ export class KaizenMetamorphosisEngine {
             // Forced (autonomy) steps on them become factor steps; the window
             // learner replaces random and reinforcement mutations on them.
             // SYNAPTIC_PRUNING_THRESHOLD keeps the legacy atomic mutation.
-            if (isKaizenLearned()) {
+            if (isKaizenLearned(executionEnvironmentFor(this).config)) {
               const forced = forcedKey && (forcedDirection === 1 || forcedDirection === -1);
               if (forced && KAIZEN_ADJUSTABLE_KEYS.includes(forcedKey)) return this.applyFactorStep(forcedKey, forcedDirection);
               if (!forced) {
@@ -562,7 +576,7 @@ export class KaizenMetamorphosisEngine {
             }
             
             let keyToMutate;
-            let direction = Math.random() > 0.5 ? 1 : -1;
+            let direction = executionEnvironmentFor(this).random() > 0.5 ? 1 : -1;
             
             // 1. DETERMINE MUTATION TARGET AND DIRECTION
             if (isForced) {
@@ -577,14 +591,14 @@ export class KaizenMetamorphosisEngine {
                 // PRIORITY: FORCE Dissonance Constructiva (Friction)
                 keyToMutate = 'HEBBIAN_FACTOR';
                 direction = -1; // Force reduction in Hebbian learning to break stable patterns (Friction)
-            } else if (ccc >= THRESHOLD_CCC_ASCEND && ccc < QICNConfig.ASCENSION_THRESHOLD) {
+            } else if (ccc >= THRESHOLD_CCC_ASCEND && ccc < executionEnvironmentFor(this).config.ASCENSION_THRESHOLD) {
                 // PRIORITY: FORCE Ascensión (Architectural Preference)
                 const ascentKeys = ['HEBBIAN_FACTOR', 'BASE_LEARNING_RATE', 'RETRO_FLUX_WEIGHT'];
-                keyToMutate = ascentKeys[Math.floor(Math.random() * ascentKeys.length)];
+                keyToMutate = ascentKeys[Math.floor(executionEnvironmentFor(this).random() * ascentKeys.length)];
                 direction = 1; // Force positive change to increase CCC push
             } else {
                 // Normal random mutation
-                keyToMutate = this.mutableKeys[Math.floor(Math.random() * this.mutableKeys.length)];
+                keyToMutate = this.mutableKeys[Math.floor(executionEnvironmentFor(this).random() * this.mutableKeys.length)];
             }
             
             if (!keyToMutate || !this.mutableKeys.includes(keyToMutate)) {
@@ -601,7 +615,7 @@ export class KaizenMetamorphosisEngine {
             // Forced planner mutations are deterministic.
             const atomicStep = isForced
               ? METAMORPHOSIS_MAGNITUDE
-              : METAMORPHOSIS_MAGNITUDE * (Math.random() * 0.5 + 0.5);
+              : METAMORPHOSIS_MAGNITUDE * (executionEnvironmentFor(this).random() * 0.5 + 0.5);
             
             // 3. Apply atomic change
             let newValue = currentValue + atomicStep * direction;

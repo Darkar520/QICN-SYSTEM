@@ -1,11 +1,13 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 import { QICNConfig } from '../../services/config.js';
 
 export class ConsciousNode {
-          constructor(id, mutableConfig) {
+          constructor(id, mutableConfig, executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
             this.id = id;
-            this.energy = 0.5 + Math.random() * 0.5; // Energía (la materia, el potencial)
-            this.intensity = 0.3 + Math.random() * 0.7; // Intensidad (la partícula)
-            this.phase = Math.random() * 2 * Math.PI; // Fase (la onda)
+            this.energy = 0.5 + executionEnvironmentFor(this).random() * 0.5; // Energía (la materia, el potencial)
+            this.intensity = 0.3 + executionEnvironmentFor(this).random() * 0.7; // Intensidad (la partícula)
+            this.phase = executionEnvironmentFor(this).random() * 2 * Math.PI; // Fase (la onda)
             this.coherenceState = 0.5;
             this.retroInductionFlux = 0; // Flujo temporal (salto no-causal)
             this.plasticityWeight = 1.0;
@@ -17,8 +19,8 @@ export class ConsciousNode {
             this.incomingSignals = [];
             
             // Visual position (for the 150 node sample)
-            this.x = Math.random() * 800;
-            this.y = Math.random() * 600;
+            this.x = executionEnvironmentFor(this).random() * 800;
+            this.y = executionEnvironmentFor(this).random() * 600;
           }
 
           setVisualPosition(x, y, z = 0) {
@@ -40,9 +42,9 @@ export class ConsciousNode {
             const phaseDiff = this.phase - otherNode.phase;
             
             // USANDO VALORES MUTABLES DEL ARGUMENTO CONFIG
-            const k = config?.BOLTZMANN_ANALOG_K || QICNConfig.BOLTZMANN_ANALOG_K;
-            const T = config?.INFORMATIONAL_TEMP_T || QICNConfig.INFORMATIONAL_TEMP_T;
-            const theta = QICNConfig.COHERENCE_THRESHOLD_THETA;
+            const k = config?.BOLTZMANN_ANALOG_K || executionEnvironmentFor(this).config.BOLTZMANN_ANALOG_K;
+            const T = config?.INFORMATIONAL_TEMP_T || executionEnvironmentFor(this).config.INFORMATIONAL_TEMP_T;
+            const theta = executionEnvironmentFor(this).config.COHERENCE_THRESHOLD_THETA;
             
             const denominator = theta * Math.cos(phaseDiff);
             
@@ -111,7 +113,7 @@ export class ConsciousNode {
               const hebbianUpdate = HEBBIAN_FACTOR * this.intensity * feedbackSignal;
               
               const newWeight = conn.weight + hebbianUpdate +
-                                  (Math.random() - 0.5) * 0.01 * this.learningRate;
+                                  (executionEnvironmentFor(this).random() - 0.5) * 0.01 * this.learningRate;
               
               return {
                 ...conn,

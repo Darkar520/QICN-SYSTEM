@@ -1,3 +1,4 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 const clamp01 = (value) => Math.max(0, Math.min(1, Number(value) || 0));
 const toFinite = (value, fallback = 0) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
 const asString = (value, fallback = '') => {
@@ -25,7 +26,7 @@ const createSeededRandom = (seed = 17057) => {
   };
 };
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, Math.max(0, ms)));
+const sleep = (ms, environment) => new Promise((resolve) => environment.setTimeout(resolve, Math.max(0, ms)));
 
 const buildBitsFromSeededRandom = (nextRandom, bitCount = 32) => {
   const bits = [];
@@ -71,7 +72,8 @@ const shuffleSequence = (sequence, seed) => {
 };
 
 export class EntropyExperimentController {
-  constructor(config = {}) {
+  constructor(config = {}, executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
     this.sequenceCursor = 0;
     this.config = {
       mode: 'baseline',
@@ -159,7 +161,7 @@ export class EntropyExperimentController {
     }
   }
 
-  materializeSyntheticChunk({ ttlMs = 60000, nowMs = Date.now() } = {}) {
+  materializeSyntheticChunk({ ttlMs = 60000, nowMs = executionEnvironmentFor(this).wallNow() } = {}) {
     if (!this.usesSyntheticSource()) {
       return { ok: false, reason: 'synthetic_source_not_enabled' };
     }
@@ -240,10 +242,10 @@ export class EntropyExperimentController {
     };
   }
 
-  async applyPostFetchControls(result, nowMs = Date.now()) {
+  async applyPostFetchControls(result, nowMs = executionEnvironmentFor(this).wallNow()) {
     const mode = this.config.mode;
     if (mode === 'delayed_entropy' && this.config.delayMs > 0 && result?.ok && result?.sample) {
-      await sleep(this.config.delayMs);
+      await sleep(this.config.delayMs, executionEnvironmentFor(this));
       return {
         ...result,
         requestMeta: {

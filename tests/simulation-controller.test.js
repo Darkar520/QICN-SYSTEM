@@ -7,7 +7,7 @@ import { OntologicalSingularityCore } from '../src/simulation/OntologicalSingula
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const indexSource = fs.readFileSync(path.join(projectRoot, 'src', 'index.jsx'), 'utf8');
-const appSource = fs.readFileSync(path.join(projectRoot, 'src', 'components', 'SimulationEngine.jsx'), 'utf8') + '\n' + fs.readFileSync(path.join(projectRoot, 'src', 'hooks', 'useSimulationCycle.js'), 'utf8');
+const appSource = fs.readFileSync(path.join(projectRoot, 'src', 'components', 'SimulationEngine.jsx'), 'utf8') + '\n' + fs.readFileSync(path.join(projectRoot, 'src', 'runtime', 'SimulationCycleDriver.js'), 'utf8');
 
 try {
   const controller = new SimulationController();
@@ -35,9 +35,11 @@ try {
   assert(/SimulationController/.test(appSource), 'App.jsx must use SimulationController');
 
   const runSimulationCycleMatch = appSource.match(
-    /const\s+runSimulationCycle\s*=\s*useCallback\([\s\S]*?\n\s*\},\s*\[([^\]]*)\]\);/
+    /const\s+runSimulationCycle\s*=\s*bindCallback\([\s\S]*?\n\s*\},\s*\[([^\]]*)\]\);/
   );
-  assert(runSimulationCycleMatch, 'runSimulationCycle useCallback block must be present');
+  const adapterSource = fs.readFileSync(path.join(projectRoot, 'src', 'hooks', 'useSimulationCycle.js'), 'utf8');
+  assert(/bindCallback:\s*useCallback/.test(adapterSource), 'React adapter must bind the driver with useCallback');
+  assert(runSimulationCycleMatch, 'runSimulationCycle callback block must be present in the driver');
   const dependencies = runSimulationCycleMatch[1]
     .split(',')
     .map((entry) => entry.trim())

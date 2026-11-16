@@ -1,7 +1,9 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 const toFinite = (value, fallback = 0) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
 
 export class EntropyHealthMonitor {
-  constructor(options = {}) {
+  constructor(options = {}, executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
     this.state = {
       status: 'disabled',
       consecutiveFailures: 0,
@@ -24,10 +26,10 @@ export class EntropyHealthMonitor {
       configWarnings: [],
       lastEvent: 'init'
     };
-    this.setEnabled(Boolean(options.enabled), Date.now());
+    this.setEnabled(Boolean(options.enabled), executionEnvironmentFor(this).wallNow());
   }
 
-  setEnabled(enabled, nowMs = Date.now()) {
+  setEnabled(enabled, nowMs = executionEnvironmentFor(this).wallNow()) {
     this.state.status = enabled ? 'degraded' : 'disabled';
     this.state.lastUpdateMs = nowMs;
     this.state.lastEvent = enabled ? 'enabled' : 'disabled';
@@ -45,7 +47,7 @@ export class EntropyHealthMonitor {
     this.state.lastConsumedChunkId = String(snapshot.lastConsumedChunkId || this.state.lastConsumedChunkId || '');
   }
 
-  markConfigWarnings(warnings = [], nowMs = Date.now()) {
+  markConfigWarnings(warnings = [], nowMs = executionEnvironmentFor(this).wallNow()) {
     this.state.configWarnings = Array.isArray(warnings) ? warnings.slice(0, 8) : [];
     this.state.lastUpdateMs = nowMs;
     if (this.state.configWarnings.length > 0) {
@@ -53,7 +55,7 @@ export class EntropyHealthMonitor {
     }
   }
 
-  markRefillStart(requestedChunks = 0, snapshot = {}, nowMs = Date.now()) {
+  markRefillStart(requestedChunks = 0, snapshot = {}, nowMs = executionEnvironmentFor(this).wallNow()) {
     this.applyBufferSnapshot(snapshot);
     this.state.refillInFlight = requestedChunks > 0;
     this.state.lastRefillStartedMs = nowMs;
@@ -61,7 +63,7 @@ export class EntropyHealthMonitor {
     this.state.lastEvent = requestedChunks > 0 ? 'refill_started' : 'refill_skipped';
   }
 
-  markRefillEnd(payload = {}, nowMs = Date.now()) {
+  markRefillEnd(payload = {}, nowMs = executionEnvironmentFor(this).wallNow()) {
     this.applyBufferSnapshot(payload.bufferSnapshot || {});
     this.state.refillInFlight = false;
     this.state.lastRefillCompletedMs = nowMs;
@@ -72,7 +74,7 @@ export class EntropyHealthMonitor {
     this._syncStatus();
   }
 
-  markSuccess(snapshot = {}, nowMs = Date.now(), details = {}) {
+  markSuccess(snapshot = {}, nowMs = executionEnvironmentFor(this).wallNow(), details = {}) {
     this.applyBufferSnapshot(snapshot);
     this.state.consecutiveValid += 1;
     this.state.consecutiveFailures = 0;
@@ -83,7 +85,7 @@ export class EntropyHealthMonitor {
     this._syncStatus();
   }
 
-  markFailure(reason = 'bridge_unavailable', snapshot = {}, nowMs = Date.now()) {
+  markFailure(reason = 'bridge_unavailable', snapshot = {}, nowMs = executionEnvironmentFor(this).wallNow()) {
     this.applyBufferSnapshot(snapshot);
     this.state.consecutiveFailures += 1;
     this.state.consecutiveValid = 0;
@@ -93,7 +95,7 @@ export class EntropyHealthMonitor {
     this._syncStatus();
   }
 
-  markPending(reason = 'upstream_pending', pendingJobId = '', snapshot = {}, nowMs = Date.now()) {
+  markPending(reason = 'upstream_pending', pendingJobId = '', snapshot = {}, nowMs = executionEnvironmentFor(this).wallNow()) {
     this.applyBufferSnapshot(snapshot);
     this.state.lastError = String(reason || 'upstream_pending');
     this.state.lastPendingJobId = String(pendingJobId || '');
@@ -102,7 +104,7 @@ export class EntropyHealthMonitor {
     this._syncStatus({ allowHealthy: false });
   }
 
-  markDropped(reason = 'sample_rejected', snapshot = {}, nowMs = Date.now()) {
+  markDropped(reason = 'sample_rejected', snapshot = {}, nowMs = executionEnvironmentFor(this).wallNow()) {
     this.applyBufferSnapshot(snapshot);
     this.state.droppedSamples += 1;
     this.state.lastError = String(reason || 'sample_rejected');
@@ -111,7 +113,7 @@ export class EntropyHealthMonitor {
     this._syncStatus({ allowHealthy: false });
   }
 
-  markConsume(snapshot = {}, nowMs = Date.now(), details = {}) {
+  markConsume(snapshot = {}, nowMs = executionEnvironmentFor(this).wallNow(), details = {}) {
     this.applyBufferSnapshot(snapshot);
     this.state.lastConsumedChunkId = String(details.chunkId || this.state.lastConsumedChunkId || '');
     this.state.lastUpdateMs = nowMs;
@@ -119,7 +121,7 @@ export class EntropyHealthMonitor {
     this._syncStatus();
   }
 
-  markFallback(reason = 'buffer_empty', snapshot = {}, nowMs = Date.now(), stale = false) {
+  markFallback(reason = 'buffer_empty', snapshot = {}, nowMs = executionEnvironmentFor(this).wallNow(), stale = false) {
     this.applyBufferSnapshot(snapshot);
     this.state.fallbackCount += 1;
     this.state.lastError = String(reason || 'buffer_empty');

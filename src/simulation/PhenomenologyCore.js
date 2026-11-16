@@ -1,3 +1,4 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 // @ts-check
 
 /**
@@ -62,8 +63,9 @@ export const SPECTRAL_INTERPRETATION_BOUNDARY =
  */
 
 export class PhenomenologyCore {
-    constructor() {
-        this.logger = createLogger('PhenomenologyCore');
+    constructor(executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
+        this.logger = executionEnvironment?.mode === 'workbench' ? executionEnvironment.logger : createLogger('PhenomenologyCore');
         // Estado fenomenologico persistente
         /** @type {PhenomenologyState} */
         this.phenomenologyState = {
@@ -122,7 +124,7 @@ export class PhenomenologyCore {
             log_enabled: true,
             spectralWarning: null
         };
-        console.log('[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.');
+        executionEnvironmentFor(this).console.log('[PHENOMENOLOGY_INIT] Core inicializado con instrumentacion diagnostica activa.');
     }
 
     // =========================================================================
@@ -166,11 +168,11 @@ export class PhenomenologyCore {
      * @returns {number} - Coeficiente de cierre causal [0, 1]
      */
     calculateBethQ() {
-        const t0 = performance.now();
+        const t0 = executionEnvironmentFor(this).measureNow();
         this._diagnostics.invocation_counters.beth_q++;
 
         if (this._diagnostics.log_enabled) {
-            console.log(`[BETH_Q_ENTRY #${this._diagnostics.invocation_counters.beth_q}] stateHistory.length: ${this.stateHistory.length}`);
+            executionEnvironmentFor(this).console.log(`[BETH_Q_ENTRY #${this._diagnostics.invocation_counters.beth_q}] stateHistory.length: ${this.stateHistory.length}`);
         }
 
         if (this.stateHistory.length < 10) {
@@ -184,7 +186,7 @@ export class PhenomenologyCore {
             this.phenomenologyState.beth_q = Math.max(0.1, Math.min(1, 0.3 + (currentCCC * 0.7)));
             this.phenomenologyState.beth_q_mode = 'warmup_derived';
             if (this._diagnostics.log_enabled) {
-                console.log(`[BETH_Q_DERIVED] CCC=${currentCCC.toFixed(4)} ?' beth_q=${this.phenomenologyState.beth_q.toFixed(4)}`);
+                executionEnvironmentFor(this).console.log(`[BETH_Q_DERIVED] CCC=${currentCCC.toFixed(4)} ?' beth_q=${this.phenomenologyState.beth_q.toFixed(4)}`);
             }
             return this.phenomenologyState.beth_q;
         }
@@ -193,7 +195,7 @@ export class PhenomenologyCore {
         const I_XY = this._calculateMutualInformation(this.stateHistory, this.inputHistory);
 
         if (this._diagnostics.log_enabled) {
-            console.log(`[BETH_Q_CALC] H(X)=${H_X.toFixed(4)}, I(X;Y)=${I_XY.toFixed(4)}`);
+            executionEnvironmentFor(this).console.log(`[BETH_Q_CALC] H(X)=${H_X.toFixed(4)}, I(X;Y)=${I_XY.toFixed(4)}`);
         }
 
         // Evitar division por cero (Entropia Nula)
@@ -204,10 +206,10 @@ export class PhenomenologyCore {
             this.phenomenologyState.beth_q = baseline;
             this.phenomenologyState.beth_q_mode = 'deterministic_baseline';
 
-            const t1 = performance.now();
+            const t1 = executionEnvironmentFor(this).measureNow();
             this._diagnostics.last_execution_times.beth_q = t1 - t0;
             if (this._diagnostics.log_enabled) {
-                console.log(`[BETH_Q_STABILITY] H_X?^0 ?' beth_q derivado=${this.phenomenologyState.beth_q.toFixed(6)}`);
+                executionEnvironmentFor(this).console.log(`[BETH_Q_STABILITY] H_X?^0 ?' beth_q derivado=${this.phenomenologyState.beth_q.toFixed(6)}`);
             }
             return this.phenomenologyState.beth_q;
         }
@@ -216,11 +218,11 @@ export class PhenomenologyCore {
         this.phenomenologyState.beth_q = beth_q;
         this.phenomenologyState.beth_q_mode = 'empirical';
 
-        const t1 = performance.now();
+        const t1 = executionEnvironmentFor(this).measureNow();
         this._diagnostics.last_execution_times.beth_q = t1 - t0;
 
         if (this._diagnostics.log_enabled) {
-            console.log(`[BETH_Q_EXIT] beth_q=${beth_q.toFixed(6)}. Tiempo: ${(t1 - t0).toFixed(2)}ms`);
+            executionEnvironmentFor(this).console.log(`[BETH_Q_EXIT] beth_q=${beth_q.toFixed(6)}. Tiempo: ${(t1 - t0).toFixed(2)}ms`);
         }
 
         return beth_q;
@@ -338,11 +340,11 @@ export class PhenomenologyCore {
      * @returns {object} - { delta_lambda, lambda_1, lambda_2, tau }
      */
     calculateSpectralGap() {
-        const t0 = performance.now();
+        const t0 = executionEnvironmentFor(this).measureNow();
         this._diagnostics.invocation_counters.spectral++;
 
         if (this._diagnostics.log_enabled) {
-            console.log(`[SPECTRAL_ENTRY #${this._diagnostics.invocation_counters.spectral}] transitionHistory.length: ${this.transitionHistory.length}`);
+            executionEnvironmentFor(this).console.log(`[SPECTRAL_ENTRY #${this._diagnostics.invocation_counters.spectral}] transitionHistory.length: ${this.transitionHistory.length}`);
         }
 
         if (this.transitionHistory.length < 5) {
@@ -363,7 +365,7 @@ export class PhenomenologyCore {
             this.phenomenologyState.spectral_interpretation_boundary = SPECTRAL_INTERPRETATION_BOUNDARY;
 
             if (this._diagnostics.log_enabled) {
-                console.log(`[SPECTRAL_DERIVED] CCC=${currentCCC.toFixed(4)} ?' gap=${derivedGap.toFixed(4)}, lambda,,=${derivedLambda2.toFixed(4)}`);
+                executionEnvironmentFor(this).console.log(`[SPECTRAL_DERIVED] CCC=${currentCCC.toFixed(4)} ?' gap=${derivedGap.toFixed(4)}, lambda,,=${derivedLambda2.toFixed(4)}`);
             }
             return {
                 delta_lambda: derivedGap,
@@ -385,7 +387,7 @@ export class PhenomenologyCore {
         const tau = this.calculateRelaxationTime(boundedGap);
 
         if (this._diagnostics.log_enabled) {
-            console.log(`[SPECTRAL_CALC] lambda,=${lambda_1.toFixed(4)}, lambda,,=${lambda_2.toFixed(4)}, "lambda=${delta_lambda.toFixed(4)}, "=${tau.toFixed(2)}`);
+            executionEnvironmentFor(this).console.log(`[SPECTRAL_CALC] lambda,=${lambda_1.toFixed(4)}, lambda,,=${lambda_2.toFixed(4)}, "lambda=${delta_lambda.toFixed(4)}, "=${tau.toFixed(2)}`);
         }
 
         // Actualizar estado
@@ -397,11 +399,11 @@ export class PhenomenologyCore {
         this.phenomenologyState.basecore_thm_relaxation_instantiated = false;
         this.phenomenologyState.spectral_interpretation_boundary = SPECTRAL_INTERPRETATION_BOUNDARY;
 
-        const t1 = performance.now();
+        const t1 = executionEnvironmentFor(this).measureNow();
         this._diagnostics.last_execution_times.spectral = t1 - t0;
 
         if (this._diagnostics.log_enabled) {
-            console.log(`[SPECTRAL_EXIT] gap=${this.phenomenologyState.spectral_gap.toFixed(6)}. Tiempo: ${(t1 - t0).toFixed(2)}ms`);
+            executionEnvironmentFor(this).console.log(`[SPECTRAL_EXIT] gap=${this.phenomenologyState.spectral_gap.toFixed(6)}. Tiempo: ${(t1 - t0).toFixed(2)}ms`);
         }
 
         return {
@@ -685,11 +687,11 @@ export class PhenomenologyCore {
      * ULTRATHINK: Vincula la divergencia de trayectorias a la memoria persistente
      */
     detectBifurcation(psi = null, epsilon = 0.01) {
-        const t0 = performance.now();
+        const t0 = executionEnvironmentFor(this).measureNow();
         this._diagnostics.invocation_counters.bifurcation++;
 
         if (this._diagnostics.log_enabled) {
-            console.log(`[BIFURCATION_ENTRY #${this._diagnostics.invocation_counters.bifurcation}] psi=${psi}, epsilon=${epsilon}`);
+            executionEnvironmentFor(this).console.log(`[BIFURCATION_ENTRY #${this._diagnostics.invocation_counters.bifurcation}] psi=${psi}, epsilon=${epsilon}`);
         }
 
         if (psi === null && this.stateHistory.length >= 10) {
@@ -698,7 +700,7 @@ export class PhenomenologyCore {
 
         if (psi === null || this.stateHistory.length < 10) {
             if (this._diagnostics.log_enabled) {
-                console.log('[BIFURCATION_EXIT] Insuficientes datos. Retornando estado previo.');
+                executionEnvironmentFor(this).console.log('[BIFURCATION_EXIT] Insuficientes datos. Retornando estado previo.');
             }
             return {
                 detected: this.phenomenologyState.bifurcation_detected,
@@ -723,12 +725,12 @@ export class PhenomenologyCore {
         this.phenomenologyState.bifurcation_detected = detected;
         this.phenomenologyState.bifurcation_strength = delta_aleph;
 
-        const t1 = performance.now();
+        const t1 = executionEnvironmentFor(this).measureNow();
         this._diagnostics.last_execution_times.bifurcation = t1 - t0;
 
         if (this._diagnostics.log_enabled) {
-            console.log(`[BIFURCATION_CALC] "_a=${aleph_a.toFixed(6)}, "_b=${aleph_b.toFixed(6)}, ""=${delta_aleph.toFixed(6)}`);
-            console.log(`[BIFURCATION_EXIT] detected=${detected}. Tiempo: ${(t1 - t0).toFixed(2)}ms`);
+            executionEnvironmentFor(this).console.log(`[BIFURCATION_CALC] "_a=${aleph_a.toFixed(6)}, "_b=${aleph_b.toFixed(6)}, ""=${delta_aleph.toFixed(6)}`);
+            executionEnvironmentFor(this).console.log(`[BIFURCATION_EXIT] detected=${detected}. Tiempo: ${(t1 - t0).toFixed(2)}ms`);
         }
 
         return {

@@ -1,7 +1,9 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 import { QICNConfig } from '../../services/config.js';
 
 export class InformationalEntanglementField {
-          constructor() {
+          constructor(executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
             this.resonanceField = { globalEnergy: 0, globalPhase: 0, coherenceVariance: 0, normalizedResonance: 0 };
             this.entanglementMatrix = [];  
           }
@@ -72,7 +74,7 @@ export class InformationalEntanglementField {
           }
 
           applyNodalPlasticity(nodes, ccc, mutableConfig) {
-            const feedbackSignal = ccc > QICNConfig.COHERENCE_THRESHOLD ? 0.1 : -0.05;
+            const feedbackSignal = ccc > executionEnvironmentFor(this).config.COHERENCE_THRESHOLD ? 0.1 : -0.05;
             return nodes.map(node => {
               node.applyPlasticity(feedbackSignal, mutableConfig);
               return node;

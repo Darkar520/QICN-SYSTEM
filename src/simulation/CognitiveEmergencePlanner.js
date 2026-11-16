@@ -1,3 +1,4 @@
+import { bindExecutionEnvironment, executionEnvironmentFor, LEGACY_EXECUTION_ENVIRONMENT } from '../runtime/ExecutionEnvironment.js';
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 const toFinite = (value, fallback = 0) => {
@@ -15,7 +16,7 @@ const copyState = (state = {}) => ({
   energyDispersion: Math.max(0, toFinite(state.energyDispersion, 0))
 });
 
-const gaussian = (randomFn = Math.random) => {
+const gaussian = (randomFn = LEGACY_EXECUTION_ENVIRONMENT.random) => {
   const u1 = Math.max(1e-9, Math.min(1 - 1e-9, toFinite(randomFn(), 0.5)));
   const u2 = Math.max(1e-9, Math.min(1 - 1e-9, toFinite(randomFn(), 0.5)));
   return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
@@ -65,7 +66,8 @@ const defaultObjective = ({
 };
 
 export class CognitiveEmergencePlanner {
-  constructor(config = {}) {
+  constructor(config = {}, executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
     this.config = {
       horizon: Math.max(3, Math.min(24, Math.floor(toFinite(config.horizon, 10)))),
       sampleCount: Math.max(8, Math.min(128, Math.floor(toFinite(config.sampleCount, 24)))),
@@ -124,7 +126,7 @@ export class CognitiveEmergencePlanner {
     plannerEnabled = true,
     worldModelEnabled = true,
     objectiveFn = defaultObjective,
-    randomFn = Math.random,
+    randomFn = executionEnvironmentFor(this).random,
     quantumEpsilonFn = null,
     sensorState = {}
   } = {}) {

@@ -84,7 +84,7 @@ try {
   // CASE 1: fuente contiene el regimen multibanda determinista esperado
   {
     const sourcePath = path.join(process.cwd(), 'src', 'components', 'SimulationEngine.jsx');
-    const source = fs.readFileSync(sourcePath, 'utf8') + '\n' + fs.readFileSync(path.join(process.cwd(), 'src', 'hooks', 'useSimulationCycle.js'), 'utf8');
+    const source = fs.readFileSync(sourcePath, 'utf8') + '\n' + fs.readFileSync(path.join(process.cwd(), 'src', 'runtime', 'SimulationCycleDriver.js'), 'utf8');
     assert.ok(/bandCenter\s*=\s*Math\.max\(\s*0\.985/.test(source), 'CASE 1 FAIL: bandCenter clamp lower bound missing.');
     assert.ok(/Math\.min\(\s*1\.13/.test(source), 'CASE 1 FAIL: bandCenter clamp upper bound missing.');
     assert.ok(/0\.020\s*\*\s*sensoryPulse/.test(source), 'CASE 1 FAIL: sensoryPulse coefficient missing.');

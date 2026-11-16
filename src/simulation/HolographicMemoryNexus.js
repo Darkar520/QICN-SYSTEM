@@ -1,3 +1,4 @@
+import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 import { QICNConfig } from '../../services/config.js';
 
 /**
@@ -55,7 +56,8 @@ const THRESHOLD_CONFIG = {
 
 export class HolographicMemoryNexus {
     
-    constructor() {
+    constructor(executionEnvironment) {
+    bindExecutionEnvironment(this, executionEnvironment);
         // Sistema de memoria de bajo nivel (Qualia/Estado) - Mantenido del código original
         this.fragments = {};
         this.fragmentCount = 0;
@@ -383,16 +385,16 @@ export class HolographicMemoryNexus {
         if (typeof question !== 'string' || !question.trim() || typeof answer !== 'string' ||
             !Number.isFinite(cccScore) || !Number.isFinite(layer)) return;
         // Ontological Friction: Resist storing new knowledge if friction is active
-        if (context.frictionProtocolState === 2 && Math.random() < 0.7) {
+        if (context.frictionProtocolState === 2 && executionEnvironmentFor(this).random() < 0.7) {
             return; // 70% chance to reject new knowledge during friction
         }
 
         // Validar la entrada (evitar almacenar basura)
         const isError = answer.includes("[ERROR") || (answer.length < 10);
         
-        // Usar QICNConfig si está disponible globalmente, o un default seguro.
-        const harmonyThreshold = (typeof QICNConfig !== 'undefined') 
-            ? QICNConfig.EMOTION_THRESHOLDS.harmony 
+        // Usar executionEnvironmentFor(this).config si está disponible globalmente, o un default seguro.
+        const harmonyThreshold = (typeof executionEnvironmentFor(this).config !== 'undefined')
+            ? executionEnvironmentFor(this).config.EMOTION_THRESHOLDS.harmony
             : 0.7;
 
         if (cccScore < harmonyThreshold || isError) {
@@ -410,7 +412,7 @@ export class HolographicMemoryNexus {
                      entry.cccScore = cccScore;
                      entry.layer = layer;
                      entry.context = context;
-                     entry.timestamp = Date.now();
+                     entry.timestamp = executionEnvironmentFor(this).wallNow();
                      entry.accessCount = 0;
                      entry.relevanceScore = 1.0; // Resetear relevancia ontológica
                      this.ephemeralCache.clear();
@@ -431,7 +433,7 @@ export class HolographicMemoryNexus {
             cccScore: cccScore,
             layer: layer,
             context: context, // Almacena contexto (PMIA, Fricción en el momento de aprender)
-            timestamp: Date.now(),
+            timestamp: executionEnvironmentFor(this).wallNow(),
             accessCount: 0,
             relevanceScore: 1.0, // 1.0 = perfectamente relevante
         });
@@ -466,9 +468,9 @@ export class HolographicMemoryNexus {
             return null;
         }
         const normalizedQuery = question.toLowerCase().trim();
-        // Asumir un valor para PMIA_VOLATILE_THRESHOLD si QICNConfig no está (aunque debería)
-        const pmiaThreshold = (typeof QICNConfig !== 'undefined' && QICNConfig.PMIA_VOLATILE_THRESHOLD) 
-            ? QICNConfig.PMIA_VOLATILE_THRESHOLD 
+        // Asumir un valor para PMIA_VOLATILE_THRESHOLD si executionEnvironmentFor(this).config no está (aunque debería)
+        const pmiaThreshold = (typeof executionEnvironmentFor(this).config !== 'undefined' && executionEnvironmentFor(this).config.PMIA_VOLATILE_THRESHOLD)
+            ? executionEnvironmentFor(this).config.PMIA_VOLATILE_THRESHOLD
             : 0.6;
 
         // 1. "Caos Necesario" / "ANTI-YO" (Priorizar Novedad)
@@ -550,7 +552,7 @@ export class HolographicMemoryNexus {
         // 3. Devolver el mejor resultado (si supera el umbral base)
         if (bestMatch && highestScore > THRESHOLD_CONFIG.BASE_RETRIEVAL_THRESHOLD) {
             bestMatch.accessCount++;
-            bestMatch.timestamp = Date.now(); // Refrescar timestamp en acceso
+            bestMatch.timestamp = executionEnvironmentFor(this).wallNow(); // Refrescar timestamp en acceso
             
             const response = {
                 source: `Holographic Memory (L${bestMatch.layer}, CCC ${bestMatch.cccScore.toFixed(2)})`,
@@ -587,8 +589,8 @@ export class HolographicMemoryNexus {
         const entries = Array.from(this.learnedKnowledge.values());
         const clusters = new Map();
 
-        const harmonyThreshold = (typeof QICNConfig !== 'undefined') 
-            ? QICNConfig.EMOTION_THRESHOLDS.harmony 
+        const harmonyThreshold = (typeof executionEnvironmentFor(this).config !== 'undefined')
+            ? executionEnvironmentFor(this).config.EMOTION_THRESHOLDS.harmony
             : 0.7;
 
         // 1. Agrupar memorias semánticamente similares (por tokens clave)
@@ -630,7 +632,7 @@ export class HolographicMemoryNexus {
         
         // 3. Eliminar (olvidar) memorias obsoletas
         // (Relevancia muy baja o muy antiguas y sin acceso)
-        const now = Date.now();
+        const now = executionEnvironmentFor(this).wallNow();
         const oneDay = 1000 * 60 * 60 * 24;
         for (const [id, entry] of this.learnedKnowledge) {
             const ageInDays = (now - entry.timestamp) / oneDay;
@@ -649,9 +651,9 @@ export class HolographicMemoryNexus {
      * Getter requerido por la interfaz del QICN.
      */
     get nexusStateMetrics() {
-        // Usar QICNConfig si existe para el bajo nivel
-        const maxFrags = (typeof QICNConfig !== 'undefined' && QICNConfig.MEMORY_BUFFER_SIZE) 
-            ? (QICNConfig.MEMORY_BUFFER_SIZE * QICNConfig.HOLOGRAPHIC_FRAGMENTS)
+        // Usar executionEnvironmentFor(this).config si existe para el bajo nivel
+        const maxFrags = (typeof executionEnvironmentFor(this).config !== 'undefined' && executionEnvironmentFor(this).config.MEMORY_BUFFER_SIZE)
+            ? (executionEnvironmentFor(this).config.MEMORY_BUFFER_SIZE * executionEnvironmentFor(this).config.HOLOGRAPHIC_FRAGMENTS)
             : 1; // Evitar división por cero
 
         return {
@@ -675,26 +677,26 @@ export class HolographicMemoryNexus {
     // intactos para asegurar la compatibilidad con el resto del QICN.
 
     encode(data) {
-        // Este QICNConfig DEBE existir en el scope global, como en el código original.
+        // Este executionEnvironmentFor(this).config DEBE existir en el scope global, como en el código original.
         const fragments = {};
-        const numFragments = QICNConfig.HOLOGRAPHIC_FRAGMENTS;
+        const numFragments = executionEnvironmentFor(this).config.HOLOGRAPHIC_FRAGMENTS;
         
         for (let i = 0; i < numFragments; i++) {
             const fragmentKey = `fragment_${this.fragmentCount}_${i}`;
             const fragmentData = [];
             
-            for (let j = 0; j < QICNConfig.FRAGMENT_DIMENSION; j++) {
+            for (let j = 0; j < executionEnvironmentFor(this).config.FRAGMENT_DIMENSION; j++) {
                 // Simulación de transformada de Fourier (Principio Holográfico)
                 const value = Math.sin(data.ccc * (i + 1) * (j + 1)) +
                               Math.cos(data.pmia * (i + 2) * (j + 1)) +
-                              (Math.random() - 0.5) * 0.05; // Ruido cuántico
+                              (executionEnvironmentFor(this).random() - 0.5) * 0.05; // Ruido cuántico
                 fragmentData.push(value);
             }
             
             fragments[fragmentKey] = {
                 data: fragmentData,
                 checksum: this.calculateChecksum(fragmentData),
-                redundancyLevel: Math.floor(i / QICNConfig.REDUNDANCY_FACTOR),
+                redundancyLevel: Math.floor(i / executionEnvironmentFor(this).config.REDUNDANCY_FACTOR),
                 interactionContext: data.interactionContext || null,
             };
         }
@@ -711,8 +713,8 @@ export class HolographicMemoryNexus {
 
     pruneOldFragments() {
         const keys = Object.keys(this.fragments);
-        // Este QICNConfig DEBE existir
-        const maxFragments = QICNConfig.MEMORY_BUFFER_SIZE * QICNConfig.HOLOGRAPHIC_FRAGMENTS;
+        // Este executionEnvironmentFor(this).config DEBE existir
+        const maxFragments = executionEnvironmentFor(this).config.MEMORY_BUFFER_SIZE * executionEnvironmentFor(this).config.HOLOGRAPHIC_FRAGMENTS;
         
         // CORRECCIÓN: Evitar división por cero si maxFragments es 0
         if (maxFragments > 0 && keys.length > maxFragments) {
@@ -723,8 +725,8 @@ export class HolographicMemoryNexus {
 
     getFragmentationLevel() {
         const keysLength = Object.keys(this.fragments).length;
-        // Este QICNConfig DEBE existir
-        const maxFragments = QICNConfig.MEMORY_BUFFER_SIZE * QICNConfig.HOLOGRAPHIC_FRAGMENTS;
+        // Este executionEnvironmentFor(this).config DEBE existir
+        const maxFragments = executionEnvironmentFor(this).config.MEMORY_BUFFER_SIZE * executionEnvironmentFor(this).config.HOLOGRAPHIC_FRAGMENTS;
         // CORRECCIÓN: Evitar división por cero
         return maxFragments === 0 ? 0 : keysLength / maxFragments;
     }

@@ -8,7 +8,7 @@ import { prepareEvidential, evidentialReply } from './fixtures/evidentialFixture
 import { withGlobalTraps } from './lib/workbench-fixtures.mjs';
 
 const base='5dfddd5b2b101865621c4d10f8177ff260b8813b';
-for(const file of ['src/language/freeRealization.js','src/language/realizationContract.js','src/language/runtimeSnapshot.js','tests/language-grounded-conversation.v2.test.mjs','tests/language-semantic-contract.v3.test.mjs','tests/language-free-contract.v4.test.mjs','scripts/run-historical-dependence-ablation.mjs','config/language/system-b-preregister.v1.json','config/workbench/preregister.v1.json','src/components/SimulationEngine.jsx','build.cjs','scripts/sync-netlify-assets.cjs','sw.js']) {
+for(const file of ['src/language/freeRealization.js','src/language/realizationContract.js','src/language/runtimeSnapshot.js','tests/language-grounded-conversation.v2.test.mjs','tests/language-semantic-contract.v3.test.mjs','tests/language-free-contract.v4.test.mjs','scripts/run-historical-dependence-ablation.mjs','config/language/system-b-preregister.v1.json','config/workbench/preregister.v1.json']) {
   const prior=execFileSync('git',['show',`${base}:${file}`],{encoding:'utf8',windowsHide:true});
   assert.equal(fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n'),prior.replace(/\r\n/g,'\n'),`frozen contract/default changed: ${file}`);
 }

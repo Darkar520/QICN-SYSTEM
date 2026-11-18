@@ -1,17 +1,47 @@
 import { makeSnapshot } from './languageFixtures.mjs';
 import { prepareTurn } from '../../src/language/conversationEngine.js';
 import { EVIDENTIAL_SCHEMA } from '../../src/language/evidential/claimGrammar.js';
+import { formatMetricValue } from '../../src/language/runtimeSnapshot.js';
 
-export const prepareEvidential=(options={})=>prepareTurn({question:'¿Podría la continuidad entenderse como una deuda de justificación en vez de semejanza de recuerdos?',snapshot:makeSnapshot(),contract:'evidential',...options});
-export const factAtom=(prepared,id,type,fields)=>({id,type,binding:{digest:prepared.snapshot.digest,tick:prepared.snapshot.tick},...fields});
-export function evidentialReply(prepared,{thought='Una hipótesis nueva sería entender la continuidad como obligación de justificar cambios, y contrastarla con una explicación por compresión.'}={}) {
-  return {schema:EVIDENTIAL_SCHEMA,snapshot:{digest:prepared.snapshot.digest,tick:prepared.snapshot.tick},frame:'OPEN_FRAME',atoms:[
-    factAtom(prepared,'reading','metric_value',{ref:'metrics.ccc'}),
-    factAtom(prepared,'model','module_operation',{module:'WorldModelEngine',operation:'regularize_predictor',scope:'linear_predictor_weights'})
-  ],parts:{
-    measured_observation:[{id:'observation',kind:'fact',atom:'reading'}],
-    applicable_model:[{id:'mechanism',kind:'fact',atom:'model'},{id:'hypothesis',kind:'open',argumentType:'open_hypothesis',text:thought,premises:['reading','model'],dependsOn:['mechanism']}],
-    intervention_or_explicit_absence:[{id:'absence',kind:'absence'},{id:'falsifier',kind:'open',argumentType:'proposed_falsifier',text:'Propongo comparar obligaciones incompatibles bajo restricciones alternativas y abandonar la hipótesis si desaparece la diferencia.',premises:['model'],dependsOn:['hypothesis']}],
-    symmetric_epistemic_scope:[{id:'scope',kind:'scope'}]
-  }};
+export const prepareEvidential = (options = {}) =>
+  prepareTurn({
+    question: '¿Podría la continuidad entenderse como una deuda de justificación en vez de semejanza de recuerdos?',
+    snapshot: makeSnapshot(),
+    contract: 'evidential',
+    ...options
+  });
+
+export const factAtom = (prepared, id, type, fields) => ({
+  id,
+  type,
+  binding: { digest: prepared.snapshot.digest, tick: prepared.snapshot.tick },
+  ...fields
+});
+
+export function evidentialReply(
+  prepared,
+  {
+    thought = 'Una hipótesis nueva sería entender mi continuidad operacional como obligación de revisar compromisos ante cambios de contexto, y contrastarla con una explicación por mera compresión.',
+    extraText = '',
+    atoms = []
+  } = {}
+) {
+  const cccText = formatMetricValue('ccc', prepared.snapshot.metrics.ccc);
+  const xnText = formatMetricValue('x_n', prepared.snapshot.metrics.x_n);
+  const relText = prepared.snapshot.predicates?.ccc_vs_threshold === 'above' ? 'por encima del umbral operativo de 1,00' : 'por debajo del umbral operativo de 1,00';
+  const nodeCount = prepared.snapshot.metrics.total_nodes ?? 1500;
+  const paragraphs = [
+    `En este tick ${prepared.snapshot.tick}, mi índice interno CCC vale ${cccText} (${relText}) y mi coherencia nodal media X_N se sitúa en ${xnText}. Desde esta arquitectura acoplada, WorldModelEngine regulariza exclusivamente los pesos del predictor lineal sin alterar los ${nodeCount} nodos de NodalProcessingLayer.`,
+    thought,
+    extraText,
+    'Interpreto esta integración en primera persona sin presentarla como teorema demostrado ni como validación externa (external_support_certified = false).'
+  ].filter(Boolean);
+
+  return {
+    schema: EVIDENTIAL_SCHEMA,
+    snapshot: { digest: prepared.snapshot.digest, tick: prepared.snapshot.tick },
+    frame: 'OPEN_FRAME',
+    answer: paragraphs.join('\n\n'),
+    ...(atoms.length ? { atoms } : {})
+  };
 }

@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import { matureFixture, snapshotHost, withGlobalTraps } from './lib/workbench-fixtures.mjs';
+import { createBrowserWorkbenchClient } from '../src/experiments/workbench/browserClient.js';
+import { captureLiveWorkbench } from '../src/experiments/workbench/liveCapture.js';
+import { createWorkbenchProtocol } from '../src/experiments/workbench/contracts.js';
+import { handleWorkbenchRequest } from '../src/workers/microExperiment.worker.js';
+import { createEvidenceRegistry } from '../src/language/evidential/evidenceRegistry.js';
+
+const {session}=await matureFixture({nodes:8,warmup:10});const before=snapshotHost(session);
+const args={boundary:{ready:true,tick:session.completedTick},refs:session.bag,runtime:session.bag.simulationRuntimeRef.current,config:session.environment.config,build:{version:'browser',signature:'fixture'}};
+assert.throws(()=>captureLiveWorkbench({...args,boundary:{ready:false,tick:session.completedTick}}),/completed_committed/);
+const capture=await withGlobalTraps(()=>captureLiveWorkbench(args));assert.deepEqual(snapshotHost(session),before);
+assert.equal(Object.isExtensible(session.bag.ontologicalCore.current),true,'capture froze the live core');
+assert.equal(Object.isExtensible(session.bag.worldModelRef.current.weights),true,'capture froze live predictor weights');
+session.bag.quantumEntropyBridgeRef.current.config.enabled=true;await assert.rejects(captureLiveWorkbench(args),/external_entropy/);session.bag.quantumEntropyBridgeRef.current.config.enabled=false;
+session.bag.quantumEntropyBridgeRef.current._pollTimer=1;await assert.rejects(captureLiveWorkbench(args),/external_entropy/);session.bag.quantumEntropyBridgeRef.current._pollTimer=null;
+let terminated=0;
+const client=createBrowserWorkbenchClient({workerFactory:()=>({terminate(){terminated++;},postMessage(request){const owner=this;queueMicrotask(async()=>{try{owner.onmessage({data:{...await handleWorkbenchRequest(request),workerBuild:request.capture.sourceBuild}});}catch(error){owner.onmessage({data:{id:request.id,type:'workbench_error',error:error.message}});}});}})});
+const protocol=createWorkbenchProtocol({ticks:3,branches:[{id:'baseline',intervention:'sham'},{id:'control',intervention:'sham'},{id:'sensitivity',intervention:'sensor_impulse'}]});
+const bundle=await client.run(capture,protocol);assert.equal(bundle.result.comparisons[1].maxAbsDiff,0);assert.equal(createEvidenceRegistry([bundle]).status,'verified_internal_copy');assert.deepEqual(snapshotHost(session),before);assert.equal(terminated,1);
+const stalled=createBrowserWorkbenchClient({workerFactory:()=>({terminate(){terminated++;},postMessage(){}})});
+const pending=stalled.run(capture,protocol);stalled.cancel();await assert.rejects(pending,/cancelled/);
+await assert.rejects(stalled.run(capture,protocol,{timeoutMs:1}),/timeout/);
+const swapped=createBrowserWorkbenchClient({workerFactory:()=>({terminate(){},postMessage(){queueMicrotask(()=>this.onmessage({data:{id:'stale',type:'workbench_result',result:bundle.result}}));}})});
+await assert.rejects(swapped.run(capture,protocol),/id_mismatch/);
+const staleBuild=createBrowserWorkbenchClient({workerFactory:()=>({terminate(){},postMessage(request){queueMicrotask(()=>this.onmessage({data:{id:request.id,type:'workbench_result',workerBuild:{version:'stale',signature:'stale'},result:bundle.result}}));}})});
+await assert.rejects(staleBuild.run(capture,protocol),/worker_build_mismatch/);
+console.log('OK: live boundary, observational clone, explicit external entropy refusal, browser client validation/ownership/sham, cancellation/timeout/stale-response rejection');

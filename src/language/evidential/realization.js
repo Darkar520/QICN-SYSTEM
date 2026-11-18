@@ -1,101 +1,427 @@
 // claim_scope: optional_internal_language_verification
 // evidence_scope: internal_support_only
-// interpretation_boundary: Atom verification does not certify open philosophy or external validation.
-import { PARTS, EVIDENTIAL_SCHEMA, parseEvidentialRealization } from './claimGrammar.js';
-import { verifyFactualAtom } from './factualVerifier.js';
-import { inspectOpenProse, renderOpenArgument, SCOPE_TEXT, V5_GUARANTEE } from './epistemicPolicy.js';
+// interpretation_boundary: Unified first-person evidential verifier and publisher; never certifies philosophy or external support.
+import { EVIDENTIAL_SCHEMA, parseEvidentialRealization } from './claimGrammar.js';
+import { buildEvidentialProseContext, verifyFactualAtom, verifySentenceEvidential } from './factualVerifier.js';
+import { inspectOpenProseDetails, SCOPE_TEXT, V5_GUARANTEE } from './epistemicPolicy.js';
+import { segmentAnswer, assembleText } from '../freeRealization.js';
+import { planAnswer, composeLocalAnswer } from '../narrator.js';
+import { resolveIntent } from '../intentResolver.js';
+import { MODULE_NAMES } from '../moduleInventory.generated.js';
 import { freezeData } from '../../experiments/workbench/contracts.js';
 
-const headings={measured_observation:'Observación anclada',applicable_model:'Modelo y propuestas abiertas',intervention_or_explicit_absence:'Intervención o ausencia registrada',symmetric_epistemic_scope:'Alcance epistémico'};
-function coverage(spans) {
-  return PARTS.every(part=>spans.some(span=>span.part===part && span.ok))
-    && spans.some(span=>span.part==='measured_observation'&&span.ok&&span.observationEligible)
-    && spans.some(span=>span.part==='applicable_model'&&span.ok&&span.modelEligible)
-    && spans.some(span=>span.part==='intervention_or_explicit_absence'&&span.ok&&['measured_effect','absence'].includes(span.atomType));
-}
-export function verifyEvidentialRealization(parsed,context) {
-  const envelope=parsed.snapshot.digest===context.snapshot.digest && parsed.snapshot.tick===context.snapshot.tick;
-  const atoms=parsed.atoms.map(atom=>verifyFactualAtom(atom,context)),byId=new Map(atoms.map(atom=>[atom.id,atom]));
-  const spans=[],seen=new Map();
-  for(const part of PARTS)for(const span of parsed.parts[part]) {
-    const reasons=[];let text='',atomType=null,cites=[],observationEligible=false,modelEligible=false;
-    if(span.kind==='fact') {
-      const atom=byId.get(span.atom);
-      if(!atom?.ok)reasons.push('v5_invalid_fact_reference');
-      else {text=atom.text;atomType=atom.type;cites=[span.atom];observationEligible=atom.observationEligible;modelEligible=atom.modelEligible;}
-      if(part==='symmetric_epistemic_scope')reasons.push('v5_scope_required');
-      if(part==='measured_observation'&&atom?.type!=='metric_value'&&atom?.type!=='comparison'&&atom?.type!=='algebraic_relation'&&atom?.type!=='analytical_bound'&&atom?.type!=='ledger_event')reasons.push('v5_observation_type');
-    } else if(span.kind==='open') {
-      if(part!=='applicable_model'&&part!=='intervention_or_explicit_absence')reasons.push('v5_open_part');
-      reasons.push(...inspectOpenProse(span.text,context));
-      for(const premise of span.premises)if(!byId.get(premise)?.ok)reasons.push('v5_invalid_premise');
-      for(const dependency of span.dependsOn||[])if(!seen.get(dependency)?.ok)reasons.push('v5_invalid_dependency');
-      cites=[...span.premises];text=renderOpenArgument(span);
-    } else if(span.kind==='absence') {
-      if(part!=='intervention_or_explicit_absence'||context.evidenceRegistry.status!=='not_recorded')reasons.push('v5_false_evidence_absence');
-      text='Intervención verificada disponible: not_recorded. No se ha aportado un resultado de copia verificado; disponer de un mecanismo no sustituye una intervención.';atomType='absence';
-    } else {
-      if(part!=='symmetric_epistemic_scope')reasons.push('v5_scope_part');
-      text=SCOPE_TEXT;atomType='scope';
+export function verifyEvidentialRealization(parsed, context, proseContext = null) {
+  const envelope =
+    parsed.snapshot.digest === context.snapshot.digest
+    && parsed.snapshot.tick === context.snapshot.tick;
+
+  const atoms = (parsed.atoms || []).map((atom) => verifyFactualAtom(atom, context));
+  const resolvedProse = proseContext || buildEvidentialProseContext({
+    snapshot: context.snapshot,
+    factualContext: context
+  });
+
+  const segments = segmentAnswer(parsed.answer);
+  const sentences = [];
+  for (const seg of segments) {
+    if (seg.blank) continue;
+    const factual = verifySentenceEvidential(seg.text, resolvedProse);
+    const epistemic = inspectOpenProseDetails(seg.text, context);
+    const reasons = [...factual.reasons];
+    for (const item of epistemic) {
+      const key = `${item.reason}:${item.token || ''}`;
+      if (!reasons.some((r) => `${r.reason}:${r.detail || ''}` === key)) {
+        reasons.push({ reason: item.reason, detail: item.token || item.pattern });
+      }
     }
-    const result={id:span.id,part,kind:span.kind,atomType,observationEligible,modelEligible,ok:!reasons.length,text,cites,reasons:[...new Set(reasons)],...(span.kind==='open'?{argumentStatus:'open_proposal_not_fact',premises:[...span.premises],dependsOn:span.dependsOn||[]}: {})};
-    spans.push(result);seen.set(span.id,result);
+    sentences.push({
+      index: seg.index,
+      lineIndex: seg.lineIndex,
+      text: seg.text,
+      ok: reasons.length === 0,
+      reasons,
+      diagnostics: epistemic,
+      numbers: factual.numbers,
+      b2Matches: factual.b2Matches
+    });
   }
-  // Scope is locally authored and cannot be omitted, replaced or appended to.
-  const scopes=spans.filter(span=>span.part==='symmetric_epistemic_scope');
-  const scopeValid=scopes.length===1&&scopes[0].kind==='scope'&&scopes[0].ok;
-  const discrepancies=[...(!envelope?[{reason:'v5_full_snapshot_binding'}]:[]),...atoms.filter(atom=>!atom.ok).map(atom=>({atom:atom.id,reason:atom.reasons.join(',')})),...spans.filter(span=>!span.ok).map(span=>({span:span.id,reason:span.reasons.join(',')})),...(!scopeValid?[{reason:'v5_symmetric_scope_required'}]:[]),...(!coverage(spans)?[{reason:'v5_four_part_coverage'}]:[])];
-  return freezeData({ok:!discrepancies.length,envelope,scopeValid,atoms,spans,discrepancies,guaranteeNote:V5_GUARANTEE,evidence_scope:'internal_support_only',external_support_certified:false});
-}
-export function evaluateEvidential(context,modelText) {
-  try {const verification=verifyEvidentialRealization(parseEvidentialRealization(modelText),context);return {ok:verification.ok,verification,error:null};}
-  catch(error){return {ok:false,verification:null,error:String(error.message||'v5_contract_error')};}
-}
-export function evidentialGracefulCandidate(verification) {
-  if(!verification?.envelope||!verification.scopeValid)return null;
-  const kept=verification.spans.filter(span=>span.ok);
-  if(!coverage(kept))return null;
-  return {kept,withheld:verification.spans.filter(span=>!span.ok),droppedAtoms:verification.atoms.filter(atom=>!atom.ok)};
-}
-export function renderEvidential(spans) {
-  return PARTS.map(part=>`${headings[part]}\n${spans.filter(span=>span.part===part).map(span=>span.text).join('\n')}`).join('\n\n');
+
+  const discrepancies = [
+    ...(!envelope ? [{ reason: 'v5_full_snapshot_binding', detail: `${String(parsed.snapshot.digest).slice(0, 12)}@${parsed.snapshot.tick}` }] : []),
+    ...atoms
+      .filter((atom) => !atom.ok)
+      .map((atom) => ({
+        atom: atom.id,
+        reason: atom.reasons.join(','),
+        ...(atom.details?.length ? { details: atom.details } : {})
+      })),
+    ...sentences.flatMap((s) =>
+      s.reasons.map((r) => ({
+        sentence: s.index,
+        reason: r.reason,
+        detail: r.detail,
+        ...(s.diagnostics?.length ? { details: s.diagnostics } : {})
+      }))
+    )
+  ];
+
+  return freezeData({
+    ok: discrepancies.length === 0 && sentences.length > 0,
+    envelope,
+    atoms,
+    segments,
+    sentences,
+    discrepancies,
+    guaranteeNote: V5_GUARANTEE,
+    evidence_scope: 'internal_support_only',
+    external_support_certified: false
+  });
 }
 
-export function finalizeEvidentialTurn(prepared,options,core,conversationSchema) {
-  const context=prepared.evidentialContext,snapshot=context.snapshot;
-  const tries=(Array.isArray(options.attempts)?options.attempts:options.modelText!=null||options.modelError?[{modelText:options.modelText,modelError:options.modelError}]:[]).slice(0,2);
-  const mode=options.mode||(tries.length?'gemini':'local'),graceful=options.integrityMode==='graceful';
-  const trace={schema:EVIDENTIAL_SCHEMA,contract:'evidential',snapshotTick:snapshot.tick,snapshotDigest:snapshot.digest,registryDigest:context.evidenceRegistry.digest,route:'local_evidential',mode,attempts:[],provider:options.provider||null,transportRetries:(options.transportRetries||[]).slice(0,4),reasoningPlan:prepared.reasoningPlan};
-  const integrity={mode:graceful?'graceful':'strict',severity:'ok',banner:null,discrepancies:[],withheld:[],snapshotEcho:'full_match',guaranteeNote:V5_GUARANTEE};
-  const localText=`Lectura local de la captura: tick ${snapshot.tick}, digest ${snapshot.digest}.\n${SCOPE_TEXT}`;
-  let text=localText,spans=[],verification=null,bestPartial=null,localReading=null;
-  if(mode==='gemini') {
-    for(const attempt of tries) {
-      if(attempt.modelError){trace.attempts.push({stage:'transport',code:String(attempt.modelError.code||attempt.modelError.message||'unknown')});continue;}
-      const evaluation=evaluateEvidential(context,attempt.modelText);
-      const v=evaluation.verification;
-      trace.attempts.push({stage:evaluation.ok?'verified':'rejected',error:evaluation.error,discrepancies:v?.discrepancies||[],rejectedSpans:v?.spans.filter(span=>!span.ok)||[],failedAtoms:v?.atoms.filter(atom=>!atom.ok)||[]});
-      if(evaluation.ok){verification=v;spans=v.spans;trace.route='gemini_evidential_checked';break;}
-      const candidate=evidentialGracefulCandidate(v);
-      if(candidate&&(!bestPartial||candidate.kept.length>bestPartial.candidate.kept.length))bestPartial={v,candidate};
+export function evaluateEvidential(context, modelText, proseContext = null) {
+  try {
+    const parsed = parseEvidentialRealization(modelText);
+    const verification = verifyEvidentialRealization(parsed, context, proseContext);
+    return { ok: verification.ok, verification, error: null, errorDetails: null };
+  } catch (error) {
+    return {
+      ok: false,
+      verification: null,
+      error: String(error.message || 'v5_contract_error'),
+      errorDetails: error?.details || null
+    };
+  }
+}
+
+export function evidentialGracefulCandidate(verification) {
+  if (!verification?.envelope) return null;
+  if (verification.atoms?.some((atom) => !atom.ok)) return null;
+  const kept = verification.sentences.filter((s) => s.ok);
+  if (!kept.length) return null;
+  return {
+    kept,
+    withheld: verification.sentences.filter((s) => !s.ok),
+    droppedAtoms: []
+  };
+}
+
+function formatLocalWorkbenchSummary(registry) {
+  if (!registry || registry.status !== 'verified_internal_copy' || !registry.entries?.length) {
+    return 'Evidencia experimental B2 en copia aislada: not_recorded.';
+  }
+  const lines = registry.entries.map(
+    (e) =>
+      `Copia aislada ${e.captureDigest.slice(0, 12)} (ticks ${e.sourceTick + 1}-${e.endTick}, rama ${e.branchId}, intervención ${e.intervention}): maxAbsDiff = ${e.measures.maxAbsDiff}, actionDivergence = ${e.measures.actionDivergence}, deltaInTubeRate = ${e.measures.deltaInTubeRate}, deltaObjectiveScore = ${e.measures.deltaObjectiveScore} (resultado en copia aislada, no del estado vivo ni soporte externo).`
+  );
+  return lines.join(' ');
+}
+
+function buildEvidentialConcordance(publishedSentences, verifiedAtoms, context) {
+  const rows = [];
+  const seen = new Set();
+
+  for (const s of publishedSentences) {
+    for (const m of s.b2Matches || []) {
+      const atomKey = `b2:${s.index}:${m.entry.branchId}:${m.measure}:${m.token}`;
+      if (seen.has(atomKey)) continue;
+      seen.add(atomKey);
+      rows.push({
+        atom: `${m.entry.branchId}.${m.measure}`,
+        sentence: s.index,
+        type: 'measured_effect',
+        inserted: m.token,
+        engine: m.value,
+        source: `workbench:${m.entry.resultDigest.slice(0, 12)} (ticks ${m.entry.sourceTick + 1}-${m.entry.endTick})`,
+        status: 'verified_b2',
+        binding: { digest: context.snapshot.digest, tick: context.snapshot.tick }
+      });
     }
-    if(!verification&&graceful&&bestPartial) {
-      verification=bestPartial.v;spans=bestPartial.candidate.kept;trace.route='gemini_evidential_partial';
-      integrity.severity='medium';integrity.withheld=bestPartial.candidate.withheld.map(span=>({id:span.id,reasons:span.reasons}));
-      integrity.discrepancies=verification.discrepancies;integrity.banner='Propuestas y hechos inválidos y todos sus dependientes quedaron retenidos; se conservan las cuatro partes y ambos polos.';
-    }
-    if(verification)text=renderEvidential(spans);
-    else {
-      trace.route=trace.attempts.length&&trace.attempts.every(a=>a.stage==='transport')?'gemini_evidential_unavailable':'gemini_evidential_rejected';
-      integrity.severity='high';integrity.discrepancies=trace.attempts.at(-1)?.discrepancies||[];
-      integrity.banner='Sistema B retuvo la redacción; no se publica un argumento de sustitución.';
-      text='No se publica la propuesta: no superó el contrato evidencial v5.';
-      localReading={label:'Lectura local (sin argumento de Gemini)',text:localText,cites:[]};
+    for (const n of s.numbers || []) {
+      // Skip duplicating numbers already logged as verified B2 effects.
+      if ((s.b2Matches || []).some((m) => m.token === n.token)) continue;
+      const rowStatus = n.status === 'exact_match' ? 'exact_match' : 'from_fact';
+      const key = `num:${s.index}:${n.metric || 'literal'}:${n.token}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      rows.push({
+        atom: n.metric || `f${s.index}:${n.token}`,
+        sentence: s.index,
+        type: n.metric?.includes('sigma_defect_bound') ? 'analytical_bound' : 'metric_value',
+        inserted: n.token,
+        engine: n.engine ?? n.token,
+        source: n.engineSource || n.status || 'paquete',
+        status: rowStatus,
+        binding: { digest: context.snapshot.digest, tick: context.snapshot.tick }
+      });
     }
   }
-  const citedIds=[...new Set(spans.flatMap(span=>span.cites))];
-  const verifiedAtoms=verification?.atoms.filter(atom=>atom.ok&&citedIds.includes(atom.id))||[];
-  trace.openArgumentStatus='open_proposal_not_semantically_certified';
-  const rows=verifiedAtoms.map(atom=>({atom:atom.id,type:atom.type,inserted:atom.value,engine:atom.value,source:atom.source,status:'verified_atom',binding:atom.binding}));
-  return {text,intent:prepared.intent.intent,sentences:spans.map((span,index)=>({...span,index:index+1,source:span.kind==='open'?'gemini_open_proposal':'local_verified_insertion'})),evidence:verifiedAtoms.map(atom=>({id:atom.id,kind:atom.type,evidenceClass:atom.evidenceClass,source:atom.source,provenance:atom.provenance,expressedBy:'local_verified_insertion'})),trace,integrity,localReading,core,concordance:{rows,summary:{total:rows.length,exact:rows.length,fromFact:rows.length,outOfTolerance:0}},controlProposal:null,record:{schema:conversationSchema,turnIndex:prepared.turnIndex,question:String(prepared.question||'').slice(0,500),intent:prepared.intent.intent,intentLabel:prepared.intent.intent,tick:snapshot.tick,snapshotDigest:snapshot.digest,metrics:{...snapshot.metrics},answerSummary:text.replace(/\s+/g,' ').slice(0,400),route:trace.route,sessionId:prepared.sessionId||null}};
+
+  for (const atom of verifiedAtoms || []) {
+    rows.push({
+      atom: atom.id,
+      sentence: '—',
+      type: atom.type,
+      inserted: atom.value,
+      engine: atom.value,
+      source: atom.source,
+      status: 'verified_atom',
+      binding: atom.binding
+    });
+  }
+
+  const outOfTolerance = rows.filter((r) => r.status === 'out_of_tolerance').length;
+  const exact = rows.filter((r) => r.status === 'exact_match' || r.status === 'verified_b2' || r.status === 'verified_atom').length;
+  const fromFact = rows.filter((r) => r.status === 'from_fact').length;
+  return {
+    rows,
+    summary: {
+      total: rows.length,
+      exact,
+      fromFact,
+      outOfTolerance
+    }
+  };
+}
+
+function buildEvidenceList(publishedText, verifiedAtoms, context, proseContext) {
+  const list = [];
+  for (const atom of verifiedAtoms || []) {
+    list.push({
+      id: atom.id,
+      kind: atom.type,
+      evidenceClass: atom.evidenceClass,
+      source: atom.source,
+      provenance: atom.provenance,
+      expressedBy: 'verified_atom'
+    });
+  }
+  if (context.evidenceRegistry.status === 'verified_internal_copy') {
+    for (const entry of context.evidenceRegistry.entries) {
+      list.push({
+        id: `workbench.${entry.branchId}`,
+        kind: 'measured_effect',
+        evidenceClass: 'derived_proxy',
+        source: `workbench:${entry.resultDigest.slice(0, 12)} (copia ${entry.captureDigest.slice(0, 12)})`,
+        provenance: entry,
+        expressedBy: 'b2_verified_registry'
+      });
+    }
+  } else {
+    list.push({
+      id: 'workbench.b2_absence',
+      kind: 'explicit_absence',
+      evidenceClass: 'artifact_only',
+      source: 'evidenceRegistry:not_recorded',
+      provenance: null,
+      expressedBy: 'b2_verified_registry'
+    });
+  }
+  if (context.ledgerDigest) {
+    list.push({
+      id: 'ledger.record',
+      kind: 'ledger_event',
+      evidenceClass: 'direct_signal',
+      source: `ledger:${context.ledgerDigest.slice(0, 12)}`,
+      provenance: proseContext?.ledgerSummary || null,
+      expressedBy: 'verified_ledger_digest'
+    });
+  }
+  const citedModules = MODULE_NAMES.filter(
+    (name) => name.length >= 4 && /^[A-Z][a-z0-9]+[A-Z]/.test(name) && new RegExp(`\\b${name}\\b`).test(publishedText)
+  );
+  for (const mod of citedModules.slice(0, 12)) {
+    list.push({
+      id: `module.${mod}`,
+      kind: 'module_attribution',
+      evidenceClass: 'catalog',
+      source: 'src/language/moduleInventory.generated.js',
+      provenance: null,
+      expressedBy: 'gemini_prose_verified'
+    });
+  }
+  return list;
+}
+
+export function finalizeEvidentialTurn(prepared, options, core, conversationSchema) {
+  const context = prepared.evidentialContext;
+  const snapshot = context.snapshot;
+  const proseContext = prepared.proseContext || buildEvidentialProseContext({ snapshot, factualContext: context });
+  const tries = (
+    Array.isArray(options.attempts)
+      ? options.attempts
+      : options.modelText != null || options.modelError
+        ? [{ modelText: options.modelText, modelError: options.modelError }]
+        : []
+  ).slice(0, 2);
+  const mode = options.mode || (tries.length ? 'gemini' : 'local');
+  const graceful = options.integrityMode === 'graceful';
+
+  const sanitizePlan = prepared.reasoningPlan
+    ? (() => {
+        const { _promptArgs: _omit, ...rest } = prepared.reasoningPlan;
+        return rest;
+      })()
+    : null;
+
+  const trace = {
+    schema: EVIDENTIAL_SCHEMA,
+    contract: 'evidential',
+    snapshotTick: snapshot.tick,
+    snapshotDigest: snapshot.digest,
+    registryDigest: context.evidenceRegistry.digest,
+    route: 'local_evidential',
+    mode,
+    attempts: [],
+    provider: options.provider || null,
+    transportRetries: (options.transportRetries || []).slice(0, 4),
+    reasoningPlan: sanitizePlan
+  };
+  const integrity = {
+    mode: graceful ? 'graceful' : 'strict',
+    severity: 'ok',
+    banner: null,
+    discrepancies: [],
+    withheld: [],
+    snapshotEcho: 'full_match',
+    guaranteeNote: V5_GUARANTEE
+  };
+
+  const intent = prepared.intent || resolveIntent(prepared.question || '');
+  const localPlan = planAnswer(intent, proseContext.props);
+  const baseLocal = composeLocalAnswer({
+    intentResult: intent,
+    plan: localPlan,
+    props: proseContext.props,
+    turnIndex: prepared.turnIndex || 0,
+    controlProposal: prepared.controlProposal || null
+  });
+  const localText = `${baseLocal}\n\n${formatLocalWorkbenchSummary(context.evidenceRegistry)}\n${SCOPE_TEXT}`.trim();
+
+  let text = localText;
+  let publishedSentences = [];
+  let verification = null;
+  let bestPartial = null;
+  let localReading = null;
+
+  if (mode === 'gemini') {
+    for (const attempt of tries) {
+      if (attempt.modelError) {
+        trace.attempts.push({
+          stage: 'transport',
+          code: String(attempt.modelError.code || attempt.modelError.message || 'unknown')
+        });
+        continue;
+      }
+      const evaluation = evaluateEvidential(context, attempt.modelText, proseContext);
+      const v = evaluation.verification;
+      trace.attempts.push({
+        stage: evaluation.ok ? 'verified' : 'rejected',
+        error: evaluation.error,
+        ...(evaluation.errorDetails ? { errorDetails: evaluation.errorDetails } : {}),
+        discrepancies: v?.discrepancies?.slice(0, 16) || [],
+        rejectedSentences: v?.sentences?.filter((s) => !s.ok).map((s) => ({
+          index: s.index,
+          text: String(s.text).slice(0, 400),
+          reasons: s.reasons.map((r) => `${r.reason}${r.detail ? `:${r.detail}` : ''}`)
+        })) || [],
+        failedAtoms: v?.atoms?.filter((atom) => !atom.ok) || []
+      });
+      if (evaluation.ok) {
+        verification = v;
+        publishedSentences = v.sentences;
+        text = assembleText(v.segments);
+        if (prepared.controlProposal) text = `${text}\n\n${prepared.controlProposal.text}`.trim();
+        trace.route = 'gemini_evidential_checked';
+        break;
+      }
+      const candidate = evidentialGracefulCandidate(v);
+      if (candidate && (!bestPartial || candidate.kept.length > bestPartial.candidate.kept.length)) {
+        bestPartial = { v, candidate };
+      }
+    }
+
+    if (!verification && graceful && bestPartial) {
+      verification = bestPartial.v;
+      publishedSentences = bestPartial.candidate.kept;
+      const keptIndex = new Set(publishedSentences.map((s) => s.index));
+      text = assembleText(verification.segments, (seg) => keptIndex.has(seg.index));
+      if (prepared.controlProposal) text = `${text}\n\n${prepared.controlProposal.text}`.trim();
+      trace.route = 'gemini_evidential_partial';
+      integrity.severity = 'medium';
+      integrity.withheld = bestPartial.candidate.withheld.map((s) => ({
+        index: s.index,
+        text: s.text,
+        reasons: s.reasons.map((r) => `${r.reason}${r.detail ? `:${r.detail}` : ''}`),
+        diagnostics: s.diagnostics
+      }));
+      integrity.discrepancies = verification.discrepancies.slice(0, 12);
+      integrity.banner = `Modo graceful: publico ${publishedSentences.length} de ${verification.sentences.length} frases; ${integrity.withheld.length} quedaron retenidas en la traza.`;
+    }
+
+    if (!verification) {
+      const transportOnly = trace.attempts.length > 0 && trace.attempts.every((a) => a.stage === 'transport');
+      trace.route = transportOnly ? 'gemini_evidential_unavailable' : 'gemini_evidential_rejected';
+      const lastAttempt = trace.attempts.at(-1);
+      integrity.severity = 'high';
+      integrity.snapshotEcho = verification?.envelope === false ? 'mismatch' : (lastAttempt?.error === 'v5_binding' ? 'mismatch' : 'none');
+      integrity.discrepancies = lastAttempt?.discrepancies?.length
+        ? lastAttempt.discrepancies
+        : (lastAttempt?.error
+            ? [{ reason: lastAttempt.error, ...(lastAttempt.errorDetails ? { details: [lastAttempt.errorDetails] } : {}) }]
+            : []);
+      integrity.banner = transportOnly
+        ? 'Canal de lenguaje no disponible; muestro lectura local determinista.'
+        : 'Sistema B retuvo la redacción; no superó la verificación factual/epistémica.';
+      text = transportOnly
+        ? 'Mi canal de lenguaje no respondió en este turno, así que muestro la lectura directa del motor.'
+        : 'No se publica la redacción de este turno porque no superó la verificación del contrato Sistema B.';
+      localReading = { label: 'Lectura local del motor (Sistema B)', text: localText, cites: [...localPlan.ids] };
+    }
+  } else {
+    publishedSentences = localText.split(/(?<=[.!?])\s+/).filter(Boolean).map((line, idx) => ({
+      index: idx + 1,
+      text: line,
+      numbers: [],
+      b2Matches: []
+    }));
+  }
+
+  const verifiedAtoms = verification?.atoms?.filter((atom) => atom.ok) || [];
+  const concordance = buildEvidentialConcordance(publishedSentences, verifiedAtoms, context);
+  const evidence = buildEvidenceList(text, verifiedAtoms, context, proseContext);
+
+  return {
+    text,
+    intent: intent.intent,
+    sentences: publishedSentences.map((s) => ({
+      index: s.index,
+      kind: 'evidential_prose',
+      text: s.text,
+      raw: s.text,
+      cites: [],
+      source: mode === 'gemini' ? 'gemini_evidential' : 'local_evidential',
+      numbers: s.numbers || [],
+      b2Matches: s.b2Matches || []
+    })),
+    evidence,
+    trace,
+    integrity,
+    localReading,
+    core,
+    concordance,
+    controlProposal: prepared.controlProposal && prepared.controlProposal.action ? prepared.controlProposal : null,
+    record: {
+      schema: conversationSchema,
+      turnIndex: prepared.turnIndex,
+      question: String(prepared.question || '').slice(0, 500),
+      intent: intent.intent,
+      intentLabel: intent.intent,
+      tick: snapshot.tick,
+      snapshotDigest: snapshot.digest,
+      metrics: { ...snapshot.metrics },
+      answerSummary: text.replace(/\s+/g, ' ').slice(0, 400),
+      route: trace.route,
+      sessionId: prepared.sessionId || null
+    }
+  };
 }

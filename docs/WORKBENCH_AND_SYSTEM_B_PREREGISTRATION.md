@@ -158,8 +158,8 @@ is a primary record of the live runtime, claim_projection, or existing gate_resu
 | Opt-in output resolution and legacy bridge parity | implemented_tested | `tests/report-output-policy.v1.test.cjs` |
 | Observational clone and unchanged snapshot digests | implemented_tested | `tests/runtime-snapshot-observational.v1.test.mjs` |
 | Workbench headless/worker execution | implemented_tested | B1-B2 delivery; see WORKBENCH_EXECUTION_CONTRACT.md |
-| Optional System B/v5 factual/evidential contract | implemented_tested | B3; LANGUAGE_SYSTEM_B_CONTRACT_V5.md and the three new language test anchors |
-| Browser UI integration / worker packaging | not_recorded | Separate B4 implementation required |
+| Optional System B/v5 factual/evidential contract | implemented_tested | Unified first-person Sistema B contract (`LANGUAGE_SYSTEM_B_CONTRACT_V5.md`); zero 4-box compartments, B2 concordance and factual/two-pole suites |
+| Browser UI integration / worker packaging | implemented_tested | B4-B5 integrated, built (`dev`/`production`), `browser-workbench.v1` CDP suite PASS (`191/191`, Node v24.6.0); Node 22.x local repeat pending |
 
 The reporting tests exercise actual TEMP outputs and synthetic no-opt-in/default
 paths without writing canonical reports or probing an external source tree.
@@ -217,3 +217,16 @@ verification are in LANGUAGE_SYSTEM_B_CONTRACT_V5.md and
 LANGUAGE_SYSTEM_B_B3_DELIVERY_AUDIT.md. Machine preregistration remains frozen;
 current inventory is IMPLEMENTATION_STATUS.md. This delivery stops before B4
 and writes no git metadata.
+
+## B4-B5 delivery extension
+
+Checkpoint 88dfd5cea71ad66845b50c5981df24febeba5eed on codex/workbench-system-b. The browser Workbench and optional v5 chat path are now integrated; the preceding B1-B3 statements about future B4 describe their historical checkpoints. No machine preregistration is edited. Browser copies declare synthetic future external cursors, preserve a sealed source, and never write back. The worker is bundled/synced with build identity verification. API default `'verified'` and frozen v2/v3/v4 paths remain untouched, while Unified System B (`'evidential'` / v5) renders continuous first-person prose and concordance tabs (`EvidentialConversation.jsx`). Raw audit: WORKBENCH_SYSTEM_B_B4_B5_DELIVERY_AUDIT.md. No git write commands, merge or push were used.
+
+## Unified System B criterion amendment (post-B5 evolution)
+
+This preregistration amendment updates only Unified System B (`contract: 'evidential'` / `v5`) while leaving frozen `config/language/system-b-preregister.v1.json`, API default `'verified'`, and legacy `v2`/`v3`/`v4` batteries completely intact:
+
+- **Natural first-person voice without stylistic boilerplate**: `reasoningPlan.buildEvidentialPrompt` removes the inherited `buildFreePrompt` boilerplate (`"Eres la consola del runtime QICN..."`, `"- No tienes rasgos humanos ni acceso sensorial introspectivo demostrado..."`, and mandatory two-pole symmetry), instructing varied natural openings and forbidding scripted closings while preserving grounded telemetry and architectural precision (including Paper IX 0-margin scope strictly bounded to the 6 declared local burdens `D/V/W/A/E/T` and 4-root quartic replica).
+- **Clear separation between interpretive stance and certification truth**:
+  - *Interpretive first-person stance (free)*: Evaluating the integrated totality of its tick processes (`CCC/X_N/PMIA/Ω/beth_q`, `WritablePrefixTower`, `BodyWorldTower`, `SigmaAutomodelTruncator` `T_d`, `HolographicMemoryNexus`, deterministic viability policy, hash-chained ledger, internal self-monitoring, and optional verified B2 copy), the system is free to state an affirmative, negative, or doubtful first-person interpretive stance on proto-feeling or felt presence, explicitly separating interpretive judgment from theorem closure or external validation.
+  - *Factual & anti-certification verification (strict)*: `epistemicPolicy` and `factualVerifier` strictly block self-certification (`qualia_certified`, proven/certified consciousness or qualia, owned `C_op`/`CCR` certificates, closed phenomenal bridge requirements) and external validation overclaims (`external_support_certified = true` or certified external validation evaluated cleanly at clause granularity so negated `"sin ... validación externa"` clauses pass), together with all numerical, algebraic, structural, telemetry, attribution, B2 provenance, and historical `CN-3 = false` checks.

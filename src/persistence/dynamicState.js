@@ -23,15 +23,80 @@
 
 import { Frac } from '../simulation/tower/ExactFraction.js';
 import { TowerState } from '../simulation/tower/WritablePrefixTower.js';
-import { ExtendedTowerState } from '../simulation/tower/BodyWorldTower.js';
+import { ExtendedTowerState, Mechanism } from '../simulation/tower/BodyWorldTower.js';
+import { NodalProcessingLayer } from '../simulation/NodalProcessingLayer.js';
+import { ConsciousNode } from '../simulation/ConsciousNode.js';
+import { OntologicalSingularityCore, InternalSelfSimulator } from '../simulation/OntologicalSingularityCore.js';
+import { PhenomenologyCore } from '../simulation/PhenomenologyCore.js';
+import { SovereigntyRequirementMatrix } from '../sovereignty/SovereigntyRequirementMatrix.js';
+import { InformationalEntanglementField } from '../simulation/InformationalEntanglementField.js';
+import { KaizenMetamorphosisEngine } from '../simulation/KaizenMetamorphosisEngine.js';
+import { MetaSovereigntyCheck } from '../simulation/MetaSovereigntyCheck.js';
+import { HolographicMemoryNexus } from '../simulation/HolographicMemoryNexus.js';
+import { SimulationController } from '../simulation/SimulationController.js';
+import { WorldModelEngine } from '../simulation/WorldModelEngine.js';
+import { CognitiveEmergencePlanner } from '../simulation/CognitiveEmergencePlanner.js';
+import { StructuralConsolidationTracker } from '../runtime/StructuralConsolidationTracker.js';
+import { PhenomenologyProtocolTracker } from '../utils/phenomenologyProtocolSuite.js';
+import { BudgetTracker } from '../utils/cognitiveEmergenceEvaluation.js';
+import { ExogenousPerturbationDriver } from '../experiments/ExogenousPerturbationDriver.js';
+import { CausalInterventionScheduler } from '../experiments/CausalInterventionScheduler.js';
+import { QuantumEntropyBridge } from '../simulation/QuantumEntropyBridge.js';
+import { EntropyBufferManager } from '../simulation/EntropyBufferManager.js';
+import { EntropyProviderClient } from '../simulation/EntropyProviderClient.js';
+import { EntropyHealthMonitor } from '../simulation/EntropyHealthMonitor.js';
+import { EntropyExperimentController } from '../simulation/EntropyExperimentController.js';
+import { OperationalHistoryLedger } from '../identity/OperationalHistoryLedger.js';
 
 export const DYNAMIC_STATE_SCHEMA = 'qicn.dynamic_state.v3';
 
 const FROZEN_VALUE_CLASSES = Object.freeze({
   Frac,
   TowerState,
-  ExtendedTowerState
+  ExtendedTowerState,
+  Mechanism
 });
+
+// Explicit constructor-reference registry so class tags in v3/Workbench digests
+// never depend on unmangled Function.prototype.name across separate/minified bundles.
+const CANONICAL_CLASS_NAMES = new WeakMap([
+  [Frac, 'Frac'],
+  [TowerState, 'TowerState'],
+  [ExtendedTowerState, 'ExtendedTowerState'],
+  [Mechanism, 'Mechanism'],
+  [NodalProcessingLayer, 'NodalProcessingLayer'],
+  [ConsciousNode, 'ConsciousNode'],
+  [OntologicalSingularityCore, 'OntologicalSingularityCore'],
+  [InternalSelfSimulator, 'InternalSelfSimulator'],
+  [PhenomenologyCore, 'PhenomenologyCore'],
+  [SovereigntyRequirementMatrix, 'SovereigntyRequirementMatrix'],
+  [InformationalEntanglementField, 'InformationalEntanglementField'],
+  [KaizenMetamorphosisEngine, 'KaizenMetamorphosisEngine'],
+  [MetaSovereigntyCheck, 'MetaSovereigntyCheck'],
+  [HolographicMemoryNexus, 'HolographicMemoryNexus'],
+  [SimulationController, 'SimulationController'],
+  [WorldModelEngine, 'WorldModelEngine'],
+  [CognitiveEmergencePlanner, 'CognitiveEmergencePlanner'],
+  [StructuralConsolidationTracker, 'StructuralConsolidationTracker'],
+  [PhenomenologyProtocolTracker, 'PhenomenologyProtocolTracker'],
+  [BudgetTracker, 'BudgetTracker'],
+  [ExogenousPerturbationDriver, 'ExogenousPerturbationDriver'],
+  [CausalInterventionScheduler, 'CausalInterventionScheduler'],
+  [QuantumEntropyBridge, 'QuantumEntropyBridge'],
+  [EntropyBufferManager, 'EntropyBufferManager'],
+  [EntropyProviderClient, 'EntropyProviderClient'],
+  [EntropyHealthMonitor, 'EntropyHealthMonitor'],
+  [EntropyExperimentController, 'EntropyExperimentController'],
+  [OperationalHistoryLedger, 'OperationalHistoryLedger']
+]);
+
+function resolveCanonicalClassName(value) {
+  const ctor = value?.constructor;
+  if (typeof ctor === 'function' && CANONICAL_CLASS_NAMES.has(ctor)) {
+    return CANONICAL_CLASS_NAMES.get(ctor);
+  }
+  return ctor?.name || 'Object';
+}
 
 // Instance components restored in place, in capture order (nodal layer first
 // so node references elsewhere resolve to node ids).
@@ -102,7 +167,7 @@ function encodeValue(value, ctx) {
     const enc = encodeValue(value[key], ctx);
     if (enc !== SKIP) fields[key] = enc;
   }
-  return isPlainObject(value) ? { __plain: fields, __id: id } : { __obj: fields, __class: value.constructor?.name || 'Object', __id: id };
+  return isPlainObject(value) ? { __plain: fields, __id: id } : { __obj: fields, __class: resolveCanonicalClassName(value), __id: id };
 }
 const encodeOrSkip = (v, ctx) => { const e = encodeValue(v, ctx); return e === SKIP ? { __skip: 1 } : e; };
 

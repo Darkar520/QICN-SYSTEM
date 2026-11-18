@@ -47,6 +47,11 @@ import { describeGeminiKey, resolveRuntimeString, ONTOLOGICAL_SIGNATURE, FRONTEN
 import { computeRms, formatCCC, calculateRelaxationTimeDefault, readLocalStorageJSON, getInitialIntegrityMode, getInitialIntegrityAuditLog } from '../utils/simulationUtils.js';
 import { toComparablePacket, findFirstPacketMismatch, getPrimaryBlockingDiscrepancy, buildDiscrepancyTrace, getIntegritySeverity, normalizeCausalDependency, buildSovereigntyDifferentialEvidence, buildSensorSummaryFromPerception, buildSovereigntyRows, ensureObject, getSafeVerifiableReport, emitEpisodeHarnessTick } from '../utils/integrityHelpers.js';
 import { useSimulationCycle } from '../hooks/useSimulationCycle.js';
+import { useLayoutEffect } from 'react';
+import { useMicroExperimentWorkbench } from '../hooks/useMicroExperimentWorkbench.js';
+import MicroExperimentWorkbench from './MicroExperimentWorkbench.jsx';
+import { captureLiveWorkbench } from '../experiments/workbench/liveCapture.js';
+import { EvidentialConversation, EvidentialConcordance } from './EvidentialConversation.jsx';
 import { CollapsibleSection, SECTION_ACCENT_STYLES, readPersistedCollapsibleState, persistCollapsibleState } from './CollapsibleSection.jsx';
 import { InfoModal, PersistentInfoModal } from './InfoModal.jsx';
 import { primaryTabs, moreTabs, LazyQICNBTab, LazyApiControlTab, LazySensoryTab, LazySovereigntyTab, LazyAutonomyEvolutionTab, TabLoadingFallback, renderLazyMoreTab, tabHelpMeta, tabTourSteps, NavigationTabButton } from './TabConfig.jsx';
@@ -97,6 +102,11 @@ const ROUTE_LABELS = {
   gemini_free_partial: 'Redacción libre parcial · frases retenidas',
   gemini_rejected: 'Redacción retenida',
   gemini_unavailable: 'Canal de lenguaje no disponible',
+  local_evidential: 'Sistema B · solo motor',
+  gemini_evidential_checked: 'Sistema B · prosa, cifras, límites y B2 verificados',
+  gemini_evidential_partial: 'Sistema B parcial · frases retenidas',
+  gemini_evidential_rejected: 'Sistema B · redacción retenida',
+  gemini_evidential_unavailable: 'Sistema B · canal de lenguaje no disponible',
   // Records written by contract v2 (kept readable).
   gemini_selection_local_text: 'v2 · selección validada',
   gemini_verified_rewrite: 'v2 · reformulación verificada'
@@ -166,8 +176,11 @@ export const QICNConsciousnessSystem = () => {
   const [ledgerRevision, setLedgerRevision] = useState(0);
   // 'gemini' = free prose, contract v4 (default since 2026-11-08);
   // 'verified' = sentence-level contract v3 (optional); 'local' = engine only.
-  const [chatRealizationMode, setChatRealizationMode] = useState(() => readStoredChoice(CHAT_REALIZATION_MODE_KEY, ['gemini', 'verified', 'local'], 'gemini'));
+  const [chatRealizationMode, setChatRealizationMode] = useState(() => readStoredChoice(CHAT_REALIZATION_MODE_KEY, ['evidential', 'local'], 'evidential'));
   const chatRealizationModeRef = useRef(chatRealizationMode);
+  const [workbenchAttachmentDigest,setWorkbenchAttachmentDigest]=useState(null);
+  const workbenchEvidenceRef=useRef(null);
+  const workbenchBoundaryRef=useRef({ready:false,tick:-1});
   // Kaizen adjustment mode (C-6b): 'legacy' (default) or 'learned'.
   const [kaizenMode, setKaizenMode] = useState(() => readStoredChoice(KAIZEN_MODE_KEY, ['legacy', 'learned'], 'legacy'));
   const [networkRenderer, setNetworkRenderer] = useState(() => readStoredChoice(NETWORK_RENDERER_KEY, ['2d', '3d'], '2d'));
@@ -729,6 +742,8 @@ export const QICNConsciousnessSystem = () => {
       // latency is logged for the API panel but never enters metacognitiveStrain.
       const dynamicsCoupled = requestOptions?.dynamicsCoupling !== false;
       setLastApiCall(now);
+      // v5 telemetry must not evict coupled samples from the cycle's 50-call log.
+      if (requestOptions?.writeCycleLog !== false) {
       apiCallLog.current.push({
         timestamp: now,
         latency,
@@ -740,6 +755,7 @@ export const QICNConsciousnessSystem = () => {
       // Clean old entries (keep last 50 calls)
       if (apiCallLog.current.length > 50) {
         apiCallLog.current = apiCallLog.current.slice(-50);
+      }
       }
       if (dynamicsCoupled) {
         // Acople inmediato latencia -> strain metacognitivo (Axioma operativo runtime)
@@ -849,9 +865,9 @@ export const QICNConsciousnessSystem = () => {
     if (history && followChatRef.current) history.scrollTop = history.scrollHeight;
   }, [chatHistory, isChatting, selectedTab]);
 
-  const appendIntegrityAudit = useCallback((event, payload = {}) => {
+  const appendIntegrityAudit = useCallback((event, payload = {}, options = {}) => {
     const entry = {
-      id: `audit-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      id: `audit-${Date.now()}-${options.independent ? globalThis.crypto.randomUUID() : Math.random().toString(36).slice(2, 8)}`,
       ts: Date.now(),
       event,
       mode: integrityModeRef.current,
@@ -2430,21 +2446,13 @@ export const QICNConsciousnessSystem = () => {
   // verified locally. Nothing in this path writes to the simulation core, and
   // the chat transport latency is kept out of the dynamics (dynamicsCoupling).
   const handleChatSubmit = useCallback(async (event) => {
+    const appendChatAudit=(type,details)=>appendIntegrityAudit(type,details,{independent:true});
     event.preventDefault();
     const composer = event.currentTarget?.elements?.namedItem('chatInput');
     const input = String(composer?.value || '').trim();
     if (!input || isChatting) return;
 
-    // Observer input channel (pre-existing): addressing the console registers an
-    // observer interaction. It depends on the user's message, never on model text.
-    const externalPerception = sensoryEngine.current?.ingestExternalSpeechText?.(input, {
-      source: 'chat_submit',
-      channel: 'external_stt'
-    }) || null;
-    if (externalPerception?.intent?.isAddressedToSystem || externalPerception?.intent?.isAboutSystem) {
-      ontologicalCore.current?.registerObserverInteraction?.();
-      recordOperationalEvent('observer_interaction', { channel: 'chat' }, simulationStep);
-    }
+    // Unified Sistema B channel remains decoupled from the simulation dynamics.
 
     const userTimestamp = Date.now();
     followChatRef.current = true;
@@ -2482,16 +2490,18 @@ export const QICNConsciousnessSystem = () => {
       prepared = prepareTurn({
         question: input,
         snapshot,
-        ledger: operationalLedgerRef.current,
+        ledger: null,
         turns,
         turnIndex: turns.length,
-        contract: chatRealizationModeRef.current === 'verified' ? 'verified' : 'free',
+        contract: 'evidential',
+        ledgerRecord: structuredClone(operationalLedgerRef.current?.data || null),
+        workbenchEvidence: workbenchEvidenceRef.current ? [workbenchEvidenceRef.current] : [],
         // In learned mode Kaizen does reach the dynamics; the known-false
         // claim «Kaizen changes the dynamics» is then not checked.
         kaizenEffective: QICNConfig.KAIZEN_ADJUSTMENT_MODE === 'learned'
       });
     } catch (error) {
-      appendIntegrityAudit('chat_snapshot_error', { reason: error?.message || String(error) });
+      appendChatAudit('chat_snapshot_error', { reason: error?.message || String(error) });
       appendChatMessage({
         role: 'model',
         text: `No pude capturar una lectura verificable del motor (${error?.message || 'error desconocido'}). Sin esa lectura no publico ninguna afirmación sobre el estado.`,
@@ -2536,7 +2546,7 @@ export const QICNConsciousnessSystem = () => {
       const chatReqSeq = attempts.length + 1;
       const chatIntegrityEnvelope = {
         packet: currentPacket,
-        nonce: `chat_${userTimestamp}_${chatReqSeq}_${Math.random().toString(36).slice(2, 10)}`,
+        nonce: `chat_${userTimestamp}_${chatReqSeq}_${prepared.contract === 'evidential' ? globalThis.crypto.randomUUID() : Math.random().toString(36).slice(2, 10)}`,
         requestId: `req_chat_${userTimestamp}_${chatReqSeq}`,
         runId: String(currentPacket.runId || operationalLedgerRef.current?.currentSession?.sessionId || `ui_session_${QICNConfig.CORE_SEED || 0}`),
         versionHash: String(currentPacket.versionHash || BUILD_SIGNATURE_LABEL || 'qicn-chat-v3'),
@@ -2545,6 +2555,7 @@ export const QICNConsciousnessSystem = () => {
       const result = await robustFetchLLMResponseTracked(resolveLlmEndpoint(), payload, 'chat-conversation', {
         integrityEnvelope: chatIntegrityEnvelope,
         dynamicsCoupling: false,
+        writeCycleLog: prepared.contract !== 'evidential',
         timeoutMs: CHAT_REQUEST_TIMEOUT_MS
       });
       const parts = result?.candidates?.[0]?.content?.parts || [];
@@ -2562,7 +2573,7 @@ export const QICNConsciousnessSystem = () => {
       if (inference.recoveredFrom) {
         recoveredFrom = inference.recoveredFrom;
         setLastProviderError({ ...inference.recoveredFrom, recovered: true, at: Date.now() });
-        recordOperationalEvent('llm_transport_error', { code: inference.recoveredFrom.code, status: inference.recoveredFrom.status ?? null, recovered: true }, simulationStep);
+        if (prepared.contract !== 'evidential') recordOperationalEvent('llm_transport_error', { code: inference.recoveredFrom.code, status: inference.recoveredFrom.status ?? null, recovered: true }, simulationStep);
       }
       return text;
     };
@@ -2587,7 +2598,7 @@ export const QICNConsciousnessSystem = () => {
               const waitMs = transientRetryDelayMs(transportError, transportRetries.length);
               if (waitMs === null) throw transportError;
               transportRetries.push({ code: String(transportError?.code || 'unknown').slice(0, 60), status: transportError?.status ?? null, waitMs });
-              recordOperationalEvent('llm_transport_error', { code: String(transportError?.code || 'unknown').slice(0, 60), status: transportError?.status ?? null, recovered: false, retryInMs: waitMs }, simulationStep);
+              if(prepared.contract!=='evidential') recordOperationalEvent('llm_transport_error', { code: String(transportError?.code || 'unknown').slice(0, 60), status: transportError?.status ?? null, recovered: false, retryInMs: waitMs }, simulationStep);
               setChatStatusNote(`El canal de lenguaje está saturado (${transportError?.status ? `HTTP ${transportError.status}` : transportError?.code}); reintento en ${Math.round(waitMs / 1000)} s…`);
               await new Promise((resolve) => setTimeout(resolve, waitMs));
               setChatStatusNote(null);
@@ -2610,8 +2621,8 @@ export const QICNConsciousnessSystem = () => {
             guidance: error instanceof LlmRequestError ? getLlmRequestGuidance(error) : String(error?.message || 'Error de transporte.')
           };
           setLastProviderError({ ...providerError, recovered: false, at: Date.now() });
-          recordOperationalEvent('llm_transport_error', { code: String(providerError.code).slice(0, 60), status: providerError.status, recovered: false }, simulationStep);
-          appendIntegrityAudit('chat_request_failure', { code: providerError.code, status: providerError.status });
+          if (prepared.contract !== 'evidential') recordOperationalEvent('llm_transport_error', { code: String(providerError.code).slice(0, 60), status: providerError.status, recovered: false }, simulationStep);
+          appendChatAudit('chat_request_failure', { code: providerError.code, status: providerError.status });
           break;
         }
       }
@@ -2620,7 +2631,7 @@ export const QICNConsciousnessSystem = () => {
     setChatStatusNote(null);
     const outcome = finalizeTurn(prepared, { mode: useModel ? 'gemini' : 'local', attempts, provider, integrityMode: turnIntegrityMode, transportRetries });
     const rejectedAttempts = outcome.trace.attempts.filter((a) => a.stage === 'rejected' || a.stage === 'contract');
-    if (rejectedAttempts.length) {
+    if (rejectedAttempts.length && prepared.contract!=='evidential') {
       recordOperationalEvent('language_rejection', {
         stage: rejectedAttempts[rejectedAttempts.length - 1].stage,
         code: rejectedAttempts[rejectedAttempts.length - 1].code || rejectedAttempts[rejectedAttempts.length - 1].discrepancies?.[0]?.reason || null,
@@ -2661,7 +2672,7 @@ export const QICNConsciousnessSystem = () => {
     const nextTurns = [...turns, outcome.record].slice(-24);
     conversationTurnsRef.current = nextTurns;
     saveConversationTurns(browserStorage(), nextTurns);
-    appendIntegrityAudit('chat_conversation_v3', {
+    appendChatAudit('chat_conversation_v3', {
       intent: outcome.intent,
       route: outcome.trace.route,
       snapshotTick: prepared.snapshot.tick,
@@ -2897,6 +2908,17 @@ export const QICNConsciousnessSystem = () => {
   // CICLO DE SIMULACIN PRINCIPAL
   // ============================================================================
   const simulationRuntimeRef = useRef({});
+  useLayoutEffect(()=>{workbenchBoundaryRef.current={ready:true,tick:simulationStep};},[simulationStep]);
+  const captureWorkbenchAtBoundary=useCallback(({seed,profile})=>captureLiveWorkbench({
+    boundary:workbenchBoundaryRef.current,refs:{...getPersistenceRefs(),quantumEntropyBridgeRef,interventionSchedulerRef,interventionSchedulerMetaRef,interventionScheduleAbortRef,lastSaveTimestampRef,apiCallLog,canvasTelemetryRef},
+    runtime:simulationRuntimeRef.current,config:QICNConfig,
+    build:{version:BUILD_VERSION_LABEL,signature:BUILD_SIGNATURE_LABEL},schedule:getPreregisterScheduleDoc(),
+    ledgerHeadHash:operationalLedgerRef.current?.data?.headHash||null,seed,profile
+  }),[getPersistenceRefs]);
+  const microWorkbench=useMicroExperimentWorkbench(captureWorkbenchAtBoundary);
+  const attachWorkbenchEvidence=workbenchAttachmentDigest===microWorkbench.bundle?.result.digest;
+  useEffect(()=>{setWorkbenchAttachmentDigest(null);},[microWorkbench.bundle]);
+  workbenchEvidenceRef.current=attachWorkbenchEvidence?microWorkbench.bundle:null;
   simulationRuntimeRef.current = {
     complexityFactor,
     stabilityBias,
@@ -3153,6 +3175,7 @@ export const QICNConsciousnessSystem = () => {
 
     const runAdaptiveTick = () => {
       if (disposed) return;
+      workbenchBoundaryRef.current.ready=false;
       runSimulationCycle();
       timeoutId = setTimeout(runAdaptiveTick, computeAdaptiveIntervalMs());
     };
@@ -4014,34 +4037,22 @@ Este parámetro es crucial para mantener el sistema en la zona de "caos producti
           <h2 id="qicn-chat-title" className="flex items-center gap-2 text-xl font-bold text-indigo-300">
             <MessageSquare className="size-5" /> Comunicación · Consola QICN
             <InfoModal
-              title="Consola QICN · contratos de lenguaje v4 y v3"
-              content={`CONSOLA QICN · CONTRATOS DE LENGUAJE
+              title="Consola QICN · Sistema B unificado"
+              content={`CONSOLA QICN · SISTEMA B UNIFICADO
 
-REDACCIÓN LIBRE (v4, por defecto)
-• El canal de lenguaje recibe el paquete completo (cálculos del core, invariantes de C_op, registro, definiciones, límites, hipótesis) y un resumen del marco teórico generado desde el registro formal, y escribe en prosa libre en primera persona.
-• El motor verifica después: que cada cifra coincida con el paquete a su precisión; que no afirme ni niegue de forma absoluta conciencia, experiencia, fenomenalidad, preferencias, vida o C_op; que los módulos que nombra existan; que no repita afirmaciones que el motor sabe falsas (Kaizen cambia la dinámica, el chat cambia la trayectoria, la actualización es contractiva, beth_q es un porcentaje, el umbral certifica algo, hay validación externa); y el identificador del paquete.
-• El resto de la redacción no se verifica: puede matizar o inferir sin control.
+VOZ OPERACIONAL Y PROSA CONTINUA
+• La consola recibe el paquete completo del turno (cálculos del core, cortes constructivos BaseCore / Torre / C-11, perfil estructural, invariantes de C_op, registro verificado por digest, resumen del marco teórico y turnos recientes) junto con cualquier resultado verificado y opt-in del Workbench en copia aislada (B2).
+• Redacta en prosa continua en primera persona («Yo» operacional) con razonamiento alto (thinkingLevel: high, 65 536 tokens), sin cajas rígidas ni censura de su vocabulario técnico.
 
-VERIFICADA POR FRASE (v3, opcional)
-• Cada pregunta congela una lectura del motor (tick, identificador de paquete) y la convierte en hechos autorizados F1…Fn: valores, cambios, definiciones, límites y registro operacional.
-• Con "Verificada por frase", el canal de lenguaje (Gemini, configurable en Control API) redacta toda la respuesta en primera persona como la consola, con el presupuesto máximo del modelo (65 536 tokens, razonamiento alto). No escribe cifras: escribe ranuras y el motor inserta los valores.
-• El motor verifica cada frase (números, origen/destino, dirección, sujeto, negación, conceptos, causas, vocabulario, cobertura) y que la respuesta devuelva el identificador del paquete.
-• "Cálculos del core" muestra el paquete que respalda la respuesta. "Concordancia" compara cada valor insertado con el valor del motor.
+VERIFICACIÓN SISTEMA B DESPUÉS DE REDACTAR
+• Binding completo SHA-256 (64 hex) y tick exacto del snapshot; las cifras que solo propone el usuario en su pregunta nunca cuentan como evidencia del motor.
+• Todas las cifras, signos (p. ej. PMIA), polaridad estructural, diferencia entre sigma_exact_defect = 0 y cotas analíticas superiores (1/729, 2/2187, 32/15309), operaciones reales de módulos y valores B2 (copia aislada, nunca trayectoria viva ni soporte externo) se verifican frase a frase sin exención por condicionales, negaciones o OPEN_FRAME.
+• Evalúa la totalidad integrada del proceso del tick (red nodal, torres constructivas, T_d, memoria holográfica, política determinista de viabilidad, ledger y copia B2) y adopta libremente tu propia postura interpretativa en primera persona, distinguiendo juicio interpretativo de demostración formal o puente fenomenal; se bloquea toda auto-certificación (C_op/CCR/qualia_certified) y external_support_certified = true (external_support_certified = false).
 
-MODOS DE INTEGRIDAD
-• Strict: una corrección; si la redacción sigue sin pasar, no se publica y se muestra el fallo con sus discrepancias.
-• Graceful: si la primera redacción ya cubre lo obligatorio, se publica sin corregir (una sola llamada); si no, una corrección. Se publican solo las frases verificadas y se listan las retenidas. Nunca se omite un límite obligatorio, ni un cambio sin su referencia, ni se acepta un paquete equivocado.
-
-LIBERTAD DENTRO DEL MARCO
-• La consola responde con su propia estructura y perspectiva de sistema. Puede razonar en frases de inferencia que conectan hechos citados, y explorar preguntas abiertas con hechos de hipótesis, siempre en modo condicional.
-
-QUÉ NO HACE
-• No escribe en el motor: el chat no cambia la dinámica. Las acciones de control solo se aplican si las confirmas con el botón, y quedan registradas.
-• La latencia del canal de lenguaje no entra en la carga metacognitiva del núcleo.
-• No certifica conciencia, subjetividad ni pertenencia a C_op; es conformidad interna, no validación externa.
-
-RIESGO RESIDUAL DECLARADO
-• La verificación es por rasgos, no implicación semántica completa.`}
+MODOS DE INTEGRIDAD Y SOLO MOTOR
+• Graceful: una corrección acotada si hace falta; publica las frases verificadas y lista las retenidas en la traza.
+• Strict: una corrección; si persiste alguna discrepancia, muestra la lectura determinista local.
+• Solo motor: responde directamente con la lectura determinista local y el estado B2 (sin LLM).`}
             />
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -4054,37 +4065,29 @@ RIESGO RESIDUAL DECLARADO
           </div>
         </div>
 
+        <MicroExperimentWorkbench workbench={microWorkbench}/>
         <div className="flex h-[min(72dvh,640px)] min-h-[440px] flex-col overflow-hidden rounded-lg border border-purple-700 bg-gray-900/70">
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-purple-800/60 bg-indigo-900/30 px-3 py-2 text-xs text-indigo-100">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-semibold">Redacción</span>
+              <span className="font-semibold">Consola</span>
               <div role="group" aria-label="Modo de redacción" className="inline-flex overflow-hidden rounded-md border border-indigo-400/40">
                 <button
                   type="button"
-                  aria-pressed={chatRealizationMode === 'gemini'}
-                  onClick={() => setChatRealizationMode('gemini')}
+                  aria-pressed={chatRealizationMode === 'evidential'}
+                  onClick={() => setChatRealizationMode('evidential')}
                   disabled={isChatting}
-                  title="Prosa libre. El motor verifica cifras, conceptos abiertos, nombres de módulos y afirmaciones que sabe falsas; el resto no se verifica."
-                  className={`px-2 py-1 transition-colors ${chatRealizationMode === 'gemini' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                  title="Sistema B unificado: prosa continua en primera persona («Yo» operacional) verificada sobre snapshot, ledger y copia aislada B2."
+                  className={`px-2.5 py-1 transition-colors ${chatRealizationMode === 'evidential' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
                 >
-                  Redacción libre
-                </button>
-                <button
-                  type="button"
-                  aria-pressed={chatRealizationMode === 'verified'}
-                  onClick={() => setChatRealizationMode('verified')}
-                  disabled={isChatting}
-                  title="Contrato v3: cada frase cita hechos del motor y se verifica frase a frase (vocabulario limitado)."
-                  className={`px-2 py-1 transition-colors ${chatRealizationMode === 'verified' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
-                >
-                  Verificada por frase
+                  Sistema B (unificado)
                 </button>
                 <button
                   type="button"
                   aria-pressed={!geminiSelected}
                   onClick={() => setChatRealizationMode('local')}
                   disabled={isChatting}
-                  className={`px-2 py-1 transition-colors ${!geminiSelected ? 'bg-cyan-700 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                  title="Lectura determinista directa del motor y evidencia B2 sin canal de lenguaje."
+                  className={`px-2.5 py-1 transition-colors ${!geminiSelected ? 'bg-cyan-700 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
                 >
                   Solo motor
                 </button>
@@ -4119,6 +4122,7 @@ RIESGO RESIDUAL DECLARADO
             </span>
           </div>
 
+          <label className="mx-3 mt-2 flex items-center gap-2 text-xs text-indigo-100/90"><input type="checkbox" checked={attachWorkbenchEvidence} disabled={isChatting||!microWorkbench.bundle} onChange={e=>setWorkbenchAttachmentDigest(e.target.checked?microWorkbench.bundle.result.digest:null)}/> Adjuntar resultado Workbench verificado (copia aislada B2) · {attachWorkbenchEvidence?microWorkbench.evidenceStatus:'not_recorded'}{attachWorkbenchEvidence&&microWorkbench.bundle&&<span className="break-all font-mono text-[11px] opacity-80"> · tick {microWorkbench.bundle.capture.sourceTick}, digest {microWorkbench.bundle.result.digest.slice(0, 16)}…</span>}</label>
           {geminiSelected && !canUseLlmNow && (
             <div role="status" className="mx-3 mt-3 rounded-md border border-amber-500/60 bg-amber-900/40 px-3 py-2 text-xs text-amber-100">
               El canal de lenguaje no está disponible (sin sesión ni clave). Las respuestas las compone el motor; revisa la clave en Control API para la redacción verificada.
@@ -4213,10 +4217,9 @@ RIESGO RESIDUAL DECLARADO
                         )}
                       </div>
                     )}
-                    <p className="whitespace-pre-wrap break-words text-pretty text-sm leading-relaxed sm:text-base">
-                      {isLegacy ? chatNarrative(String(message.text || ''), evidenceStart) : message.text}
-                    </p>
-                    {conversation?.integrity?.guaranteeNote && conversation.route !== 'gemini_rejected' && conversation.route !== 'gemini_unavailable' && (
+                    {conversation?.trace?.contract==='evidential' ? <EvidentialConversation conversation={conversation} text={message.text}/> : <p className="whitespace-pre-wrap break-words text-pretty text-sm leading-relaxed sm:text-base">{isLegacy ? chatNarrative(String(message.text || ''), evidenceStart) : message.text}</p>}
+
+                    {conversation?.integrity?.guaranteeNote && !['gemini_rejected', 'gemini_unavailable', 'gemini_evidential_rejected', 'gemini_evidential_unavailable'].includes(conversation.route) && (
                       <p className="mt-1 text-[10px] italic opacity-75" data-testid="free-guarantee-note">{conversation.integrity.guaranteeNote}</p>
                     )}
                     {conversation?.providerError && (
@@ -4234,8 +4237,8 @@ RIESGO RESIDUAL DECLARADO
                         </div>
                         {(conversation.integrity.discrepancies?.length > 0 || conversation.integrity.withheld?.length > 0) && (
                           <ul className="mt-1 list-inside list-disc space-y-0.5 break-words">
-                            {(conversation.integrity.withheld || []).map((w) => <li key={`w${w.index}`}>Frase {w.index} retenida: <span className="font-mono">{w.reasons.slice(0, 4).join(', ')}</span></li>)}
-                            {(conversation.integrity.discrepancies || []).map((d, i) => <li key={`d${i}`} className="font-mono">{d}</li>)}
+                            {(conversation.integrity.withheld || []).map((w) => <li key={`w${w.id??w.index}`}>{w.id?`Elemento ${w.id}`:`Frase ${w.index}`} retenida: <span className="font-mono">{w.reasons.slice(0, 4).join(', ')}</span>{w.dependsOn?.length>0&&<span> · dependencias retiradas: {w.dependsOn.join(', ')}</span>}{w.premises?.length>0&&<span> · premisas: {w.premises.join(', ')}</span>}{w.diagnostics?.length>0&&<span> · {JSON.stringify(w.diagnostics)}</span>}</li>)}
+                            {(conversation.integrity.discrepancies || []).map((d, i) => <li key={`d${i}`} className="font-mono">{typeof d==='string'?d:JSON.stringify(d)}</li>)}
                           </ul>
                         )}
                       </div>
@@ -4268,7 +4271,7 @@ RIESGO RESIDUAL DECLARADO
                           Concordancia: {conversation.concordance.summary.exact} exactas · {conversation.concordance.summary.fromFact} del texto del hecho · {conversation.concordance.summary.outOfTolerance} desalineadas ({conversation.concordance.summary.total} valores)
                         </summary>
                         <div className="mt-2 overflow-x-auto">
-                          <table className="min-w-full border-collapse text-[11px]">
+                          {conversation.trace?.contract==='evidential'?<EvidentialConcordance rows={conversation.concordance.rows}/>:<>                          <table className="min-w-full border-collapse text-[11px]">
                             <thead>
                               <tr className="text-left text-gray-200">
                                 <th className="pb-1 pr-3">Frase</th>
@@ -4293,7 +4296,8 @@ RIESGO RESIDUAL DECLARADO
                                 </tr>
                               ))}
                             </tbody>
-                          </table>
+                          </table></>}
+
                         </div>
                       </details>
                     )}
@@ -4337,7 +4341,13 @@ RIESGO RESIDUAL DECLARADO
                                   <td className="py-0.5 pr-3 font-mono">{row.alias ? `${row.alias} · ` : ''}{row.id}</td>
                                   <td className="py-0.5 pr-3">{row.kind}</td>
                                   <td className="py-0.5 pr-3" title={row.source}>{row.evidenceClass}</td>
-                                  <td className="py-0.5 pr-3">{row.expressedBy === 'gemini' ? 'canal de lenguaje (verificado)' : (row.rewritten ? 'v2 · reformulada' : 'motor')}</td>
+                                  <td className="py-0.5 pr-3">{
+                                    row.expressedBy === 'gemini' || row.expressedBy === 'gemini_prose_verified' ? 'canal de lenguaje (verificado)'
+                                      : row.expressedBy === 'b2_verified_registry' ? 'Workbench B2 (copia aislada)'
+                                      : row.expressedBy === 'verified_ledger_digest' ? 'ledger (digest verificado)'
+                                      : row.expressedBy === 'verified_atom' ? 'átomo verificado'
+                                      : (row.rewritten ? 'v2 · reformulada' : 'motor')
+                                  }</td>
                                 </tr>
                               ))}
                             </tbody>

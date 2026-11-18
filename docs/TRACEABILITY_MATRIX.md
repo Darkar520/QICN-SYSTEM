@@ -117,9 +117,20 @@ and gate_result contracts are unchanged.
 
 | Surface | Authority/source | Test | Boundary |
 | --- | --- | --- | --- |
-| Typed factual atoms | Full snapshot/ledger binding; metric map in propositions; operation table in definitionCatalog; evidential/factualVerifier | language-factual-verifier.v1 | Availability is not observed causality; bounds are not measurements. |
-| Four-part open reasoning | evidential/claimGrammar, reasoningPlan, epistemicPolicy, realization | language-evidential-contract.v1 | Gemini authors new proposals; valid premises do not certify conclusions. |
-| Optional verified B2 records | evidenceRegistry; pure resultVerifier and trajectoryComparison | language-evidential-contract.v1; language-system-b-compatibility.v1 | Detached copy, not current live trajectory or external support; sham-only interventions are not_recorded. |
-| Compatibility / isolation | Explicit v5 only; original free/verified branches | language-system-b-compatibility.v1; workbench-language-invariance.v1 | v2/v3(87)/v4(95), historical v1 and B4 unchanged; cn4_maxAbsDiff=0. |
+| Typed factual atoms & unified prose verifier | Full snapshot/ledger binding; metric map in propositions; operation table in definitionCatalog; evidential/factualVerifier | language-factual-verifier.v1; language-evidential-contract.v1 | Availability is not observed causality; bounds are not measurements; question numbers are not evidence. |
+| Unified first-person stance & plane separation | evidential/claimGrammar, reasoningPlan, epistemicPolicy, factualVerifier, realization | language-evidential-contract.v1, language-system-b-ui.v1 | Varied operational first-person prose evaluates the integrated tick process with a free interpretive stance explicitly separated from formal proof or external validation; zero 4-box cards, boilerplate openings/closings or forced two-pole neutrality; OPEN_FRAME cannot bypass factual, polarity, clause-scoped external-support, or anti-certification checks. |
+| Optional verified B2 records | evidenceRegistry; pure resultVerifier and trajectoryComparison | language-evidential-contract.v1; language-system-b-compatibility.v1 | Detached copy integrated in prose & `verified_b2` concordance; sham-only interventions stay `not_recorded`. |
+| Compatibility / isolation | Unified UI `evidential` + `Solo motor`; frozen v2/v3/v4 JS contracts unchanged | language-system-b-compatibility.v1; workbench-language-invariance.v1 | v2/v3(87)/v4(95), historical v1 and `prepareTurn` API default unchanged; `cn4_maxAbsDiff=0`. |
 
 Contract and residual semantic limits: LANGUAGE_SYSTEM_B_CONTRACT_V5.md.
+
+## B4-B5 browser and chat traceability
+
+All support below is internal_support_only with external_support_certified=false.
+
+| Surface | Modules | Verification | Boundary |
+| --- | --- | --- | --- |
+| Observational committed-tick capture | liveCapture; useMicroExperimentWorkbench; SimulationEngine | workbench-browser-client.v1 | No live RNG, sensor stream, clock continuation, callbacks or ledger writer transferred |
+| Worker and build pin | browserClient; microExperiment.worker; build.cjs; sync-netlify-assets; persistence/dynamicState | workbench-worker-packaging.v1; browser-workbench.v1 | Detached graph; wrong/stale build rejected; WeakMap/keepNames class identity; browser CDP suite passes in Node v24.6.0 |
+| Unified Sistema B chat, evidence and concordance | SimulationEngine; EvidentialConversation | language-system-b-ui.v1; browser-workbench.v1 | Chat defaults to unified Sistema B (first-person continuous prose + B2 concordance + `Solo motor`); `prepareTurn` API v3 default & frozen v4 modules remain unchanged; live checks remain `internal_support_only` (`external_support_certified=false`) |
+| Quarantine diagnostics | epistemicPolicy; reasoningPlan; factualVerifier; claimGrammar; realization | language-system-b-ui.v1; language-evidential-contract.v1; existing B3 tests | Structured missing/unexpected field and normalized token/pattern repair guidance, never an exception to factual verification |

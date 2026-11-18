@@ -185,3 +185,9 @@ nested paths. They are not invoked, modified or reported PASS in this delivery.
 Default report paths and the protected common module remain intact.
 
 Delivery commands, observed outputs, environment limitations and complete changed-file status: see WORKBENCH_B1_B2_DELIVERY_AUDIT.md.
+
+## B4 browser extension (supersedes B1-B2 deferral)
+
+useMicroExperimentWorkbench and MicroExperimentWorkbench now capture at a safe committed tick and execute the same handler in a browser ESM Worker. liveCapture receives the native graph only for synchronous data copying; no apply-back exists. Active/polling external entropy rejects without changing the provider. Since browser RNG, wall/performance clocks and hardware cursors cannot be captured, execution explicitly starts a fresh synthetic seed/calendar/sensor context and common future tape, with react_commit setters. Neither profile claims exact continuation of the live trajectory. The initial virtual epoch is 1800000000000, not a live clock read.
+
+Cancellation, unmount, supersession and timeout invalidate outstanding operations and terminate workers. Verified immutable bundles alone reach opt-in v5 evidence. Worker and main bundle share a build signature and preserve canonical class identity across separate/minified bundles (`keepNames: true` + `WeakMap` class registry in `dynamicState.js`); stale/missing worker build metadata rejects. `build.cjs` emits `microExperiment.worker.js`, sync copies it to root, and the cleanup/no-op `sw.js` neither intercepts nor caches its requests. Status and diagnostics label the source tick/hash and copy scope. The real-browser CDP test (`browser-workbench.v1`) and local live-runtime checks pass (`Node v24.6.0`, `internal_support_only`, `external_support_certified = false`); Node `22.x` local parity remains pending.

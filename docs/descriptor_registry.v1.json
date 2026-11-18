@@ -36,7 +36,8 @@
       "batch_primary",
       "batch_derived",
       "mixed",
-      "external_frozen"
+      "external_frozen",
+      "internal_support_only"
     ],
     "external_dependency": [
       "none",
@@ -882,6 +883,75 @@
       "status": "documented_partial",
       "non_claim_boundary": "Standalone helpers may use synthetic defaults; their outputs are not recorded run or batch artifacts and do not imply external validation.",
       "notes_gaps": "NC5-NC12 and planning helpers are exported and tested in isolation; default traces and graphs can be synthetic. No automatic integration with NC1-NC4 batch enforcement was found."
+    },
+    {
+      "id": "AO_browser_workbench",
+      "source_module": [
+        "src/hooks/useMicroExperimentWorkbench.js",
+        "src/components/MicroExperimentWorkbench.jsx",
+        "src/experiments/workbench/browserClient.js",
+        "src/experiments/workbench/liveCapture.js",
+        "src/workers/microExperiment.worker.js"
+      ],
+      "source_artifact": [
+        "qicn.workbench_capture.v1",
+        "qicn.workbench_protocol.v1",
+        "qicn.workbench_result.v1"
+      ],
+      "source_signals": [
+        "captured source tick",
+        "isolated trajectory comparisons",
+        "experimental chain digests"
+      ],
+      "test_anchors": [
+        "tests/workbench-browser-client.v1.test.mjs",
+        "tests/workbench-worker-packaging.v1.test.mjs",
+        "tests/browser-workbench.v1.test.mjs"
+      ],
+      "external_dependency": "none",
+      "kind": "artifact_only",
+      "layer": "runtime_derived",
+      "downstream_artifacts": [],
+      "gate_dependencies": [],
+      "claim_projection_dependencies": [],
+      "evidence_scope": "internal_support_only",
+      "status": "documented_partial",
+      "non_claim_boundary": "Internal copy/language audit only; external_support_certified=false. Not live primary evidence, external validation, claim_projection or gate_result.",
+      "notes_gaps": "UI integrated, bundled worker verified with keepNames/WeakMap canonical class mapping, and real-browser CDP test (`browser-workbench.v1`) passed in Node v24.6.0. Node 22.x local parity and external validation remain not_recorded."
+    },
+    {
+      "id": "AO_system_b_chat_ui",
+      "source_module": [
+        "src/components/SimulationEngine.jsx",
+        "src/components/EvidentialConversation.jsx",
+        "src/language/evidential/epistemicPolicy.js",
+        "src/language/evidential/reasoningPlan.js",
+        "src/language/evidential/factualVerifier.js",
+        "src/language/evidential/realization.js"
+      ],
+      "source_artifact": [
+        "qicn.language_realization.v5"
+      ],
+      "source_signals": [
+        "first-person evidential prose",
+        "verified snapshot and B2 clone concordance",
+        "first-person interpretive plane-separation and anti-certification verification"
+      ],
+      "test_anchors": [
+        "tests/language-system-b-ui.v1.test.mjs",
+        "tests/language-evidential-contract.v1.test.mjs",
+        "tests/workbench-language-invariance.v1.test.mjs"
+      ],
+      "external_dependency": "external_service",
+      "kind": "artifact_only",
+      "layer": "runtime_derived",
+      "downstream_artifacts": [],
+      "gate_dependencies": [],
+      "claim_projection_dependencies": [],
+      "evidence_scope": "internal_support_only",
+      "status": "documented_partial",
+      "non_claim_boundary": "Internal copy/language audit only; external_support_certified=false. Not live primary evidence, external validation, claim_projection or gate_result.",
+      "notes_gaps": "Unified first-person Sistema B UI integrated (zero 4-box segmentation; high thinking preserved; continuous prose + snapshot/B2 concordance + Solo motor), verified by browser CDP (`browser-workbench.v1`) and Node v24.6.0 tests. Real Gemini probes remain exploratory internal checks (`external_support_certified=false`); Node 22.x local parity remains pending."
     }
   ]
 }

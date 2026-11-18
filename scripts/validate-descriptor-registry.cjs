@@ -56,7 +56,8 @@ const EXPECTED_ENUMS = Object.freeze({
     'batch_primary',
     'batch_derived',
     'mixed',
-    'external_frozen'
+    'external_frozen',
+    'internal_support_only'
   ]),
   external_dependency: new Set([
     'none',

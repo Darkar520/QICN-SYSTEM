@@ -345,11 +345,16 @@ See WORKBENCH_EXECUTION_CONTRACT.md and tests/workbench-*.v1.test.mjs. The legac
 
 ## B3 language publication controls
 
-Optional v5 publication (checked/partial/rejected) is a language route, not an
-admissibility gate_result or batch_enforcement. Its typed facts, open proposals,
-scope policy and dependency-safe graceful controls do not change NC1-NC12,
-run_verdict or roeo_enforcement_report.json. Verified B2 interventions remain
-internal copy records; they cannot become external support through a language
-label. Historical v1 CN-3=false remains unchanged. The expanded language
-invariance test covers v5 valid/rejected/corrected/graceful turns with zero
-numeric/state/action/cursor divergence. See LANGUAGE_SYSTEM_B_CONTRACT_V5.md.
+Unified Sistema B publication (checked/partial/rejected) is a language route, not an
+admissibility gate_result or batch_enforcement. Its full 64-hex snapshot binding,
+first-person continuous prose verifier, optional typed atoms, first-person interpretive plane-separation and anti-certification policy
+and B2 copy concordance controls do not change NC1-NC12, run_verdict or
+roeo_enforcement_report.json. Verified B2 interventions remain internal copy
+records; they cannot become external support through prose. Historical v1 CN-3=false
+remains unchanged. The expanded language invariance test covers v5
+valid/affirmative/negative/rejected/correction/graceful turns with zero numeric/state/action/cursor
+divergence. See LANGUAGE_SYSTEM_B_CONTRACT_V5.md.
+
+## B4-B5 UI isolation controls
+
+The browser panel copies only a completed, React-committed tick and rejects active external entropy. Both profiles declare fresh synthetic future RNG/calendar/sensors; legacy formulas are retained without claiming live external cursor continuation. Sham is mandatory, genuine intervention availability excludes sham-only records, cancellation/timeouts terminate the worker, stale responses/builds reject, and there is no apply-back. v5 evidence attachment is explicit and immutable. New browser/packaging tests do not change run_verdict, NC1-NC12, batch_enforcement or historical v1 CN-3=false. See WORKBENCH_SYSTEM_B_B4_B5_DELIVERY_AUDIT.md.

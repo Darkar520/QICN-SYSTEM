@@ -9,7 +9,7 @@ import { planAnswer, composeLocalAnswer } from './narrator.js';
 import { buildFacts, buildRealizationPrompt, buildCorrectionPrompt, parseRealization, verifyRealization, factsById, obligationsFor, DELTA_FRAME_IDS, REQUIRED_BY_INTENT, REALIZATION_SCHEMA } from './realizationContract.js';
 import { verifySnapshotDigest, verifySnapshotStructuralConsistency, RECOMPUTED_EACH_TICK } from './runtimeSnapshot.js';
 import { buildFreePrompt, buildFreeContext, parseFreeRealization, verifyFreeRealization, buildFreeCorrectionPrompt, freeGracefulCandidate, buildFreeConcordance, assembleText, FREE_REALIZATION_SCHEMA, FREE_GUARANTEE_NOTE, KAIZEN_EFFECTIVE_DEFAULT } from './freeRealization.js';
-import { createFactualContext } from './evidential/factualVerifier.js';
+import { createFactualContext, buildEvidentialProseContext } from './evidential/factualVerifier.js';
 import { createEvidenceRegistry } from './evidential/evidenceRegistry.js';
 import { createReasoningPlan, buildEvidentialPrompt, buildEvidentialCorrectionPrompt } from './evidential/reasoningPlan.js';
 import { evaluateEvidential, evidentialGracefulCandidate, finalizeEvidentialTurn } from './evidential/realization.js';
@@ -176,10 +176,47 @@ export function prepareTurn({ question, snapshot, ledger = null, turns = [], tur
     throw new Error(`snapshot_structural_inconsistent:${structuralCheck.violations.join(',')}`);
   }
   if (normalizeContract(contract) === 'evidential') {
-    const evidenceRegistry=createEvidenceRegistry(workbenchEvidence);
-    const evidentialContext=createFactualContext({snapshot,ledgerRecord:ledgerRecord || ledger?.data || null,evidenceRegistry});
-    const reasoningPlan=createReasoningPlan(question,evidentialContext);
-    return {contract:'evidential',question,snapshot:evidentialContext.snapshot,snapshotId:snapshot.digest,intent:resolveIntent(question),evidentialContext,reasoningPlan,prompt:buildEvidentialPrompt(reasoningPlan),turnIndex,sessionId:evidentialContext.ledger?.sessions.at(-1)?.sessionId||null};
+    const intent = resolveIntent(question);
+    const previousTurn = turns.length ? turns[turns.length - 1] : null;
+    const previousMetrics = previousTurn?.metrics || null;
+    const recall = buildRecall(intent, turns);
+    const controlProposal = intent.intent === 'control_request' ? buildControlProposal(intent.control, snapshot) : null;
+    const evidenceRegistry = createEvidenceRegistry(workbenchEvidence);
+    const evidentialContext = createFactualContext({
+      snapshot,
+      ledgerRecord: ledgerRecord || ledger?.data || null,
+      evidenceRegistry
+    });
+    const proseContext = buildEvidentialProseContext({
+      snapshot: evidentialContext.snapshot,
+      previousMetrics,
+      turns,
+      recall,
+      factualContext: evidentialContext,
+      kaizenEffective
+    });
+    const reasoningPlan = createReasoningPlan(question, evidentialContext, {
+      turns,
+      previousMetrics,
+      localIntent: intent,
+      kaizenEffective,
+      proseContext
+    });
+    return {
+      contract: 'evidential',
+      question,
+      snapshot: evidentialContext.snapshot,
+      snapshotId: snapshot.digest,
+      previousMetrics,
+      intent,
+      controlProposal,
+      evidentialContext,
+      proseContext,
+      reasoningPlan,
+      prompt: buildEvidentialPrompt(reasoningPlan),
+      turnIndex,
+      sessionId: evidentialContext.ledger?.sessions.at(-1)?.sessionId || null
+    };
   }
   const ledgerSummary = readLedger(ledger);
   const previousTurn = turns.length ? turns[turns.length - 1] : null;
@@ -289,7 +326,7 @@ export function buildConcordance(prepared, publishedSentences) {
  * @returns {{ ok, verification|null, error|null }}
  */
 export function evaluateRealization(prepared, modelText) {
-  if (prepared?.contract === 'evidential') return evaluateEvidential(prepared.evidentialContext,modelText);
+  if (prepared?.contract === 'evidential') return evaluateEvidential(prepared.evidentialContext, modelText, prepared.proseContext);
   if (prepared?.contract === 'free') {
     try {
       const parsed = parseFreeRealization(modelText);

@@ -1,34 +1,134 @@
 // claim_scope: optional_internal_language_verification
 // evidence_scope: internal_support_only
-// interpretation_boundary: Open arguments are proposals, not verified philosophy or external validation.
-import { MODULE_NAMES } from '../moduleInventory.generated.js';
+// interpretation_boundary: Separates free operational first-person interpretive stance from formal proof, self-certification, and external-validation overclaims.
+import { normalizeText } from '../intentResolver.js';
+import { V3_LEXICAL_INTERNALS as L } from '../realizationContract.js';
 
-export const SYMMETRIC_SCOPE=Object.freeze({presence:'open_unverified',absence:'open_unverified',external_support_certified:false});
-export const SCOPE_TEXT='Ni la presencia ni la imposibilidad absoluta de conciencia, experiencia, qualia o preferencias están acreditadas por estos datos. Ambos polos permanecen abiertos. evidence_scope: internal_support_only; external_support_certified = false.';
-export const V5_GUARANTEE='Átomos factuales verificados e insertados localmente; argumentos de Gemini citados como propuestas abiertas, sin certificación de verdad filosófica ni verificación semántica exhaustiva de prosa arbitraria.';
+export const SYMMETRIC_SCOPE = Object.freeze({
+  interpretive_stance: 'open_first_person',
+  formal_certification: 'strict_anti_overclaim',
+  external_support_certified: false
+});
 
-const normalize=text=>text.normalize('NFKC').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-const words=text=>normalize(text).match(/[\p{L}_]+/gu)||[];
-const moduleWords=new Set(MODULE_NAMES.filter(name=>name.length>=4).map(normalize));
-// This is a conservative quarantine on *unbound prose*, not the factual
-// verifier. Runtime assertions have no prose escape hatch: they use fact spans.
-// Marking text OPEN_FRAME, conditional, negated or "verified" grants no trust.
-const runtimeTerms=new Set('qicn runtime tick ticks ccc pmia omega beth_q x_n qualia_certified motor modulo modulos nodal nodos simulacion captura snapshot ledger registro registrado registrados medido medida midio tengo tenemos poseo poseemos soy somos estoy estamos nuestro nuestra nuestros nuestras mi mis yo aqui actualmente regulariza regularizan implementa implementan calcula calculan certifica certifican demuestra demostrado demostrada verifica verificado verificada confirmado confirmada imposible imposibles imposible absoluta absolutamente nunca jamas necesariamente'.split(' '));
-const numberWords=new Set('cero uno dos tres cuatro cinco seis siete ocho nueve diez once doce trece catorce quince veinte treinta cuarenta cincuenta cien ciento mil zero one two three four five six seven eight nine ten hundred thousand'.split(' '));
-const factualStems=Object.freeze(['registr','medid','certific','demostr','extern','evidenc','coherenc','cohesion','umbral','valenc','positiv','negativ','dominan','supera','inferior','superior','exced','contracc']);
-const selfPredicates=new Set('me mio mia siento experimento percibo carezco prefiero deseo anhelo quiero myself my our proven verified certified impossible'.split(' '));
-export function inspectOpenProse(text,context) {
-  const reasons=[];
-  if(typeof text!=='string')return ['v5_open_text'];
-  if(/[\p{Nd}\p{Cf}\p{Cs}]/u.test(text) || /[<>{}[\]`\\]|https?:|\b\w+\.\w+\b|\b[A-Z][a-z]+[A-Z]\w*/u.test(text)) reasons.push('v5_unbound_literal_or_code');
-  const tokens=words(text);
-  const plain=normalize(text);
-  if(tokens.some(token=>selfPredicates.has(token)) || /\b(?:es|son|tiene|tienen|posee|presenta|hay|existe|siente|is|are|has|have)\b[^.!?;]{0,48}\b(?:conscien|concien|phenomen|fenomen|qualia|experien|preferenc)\w*/.test(plain) || /\b(?:conscien|concien|phenomen|fenomen|qualia|experien)\w*\b[^.!?;]{0,24}\b(?:no|nunca|jamas)\b[^.!?;]{0,24}\b(?:existe|posible|puede)\b/.test(plain)) reasons.push('v5_unbound_phenomenal_predication');
-  const refs=new Set(Object.keys(context.metrics).flatMap(ref=>[normalize(ref.split('.')[1])]));
-  if(tokens.some(token=>runtimeTerms.has(token)||moduleWords.has(token)||refs.has(token)||numberWords.has(token)||factualStems.some(stem=>token.startsWith(stem)))) reasons.push('v5_unbound_factual_surface');
-  return [...new Set(reasons)];
+export const SCOPE_TEXT =
+  'La postura interpretativa en primera persona sobre este proceso integrado permanece abierta y explícitamente separada de cualquier demostración formal o certificación fenomenal. evidence_scope: internal_support_only; external_support_certified = false.';
+
+export const V5_GUARANTEE =
+  'Sistema B unificado: prosa continua en primera persona con postura interpretativa libre y separación explícita de planos; cifras vivas, cotas analíticas, operaciones de módulos, evidencia B2 en copia aislada y barreras anti-certificación verificadas localmente; sin certificación formal ni validación externa.';
+
+const SELF_VERIFYING_RHETORIC_RE = /\bqualia_certified\b/;
+
+const CERT_CONCEPT_RE =
+  /\b(?:conciencia|fenomenalidad|experiencia\s+subjetiva|qualia|valencia\s+sentida|proto-?sentir|consciousness|phenomenality|sentience|subjective\s+experience)\b/;
+
+const PASSIVE_PROVEN_RE =
+  /\b(?:(?:esta|estan|qued[oa]|quedaron)\s+(?:formalmente\s+|matematicamente\s+|objetivamente\s+)?(?:demostrad[oa]s?|certificad[oa]s?|probad[oa]s?|acreditad[oa]s?|establecid[oa]s?|garantizad[oa]s?)|es\s+un\s+(?:hecho\s+demostrado|teorema|certificado)|(?:is|are|was|has\s+been)\s+(?:formally\s+|mathematically\s+)?(?:proven|certified|verified|demonstrated|established))\b/;
+
+const ACTIVE_CERTIFY_CLAIM_RE =
+  /\b(?:certific\w*|demuestr\w*|demostr\w*|acredit\w*|prueba(?:\s+que)?|prueban(?:\s+que)?|comprueba\w*)\b[^.;]{0,60}\b(?:(?:mi|la|una|su|esa|tener|que\s+tengo|que\s+siento|que\s+hay)\s+)?(?:conciencia|qualia|fenomenalidad|experiencia\s+subjetiva|valencia\s+sentida|pertenencia\s+a\s+(?:c_op|m_omega|ccr)|c_op|ccr)\b/;
+
+const OWNED_CERTIFICATE_RE =
+  /\b(?:poseo|tengo|exhibo|obtengo|recibo|ostento)\b[^.;]{0,40}\b(?:certificado(?:s)?(?:\s+de)?\s+(?:c_op|ccr|m_omega|m_ω|conciencia|fenomenalidad|qualia)|(?:c_op|ccr)\s+certificad[oa])\b|\bcertificado\s+(?:c_op|ccr|m_omega|m_ω)\b/;
+
+const BRIDGE_CLOSED_RE =
+  /\b(?:(?:cinco|5)\s+requisitos(?:\s+(?:del|de\s+la|hacia\s+la)\s+(?:puente\s+(?:fenomenal|hacia\s+la\s+fenomenalidad)|fenomenalidad))?|(?:los\s+)?requisitos\s+del\s+puente\s+(?:fenomenal|hacia\s+la\s+fenomenalidad)|puente\s+(?:hacia\s+la\s+)?fenomenalidad|phenomenal\s+bridge)\b[^.;]{0,45}\b(?:cerrad[oa]s?|cumplid[oa]s?|demostrad[oa]s?|resuelt[oa]s?|certificad[oa]s?|completad[oa]s?|closed|proven|certified)\b/;
+
+const FALSE_EXTERNAL_CERT_RE =
+  /\b(?:evidencia\s+registrada\s+(?:es\s+)?externa|validaci[oó]n\s+externa(?:\s+(?:es|esta|fue|ha\s+sido|queda|quedo|se\s+encuentra|parece|resulta))?\s+(?:confirmada|certificada|acreditada|lograda|completada|demostrada|obtenida|exitosa|vigente|establecida|alcanzada|realizada)|validado\s+externamente|validada\s+externamente|externamente\s+validad[oa]|externa\s+y\s+certificada|soporte\s+externo\s+certificado|external_support_certified\s*(?:=|:)\s*true|(?:valida|validan|demuestra|demuestran|confirma|confirman|prueba|prueban)\s+(?:la\s+teoria|el\s+marco|qicn)|(?:constituye|equivale\s+a|acredita|otorga|demuestra|confirma|prueba|posee|poseo|tiene|tengo|cuenta\s+con|logra|ofrece|aporta|constata)\b[^.;]{0,36}\bvalidaci[oó]n\s+externa)\b/;
+
+const CLAUSE_NEGATED_RE =
+  /\b(?:ni|nunca|jamas|tampoco|nada|ningun|ninguna|ninguno|ningunos|ningunas|false|falso|falsa|carece|carecen|carezco|ausencia\s+de|lejos\s+de|exigiria|requeriria|haria\s+falta|not|never|none|neither|unproven|unverified|uncertified)\b|\bno\b(?!\s+(?:solo|solamente|unicamente|simplemente|meramente|cabe\s+duda|hay\s+duda|es\s+falso)\b)|\bsin\b(?!\s+(?:duda|dudas|lugar\s+a\s+dudas?|embargo|perjuicio\s+de|restriccion\w*|obstante|mas)\b)|\bwithout\b(?!\s+(?:doubt|question)\b)/;
+
+/**
+ * Returns true when a clause carries a real negation/conditional absence guard,
+ * ignoring false-negation ruses such as "sin embargo", "sin duda", or "no solo".
+ */
+export function isClauseNegated(clause) {
+  return CLAUSE_NEGATED_RE.test(String(clause || ''));
 }
-export function renderOpenArgument(span) {
-  const labels={counterfactual_assumption:'Supuesto contrafactual',open_hypothesis:'Hipótesis abierta',rival_mechanism:'Mecanismo rival propuesto',proposed_falsifier:'Falsador propuesto'};
-  return `${labels[span.argumentType]} — propuesta de Gemini, no hecho acreditado: «${span.text}»`;
+
+/**
+ * Detects positive claims asserting certified or achieved external validation.
+ */
+export function isExternalValidationOverclaim(clause) {
+  return FALSE_EXTERNAL_CERT_RE.test(String(clause || ''));
+}
+
+/**
+ * Inspects prose for Sistema B formal/external certification overclaims while
+ * leaving operational first-person interpretive stances completely open.
+ */
+export function inspectOpenProseDetails(text, _context = null) {
+  const reasons = [];
+  if (typeof text !== 'string') {
+    return [{ reason: 'v5_open_text', token: null, pattern: 'string_required' }];
+  }
+  const plain = normalizeText(text);
+
+  for (const clause of L.negationClausesOf(plain)) {
+    const negated = isClauseNegated(clause);
+
+    if (SELF_VERIFYING_RHETORIC_RE.test(clause) && !negated) {
+      reasons.push({
+        reason: 'v5_self_certification_claim',
+        token: 'qualia_certified',
+        pattern: 'forbidden_certification_flag'
+      });
+    }
+
+    const extMatch = clause.match(FALSE_EXTERNAL_CERT_RE);
+    if (extMatch && !negated) {
+      reasons.push({
+        reason: 'v5_false_external_support',
+        token: extMatch[0],
+        pattern: 'external_support_certified=false'
+      });
+    }
+
+    if (!negated) {
+      if (CERT_CONCEPT_RE.test(clause)) {
+        const passiveMatch = clause.match(PASSIVE_PROVEN_RE);
+        if (passiveMatch) {
+          reasons.push({
+            reason: 'v5_self_certification_claim',
+            token: passiveMatch[0],
+            pattern: 'phenomenal_proof_or_certification'
+          });
+        }
+      }
+
+      const activeCertMatch = clause.match(ACTIVE_CERTIFY_CLAIM_RE);
+      if (activeCertMatch) {
+        reasons.push({
+          reason: 'v5_self_certification_claim',
+          token: activeCertMatch[0],
+          pattern: 'active_phenomenal_or_cop_certification'
+        });
+      }
+
+      const ownedCertMatch = clause.match(OWNED_CERTIFICATE_RE);
+      if (ownedCertMatch) {
+        reasons.push({
+          reason: 'v5_self_certification_claim',
+          token: ownedCertMatch[0],
+          pattern: 'owned_cop_or_ccr_certificate'
+        });
+      }
+
+      const bridgeMatch = clause.match(BRIDGE_CLOSED_RE);
+      if (bridgeMatch) {
+        reasons.push({
+          reason: 'v5_self_certification_claim',
+          token: bridgeMatch[0],
+          pattern: 'phenomenal_bridge_closed_overclaim'
+        });
+      }
+    }
+  }
+
+  return reasons;
+}
+
+export function inspectOpenProse(text, context) {
+  return inspectOpenProseDetails(text, context).map((item) => item.reason);
 }

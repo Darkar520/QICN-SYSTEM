@@ -87,7 +87,7 @@ const RULES = [
   { intent: 'identity', weight: 0.9, test: /(que eres|quien eres|que es esto|que es qicn|como te llamas|eres un llm|eres gemini|eres una ia|eres un modelo|tu identidad|presentate)/ },
   { intent: 'capabilities', weight: 0.86, test: /(que puedes hacer|que sabes hacer|para que sirves|capacidades|funciones tienes|que haces|puedes calcular)/ },
   { intent: 'help', weight: 0.8, test: /(\bayuda\b|como funciona|como te uso|como se usa|instrucciones|que te pregunto|que puedo preguntar)/ },
-  { intent: 'limits_claims', weight: 0.84, test: /(limites|limitaciones|que no puedes|validacion externa|esta demostrado|es real|es cierto que|alucin|inventas|garantia|rival hibrido|empate hibrido|obstruccion|reserva informada)/ },
+  { intent: 'limits_claims', weight: 0.84, test: /(limites|limitaciones|alcance|postura|que no puedes|validacion externa|esta demostrado|es real|es cierto que|alucin|inventas|garantia|rival hibrido|empate hibrido|obstruccion|reserva informada)/ },
   { intent: 'history_evolution', weight: 0.82, test: /(evolucion|ha cambiado|cambio desde|cambios|historial|tendencia|ha subido|ha bajado|subio|\bbajo\b(?!\s+(?:c-\d+|el\b|la\b|los\b|las\b|un\b|una\b|su\b|este\b|esta\b|mi\b|tu\b|control|regimen|hipotesis|restriccion))|que ha pasado|transiciones|desde la ultima|desde antes|como ha ido)/ },
   { intent: 'metric_definition', weight: 0.85, test: /(que es|que significa|como se calcula|como calculas|como puedes instanciar|como instancias|que cotas|que pasa en|define|definicion|formula|explica|explicame|para que sirve)/ },
   { intent: 'parameters', weight: 0.8, test: /(parametros?|configuracion|tasa de aprendizaje|hebbian|plasticidad|kaizen|semilla|seed|version|build)/ },

@@ -588,6 +588,7 @@ export const QICNConsciousnessSystem = () => {
       return '';
     }
   });
+  const [editingQuickGeminiKey, setEditingQuickGeminiKey] = useState(false);
   const [customCodexKey, setCustomCodexKey] = useState(() => {
     try {
       return localStorage.getItem(FRONTEND_CODEX_KEY_STORAGE) || '';
@@ -4123,6 +4124,28 @@ MODOS DE INTEGRIDAD Y SOLO MOTOR
           </div>
 
           <label className="mx-3 mt-2 flex items-center gap-2 text-xs text-indigo-100/90"><input type="checkbox" checked={attachWorkbenchEvidence} disabled={isChatting||!microWorkbench.bundle} onChange={e=>setWorkbenchAttachmentDigest(e.target.checked?microWorkbench.bundle.result.digest:null)}/> Adjuntar resultado Workbench verificado (copia aislada B2) · {attachWorkbenchEvidence?microWorkbench.evidenceStatus:'not_recorded'}{attachWorkbenchEvidence&&microWorkbench.bundle&&<span className="break-all font-mono text-[11px] opacity-80"> · tick {microWorkbench.bundle.capture.sourceTick}, digest {microWorkbench.bundle.result.digest.slice(0, 16)}…</span>}</label>
+          {geminiSelected && frontendGeminiEnabled && (!hasFrontendGeminiKey || editingQuickGeminiKey) && (
+            <div className="mx-3 mt-2 flex flex-wrap items-center gap-2 rounded-md border border-cyan-500/40 bg-cyan-950/40 px-3 py-1.5 text-xs text-cyan-100">
+              <span className="shrink-0 font-medium text-cyan-200">API Key Gemini (navegador):</span>
+              <input
+                type="password"
+                value={customGeminiKey}
+                onFocus={() => setEditingQuickGeminiKey(true)}
+                onBlur={() => setEditingQuickGeminiKey(false)}
+                onChange={(e) => setCustomGeminiKey(e.target.value)}
+                aria-label="Clave rápida de API de Gemini en navegador"
+                placeholder="Pega tu clave Gemini (AIza… o AQ.…)"
+                className="min-w-[200px] flex-1 rounded border border-cyan-500/40 bg-gray-900/90 px-2 py-1 font-mono text-xs text-cyan-100 placeholder:text-cyan-200/50 focus:border-cyan-400 focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => handleTabSelect('api-control')}
+                className="shrink-0 rounded border border-cyan-400/50 px-2 py-1 text-[11px] text-cyan-100 hover:bg-cyan-800/40"
+              >
+                Control API
+              </button>
+            </div>
+          )}
           {geminiSelected && !canUseLlmNow && (
             <div role="status" className="mx-3 mt-3 rounded-md border border-amber-500/60 bg-amber-900/40 px-3 py-2 text-xs text-amber-100">
               El canal de lenguaje no está disponible (sin sesión ni clave). Las respuestas las compone el motor; revisa la clave en Control API para la redacción verificada.
@@ -4141,9 +4164,16 @@ MODOS DE INTEGRIDAD Y SOLO MOTOR
                 )}
                 <p className="mt-1 text-amber-200/80">La clave no se ha borrado. Mientras tanto, el motor local sigue respondiendo.</p>
               </div>
-              <button type="button" onClick={() => setLastProviderError(null)} className="shrink-0 rounded border border-amber-400/50 px-2 py-0.5 hover:bg-amber-800/40">
-                Cerrar
-              </button>
+              <div className="flex shrink-0 flex-col gap-1">
+                {frontendGeminiEnabled && (
+                  <button type="button" onClick={() => handleTabSelect('api-control')} className="rounded border border-cyan-400/50 px-2 py-0.5 text-cyan-100 hover:bg-cyan-800/40">
+                    Control API
+                  </button>
+                )}
+                <button type="button" onClick={() => setLastProviderError(null)} className="rounded border border-amber-400/50 px-2 py-0.5 hover:bg-amber-800/40">
+                  Cerrar
+                </button>
+              </div>
             </div>
           )}
 

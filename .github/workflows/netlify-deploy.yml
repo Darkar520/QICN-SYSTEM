@@ -1,0 +1,68 @@
+name: netlify-deploy
+
+on:
+  push:
+    branches: ["main", "codex/workbench-system-b"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: netlify-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy/netlify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: npm
+          cache-dependency-path: "package-lock.json"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle for Netlify
+        env:
+          BUILD_MODE: production
+          APP_ENV: production
+          NODE_ENV: production
+          AUTH_REQUIRED: ${{ vars.AUTH_REQUIRED || 'false' }}
+          FRONTEND_GEMINI_ALLOWED: ${{ vars.FRONTEND_GEMINI_ALLOWED || 'true' }}
+          GEMINI_MODEL_ID: ${{ vars.GEMINI_MODEL_ID || 'gemini-3-flash-preview' }}
+          GEMINI_STRICT_MODEL: ${{ vars.GEMINI_STRICT_MODEL || 'true' }}
+        run: npm run build
+
+      - name: Validate Netlify deploy credentials
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID || vars.NETLIFY_SITE_ID }}
+        run: |
+          if [ -z "$NETLIFY_AUTH_TOKEN" ] || [ -z "$NETLIFY_SITE_ID" ]; then
+            echo "::error::Missing NETLIFY_AUTH_TOKEN or NETLIFY_SITE_ID in GitHub Repository Secrets/Variables."
+            exit 1
+          fi
+
+      - name: Deploy dist and functions to Netlify (production)
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID || vars.NETLIFY_SITE_ID }}
+          NETLIFY_CLI_TELEMETRY_DISABLED: "true"
+        run: |
+          npx --yes netlify-cli@23.9.5 deploy \
+            --prod \
+            --no-build \
+            --dir=dist \
+            --functions=netlify/functions \
+            --site="$NETLIFY_SITE_ID" \
+            --auth="$NETLIFY_AUTH_TOKEN" \
+            --message="GitHub ${GITHUB_REF_NAME}@${GITHUB_SHA::7}"

@@ -66,6 +66,7 @@ for (const marker of [
   'EvidentialConversation conversation={conversation} text={message.text}',
   'EvidentialConcordance rows=',
   'attachWorkbenchEvidence',
+  'Clave rápida de API de Gemini en navegador',
   'responseMimeType: \'application/json\''
 ]) {
   assert.ok(ui.includes(marker), `missing UI marker: ${marker}`);

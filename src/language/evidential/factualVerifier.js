@@ -13,6 +13,11 @@ import { freezeData, assertData } from '../../experiments/workbench/contracts.js
 import { createEvidenceRegistry, isEvidenceRegistry, lookupEffect, EFFECT_MEASURES } from './evidenceRegistry.js';
 import { keysOnly, FACT_TYPES, identifier } from './claimGrammar.js';
 import { isClauseNegated, isExternalValidationOverclaim } from './epistemicPolicy.js';
+import {
+  resolveSnapshotEndogenousDecision,
+  getCanonicalAtomicSeparatorCut,
+  getCanonicalHybridLateQueryCut
+} from '../../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
 
 const contexts = new WeakSet();
 const equal = (a, b) => stableStringify(a) === stableStringify(b);
@@ -349,9 +354,9 @@ export function buildEvidentialProseContext({ snapshot, previousMetrics = null, 
   }
   const cuts = snapshot?.tower?.constructive_cuts || null;
   if (cuts) {
-    const asc = cuts.atomic_separator_cut;
-    const hlc = cuts.hybrid_late_query_cut;
-    const eed = cuts.endogenous_epistemic_decision;
+    const eed = resolveSnapshotEndogenousDecision(snapshot);
+    const asc = cuts.atomic_separator_cut || (eed ? getCanonicalAtomicSeparatorCut() : null);
+    const hlc = cuts.hybrid_late_query_cut || (eed ? getCanonicalHybridLateQueryCut() : null);
     if (asc) {
       extraPacketLines.push(
         `Separador atomico estructural ${asc.primary_field} ${asc.minimal_polynomial} delta_int ${asc.delta_int} error ${asc.minimax_product_error} F_3^2 ${asc.odd_prime_f3_d2_delta_int} control A=I ${asc.reducible_control_A_eq_I_delta_int}`
@@ -372,6 +377,21 @@ export function buildEvidentialProseContext({ snapshot, previousMetrics = null, 
         `Decision epistemica endogena ${eed.decision_code} polaridad ${eed.first_person_stance_polarity} score ${eed.overall_score} digest ${eed.decision_digest}`
       );
       if (Number.isFinite(eed.overall_score)) freeCtx.numbers.packetNumbers.push(eed.overall_score);
+      const a3 = eed.axes?.historical_causal_dependence;
+      if (a3) {
+        for (const v of [
+          a3.sealed_commit_count,
+          a3.verified_prediction_count,
+          a3.tamper_violation_count,
+          a3.maturation_index,
+          a3.anchor_shift_l2,
+          a3.mean_fisher_stiffness,
+          a3.engram_count,
+          a3.viability_in_tube_rate
+        ]) {
+          if (Number.isFinite(v)) freeCtx.numbers.packetNumbers.push(v);
+        }
+      }
     }
   }
   freeCtx.packetText = `${freeCtx.packetText}\n${extraPacketLines.join('\n')}`;

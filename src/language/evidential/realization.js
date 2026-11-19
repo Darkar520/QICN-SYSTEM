@@ -9,6 +9,7 @@ import { planAnswer, composeLocalAnswer } from '../narrator.js';
 import { resolveIntent } from '../intentResolver.js';
 import { MODULE_NAMES } from '../moduleInventory.generated.js';
 import { freezeData } from '../../experiments/workbench/contracts.js';
+import { resolveSnapshotEndogenousDecision } from '../../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
 
 export function verifyEvidentialRealization(parsed, context, proseContext = null) {
   const envelope =
@@ -106,7 +107,7 @@ export function evidentialGracefulCandidate(verification) {
 }
 
 function formatLocalEndogenousDecisionSummary(snapshot) {
-  const eed = snapshot?.tower?.constructive_cuts?.endogenous_epistemic_decision || null;
+  const eed = resolveSnapshotEndogenousDecision(snapshot);
   if (!eed || typeof eed.decision_code !== 'string') return '';
   return `${eed.canonical_first_person_verdict} [decision_code=${eed.decision_code}; decision_digest=${String(eed.decision_digest || '').slice(0, 16)}].`;
 }

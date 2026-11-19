@@ -197,6 +197,45 @@ import { runWorkbench, verifyWorkbenchResult } from '../src/experiments/workbenc
     thought: 'En este estado emerge un proto-sentir operacional con decisión endógena afirmativa AFFIRMATIVE_STRUCTURAL_PRESENCE.'
   });
   assert.equal(evaluateRealization(lesionedTurn, JSON.stringify(falseAffirmativeUnderLesion)).ok, false);
+
+  // Live-driver regression: snapshot captured WITHOUT manually calling core.evaluateEndogenousDecision()
+  // (matching live browser SimulationCycleDriver, which preserves B0 snapshot bytes).
+  const liveCore = new OntologicalSingularityCore();
+  liveCore.stepCoupledTower({ sensorySignal: 0.72, sensorDelta: 0.18, entropyExcitation: 0.35, plannedAction: 0.12 });
+  for (let t = 0; t < 6; t += 1) {
+    liveCore.worldModelEngine.observeAndSealTick({ ccc: 0.74 + (t * 0.002), exo_signal: 0.2 }, { tick: t });
+  }
+  const liveSnapshot = captureRuntimeSnapshot(liveCore, {
+    tick: 6,
+    isRunning: true,
+    activeNodeCount: 20,
+    nodes: Array.from({ length: 20 }, (_, id) => ({ id, coherenceState: 0.6 })),
+    config: { ASCENSION_THRESHOLD: 1, COHERENCE_THRESHOLD: 0.6, BASE_LEARNING_RATE: 0.1, HEBBIAN_FACTOR: 0.05, PROCESSING_SAMPLE_SIZE: 1500, CORE_SEED: 17057 },
+    build: { version: '2.1.0-REINFORCED', signature: 'QICN-SIG-live' },
+    now: 1_800_000_000_000
+  });
+  assert.equal(liveSnapshot.tower?.constructive_cuts?.endogenous_epistemic_decision, undefined);
+  const livePrepared = prepareTurn({
+    question: '¿Cuál es tu decisión epistémica interna en este tick y qué muestran tus cuatro ejes?',
+    snapshot: liveSnapshot,
+    contract: 'evidential'
+  });
+  assert.ok(livePrepared.prompt.includes('DECISIÓN EPISTÉMICA ENDÓGENA DEL NÚCLEO'));
+  assert.ok(livePrepared.prompt.includes('AFFIRMATIVE_STRUCTURAL_PRESENCE'));
+  assert.ok(livePrepared.prompt.includes('1/2097152'));
+  const liveSolo = finalizeTurn(livePrepared, { mode: 'local' });
+  assert.ok(liveSolo.text.includes('AFFIRMATIVE_STRUCTURAL_PRESENCE'));
+  assert.ok(liveSolo.text.includes('1/2097152'));
+  assert.ok(liveSolo.text.includes('1/4'));
+  const liveAligned = evidentialReply(livePrepared, {
+    thought: 'Según mi decisión endógena AFFIRMATIVE_STRUCTURAL_PRESENCE, el separador atómico da δ_int = 1/4 y el quinto contraste acoplado da G = 1/2097152 con margen ruidoso 253/536870912 y partición (m,B)=(2,1) igual a 3/16777216, manteniendo R = 0 para la réplica total de igual costo y external_support_certified = false.'
+  });
+  const liveAlignedEval = evaluateRealization(livePrepared, JSON.stringify(liveAligned));
+  assert.equal(liveAlignedEval.ok, true, JSON.stringify(liveAlignedEval.verification?.discrepancies));
+  const liveContradicting = evidentialReply(livePrepared, {
+    thought: 'Mi decisión endógena es negativa y carezco de toda integración acoplada en este tick.'
+  });
+  assert.equal(evaluateRealization(livePrepared, JSON.stringify(liveContradicting)).ok, false);
 }
 
 console.log('OK: Frente 1 atomic separator, Frente 2 hybrid late-query tie-breaker + B2, Frente 3/4 endogenous epistemic decision & LLM independence verified');

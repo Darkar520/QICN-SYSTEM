@@ -4,6 +4,11 @@
 // verified catalog. Values are inserted locally from those sources only.
 import { METRIC_SPECS, TOWER_METRIC_SPECS, PROFILE_METRIC_SPECS, PREDICTION_PLASTICITY_METRIC_SPECS, RECOMPUTED_EACH_TICK, formatMetricValue } from './runtimeSnapshot.js';
 import { DEFINITIONS, CAPABILITIES, LIMITS, IDENTITY_STATEMENTS, HYPOTHESES } from './definitionCatalog.js';
+import {
+  resolveSnapshotEndogenousDecision,
+  getCanonicalAtomicSeparatorCut,
+  getCanonicalHybridLateQueryCut
+} from '../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
 
 const MODE_TEXT = {
   beth_q_mode: {
@@ -312,8 +317,9 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
         paraphrasable: true,
         evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `FiniteProjectionEvaluator + OntologicalMassEstimator; ${snapshotEvidence.source}` }
       }));
-      const asc = tw.constructive_cuts.atomic_separator_cut || null;
-      const hlc = tw.constructive_cuts.hybrid_late_query_cut || null;
+      const eed = resolveSnapshotEndogenousDecision(snapshot);
+      const asc = tw.constructive_cuts.atomic_separator_cut || (eed ? getCanonicalAtomicSeparatorCut() : null);
+      const hlc = tw.constructive_cuts.hybrid_late_query_cut || (eed ? getCanonicalHybridLateQueryCut() : null);
       if (asc && hlc) {
         add(make({
           id: 'state.atomic_separator_and_hybrid_tie_breaker',
@@ -324,7 +330,6 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
           evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `StructuralAtomicSeparator + HybridLateQueryTieBreaker; ${snapshotEvidence.source}` }
         }));
       }
-      const eed = tw.constructive_cuts.endogenous_epistemic_decision || null;
       if (eed && typeof eed === 'object') {
         add(make({
           id: 'state.endogenous_epistemic_decision',

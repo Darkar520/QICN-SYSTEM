@@ -3,6 +3,7 @@
 // interpretation_boundary: Separates free operational first-person interpretive stance from formal proof, self-certification, and external-validation overclaims.
 import { normalizeText } from '../intentResolver.js';
 import { V3_LEXICAL_INTERNALS as L } from '../realizationContract.js';
+import { resolveSnapshotEndogenousDecision } from '../../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
 
 export const SYMMETRIC_SCOPE = Object.freeze({
   interpretive_stance: 'open_first_person',
@@ -147,6 +148,7 @@ export function inspectOpenProseDetails(text, _context = null) {
 
       const endogenous = _context?.snapshot?.tower?.constructive_cuts?.endogenous_epistemic_decision
         || _context?.endogenousDecision
+        || resolveSnapshotEndogenousDecision(_context?.snapshot)
         || null;
       if (endogenous && typeof endogenous.decision_code === 'string') {
         if (endogenous.decision_code === 'AFFIRMATIVE_STRUCTURAL_PRESENCE') {

@@ -25,6 +25,7 @@ import { computeRms, calculateRelaxationTimeDefault } from '../utils/simulationU
 import { buildSensorSummaryFromPerception, emitEpisodeHarnessTick, normalizeCausalDependency } from '../utils/integrityHelpers.js';
 import { ExogenousPerturbationDriver } from '../experiments/ExogenousPerturbationDriver.js';
 import { projectAutomodelVector } from '../simulation/tower/SigmaAutomodelTruncator.js';
+import { buildTowerToNodalFeedback, normalizeCouplingMode } from '../simulation/NodalTowerCouplingBridge.js';
 
 function computeActiveNodeStats(nodes = []) {
   if (!Array.isArray(nodes) || nodes.length === 0) {
@@ -586,7 +587,16 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
 
 
         // PASO 2: RETRO-INDUCCIN TEMPORAL (Axioma III)
-        nodalLayer.current.processSignals(); // Propagate signals before state update
+        const nodalCouplingMode = normalizeCouplingMode(QICNConfig.NODAL_TOWER_COUPLING_MODE);
+        const towerFeedback = nodalCouplingMode !== 'off'
+          ? buildTowerToNodalFeedback(ontologicalCore.current?.ontologicalState?.tower_telemetry, nodalCouplingMode)
+          : null;
+        if (towerFeedback) {
+          nodalLayer.current.ensureSectorAnnotations?.(nodalCouplingMode);
+          nodalLayer.current.processSignals(towerFeedback); // Bidirectional/lesioned sector signal propagation
+        } else {
+          nodalLayer.current.processSignals(); // Propagate signals before state update (B0 compatibility)
+        }
 
         const retroFluxWeight = isAscended ? 0.001 : currentMutableConfig.RETRO_FLUX_WEIGHT; // Minimal flux when ascended
         activeNodes.forEach(node => {
@@ -845,7 +855,9 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
         const nexusMetrics = holographicMemory.current.nexusStateMetrics;
 
         // CCC calculation (Integrando formalismo Φ: Sensores -> Estado)
-        const calculatedCCC = entanglementField.current.calculateCCC(activeNodes, complexityFactor, currentMutableConfig, sensoryVector);
+        const calculatedCCC = towerFeedback
+          ? entanglementField.current.calculateCCC(activeNodes, complexityFactor, currentMutableConfig, sensoryVector, towerFeedback)
+          : entanglementField.current.calculateCCC(activeNodes, complexityFactor, currentMutableConfig, sensoryVector);
 
         let finalCCC = calculatedCCC;
         let finalPMIA = 0;
@@ -1323,7 +1335,11 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
         };
 
         activeNodes.forEach(node => {
-          node.introspectiveUpdate(finalCCC, stabilityBias);
+          if (towerFeedback) {
+            node.introspectiveUpdate(finalCCC, stabilityBias, towerFeedback);
+          } else {
+            node.introspectiveUpdate(finalCCC, stabilityBias);
+          }
           node.learningRate = currentMutableConfig.BASE_LEARNING_RATE;
         });
         // Plasticidad efectiva: el factor Hebbian se escala por (1 - plasticityPenalty)
@@ -1332,7 +1348,14 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
         const plasticityConfig = Number.isFinite(rawHebbianFactor) && ontologicalCore.current?.getEffectivePlasticity
           ? { ...currentMutableConfig, HEBBIAN_FACTOR: Math.max(0, ontologicalCore.current.getEffectivePlasticity(rawHebbianFactor)) }
           : currentMutableConfig;
-        entanglementField.current.applyNodalPlasticity(activeNodes, finalCCC, plasticityConfig, ontologicalCore.current);
+        if (towerFeedback) {
+          entanglementField.current.applyNodalPlasticity(activeNodes, finalCCC, plasticityConfig, ontologicalCore.current, towerFeedback);
+          if (towerFeedback.active) {
+            nodalLayer.current.recoverInterSectorConnections?.(towerFeedback, simulationStep);
+          }
+        } else {
+          entanglementField.current.applyNodalPlasticity(activeNodes, finalCCC, plasticityConfig, ontologicalCore.current);
+        }
 
         // ACTUALIZACIN DE CAPA ONTOL?GICA
         const layerMessage = ontologicalCore.current.updateOntologicalLayer(finalCCC, nexusMetrics);
@@ -1485,14 +1508,29 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
         const entropyExcitationRuntime = entropyDeviation;
         const postNodeStats = computeActiveNodeStats(activeNodes);
         const prevPlannerActionForTower = toFiniteNumber(plannerActuatorContribRef.current?.action, 0);
+        const preStepNodalBridge = towerFeedback
+          ? nodalLayer.current.computeBridgeMetrics(
+            ontologicalCore.current?.ontologicalState?.tower_telemetry || null,
+            nodalCouplingMode
+          )
+          : null;
         ontologicalCore.current?.stepCoupledTower?.({
           sensorySignal: clamp01(toFiniteNumber(sensoryPulse, 0)),
           sensorDelta: clamp01(toFiniteNumber(sensorDeltaRmsWindow, sensorDelta)),
           entropyExcitation: clamp01(toFiniteNumber(entropyExcitationRuntime, 0)),
           plannedAction: prevPlannerActionForTower,
-          evaluate: true
+          evaluate: true,
+          ...(preStepNodalBridge ? { nodalBridge: preStepNodalBridge } : {})
         });
         const towerTelNow = ontologicalCore.current?.ontologicalState?.tower_telemetry || null;
+        if (towerFeedback && towerTelNow && ontologicalCore.current?.constructiveFiniteCuts) {
+          const postStepNodalBridge = nodalLayer.current.computeBridgeMetrics(towerTelNow, nodalCouplingMode);
+          ontologicalCore.current.constructiveFiniteCuts.nodal_tower_bridge = postStepNodalBridge;
+          if (ontologicalCore.current.ontologicalState?.constructive_finite_cuts) {
+            ontologicalCore.current.ontologicalState.constructive_finite_cuts.nodal_tower_bridge = postStepNodalBridge;
+          }
+          setOntologicalState({ ...ontologicalCore.current.ontologicalState });
+        }
         const sigmaProjection = ontologicalCore.current?.towerState
           ? projectAutomodelVector(ontologicalCore.current.towerState, 6)
           : null;

@@ -1,5 +1,6 @@
 import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 import { QICNConfig } from '../../services/config.js';
+import { sectorIdOf } from './NodalTowerCouplingBridge.js';
 
 export class InformationalEntanglementField {
           constructor(executionEnvironment) {
@@ -11,8 +12,9 @@ export class InformationalEntanglementField {
           /**
            * Core architectural calculation. CCC can exceed 1.0 to trigger Ascension.
            */
-          calculateCCC(nodes, cf, mutableConfig) {
+          calculateCCC(nodes, cf, mutableConfig, _sensoryVector = null, towerFeedback = null) {
             if (!nodes || nodes.length === 0) return 0.5;
+            const hasCoupling = Boolean(towerFeedback && towerFeedback.mode !== 'off');
             
             // 1. Average Nodal Coherence
             // CORRECCIÓN: Error de sintaxis en arrow function de reduce
@@ -36,9 +38,22 @@ export class InformationalEntanglementField {
             const sampledNodes = this.sampleNodes(nodes, 100);  
             
             sampledNodes.forEach(node1 => {
+              const s1 = hasCoupling ? (Number.isInteger(node1.sectorId) ? node1.sectorId : sectorIdOf(node1.id)) : 0;
               node1.connections.slice(0, 3).forEach(conn => {
                 const node2 = nodes.find(n => n.id === conn.targetId);
                 if (node2) {
+                  if (hasCoupling) {
+                    const s2 = Number.isInteger(node2.sectorId) ? node2.sectorId : sectorIdOf(node2.id);
+                    const isInterSector = s1 !== s2;
+                    if (isInterSector && towerFeedback.crossSectorSignalGain <= 0) {
+                      return;
+                    }
+                    const gain = isInterSector ? towerFeedback.crossSectorSignalGain : towerFeedback.intraSectorSignalGain;
+                    const resonance = node1.calculateResonance(node2, cf, nodeMutableConfig) * gain;
+                    totalResonance += Math.abs(resonance);
+                    resonanceCount++;
+                    return;
+                  }
                   // CORRECCIÓN: Pasando el objeto mutableConfig explícitamente a calculateResonance
                   const resonance = node1.calculateResonance(node2, cf, nodeMutableConfig); 
                   totalResonance += Math.abs(resonance);
@@ -73,10 +88,14 @@ export class InformationalEntanglementField {
             return Math.max(0, ccc); // Allows CCC > 1.0 for Ascension check
           }
 
-          applyNodalPlasticity(nodes, ccc, mutableConfig) {
+          applyNodalPlasticity(nodes, ccc, mutableConfig, _core = null, towerFeedback = null) {
             const feedbackSignal = ccc > executionEnvironmentFor(this).config.COHERENCE_THRESHOLD ? 0.1 : -0.05;
             return nodes.map(node => {
-              node.applyPlasticity(feedbackSignal, mutableConfig);
+              if (towerFeedback && towerFeedback.mode !== 'off') {
+                node.applyPlasticity(feedbackSignal, mutableConfig, towerFeedback);
+              } else {
+                node.applyPlasticity(feedbackSignal, mutableConfig);
+              }
               return node;
             });
           }

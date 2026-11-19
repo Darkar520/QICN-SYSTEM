@@ -58,6 +58,9 @@ const QICNConfig = {
   HISTORICAL_PLASTICITY_ENABLED: true,
   EXOGENOUS_REGIME_MODE: 'off',
   EXOGENOUS_REGIME_SEED: 0x42A1,
+  // Acoplamiento bidireccional nodo-torre (Bloque 1): 'off' conserva compatibilidad B0 bit-a-bit;
+  // la UI interactiva activa 'bidirectional' por defecto ('td_cut_eta_zero' y 'reducible_control' son controles negativos reales).
+  NODAL_TOWER_COUPLING_MODE: 'off',
 
   // Memoria Holográfica
   HOLOGRAPHIC_FRAGMENTS: 10,

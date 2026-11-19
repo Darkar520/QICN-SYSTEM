@@ -2221,23 +2221,36 @@ export class OntologicalSingularityCore {
 
     getEndogenousEpistemicDecision(overrides = {}) {
         const cuts = this.constructiveFiniteCuts || this.ontologicalState?.constructive_finite_cuts || {};
+        const nodalBridge = overrides.nodalBridge !== undefined ? overrides.nodalBridge : (cuts.nodal_tower_bridge || null);
+        const health = typeof this.getDynamicHealth === 'function' ? this.getDynamicHealth() : {};
+        const bridgeLesions = nodalBridge ? {
+            forcePhysicalTdCut: Boolean(nodalBridge.td_cut_active),
+            forceReducibleIdentity: Boolean(nodalBridge.reducible_control_active)
+        } : {};
         return evaluateEndogenousEpistemicDecision({
             atomicSeparatorCut: overrides.atomicSeparatorCut || cuts.atomic_separator_cut || getCanonicalAtomicSeparatorCut(),
             hybridLateQueryCut: overrides.hybridLateQueryCut || cuts.hybrid_late_query_cut || getCanonicalHybridLateQueryCut(),
+            nodalBridge,
             plasticity: overrides.plasticity || this.worldModelEngine?.getPlasticityProfile?.() || null,
             engramCount: overrides.engramCount,
             viability: overrides.viability,
             runtime: {
                 ccc: this.ontologicalState?.coherence,
+                x_n: nodalBridge?.upward_projections?.mean_coherence,
                 pmia: this.pmiaValue,
                 omega: this.ontologicalState?.omega,
                 beth_q: this.ontologicalState?.beth_q,
+                stasis_index: health?.stasisIndex ?? 0,
+                regime: this.ontologicalState?.regime || 'PRE_CONSCIOUS',
                 sigma_exact_defect: this.ontologicalState?.tower_telemetry?.sigmaExactDefect ?? '0',
                 sigma_defect_bound: this.ontologicalState?.tower_telemetry?.sigmaDefectBound ?? '2/2187',
                 active_retention: this.ontologicalState?.tower_telemetry?.activeRetention ?? (9 / 16),
                 ...(overrides.runtime || {})
             },
-            lesions: overrides.lesions || null
+            lesions: {
+                ...bridgeLesions,
+                ...(overrides.lesions || {})
+            }
         });
     }
 
@@ -2266,7 +2279,8 @@ export class OntologicalSingularityCore {
         sensorDelta = 0,
         entropyExcitation = 0,
         plannedAction = 0,
-        evaluate = true
+        evaluate = true,
+        nodalBridge = null
     } = {}) {
         const quantizeToBudget = (val) => {
             const clamped = Math.max(-0.25, Math.min(0.25, this._toFinite(val, 0)));
@@ -2303,13 +2317,25 @@ export class OntologicalSingularityCore {
             { u: activeControlU, q }
         );
 
+        const hasNodalBridge = Boolean(nodalBridge && nodalBridge.mode && nodalBridge.mode !== 'off');
+        const up = hasNodalBridge ? (nodalBridge.upward_projections || {}) : null;
+        const nodalBodyMod = hasNodalBridge && nodalBridge.active
+            ? (this._toFinite(up.body_balance, 0) * 0.45)
+            : 0;
+        const nodalFluxMod = hasNodalBridge && nodalBridge.active
+            ? ((this._toFinite(up.inter_sector_flux_drive, 0) - 0.35) * 0.25)
+            : 0;
+        const nodalWorldMod = hasNodalBridge && nodalBridge.active
+            ? (this._toFinite(up.world_contrast, 0) * 0.45)
+            : 0;
+
         const bodyInput = [
-            quantizeToBudget((sensorySignal - 0.5) * 0.5),
-            quantizeToBudget((entropyExcitation - 0.5) * 0.5)
+            quantizeToBudget(((sensorySignal - 0.5) * 0.5) + nodalBodyMod),
+            quantizeToBudget(((entropyExcitation - 0.5) * 0.5) - nodalBodyMod + nodalFluxMod)
         ];
         const worldInput = [
-            quantizeToBudget(sensorDelta * 0.5),
-            quantizeToBudget(plannedAction * 0.25)
+            quantizeToBudget((sensorDelta * 0.5) + nodalWorldMod),
+            quantizeToBudget((plannedAction * 0.25) + (nodalFluxMod * 0.5))
         ];
 
         this.towerState = advanceBodyWorldTower(
@@ -2326,6 +2352,9 @@ export class OntologicalSingularityCore {
             bodyVec: this.towerState.body,
             worldVec: this.towerState.world
         });
+        if (hasNodalBridge) {
+            constructiveCuts.nodal_tower_bridge = nodalBridge;
+        }
         this.constructiveFiniteCuts = constructiveCuts;
         this.ontologicalState.tower_phase = floatTelemetry.core.phase;
         this.ontologicalState.tower_code = floatTelemetry.core.code;

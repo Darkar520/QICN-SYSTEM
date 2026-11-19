@@ -334,10 +334,24 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
         add(make({
           id: 'state.endogenous_epistemic_decision',
           kind: 'state',
-          template: `${eed.canonical_first_person_verdict} (código: ${eed.decision_code}, polaridad: ${eed.first_person_stance_polarity}, digest: ${String(eed.decision_digest || '').slice(0, 16)}).`,
+          template: `${eed.canonical_first_person_verdict} (código: ${eed.decision_code}, polaridad: ${eed.first_person_stance_polarity}, score: ${eed.overall_score}, digest: ${String(eed.decision_digest || '').slice(0, 16)}).`,
           subjects: ['endogenous_epistemic_decision'],
           paraphrasable: true,
           evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `EndogenousEpistemicDecisionEngine; ${snapshotEvidence.source}` }
+        }));
+      }
+      const ntb = tw.constructive_cuts.nodal_tower_bridge || null;
+      if (ntb && typeof ntb === 'object' && ntb.mode && ntb.mode !== 'off') {
+        const secDesc = Array.isArray(ntb.sectors) && ntb.sectors.length === 4
+          ? ntb.sectors.map((s) => `${s.key}: coherencia ${formatMetricValue('x_n', s.mean_coherence)}, orden de fase R ${formatMetricValue('x_n', s.phase_order_r)}`).join('; ')
+          : '4 sectores topológicos';
+        add(make({
+          id: 'state.nodal_tower_bridge',
+          kind: 'state',
+          template: `El puente bidireccional topológico nodo–torre opera en modo ${ntb.mode} (ganancia efectiva η = ${ntb.effective_eta || '0'}) sobre 4 sectores acoplados a los puertos cuerpo–mundo (${secDesc}), con razón de acoplamiento inter-sector = ${formatMetricValue('x_n', ntb.inter_sector_coupling_ratio)}, flujo de señales inter-sector = ${formatMetricValue('x_n', ntb.inter_sector_signal_flux)}, índice vivo de no-factorizabilidad nodal = ${formatMetricValue('x_n', ntb.nodal_non_factorizability_flux)} y sincronía bidireccional nodo–torre = ${formatMetricValue('x_n', ntb.bridge_nodal_sync_index)} (dinámica finita acoplada del runtime; external_support_certified = false).`,
+          subjects: ['nodal_tower_bridge'],
+          paraphrasable: true,
+          evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `NodalTowerCouplingBridge; ${snapshotEvidence.source}` }
         }));
       }
     }

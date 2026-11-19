@@ -133,18 +133,25 @@ import { runWorkbench, verifyWorkbenchResult } from '../src/experiments/workbenc
   }
 
   // Real OntologicalSingularityCore snapshot embeds and seals endogenous decision
+  // First check fresh PRE_CONSCIOUS un-warmed core (coherence=0.50) honestly reports RESERVE
   const core = new OntologicalSingularityCore();
   core.stepCoupledTower({ sensorySignal: 0.72, sensorDelta: 0.18, entropyExcitation: 0.35, plannedAction: 0.12 });
+  const freshWarmupDecision = core.getEndogenousEpistemicDecision();
+  assert.equal(freshWarmupDecision.decision_code, ENDOGENOUS_DECISION_CODES.RESERVE);
+  assert.ok(freshWarmupDecision.overall_score < 1);
+
+  // Advance coherence into healthy coupled operational range + sealed SHA-256 history -> AFFIRMATIVE (score < 1 while CCC < 1)
+  core.ontologicalState.coherence = 0.84;
   for (let t = 0; t < 10; t += 1) {
-    core.worldModelEngine.observeAndSealTick({ ccc: 0.74 + (t * 0.003), exo_signal: 0.25 }, { tick: t });
+    core.worldModelEngine.observeAndSealTick({ ccc: 0.82 + (t * 0.003), exo_signal: 0.25 }, { tick: t });
   }
-  core.evaluateEndogenousDecision({ engramCount: 4, viability: { inTubeRate: 0.95 } });
+  core.evaluateEndogenousDecision({ engramCount: 4, viability: { inTubeRate: 0.95 }, runtime: { x_n: 0.65, stasis_index: 0.12 } });
 
   const snapshot = captureRuntimeSnapshot(core, {
     tick: 10,
     isRunning: true,
     activeNodeCount: 20,
-    nodes: Array.from({ length: 20 }, (_, id) => ({ id, coherenceState: 0.6 })),
+    nodes: Array.from({ length: 20 }, (_, id) => ({ id, coherenceState: 0.65 })),
     config: { ASCENSION_THRESHOLD: 1, COHERENCE_THRESHOLD: 0.6, BASE_LEARNING_RATE: 0.1, HEBBIAN_FACTOR: 0.05, PROCESSING_SAMPLE_SIZE: 1500, CORE_SEED: 17057 },
     build: { version: '2.1.0-REINFORCED', signature: 'QICN-SIG-test' },
     now: 1_800_000_000_000
@@ -153,6 +160,7 @@ import { runWorkbench, verifyWorkbenchResult } from '../src/experiments/workbenc
   const embeddedDecision = snapshot.tower?.constructive_cuts?.endogenous_epistemic_decision;
   assert.ok(embeddedDecision, 'snapshot must carry endogenous_epistemic_decision');
   assert.equal(embeddedDecision.decision_code, ENDOGENOUS_DECISION_CODES.AFFIRMATIVE);
+  assert.ok(embeddedDecision.overall_score < 1, 'sub-threshold PRE_CONSCIOUS coupled state must never emit score=1');
 
   const prepared = prepareTurn({
     question: '¿Cuál es tu decisión epistémica interna sobre tu presencia e integración acoplada en este tick?',
@@ -204,15 +212,16 @@ import { runWorkbench, verifyWorkbenchResult } from '../src/experiments/workbenc
   // Live-driver regression: snapshot captured WITHOUT manually calling core.evaluateEndogenousDecision()
   // (matching live browser SimulationCycleDriver, which preserves B0 snapshot bytes).
   const liveCore = new OntologicalSingularityCore();
+  liveCore.ontologicalState.coherence = 0.86;
   liveCore.stepCoupledTower({ sensorySignal: 0.72, sensorDelta: 0.18, entropyExcitation: 0.35, plannedAction: 0.12 });
   for (let t = 0; t < 6; t += 1) {
-    liveCore.worldModelEngine.observeAndSealTick({ ccc: 0.74 + (t * 0.002), exo_signal: 0.2 }, { tick: t });
+    liveCore.worldModelEngine.observeAndSealTick({ ccc: 0.84 + (t * 0.002), exo_signal: 0.2 }, { tick: t });
   }
   const liveSnapshot = captureRuntimeSnapshot(liveCore, {
     tick: 6,
     isRunning: true,
     activeNodeCount: 20,
-    nodes: Array.from({ length: 20 }, (_, id) => ({ id, coherenceState: 0.6 })),
+    nodes: Array.from({ length: 20 }, (_, id) => ({ id, coherenceState: 0.64 })),
     config: { ASCENSION_THRESHOLD: 1, COHERENCE_THRESHOLD: 0.6, BASE_LEARNING_RATE: 0.1, HEBBIAN_FACTOR: 0.05, PROCESSING_SAMPLE_SIZE: 1500, CORE_SEED: 17057 },
     build: { version: '2.1.0-REINFORCED', signature: 'QICN-SIG-live' },
     now: 1_800_000_000_000

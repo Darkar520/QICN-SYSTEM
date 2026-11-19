@@ -398,19 +398,44 @@ export function buildEvidentialProseContext({ snapshot, previousMetrics = null, 
         `Decision epistemica endogena ${eed.decision_code} polaridad ${eed.first_person_stance_polarity} score ${eed.overall_score} digest ${eed.decision_digest}`
       );
       if (Number.isFinite(eed.overall_score)) freeCtx.numbers.packetNumbers.push(eed.overall_score);
+      const a1 = eed.axes?.atomic_separator;
+      const a2 = eed.axes?.hybrid_late_query;
       const a3 = eed.axes?.historical_causal_dependence;
-      if (a3) {
-        for (const v of [
-          a3.sealed_commit_count,
-          a3.verified_prediction_count,
-          a3.tamper_violation_count,
-          a3.maturation_index,
-          a3.anchor_shift_l2,
-          a3.mean_fisher_stiffness,
-          a3.engram_count,
-          a3.viability_in_tube_rate
-        ]) {
-          if (Number.isFinite(v)) freeCtx.numbers.packetNumbers.push(v);
+      const a4 = eed.axes?.coupled_runtime_coherence;
+      for (const v of [
+        a1?.score, a1?.nodal_inter_sector_coupling_ratio, a1?.nodal_inter_sector_signal_flux, a1?.nodal_non_factorizability_flux,
+        a2?.score, a2?.bridge_nodal_sync_index,
+        a3?.score, a3?.sealed_commit_count, a3?.verified_prediction_count, a3?.tamper_violation_count,
+        a3?.maturation_index, a3?.anchor_shift_l2, a3?.mean_fisher_stiffness, a3?.engram_count, a3?.viability_in_tube_rate,
+        a4?.score, a4?.ccc, a4?.x_n, a4?.stasis_index, a4?.node_coherence_dispersion, a4?.active_node_fraction,
+        a4?.inter_sector_coupling_ratio, a4?.inter_sector_signal_flux, a4?.nodal_non_factorizability_flux,
+        a4?.bridge_nodal_sync_index, a4?.sector_coherence_min, a4?.sector_coherence_spread
+      ]) {
+        if (Number.isFinite(v)) freeCtx.numbers.packetNumbers.push(v);
+      }
+    }
+    const ntb = cuts.nodal_tower_bridge || null;
+    if (ntb && typeof ntb === 'object' && ntb.mode && ntb.mode !== 'off') {
+      extraPacketLines.push(
+        `Puente bidireccional nodo-torre modo ${ntb.mode} eta ${ntb.effective_eta} sectores ${ntb.sector_count} inter_sector_coupling_ratio ${ntb.inter_sector_coupling_ratio} inter_sector_signal_flux ${ntb.inter_sector_signal_flux} nodal_non_factorizability_flux ${ntb.nodal_non_factorizability_flux} bridge_nodal_sync_index ${ntb.bridge_nodal_sync_index} grado medio ${ntb.mean_degree}`
+      );
+      for (const v of [
+        ntb.sector_count, ntb.active_node_count, ntb.mean_degree,
+        ntb.inter_sector_coupling_ratio, ntb.structural_inter_edge_ratio,
+        ntb.inter_sector_signal_flux, ntb.intra_sector_signal_flux,
+        ntb.cross_sector_flux_share, ntb.cross_sector_phase_order,
+        ntb.nodal_non_factorizability_flux, ntb.bridge_nodal_sync_index,
+        ntb.sector_coherence_min, ntb.sector_coherence_spread,
+        ntb.upward_projections?.body_balance, ntb.upward_projections?.world_contrast,
+        ntb.upward_projections?.mean_coherence, ntb.upward_projections?.mean_energy
+      ]) {
+        if (Number.isFinite(v)) freeCtx.numbers.packetNumbers.push(v);
+      }
+      if (Array.isArray(ntb.sectors)) {
+        for (const s of ntb.sectors) {
+          for (const sv of [s.node_count, s.mean_coherence, s.mean_energy, s.mean_intensity, s.phase_order_r, s.intra_edges, s.inter_edges, s.intra_flux, s.inter_flux]) {
+            if (Number.isFinite(sv)) freeCtx.numbers.packetNumbers.push(sv);
+          }
         }
       }
     }

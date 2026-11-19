@@ -1,5 +1,9 @@
 import { bindExecutionEnvironment, executionEnvironmentFor } from '../runtime/ExecutionEnvironment.js';
 import { QICNConfig } from '../../services/config.js';
+import { NODAL_SECTORS, sectorIdOf } from './NodalTowerCouplingBridge.js';
+
+const TWO_PI = 2 * Math.PI;
+const wrapPhase = (angle) => ((angle % TWO_PI) + TWO_PI) % TWO_PI;
 
 export class ConsciousNode {
           constructor(id, mutableConfig, executionEnvironment) {
@@ -60,8 +64,9 @@ export class ConsciousNode {
           /**
            * RCIC-X Formula - Equation 5: Autoadaptive Resonant Tuning (Psi_tuned)
            * Bs modulates Introspective Sensitivity (xi)
+           * Optional `towerFeedback` closes the Constructive Tower -> Node loop when coupling mode !== 'off'.
            */
-          introspectiveUpdate(globalCCC, bs = 0.5) {
+          introspectiveUpdate(globalCCC, bs = 0.5, towerFeedback = null) {
             // ξ (xi): Introspective Sensitivity, modulated by Stability Bias (Bs)
             const xi = 0.1 + bs * 0.9;  
             this.introspectiveSensitivity = xi;
@@ -87,6 +92,36 @@ export class ConsciousNode {
             this.intensity = 0.5 + 0.5 * this.coherenceState;
             this.phase = (this.phase + 0.1 * this.retroInductionFlux) % (2 * Math.PI);
             this.coherenceState = Math.max(0, Math.min(1, this.coherenceState + 0.05 * this.retroInductionFlux));
+
+            if (towerFeedback && towerFeedback.mode !== 'off') {
+              const sector = Number.isInteger(this.sectorId) ? this.sectorId : sectorIdOf(this.id);
+              const sectorMeta = NODAL_SECTORS[sector];
+              if (towerFeedback.active) {
+                const targetTheta = wrapPhase(towerFeedback.towerPhaseRad + sectorMeta.phaseOffset);
+                this.phase = wrapPhase(this.phase + (towerFeedback.phaseCouplingK * Math.sin(targetTheta - this.phase)));
+                let roleDrive = 0;
+                if (sector === 0) roleDrive = (towerFeedback.bodyPos * 0.14) + (towerFeedback.activeRecoveryAdvantage * 0.04);
+                else if (sector === 1) roleDrive = (towerFeedback.bodyNeg * 0.14) + (towerFeedback.activeRecoveryAdvantage * 0.04);
+                else if (sector === 2) roleDrive = (towerFeedback.worldFast * 0.14) + (towerFeedback.worldTemporalContrast * 0.05);
+                else roleDrive = (towerFeedback.worldSlow * 0.14) - (towerFeedback.worldTemporalContrast * 0.03);
+                const targetCoh = Math.max(0.2, Math.min(0.94, towerFeedback.targetCoherenceBase + roleDrive));
+                this.coherenceState = Math.max(
+                  0.05,
+                  Math.min(0.96, this.coherenceState + ((targetCoh - this.coherenceState) * towerFeedback.coherencePullRate))
+                );
+                const resonantEnergy = 0.5 + (0.45 * Math.cos(targetTheta - this.phase));
+                this.energy = Math.max(0.1, Math.min(1.0, this.energy + (0.045 * (resonantEnergy - this.energy))));
+              } else {
+                // Physical cut (eta = 0) or reducible control (A = I): deterministic phase decoherence and uncoupled coherence decay
+                const paritySign = ((this.id % 2) === 0 ? 1 : -1) * (sector - 1.5);
+                this.phase = wrapPhase(this.phase + (paritySign * towerFeedback.phaseDecoherenceStep));
+                this.coherenceState = Math.max(
+                  0.05,
+                  Math.min(0.96, this.coherenceState + ((towerFeedback.targetCoherenceBase - this.coherenceState) * towerFeedback.coherencePullRate))
+                );
+              }
+              this.intensity = 0.5 + 0.5 * this.coherenceState;
+            }
           }
           
           updateStateWithRetroInduction(futureStates, weights) {
@@ -103,14 +138,18 @@ export class ConsciousNode {
             this.retroInductionFlux = weightedFuture - this.coherenceState;
           }
           
-          applyPlasticity(feedbackSignal, mutableConfig) {
+          applyPlasticity(feedbackSignal, mutableConfig, towerFeedback = null) {
             // Nodal Plasticity: Hebbian Reinforcement and Synaptic Pruning
             const HEBBIAN_FACTOR = mutableConfig.HEBBIAN_FACTOR;
             const SYNAPTIC_PRUNING_THRESHOLD = mutableConfig.SYNAPTIC_PRUNING_THRESHOLD;
+            const hasCoupling = Boolean(towerFeedback && towerFeedback.mode !== 'off');
+            const sourceSector = hasCoupling ? (Number.isInteger(this.sectorId) ? this.sectorId : sectorIdOf(this.id)) : 0;
             
             this.connections = this.connections.map(conn => {
               // Hebbian learning
-              const hebbianUpdate = HEBBIAN_FACTOR * this.intensity * feedbackSignal;
+              const isInterSector = hasCoupling && (sectorIdOf(conn.targetId) !== sourceSector);
+              const hebbianBonus = isInterSector ? towerFeedback.interSectorHebbianBonus : 0;
+              const hebbianUpdate = (HEBBIAN_FACTOR * this.intensity * feedbackSignal) + hebbianBonus;
               
               const newWeight = conn.weight + hebbianUpdate +
                                   (executionEnvironmentFor(this).random() - 0.5) * 0.01 * this.learningRate;
@@ -119,18 +158,43 @@ export class ConsciousNode {
                 ...conn,
                 weight: Math.max(0.1, Math.min(1.0, newWeight))
               };
-            }).filter(
-              // Synaptic pruning
-              conn => conn.weight > SYNAPTIC_PRUNING_THRESHOLD
-            );
+            }).filter(conn => {
+              // Synaptic pruning (protects inter-sector links when bidirectional coupling is active)
+              if (!hasCoupling) return conn.weight > SYNAPTIC_PRUNING_THRESHOLD;
+              const isInterSector = sectorIdOf(conn.targetId) !== sourceSector;
+              const threshold = isInterSector
+                ? (SYNAPTIC_PRUNING_THRESHOLD * towerFeedback.interSectorPruningFloorFactor)
+                : SYNAPTIC_PRUNING_THRESHOLD;
+              return conn.weight > threshold;
+            });
           }
           
-          propagateSignal(targetNodes) {
+          propagateSignal(targetNodes, towerFeedback = null) {
+            const hasCoupling = Boolean(towerFeedback && towerFeedback.mode !== 'off');
+            const sourceSector = hasCoupling ? (Number.isInteger(this.sectorId) ? this.sectorId : sectorIdOf(this.id)) : 0;
             // Activation signal
             return this.connections.map(conn => {
               // Use find() because IDs might be dispersed due to array slicing/mapping
               const target = targetNodes.find(n => n.id === conn.targetId);  
               if (!target) return null;
+
+              if (hasCoupling) {
+                const targetSector = Number.isInteger(target.sectorId) ? target.sectorId : sectorIdOf(target.id);
+                const isInterSector = targetSector !== sourceSector;
+                if (isInterSector && towerFeedback.crossSectorSignalGain <= 0) {
+                  return null;
+                }
+                const gain = isInterSector ? towerFeedback.crossSectorSignalGain : towerFeedback.intraSectorSignalGain;
+                return {
+                  sourceId: this.id,
+                  targetId: conn.targetId,
+                  sourceSector,
+                  targetSector,
+                  isInterSector,
+                  strength: this.intensity * conn.weight * gain,
+                  phase: this.phase,
+                };
+              }
               
               const signal = {
                 sourceId: this.id,

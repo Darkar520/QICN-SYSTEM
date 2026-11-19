@@ -23,6 +23,7 @@ import { OntologicalSingularityCore } from '../simulation/OntologicalSingularity
 import { InformationalEntanglementField } from '../simulation/InformationalEntanglementField.js';
 import { KaizenMetamorphosisEngine } from '../simulation/KaizenMetamorphosisEngine.js';
 import { NodalProcessingLayer } from '../simulation/NodalProcessingLayer.js';
+import { NODAL_TOWER_COUPLING_MODES, normalizeCouplingMode } from '../simulation/NodalTowerCouplingBridge.js';
 import { MetaSovereigntyCheck } from '../simulation/MetaSovereigntyCheck.js';
 import { QuantumEntropyBridge } from '../simulation/QuantumEntropyBridge.js';
 import { SensoryPerceptionEngine } from '../simulation/SensoryPerceptionEngine.js';
@@ -2094,6 +2095,23 @@ export const QICNConsciousnessSystem = () => {
     setExogenousRegimeMode(normalized);
   }, []);
 
+  // Interactive browser UI defaults to real bidirectional nodal-tower coupling while
+  // keeping services/config.js at 'off' so historical B0 equivalence stays bit-for-bit identical.
+  const [nodalCouplingMode, setNodalCouplingMode] = useState(() => {
+    const current = normalizeCouplingMode(QICNConfig.NODAL_TOWER_COUPLING_MODE);
+    if (typeof window !== 'undefined' && current === NODAL_TOWER_COUPLING_MODES.OFF) {
+      QICNConfig.NODAL_TOWER_COUPLING_MODE = NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL;
+      return NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL;
+    }
+    return current;
+  });
+  const handleNodalCouplingModeChange = useCallback((nextMode) => {
+    const normalized = normalizeCouplingMode(nextMode);
+    QICNConfig.NODAL_TOWER_COUPLING_MODE = normalized;
+    nodalLayer.current?.ensureSectorAnnotations?.(normalized);
+    setNodalCouplingMode(normalized);
+  }, []);
+
   const getPersistenceRefs = useCallback(() => ({
     nodalLayer,
     ontologicalCore,
@@ -4068,7 +4086,25 @@ MODOS DE INTEGRIDAD Y SOLO MOTOR
 
         <MicroExperimentWorkbench workbench={microWorkbench}/>
         {(() => {
-          const liveEndogenous = ontologicalCore.current?.getEndogenousEpistemicDecision?.()
+          const liveBridge = nodalLayer.current?.getBridgeMetrics?.()
+            || ontologicalCore.current?.constructiveFiniteCuts?.nodal_tower_bridge
+            || ontologicalState?.constructive_finite_cuts?.nodal_tower_bridge
+            || null;
+          const liveNodes = nodalLayer.current?.getActiveNodes?.() || [];
+          const liveXn = liveNodes.length
+            ? liveNodes.reduce((sum, n) => sum + (Number(n?.coherenceState) || 0), 0) / liveNodes.length
+            : undefined;
+          const liveDispersion = liveNodes.length && Number.isFinite(liveXn)
+            ? Math.sqrt(liveNodes.reduce((sum, n) => sum + (((Number(n?.coherenceState) || 0) - liveXn) ** 2), 0) / liveNodes.length)
+            : 0;
+          const liveEndogenous = ontologicalCore.current?.getEndogenousEpistemicDecision?.({
+            nodalBridge: liveBridge,
+            runtime: {
+              ...(Number.isFinite(liveXn) ? { x_n: liveXn } : {}),
+              node_coherence_dispersion: liveDispersion,
+              active_node_fraction: nodalLayer.current?.nodes?.length ? (liveNodes.length / nodalLayer.current.nodes.length) : 1
+            }
+          })
             || ontologicalCore.current?.constructiveFiniteCuts?.endogenous_epistemic_decision
             || ontologicalState?.constructive_finite_cuts?.endogenous_epistemic_decision
             || null;
@@ -4077,17 +4113,25 @@ MODOS DE INTEGRIDAD Y SOLO MOTOR
           const a2 = liveEndogenous.axes?.hybrid_late_query || {};
           const a3 = liveEndogenous.axes?.historical_causal_dependence || {};
           const a4 = liveEndogenous.axes?.coupled_runtime_coherence || {};
+          const isAff = liveEndogenous.decision_code === 'AFFIRMATIVE_STRUCTURAL_PRESENCE';
+          const isRes = liveEndogenous.decision_code === 'STRUCTURAL_RESERVE_UNDER_WARMUP_OR_PARTIAL_HISTORY';
+          const borderTone = isAff
+            ? 'border-emerald-700/80 text-emerald-50'
+            : (isRes ? 'border-amber-600/80 text-amber-50' : 'border-rose-700/80 text-rose-50');
+          const badgeTone = isAff
+            ? 'bg-emerald-900/70 text-emerald-100'
+            : (isRes ? 'bg-amber-900/70 text-amber-100' : 'bg-rose-900/70 text-rose-100');
           return (
             <section
               data-testid="endogenous-epistemic-decision-panel"
               aria-label="Decisión epistémica endógena del núcleo"
-              className="my-2 rounded border border-emerald-700/80 bg-gray-950/90 p-3 text-xs text-emerald-50"
+              className={`my-2 rounded border bg-gray-950/90 p-3 text-xs ${borderTone}`}
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-sm font-semibold text-emerald-200">
                   Módulo Interno Determinista de Decisión Epistémica (Independiente del LLM)
                 </h3>
-                <span className="rounded bg-emerald-900/70 px-2 py-0.5 font-mono text-[11px] text-emerald-100">
+                <span className={`rounded px-2 py-0.5 font-mono text-[11px] ${badgeTone}`}>
                   {liveEndogenous.decision_code} · polaridad: {liveEndogenous.first_person_stance_polarity} · score: {liveEndogenous.overall_score}
                 </span>
               </div>
@@ -4096,15 +4140,17 @@ MODOS DE INTEGRIDAD Y SOLO MOTOR
               </p>
               <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
                 <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
-                  <div className="font-semibold text-emerald-300">Eje 1 · Subplanta racional exacta · Separador Atómico ({a1.status})</div>
+                  <div className="font-semibold text-emerald-300">Eje 1 · Subplanta racional exacta + No-Factorizabilidad Nodal ({a1.status})</div>
                   <div className="text-[11px] text-gray-200">
                     {a1.primary_field} ({a1.minimal_polynomial}): δ_int = {a1.delta_int} · error producto ≥ {a1.minimax_product_error} · F₃² δ_int = {a1.odd_prime_f3_d2_delta_int} · control reducible A=I: δ_int = {a1.reducible_control_A_eq_I_delta_int}
+                    {a1.nodal_inter_sector_coupling_ratio != null ? ` · inter-sector = ${a1.nodal_inter_sector_coupling_ratio} · flujo NF = ${a1.nodal_non_factorizability_flux}` : ''}
                   </div>
                 </div>
                 <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
-                  <div className="font-semibold text-emerald-300">Eje 2 · Subplanta racional 5 raíces · Consulta Tardía B &lt; m ({a2.status})</div>
+                  <div className="font-semibold text-emerald-300">Eje 2 · Subplanta 5 raíces + Sincronía Nodo–Torre ({a2.status})</div>
                   <div className="text-[11px] text-gray-200">
                     G = {a2.fifth_contrast_G} · margen ruidoso = {a2.noisy_penalized_margin} (&gt; G/2 ante lectura cruda ε ≤ G/1024 + costo B·w_c) · (m,B)=(2,1) = {a2.m2_b1_optimal_partition_mean} · corte T_d = {a2.td_cut_eta_zero_contrast} · réplica total R = {a2.equal_cost_total_replica_R} · ref. invertida = {a2.inverted_reference_R}
+                    {a2.bridge_nodal_sync_index != null ? ` · sync nodo–torre = ${a2.bridge_nodal_sync_index} (modo ${a2.live_coupling_mode}, η = ${a2.live_effective_eta})` : ''}
                   </div>
                 </div>
                 <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
@@ -4114,12 +4160,29 @@ MODOS DE INTEGRIDAD Y SOLO MOTOR
                   </div>
                 </div>
                 <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
-                  <div className="font-semibold text-emerald-300">Eje 4 · Telemetría acoplada viva · 1500 Nodos + Torres ({a4.status})</div>
+                  <div className="font-semibold text-emerald-300">Eje 4 · Salud Dinámica 1500 Nodos + Torres ({a4.status} · {a4.health_tier})</div>
                   <div className="text-[11px] text-gray-200">
-                    Retención activa = {a4.active_retention_rational} · cuerpo-mundo = {a4.body_world_contraction_rational} · defecto exacto T_d = {a4.sigma_exact_defect} (cota {a4.sigma_defect_bound_rational}) · reserva Φ⁷ = {a4.informed_reserve_phi7_rational} · cargas D/V/W/A/E/T rango {a4.local_burdens_rank} ({a4.local_burdens_min_margin_rational})
+                    CCC = {a4.ccc} · X_N = {a4.x_n} · estasis = {a4.stasis_index} · retención activa = {a4.active_retention_rational} · cuerpo-mundo = {a4.body_world_contraction_rational} · defecto exacto T_d = {a4.sigma_exact_defect} (cota {a4.sigma_defect_bound_rational}) · reserva Φ⁷ = {a4.informed_reserve_phi7_rational} · cargas D/V/W/A/E/T rango {a4.local_burdens_rank} ({a4.local_burdens_min_margin_rational})
                   </div>
                 </div>
               </div>
+              {liveBridge && liveBridge.mode !== 'off' && Array.isArray(liveBridge.sectors) && (
+                <div data-testid="nodal-tower-bridge-sectors" className="mt-2 rounded border border-cyan-800/60 bg-gray-900/70 p-2 text-[11px] text-cyan-100">
+                  <div className="font-semibold text-cyan-300">
+                    Puente Bidireccional Nodo–Torre (4 Sectores · modo {liveBridge.mode} · η = {liveBridge.effective_eta})
+                  </div>
+                  <div className="mt-0.5 text-cyan-100/90">
+                    Inter-sector = {liveBridge.inter_sector_coupling_ratio} · flujo cruzado = {liveBridge.inter_sector_signal_flux} · no-factorizabilidad nodal = {liveBridge.nodal_non_factorizability_flux} · sincronía nodo–torre = {liveBridge.bridge_nodal_sync_index}
+                  </div>
+                  <div className="mt-1 grid grid-cols-2 gap-1 sm:grid-cols-4 font-mono text-[10px]">
+                    {liveBridge.sectors.map((sec) => (
+                      <div key={sec.key} className="rounded bg-slate-950/80 px-1.5 py-1 border border-cyan-900/50">
+                        <span className="text-cyan-300">{sec.key}</span>: coh={sec.mean_coherence.toFixed(3)} · R={sec.phase_order_r.toFixed(3)} · flux={sec.inter_flux.toFixed(2)}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <p className="mt-1.5 break-all font-mono text-[10px] text-emerald-300/80">
                 decision_digest (SHA-256): {liveEndogenous.decision_digest} · llm_is_translator_only = true · external_support_certified = false (auditoría externa abierta; no veta el veredicto endógeno)
               </p>
@@ -8705,6 +8768,24 @@ return (
               <option value="off">off (línea base)</option>
               <option value="non_stationary_regime">non_stationary_regime</option>
               <option value="stationary_iid_sham">stationary_iid_sham</option>
+            </select>
+          </div>
+          <div className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs border bg-slate-900/70 border-cyan-800/60 text-slate-200">
+            <label htmlFor="nodal-coupling-mode-select" className="font-semibold text-cyan-200 whitespace-nowrap">
+              Puente Nodo–Torre
+            </label>
+            <select
+              id="nodal-coupling-mode-select"
+              data-testid="nodal-coupling-mode-select"
+              value={nodalCouplingMode}
+              onChange={(e) => handleNodalCouplingModeChange(e.target.value)}
+              className="bg-slate-800 border border-cyan-700/80 rounded px-2 py-1 text-[11px] font-mono text-cyan-200 focus:outline-none focus:border-cyan-400"
+              title="Acoplamiento bidireccional entre los 4 sectores de 1500 nodos y las torres constructivas (controles negativos reales: corte η=0 y reducible A=I)"
+            >
+              <option value="bidirectional">bidirectional (η=1/8)</option>
+              <option value="td_cut_eta_zero">td_cut_eta_zero (η=0)</option>
+              <option value="reducible_control">reducible_control (A=I)</option>
+              <option value="off">off (compat B0)</option>
             </select>
           </div>
         </div>

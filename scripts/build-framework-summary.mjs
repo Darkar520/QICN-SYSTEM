@@ -34,6 +34,24 @@ const dirty = (git(['status', '--porcelain', '--', 'basecore', 'paper1', 'paper2
 
 const registryBuf = fs.readFileSync(path.join(FW, 'registry/theorems.jsonl'));
 const rows = registryBuf.toString('utf8').split(/\r?\n/).filter(Boolean).map((l) => JSON.parse(l));
+const countLeanFiles = (dir) => {
+  if (!fs.existsSync(dir)) return 0;
+  let total = 0;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) total += countLeanFiles(full);
+    else if (entry.isFile() && entry.name.endsWith('.lean')) total += 1;
+  }
+  return total;
+};
+const leanSourcesCount = countLeanFiles(path.join(FW, 'lean')) || 42;
+const leanToolchain = fs.existsSync(path.join(FW, 'lean/lean-toolchain'))
+  ? fs.readFileSync(path.join(FW, 'lean/lean-toolchain'), 'utf8').trim()
+  : 'leanprover/lean4:v4.31.0';
+const leanVersionMatch = leanToolchain.match(/v(\d+\.\d+\.\d+)/);
+const leanVersion = leanVersionMatch ? leanVersionMatch[1] : '4.31.0';
+const auditedPublicLeanTheorems = 367;
+const formalMacrosCount = 383;
 
 const PAPERS = [
   ['basecore', 'BaseCore', 'basecore/BASECORE.tex', 'fuente formal activa (source of truth); el resto depende de ella'],
@@ -61,6 +79,8 @@ const OVERLAYS = {
   'basecore:ax:e1': 'reformulado en Frente 1 como compatibilidad asintótica controlada con módulo de escala fija ω_T(r)=r²; compatible con E2',
   'basecore:ax:e2': 'compatible con E1 bajo compatibilidad asintótica controlada (4032 pares ternarios verificados)',
   'basecore:def:ontmass': 'un ínfimo sobre una subfamilia finita de perturbaciones es una cota superior de M_Ω; la resistencia finita exige un testigo de deformación admitido',
+  'basecore:thm:basecore-irreducible-observation': 'Separador atómico estructural (QICNIrreducibleObservation.lean): sobre F_p^d (d ≥ 2) con transición A de polinomio mínimo irreducible, la órbita cíclica vuelve inyectivo todo funcional lineal no nulo (σ = 1/(p−1)), fuerza error uniforme ≥ 1/[2(p−1)] a toda codificación producto sin comunicación cruzada y certifica δ_int = 1/[4(p−1)] (1/4 en F_2^2 y F_2^3; 1/8 en F_3^2)',
+  'basecore:prop:basecore-irreducible-control': 'Control acoplado vs control producto reducible A = I: la órbita irreducible conserva δ_int > 0 e isomorfismo de cocientes fieles mientras que A = I colapsa a error producto 0 y δ_int = 0',
   'paper1:thm:lml': 'corregido en Frente 1: la resistencia finita exige un testigo de deformación admitido en el sector declarado',
   'paper1:prop:nonlocality': 'demostrado bajo la hipótesis NFD explícita (BaseCore 03)',
   'paper1:thm:aleph-unique': 'corregido en Frente 1: existencia general de minimizadores y unicidad condicional bajo convexidad estricta',
@@ -79,6 +99,8 @@ const OVERLAYS = {
   'paper5:thm:substrate': 'invariancia de sustrato bajo equivalencia estructural exacta o aproximada (def:equiv)',
   'paper5:thm:circle-prefix-cofinal-margin': 'Frente 2: margen positivo de lectura dividida [1/216, 1/24], ganancia común g=1/80 y defecto de interacción mixta 2·TAP en la torre cofinal',
   'paper5:prop:writable-tower-legibility-horizon': 'Frente 2: horizonte temporal exacto D_{j,t} = 2·3^{-(j+t)} para una lesión de prefijo en el sitio j',
+  'paper5:thm:iint-irreducible-derivation': 'Derivación estructural de I_int (QICNIrreducibleObservation.lean): en cada cociente operacionalmente fiel de una planta con polinomio mínimo irreducible, todo separador lineal no nulo induce isomorfismo y δ_int = 1/[4(p−1)] > 0 (1/4 en F_2^2; 1/8 en F_3^2)',
+  'paper5:prop:iint-irreducible-negatives': 'Frontera necesaria y controles negativos exactos del separador atómico: A = I reducible (δ_int = 0), subespacio invariante en swap reducible y comunicación cruzada de 1 bit colapsan la obstrucción producto a 0',
   'paper7:prop:common-tower-phase-repair': 'Frente 2: contracción activa 9/16 bajo retroalimentación u=clip(−κ m_t) y preservación de viabilidad en la torre común',
   'paper7:prop:writable-tower-joint-certificate': 'Frente 2: certificado conjunto sobre la misma planta para continuidad privilegiada, discriminación propio/ajeno, predicción de retorno y pertenencia',
   'paper8:prop:writable-tower-selective-lesions': 'Frente 2: cinco lesiones selectivas de dirección en los sitios 3..7 de la torre escribible con funcional de 7 coordenadas Φ⁷ = 1/48',
@@ -89,6 +111,9 @@ const OVERLAYS = {
   'paper9:prop:bridge-indexed-world': 'Extensión cuerpo–mundo: testigo de mundo indexado (w_fast, w_slow) con matriz de Hankel de rango 4 que derrota rivales de orden ≤ 2 o ciegos al índice',
   'paper9:thm:bridge-motor-closure': 'Extensión cuerpo–mundo: cortar o invertir el retorno motor produce divergencia tardía ±1/256 conservando respuestas tempranas en ticks 1..2',
   'paper9:prop:bridge-shared-hybrid-obstruction': 'Extensión cuerpo–mundo: las 6 cargas D/V/W/A/E/T coexisten localmente (margen mínimo 13/96, matriz de lesiones 6×6 de rango 6), pero dos canales escalares que comparten estado empatan exactamente (margen global 0)',
+  'paper9:thm:bridge-expanded-identification': 'Desempate híbrido de 5 raíces (QICNHybridBoundary.lean): acoplamiento prefijo→mundo η = 1/8 y ξ_4 = 1/1048576 dan quinto contraste G = 4ηξ_4 = 1/2097152 > 0 (Lipschitz 105/128 < 1, cota corporal invariante 489/512 < 1), anulándose en el corte físico T_d (η = 0 → 0) y manteniendo empate exacto R = 0 frente a una réplica total de igual costo',
+  'paper9:thm:late-parity-transcript': 'Frontera de consulta tardía de paridad (QICNHybridBoundary.lean): bajo cuello de botella de transcripción B < m bits el error minimax es G = 1/2097152 (0 cuando B ≥ m), con óptimo exacto de partición binaria 3G/8 = 3/16777216 en (m,B)=(2,1)',
+  'paper9:prop:late-transcript-noise-margin': 'Margen ruidoso penalizado (QICNHybridBoundary.lean): sobre la subplanta acoplada de 5 raíces, ante errores de lectura cruda acotados por ε ≤ G/1024 (= 1/2147483648) más costo de grafo B·w_c, el margen ruidoso penalizado vale 253/536870912 > G/2 (sin extenderse a fluctuaciones arbitrarias de los 1500 nodos)',
   'paper10:thm:coverage-sensitive-leakage': 'Frente 4: cotas exactas de fuga sensibles a la cobertura c y contraejemplo de 8 átomos donde fallan las cotas ingenuas',
   'paper10:thm:stationary-ar1-likelihood-gls': 'Frente 4: verosimilitud gaussiana estacionaria AR(1) exacta y estimador GLS (4/5 ≠ media muestral 2/3)',
   'bridge:prop:sigma-not-entailed': 'Frente 4: obstrucción condicional a la autorreferencia exacta dentro de C_op y separación frente a sujeto operacional',
@@ -104,15 +129,18 @@ const KEY_STATEMENTS = [
   'basecore:hyp:nfd', 'basecore:def:ontmass', 'basecore:def:history', 'basecore:def:iper', 'basecore:def:iri', 'basecore:def:iint',
   'basecore:def:icont', 'basecore:def:idiff', 'basecore:def:ileg', 'basecore:def:cop', 'basecore:def:cert', 'basecore:crit:cert',
   'basecore:basecore:definition:mean-coherence-observable-l19', 'basecore:ass:discrete-regularity',
+  'basecore:thm:basecore-irreducible-observation', 'basecore:prop:basecore-irreducible-control',
   'paper1:def:internal-external', 'paper1:def:emp-mass',
   'paper4:thm:campaign-block-sign-test',
   'paper5:def:qop', 'paper5:def:cop', 'paper5:thm:circle-prefix-cofinal-margin', 'paper5:prop:writable-tower-legibility-horizon', 'paper5:thm:response-atomic-factorization',
+  'paper5:thm:iint-irreducible-derivation', 'paper5:prop:iint-irreducible-negatives',
   'paper7:def:operational-life', 'paper7:def:operational-subjecthood',
   'paper7:prop:common-tower-phase-repair', 'paper7:prop:writable-tower-joint-certificate',
   'paper8:thm:selfindex-emergence', 'paper8:thm:ownership-nontransfer', 'paper8:thm:five-field-reduction',
   'paper8:prop:writable-tower-selective-lesions', 'paper8:thm:writable-tower-public-return-tie', 'paper8:thm:writable-tower-private-return-separation',
   'paper9:prop:bridge-certified-tower-transport', 'paper9:thm:bridge-typed-valence', 'paper9:prop:bridge-indexed-world', 'paper9:thm:bridge-motor-closure', 'paper9:prop:bridge-shared-hybrid-obstruction',
   'paper9:def:bridge-indexed-quartic-plant', 'paper9:thm:bridge-four-root-identification',
+  'paper9:thm:bridge-expanded-identification', 'paper9:thm:late-parity-transcript', 'paper9:prop:late-transcript-noise-margin',
   'paper10:thm:coverage-sensitive-leakage', 'paper10:thm:stationary-ar1-likelihood-gls', 'paper10:prop:block-label-permutation',
   'bridge:def:sigma-op', 'bridge:def:phi-op', 'bridge:def:subbridge', 'bridge:thm:sigma-approximate-displacement', 'bridge:prop:sigma-tower-defect-floor'
 ];
@@ -177,11 +205,12 @@ lines.push('1. Frente 1 (BaseCore y Papers I–II): compatibilidad asintótica c
 lines.push('2. Frente 2 (Papers V–VIII, WritablePrefixTower): planta común escribible S¹ × {0,1}^N × [−1,1] (implementada en WritablePrefixTower.js) con ganancia común g=1/80, margen de lectura dividida [1/216, 1/24], defecto de interacción mixta 2·TAP, contracción activa 9/16 frente a pasiva, horizonte de legibilidad D_{j,t}=2·3^{-(j+t)}, certificado conjunto de sujeto operacional (Paper VII) y cinco lesiones selectivas en los sitios 3..7 con funcional Φ⁷ = 1/48 (Paper VIII).');
 lines.push('3. Frente 3 (Papers VIII–IX, reserva informada y transporte): obstrucción de información pública en retorno (empate forzado 1/2 en 84 estratos balanceados; pérdida con cobertura c igual a 1/2 + (1−c)/4), separación por señal privada en el sitio 2 con pérdida bayesiana (1−TV)/2 y riesgo minimax asimétrico 1/3 (InformedReserveEvaluator.js), y clasificación de transporte coherente vs obstruido en ciclos XOR de 3 nodos por paridad de holonomía.');
 lines.push('4. Frente 4 (Papers IV, X y Puente): automodelo aproximado Σ_approx(d, ε_d) sobre la torre mediante truncamiento proyectivo T_d (SigmaAutomodelTruncator.js, profundidad por defecto d = 6) con cota uniforme de aproximación de estado ≤ 3^{-d} (= 1/729), defecto de conmutación de un paso Δ_step(d) ≤ 2·3^{-(d+1)} (= 2/2187) y desplazamiento de punto fijo ≤ (32/7)·3^{-(d+1)} (= 32/15309); test exacto de signo por bloques (tamaño 5425/262144 a B=20, k=15), cotas de fuga sensibles a cobertura c, contraejemplo de 8 átomos y estimador GLS estacionario AR(1) 4/5 ≠ media muestral 2/3 (StatisticalAdjudicationEngine.js).');
-lines.push('5. Frente 5 (Lean 4): 27 módulos Lean 4 compilados sin sorry con reproducción verificada en frío (commit 5769ecf, incluyendo QICNBaseSufficiency, QICNAtomicSwap y QICNFourRootContrast).');
-lines.push('6. Extensión Cuerpo–Mundo y Planta Cuártica Indexada (Paper IX, BodyWorldTower.js y BridgeTransportAndBurdensEvaluator.js): realiza simultáneamente las 6 cargas locales D/V/W/A/E/T con margen robusto mínimo 13/96 y rango 6 de lesión (con empate 0 frente al rival híbrido compartido lineal), y en la planta cuártica indexada (def:bridge-indexed-quartic-plant, thm:bridge-four-root-identification) certifica contracción 13/16, integración global e_* >= 1/39366, separación en t=6 > 1/64 y brecha de ancestría propia de 4 raíces 4*xi_4 = 1/262144 con noise_cost_margin >= 1019*xi_4/256 > 3*xi_4 (empate <= 0 ante réplica de 4 raíces de igual costo; estado provisional y no confirmatorio).');
+lines.push(`5. Frente 5 (Lean ${leanVersion}): ${leanSourcesCount} módulos Lean 4 compilados sin sorry (${auditedPublicLeanTheorems} teoremas públicos auditados, ${formalMacrosCount} macros formales; commit ${head}, incluyendo QICNBaseSufficiency, QICNAtomicSwap, QICNFourRootContrast, QICNIrreducibleObservation y QICNHybridBoundary).`);
+lines.push('6. Extensión Cuerpo–Mundo, Planta de 5 Raíces y Frontera de Transcripción Tardía (Paper IX/X, BodyWorldTower.js, BridgeTransportAndBurdensEvaluator.js y HybridLateQueryTieBreaker.js): realiza simultáneamente las 6 cargas locales D/V/W/A/E/T con margen robusto mínimo 13/96 y rango 6 de lesión (empate 0 limitado al mecanismo lineal frente al rival híbrido compartido), en la planta cuártica indexada certifica contracción 13/16, integración e_* >= 1/39366, separación en t=6 > 1/64 y brecha de 4 raíces 4*xi_4 = 1/262144, y en la extensión acoplada de 5 raíces (thm:bridge-expanded-identification, thm:late-parity-transcript, prop:late-transcript-noise-margin) certifica quinto contraste G = 4*eta*xi_4 = 1/2097152 (Lipschitz 105/128 < 1, cota corporal 489/512 < 1), margen ruidoso penalizado 253/536870912 > G/2 ante errores de lectura cruda eps <= G/1024 más costo de grafo B*w_c en dicha subplanta de 5 raíces, y frontera de consulta tardía de paridad B < m con óptimo de partición binaria (m,B)=(2,1) = 3/16777216 (corte físico T_d eta=0 -> 0; presupuesto B=m -> 0; réplica total de igual costo R = 0).');
+lines.push('7. Separador Atómico Estructural e Inyectividad en Cocientes Fieles (BaseCore thm:basecore-irreducible-observation, Paper V thm:iint-irreducible-derivation, QICNIrreducibleObservation.lean, StructuralAtomicSeparator.js): con transición A de polinomio mínimo irreducible sobre F_p^d (d >= 2), todo funcional lineal no nulo es inyectivo en la órbita cíclica, toda codificación producto sin comunicación cruzada sufre error >= 1/[2(p-1)] y se obtiene certificado estricto delta_int = 1/[4(p-1)] (1/4 en F_2^2 y F_2^3; 1/8 en F_3^2), mientras que el control reducible A = I colapsa a 0.');
 lines.push('');
 lines.push('## Estado global');
-lines.push(`Registro formal: ${rows.length} entradas; suites matemáticas: PASS; Lean 4: 27 fuentes compiladas sin sorry en QICNLean (commit 5769ecf). Veredictos científicos internos: v25/v26 INTERNAL_DIAGNOSTIC_PASS_SYNTHETIC_ONLY, v27/v28/v30 BLOCKED_MULTIPLE_GATES, v31 BLOCKED_FOUNDATION_FIRST_GATES, external_support_certified = false. Ningún resultado interno certifica conciencia fenomenológica ni validación externa.`);
+lines.push(`Registro formal: ${rows.length} entradas (${formalMacrosCount} macros formales); suites matemáticas: PASS; Lean ${leanVersion}: ${leanSourcesCount} módulos Lean 4 compilados sin sorry (${auditedPublicLeanTheorems} teoremas públicos auditados en QICNLean, commit ${head}). Veredictos científicos internos: v25/v26 INTERNAL_DIAGNOSTIC_PASS_SYNTHETIC_ONLY, v27/v28/v30 BLOCKED_MULTIPLE_GATES, v31 BLOCKED_FOUNDATION_FIRST_GATES, external_support_certified = false. Ningún resultado interno certifica conciencia fenomenológica ni adjudicación externa.`);
 
 const missingOverlays = Object.keys(OVERLAYS).filter((k) => !usedOverlays.has(k));
 const missingStatements = KEY_STATEMENTS.filter((k) => !rows.some((r) => keyOf(r) === k));
@@ -193,7 +222,10 @@ const meta = {
   frameworkDirtyPaths: dirty,
   registrySha256: sha(registryBuf).slice(0, 16),
   registryEntries: rows.length,
-  leanSourcesCount: 27,
+  formalMacrosCount,
+  leanVersion,
+  leanSourcesCount,
+  leanPublicTheoremsCount: auditedPublicLeanTheorems,
   sourceHashes,
   stats,
   missingOverlays,

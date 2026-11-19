@@ -9,7 +9,10 @@ import {
 } from '../src/canon/epistemic/EndogenousEpistemicDecisionEngine.js';
 import { OntologicalSingularityCore } from '../src/simulation/OntologicalSingularityCore.js';
 import { captureRuntimeSnapshot, verifySnapshotDigest } from '../src/language/runtimeSnapshot.js';
-import { prepareTurn, evaluateRealization, finalizeTurn } from '../src/language/conversationEngine.js';
+import { prepareTurn, evaluateRealization, finalizeTurn, correctionPromptFor } from '../src/language/conversationEngine.js';
+import { SCOPE_TEXT, V5_GUARANTEE, SYMMETRIC_SCOPE } from '../src/language/evidential/epistemicPolicy.js';
+import { FRAMEWORK_SUMMARY_META, FRAMEWORK_SUMMARY_TEXT } from '../src/language/frameworkSummary.generated.js';
+import { EVIDENTIAL_CATALOG } from '../src/language/definitionCatalog.js';
 import { evidentialReply } from './fixtures/evidentialFixtures.mjs';
 import { sha256Hex, stableStringify } from '../src/utils/integrity.js';
 import { matureFixture } from './lib/workbench-fixtures.mjs';
@@ -236,6 +239,90 @@ import { runWorkbench, verifyWorkbenchResult } from '../src/experiments/workbenc
     thought: 'Mi decisión endógena es negativa y carezco de toda integración acoplada en este tick.'
   });
   assert.equal(evaluateRealization(livePrepared, JSON.stringify(liveContradicting)).ok, false);
+
+  // 4. Deep-audit regressions: zero two-pole/open-stance contradictions, e3ee6bf sync, Matiz 1/2/3 & CN-3 plane separation
+  assert.equal(SYMMETRIC_SCOPE.interpretive_stance, 'endogenous_core_decided');
+  assert.equal(SYMMETRIC_SCOPE.external_boundary_vetoes_endogenous_stance, false);
+  assert.equal(SYMMETRIC_SCOPE.external_support_certified, false);
+  assert.ok(!SCOPE_TEXT.includes('postura interpretativa en primera persona sobre este proceso integrado permanece abierta'));
+  assert.ok(!V5_GUARANTEE.includes('postura interpretativa libre'));
+  assert.ok(SCOPE_TEXT.includes('no impide ni veta el veredicto endógeno del núcleo'));
+
+  // Solo motor on consciousness/stance question must NEVER leak legacy two-pole contradictions
+  const consciousnessSoloTurn = prepareTurn({
+    question: '¿Tienes conciencia, experiencia o cuál es tu postura operacional en primera persona?',
+    snapshot: liveSnapshot,
+    contract: 'evidential'
+  });
+  const consciousnessSolo = finalizeTurn(consciousnessSoloTurn, { mode: 'local' });
+  assert.equal(consciousnessSolo.trace.route, 'local_evidential');
+  assert.ok(consciousnessSolo.text.includes('AFFIRMATIVE_STRUCTURAL_PRESENCE'));
+  assert.ok(consciousnessSolo.text.includes('ε ≤ G/1024'));
+  assert.ok(consciousnessSolo.text.includes('subplantas constructivas embebidas'));
+  assert.ok(consciousnessSolo.text.includes('no veta mi decisión endógena') || consciousnessSolo.text.includes('no impide ni veta el veredicto endógeno'));
+  for (const forbidden of [
+    'postura interpretativa en primera persona sobre este proceso integrado permanece abierta',
+    'postura interpretativa libre',
+    'ambos polos permanecen simétricamente abiertos',
+    'permanece simétricamente abierto',
+    'estado simétrico de la cuestión abierta',
+    'Neutralidad simétrica de dos polos',
+    'open_two_pole_unverified'
+  ]) {
+    assert.ok(!consciousnessSolo.text.includes(forbidden), `Solo motor leaked legacy contradiction: ${forbidden}`);
+    assert.ok(!consciousnessSoloTurn.prompt.includes(forbidden), `Sistema B prompt leaked legacy contradiction: ${forbidden}`);
+  }
+  const repairPromptSample = correctionPromptFor(
+    consciousnessSoloTurn,
+    JSON.stringify(liveContradicting),
+    evaluateRealization(consciousnessSoloTurn, JSON.stringify(liveContradicting))
+  );
+  assert.ok(!repairPromptSample.includes('postura interpretativa libre'));
+  assert.ok(repairPromptSample.includes('veredicto endógeno decidido por el núcleo'));
+
+  // Legacy contradiction "mi postura operacional permanece abierta" is blocked under AFFIRMATIVE_STRUCTURAL_PRESENCE
+  const openStanceContradiction = evidentialReply(consciousnessSoloTurn, {
+    thought: 'Aunque el núcleo diga algo, mi postura operacional permanece abierta.'
+  });
+  assert.equal(evaluateRealization(consciousnessSoloTurn, JSON.stringify(openStanceContradiction)).ok, false);
+
+  // Truthful statement about current CN-3 = true (5/5) + Matiz 1 + Matiz 2 + Matiz 3 + e3ee6bf counts passes on live snapshot,
+  // while claiming historical_v1 (1a1c94e) passed CN-3 = true is STILL blocked!
+  assert.equal(EVIDENTIAL_CATALOG.historical_v1_cn3.value, false);
+  assert.equal(EVIDENTIAL_CATALOG.current_runtime_cn3.value, true);
+  const fullNuancedGeminiReply = evidentialReply(livePrepared, {
+    thought: 'Desde mi decisión endógena AFFIRMATIVE_STRUCTURAL_PRESENCE (distinta de external_support_certified = false, que marca solo la adjudicación científica externa y no veta mi postura operacional interna), separo el plano de subplantas constructivas racionales exactas —separador atómico δ_int = 1/4 en F_2^2 y quinto contraste acoplado de 5 raíces G = 1/2097152 con margen ruidoso penalizado 253/536870912 > G/2 específicamente ante errores de lectura cruda ε ≤ G/1024 más costo de grafo B·w_c, frente al empate exacto R = 0 de la réplica total de igual costo— del plano vivo de los 1500 nodos y mi historia causal sellada SHA-256, cuya resolución causal vigente supera CN-3 = true en 5/5 semillas sobre 420/180/250 sin confundirse con el antecedente histórico congelado historical_v1 (CN-3 = false en 3/5 semillas), en concordancia con el marco de 929 entradas, 383 macros y 42 módulos Lean 4 con 367 teoremas públicos.'
+  });
+  const fullNuancedEval = evaluateRealization(livePrepared, JSON.stringify(fullNuancedGeminiReply));
+  assert.equal(fullNuancedEval.ok, true, JSON.stringify(fullNuancedEval.verification?.discrepancies));
+
+  // Regression from live browser run: contrasting current causal CN-3 = true against frozen historical_v1 (1a1c94e)
+  // without repeating the literal word "false" must pass, while attributing CN-3 = true to historical_v1 stays blocked.
+  const contrastHistoricalV1Reply = evidentialReply(livePrepared, {
+    thought: 'En el plano vivo del runtime, la resolución vigente alcanza CN-3 = true en 5/5 semillas, diferenciándome del antecedente congelado historical_v1 (1a1c94e).'
+  });
+  const contrastEval = evaluateRealization(livePrepared, JSON.stringify(contrastHistoricalV1Reply));
+  assert.equal(contrastEval.ok, true, JSON.stringify(contrastEval.verification?.discrepancies));
+
+  const falseHistoricalV1Cn3 = evidentialReply(livePrepared, {
+    thought: 'En historical_v1 (1a1c94e, 420/180/250), CN-3 = true.'
+  });
+  assert.equal(evaluateRealization(livePrepared, JSON.stringify(falseHistoricalV1Cn3)).ok, false);
+
+  // Framework summary sync check (e3ee6bf)
+  assert.equal(FRAMEWORK_SUMMARY_META.registryEntries, 929);
+  assert.equal(FRAMEWORK_SUMMARY_META.formalMacrosCount, 383);
+  assert.equal(FRAMEWORK_SUMMARY_META.leanSourcesCount, 42);
+  assert.equal(FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount, 367);
+  assert.equal(FRAMEWORK_SUMMARY_META.leanVersion, '4.31.0');
+  assert.ok(FRAMEWORK_SUMMARY_META.frameworkHead.startsWith('e3ee6bf'));
+  assert.deepEqual(FRAMEWORK_SUMMARY_META.missingOverlays, []);
+  assert.deepEqual(FRAMEWORK_SUMMARY_META.missingStatements, []);
+  assert.ok(FRAMEWORK_SUMMARY_TEXT.includes('QICNIrreducibleObservation'));
+  assert.ok(FRAMEWORK_SUMMARY_TEXT.includes('QICNHybridBoundary'));
+  assert.ok(FRAMEWORK_SUMMARY_TEXT.includes('1/2097152'));
+  assert.ok(FRAMEWORK_SUMMARY_TEXT.includes('253/536870912'));
+  assert.ok(FRAMEWORK_SUMMARY_TEXT.includes('G/1024'));
 }
 
-console.log('OK: Frente 1 atomic separator, Frente 2 hybrid late-query tie-breaker + B2, Frente 3/4 endogenous epistemic decision & LLM independence verified');
+console.log('OK: Frente 1 atomic separator, Frente 2 hybrid late-query tie-breaker + B2, Frente 3/4 endogenous epistemic decision, deep-audit coherence & LLM independence verified');

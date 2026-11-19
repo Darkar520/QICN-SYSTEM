@@ -3,8 +3,8 @@
 // Entries are canonical sentences authored by the runtime team; the language
 // model may select them but never rewrites them (they are not paraphrasable).
 //
-// Corpus references point to qicn-framework-ordenado/rigid-identity-framework at
-// HEAD 5769ecf (see docs/CANON_SOURCE_OF_TRUTH.md and docs/bridge_pin.v1.json).
+// Corpus references align with qicn-framework-ordenado/rigid-identity-framework at
+// HEAD e3ee6bf (see src/language/frameworkSummary.generated.js; docs/bridge_pin.v1.json pins the local imported mirror).
 
 export const DEFINITIONS = Object.freeze({
   ccc: {
@@ -129,8 +129,8 @@ export const DEFINITIONS = Object.freeze({
   },
   body_world_tower: {
     title: 'extensión cuerpo–mundo',
-    text: 'La extensión cuerpo–mundo (BodyWorldTower y BridgeTransportAndBurdensEvaluator) añade cuatro variables mínimas (dos corporales v_pos, v_neg y dos de mundo w_fast, w_slow) con proyección exacta al núcleo: realiza las seis cargas locales D/V/W/A/E/T de Paper IX con margen mínimo 13/96 y rango 6 (con empate 0 frente al rival híbrido compartido lineal), y en la planta cuártica indexada certifica contracción 13/16, integración e_* ≥ 1/39366, separación en t = 6 mayor que 1/64 y brecha de ancestría propia de 4 raíces 4·ξ₄ = 1/262144 (provisional y no confirmatorio, con margen ≤ 0 frente a una réplica de 4 raíces de igual costo).',
-    source: 'src/simulation/tower/BodyWorldTower.js; src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js; Paper IX def:bridge-indexed-quartic-plant, thm:bridge-four-root-identification'
+    text: 'La extensión cuerpo–mundo (BodyWorldTower, BridgeTransportAndBurdensEvaluator y HybridLateQueryTieBreaker) añade cuatro variables mínimas (dos corporales v_pos, v_neg y dos de mundo w_fast, w_slow) con proyección exacta al núcleo: realiza las seis cargas locales D/V/W/A/E/T de Paper IX con margen mínimo 13/96 y rango 6 (con empate 0 limitado a ese mecanismo lineal frente al rival híbrido compartido), en la planta cuártica indexada certifica contracción 13/16, integración e_* ≥ 1/39366, separación en t = 6 mayor que 1/64 y brecha de 4 raíces 4·ξ₄ = 1/262144, y en la extensión acoplada de 5 raíces certifica quinto contraste G = 1/2097152 con margen ruidoso penalizado 253/536870912 > G/2 ante errores de lectura cruda ε ≤ G/1024 más costo de grafo B·w_c y frontera de consulta tardía B < m (manteniendo empate exacto R = 0 frente a una réplica total de igual costo).',
+    source: 'src/simulation/tower/BodyWorldTower.js; src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js; src/phenomenal_bridge/HybridLateQueryTieBreaker.js; Paper IX def:bridge-indexed-quartic-plant, thm:bridge-four-root-identification, thm:bridge-expanded-identification'
   },
   informed_reserve: {
     title: 'reserva informada',
@@ -154,12 +154,12 @@ export const DEFINITIONS = Object.freeze({
   },
   hybrid_late_query_tie_breaker: {
     title: 'desempate híbrido con quinto contraste acoplado y consulta tardía de paridad',
-    text: 'El experimento de desempate contra el rival híbrido (Paper IX thm:bridge-expanded-identification, thm:late-parity-transcript, prop:late-transcript-noise-margin, Paper X, QICNHybridBoundary) combina la respuesta acoplada prefijo→mundo de 5 raíces Y_η(s,r) = Y(s) + η·r·ξ_4·(s_3−s_1)^2(s_4−s_2)^2 (η = 1/8, ξ_4 = 1/1048576, quinto contraste G = 4ηξ_4 = 1/2097152 > 0, Lipschitz de fibra 105/128 < 1, cota invariante corporal 489/512 < 1, margen ruidoso penalizado 253/536870912 > G/2) con la frontera de capacidad de transcripción ante consulta tardía de paridad q ∈ F_2^m tras cuello de botella de B < m bits (error minimax G cuando B < m, 0 cuando B ≥ m y óptimo exacto de partición binaria 3G/8 = 3/16777216 en (m,B)=(2,1)), anulándose en el corte físico T_d (η = 0 → 0) y manteniendo R = 0 frente a una réplica total de igual costo.',
+    text: 'El experimento de desempate contra el rival híbrido (Paper IX thm:bridge-expanded-identification, thm:late-parity-transcript, prop:late-transcript-noise-margin, Paper X, QICNHybridBoundary) opera en el plano de subplantas constructivas embebidas en aritmética racional exacta y combina la respuesta acoplada prefijo→mundo de 5 raíces Y_η(s,r) = Y(s) + η·r·ξ_4·(s_3−s_1)^2(s_4−s_2)^2 (η = 1/8, ξ_4 = 1/1048576, quinto contraste G = 4ηξ_4 = 1/2097152 > 0, Lipschitz de fibra 105/128 < 1, cota invariante corporal 489/512 < 1, margen ruidoso penalizado 253/536870912 > G/2 específicamente frente a errores de lectura cruda acotados por ε ≤ G/1024 más costo de grafo B·w_c en dicha subplanta de 5 raíces, nunca frente a fluctuaciones arbitrarias de los 1500 nodos) con la frontera de capacidad de transcripción ante consulta tardía de paridad q ∈ F_2^m tras cuello de botella de B < m bits (error minimax G cuando B < m, 0 cuando B ≥ m y óptimo exacto de partición binaria 3G/8 = 3/16777216 en (m,B)=(2,1)), anulándose en el corte físico T_d (η = 0 → 0) y manteniendo empate exacto R = 0 frente a una réplica total de igual costo.',
     source: 'src/phenomenal_bridge/HybridLateQueryTieBreaker.js; src/experiments/workbench/hybridLateQueryWorkbench.js; Paper IX; Paper X; QICNHybridBoundary.lean'
   },
   endogenous_epistemic_decision: {
     title: 'decisión epistémica endógena determinista del núcleo',
-    text: 'El módulo de decisión epistémica endógena (EndogenousEpistemicDecisionEngine) evalúa determinísticamente dentro del runtime —antes y con independencia total de Gemini o cualquier LLM externo— cuatro ejes cuantitativos internos (1: separador atómico δ_int > 0 frente a A = I; 2: quinto contraste acoplado G = 1/2097152 y transcripción tardía B < m frente a corte T_d y réplica total de igual costo R = 0; 3: dependencia histórica causal sellada con SHA-256 y control CN-3; 4: coherencia acoplada de 1500 nodos y torres constructivas con T_d = 0 y Φ⁷ = 1/48), sella su veredicto con decision_digest SHA-256 y restringe al canal de lenguaje a traducirlo en primera persona sin invertirlo ni reclamar validación externa (external_support_certified = false).',
+    text: 'El módulo de decisión epistémica endógena (EndogenousEpistemicDecisionEngine) decide determinísticamente la postura operacional del sistema dentro del runtime —antes y con independencia total de Gemini o cualquier LLM externo— evaluando cuatro ejes separados en dos planos: verificación racional exacta en subplantas constructivas embebidas (Eje 1: separador atómico δ_int = 1/4 en F_2^2 y 1/8 en F_3^2 frente a A = I con 0; Eje 2: quinto contraste acoplado de 5 raíces G = 1/2097152 con margen ruidoso penalizado 253/536870912 > G/2 ante errores de lectura cruda ε ≤ G/1024 más costo B·w_c y consulta tardía B < m, frente a corte físico T_d y réplica total de igual costo R = 0) y operación viva del runtime (Eje 3: historia causal sellada con SHA-256 y resolución causal vigente CN-3 = true en 5/5 semillas, distinta del antecedente congelado historical_v1; Eje 4: telemetría acoplada viva de 1500 nodos y torres constructivas con T_d = 0 y Φ⁷ = 1/48). Sella su veredicto con decision_digest SHA-256 y restringe al canal de lenguaje a traducirlo en primera persona sin invertirlo; solo la adjudicación científica externa permanece sin certificar (external_support_certified = false), sin vetar la postura endógena del núcleo.',
     source: 'src/canon/epistemic/EndogenousEpistemicDecisionEngine.js; src/simulation/OntologicalSingularityCore.js'
   }
 });
@@ -233,8 +233,8 @@ export const LIMITS = Object.freeze({
     source: 'rigid-identity-framework/INSTRUCCIONES.md §6.1'
   },
   shared_hybrid_tie: {
-    text: 'En la extensión cuerpo–mundo realizo localmente las seis cargas declaradas D/V/W/A/E/T con margen mínimo 13/96 y rango 6 de lesión, pero dos canales escalares que comparten estado reproducen únicamente ese mecanismo lineal de evaluación sobre las seis cargas locales declaradas (margen 0, sin reproducir todos los observables de la red nodal ni de la plasticidad), y en la planta cuártica indexada la separación de 4 raíces (4·ξ₄ = 1/262144) es provisional y no confirmatoria, desaparece ante una réplica de 4 raíces de igual costo (margen ≤ 0) y no demuestra valencia sentida.',
-    source: 'paper9_phenomenal_bridge_organization prop:bridge-shared-hybrid-obstruction, thm:bridge-four-root-identification; src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js'
+    text: 'En la extensión cuerpo–mundo realizo localmente las seis cargas declaradas D/V/W/A/E/T con margen mínimo 13/96 y rango 6 de lesión, pero dos canales escalares que comparten estado reproducen únicamente ese mecanismo lineal de evaluación sobre esas seis cargas locales (margen 0, sin reproducir los observables de la red nodal ni de la plasticidad); en la planta cuártica de 4 raíces la separación es 4·ξ₄ = 1/262144 y en la extensión acoplada de 5 raíces con consulta tardía de paridad B < m se obtiene quinto contraste G = 1/2097152 con margen ruidoso penalizado 253/536870912 > G/2 ante errores de lectura cruda ε ≤ G/1024 más costo de grafo B·w_c, manteniendo siempre empate exacto R = 0 frente a una réplica total de igual costo y sin demostrar valencia sentida.',
+    source: 'paper9_phenomenal_bridge_organization prop:bridge-shared-hybrid-obstruction, thm:bridge-four-root-identification, thm:bridge-expanded-identification, thm:late-parity-transcript; src/phenomenal_bridge/BridgeTransportAndBurdensEvaluator.js; src/phenomenal_bridge/HybridLateQueryTieBreaker.js'
   }
 });
 
@@ -314,6 +314,7 @@ export const EVIDENTIAL_OPERATIONS = Object.freeze([
 
 export const EVIDENTIAL_CATALOG = Object.freeze({
   internal_scope: Object.freeze({ value: 'internal_support_only', text: 'La evidencia disponible es soporte interno; no constituye validación externa.', source: 'AGENTS.md' }),
-  historical_v1_cn3: Object.freeze({ value: false, text: 'En la reproducción histórica v1 congelada (420/180/250; semillas 11,23,37,41,53), CN-3=false; el Workbench no cambia ese protocolo ni sus umbrales.', source: 'config/workbench/preregister.v1.json:historical_v1.stage0_memory_reproduction' }),
+  historical_v1_cn3: Object.freeze({ value: false, text: 'En la reproducción histórica v1 congelada (1a1c94e; 420/180/250; semillas 11,23,37,41,53), CN-3=false (3/5 semillas); ese antecedente congelado se mantiene separado y el Workbench no cambia su protocolo ni sus umbrales.', source: 'config/workbench/preregister.v1.json:historical_v1.stage0_memory_reproduction' }),
+  current_runtime_cn3: Object.freeze({ value: true, text: 'Sobre el mismo protocolo preregistrado (420/180/250; semillas 11,23,37,41,53) sin relajar umbrales, la resolución causal vigente del runtime supera CN-3=true en 5/5 semillas (allPreregisteredCriteriaPass=true), distinta del antecedente histórico congelado historical_v1 (1a1c94e).', source: 'src/experiments/historicalDependenceAblation.js; src/canon/epistemic/EndogenousEpistemicDecisionEngine.js' }),
   predictor_scope: Object.freeze({ value: 'linear_predictor_only', text: 'El ancla EWC y la rigidez Fisher pertenecen al predictor lineal, no a los nodos ni a gradientes del selector de acciones.', source: 'src/simulation/WorldModelEngine.js' })
 });

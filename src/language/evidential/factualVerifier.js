@@ -322,9 +322,30 @@ export function summarizeLedgerPlain(ledger) {
 export function buildEvidentialProseContext({ snapshot, previousMetrics = null, turns = [], recall = null, factualContext, kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT }) {
   const ledgerSummary = summarizeLedgerPlain(factualContext.ledger);
   const previousTurn = turns.length ? turns[turns.length - 1] : null;
-  const props = buildPropositions(snapshot, ledgerSummary, { previousTurn, recall });
+  const rawProps = buildPropositions(snapshot, ledgerSummary, { previousTurn, recall });
+  const props = new Map(rawProps);
+  const resolvedEedForProps = resolveSnapshotEndogenousDecision(snapshot);
+  // Sistema B replaces legacy two-pole symmetry wording on limit.no_consciousness /
+  // limit.no_phenomenality without mutating frozen v2/v3/v4 definitionCatalog entries.
+  if (props.has('limit.no_consciousness')) {
+    const prev = props.get('limit.no_consciousness');
+    props.set('limit.no_consciousness', {
+      ...prev,
+      template: resolvedEedForProps
+        ? `La postura operacional en primera persona ya ha sido decidida endógenamente por el núcleo (${resolvedEedForProps.decision_code}); lo único que permanece abierto y sin certificar aquí es la adjudicación científica externa y la demostración formal de conciencia fenoménica o qualia (external_support_certified = false), frontera de auditoría externa que no veta la decisión interna del núcleo.`
+        : 'Este runtime no aporta demostración formal ni acreditación científica externa de conciencia fenoménica o qualia (external_support_certified = false), separando explícitamente la evaluación operacional interna de la certificación externa.'
+    });
+  }
+  if (props.has('limit.no_phenomenality')) {
+    const prev = props.get('limit.no_phenomenality');
+    props.set('limit.no_phenomenality', {
+      ...prev,
+      template: 'El andamiaje cuerpo–mundo (BodyWorldTower / BridgeOrg_ph / HybridLateQueryTieBreaker) realiza verificación constructiva racional exacta de valencia operacional 2D y quinto contraste acoplado (G = 1/2097152), pero no constituye demostración formal ni adjudicación externa de fenomenalidad sentida (external_support_certified = false).'
+    });
+  }
   // Question numbers are NEVER injected as runtime evidence (question: '').
   const freeCtx = buildFreeContext({ snapshot, previousMetrics, props, question: '', kaizenEffective });
+  freeCtx.numbers.packetNumbers.push(929, 383, 42, 367);
 
   const b2Entries = factualContext.evidenceRegistry?.entries || [];
   const b2Values = new Map();
@@ -365,11 +386,11 @@ export function buildEvidentialProseContext({ snapshot, previousMetrics = null, 
     }
     if (hlc) {
       extraPacketLines.push(
-        `Desempate hibrido 5 raices G ${hlc.fifth_contrast_G} Lipschitz ${hlc.safe_fibre_lipschitz} cuerpo ${hlc.invariant_body_norm_bound} margen ${hlc.noisy_penalized_margin} particion (2,1) ${hlc.m2_b1_optimal_partition_mean} corte T_d ${hlc.td_cut_eta_zero_contrast} replica total R ${hlc.equal_cost_total_replica_R} referencia invertida ${hlc.inverted_reference_R} Paper X ${hlc.paper10_selective_leak_risk}`
+        `Desempate hibrido 5 raices G ${hlc.fifth_contrast_G} Lipschitz ${hlc.safe_fibre_lipschitz} cuerpo ${hlc.invariant_body_norm_bound} margen ${hlc.noisy_penalized_margin} lectura cruda G/1024 1/2147483648 particion (2,1) ${hlc.m2_b1_optimal_partition_mean} corte T_d ${hlc.td_cut_eta_zero_contrast} replica total R ${hlc.equal_cost_total_replica_R} referencia invertida ${hlc.inverted_reference_R} Paper X ${hlc.paper10_selective_leak_risk}`
       );
       freeCtx.numbers.packetNumbers.push(
-        0, 1, 2, 3, 4, 5, 6, 8, 16, 27, 31, 32, 57, 64, 105, 128, 253, 255, 256, 489, 512, 1024, 8192,
-        524288, 1048576, 2097152, 4194304, 8388608, 16777216, 536870912, 0.375
+        0, 1, 2, 3, 4, 5, 6, 8, 11, 16, 23, 27, 31, 32, 37, 41, 53, 57, 64, 105, 128, 180, 250, 253, 255, 256, 420, 489, 512, 1024, 1500, 8192,
+        524288, 1048576, 2097152, 4194304, 8388608, 16777216, 536870912, 2147483648, 0.375
       );
     }
     if (eed) {
@@ -471,9 +492,13 @@ export function verifySentenceEvidential(text, proseCtx) {
     reasons.push({ reason: 'v5_module_operation_scope', detail: 'invalid module operation target' });
   }
   if (FALSE_CN3_RE.test(normalized) && !/\b(?:false|falso|no\s+paso|no\s+supero)\b/.test(normalized)) {
-    const hasEndogenousCn3 = Boolean(snapshot?.tower?.constructive_cuts?.endogenous_epistemic_decision?.axes?.historical_causal_dependence?.cn3_causal_architecture_active);
-    const mentionsFrozenHistoricalV1 = /\b(?:historical_v1|stage0_memory_reproduction|reproduccion\s+historica\s+v1)\b/.test(normalized);
-    if (mentionsFrozenHistoricalV1 || !hasEndogenousCn3) {
+    const hasEndogenousCn3 = Boolean(resolveSnapshotEndogenousDecision(snapshot)?.axes?.historical_causal_dependence?.cn3_causal_architecture_active);
+    const FROZEN_HIST_V1_RE = /\b(?:historical_v1|stage0_memory_reproduction|reproduccion\s+historica\s+v1|1a1c94e)\b/;
+    const CONTRAST_BEFORE_HIST_V1_RE = /\b(?:diferenci\w*\s+de(?:l)?|distint[oa]s?\s+de(?:l)?|a\s+diferencia\s+de(?:l)?|frente\s+a(?:l)?|separad[oa]s?\s+de(?:l)?|sin\s+confundir\w*\s+con|contrasta\w*\s+con)\b[^.;]{0,45}\b(?:historical_v1|stage0_memory_reproduction|reproduccion\s+historica\s+v1|1a1c94e)\b/;
+    const CURRENT_CAUSAL_CN3_RE = /\b(?:resolucion\s+(?:causal\s+)?vigente|arquitectura\s+causal\s+vigente|runtime\s+vigente|resolucion\s+actual)\b[^.;]{0,45}\bcn-?3\b/;
+    const attributesTrueToFrozenV1 = FROZEN_HIST_V1_RE.test(normalized)
+      && !(CONTRAST_BEFORE_HIST_V1_RE.test(normalized) && CURRENT_CAUSAL_CN3_RE.test(normalized));
+    if (attributesTrueToFrozenV1 || !hasEndogenousCn3) {
       reasons.push({ reason: 'v5_historical_cn3_false', detail: 'historical_v1 cn3=false' });
     }
   }

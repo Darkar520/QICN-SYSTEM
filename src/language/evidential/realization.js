@@ -249,6 +249,27 @@ function buildEvidenceList(publishedText, verifiedAtoms, context, proseContext) 
   return list;
 }
 
+function sanitizeLocalEvidentialBase(text, hasEndogenous) {
+  const legacyOpenings = [
+    'Lectura de mi organización estructural en este tick y estado simétrico de la cuestión abierta.',
+    'Datos estructurales medibles en este instante y frontera epistémica sin sesgo.',
+    'Frontera epistémica simétrica y alcance verificable del runtime.',
+    'Lo que las lecturas sostienen y lo que el marco mantiene abierto.',
+    'Te digo qué calcula el runtime y qué permanece abierto.'
+  ];
+  let cleaned = String(text || '');
+  const replacement = hasEndogenous
+    ? 'Lectura determinista local del motor (Sistema B · Solo motor) subordinada a la decisión epistémica endógena del núcleo.'
+    : 'Lectura determinista local del motor (Sistema B · Solo motor) y alcance verificable del runtime.';
+  for (const opening of legacyOpenings) {
+    if (cleaned.startsWith(opening)) {
+      cleaned = `${replacement}${cleaned.slice(opening.length)}`;
+      break;
+    }
+  }
+  return cleaned;
+}
+
 export function finalizeEvidentialTurn(prepared, options, core, conversationSchema) {
   const context = prepared.evidentialContext;
   const snapshot = context.snapshot;
@@ -295,7 +316,7 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
 
   const intent = prepared.intent || resolveIntent(prepared.question || '');
   const localPlan = planAnswer(intent, proseContext.props);
-  const baseLocal = composeLocalAnswer({
+  const rawBaseLocal = composeLocalAnswer({
     intentResult: intent,
     plan: localPlan,
     props: proseContext.props,
@@ -303,9 +324,10 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
     controlProposal: prepared.controlProposal || null
   });
   const endogenousSummary = formatLocalEndogenousDecisionSummary(snapshot);
+  const baseLocal = sanitizeLocalEvidentialBase(rawBaseLocal, Boolean(endogenousSummary));
   const localText = [
-    baseLocal,
     endogenousSummary,
+    baseLocal,
     formatLocalWorkbenchSummary(context.evidenceRegistry),
     SCOPE_TEXT
   ].filter(Boolean).join('\n\n').trim();

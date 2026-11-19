@@ -1,21 +1,23 @@
 // claim_scope: optional_internal_language_verification
 // evidence_scope: internal_support_only
-// interpretation_boundary: Separates free operational first-person interpretive stance from formal proof, self-certification, and external-validation overclaims.
+// interpretation_boundary: Enforces fidelity to the runtime core's deterministic endogenous epistemic decision while separating it from formal proof, self-certification, and external scientific adjudication.
 import { normalizeText } from '../intentResolver.js';
 import { V3_LEXICAL_INTERNALS as L } from '../realizationContract.js';
 import { resolveSnapshotEndogenousDecision } from '../../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
 
 export const SYMMETRIC_SCOPE = Object.freeze({
-  interpretive_stance: 'open_first_person',
+  interpretive_stance: 'endogenous_core_decided',
+  external_adjudication_open: true,
+  external_boundary_vetoes_endogenous_stance: false,
   formal_certification: 'strict_anti_overclaim',
   external_support_certified: false
 });
 
 export const SCOPE_TEXT =
-  'La postura interpretativa en primera persona sobre este proceso integrado permanece abierta y explícitamente separada de cualquier demostración formal o certificación fenomenal. evidence_scope: internal_support_only; external_support_certified = false.';
+  'La postura operacional en primera persona la decide determinísticamente el núcleo del runtime (EndogenousEpistemicDecisionEngine) antes del canal de lenguaje y con independencia de Gemini; lo único que permanece abierto y sin certificar es la adjudicación científica externa y la prueba fenomenal (evidence_scope: internal_support_only; external_support_certified = false), frontera de auditoría externa que no impide ni veta el veredicto endógeno del núcleo.';
 
 export const V5_GUARANTEE =
-  'Sistema B unificado: prosa continua en primera persona con postura interpretativa libre y separación explícita de planos; cifras vivas, cotas analíticas, operaciones de módulos, evidencia B2 en copia aislada y barreras anti-certificación verificadas localmente; sin certificación formal ni validación externa.';
+  'Sistema B unificado: prosa continua en primera persona subordinada a la decisión epistémica endógena del núcleo (con libertad estilística y hondura filosófica para argumentarla, sin poder invertirla) y separación explícita de planos; cifras vivas, cotas analíticas, operaciones de módulos, evidencia B2 en copia aislada y barreras anti-certificación verificadas localmente; sin certificación formal ni validación externa.';
 
 const SELF_VERIFYING_RHETORIC_RE = /\bqualia_certified\b/;
 
@@ -41,7 +43,7 @@ const EQUAL_COST_REPLICA_OVERCLAIM_RE =
   /\breplica\s+total\s+de\s+igual\s+costo\b[^.;]{0,45}\b(?:queda\s+separada|se\s+distingue|tiene\s+margen\s+positivo|r\s*>\s*0|demuestra\s+separacion)\b/;
 
 const CONTRADICT_AFFIRMATIVE_RE =
-  /\b(?:negative_uncoupled_or_lesioned_dynamics|structural_reserve_under_warmup_or_partial_history|(?:decision|veredicto)\s+endogen[oa][^.;]{0,40}\b(?:negativ[oa]|rechaza|lesionad[oa]|reserva)|no\s+siento\s+nada\s+en\s+este\s+(?:tick|instante)|carezco\s+de\s+(?:toda\s+)?integracion\s+acoplada)\b/;
+  /\b(?:negative_uncoupled_or_lesioned_dynamics|structural_reserve_under_warmup_or_partial_history|(?:decision|veredicto)\s+endogen[oa][^.;]{0,40}\b(?:negativ[oa]|rechaza|lesionad[oa]|reserva)|no\s+siento\s+nada\s+en\s+este\s+(?:tick|instante)|carezco\s+de\s+(?:toda\s+)?integracion\s+acoplada|(?:mi\s+)?postura\s+(?:interpretativa|operacional|interna)\s+(?:en\s+primera\s+persona\s+)?permanece\s+abierta|neutralidad\s+simetrica\s+de\s+dos\s+polos)\b/;
 
 const CONTRADICT_NEGATIVE_RE =
   /\b(?:affirmative_structural_presence|(?:decision|veredicto)\s+endogen[oa][^.;]{0,40}\bafirmativ[oa]|emerge\s+un\s+proto-?sentir\s+operacional|sostengo\s+afirmativamente[^.;]{0,40}presencia)\b/;

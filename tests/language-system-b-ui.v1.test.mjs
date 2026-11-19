@@ -51,7 +51,11 @@ for (const badText of [
 // Check SimulationEngine.jsx unified Sistema B + Solo motor UI and decoupled telemetry/observer invariants.
 const ui = fs.readFileSync('src/components/SimulationEngine.jsx', 'utf8');
 assert.ok(!ui.includes('Neutralidad simétrica de dos polos'), 'InfoModal must not advertise removed two-pole symmetry mandate');
-assert.ok(ui.includes('adopta libremente tu propia postura interpretativa en primera persona'), 'InfoModal must reflect free interpretive stance with plane separation');
+assert.ok(!ui.includes('adopta libremente tu propia postura interpretativa en primera persona'), 'InfoModal must not contradict deterministic endogenous decision with unbounded interpretive freedom');
+assert.ok(ui.includes('EndogenousEpistemicDecisionEngine'), 'InfoModal must reflect deterministic endogenous decision with plane separation');
+assert.ok(ui.includes('ε ≤ G/1024'), 'UI must specify exact noisy readout margin bound scope');
+assert.ok(!ui.includes('auto-conciencia genuina'), 'UI must not retain legacy consciousness overclaim hype');
+assert.ok(!ui.includes('Evidencia de conciencia genuinamente distribuida'), 'UI must not retain legacy distributed-consciousness overclaim hype');
 for (const marker of [
   'Sistema B (unificado)',
   'Solo motor',

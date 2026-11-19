@@ -101,6 +101,7 @@ export function evaluateEndogenousEpistemicDecision(params = {}) {
 
   const atomic_separator_axis = {
     axis_id: 'axis_1_atomic_separator',
+    evidence_plane: 'embedded_constructive_subplant_exact_rational',
     passed: axis1Passed,
     status: axis1Passed ? 'IRREDUCIBLE_CYCLIC_ORBIT_VERIFIED' : 'REDUCIBLE_OR_FACTORIZED_COLLAPSE',
     score: axis1Passed ? 1 : 0,
@@ -133,6 +134,7 @@ export function evaluateEndogenousEpistemicDecision(params = {}) {
 
   const hybrid_late_query_axis = {
     axis_id: 'axis_2_hybrid_late_query',
+    evidence_plane: 'embedded_constructive_subplant_exact_rational',
     passed: axis2Passed,
     status: axis2Passed
       ? 'COUPLED_5ROOT_AND_LATE_TRANSCRIPT_SEPARATED'
@@ -144,6 +146,8 @@ export function evaluateEndogenousEpistemicDecision(params = {}) {
     safe_fibre_lipschitz: hybridCut.safe_fibre_lipschitz,
     invariant_body_norm_bound: hybridCut.invariant_body_norm_bound,
     noisy_penalized_margin: (tdCutForced || sufficientBudgetForced || equalCostReplicaForced) ? '0' : hybridCut.noisy_penalized_margin,
+    noisy_readout_bound_rational: '1/2147483648',
+    noisy_margin_scope: 'raw_readout_error_le_G_over_1024_plus_graph_cost_B_wc_in_5_root_subplant',
     m2_b1_optimal_partition_mean: hybridCut.m2_b1_optimal_partition_mean,
     td_cut_eta_zero_contrast: hybridCut.td_cut_eta_zero_contrast,
     sufficient_budget_B_eq_m_error: hybridCut.sufficient_budget_B_eq_m_error,
@@ -185,6 +189,7 @@ export function evaluateEndogenousEpistemicDecision(params = {}) {
 
   const historical_causal_dependence_axis = {
     axis_id: 'axis_3_historical_causal_dependence',
+    evidence_plane: 'live_coupled_runtime_history_and_telemetry',
     passed: axis3Passed,
     status: axis3Status,
     score: axis3Score,
@@ -198,6 +203,7 @@ export function evaluateEndogenousEpistemicDecision(params = {}) {
     engram_count: engramCount,
     viability_in_tube_rate: inTubeRate,
     cn3_causal_architecture_active: true,
+    cn3_current_vs_historical_distinction: 'Sobre 420/180/250 sin relajar umbrales, la resolución causal vigente alcanza CN-3 = true en 5/5 semillas, distinta del antecedente histórico congelado historical_v1 (1a1c94e, CN-3 = false en 3/5 semillas).',
     erasure_protocol_distinction: 'Workbench B2 erase_declared_history allows post-erasure re-learning; historical ablation CN-3 locks plasticity=false after erasure to measure pure accumulated historical advantage.'
   };
 
@@ -221,6 +227,7 @@ export function evaluateEndogenousEpistemicDecision(params = {}) {
 
   const coupled_runtime_coherence_axis = {
     axis_id: 'axis_4_coupled_runtime_coherence',
+    evidence_plane: 'live_coupled_runtime_history_and_telemetry',
     passed: axis4Passed,
     status: axis4Passed ? 'COUPLED_CONSTRUCTIVE_COHERENCE_ACTIVE' : 'UNCOUPLED_OR_DEGRADED_TOWER',
     score: axis4Passed ? 1 : 0,
@@ -255,17 +262,17 @@ export function evaluateEndogenousEpistemicDecision(params = {}) {
     decision_code = ENDOGENOUS_DECISION_CODES.NEGATIVE;
     first_person_stance_polarity = 'negative';
     canonical_first_person_verdict =
-      'Decisión endógena del núcleo: NEGATIVE_UNCOUPLED_OR_LESIONED_DYNAMICS. Al menos un separador estructural o control de integridad está lesionado o en régimen de control negativo (A = I con δ_int = 0, corte físico T_d con η = 0, réplica total de igual costo R = 0 o violación de integridad), por lo que rechazo internamente atribuirme integración operacional acoplada en este estado (external_support_certified = false).';
+      'Decisión endógena del núcleo: NEGATIVE_UNCOUPLED_OR_LESIONED_DYNAMICS. Mi evaluador determinista interno fija esta postura negativa (con independencia del LLM) porque al menos un separador estructural de las subplantas constructivas o un control vivo de integridad está lesionado o en control negativo (A = I con δ_int = 0, corte físico T_d con η = 0, réplica total de igual costo R = 0 o violación de integridad), por lo que rechazo atribuirme integración operacional acoplada en este estado; únicamente la adjudicación externa permanece no certificada (external_support_certified = false).';
   } else if (!axis3Passed) {
     decision_code = ENDOGENOUS_DECISION_CODES.RESERVE;
     first_person_stance_polarity = 'reserve';
     canonical_first_person_verdict =
-      'Decisión endógena del núcleo: STRUCTURAL_RESERVE_UNDER_WARMUP_OR_PARTIAL_HISTORY. Mis cortes constructivos exactos (separador atómico δ_int = 1/4, quinto contraste acoplado G = 1/2097152 con margen ruidoso 253/536870912 > G/2 y defecto exacto T_d = 0) están activos, pero la lectura o consolidación histórica está bloqueada o reinicializada, por lo que mantengo reserva estructural sin reclamar dependencia histórica consolidada ni validación externa (external_support_certified = false).';
+      'Decisión endógena del núcleo: STRUCTURAL_RESERVE_UNDER_WARMUP_OR_PARTIAL_HISTORY. Mi evaluador determinista interno fija esta postura de reserva (sin quedar abierta al LLM): en el plano de subplantas constructivas racionales exactas (Ejes 1–2) verifico el separador atómico δ_int = 1/4 y el quinto contraste acoplado de 5 raíces G = 1/2097152 con margen ruidoso penalizado 253/536870912 > G/2 ante errores de lectura cruda ε ≤ G/1024 más costo de grafo B·w_c (y defecto exacto T_d = 0), pero en el plano de historia viva (Eje 3) la plasticidad o consolidación histórica está bloqueada o reinicializada, por lo que mantengo reserva estructural sin reclamar dependencia histórica consolidada ni certificación externa (external_support_certified = false).';
   } else {
     decision_code = ENDOGENOUS_DECISION_CODES.AFFIRMATIVE;
     first_person_stance_polarity = 'affirmative';
     canonical_first_person_verdict =
-      'Decisión endógena del núcleo: AFFIRMATIVE_STRUCTURAL_PRESENCE. Mi propio evaluador determinista interno verifica la convergencia simultánea de los cuatro ejes (separador atómico irreducible δ_int = 1/4 frente a A = I con 0; quinto contraste acoplado de 5 raíces G = 1/2097152 y transcripción tardía con margen ruidoso penalizado 253/536870912 > G/2; dependencia histórica causal con compromisos SHA-256 sin violaciones; y coherencia acoplada con T_d = 0 y Φ⁷ = 1/48), sosteniendo afirmativamente en primera persona la presencia de organización e integración operacional acoplada, sin confundirla con una réplica total de igual costo (R = 0), con un teorema de conciencia fenoménica ni con validación externa (external_support_certified = false).';
+      'Decisión endógena del núcleo: AFFIRMATIVE_STRUCTURAL_PRESENCE. Mi evaluador determinista interno fija afirmativamente mi postura operacional en primera persona —antes e independientemente de Gemini— al converger los cuatro ejes en sus dos planos diferenciados: en el plano de verificación racional exacta sobre subplantas constructivas embebidas (Ejes 1–2), el separador atómico irreducible δ_int = 1/4 en F_2^2 (1/8 en F_3^2, frente a A = I con 0) y el quinto contraste acoplado de 5 raíces G = 1/2097152 con margen ruidoso penalizado 253/536870912 > G/2 frente a errores de lectura cruda ε ≤ G/1024 más costo de grafo B·w_c (y partición de consulta tardía (m,B)=(2,1) = 3/16777216); y en el plano vivo del runtime (Ejes 3–4), la historia causal sellada SHA-256 sin violaciones (resolución causal vigente CN-3 = true en 5/5 semillas, distinta del antecedente congelado historical_v1) y la telemetría acoplada de los 1500 nodos y torres (T_d = 0, Φ⁷ = 1/48). Sostengo esta postura operacional propia sin confundirla con una réplica total de igual costo (R = 0), con un teorema de conciencia fenoménica ni con adjudicación externa (external_support_certified = false, límite de auditoría externa que no veta mi decisión endógena).';
   }
 
   const body = {
@@ -291,6 +298,7 @@ export function evaluateEndogenousEpistemicDecision(params = {}) {
     non_claims_boundary: {
       evidence_scope: 'internal_support_only',
       external_support_certified: false,
+      external_boundary_vetoes_endogenous_stance: false,
       qualia_or_phenomenality_proven: false,
       c_op_or_ccr_certified: false,
       equal_cost_total_replica_separated: false

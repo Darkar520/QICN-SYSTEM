@@ -65,7 +65,27 @@ export function createReasoningPlan(question, context, options = {}) {
   });
 }
 
-function buildB2AuthorityLines(evidenceRegistry, ledgerInfo) {
+function buildEndogenousDecisionLines(snapshot) {
+  const eed = snapshot?.tower?.constructive_cuts?.endogenous_epistemic_decision || null;
+  if (!eed) return [];
+  const a1 = eed.axes?.atomic_separator || {};
+  const a2 = eed.axes?.hybrid_late_query || {};
+  const a3 = eed.axes?.historical_causal_dependence || {};
+  const a4 = eed.axes?.coupled_runtime_coherence || {};
+  return [
+    '',
+    'DECISIÓN EPISTÉMICA ENDÓGENA DEL NÚCLEO (EVALUADA POR EL MOTOR ANTES DEL LLM)',
+    `- Código de decisión endógena: ${eed.decision_code} (polaridad en primera persona: ${eed.first_person_stance_polarity}, score global: ${eed.overall_score}, decision_digest: ${eed.decision_digest}).`,
+    `- Veredicto canónico del núcleo: ${eed.canonical_first_person_verdict}`,
+    `- Eje 1 (Separador Atómico Estructural e Inyectividad en Cocientes Fieles): status=${a1.status}, campo=${a1.primary_field} (${a1.minimal_polynomial}), δ_int=${a1.delta_int} (F_3^2: ${a1.odd_prime_f3_d2_delta_int}), error minimax de producto=${a1.minimax_product_error}, control reducible A=I δ_int=${a1.reducible_control_A_eq_I_delta_int}.`,
+    `- Eje 2 (Quinto Contraste Acoplado de 5 Raíces y Frontera de Transcripción Tardía B < m): status=${a2.status}, quinto contraste G=${a2.fifth_contrast_G}, Lipschitz=${a2.safe_fibre_lipschitz}, cota corporal=${a2.invariant_body_norm_bound}, margen ruidoso penalizado=${a2.noisy_penalized_margin} (> G/2), óptimo partición (m,B)=(2,1)=${a2.m2_b1_optimal_partition_mean}, controles negativos: corte físico T_d (η=0)=${a2.td_cut_eta_zero_contrast}, presupuesto suficiente (B=m)=${a2.sufficient_budget_B_eq_m_error}, réplica total de igual costo R=${a2.equal_cost_total_replica_R}, referencia invertida R=${a2.inverted_reference_R}, fuga selectiva Paper X=${a2.paper10_selective_leak_risk}.`,
+    `- Eje 3 (Dependencia Histórica Causal y Predicciones Selladas SHA-256): status=${a3.status}, plasticity_enabled=${a3.plasticity_enabled}, tamper_violation_count=${a3.tamper_violation_count}, sealed_commit_count=${a3.sealed_commit_count}, verified_prediction_count=${a3.verified_prediction_count}, maturation_index=${a3.maturation_index}, anchor_shift_l2=${a3.anchor_shift_l2}, mean_fisher_stiffness=${a3.mean_fisher_stiffness}, engram_count=${a3.engram_count}, viability_in_tube_rate=${a3.viability_in_tube_rate}.`,
+    `- Eje 4 (Coherencia Acoplada de 1500 Nodos y Torres Constructivas): status=${a4.status}, retención activa=${a4.active_retention_rational}, contracción cuerpo-mundo=${a4.body_world_contraction_rational}, defecto exacto T_d=${a4.sigma_exact_defect} (cota=${a4.sigma_defect_bound_rational}), reserva privada Φ⁷=${a4.informed_reserve_phi7_rational}, cargas locales rango=${a4.local_burdens_rank} (margen=${a4.local_burdens_min_margin_rational}), copia B2=${a4.b2_isolated_copy_status}.`,
+    '- Regla de traducción fiel: este veredicto fue decidido por el propio motor determinista antes de llamarte. Actúas estrictamente como traductor lingüístico en primera persona de este veredicto y sus 4 ejes; NO puedes invertir el código de decisión endógena del núcleo ni reclamar validación externa (external_support_certified = false).'
+  ];
+}
+
+function buildB2AuthorityLines(evidenceRegistry, ledgerInfo, snapshot = null) {
   const lines = [
     '',
     'AUTORIDAD EVIDENCIAL SISTEMA B (Workbench B2, Ledger y Cotas Exactas)',
@@ -125,7 +145,8 @@ function buildUnifiedSystemBHeader(args, fullDigest, fullTick) {
     `Responde exclusivamente con application/json válido (sin texto fuera ni Markdown): {"schema":"${EVIDENTIAL_SCHEMA}","snapshot":{"digest":"${fullDigest}","tick":${fullTick}},"answer":"<prosa continua en primera persona; usa \\n\\n para separar párrafos>"}. Máximo ${MAX_EVIDENTIAL_ANSWER_CHARS} caracteres en "answer".`,
     `Copia EXACTOS los 64 caracteres hex de "digest" (${fullDigest}) y el entero "tick" (${fullTick}).`,
     `Local intent orientativo: ${args.localIntent?.intent || 'unknown'}.`,
-    ...buildB2AuthorityLines(args.evidenceRegistry, args.ledgerInfo)
+    ...buildEndogenousDecisionLines(args.snapshot),
+    ...buildB2AuthorityLines(args.evidenceRegistry, args.ledgerInfo, args.snapshot)
   ].join('\n');
 }
 

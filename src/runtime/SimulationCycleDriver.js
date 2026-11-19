@@ -751,6 +751,8 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
               maturationIndex: preWorldPlasticity.maturationIndex,
               surprisalEma: preWorldPlasticity.surprisalEma,
               unforeseenEventRate: preWorldPlasticity.unforeseenEventRate,
+              anchorShiftL2: preWorldPlasticity.anchorShiftL2,
+              meanFisherStiffness: preWorldPlasticity.meanFisherStiffness,
               engramContext: preEngramContext,
               cluster: preCluster,
               tick: simulationStep,
@@ -786,7 +788,9 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
               : 0;
             const relaxRate = policyId === 'stabilize_learning'
               ? 0.30
-              : Math.max(0.08, calmFreezePull);
+              : ((policyId === 'sensor_load_shed' || policyId === 'llm_pressure_relief')
+                ? 0.22
+                : Math.max(0.08, calmFreezePull));
             const stabilizePull = (preNodeStats.mean - node.coherenceState) * relaxRate;
             const deltaCoh = (parity * timeFlip * jitterAmp * 0.11) + (stepShift * 0.055) + antiStasisKick + stabilizePull;
             node.coherenceState = Math.max(0.05, Math.min(0.98, node.coherenceState + deltaCoh));
@@ -825,7 +829,7 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
             metaSovereigntyCheck.current.getMetacognitiveStrain?.(),
             toFiniteNumber(latencyFeedback?.strainEma, 0)
           ) + (exoSample.active
-            ? ((exoSample.strainDrive * exoAttenuations.strain * 0.65) + (exoSample.stasisDrive * exoAttenuations.stasis * 0.18))
+            ? ((exoSample.strainDrive * exoAttenuations.strain * 0.65) + (exoSample.stasisDrive * exoAttenuations.stasis * 0.18) + (sensorDelta * 0.28))
             : 0)
         );
         const latencyStressState = metaSovereigntyCheck.current.getLatencyStressState?.()
@@ -1731,8 +1735,12 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
                 maturationIndex: postWorldPlasticity.maturationIndex,
                 surprisalEma: postWorldPlasticity.surprisalEma,
                 unforeseenEventRate: postWorldPlasticity.unforeseenEventRate,
-                engramContext: postEngramContext,
-                cluster: postCluster
+                ...(exoSample.active ? {
+                  anchorShiftL2: postWorldPlasticity.anchorShiftL2,
+                  meanFisherStiffness: postWorldPlasticity.meanFisherStiffness
+                } : {}),
+                engramContext: exoSample.active ? preEngramContext : postEngramContext,
+                cluster: exoSample.active ? preCluster : postCluster
               }
             );
 
@@ -1872,9 +1880,13 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
         }
 
         // Registro objetivo no circular de viabilidad Viab(S, tau) y consolidación determinista de engramas.
-        const effectivePolicyActionId = autonomyAction !== 'none'
-          ? autonomyAction
-          : (activeViabilityDecision?.actionId || 'stabilize_learning');
+        const effectivePolicyActionId = exoSample.active
+          ? (activeViabilityDecision?.actionId || (autonomyAction !== 'none' ? autonomyAction : 'stabilize_learning'))
+          : (autonomyAction !== 'none'
+            ? autonomyAction
+            : (activeViabilityDecision?.actionId || 'stabilize_learning'));
+        const effectiveViabilityCluster = exoSample.active ? preCluster : postCluster;
+        const effectiveEngramVec = exoSample.active ? preStateVec : postStateVec;
         const dynamicStasisValid = ascensionDynamicsRef.current?.history?.length >= 3;
         const baseDynamicStasis = dynamicStasisValid ? postAscensionDynamicHealth.stasisIndex : 0;
         const effectiveObjectiveStasis = clamp01(Math.max(baseDynamicStasis, exoStasisLoad));
@@ -1889,8 +1901,9 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
             ascensionThreshold: QICNConfig.ASCENSION_THRESHOLD
           },
           activeActionId: effectivePolicyActionId,
-          cluster: postCluster,
-          plasticityEnabled
+          cluster: effectiveViabilityCluster,
+          plasticityEnabled,
+          exogenousActive: Boolean(exoSample.active)
         }) || null;
 
         if (environment.diagnostics) {
@@ -1912,7 +1925,7 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
         if (shouldConsolidateEngram && holographicMemory.current?.consolidateStructuralEngram) {
           const credits = tickViabilityRes?.settledCredits || [];
           const latestCredit = credits.length > 0 ? credits[credits.length - 1] : null;
-          holographicMemory.current.consolidateStructuralEngram(postStateVec, {
+          holographicMemory.current.consolidateStructuralEngram(effectiveEngramVec, {
             actionId: latestCredit?.actionId || effectivePolicyActionId,
             objectiveViabilityGain: latestCredit ? latestCredit.objectiveViabilityGain : 0,
             surprisal: postWorldPlasticity.surprisalEma,

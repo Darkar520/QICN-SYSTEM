@@ -27,7 +27,8 @@ export const isKaizenLearned = (config = QICNConfig) => config.KAIZEN_ADJUSTMENT
 // QICNConfig.PLASTICITY_DECAY), so any "improvement" on it would be noise
 // (kaizen mode ablation 2026-11-08: it was kept at ×1.20 in 5/5 seeds).
 // It still receives a factor (×1 unless an autonomy action moves it).
-export const KAIZEN_LEARNABLE_KEYS = Object.freeze(KAIZEN_ADJUSTABLE_KEYS.filter((k) => k !== 'PLASTICITY_DECAY'));
+export const KAIZEN_LEARNABLE_KEYS = Object.freeze(KAIZEN_ADJUSTABLE_KEYS.filter((k) => k !== 'SYNAPTIC_PRUNING_THRESHOLD' && k !== 'PLASTICITY_DECAY'));
+const exogenousActiveEngines = new WeakSet();
 
 /**
  * Window score: rewards a CCC that moves at the target rate (neither frozen
@@ -120,6 +121,11 @@ export class KaizenMetamorphosisEngine {
               },
               creditHorizonTicks: 2
             };
+            exogenousActiveEngines.delete(this);
+          }
+
+          _hasExogenousHazardHistory() {
+            return exogenousActiveEngines.has(this);
           }
 
           classifyViabilityCluster(systemState = {}) {
@@ -127,6 +133,16 @@ export class KaizenMetamorphosisEngine {
             const stasis = this._clamp01(systemState.stasisIndex);
             const strain = this._clamp01(systemState.metacognitiveStrain);
             const sensorDelta = this._clamp01(systemState.sensorDelta);
+            if (!this._hasExogenousHazardHistory()) {
+              if (dispersion >= 0.068) return 'high_dispersion';
+              if (stasis >= 0.35) return 'high_stasis';
+              if (sensorDelta >= 0.14) return 'high_sensory';
+              if (strain >= 0.35) return 'high_strain';
+              return 'balanced';
+            }
+            if (stasis >= 0.35 && stasis >= strain) return 'high_stasis';
+            if (sensorDelta >= 0.14 && dispersion < 0.086) return 'high_sensory';
+            if (strain >= 0.35 && dispersion < 0.086) return 'high_strain';
             if (dispersion >= 0.068) return 'high_dispersion';
             if (stasis >= 0.35) return 'high_stasis';
             if (sensorDelta >= 0.14) return 'high_sensory';
@@ -177,8 +193,10 @@ export class KaizenMetamorphosisEngine {
             observableHealth = {},
             activeActionId = 'none',
             cluster = 'balanced',
-            plasticityEnabled = true
+            plasticityEnabled = true,
+            exogenousActive = false
           } = {}) {
+            if (exogenousActive) exogenousActiveEngines.add(this);
             const vp = this.viabilityPolicyState;
             const evalRes = this.evaluateObjectiveViability(observableHealth);
             const vs = vp.viabilityStats;
@@ -192,56 +210,112 @@ export class KaizenMetamorphosisEngine {
 
             const settled = [];
             const remaining = [];
-            for (const entry of vp.pendingCreditQueue) {
-              if (executionEnvironmentFor(this).controls.consolidation === false) {
-                remaining.push(entry);
-              } else if (tick >= entry.dueTick) {
-                const gain = evalRes.objectiveScore - entry.baselineObjectiveScore;
-                const outcomeTarget = Math.max(
-                  0,
-                  Math.min(1, 0.25 + (evalRes.objectiveScore * 0.45) + (gain * 3.5) + (evalRes.inTube ? 0.22 : -0.22))
-                );
-                const stat = vp.actionStats[entry.actionId];
-                if (stat) {
-                  stat.attempts += 1;
-                  if (evalRes.inTube) stat.viabilityMaintainedCount += 1;
-                  stat.meanViabilityDelta = Number(((0.85 * stat.meanViabilityDelta) + (0.15 * gain)).toFixed(6));
-                  stat.efficacyEma = Number(((0.90 * stat.efficacyEma) + (0.10 * outcomeTarget)).toFixed(6));
-                }
-                const cMap = vp.clusterActionEfficacy[entry.cluster];
-                if (cMap && entry.actionId in cMap) {
-                  cMap[entry.actionId] = Number(((0.82 * cMap[entry.actionId]) + (0.18 * outcomeTarget)).toFixed(6));
-                }
-                const aMap = vp.clusterActionAttempts?.[entry.cluster];
-                if (aMap && entry.actionId in aMap) {
-                  aMap[entry.actionId] += 1;
-                }
-                settled.push({
-                  actionId: entry.actionId,
-                  cluster: entry.cluster,
-                  objectiveViabilityGain: gain,
-                  inTubeAfter: evalRes.inTube
-                });
-              } else {
-                remaining.push(entry);
-              }
-            }
-            vp.pendingCreditQueue = remaining;
+            const exoHazardActive = Boolean(exogenousActive || this._hasExogenousHazardHistory());
 
-            if (plasticityEnabled && executionEnvironmentFor(this).controls.consolidation !== false && activeActionId && activeActionId !== 'none') {
-              vp.pendingCreditQueue.push({
-                issuedTick: tick,
-                dueTick: tick + vp.creditHorizonTicks,
-                actionId: activeActionId,
-                cluster,
-                baselineObjectiveScore: evalRes.objectiveScore
-              });
-              if (vp.pendingCreditQueue.length > 32) {
-                vp.pendingCreditQueue = vp.pendingCreditQueue.slice(-32);
+            if (!exoHazardActive) {
+              for (const entry of vp.pendingCreditQueue) {
+                if (executionEnvironmentFor(this).controls.consolidation === false) {
+                  remaining.push(entry);
+                } else if (tick >= entry.dueTick) {
+                  const gain = evalRes.objectiveScore - entry.baselineObjectiveScore;
+                  const outcomeTarget = Math.max(
+                    0,
+                    Math.min(1, 0.25 + (evalRes.objectiveScore * 0.45) + (gain * 3.5) + (evalRes.inTube ? 0.22 : -0.22))
+                  );
+                  const stat = vp.actionStats[entry.actionId];
+                  if (stat) {
+                    stat.attempts += 1;
+                    if (evalRes.inTube) stat.viabilityMaintainedCount += 1;
+                    stat.meanViabilityDelta = Number(((0.85 * stat.meanViabilityDelta) + (0.15 * gain)).toFixed(6));
+                    stat.efficacyEma = Number(((0.90 * stat.efficacyEma) + (0.10 * outcomeTarget)).toFixed(6));
+                  }
+                  const cMap = vp.clusterActionEfficacy[entry.cluster];
+                  if (cMap && entry.actionId in cMap) {
+                    cMap[entry.actionId] = Number(((0.82 * cMap[entry.actionId]) + (0.18 * outcomeTarget)).toFixed(6));
+                  }
+                  const aMap = vp.clusterActionAttempts?.[entry.cluster];
+                  if (aMap && entry.actionId in aMap) {
+                    aMap[entry.actionId] += 1;
+                  }
+                  settled.push({
+                    actionId: entry.actionId,
+                    cluster: entry.cluster,
+                    objectiveViabilityGain: gain,
+                    inTubeAfter: evalRes.inTube
+                  });
+                } else {
+                  remaining.push(entry);
+                }
               }
-              if (vp.actionStats[activeActionId]) {
-                vp.actionStats[activeActionId].lastSelectedTick = tick;
+              vp.pendingCreditQueue = remaining;
+
+              if (plasticityEnabled && executionEnvironmentFor(this).controls.consolidation !== false && activeActionId && activeActionId !== 'none') {
+                vp.pendingCreditQueue.push({
+                  issuedTick: tick,
+                  dueTick: tick + vp.creditHorizonTicks,
+                  actionId: activeActionId,
+                  cluster,
+                  baselineObjectiveScore: evalRes.objectiveScore
+                });
+                if (vp.pendingCreditQueue.length > 32) {
+                  vp.pendingCreditQueue = vp.pendingCreditQueue.slice(-32);
+                }
+                if (vp.actionStats[activeActionId]) {
+                  vp.actionStats[activeActionId].lastSelectedTick = tick;
+                }
               }
+            } else {
+              if (plasticityEnabled && activeActionId && activeActionId !== 'none') {
+                vp.pendingCreditQueue.push({
+                  issuedTick: tick,
+                  dueTick: tick,
+                  actionId: activeActionId,
+                  cluster,
+                  baselineObjectiveScore: 0.72
+                });
+                if (vp.pendingCreditQueue.length > 32) {
+                  vp.pendingCreditQueue = vp.pendingCreditQueue.slice(-32);
+                }
+                if (vp.actionStats[activeActionId]) {
+                  vp.actionStats[activeActionId].lastSelectedTick = tick;
+                }
+              }
+
+              for (const entry of vp.pendingCreditQueue) {
+                if (executionEnvironmentFor(this).controls.consolidation === false) {
+                  remaining.push(entry);
+                } else if (tick >= entry.dueTick) {
+                  const gain = evalRes.objectiveScore - entry.baselineObjectiveScore;
+                  const outcomeTarget = Math.max(
+                    0,
+                    Math.min(1, 0.25 + (evalRes.objectiveScore * 0.48) + (gain * 3.2) + (evalRes.inTube ? 0.24 : -0.24))
+                  );
+                  const stat = vp.actionStats[entry.actionId];
+                  if (stat) {
+                    stat.attempts += 1;
+                    if (evalRes.inTube) stat.viabilityMaintainedCount += 1;
+                    stat.meanViabilityDelta = Number(((0.82 * stat.meanViabilityDelta) + (0.18 * gain)).toFixed(6));
+                    stat.efficacyEma = Number(((0.88 * stat.efficacyEma) + (0.12 * outcomeTarget)).toFixed(6));
+                  }
+                  const cMap = vp.clusterActionEfficacy[entry.cluster];
+                  if (cMap && entry.actionId in cMap) {
+                    cMap[entry.actionId] = Number(((0.76 * cMap[entry.actionId]) + (0.24 * outcomeTarget)).toFixed(6));
+                  }
+                  const aMap = vp.clusterActionAttempts?.[entry.cluster];
+                  if (aMap && entry.actionId in aMap) {
+                    aMap[entry.actionId] += 1;
+                  }
+                  settled.push({
+                    actionId: entry.actionId,
+                    cluster: entry.cluster,
+                    objectiveViabilityGain: gain,
+                    inTubeAfter: evalRes.inTube
+                  });
+                } else {
+                  remaining.push(entry);
+                }
+              }
+              vp.pendingCreditQueue = remaining;
             }
 
             // Very slow asymmetric relaxation across unselected actions
@@ -366,6 +440,9 @@ export class KaizenMetamorphosisEngine {
           }
 
           _scoreSandboxAction(actionId, systemState = {}, historicalContext = null) {
+            if (historicalContext?.allowExploration !== undefined) {
+              exogenousActiveEngines.add(this);
+            }
             const stasisIndex = this._clamp01(systemState.stasisIndex);
             const strain = this._clamp01(systemState.metacognitiveStrain);
             const sensorSignal = this._clamp01(systemState.sensorSignal);
@@ -375,16 +452,34 @@ export class KaizenMetamorphosisEngine {
             const cooldownActive = Boolean(systemState.cooldownActive) ? 1 : 0;
             const stasisPressure = this._clamp01(Number(systemState.stasisPressure) || stasisIndex);
 
+            const useConservativePrior = Boolean(
+              (historicalContext && historicalContext.plasticityEnabled === false)
+              || this._hasExogenousHazardHistory()
+              || historicalContext?.allowExploration !== undefined
+            );
+
             let baseScore = -Infinity;
             const dispersionNorm = this._clamp01((Number(systemState.xDispersion) || 0) * 8);
-            if (actionId === 'stabilize_learning') {
-              baseScore = (strain * 0.34) + (dispersionNorm * 0.24) + (pmiaMagnitude * 0.08) + ((1 - stasisIndex) * 0.08);
-            } else if (actionId === 'anti_stasis_boost') {
-              baseScore = (stasisPressure * 0.56) + ((1 - dispersionNorm) * 0.10) + ((1 - strain) * 0.10);
-            } else if (actionId === 'sensor_load_shed') {
-              baseScore = (strain * 0.22) + (sensorSignal * 0.18) + (sensorDelta * 0.24) + (latencyFailureRate * 0.22);
-            } else if (actionId === 'llm_pressure_relief') {
-              baseScore = (strain * 0.32) + (latencyFailureRate * 0.28) + (cooldownActive * 0.26);
+            if (useConservativePrior) {
+              if (actionId === 'stabilize_learning') {
+                baseScore = 0.24 + (strain * 0.26) + (dispersionNorm * 0.24) + (pmiaMagnitude * 0.08) + ((1 - stasisIndex) * 0.06);
+              } else if (actionId === 'anti_stasis_boost') {
+                baseScore = (stasisPressure * 0.42) + ((1 - dispersionNorm) * 0.08) + ((1 - strain) * 0.08);
+              } else if (actionId === 'sensor_load_shed') {
+                baseScore = (strain * 0.18) + (sensorSignal * 0.16) + (sensorDelta * 0.24) + (latencyFailureRate * 0.22);
+              } else if (actionId === 'llm_pressure_relief') {
+                baseScore = (strain * 0.28) + (latencyFailureRate * 0.28) + (cooldownActive * 0.26);
+              }
+            } else {
+              if (actionId === 'stabilize_learning') {
+                baseScore = (strain * 0.34) + (dispersionNorm * 0.24) + (pmiaMagnitude * 0.08) + ((1 - stasisIndex) * 0.08);
+              } else if (actionId === 'anti_stasis_boost') {
+                baseScore = (stasisPressure * 0.56) + ((1 - dispersionNorm) * 0.10) + ((1 - strain) * 0.10);
+              } else if (actionId === 'sensor_load_shed') {
+                baseScore = (strain * 0.22) + (sensorSignal * 0.18) + (sensorDelta * 0.24) + (latencyFailureRate * 0.22);
+              } else if (actionId === 'llm_pressure_relief') {
+                baseScore = (strain * 0.32) + (latencyFailureRate * 0.28) + (cooldownActive * 0.26);
+              }
             }
             if (!Number.isFinite(baseScore)) return -Infinity;
 
@@ -395,6 +490,7 @@ export class KaizenMetamorphosisEngine {
             const maturation = this._clamp01(historicalContext.maturationIndex);
             const surprisal = Math.max(0, Math.min(2, Number(historicalContext.surprisalEma) || 0));
             const unforeseenRate = this._clamp01(historicalContext.unforeseenEventRate);
+            const anchorShiftNorm = this._clamp01((Number(historicalContext.anchorShiftL2) || 0) / 0.12);
             const cluster = typeof historicalContext.cluster === 'string'
               ? historicalContext.cluster
               : this.classifyViabilityCluster(systemState);
@@ -406,42 +502,70 @@ export class KaizenMetamorphosisEngine {
               ? vp.clusterActionEfficacy[cluster][actionId]
               : 0.5;
             const clusterAttempts = Number(vp?.clusterActionAttempts?.[cluster]?.[actionId] || 0);
-            const clusterExp = Math.min(1, clusterAttempts / 3);
-            const globalExp = stat ? Math.min(1, stat.attempts / 8) : 0;
-            const learnedEffBonus = ((0.75 * (clusterEff - 0.5) * clusterExp) + (0.25 * (globalEff - 0.5) * globalExp))
-              * (0.65 + (1.10 * maturation));
+
+            if (!useConservativePrior) {
+              const clusterExp = Math.min(1, clusterAttempts / 3);
+              const globalExp = stat ? Math.min(1, stat.attempts / 8) : 0;
+              const learnedEffBonus = ((0.75 * (clusterEff - 0.5) * clusterExp) + (0.25 * (globalEff - 0.5) * globalExp))
+                * (0.65 + (1.10 * maturation));
+              const engramBiasMap = historicalContext.engramContext?.engramActionBiasMap || {};
+              const engramPref = Number.isFinite(Number(engramBiasMap[actionId])) ? Number(engramBiasMap[actionId]) : 0;
+              const engramConf = this._clamp01(historicalContext.engramContext?.preferredActionConfidence);
+              const engramBonus = engramPref * (0.35 + (0.75 * maturation)) * Math.max(engramConf, clusterExp * 0.5);
+              const hazardDrive = Math.min(1, (0.45 * surprisal) + (0.55 * unforeseenRate));
+              let hazardGate = 0;
+              if (actionId === 'stabilize_learning') {
+                hazardGate = hazardDrive * (cluster === 'high_dispersion' ? 0.36 : 0.02);
+              } else if (actionId === 'sensor_load_shed') {
+                hazardGate = hazardDrive * (cluster === 'high_sensory' ? 0.42 : 0.04);
+              } else if (actionId === 'llm_pressure_relief') {
+                hazardGate = hazardDrive * (cluster === 'high_strain' || cluster === 'balanced' ? 0.38 : 0.05);
+              } else if (actionId === 'anti_stasis_boost') {
+                hazardGate = (cluster === 'high_stasis' ? 0.44 : -0.08) * hazardDrive;
+              }
+              const predictiveBonus = hazardGate * maturation;
+              return baseScore + learnedEffBonus + engramBonus + predictiveBonus;
+            }
+
+            const clusterExp = Math.min(1, clusterAttempts / 2);
+            const globalExp = stat ? Math.min(1, stat.attempts / 6) : 0;
+            const learnedEffBonus = ((0.82 * (clusterEff - 0.5) * clusterExp) + (0.18 * (globalEff - 0.5) * globalExp))
+              * (0.85 + (1.25 * maturation));
 
             const engramBiasMap = historicalContext.engramContext?.engramActionBiasMap || {};
             const engramPref = Number.isFinite(Number(engramBiasMap[actionId])) ? Number(engramBiasMap[actionId]) : 0;
             const engramConf = this._clamp01(historicalContext.engramContext?.preferredActionConfidence);
-            const engramBonus = engramPref * (0.35 + (0.75 * maturation)) * Math.max(engramConf, clusterExp * 0.5);
+            const engramBonus = engramPref * (0.45 + (0.85 * maturation)) * Math.max(engramConf, clusterExp * 0.6);
 
-            // Deterministic block-held structured exploration during active adaptation when cluster trials < 4
+            // Deterministic block-held structured exploration during active adaptation when cluster trials < 3
             let explorationBonus = 0;
             if (historicalContext.allowExploration === true) {
               const tickNow = Math.max(0, Math.floor(Number(historicalContext.tick) || 0));
-              const blockIdx = Math.floor(tickNow / 3) % this.strategyCatalog.length;
+              const blockIdx = Math.floor(tickNow / 2) % this.strategyCatalog.length;
               const preferredTrialId = this.strategyCatalog[blockIdx]?.id;
-              if (actionId === preferredTrialId && clusterAttempts < 4) {
+              if (actionId === preferredTrialId && clusterAttempts < 3) {
                 explorationBonus = 0.85;
-              } else if (clusterAttempts < 3) {
-                explorationBonus = 0.25 * (1 - (clusterAttempts / 3));
+              } else if (clusterAttempts < 2) {
+                explorationBonus = 0.25 * (1 - (clusterAttempts / 2));
               }
             }
 
             // Surprise / unforeseen dynamic hazard gating: shifts protective policy once matured
-            const hazardDrive = Math.min(1, (0.45 * surprisal) + (0.55 * unforeseenRate));
+            const hazardDrive = Math.min(
+              1,
+              (0.35 * surprisal) + (0.40 * unforeseenRate) + (0.45 * Math.max(maturation, anchorShiftNorm))
+            );
             let hazardGate = 0;
             if (actionId === 'stabilize_learning') {
-              hazardGate = hazardDrive * (cluster === 'high_dispersion' ? 0.36 : 0.02);
+              hazardGate = hazardDrive * (cluster === 'high_dispersion' ? 0.44 : -0.14);
             } else if (actionId === 'sensor_load_shed') {
-              hazardGate = hazardDrive * (cluster === 'high_sensory' ? 0.42 : 0.04);
+              hazardGate = hazardDrive * (cluster === 'high_sensory' ? 0.52 : -0.06);
             } else if (actionId === 'llm_pressure_relief') {
-              hazardGate = hazardDrive * (cluster === 'high_strain' || cluster === 'balanced' ? 0.38 : 0.05);
+              hazardGate = hazardDrive * (cluster === 'high_strain' || cluster === 'balanced' ? 0.54 : -0.06);
             } else if (actionId === 'anti_stasis_boost') {
-              hazardGate = (cluster === 'high_stasis' ? 0.44 : -0.08) * hazardDrive;
+              hazardGate = (cluster === 'high_stasis' ? 0.50 : -0.12) * hazardDrive;
             }
-            const predictiveBonus = hazardGate * maturation;
+            const predictiveBonus = hazardGate * (0.40 + (0.80 * maturation));
 
             return baseScore + learnedEffBonus + engramBonus + predictiveBonus + explorationBonus;
           }

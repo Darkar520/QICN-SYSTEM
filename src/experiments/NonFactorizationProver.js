@@ -2,6 +2,7 @@
 
 import { sha256Hex } from '../utils/integrity.js';
 import { F, ZERO, ONE, HALF, fMin, fMax } from '../simulation/tower/ExactFraction.js';
+import { verifyStructuralAtomicSeparatorAndFaithfulQuotients } from '../canon/invariants/StructuralAtomicSeparator.js';
 import {
   ALTERNATING,
   CONTEXTS,
@@ -200,6 +201,7 @@ export const verifyTowerCommonPlantAndInteractionNonFactorization = () => {
   const additiveErrorExact = TAP.div(2);
   const noisyAdditiveLowerBound = TAP.mul(3).div(8);
   const responseAtomicSwap = verifyResponseAtomicFactorizationSwap();
+  const structuralAtomicSeparator = verifyStructuralAtomicSeparatorAndFaithfulQuotients();
 
   return {
     passed: true,
@@ -210,7 +212,8 @@ export const verifyTowerCommonPlantAndInteractionNonFactorization = () => {
     mixedInteractionDifference: mixedDiff.toString(),
     additiveApproximationErrorExact: additiveErrorExact.toString(),
     noisyAdditiveErrorLowerBound256Corners: noisyAdditiveLowerBound.toString(),
-    responseAtomicFactorizationSwap: responseAtomicSwap
+    responseAtomicFactorizationSwap: responseAtomicSwap,
+    structuralAtomicSeparator
   };
 };
 

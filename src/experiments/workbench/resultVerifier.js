@@ -27,5 +27,26 @@ export function verifyWorkbenchResult(result, capture, protocol) {
   recomputed.forEach((comparison,index) => {
     if (specification.branches[index].intervention === 'sham' && (!comparison.fullStateIdentical || comparison.maxAbsDiff !== 0 || comparison.actionDivergence !== 0)) throw new Error('sham_control_failed');
   });
+  if (!body.hybridLateQueryTieBreaker) throw new Error('workbench_missing_hybrid_tie_breaker');
+  const tieBreaker = verifyData(body.hybridLateQueryTieBreaker, 'qicn.workbench_hybrid_late_query.v1');
+  if (
+    tieBreaker.captureDigest !== capture.digest
+    || tieBreaker.sourceTick !== capture.sourceTick
+    || tieBreaker.evidence_scope !== 'internal_support_only'
+    || tieBreaker.external_support_certified !== false
+    || tieBreaker.passed !== true
+    || tieBreaker.fifthContrastG !== '1/2097152'
+    || tieBreaker.noisyPenalizedMargin !== '253/536870912'
+    || tieBreaker.m2_b1_best_mean !== '3/16777216'
+    || tieBreaker.negativeControls?.tdCutContrast !== '0'
+    || tieBreaker.negativeControls?.equalCostTotalReplicaR !== '0'
+    || tieBreaker.negativeControls?.invertedReferenceR !== '-1/1048576'
+    || tieBreaker.negativeControls?.knownSelectiveLeakRisk !== '3/8'
+    || tieBreaker.negativeControls?.alwaysTieCoverage !== '0'
+    || tieBreaker.atomicSeparator?.primaryDeltaInt !== '1/4'
+    || tieBreaker.atomicSeparator?.reducibleIdentityDeltaInt !== '0'
+  ) {
+    throw new Error('workbench_hybrid_tie_breaker_mismatch');
+  }
   return true;
 }

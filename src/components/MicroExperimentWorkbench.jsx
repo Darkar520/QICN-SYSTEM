@@ -24,6 +24,15 @@ export function MicroExperimentWorkbench({workbench}) {
         const mean=b=>b.trajectory.reduce((sum,p)=>sum+p.values.viabilityObjectiveScore,0)/b.trajectory.length;
         return <tr key={row.branchId}><td>{row.branchId}</td><td>{row.maxAbsDiff}</td><td>{row.actionDivergence}</td><td>{row.baselineInTubeRate} / {row.branchInTubeRate}</td><td>{mean(base)} / {mean(branch)}</td><td>{row.deltaObjectiveScore}</td></tr>;
       })}</tbody></table></div>
+      {bundle.result.hybridLateQueryTieBreaker&&<div data-testid="workbench-hybrid-late-query" className="my-2 rounded border border-cyan-800 bg-gray-900 p-2">
+        <div className="font-semibold text-cyan-200">Desempate Híbrido Paper IX/X (5 raíces acopladas + consulta tardía de paridad + separador atómico)</div>
+        <p className="text-[11px] text-cyan-100">
+          5.º contraste G = {bundle.result.hybridLateQueryTieBreaker.fifthContrastG} · Lipschitz = {bundle.result.hybridLateQueryTieBreaker.safeFibreLipschitz} · cota cuerpo = {bundle.result.hybridLateQueryTieBreaker.invariantBodyNormBound} · margen ruidoso penalizado = {bundle.result.hybridLateQueryTieBreaker.noisyPenalizedMargin} (&gt; G/2) · óptimo partición (m,B)=(2,1) = {bundle.result.hybridLateQueryTieBreaker.m2_b1_best_mean} · separador atómico δ_int(F₂²) = {bundle.result.hybridLateQueryTieBreaker.atomicSeparator.primaryDeltaInt} (F₃²: {bundle.result.hybridLateQueryTieBreaker.atomicSeparator.oddPrimeDeltaInt}) vs A=I ({bundle.result.hybridLateQueryTieBreaker.atomicSeparator.reducibleIdentityDeltaInt})
+        </p>
+        <p className="text-[11px] text-cyan-300">
+          Controles negativos: corte físico T_d (η=0) = {bundle.result.hybridLateQueryTieBreaker.negativeControls.tdCutContrast} · presupuesto suficiente (B=m) = {bundle.result.hybridLateQueryTieBreaker.negativeControls.sufficientBudgetBEqualsMError} · réplica total igual costo R = {bundle.result.hybridLateQueryTieBreaker.negativeControls.equalCostTotalReplicaR} · referencia invertida R = {bundle.result.hybridLateQueryTieBreaker.negativeControls.invertedReferenceR} · fuga selectiva Paper X = {bundle.result.hybridLateQueryTieBreaker.negativeControls.knownSelectiveLeakRisk} · always_tie coverage = {bundle.result.hybridLateQueryTieBreaker.negativeControls.alwaysTieCoverage} · digest: {bundle.result.hybridLateQueryTieBreaker.digest.slice(0,16)}…
+        </p>
+      </div>}
       {bundle.result.branches.map(branch=><details key={branch.id}><summary>{branch.id}: márgenes top-2, pesos, Fisher, engramas y procedencia</summary><pre className="max-h-72 overflow-auto whitespace-pre-wrap break-all">{JSON.stringify({intervention:branch.intervention,chainHead:branch.chain.headHash,trajectory:branch.trajectory.map(p=>({tick:p.tick,margin:p.policyDiagnostic?.topTwoMargin??'not_recorded',weights:p.predictorWeights,engrams:p.engramCount,viability:p.viabilityEvaluation}))},null,2)}</pre></details>)}</>}
   </section>;
 }

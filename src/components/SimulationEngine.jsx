@@ -4067,6 +4067,65 @@ MODOS DE INTEGRIDAD Y SOLO MOTOR
         </div>
 
         <MicroExperimentWorkbench workbench={microWorkbench}/>
+        {(() => {
+          const liveEndogenous = ontologicalCore.current?.getEndogenousEpistemicDecision?.()
+            || ontologicalCore.current?.constructiveFiniteCuts?.endogenous_epistemic_decision
+            || ontologicalState?.constructive_finite_cuts?.endogenous_epistemic_decision
+            || null;
+          if (!liveEndogenous) return null;
+          const a1 = liveEndogenous.axes?.atomic_separator || {};
+          const a2 = liveEndogenous.axes?.hybrid_late_query || {};
+          const a3 = liveEndogenous.axes?.historical_causal_dependence || {};
+          const a4 = liveEndogenous.axes?.coupled_runtime_coherence || {};
+          return (
+            <section
+              data-testid="endogenous-epistemic-decision-panel"
+              aria-label="Decisión epistémica endógena del núcleo"
+              className="my-2 rounded border border-emerald-700/80 bg-gray-950/90 p-3 text-xs text-emerald-50"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-sm font-semibold text-emerald-200">
+                  Módulo Interno Determinista de Decisión Epistémica (Independiente del LLM)
+                </h3>
+                <span className="rounded bg-emerald-900/70 px-2 py-0.5 font-mono text-[11px] text-emerald-100">
+                  {liveEndogenous.decision_code} · polaridad: {liveEndogenous.first_person_stance_polarity} · score: {liveEndogenous.overall_score}
+                </span>
+              </div>
+              <p className="mt-1 text-[11px] text-emerald-100/90">
+                {liveEndogenous.canonical_first_person_verdict}
+              </p>
+              <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
+                <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
+                  <div className="font-semibold text-emerald-300">Eje 1 · Separador Atómico Estructural ({a1.status})</div>
+                  <div className="text-[11px] text-gray-200">
+                    {a1.primary_field} ({a1.minimal_polynomial}): δ_int = {a1.delta_int} · error producto ≥ {a1.minimax_product_error} · F₃² δ_int = {a1.odd_prime_f3_d2_delta_int} · control reducible A=I: δ_int = {a1.reducible_control_A_eq_I_delta_int}
+                  </div>
+                </div>
+                <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
+                  <div className="font-semibold text-emerald-300">Eje 2 · 5 Raíces + Consulta Tardía B &lt; m ({a2.status})</div>
+                  <div className="text-[11px] text-gray-200">
+                    G = {a2.fifth_contrast_G} · margen ruidoso = {a2.noisy_penalized_margin} (&gt; G/2) · (m,B)=(2,1) = {a2.m2_b1_optimal_partition_mean} · corte T_d = {a2.td_cut_eta_zero_contrast} · réplica total R = {a2.equal_cost_total_replica_R} · ref. invertida = {a2.inverted_reference_R}
+                  </div>
+                </div>
+                <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
+                  <div className="font-semibold text-emerald-300">Eje 3 · Dependencia Histórica Causal y CN-3 ({a3.status})</div>
+                  <div className="text-[11px] text-gray-200">
+                    Compromisos SHA-256: {a3.sealed_commit_count} (verificados: {a3.verified_prediction_count}, violaciones: {a3.tamper_violation_count}) · maduración = {a3.maturation_index} · ‖W*−W₀‖₂ = {a3.anchor_shift_l2} · engramas = {a3.engram_count} · inTubeRate = {a3.viability_in_tube_rate}
+                  </div>
+                </div>
+                <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
+                  <div className="font-semibold text-emerald-300">Eje 4 · Coherencia Acoplada 1500 Nodos + Torres ({a4.status})</div>
+                  <div className="text-[11px] text-gray-200">
+                    Retención activa = {a4.active_retention_rational} · cuerpo-mundo = {a4.body_world_contraction_rational} · defecto exacto T_d = {a4.sigma_exact_defect} (cota {a4.sigma_defect_bound_rational}) · reserva Φ⁷ = {a4.informed_reserve_phi7_rational} · cargas D/V/W/A/E/T rango {a4.local_burdens_rank} ({a4.local_burdens_min_margin_rational})
+                  </div>
+                </div>
+              </div>
+              <p className="mt-1.5 break-all font-mono text-[10px] text-emerald-300/80">
+                decision_digest (SHA-256): {liveEndogenous.decision_digest} · llm_is_translator_only = true · external_support_certified = false
+              </p>
+            </section>
+          );
+        })()}
         <div className="flex h-[min(72dvh,640px)] min-h-[440px] flex-col overflow-hidden rounded-lg border border-purple-700 bg-gray-900/70">
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-purple-800/60 bg-indigo-900/30 px-3 py-2 text-xs text-indigo-100">
             <div className="flex flex-wrap items-center gap-2">

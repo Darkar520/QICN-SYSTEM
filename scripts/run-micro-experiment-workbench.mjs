@@ -64,5 +64,5 @@ try {
   if(!sham.fullStateIdentical||sham.maxAbsDiff!==0||sham.actionDivergence!==0)throw new Error('sham_control_failed');
   fs.mkdirSync(path.dirname(out),{recursive:true});
   fs.writeFileSync(out,JSON.stringify({capture,protocol,result},null,2)+'\n');
-  console.log(JSON.stringify({out,resultDigest:result.digest,executionStatus:result.executionStatus,comparisons:result.comparisons},null,2));
+  console.log(JSON.stringify({out,resultDigest:result.digest,executionStatus:result.executionStatus,comparisons:result.comparisons,hybridLateQueryTieBreaker:{digest:result.hybridLateQueryTieBreaker?.digest,passed:result.hybridLateQueryTieBreaker?.passed,fifthContrastG:result.hybridLateQueryTieBreaker?.fifthContrastG,noisyPenalizedMargin:result.hybridLateQueryTieBreaker?.noisyPenalizedMargin,m2_b1_best_mean:result.hybridLateQueryTieBreaker?.m2_b1_best_mean,atomicSeparatorDeltaInt:result.hybridLateQueryTieBreaker?.atomicSeparator?.primaryDeltaInt}},null,2));
 } catch(error) { console.error(`FAIL workbench: ${error.message}`);process.exitCode=1; }

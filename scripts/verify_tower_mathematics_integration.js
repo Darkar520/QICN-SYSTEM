@@ -95,6 +95,15 @@ export function runAllTowerMathematicsChecks() {
     nonFact.responseAtomicFactorizationSwap.negativeControls.crossStateMessageSwapError,
     '0'
   );
+  assert.equal(nonFact.structuralAtomicSeparator.passed, true);
+  assert.equal(nonFact.structuralAtomicSeparator.primary_binary_instance.integrationCertificateDeltaInt, '1/4');
+  assert.equal(nonFact.structuralAtomicSeparator.higher_degree_instance.integrationCertificateDeltaInt, '1/4');
+  assert.equal(nonFact.structuralAtomicSeparator.odd_prime_instance.integrationCertificateDeltaInt, '1/8');
+  assert.equal(nonFact.structuralAtomicSeparator.primary_binary_instance.faithfulQuotientInjectiveVerified, true);
+  assert.equal(
+    nonFact.structuralAtomicSeparator.negative_controls.reducible_identity_A_eq_I.integrationCertificateDeltaInt,
+    '0'
+  );
 
   const sigma = verifySigmaApproximateAutomodels();
   assert.equal(sigma.passed, true, 'Frente 4 Paper Puente Sigma Automodels failed');
@@ -149,6 +158,17 @@ export function runAllTowerMathematicsChecks() {
   );
   assert.equal(bodyWorld.indexedQuarticPlantAndFourRootClosure.provisional_non_confirmatory, true);
   assert.equal(bodyWorld.indexedQuarticPlantAndFourRootClosure.external_support_certified, false);
+  assert.equal(bodyWorld.hybridLateQueryTieBreaker.passed, true);
+  assert.equal(bodyWorld.hybridLateQueryTieBreaker.five_root_coupled_plant.fifthContrastG, '1/2097152');
+  assert.equal(bodyWorld.hybridLateQueryTieBreaker.five_root_coupled_plant.safeFibreLipschitz, '105/128');
+  assert.equal(bodyWorld.hybridLateQueryTieBreaker.five_root_coupled_plant.invariantBodyNormBound, '489/512');
+  assert.equal(bodyWorld.hybridLateQueryTieBreaker.five_root_coupled_plant.noisyPenalizedMargin, '253/536870912');
+  assert.equal(bodyWorld.hybridLateQueryTieBreaker.late_query_transcript_frontier.m2_b1_best_mean, '3/16777216');
+  assert.equal(bodyWorld.hybridLateQueryTieBreaker.negative_controls.physical_td_cut_eta_zero.fifthContrast, '0');
+  assert.equal(bodyWorld.hybridLateQueryTieBreaker.negative_controls.equal_cost_total_replica.replica_R, '0');
+  assert.equal(bodyWorld.hybridLateQueryTieBreaker.negative_controls.inverted_reference_control.inverted_reference_R, '-1/1048576');
+  assert.equal(bodyWorld.hybridLateQueryTieBreaker.negative_controls.paper10_blind_source_separation.known_selective_leak_risk, '3/8');
+  assert.equal(bodyWorld.hybridLateQueryTieBreaker.negative_controls.paper10_blind_source_separation.always_tie_coverage, '0');
 
   const front5 = runFullStatisticalAdjudicationSuite();
   assert.equal(front5.passed, true, 'Frente 5 Statistical Adjudication (Papers IV & X) failed');

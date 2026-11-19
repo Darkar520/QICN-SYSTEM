@@ -6,6 +6,7 @@ import { applyWorkbenchIntervention } from './interventions.js';
 import { readWorkbenchMetrics, compareWorkbenchTrajectories } from './metrics.js';
 import { createExperimentalChain, verifyExperimentalChain } from './recordChain.js';
 import { assertData, validateProtocol, verifyData, sealData, WORKBENCH_BOUNDARY } from './contracts.js';
+import { runWorkbenchHybridTieBreaker } from './hybridLateQueryWorkbench.js';
 
 export async function runWorkbench(capture, protocol, { signal = null, expectedBuild = null } = {}) {
   // Detach synchronously, before the first await: caller mutations can never
@@ -49,13 +50,14 @@ export async function runWorkbench(capture, protocol, { signal = null, expectedB
   comparisons.forEach((comparison,index) => {
     if (specification.branches[index].intervention === 'sham' && (!comparison.fullStateIdentical || comparison.maxAbsDiff !== 0 || comparison.actionDivergence !== 0)) throw new Error('sham_control_failed');
   });
+  const hybridLateQueryTieBreaker = runWorkbenchHybridTieBreaker(captured);
   return sealData({
     schema: 'qicn.workbench_result.v1', ...WORKBENCH_BOUNDARY,
     executionStatus: 'COMPLETED', captureDigest: captured.digest,
     protocolDigest: preregistered.digest, sourceTick: captured.sourceTick,
     profile: specification.profile, ticks: specification.ticks,
     originalArchive: { dynamicRecordDigest: captured.dynamicRecord.digest, ledgerHeadHash: captured.ledgerHeadHash },
-    branches, comparisons
+    branches, comparisons, hybridLateQueryTieBreaker
   });
 }
 

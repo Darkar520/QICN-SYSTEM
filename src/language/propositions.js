@@ -312,6 +312,29 @@ export function buildPropositions(snapshot, ledger = null, conversation = {}) {
         paraphrasable: true,
         evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `FiniteProjectionEvaluator + OntologicalMassEstimator; ${snapshotEvidence.source}` }
       }));
+      const asc = tw.constructive_cuts.atomic_separator_cut || null;
+      const hlc = tw.constructive_cuts.hybrid_late_query_cut || null;
+      if (asc && hlc) {
+        add(make({
+          id: 'state.atomic_separator_and_hybrid_tie_breaker',
+          kind: 'state',
+          template: `El corte constructivo de observación atómica irreducible sobre ${asc.primary_field || 'F_2^2'} (${asc.minimal_polynomial || 't^2 + t + 1'}) certifica inyectividad universal de funcionales lineales no nulos e isomorfismo de cocientes fieles con error minimax de producto ${asc.minimax_product_error || '1/2'} y δ_int = ${asc.delta_int || '1/4'} (F_3^2: δ_int = ${asc.odd_prime_f3_d2_delta_int || '1/8'}; control reducible A = I: δ_int = ${asc.reducible_control_A_eq_I_delta_int || '0'}), mientras que el desempate híbrido acoplado de 5 raíces y transcripción tardía certifica quinto contraste G = ${hlc.fifth_contrast_G || '1/2097152'} (Lipschitz ${hlc.safe_fibre_lipschitz || '105/128'}, cota corporal ${hlc.invariant_body_norm_bound || '489/512'}), margen ruidoso penalizado ${hlc.noisy_penalized_margin || '253/536870912'} (> G/2) y óptimo de partición (m,B)=(2,1) igual a ${hlc.m2_b1_optimal_partition_mean || '3/16777216'} frente a corte físico T_d (${hlc.td_cut_eta_zero_contrast || '0'}), presupuesto suficiente B = m (${hlc.sufficient_budget_B_eq_m_error || '0'}), réplica total de igual costo (R = ${hlc.equal_cost_total_replica_R || '0'}) y referencia invertida (R = ${hlc.inverted_reference_R || '-1/1048576'}).`,
+          subjects: ['atomic_separator', 'hybrid_late_query_tie_breaker'],
+          paraphrasable: true,
+          evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `StructuralAtomicSeparator + HybridLateQueryTieBreaker; ${snapshotEvidence.source}` }
+        }));
+      }
+      const eed = tw.constructive_cuts.endogenous_epistemic_decision || null;
+      if (eed && typeof eed === 'object') {
+        add(make({
+          id: 'state.endogenous_epistemic_decision',
+          kind: 'state',
+          template: `${eed.canonical_first_person_verdict} (código: ${eed.decision_code}, polaridad: ${eed.first_person_stance_polarity}, digest: ${String(eed.decision_digest || '').slice(0, 16)}).`,
+          subjects: ['endogenous_epistemic_decision'],
+          paraphrasable: true,
+          evidence: { ...snapshotEvidence, class: 'derived_proxy', source: `EndogenousEpistemicDecisionEngine; ${snapshotEvidence.source}` }
+        }));
+      }
     }
   }
 

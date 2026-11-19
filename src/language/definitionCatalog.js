@@ -146,6 +146,21 @@ export const DEFINITIONS = Object.freeze({
     title: 'dependencia histórica y predicción sellada pre-desenlace',
     text: 'La dependencia histórica operacional (Paper VII, def:historical-dependence) evalúa si el modelo del mundo sellado con SHA-256 pre-desenlace, la consolidación elástica asimétrica sobre los pesos del predictor lineal WorldModelEngine (ancla W* y rigidez Ω, no sobre los nodos de NodalProcessingLayer), los engramas estructurales y la política determinista de viabilidad Viab(S, tau) producen divergencia causal duradera ante idéntico estímulo futuro; es soporte interno y no implica conciencia ni validación externa.',
     source: 'src/simulation/WorldModelEngine.js; src/simulation/HolographicMemoryNexus.js; src/simulation/KaizenMetamorphosisEngine.js; Paper VII def:historical-dependence'
+  },
+  atomic_separator: {
+    title: 'separador atómico estructural e inyectividad en cocientes fieles',
+    text: 'El separador atómico estructural (BaseCore thm:basecore-irreducible-observation, Paper V thm:iint-irreducible-derivation, QICNIrreducibleObservation) demuestra sobre X = F_p^d (d ≥ 2) que cuando la transición A tiene polinomio mínimo irreducible de grado d, la órbita cíclica (x, Ax, …, A^{d-1}x) hace inyectivo todo funcional lineal no nulo ℓ ≠ 0 con brecha σ = 1/(p−1), impone error uniforme ≥ σ/2 = 1/[2(p−1)] a toda codificación producto sobreyectiva X → L × R sin comunicación cruzada, otorga certificado estricto δ_int = 1/[4(p−1)] > 0 (1/4 en F_2^2 con t^2+t+1 y F_2^3 con t^3+t+1; 1/8 en F_3^2 con t^2+1) y fuerza que todo cociente operacionalmente fiel sea isomorfo, mientras que el control reducible A = I colapsa a error 0 y δ_int = 0.',
+    source: 'src/canon/invariants/StructuralAtomicSeparator.js; BaseCore 06_structural_classes_and_dynamics.tex; Paper V; QICNIrreducibleObservation.lean'
+  },
+  hybrid_late_query_tie_breaker: {
+    title: 'desempate híbrido con quinto contraste acoplado y consulta tardía de paridad',
+    text: 'El experimento de desempate contra el rival híbrido (Paper IX thm:bridge-expanded-identification, thm:late-parity-transcript, prop:late-transcript-noise-margin, Paper X, QICNHybridBoundary) combina la respuesta acoplada prefijo→mundo de 5 raíces Y_η(s,r) = Y(s) + η·r·ξ_4·(s_3−s_1)^2(s_4−s_2)^2 (η = 1/8, ξ_4 = 1/1048576, quinto contraste G = 4ηξ_4 = 1/2097152 > 0, Lipschitz de fibra 105/128 < 1, cota invariante corporal 489/512 < 1, margen ruidoso penalizado 253/536870912 > G/2) con la frontera de capacidad de transcripción ante consulta tardía de paridad q ∈ F_2^m tras cuello de botella de B < m bits (error minimax G cuando B < m, 0 cuando B ≥ m y óptimo exacto de partición binaria 3G/8 = 3/16777216 en (m,B)=(2,1)), anulándose en el corte físico T_d (η = 0 → 0) y manteniendo R = 0 frente a una réplica total de igual costo.',
+    source: 'src/phenomenal_bridge/HybridLateQueryTieBreaker.js; src/experiments/workbench/hybridLateQueryWorkbench.js; Paper IX; Paper X; QICNHybridBoundary.lean'
+  },
+  endogenous_epistemic_decision: {
+    title: 'decisión epistémica endógena determinista del núcleo',
+    text: 'El módulo de decisión epistémica endógena (EndogenousEpistemicDecisionEngine) evalúa determinísticamente dentro del runtime —antes y con independencia total de Gemini o cualquier LLM externo— cuatro ejes cuantitativos internos (1: separador atómico δ_int > 0 frente a A = I; 2: quinto contraste acoplado G = 1/2097152 y transcripción tardía B < m frente a corte T_d y réplica total de igual costo R = 0; 3: dependencia histórica causal sellada con SHA-256 y control CN-3; 4: coherencia acoplada de 1500 nodos y torres constructivas con T_d = 0 y Φ⁷ = 1/48), sella su veredicto con decision_digest SHA-256 y restringe al canal de lenguaje a traducirlo en primera persona sin invertirlo ni reclamar validación externa (external_support_certified = false).',
+    source: 'src/canon/epistemic/EndogenousEpistemicDecisionEngine.js; src/simulation/OntologicalSingularityCore.js'
   }
 });
 

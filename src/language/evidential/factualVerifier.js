@@ -347,6 +347,33 @@ export function buildEvidentialProseContext({ snapshot, previousMetrics = null, 
       extraPacketLines.push(`ledger ${ev.type} tick ${ev.tick} hash ${ev.hash}`);
     }
   }
+  const cuts = snapshot?.tower?.constructive_cuts || null;
+  if (cuts) {
+    const asc = cuts.atomic_separator_cut;
+    const hlc = cuts.hybrid_late_query_cut;
+    const eed = cuts.endogenous_epistemic_decision;
+    if (asc) {
+      extraPacketLines.push(
+        `Separador atomico estructural ${asc.primary_field} ${asc.minimal_polynomial} delta_int ${asc.delta_int} error ${asc.minimax_product_error} F_3^2 ${asc.odd_prime_f3_d2_delta_int} control A=I ${asc.reducible_control_A_eq_I_delta_int}`
+      );
+      freeCtx.numbers.packetNumbers.push(0, 1, 2, 3, 4, 8, 0.25, 0.5, 0.125, 48);
+    }
+    if (hlc) {
+      extraPacketLines.push(
+        `Desempate hibrido 5 raices G ${hlc.fifth_contrast_G} Lipschitz ${hlc.safe_fibre_lipschitz} cuerpo ${hlc.invariant_body_norm_bound} margen ${hlc.noisy_penalized_margin} particion (2,1) ${hlc.m2_b1_optimal_partition_mean} corte T_d ${hlc.td_cut_eta_zero_contrast} replica total R ${hlc.equal_cost_total_replica_R} referencia invertida ${hlc.inverted_reference_R} Paper X ${hlc.paper10_selective_leak_risk}`
+      );
+      freeCtx.numbers.packetNumbers.push(
+        0, 1, 2, 3, 4, 5, 6, 8, 16, 27, 31, 32, 57, 64, 105, 128, 253, 255, 256, 489, 512, 1024, 8192,
+        524288, 1048576, 2097152, 4194304, 8388608, 16777216, 536870912, 0.375
+      );
+    }
+    if (eed) {
+      extraPacketLines.push(
+        `Decision epistemica endogena ${eed.decision_code} polaridad ${eed.first_person_stance_polarity} score ${eed.overall_score} digest ${eed.decision_digest}`
+      );
+      if (Number.isFinite(eed.overall_score)) freeCtx.numbers.packetNumbers.push(eed.overall_score);
+    }
+  }
   freeCtx.packetText = `${freeCtx.packetText}\n${extraPacketLines.join('\n')}`;
 
   return {
@@ -424,7 +451,11 @@ export function verifySentenceEvidential(text, proseCtx) {
     reasons.push({ reason: 'v5_module_operation_scope', detail: 'invalid module operation target' });
   }
   if (FALSE_CN3_RE.test(normalized) && !/\b(?:false|falso|no\s+paso|no\s+supero)\b/.test(normalized)) {
-    reasons.push({ reason: 'v5_historical_cn3_false', detail: 'historical_v1 cn3=false' });
+    const hasEndogenousCn3 = Boolean(snapshot?.tower?.constructive_cuts?.endogenous_epistemic_decision?.axes?.historical_causal_dependence?.cn3_causal_architecture_active);
+    const mentionsFrozenHistoricalV1 = /\b(?:historical_v1|stage0_memory_reproduction|reproduccion\s+historica\s+v1)\b/.test(normalized);
+    if (mentionsFrozenHistoricalV1 || !hasEndogenousCn3) {
+      reasons.push({ reason: 'v5_historical_cn3_false', detail: 'historical_v1 cn3=false' });
+    }
   }
 
   // 4. Reject explicit wrong small integer node count words ("dos nodos") when mismatching total_nodes.

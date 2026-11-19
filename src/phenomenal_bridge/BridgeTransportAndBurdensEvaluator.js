@@ -74,8 +74,9 @@ import {
   roleFrame,
   verifyIndexedQuarticPlantAndFourRootClosure
 } from '../simulation/tower/BodyWorldTower.js';
+import { verifyHybridLateQueryTieBreakerAndFifthContrast } from './HybridLateQueryTieBreaker.js';
 
-export { verifyIndexedQuarticPlantAndFourRootClosure };
+export { verifyIndexedQuarticPlantAndFourRootClosure, verifyHybridLateQueryTieBreakerAndFifthContrast };
 
 export const BITS = Object.freeze([0, 1]);
 export const PHASE_NOISE = TAP.div(16);
@@ -579,11 +580,13 @@ export function runFullBodyWorldBridgeVerification() {
 
   const transportResult = verifyBinaryCycleTransport();
   const indexedQuarticPlantAndFourRootClosure = verifyIndexedQuarticPlantAndFourRootClosure();
+  const hybridLateQueryTieBreaker = verifyHybridLateQueryTieBreakerAndFifthContrast();
 
   return {
     passed: true,
     transportResult,
     indexedQuarticPlantAndFourRootClosure,
+    hybridLateQueryTieBreaker,
     safetyChecks,
     sixBurdensJointCertificate: baselineCerts,
     lesionSignatures: expectedLesions,

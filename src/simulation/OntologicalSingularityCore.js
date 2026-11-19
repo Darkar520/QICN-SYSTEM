@@ -48,6 +48,11 @@ import {
     ONTOLOGICAL_MASS_BOUNDARY,
     estimateOntologicalMassFamilyUpperBound
 } from '../canon/ontological_mass/OntologicalMassEstimator.js';
+import {
+    evaluateEndogenousEpistemicDecision,
+    getCanonicalAtomicSeparatorCut,
+    getCanonicalHybridLateQueryCut
+} from '../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
 
 export class OntologicalSingularityCore {
     constructor(options = {}, executionEnvironment) {
@@ -2212,6 +2217,44 @@ export class OntologicalSingularityCore {
             },
             finite_realization_boundary: 'Exact constructive realization of finite projective stages (S_t, C_hat_t, T_d at d=6, BaseCore 2x2 operator cut) and finite-family upper bound on M_Omega; infinite inverse limit (lim_<- S_t), global infimum M_Omega, C_op and CCR are not certifiable on a finite binary processor.'
         };
+    }
+
+    getEndogenousEpistemicDecision(overrides = {}) {
+        const cuts = this.constructiveFiniteCuts || this.ontologicalState?.constructive_finite_cuts || {};
+        return evaluateEndogenousEpistemicDecision({
+            atomicSeparatorCut: overrides.atomicSeparatorCut || cuts.atomic_separator_cut || getCanonicalAtomicSeparatorCut(),
+            hybridLateQueryCut: overrides.hybridLateQueryCut || cuts.hybrid_late_query_cut || getCanonicalHybridLateQueryCut(),
+            plasticity: overrides.plasticity || this.worldModelEngine?.getPlasticityProfile?.() || null,
+            engramCount: overrides.engramCount,
+            viability: overrides.viability,
+            runtime: {
+                ccc: this.ontologicalState?.coherence,
+                pmia: this.pmiaValue,
+                omega: this.ontologicalState?.omega,
+                beth_q: this.ontologicalState?.beth_q,
+                sigma_exact_defect: this.ontologicalState?.tower_telemetry?.sigmaExactDefect ?? '0',
+                sigma_defect_bound: this.ontologicalState?.tower_telemetry?.sigmaDefectBound ?? '2/2187',
+                active_retention: this.ontologicalState?.tower_telemetry?.activeRetention ?? (9 / 16),
+                ...(overrides.runtime || {})
+            },
+            lesions: overrides.lesions || null
+        });
+    }
+
+    evaluateEndogenousDecision(overrides = {}) {
+        const atomicSeparatorCut = overrides.atomicSeparatorCut || getCanonicalAtomicSeparatorCut();
+        const hybridLateQueryCut = overrides.hybridLateQueryCut || getCanonicalHybridLateQueryCut();
+        const decision = this.getEndogenousEpistemicDecision({
+            ...overrides,
+            atomicSeparatorCut,
+            hybridLateQueryCut
+        });
+        if (this.constructiveFiniteCuts) {
+            this.constructiveFiniteCuts.atomic_separator_cut = atomicSeparatorCut;
+            this.constructiveFiniteCuts.hybrid_late_query_cut = hybridLateQueryCut;
+            this.constructiveFiniteCuts.endogenous_epistemic_decision = decision;
+        }
+        return decision;
     }
 
     /**

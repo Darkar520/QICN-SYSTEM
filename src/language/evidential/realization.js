@@ -105,6 +105,12 @@ export function evidentialGracefulCandidate(verification) {
   };
 }
 
+function formatLocalEndogenousDecisionSummary(snapshot) {
+  const eed = snapshot?.tower?.constructive_cuts?.endogenous_epistemic_decision || null;
+  if (!eed || typeof eed.decision_code !== 'string') return '';
+  return `${eed.canonical_first_person_verdict} [decision_code=${eed.decision_code}; decision_digest=${String(eed.decision_digest || '').slice(0, 16)}].`;
+}
+
 function formatLocalWorkbenchSummary(registry) {
   if (!registry || registry.status !== 'verified_internal_copy' || !registry.entries?.length) {
     return 'Evidencia experimental B2 en copia aislada: not_recorded.';
@@ -295,7 +301,13 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
     turnIndex: prepared.turnIndex || 0,
     controlProposal: prepared.controlProposal || null
   });
-  const localText = `${baseLocal}\n\n${formatLocalWorkbenchSummary(context.evidenceRegistry)}\n${SCOPE_TEXT}`.trim();
+  const endogenousSummary = formatLocalEndogenousDecisionSummary(snapshot);
+  const localText = [
+    baseLocal,
+    endogenousSummary,
+    formatLocalWorkbenchSummary(context.evidenceRegistry),
+    SCOPE_TEXT
+  ].filter(Boolean).join('\n\n').trim();
 
   let text = localText;
   let publishedSentences = [];

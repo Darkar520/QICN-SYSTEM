@@ -40,7 +40,10 @@ export class InformationalEntanglementField {
             sampledNodes.forEach(node1 => {
               const s1 = hasCoupling ? (Number.isInteger(node1.sectorId) ? node1.sectorId : sectorIdOf(node1.id)) : 0;
               node1.connections.slice(0, 3).forEach(conn => {
-                const node2 = nodes.find(n => n.id === conn.targetId);
+                const directNode2 = nodes[conn.targetId];
+                const node2 = (directNode2 && directNode2.id === conn.targetId)
+                  ? directNode2
+                  : nodes.find(n => n.id === conn.targetId);
                 if (node2) {
                   if (hasCoupling) {
                     const s2 = Number.isInteger(node2.sectorId) ? node2.sectorId : sectorIdOf(node2.id);

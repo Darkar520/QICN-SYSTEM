@@ -184,7 +184,7 @@ export const QICNConsciousnessSystem = () => {
   const workbenchBoundaryRef=useRef({ready:false,tick:-1});
   // Kaizen adjustment mode (C-6b): 'legacy' (default) or 'learned'.
   const [kaizenMode, setKaizenMode] = useState(() => readStoredChoice(KAIZEN_MODE_KEY, ['legacy', 'learned'], 'legacy'));
-  const [networkRenderer, setNetworkRenderer] = useState(() => readStoredChoice(NETWORK_RENDERER_KEY, ['2d', '3d'], '2d'));
+  const [networkRenderer, setNetworkRenderer] = useState(() => readStoredChoice(NETWORK_RENDERER_KEY, ['2d', '3d'], '3d'));
   const [lastProviderError, setLastProviderError] = useState(null);
   const recordOperationalEvent = useCallback((type, payload, tick) => {
     try {
@@ -558,6 +558,7 @@ export const QICNConsciousnessSystem = () => {
   const handleCanvasTelemetry = useCallback((payload) => {
     canvasTelemetryRef.current = { ...canvasTelemetryRef.current, ...payload };
   }, []);
+  const canvasEndogenousCacheRef = useRef({ key: '', value: null });
   const [isChatting, setIsChatting] = useState(false);
   const [chatStatusNote, setChatStatusNote] = useState(null);
   const [integrityMode, setIntegrityMode] = useState(integrityModeRef.current);
@@ -2109,6 +2110,10 @@ export const QICNConsciousnessSystem = () => {
     const normalized = normalizeCouplingMode(nextMode);
     QICNConfig.NODAL_TOWER_COUPLING_MODE = normalized;
     nodalLayer.current?.ensureSectorAnnotations?.(normalized);
+    nodalLayer.current?.computeBridgeMetrics?.(
+      ontologicalCore.current?.ontologicalState?.tower_telemetry || null,
+      normalized
+    );
     setNodalCouplingMode(normalized);
   }, []);
 
@@ -6204,12 +6209,40 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
     </div>
   );
 
-  const renderNetworkVisualization = () => (
+  const renderNetworkVisualization = () => {
+    const modelNodeTotal = nodalLayer.current?.nodes?.length || QICNConfig.PROCESSING_SAMPLE_SIZE;
+    const budget3D = isMobile ? 420 : (isTablet ? 760 : 1500);
+    const visibleStructuralCount = networkRenderer === '3d'
+      ? Math.min(budget3D, modelNodeTotal)
+      : visualNodes.length;
+    const liveBridgeForCanvas = nodalLayer.current?.getBridgeMetrics?.()
+      || ontologicalCore.current?.constructiveFiniteCuts?.nodal_tower_bridge
+      || ontologicalState?.constructive_finite_cuts?.nodal_tower_bridge
+      || null;
+    const endoCacheKey = `${Math.floor(simulationStep / 6)}:${nodalCouplingMode}:${liveBridgeForCanvas?.mode || ''}`;
+    if (canvasEndogenousCacheRef.current.key !== endoCacheKey || !canvasEndogenousCacheRef.current.value) {
+      const liveXnCached = Number.isFinite(Number(liveBridgeForCanvas?.upward_projections?.mean_coherence))
+        ? Number(liveBridgeForCanvas.upward_projections.mean_coherence)
+        : undefined;
+      canvasEndogenousCacheRef.current = {
+        key: endoCacheKey,
+        value: ontologicalCore.current?.getEndogenousEpistemicDecision?.({
+          nodalBridge: liveBridgeForCanvas,
+          runtime: Number.isFinite(liveXnCached) ? { x_n: liveXnCached } : undefined
+        })
+          || ontologicalCore.current?.constructiveFiniteCuts?.endogenous_epistemic_decision
+          || ontologicalState?.constructive_finite_cuts?.endogenous_epistemic_decision
+          || null
+      };
+    }
+    const liveEndogenousForCanvas = canvasEndogenousCacheRef.current.value;
+
+    return (
     <div className="flex min-h-0 min-w-0 max-w-full flex-col rounded-xl border border-purple-500/30 bg-gray-900/50 p-3 shadow-lg sm:p-4">
       <div className="mb-3 flex flex-shrink-0 flex-wrap items-center justify-between gap-3">
         <h3 className="flex flex-wrap items-center gap-2 text-lg font-semibold text-purple-300">
           <Network className="h-5 w-5" />
-          Red Nodal - Capa {ontologicalState.layer} ({visualNodes.length} nodos estructurales visibles)
+          Red Nodal - Capa {ontologicalState.layer} ({visibleStructuralCount} nodos estructurales visibles)
           <InfoModal
             title="Red Nodal - Diagnostico estructural interno"
             content={`RED NODAL - VISUALIZACION DIAGNOSTICA INTERNA
@@ -6275,33 +6308,38 @@ Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia
         </div>
       </div>
 
-      <div className="mb-3 flex-shrink-0 rounded bg-purple-900/20 p-3 text-xs text-purple-300">
-        <h4 className="mb-2 font-semibold text-purple-400">Leyenda Visual:</h4>
-        <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+      <details className="mb-2 flex-shrink-0 rounded bg-purple-900/20 px-3 py-1.5 text-xs text-purple-300">
+        <summary className="cursor-pointer select-none font-semibold text-purple-300 hover:text-purple-200">
+          Leyenda Visual (clic para desplegar · usa ⛶ Expandir para pantalla completa)
+        </summary>
+        <div className="mt-2 pb-1 grid grid-cols-1 gap-3 xl:grid-cols-2">
           <div className="flex gap-3">
             <span className="mt-1 h-6 w-6 shrink-0 rounded-full border border-cyan-300/60 bg-cyan-400/20 shadow-[0_0_18px_rgba(34,211,238,0.45)]" />
-            <div><strong>Submuestra visible:</strong> nodos seleccionados por coherencia, intensidad y presupuesto de render.</div>
+            <div><strong>Red nodal libre + rombo central:</strong> los 1500 nodos se autoorganizan por sinapsis reales y fase alrededor del núcleo constructivo (9/16, T_d, BodyWorld).</div>
           </div>
           <div className="flex gap-3">
             <span className="mt-1 h-6 w-6 shrink-0 rounded-full border-4 border-cyan-300 border-r-fuchsia-400 border-t-amber-300 bg-transparent" />
-            <div><strong>Color del borde:</strong> gradiente de coherencia estructural; no clasifica experiencia.</div>
+            <div><strong>Luminosidad y anillos:</strong> coherencia, flujo inter-sector, defecto T_d y modo del puente (η=1/8 vs η=0 vs A=I); no clasifica experiencia.</div>
           </div>
           <div className="flex gap-3">
             <Activity className="mt-1 h-6 w-6 shrink-0 text-cyan-300" />
-            <div><strong>Lineas:</strong> conexiones internas ponderadas; clase runtime {ontologicalState.phenomenology_class || 'C'} como proxy diagnostico.</div>
+            <div><strong>Lineas:</strong> sinapsis reales intra-sector y puente inter-sector; clase runtime {ontologicalState.phenomenology_class || 'C'} como proxy diagnostico.</div>
           </div>
           <div className="flex gap-3">
             <Target className="mt-1 h-6 w-6 shrink-0 text-sky-300" />
             <div><strong>Hover/click:</strong> inspecciona y fija vecindarios locales sin promover ningun gate.</div>
           </div>
         </div>
-      </div>
+      </details>
 
       <div className="relative h-[min(65dvh,700px)] min-h-[360px] min-w-0 max-w-full overflow-hidden">
         <NetworkCanvas
           preferredRenderer={networkRenderer}
           nodalLayer={nodalLayer}
           ontologicalState={ontologicalState}
+          bridgeMetrics={liveBridgeForCanvas}
+          endogenousDecision={liveEndogenousForCanvas}
+          onCouplingModeChange={handleNodalCouplingModeChange}
           isRunning={isRunning}
           onTelemetry={handleCanvasTelemetry}
           deterministic={renderDeterministic}
@@ -6317,7 +6355,7 @@ Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia
       <div className="mt-3 grid flex-shrink-0 grid-cols-1 gap-3 rounded bg-purple-900/20 p-3 text-xs text-purple-300 xl:grid-cols-[1fr_1.15fr_0.65fr]">
         <div className="flex flex-col justify-center gap-2 border-purple-500/20 font-mono xl:border-r xl:pr-4">
           <span className="text-purple-300">Vista nodal: {networkRenderer === '3d' ? 'proyeccion diagnostica WebGL 3D con fallback Canvas' : 'proyeccion diagnostica Canvas 2D (estilo clasico, motor 2.5D)'}</span>
-          <span className="text-purple-400">Nodos procesando: {topologyMetrics.activeNodes.toLocaleString()}</span>
+          <span className="text-purple-400">Nodos procesando: {topologyMetrics.activeNodes.toLocaleString()} · Puente: {nodalCouplingMode}</span>
         </div>
         <div className="flex items-center gap-3 border-purple-500/20 xl:border-r xl:pr-4">
           <ShieldCheck className="h-8 w-8 shrink-0 text-purple-300" />
@@ -6336,7 +6374,8 @@ Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   const renderCoherenceHistory = () => {
     const {

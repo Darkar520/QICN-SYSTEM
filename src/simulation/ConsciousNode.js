@@ -169,13 +169,18 @@ export class ConsciousNode {
             });
           }
           
-          propagateSignal(targetNodes, towerFeedback = null) {
+          propagateSignal(targetNodes, towerFeedback = null, targetById = null) {
             const hasCoupling = Boolean(towerFeedback && towerFeedback.mode !== 'off');
             const sourceSector = hasCoupling ? (Number.isInteger(this.sectorId) ? this.sectorId : sectorIdOf(this.id)) : 0;
             // Activation signal
             return this.connections.map(conn => {
-              // Use find() because IDs might be dispersed due to array slicing/mapping
-              const target = targetNodes.find(n => n.id === conn.targetId);  
+              // O(1) lookup via indexed table when provided, preserving exact fallback semantics.
+              const direct = targetById ? targetById[conn.targetId] : targetNodes[conn.targetId];
+              const target = targetById
+                ? (direct || null)
+                : ((direct && direct.id === conn.targetId)
+                  ? direct
+                  : targetNodes.find(n => n.id === conn.targetId));
               if (!target) return null;
 
               if (hasCoupling) {

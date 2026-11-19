@@ -123,16 +123,23 @@ export class NodalProcessingLayer {
 
           processSignals(towerFeedback = null) {
             const activeNodes = this.getActiveNodes();
+            const activeById = new Array(this.nodes.length);
+            for (let i = 0; i < activeNodes.length; i += 1) {
+              activeById[activeNodes[i].id] = activeNodes[i];
+            }
             const hasCoupling = Boolean(towerFeedback && towerFeedback.mode !== 'off');
 
             // Propagate signals
             const newSignals = [];
-            activeNodes.forEach(node => {
+            for (let i = 0; i < activeNodes.length; i += 1) {
+              const node = activeNodes[i];
               const signals = hasCoupling
-                ? node.propagateSignal(activeNodes, towerFeedback)
-                : node.propagateSignal(activeNodes);
-              newSignals.push(...signals);
-            });
+                ? node.propagateSignal(activeNodes, towerFeedback, activeById)
+                : node.propagateSignal(activeNodes, null, activeById);
+              for (let j = 0; j < signals.length; j += 1) {
+                newSignals.push(signals[j]);
+              }
+            }
 
             let sectorIntraFlux = null;
             let sectorInterFlux = null;

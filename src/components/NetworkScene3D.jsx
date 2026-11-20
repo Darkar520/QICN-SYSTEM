@@ -23,70 +23,54 @@ const QUALITY_PRESETS = Object.freeze({
     tier: 'webgl_desktop',
     maxNodes: 1500,
     maxEdges: 1800,
-    starCount: 240,
-    sphereSegments: 7,
-    enableBloom: false,
+    starCount: 280,
+    sphereSegments: 5,
+    enableBloom: true,
     bloomStrength: 0.16,
     bloomRadius: 0.26,
     bloomThreshold: 0.68,
-    maxPixelRatio: 1.25,
-    antialias: true,
-    nodeScale: 1.15,
-    edgeAlphaBase: 0.22,
-    edgeAlphaBridge: 0.34,
-    signalPointScale: 1.35,
-    layoutIntervalMs: 145,
+    maxPixelRatio: 1.0,
     targetFps: 30
   }),
   tablet: Object.freeze({
     tier: 'webgl_tablet',
-    maxNodes: 640,
-    maxEdges: 820,
-    starCount: 140,
-    sphereSegments: 7,
+    maxNodes: 760,
+    maxEdges: 960,
+    starCount: 180,
+    sphereSegments: 5,
     enableBloom: false,
     bloomStrength: 0,
     bloomRadius: 0,
     bloomThreshold: 1,
-    maxPixelRatio: 1.35,
-    antialias: true,
-    nodeScale: 1.45,
-    edgeAlphaBase: 0.28,
-    edgeAlphaBridge: 0.42,
-    signalPointScale: 1.70,
-    layoutIntervalMs: 155,
+    maxPixelRatio: 1.0,
     targetFps: 30
   }),
   mobile: Object.freeze({
     tier: 'webgl_mobile',
-    maxNodes: 360,
-    maxEdges: 480,
-    starCount: 70,
-    sphereSegments: 8,
+    maxNodes: 300,
+    maxEdges: 420,
+    starCount: 60,
+    sphereSegments: 5,
     enableBloom: false,
     bloomStrength: 0,
     bloomRadius: 0,
     bloomThreshold: 1,
-    maxPixelRatio: 1.5,
-    antialias: true,
-    nodeScale: 1.55,
-    edgeAlphaBase: 0.34,
-    edgeAlphaBridge: 0.50,
-    signalPointScale: 2.15,
-    layoutIntervalMs: 165,
+    maxPixelRatio: 1.0,
+    nodeScale: 1.12,
+    edgeAlphaBase: 0.20,
+    edgeAlphaBridge: 0.32,
+    signalPointScale: 1.28,
+    layoutIntervalMs: 185,
     targetFps: 30
   })
 });
 
 function computeResponsiveCameraPos(w, h, mode) {
-  const aspect = w / Math.max(1, h);
   if (mode === 'mobile') {
-    return aspect < 1.0 ? [0, 3.0, 27.5] : [0, 2.5, 22.5];
+    const aspect = w / Math.max(1, h);
+    return aspect < 1.0 ? [0, 3.6, 28.5] : [0, 3.2, 26.0];
   }
-  if (mode === 'tablet') {
-    return aspect < 1.0 ? [0, 3.2, 26.5] : [0, 3.2, 25.0];
-  }
-  return [0, 4.0, 31.0];
+  return DEFAULT_CAMERA_POS;
 }
 
 const NEBULA_VERTEX_SHADER = `
@@ -160,17 +144,17 @@ const EDGE_FRAGMENT_SHADER = `
   varying float vDepth;
 
   void main() {
-    float depthFade = clamp(1.38 - (vDepth * 0.020), 0.28, 1.0);
-    float bridgeGate = mix(1.0, mix(0.22, 1.0, uBridgeActive), vIsBridge);
+    float depthFade = clamp(1.34 - (vDepth * 0.022), 0.22, 1.0);
+    float bridgeGate = mix(1.0, mix(0.20, 1.0, uBridgeActive), vIsBridge);
     // Real synaptic weight directly governs filament clarity: resonant highways shine cleanly
-    float weightGain = 0.55 + (1.05 * vWeight);
+    float weightGain = 0.42 + (0.95 * vWeight);
 
     float alpha = (uBaseAlpha * weightGain) * bridgeGate * depthFade;
-    vec3 finalCol = vColor * (0.88 + 0.42 * vWeight);
-    alpha = mix(alpha, 0.94, vHighlight);
-    finalCol = mix(finalCol, vec3(0.78, 0.99, 0.95), vHighlight * 0.62);
+    vec3 finalCol = vColor * (0.72 + 0.36 * vWeight);
+    alpha = mix(alpha, 0.90, vHighlight);
+    finalCol = mix(finalCol, vec3(0.75, 0.99, 0.95), vHighlight * 0.58);
 
-    gl_FragColor = vec4(finalCol, clamp(alpha, 0.06, 0.95));
+    gl_FragColor = vec4(finalCol, clamp(alpha, 0.04, 0.94));
   }
 `;
 
@@ -181,8 +165,7 @@ const SIGNAL_VERTEX_SHADER = `
   void main() {
     vColor = color;
     vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
-    float rawSize = (185.0 * uPointScale) / max(1.0, -mvPos.z);
-    gl_PointSize = clamp(rawSize, 4.5 * uPointScale, 20.0 * uPointScale);
+    gl_PointSize = clamp((150.0 * uPointScale) / max(1.0, -mvPos.z), 3.0 * uPointScale, 10.5 * uPointScale);
     gl_Position = projectionMatrix * mvPos;
   }
 `;
@@ -194,10 +177,8 @@ const SIGNAL_FRAGMENT_SHADER = `
     float r2 = dot(d, d);
     if (r2 > 0.25) discard;
     float g = max(0.0, 1.0 - (r2 * 4.0));
-    float halo = g * g;
-    float core = smoothstep(0.55, 0.95, g);
-    vec3 col = vColor * (0.85 + 0.45 * halo) + vec3(0.55 * core);
-    gl_FragColor = vec4(col, clamp(halo * 1.25 + core * 0.4, 0.0, 0.98));
+    float glow = g * g;
+    gl_FragColor = vec4(vColor + vec3(0.24 * glow), clamp(glow * 1.15, 0.0, 0.96));
   }
 `;
 
@@ -468,20 +449,19 @@ const NetworkScene3D = React.memo(({
       scene.fog = new THREE.FogExp2(0x030612, 0.007);
 
       const initCam = computeResponsiveCameraPos(width, height, viewportMode);
-      camera = new THREE.PerspectiveCamera(viewportMode === 'mobile' ? 48 : 44, width / height, 0.25, 220);
+      camera = new THREE.PerspectiveCamera(44, width / height, 0.25, 220);
       camera.position.set(initCam[0], initCam[1], initCam[2]);
 
-      const effectiveDpr = Math.min(window.devicePixelRatio || 1, quality.maxPixelRatio);
       renderer = new THREE.WebGLRenderer({
-        antialias: Boolean(quality.antialias),
+        antialias: false,
         powerPreference: 'high-performance',
         alpha: false,
         stencil: false
       });
-      renderer.setPixelRatio(effectiveDpr);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, quality.maxPixelRatio));
       renderer.setSize(width, height);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = viewportMode === 'mobile' ? 1.16 : 1.08;
+      renderer.toneMappingExposure = 1.05;
       renderer.domElement.style.display = 'block';
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
@@ -681,7 +661,7 @@ const NetworkScene3D = React.memo(({
       signalGeom.setAttribute('color', signalColAttr);
       signalGeom.setDrawRange(0, 0);
       const signalUniforms = {
-        uPointScale: { value: effectiveDpr * (quality.signalPointScale || 1.2) }
+        uPointScale: { value: quality.signalPointScale || 1.0 }
       };
       const signalMaterial = new THREE.ShaderMaterial({
         uniforms: signalUniforms,
@@ -774,7 +754,7 @@ const NetworkScene3D = React.memo(({
       };
 
       const onPointerMove = (ev) => {
-        // Skip hover raycasting on touch screens and while actively dragging OrbitControls
+        // Never raycast on touchmove or while actively dragging OrbitControls, and throttle hover picks to ~12 Hz
         if (ev.pointerType === 'touch' || pointerDownPos) return;
         const tNow = performance.now();
         if ((tNow - lastRaycastMs) < 80) return;
@@ -897,7 +877,7 @@ const NetworkScene3D = React.memo(({
           edgeMetaDirty = true;
         }
 
-        // 3. Recompute pure O(N+E) SO(3)-isotropic force-directed physics (fast 70ms during floor wake-up, adaptive light cadence once settled; interpolated at 30 FPS!)
+        // 3. Recompute pure O(N+E) SO(3)-isotropic force-directed physics (fast 70ms during floor wake-up, light 145ms once settled; smoothly interpolated at 30 FPS!)
         const isDormantFloor = !props.isRunning && (Number(props.tick) || 0) <= 0;
         const isPausedFrozen = !props.isRunning && (Number(props.tick) || 0) > 0;
         const layoutIntervalMs = (workspace.physicsStep < 32 && !isDormantFloor) ? 70 : (quality.layoutIntervalMs || 145);
@@ -1072,19 +1052,18 @@ const NetworkScene3D = React.memo(({
           signalGeom.setDrawRange(0, 0);
         } else {
           spawnSignalPacketsFromView(signalPool, view, workspace, renderCount, coreState, curViewMode);
-          // On subsampled tiers (mobile/tablet), keep real firing-node traffic vivid across rendered synapses
           const sigPulseBuf = view.buffers.signalPulse;
-          if (renderCount < view.nodeCount && signalPool.activeCount < 32 && latestEdgeStats.totalEdges > 0 && sigPulseBuf && curViewMode !== NODAL_3D_VIEW_MODES.CORE_ONLY) {
+          if (renderCount < view.nodeCount && signalPool.activeCount < 16 && latestEdgeStats.totalEdges > 0 && sigPulseBuf && curViewMode !== NODAL_3D_VIEW_MODES.CORE_ONLY) {
             const edgeTotal = latestEdgeStats.totalEdges;
-            const stride = Math.max(1, Math.floor(edgeTotal / 32));
+            const stride = Math.max(1, Math.floor(edgeTotal / 18));
             const phaseOffset = Math.abs(Number(props.tick) || 0) % stride;
             let added = 0;
-            for (let eIdx = phaseOffset; eIdx < edgeTotal && added < 14; eIdx += stride) {
+            for (let eIdx = phaseOffset; eIdx < edgeTotal && added < 8; eIdx += stride) {
               const rU = workspace.edgeSourceRenderIdx[eIdx];
               const rV = workspace.edgeTargetRenderIdx[eIdx];
               const mU = workspace.renderToModelIndex[rU];
               const pulseU = sigPulseBuf[mU] || 0;
-              if (pulseU < 0.30) continue;
+              if (pulseU < 0.34) continue;
               const isInterEdge = workspace.edgeIsBridge[eIdx] > 0 ? 1 : 0;
               if (isInterEdge && !coreState.bridgeActive) continue;
               const slot = signalPool.cursor % signalPool.capacity;
@@ -1093,8 +1072,8 @@ const NetworkScene3D = React.memo(({
               signalPool.fromRender[slot] = rU;
               signalPool.toRender[slot] = rV;
               signalPool.progress[slot] = 0.02 + ((eIdx % 5) * 0.04);
-              signalPool.speed[slot] = 0.95 + (Math.min(1, pulseU * 0.5) * 0.85);
-              signalPool.strength[slot] = clamp01(pulseU * 0.72);
+              signalPool.speed[slot] = 0.95 + (Math.min(1, pulseU * 0.5) * 0.80);
+              signalPool.strength[slot] = clamp01(pulseU * 0.65);
               signalPool.isInter[slot] = isInterEdge;
               added += 1;
             }
@@ -1274,6 +1253,7 @@ const NetworkScene3D = React.memo(({
         : 'relative h-full w-full min-h-[360px] select-none overflow-hidden rounded-xl border border-cyan-500/25 bg-[#030612]'}
       role="application"
       aria-label="Red nodal interactiva WebGL 3D acoplada a las torres constructivas"
+      style={!isExpanded && viewportMode !== 'mobile' && canvasScale !== 1 ? { transform: `scale(${canvasScale})` } : undefined}
     >
       <div ref={containerRef} data-testid="network-webgl-mount" className="h-full w-full" />
 
@@ -1396,7 +1376,7 @@ const NetworkScene3D = React.memo(({
       {/* Ultra-Compact Bottom Floating Telemetry Strip (expandable on demand via Detalles) */}
       <div
         data-testid="network-3d-coupled-hud"
-        className="pointer-events-none absolute bottom-2 left-2 right-2 z-10 flex flex-wrap items-end justify-between gap-1.5"
+        className="pointer-events-none absolute bottom-2.5 left-2.5 right-2.5 z-10 flex flex-wrap items-end justify-between gap-2"
       >
         <div className={`pointer-events-auto rounded-xl border border-cyan-500/25 bg-slate-950/75 text-slate-200 shadow-xl backdrop-blur-md ${compactMode ? 'px-2 py-1 text-[10px]' : 'px-2.5 py-1.5 text-[11px]'}`}>
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">

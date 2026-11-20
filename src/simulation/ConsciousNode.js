@@ -139,57 +139,60 @@ export class ConsciousNode {
           }
           
           applyPlasticity(feedbackSignal, mutableConfig, towerFeedback = null, nodesById = null) {
-            // Nodal Plasticity: Hebbian Reinforcement and Synaptic Pruning
+            // Nodal Plasticity: Hebbian Reinforcement and Synaptic Pruning (in-place zero-GC, bit-for-bit identical)
             const HEBBIAN_FACTOR = mutableConfig.HEBBIAN_FACTOR;
             const SYNAPTIC_PRUNING_THRESHOLD = mutableConfig.SYNAPTIC_PRUNING_THRESHOLD;
             const hasCoupling = Boolean(towerFeedback && towerFeedback.mode !== 'off');
             const sourceSector = hasCoupling ? (Number.isInteger(this.sectorId) ? this.sectorId : sectorIdOf(this.id)) : 0;
-            
-            this.connections = this.connections.map(conn => {
-              // Hebbian learning:
-              // - B0 ('off'): exact legacy formula (zero drift)
-              // - Coupled modes: genuinely structural pairwise phase & coherence resonance
-              //   ("fire together, wire together"), replacing any blind uniform bonus.
+            const randFn = executionEnvironmentFor(this).random;
+            const conns = this.connections;
+            const len = conns.length;
+            const baseDrive = HEBBIAN_FACTOR * this.intensity * feedbackSignal;
+            const interBonus = hasCoupling ? towerFeedback.interSectorHebbianBonus : 0;
+            const interPruneThreshold = hasCoupling
+              ? (SYNAPTIC_PRUNING_THRESHOLD * towerFeedback.interSectorPruningFloorFactor)
+              : SYNAPTIC_PRUNING_THRESHOLD;
+
+            let writeIdx = 0;
+            for (let i = 0; i < len; i += 1) {
+              const conn = conns[i];
               const isInterSector = hasCoupling && (sectorIdOf(conn.targetId) !== sourceSector);
               let hebbianUpdate;
               if (hasCoupling) {
                 const target = nodesById ? nodesById[conn.targetId] : null;
                 let pairResonance = 0;
                 if (target) {
-                  const phaseAlign = Math.cos(this.phase - target.phase); // [-1, 1]
-                  const cohAffinity = 1 - Math.abs(this.coherenceState - target.coherenceState); // [0, 1]
+                  const phaseAlign = Math.cos(this.phase - target.phase);
+                  const cohAffinity = 1 - Math.abs(this.coherenceState - target.coherenceState);
                   pairResonance = (0.68 * phaseAlign) + (0.32 * ((cohAffinity * 2) - 1));
                 }
-                const baseDrive = HEBBIAN_FACTOR * this.intensity * feedbackSignal;
                 const resonantTerm = pairResonance >= 0
                   ? (0.044 * pairResonance * (0.5 + 0.5 * this.intensity))
                   : (0.036 * pairResonance);
                 const bridgeTerm = isInterSector
-                  ? (towerFeedback.interSectorHebbianBonus >= 0
-                    ? towerFeedback.interSectorHebbianBonus * Math.max(0.12, 0.5 + (0.5 * pairResonance))
-                    : towerFeedback.interSectorHebbianBonus)
+                  ? (interBonus >= 0
+                    ? interBonus * Math.max(0.12, 0.5 + (0.5 * pairResonance))
+                    : interBonus)
                   : 0;
                 hebbianUpdate = (baseDrive * (0.45 + Math.max(0, pairResonance) * 0.55)) + resonantTerm + bridgeTerm;
               } else {
-                hebbianUpdate = HEBBIAN_FACTOR * this.intensity * feedbackSignal;
+                hebbianUpdate = baseDrive;
               }
-              
+
               const newWeight = conn.weight + hebbianUpdate +
-                                  (executionEnvironmentFor(this).random() - 0.5) * 0.01 * this.learningRate;
-              
-              return {
-                ...conn,
-                weight: Math.max(0.1, Math.min(1.0, newWeight))
-              };
-            }).filter(conn => {
-              // Synaptic pruning (protects resonant inter-sector links when bidirectional coupling is active)
-              if (!hasCoupling) return conn.weight > SYNAPTIC_PRUNING_THRESHOLD;
-              const isInterSector = sectorIdOf(conn.targetId) !== sourceSector;
-              const threshold = isInterSector
-                ? (SYNAPTIC_PRUNING_THRESHOLD * towerFeedback.interSectorPruningFloorFactor)
-                : SYNAPTIC_PRUNING_THRESHOLD;
-              return conn.weight > threshold;
-            });
+                ((randFn() - 0.5) * 0.01 * this.learningRate);
+              const clampedWeight = Math.max(0.1, Math.min(1.0, newWeight));
+              conn.weight = clampedWeight;
+
+              const threshold = isInterSector ? interPruneThreshold : SYNAPTIC_PRUNING_THRESHOLD;
+              if (clampedWeight > threshold) {
+                conns[writeIdx] = conn;
+                writeIdx += 1;
+              }
+            }
+            if (writeIdx !== len) {
+              conns.length = writeIdx;
+            }
           }
           
           propagateSignal(targetNodes, towerFeedback = null, targetById = null) {

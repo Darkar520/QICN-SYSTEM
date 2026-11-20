@@ -978,9 +978,10 @@ export function spawnSignalPacketsFromView(pool, view, workspace, renderCount, c
     pool.cursor = (pool.cursor + 1) % pool.capacity;
     pool.fromRender[slot] = rFrom;
     pool.toRender[slot] = rTo;
-    pool.progress[slot] = 0.0;
+    // Stagger departure cleanly across the tick interval so signals stream smoothly instead of bursting & going dark
+    pool.progress[slot] = -((spawned & 7) * 0.048);
     pool.strength[slot] = clamp01(sig.strength[i]);
-    pool.speed[slot] = 1.15 + (pool.strength[slot] * 0.95);
+    pool.speed[slot] = 0.68 + (pool.strength[slot] * 0.45);
     pool.isInter[slot] = isInter ? 1 : 0;
     pool.alive[slot] = 1;
     spawned += 1;
@@ -1003,13 +1004,14 @@ export function stepSignalPackets(pool, currentPositions, renderCount, dtSeconds
       pool.alive[i] = 0;
       continue;
     }
+    pool.progress[i] = nextT;
+    if (nextT <= 0.0) continue;
     const rU = pool.fromRender[i];
     const rV = pool.toRender[i];
     if (rU < 0 || rU >= renderCount || rV < 0 || rV >= renderCount) {
       pool.alive[i] = 0;
       continue;
     }
-    pool.progress[i] = nextT;
     const u3 = rU * 3;
     const v3 = rV * 3;
     const out3 = visible * 3;

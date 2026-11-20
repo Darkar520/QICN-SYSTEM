@@ -22,28 +22,47 @@ const gaussian = (randomFn = LEGACY_EXECUTION_ENVIRONMENT.random) => {
   return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
 };
 
-const fallbackPredict = (state = {}, action = 0, quantumEpsilon = 0) => {
-  const s = copyState(state);
+const writeNormalizedState = (out, state = {}) => {
+  out.ccc = toFinite(state.ccc, 0);
+  out.pmia = clamp(toFinite(state.pmia, 0), -1, 1);
+  out.sensorySignal = clamp(toFinite(state.sensorySignal, 0), 0, 1);
+  out.sensorDelta = clamp(toFinite(state.sensorDelta, 0), 0, 1);
+  out.stasisIndex = clamp(toFinite(state.stasisIndex, 0), 0, 1);
+  out.entropyExcitation = clamp(toFinite(state.entropyExcitation, 0), 0, 1);
+  out.energyDispersion = Math.max(0, toFinite(state.energyDispersion, 0));
+  return out;
+};
+
+const fallbackPredict = (state = {}, action = 0, quantumEpsilon = 0, out = null) => {
+  const sCcc = toFinite(state.ccc, 0);
+  const sPmia = clamp(toFinite(state.pmia, 0), -1, 1);
+  const sSensory = clamp(toFinite(state.sensorySignal, 0), 0, 1);
+  const sSensorDelta = clamp(toFinite(state.sensorDelta, 0), 0, 1);
+  const sStasis = clamp(toFinite(state.stasisIndex, 0), 0, 1);
+  const sEntropy = clamp(toFinite(state.entropyExcitation, 0), 0, 1);
+  const sEnergy = Math.max(0, toFinite(state.energyDispersion, 0));
   const actionSafe = clamp(toFinite(action, 0), -1, 1);
+  const absAct = Math.abs(actionSafe);
   const epsilon = clamp(toFinite(quantumEpsilon, 0), -1, 1);
-  return {
-    ...s,
-    ccc: clamp(
-      (0.78 * s.ccc) +
-      (0.56 * (s.pmia + actionSafe)) -
-      (0.12 * s.stasisIndex) -
-      (0.08 * s.energyDispersion) +
-      (0.04 * s.sensorySignal) +
-      (epsilon * 0.02),
-      0,
-      2.5
-    ),
-    pmia: clamp(s.pmia + (actionSafe * 0.5), -1, 1),
-    stasisIndex: clamp((s.stasisIndex * 0.92) + (Math.abs(actionSafe) * 0.06) - (s.sensorySignal * 0.03), 0, 1),
-    energyDispersion: clamp((s.energyDispersion * 0.9) + (Math.abs(actionSafe) * 0.05) + (Math.abs(epsilon) * 0.03), 0, 2),
-    sensorDelta: clamp((s.sensorDelta * 0.88) + (Math.abs(actionSafe) * 0.03), 0, 1),
-    entropyExcitation: clamp((s.entropyExcitation * 0.9) + (Math.abs(epsilon) * 0.04), 0, 1)
-  };
+  const absEps = Math.abs(epsilon);
+  const target = out || {};
+  target.ccc = clamp(
+    (0.78 * sCcc) +
+    (0.56 * (sPmia + actionSafe)) -
+    (0.12 * sStasis) -
+    (0.08 * sEnergy) +
+    (0.04 * sSensory) +
+    (epsilon * 0.02),
+    0,
+    2.5
+  );
+  target.pmia = clamp(sPmia + (actionSafe * 0.5), -1, 1);
+  target.sensorySignal = sSensory;
+  target.stasisIndex = clamp((sStasis * 0.92) + (absAct * 0.06) - (sSensory * 0.03), 0, 1);
+  target.energyDispersion = clamp((sEnergy * 0.9) + (absAct * 0.05) + (absEps * 0.03), 0, 2);
+  target.sensorDelta = clamp((sSensorDelta * 0.88) + (absAct * 0.03), 0, 1);
+  target.entropyExcitation = clamp((sEntropy * 0.9) + (absEps * 0.04), 0, 1);
+  return target;
 };
 
 const defaultObjective = ({
@@ -53,17 +72,25 @@ const defaultObjective = ({
   step = 0,
   sensorState = {}
 } = {}) => {
-  const current = copyState(currentState);
-  const next = copyState(nextState);
+  const curCcc = toFinite(currentState.ccc, 0);
+  const nextCcc = toFinite(nextState.ccc, 0);
+  const nextStasis = clamp(toFinite(nextState.stasisIndex, 0), 0, 1);
+  const nextEnergy = Math.max(0, toFinite(nextState.energyDispersion, 0));
+  const nextSensorDelta = clamp(toFinite(nextState.sensorDelta, 0), 0, 1);
   const actionSafe = Math.abs(clamp(toFinite(action, 0), -1, 1));
-  const sensorNovelty = clamp(toFinite(sensorState.sensorDelta, next.sensorDelta), 0, 1);
-  const cccGain = next.ccc - current.ccc;
-  const stabilityPenalty = (next.stasisIndex * 0.35) + (next.energyDispersion * 0.22);
+  const sensorNovelty = clamp(toFinite(sensorState.sensorDelta, nextSensorDelta), 0, 1);
+  const cccGain = nextCcc - curCcc;
+  const stabilityPenalty = (nextStasis * 0.35) + (nextEnergy * 0.22);
   const controlPenalty = actionSafe * 0.08;
   const noveltyReward = sensorNovelty * 0.04;
   const temporalDiscount = 1 - Math.min(0.7, step * 0.06);
   return ((cccGain * 1.7) + noveltyReward - stabilityPenalty - controlPenalty) * temporalDiscount;
 };
+
+const _scratchA = { ccc: 0, pmia: 0, sensorySignal: 0, sensorDelta: 0, stasisIndex: 0, entropyExcitation: 0, energyDispersion: 0 };
+const _scratchB = { ccc: 0, pmia: 0, sensorySignal: 0, sensorDelta: 0, stasisIndex: 0, entropyExcitation: 0, energyDispersion: 0 };
+const _scratchPredictOpts = { quantumEpsilon: 0, out: null };
+const _scratchObjArgs = { currentState: null, nextState: null, action: 0, step: 0, sensorState: null };
 
 export class CognitiveEmergencePlanner {
   constructor(config = {}, executionEnvironment) {
@@ -100,24 +127,42 @@ export class CognitiveEmergencePlanner {
     quantumEpsilonFn = null,
     sensorState = {}
   } = {}) {
-    let state = copyState(initialState);
+    const useModel = Boolean(worldModelEnabled && worldModel && typeof worldModel.predictNextState === 'function');
+    const hasQuantumFn = typeof quantumEpsilonFn === 'function';
+    const actionMin = this.config.actionMin;
+    const actionMax = this.config.actionMax;
+    const predictOpts = _scratchPredictOpts;
+    const objArgs = _scratchObjArgs;
+    objArgs.sensorState = sensorState;
+
+    let cur = writeNormalizedState(_scratchA, initialState);
+    let nxt = _scratchB;
     let reward = 0;
-    for (let step = 0; step < sequence.length; step += 1) {
-      const action = clamp(toFinite(sequence[step], 0), this.config.actionMin, this.config.actionMax);
-      const quantumEpsilon = typeof quantumEpsilonFn === 'function' ? toFinite(quantumEpsilonFn(), 0) : 0;
-      const next = worldModelEnabled && worldModel && typeof worldModel.predictNextState === 'function'
-        ? worldModel.predictNextState(state, action, { quantumEpsilon })
-        : fallbackPredict(state, action, quantumEpsilon);
-      reward += toFinite(objectiveFn({
-        currentState: state,
-        nextState: next,
-        action,
-        step,
-        sensorState
-      }), 0);
-      state = copyState(next);
+    const seqLen = sequence.length;
+    for (let step = 0; step < seqLen; step += 1) {
+      const action = clamp(toFinite(sequence[step], 0), actionMin, actionMax);
+      const quantumEpsilon = hasQuantumFn ? toFinite(quantumEpsilonFn(), 0) : 0;
+      let nextState;
+      if (useModel) {
+        predictOpts.quantumEpsilon = quantumEpsilon;
+        predictOpts.out = nxt;
+        nextState = worldModel.predictNextState(cur, action, predictOpts);
+        if (nextState !== nxt) {
+          writeNormalizedState(nxt, nextState);
+        }
+      } else {
+        fallbackPredict(cur, action, quantumEpsilon, nxt);
+      }
+      objArgs.currentState = cur;
+      objArgs.nextState = nxt;
+      objArgs.action = action;
+      objArgs.step = step;
+      reward += toFinite(objectiveFn(objArgs), 0);
+      const tmp = cur;
+      cur = nxt;
+      nxt = tmp;
     }
-    return { reward, terminalState: state };
+    return { reward, terminalState: cur };
   }
 
   planAction({
@@ -150,49 +195,71 @@ export class CognitiveEmergencePlanner {
     const sampleCount = this.config.sampleCount;
     const eliteCount = Math.max(2, Math.floor(sampleCount * this.config.eliteFraction));
     const minStd = this.config.minStd;
-    const mean = Array.from({ length: horizon }, (_, index) => seedAction * Math.exp(-index * 0.06));
-    const std = Array.from({ length: horizon }, () => this.config.initialStd);
-    let bestSequence = [...mean];
+    const actionMin = this.config.actionMin;
+    const actionMax = this.config.actionMax;
+    const mean = new Float64Array(horizon);
+    const std = new Float64Array(horizon);
+    let bestSequence = new Array(horizon);
+    for (let i = 0; i < horizon; i += 1) {
+      const m = seedAction * Math.exp(-i * 0.06);
+      mean[i] = m;
+      std[i] = this.config.initialStd;
+      bestSequence[i] = m;
+    }
     let bestScore = -Infinity;
 
+    // Pre-allocate sample slots reused across CEM iterations (zero per-iteration array/object GC)
+    const sampled = new Array(sampleCount);
+    for (let s = 0; s < sampleCount; s += 1) {
+      sampled[s] = { sequence: new Float64Array(horizon), score: 0 };
+    }
+    const evalArgs = {
+      initialState,
+      sequence: null,
+      worldModel,
+      worldModelEnabled,
+      objectiveFn,
+      quantumEpsilonFn,
+      sensorState
+    };
+
     for (let iteration = 0; iteration < this.config.iterations; iteration += 1) {
-      const sampled = [];
       for (let sample = 0; sample < sampleCount; sample += 1) {
-        const sequence = [];
+        const entry = sampled[sample];
+        const sequence = entry.sequence;
         for (let step = 0; step < horizon; step += 1) {
           const candidate = mean[step] + (gaussian(randomFn) * std[step]);
-          sequence.push(clamp(candidate, this.config.actionMin, this.config.actionMax));
+          sequence[step] = clamp(candidate, actionMin, actionMax);
         }
-        const evaluation = this._evaluateSequence({
-          initialState,
-          sequence,
-          worldModel,
-          worldModelEnabled,
-          objectiveFn,
-          quantumEpsilonFn,
-          sensorState
-        });
-        sampled.push({ sequence, score: evaluation.reward });
+        evalArgs.sequence = sequence;
+        entry.score = this._evaluateSequence(evalArgs).reward;
       }
 
       sampled.sort((a, b) => b.score - a.score);
       if (sampled[0] && sampled[0].score > bestScore) {
         bestScore = sampled[0].score;
-        bestSequence = [...sampled[0].sequence];
+        const winSeq = sampled[0].sequence;
+        for (let i = 0; i < horizon; i += 1) bestSequence[i] = winSeq[i];
       }
 
-      const elites = sampled.slice(0, eliteCount);
+      const kCount = Math.min(eliteCount, sampleCount);
       for (let step = 0; step < horizon; step += 1) {
-        const eliteValues = elites.map((entry) => entry.sequence[step]);
-        const eliteMean = eliteValues.reduce((sum, value) => sum + value, 0) / eliteValues.length;
-        const eliteVar = eliteValues.reduce((sum, value) => sum + ((value - eliteMean) ** 2), 0) / eliteValues.length;
-        mean[step] = clamp(eliteMean, this.config.actionMin, this.config.actionMax);
+        let sum = 0;
+        for (let e = 0; e < kCount; e += 1) sum += sampled[e].sequence[step];
+        const eliteMean = sum / kCount;
+        let varSum = 0;
+        for (let e = 0; e < kCount; e += 1) {
+          const d = sampled[e].sequence[step] - eliteMean;
+          varSum += d * d;
+        }
+        const eliteVar = varSum / kCount;
+        mean[step] = clamp(eliteMean, actionMin, actionMax);
         std[step] = Math.max(minStd, Math.sqrt(Math.max(0, eliteVar)));
       }
     }
 
     return {
-      firstAction: clamp(toFinite(bestSequence[0], seedAction), this.config.actionMin, this.config.actionMax),
+      firstAction: clamp(toFinite(bestSequence[0], seedAction), actionMin, actionMax),
       sequence: bestSequence,
       diagnostics: {
         plannerEnabled: true,

@@ -2591,7 +2591,7 @@ export class SensoryPerceptionEngine {
         this.generateSceneDescription();
 
         // Store current frame for motion comparison
-        this.previousFrame = new Uint8Array(pixels);
+        if (!this.previousFrame || this.previousFrame.length !== pixels.length) { this.previousFrame = new Uint8Array(pixels.length); } this.previousFrame.set(pixels);
     }
 
     analyzeScene(pixels, numPixels) {
@@ -2694,7 +2694,7 @@ export class SensoryPerceptionEngine {
             this.videoPerception.motion.intensity = 0;
             this.videoPerception.motion.activeZones = ['ninguna'];
             // Store current frame so next call can compare
-            this.previousFrame = new Uint8Array(pixels);
+            if (!this.previousFrame || this.previousFrame.length !== pixels.length) { this.previousFrame = new Uint8Array(pixels.length); } this.previousFrame.set(pixels);
             console.log('📹 Primera frame capturada para detección de movimiento');
             return;
         }

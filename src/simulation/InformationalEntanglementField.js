@@ -14,56 +14,69 @@ export class InformationalEntanglementField {
            */
           calculateCCC(nodes, cf, mutableConfig, _sensoryVector = null, towerFeedback = null) {
             if (!nodes || nodes.length === 0) return 0.5;
+            const nLen = nodes.length;
             const hasCoupling = Boolean(towerFeedback && towerFeedback.mode !== 'off');
-            
-            // 1. Average Nodal Coherence
-            // CORRECCIÓN: Error de sintaxis en arrow function de reduce
-            const avgCoherence = nodes.reduce((sum, n) => sum + n.coherenceState, 0) / nodes.length;
-            
-            // 2. Energy Variance (lower = better)
-            const energies = nodes.map(n => n.energy);
-            const avgEnergy = energies.reduce((a, b) => a + b, 0) / nodes.length;
-            const energyVariance = nodes.length > 1 ? energies.reduce((sum, e) => sum + Math.pow(e - avgEnergy, 2), 0) / (nodes.length - 1) : 0;
+
+            // 1 & 2. Average Nodal Coherence, Energy Variance & O(1) id lookup table (exact IEEE-754 order, zero O(N^2) .find())
+            let cohSum = 0;
+            let energySum = 0;
+            let maxId = nLen - 1;
+            for (let i = 0; i < nLen; i += 1) {
+              const node = nodes[i];
+              cohSum += node.coherenceState;
+              energySum += node.energy;
+              if (node.id > maxId) maxId = node.id;
+            }
+            const avgCoherence = cohSum / nLen;
+            const avgEnergy = energySum / nLen;
+            let energyVarSum = 0;
+            const nodesById = new Array(maxId + 1);
+            for (let i = 0; i < nLen; i += 1) {
+              const node = nodes[i];
+              const diff = node.energy - avgEnergy;
+              energyVarSum += diff * diff;
+              nodesById[node.id] = node;
+            }
+            const energyVariance = nLen > 1 ? energyVarSum / (nLen - 1) : 0;
             const coherenceFromVariance = 1.0 / (1.0 + energyVariance);
-            
+
             // 3. Field Resonance (modulated by Cf)
             let totalResonance = 0;
             let resonanceCount = 0;
 
             const nodeMutableConfig = {
-                BOLTZMANN_ANALOG_K: mutableConfig.BOLTZMANN_ANALOG_K,
-                INFORMATIONAL_TEMP_T: mutableConfig.INFORMATIONAL_TEMP_T,
+              BOLTZMANN_ANALOG_K: mutableConfig.BOLTZMANN_ANALOG_K,
+              INFORMATIONAL_TEMP_T: mutableConfig.INFORMATIONAL_TEMP_T,
             };
-            
-            const sampledNodes = this.sampleNodes(nodes, 100);  
-            
-            sampledNodes.forEach(node1 => {
+
+            const sampledNodes = this.sampleNodes(nodes, 100);
+            const sampledLen = sampledNodes.length;
+            for (let si = 0; si < sampledLen; si += 1) {
+              const node1 = sampledNodes[si];
               const s1 = hasCoupling ? (Number.isInteger(node1.sectorId) ? node1.sectorId : sectorIdOf(node1.id)) : 0;
-              node1.connections.slice(0, 3).forEach(conn => {
-                const directNode2 = nodes[conn.targetId];
-                const node2 = (directNode2 && directNode2.id === conn.targetId)
-                  ? directNode2
-                  : nodes.find(n => n.id === conn.targetId);
-                if (node2) {
-                  if (hasCoupling) {
-                    const s2 = Number.isInteger(node2.sectorId) ? node2.sectorId : sectorIdOf(node2.id);
-                    const isInterSector = s1 !== s2;
-                    if (isInterSector && towerFeedback.crossSectorSignalGain <= 0) {
-                      return;
-                    }
-                    const gain = isInterSector ? towerFeedback.crossSectorSignalGain : towerFeedback.intraSectorSignalGain;
-                    const resonance = node1.calculateResonance(node2, cf, nodeMutableConfig) * gain;
-                    totalResonance += Math.abs(resonance);
-                    resonanceCount++;
-                    return;
+              const conns = node1.connections;
+              const cLim = conns.length < 3 ? conns.length : 3;
+              for (let ci = 0; ci < cLim; ci += 1) {
+                const conn = conns[ci];
+                const node2 = nodesById[conn.targetId];
+                if (!node2) continue;
+                if (hasCoupling) {
+                  const s2 = Number.isInteger(node2.sectorId) ? node2.sectorId : sectorIdOf(node2.id);
+                  const isInterSector = s1 !== s2;
+                  if (isInterSector && towerFeedback.crossSectorSignalGain <= 0) {
+                    continue;
                   }
-                  // CORRECCIÓN: Pasando el objeto mutableConfig explícitamente a calculateResonance
-                  const resonance = node1.calculateResonance(node2, cf, nodeMutableConfig); 
+                  const gain = isInterSector ? towerFeedback.crossSectorSignalGain : towerFeedback.intraSectorSignalGain;
+                  const resonance = node1.calculateResonance(node2, cf, nodeMutableConfig) * gain;
                   totalResonance += Math.abs(resonance);
-                  resonanceCount++;
+                  resonanceCount += 1;
+                } else {
+                  const resonance = node1.calculateResonance(node2, cf, nodeMutableConfig);
+                  totalResonance += Math.abs(resonance);
+                  resonanceCount += 1;
                 }
-              });
-            });
+              }
+            }
             
             const avgResonance = resonanceCount > 0 ? totalResonance / resonanceCount : 0;
             // Normalización suave para evitar saturación rígida temprana en post-umbral.
@@ -94,22 +107,24 @@ export class InformationalEntanglementField {
           applyNodalPlasticity(nodes, ccc, mutableConfig, _core = null, towerFeedback = null) {
             const feedbackSignal = ccc > executionEnvironmentFor(this).config.COHERENCE_THRESHOLD ? 0.1 : -0.05;
             const hasCoupling = Boolean(towerFeedback && towerFeedback.mode !== 'off');
+            const nLen = nodes.length;
             let nodesById = null;
             if (hasCoupling) {
-              nodesById = new Array(nodes.length);
-              for (let i = 0; i < nodes.length; i += 1) {
+              nodesById = new Array(nLen);
+              for (let i = 0; i < nLen; i += 1) {
                 const n = nodes[i];
                 if (n) nodesById[n.id] = n;
               }
             }
-            return nodes.map(node => {
+            for (let i = 0; i < nLen; i += 1) {
+              const node = nodes[i];
               if (hasCoupling) {
                 node.applyPlasticity(feedbackSignal, mutableConfig, towerFeedback, nodesById);
               } else {
                 node.applyPlasticity(feedbackSignal, mutableConfig);
               }
-              return node;
-            });
+            }
+            return nodes;
           }
 
           sampleNodes(nodes, count) {

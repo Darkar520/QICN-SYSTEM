@@ -321,35 +321,71 @@ export class WorldModelEngine {
   }
 
   predictNextState(state = {}, action = 0, options = {}) {
-    const s = copyState(state);
+    const sCcc = toFinite(state.ccc, 0);
+    const sPmia = clamp(toFinite(state.pmia, 0), -1, 1);
+    const sSensory = clamp(toFinite(state.sensorySignal, 0), 0, 1);
+    const sSensorDelta = clamp(toFinite(state.sensorDelta, 0), 0, 1);
+    const sStasis = clamp(toFinite(state.stasisIndex, 0), 0, 1);
+    const sEntropy = clamp(toFinite(state.entropyExcitation, 0), 0, 1);
+    const sEnergy = Math.max(0, toFinite(state.energyDispersion, 0));
+
+    const actionFin = toFinite(action, 0);
+    const actionSafe = clamp(actionFin, -1, 1);
     const epsilon = clamp(toFinite(options.quantumEpsilon, 0), -1, 1);
-    const nextCcc = clamp(this._predictCccRaw(s, action, epsilon), 0, 2.5);
-    const actionMagnitude = Math.abs(toFinite(action, 0));
+    const pmiaAction = sPmia + actionSafe;
+    const w = this.weights;
+    const rawCcc =
+      w.bias +
+      (w.ccc * sCcc) +
+      (w.pmia * pmiaAction) +
+      (w.action * actionSafe) +
+      (w.sensorySignal * sSensory) +
+      (w.sensorDelta * sSensorDelta) +
+      (w.stasisIndex * sStasis) +
+      (w.entropyExcitation * sEntropy) +
+      (w.energyDispersion * sEnergy) +
+      (epsilon * 0.025);
+    const nextCcc = clamp(rawCcc, 0, 2.5);
+    const actionMagnitude = Math.abs(actionFin);
+    const absEps = Math.abs(epsilon);
     const nextStasis = clamp(
-      (s.stasisIndex * 0.92) +
+      (sStasis * 0.92) +
       (actionMagnitude * 0.11) +
-      ((1 - s.sensorySignal) * 0.06) -
-      (s.entropyExcitation * 0.04),
+      ((1 - sSensory) * 0.06) -
+      (sEntropy * 0.04),
       0,
       1
     );
     const nextEnergy = clamp(
-      (s.energyDispersion * 0.9) +
+      (sEnergy * 0.9) +
       (actionMagnitude * 0.08) +
-      (Math.abs(epsilon) * 0.06),
+      (absEps * 0.06),
       0,
       2
     );
-    const nextSensorDelta = clamp((s.sensorDelta * 0.86) + (Math.abs(epsilon) * 0.08), 0, 1);
-    const nextEntropy = clamp((s.entropyExcitation * 0.9) + (Math.abs(epsilon) * 0.05), 0, 1);
+    const nextSensorDelta = clamp((sSensorDelta * 0.86) + (absEps * 0.08), 0, 1);
+    const nextEntropy = clamp((sEntropy * 0.9) + (absEps * 0.05), 0, 1);
+    const nextPmia = clamp(sPmia + actionFin, -1, 1);
+
+    const out = options.out;
+    if (out) {
+      out.ccc = nextCcc;
+      out.pmia = nextPmia;
+      out.sensorySignal = sSensory;
+      out.sensorDelta = nextSensorDelta;
+      out.stasisIndex = nextStasis;
+      out.entropyExcitation = nextEntropy;
+      out.energyDispersion = nextEnergy;
+      return out;
+    }
     return {
-      ...s,
       ccc: nextCcc,
-      pmia: clamp(s.pmia + toFinite(action, 0), -1, 1),
-      stasisIndex: nextStasis,
-      energyDispersion: nextEnergy,
+      pmia: nextPmia,
+      sensorySignal: sSensory,
       sensorDelta: nextSensorDelta,
-      entropyExcitation: nextEntropy
+      stasisIndex: nextStasis,
+      entropyExcitation: nextEntropy,
+      energyDispersion: nextEnergy
     };
   }
 

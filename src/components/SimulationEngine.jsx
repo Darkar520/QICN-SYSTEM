@@ -866,6 +866,45 @@ export const QICNConsciousnessSystem = () => {
     if (history && followChatRef.current) history.scrollTop = history.scrollHeight;
   }, [chatHistory, isChatting, selectedTab]);
 
+  const integrityAuditPersistTimerRef = useRef(null);
+  const integrityAuditDirtyRef = useRef(false);
+
+  const flushIntegrityAuditLog = useCallback(() => {
+    if (integrityAuditPersistTimerRef.current !== null) {
+      if (typeof globalThis.cancelIdleCallback === 'function' && integrityAuditPersistTimerRef.current?.idle) {
+        globalThis.cancelIdleCallback(integrityAuditPersistTimerRef.current.id);
+      } else if (integrityAuditPersistTimerRef.current?.id != null) {
+        clearTimeout(integrityAuditPersistTimerRef.current.id);
+      }
+      integrityAuditPersistTimerRef.current = null;
+    }
+    if (!integrityAuditDirtyRef.current) return;
+    integrityAuditDirtyRef.current = false;
+    try {
+      localStorage.setItem(INTEGRITY_AUDIT_LOG_KEY, JSON.stringify(integrityAuditLogRef.current));
+    } catch (error) {
+      console.warn('[QICN][AUDIT] No se pudo persistir integrity audit log:', error?.message || error);
+    }
+  }, []);
+
+  const scheduleIntegrityAuditPersist = useCallback(() => {
+    integrityAuditDirtyRef.current = true;
+    if (integrityAuditPersistTimerRef.current !== null) return;
+    if (typeof globalThis.requestIdleCallback === 'function') {
+      const id = globalThis.requestIdleCallback(() => {
+        integrityAuditPersistTimerRef.current = null;
+        flushIntegrityAuditLog();
+      }, { timeout: 1200 });
+      integrityAuditPersistTimerRef.current = { idle: true, id };
+    } else {
+      const id = setTimeout(() => {
+        integrityAuditPersistTimerRef.current = null;
+        flushIntegrityAuditLog();
+      }, 850);
+      integrityAuditPersistTimerRef.current = { idle: false, id };
+    }
+  }, [flushIntegrityAuditLog]);
+
   const appendIntegrityAudit = useCallback((event, payload = {}, options = {}) => {
     const entry = {
       id: `audit-${Date.now()}-${options.independent ? globalThis.crypto.randomUUID() : Math.random().toString(36).slice(2, 8)}`,
@@ -876,13 +915,10 @@ export const QICNConsciousnessSystem = () => {
     };
     const nextLog = [...integrityAuditLogRef.current, entry].slice(-INTEGRITY_AUDIT_LOG_LIMIT);
     integrityAuditLogRef.current = nextLog;
-    try {
-      localStorage.setItem(INTEGRITY_AUDIT_LOG_KEY, JSON.stringify(nextLog));
-    } catch (error) {
-      console.warn('[QICN][AUDIT] No se pudo persistir integrity audit log:', error?.message || error);
-    }
+    // Coalesce 6-8 per-tick audit writes into one idle localStorage flush so ticks never stall WebGL frames
+    scheduleIntegrityAuditPersist();
     return entry;
-  }, []);
+  }, [scheduleIntegrityAuditPersist]);
 
   const parseSelfPatchTargetFiles = useCallback(() => (
     String(selfPatchDraft.targetFilesText || '')
@@ -1989,6 +2025,15 @@ export const QICNConsciousnessSystem = () => {
       getIntegrityAuditLog: () => integrityAuditLogRef.current.slice(),
       clearIntegrityAuditLog: () => {
         integrityAuditLogRef.current = [];
+        integrityAuditDirtyRef.current = false;
+        if (integrityAuditPersistTimerRef.current !== null) {
+          if (typeof globalThis.cancelIdleCallback === 'function' && integrityAuditPersistTimerRef.current?.idle) {
+            globalThis.cancelIdleCallback(integrityAuditPersistTimerRef.current.id);
+          } else if (integrityAuditPersistTimerRef.current?.id != null) {
+            clearTimeout(integrityAuditPersistTimerRef.current.id);
+          }
+          integrityAuditPersistTimerRef.current = null;
+        }
         try {
           localStorage.setItem(INTEGRITY_AUDIT_LOG_KEY, JSON.stringify([]));
         } catch (error) {
@@ -2152,14 +2197,30 @@ export const QICNConsciousnessSystem = () => {
     exogenousDriverRef
   }), []);
 
+  const saveStateFallbackRef = useRef({
+    simulationStep,
+    ccc,
+    pmia,
+    isAscended,
+    humanCcc
+  });
+  saveStateFallbackRef.current = {
+    simulationStep,
+    ccc,
+    pmia,
+    isAscended,
+    humanCcc
+  };
+
   const handleSaveState = useCallback(async (sourceMode = 'manual') => {
     const mode = typeof sourceMode === 'string' ? sourceMode : 'manual';
     const live = simulationRuntimeRef.current || {};
-    const liveStep = Number.isFinite(live.simulationStep) ? live.simulationStep : simulationStep;
-    const liveCcc = Number.isFinite(live.ccc) ? live.ccc : ccc;
-    const livePmia = Number.isFinite(live.pmia) ? live.pmia : pmia;
-    const liveAscended = typeof live.isAscended === 'boolean' ? live.isAscended : isAscended;
-    const liveHumanCcc = Number.isFinite(live.humanCcc) ? live.humanCcc : humanCcc;
+    const fallback = saveStateFallbackRef.current;
+    const liveStep = Number.isFinite(live.simulationStep) ? live.simulationStep : fallback.simulationStep;
+    const liveCcc = Number.isFinite(live.ccc) ? live.ccc : fallback.ccc;
+    const livePmia = Number.isFinite(live.pmia) ? live.pmia : fallback.pmia;
+    const liveAscended = typeof live.isAscended === 'boolean' ? live.isAscended : fallback.isAscended;
+    const liveHumanCcc = Number.isFinite(live.humanCcc) ? live.humanCcc : fallback.humanCcc;
     try {
       const body = captureDynamicState(getPersistenceRefs(), {
         runtime: {
@@ -2193,7 +2254,7 @@ export const QICNConsciousnessSystem = () => {
       console.warn('[QICN][PERSISTENCE_V3] Error al guardar estado dinámico:', error?.message || error);
       return { ok: false, error: String(error?.message || error) };
     }
-  }, [ccc, pmia, simulationStep, isAscended, humanCcc, getPersistenceRefs, recordOperationalEvent]);
+  }, [getPersistenceRefs, recordOperationalEvent]);
 
   const handleLoadState = useCallback(async (sourceMode = 'manual') => {
     const mode = typeof sourceMode === 'string' ? sourceMode : 'manual';
@@ -3125,11 +3186,15 @@ export const QICNConsciousnessSystem = () => {
   useEffect(() => {
     if (typeof window === 'undefined' || typeof document === 'undefined') return undefined;
     const onVisibilityChange = () => {
-      if (document.visibilityState === 'hidden' && (simulationRuntimeRef.current?.simulationStep ?? 0) > 0) {
-        void handleSaveState('visibility_hidden');
+      if (document.visibilityState === 'hidden') {
+        flushIntegrityAuditLog();
+        if ((simulationRuntimeRef.current?.simulationStep ?? 0) > 0) {
+          void handleSaveState('visibility_hidden');
+        }
       }
     };
     const onPageHide = () => {
+      flushIntegrityAuditLog();
       if ((simulationRuntimeRef.current?.simulationStep ?? 0) > 0) {
         void handleSaveState('pagehide');
       }
@@ -3137,10 +3202,11 @@ export const QICNConsciousnessSystem = () => {
     document.addEventListener('visibilitychange', onVisibilityChange);
     window.addEventListener('pagehide', onPageHide);
     return () => {
+      flushIntegrityAuditLog();
       document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('pagehide', onPageHide);
     };
-  }, [handleSaveState]);
+  }, [handleSaveState, flushIntegrityAuditLog]);
 
   useEffect(() => {
     try {

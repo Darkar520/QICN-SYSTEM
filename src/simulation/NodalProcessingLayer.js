@@ -135,39 +135,63 @@ export class NodalProcessingLayer {
 
           processSignals(towerFeedback = null) {
             const activeNodes = this.getActiveNodes();
-            const activeById = new Array(this.nodes.length);
-            for (let i = 0; i < activeNodes.length; i += 1) {
-              activeById[activeNodes[i].id] = activeNodes[i];
+            const nNodes = this.nodes.length;
+            const nActive = activeNodes.length;
+            const cache = getLayerCache(this);
+
+            if (!cache.activeById || cache.activeById.length !== nNodes) {
+              cache.activeById = new Array(nNodes);
+            } else {
+              cache.activeById.fill(undefined);
+            }
+            const activeById = cache.activeById;
+
+            if (!cache.intensitySnapshot || cache.intensitySnapshot.length !== nNodes) {
+              cache.intensitySnapshot = new Float64Array(nNodes);
+            }
+            const origIntensity = cache.intensitySnapshot;
+
+            for (let i = 0; i < nActive; i += 1) {
+              const node = activeNodes[i];
+              activeById[node.id] = node;
+              origIntensity[node.id] = node.intensity;
             }
             const hasCoupling = Boolean(towerFeedback && towerFeedback.mode !== 'off');
+            const crossGain = hasCoupling ? towerFeedback.crossSectorSignalGain : 1;
+            const intraGain = hasCoupling ? towerFeedback.intraSectorSignalGain : 1;
 
-            // Propagate signals
-            const newSignals = [];
-            for (let i = 0; i < activeNodes.length; i += 1) {
+            // Pass 1: count valid emitted signals (zero allocations, exact stride & exact 1000-tail window)
+            let totalSigs = 0;
+            for (let i = 0; i < nActive; i += 1) {
               const node = activeNodes[i];
-              const signals = hasCoupling
-                ? node.propagateSignal(activeNodes, towerFeedback, activeById)
-                : node.propagateSignal(activeNodes, null, activeById);
-              for (let j = 0; j < signals.length; j += 1) {
-                newSignals.push(signals[j]);
+              const conns = node.connections;
+              const cLen = conns.length;
+              const sourceSector = hasCoupling ? (Number.isInteger(node.sectorId) ? node.sectorId : sectorIdOf(node.id)) : 0;
+              for (let j = 0; j < cLen; j += 1) {
+                const target = activeById[conns[j].targetId];
+                if (!target) continue;
+                if (hasCoupling) {
+                  const targetSector = Number.isInteger(target.sectorId) ? target.sectorId : sectorIdOf(target.id);
+                  if (targetSector !== sourceSector && crossGain <= 0) continue;
+                }
+                totalSigs += 1;
               }
             }
 
-            const cache = getLayerCache(this);
             let sectorIntraFlux = null;
             let sectorInterFlux = null;
             let totalIntraFlux = 0;
             let totalInterFlux = 0;
             let nodeInterFlux = null;
-            if (!cache.nodeSignalPulse || cache.nodeSignalPulse.length !== this.nodes.length) {
-              cache.nodeSignalPulse = new Float32Array(this.nodes.length);
+            if (!cache.nodeSignalPulse || cache.nodeSignalPulse.length !== nNodes) {
+              cache.nodeSignalPulse = new Float32Array(nNodes);
             } else {
               for (let i = 0; i < cache.nodeSignalPulse.length; i += 1) {
                 cache.nodeSignalPulse[i] *= 0.62;
               }
             }
-            if (!cache.rawTickSignalLoad || cache.rawTickSignalLoad.length !== this.nodes.length) {
-              cache.rawTickSignalLoad = new Float32Array(this.nodes.length);
+            if (!cache.rawTickSignalLoad || cache.rawTickSignalLoad.length !== nNodes) {
+              cache.rawTickSignalLoad = new Float32Array(nNodes);
             } else {
               cache.rawTickSignalLoad.fill(0);
             }
@@ -193,54 +217,99 @@ export class NodalProcessingLayer {
             if (hasCoupling) {
               sectorIntraFlux = [0, 0, 0, 0];
               sectorInterFlux = [0, 0, 0, 0];
-              if (!cache.nodeInterFlux || cache.nodeInterFlux.length !== this.nodes.length) {
-                cache.nodeInterFlux = new Float32Array(this.nodes.length);
+              if (!cache.nodeInterFlux || cache.nodeInterFlux.length !== nNodes) {
+                cache.nodeInterFlux = new Float32Array(nNodes);
               } else {
                 cache.nodeInterFlux.fill(0);
               }
               nodeInterFlux = cache.nodeInterFlux;
             }
 
-            // Process incoming signals (Optimized O(1) lookup + real per-tick signal packet telemetry)
-            const totalSigs = newSignals.length;
+            // Pass 2: apply incoming signals directly using exact pre-tick intensities (zero throwaway GC objects!)
             const packetStride = Math.max(1, Math.floor(totalSigs / packets.capacity));
-            for (let idx = 0; idx < totalSigs; idx += 1) {
-              const signal = newSignals[idx];
-              const targetNode = this.nodes[signal.targetId]; // CORRECCION: Lookup O(1)
-              if (targetNode) {
-                targetNode.intensity = Math.min(1, targetNode.intensity + signal.strength * 0.05);
-                if (signal.targetId >= 0 && signal.targetId < rawTickLoad.length) {
-                  rawTickLoad[signal.targetId] += signal.strength;
-                }
-                if (signal.sourceId >= 0 && signal.sourceId < rawTickLoad.length) {
-                  rawTickLoad[signal.sourceId] += signal.strength * 0.35;
-                }
-                const isInter = Boolean(
-                  signal.isInterSector !== undefined
-                    ? signal.isInterSector
-                    : (sectorIdOf(signal.sourceId) !== sectorIdOf(signal.targetId))
-                );
-                if (hasCoupling) {
-                  const targetS = Number.isInteger(signal.targetSector) ? signal.targetSector : ((signal.targetId % 4) + 4) % 4;
-                  if (signal.isInterSector) {
-                    sectorInterFlux[targetS] += signal.strength;
-                    totalInterFlux += signal.strength;
-                    if (signal.targetId >= 0 && signal.targetId < nodeInterFlux.length) {
-                      nodeInterFlux[signal.targetId] += signal.strength;
+            const tailStart = totalSigs > 1000 ? (totalSigs - 1000) : 0;
+            const tailSignals = [];
+            let sigIdx = 0;
+            for (let i = 0; i < nActive; i += 1) {
+              const node = activeNodes[i];
+              const srcId = node.id;
+              const srcIntensity = origIntensity[srcId];
+              const srcPhase = node.phase;
+              const sourceSector = hasCoupling
+                ? (Number.isInteger(node.sectorId) ? node.sectorId : sectorIdOf(srcId))
+                : sectorIdOf(srcId);
+              const conns = node.connections;
+              const cLen = conns.length;
+
+              for (let j = 0; j < cLen; j += 1) {
+                const conn = conns[j];
+                const targetId = conn.targetId;
+                const targetActive = activeById[targetId];
+                if (!targetActive) continue;
+
+                const targetSector = hasCoupling
+                  ? (Number.isInteger(targetActive.sectorId) ? targetActive.sectorId : sectorIdOf(targetActive.id))
+                  : sectorIdOf(targetId);
+                const isInter = targetSector !== sourceSector;
+                if (hasCoupling && isInter && crossGain <= 0) continue;
+
+                const strength = hasCoupling
+                  ? (srcIntensity * conn.weight * (isInter ? crossGain : intraGain))
+                  : (srcIntensity * conn.weight);
+
+                const targetNode = this.nodes[targetId];
+                if (targetNode) {
+                  targetNode.intensity = Math.min(1, targetNode.intensity + strength * 0.05);
+                  if (targetId >= 0 && targetId < rawTickLoad.length) {
+                    rawTickLoad[targetId] += strength;
+                  }
+                  if (srcId >= 0 && srcId < rawTickLoad.length) {
+                    rawTickLoad[srcId] += strength * 0.35;
+                  }
+                  if (hasCoupling) {
+                    const targetS = Number.isInteger(targetSector) ? targetSector : ((targetId % 4) + 4) % 4;
+                    if (isInter) {
+                      sectorInterFlux[targetS] += strength;
+                      totalInterFlux += strength;
+                      if (targetId >= 0 && targetId < nodeInterFlux.length) {
+                        nodeInterFlux[targetId] += strength;
+                      }
+                    } else {
+                      sectorIntraFlux[targetS] += strength;
+                      totalIntraFlux += strength;
                     }
-                  } else {
-                    sectorIntraFlux[targetS] += signal.strength;
-                    totalIntraFlux += signal.strength;
+                  }
+                  if ((sigIdx % packetStride === 0 || strength >= 0.62) && packets.count < packets.capacity) {
+                    const p = packets.count;
+                    packets.from[p] = srcId;
+                    packets.to[p] = targetId;
+                    packets.strength[p] = strength;
+                    packets.isInter[p] = isInter ? 1 : 0;
+                    packets.count = p + 1;
                   }
                 }
-                if ((idx % packetStride === 0 || signal.strength >= 0.62) && packets.count < packets.capacity) {
-                  const p = packets.count;
-                  packets.from[p] = signal.sourceId;
-                  packets.to[p] = signal.targetId;
-                  packets.strength[p] = signal.strength;
-                  packets.isInter[p] = isInter ? 1 : 0;
-                  packets.count = p + 1;
+
+                if (sigIdx >= tailStart) {
+                  if (hasCoupling) {
+                    tailSignals.push({
+                      sourceId: srcId,
+                      targetId,
+                      sourceSector,
+                      targetSector,
+                      isInterSector: isInter,
+                      strength,
+                      phase: srcPhase
+                    });
+                  } else {
+                    tailSignals.push({
+                      sourceId: srcId,
+                      targetId,
+                      strength,
+                      phase: srcPhase
+                    });
+                  }
                 }
+                sigIdx += 1;
               }
             }
 
@@ -275,7 +344,7 @@ export class NodalProcessingLayer {
               };
             }
 
-            this.signalBuffer = newSignals.slice(-1000);
+            this.signalBuffer = tailSignals;
           }
 
           computeBridgeMetrics(towerTelemetry = null, mode = null) {
@@ -315,7 +384,13 @@ export class NodalProcessingLayer {
 
           getActiveNodes() {
             // NOTE: This assumes nodes in `this.nodes` are indexed by ID, which is true for the sample size.
-            return Array.from(this.activeNodeIds).map(id => this.nodes[id]).filter(n => n);
+            const out = [];
+            const nodes = this.nodes;
+            for (const id of this.activeNodeIds) {
+              const n = nodes[id];
+              if (n) out.push(n);
+            }
+            return out;
           }
 
           getTopologyMetrics() {

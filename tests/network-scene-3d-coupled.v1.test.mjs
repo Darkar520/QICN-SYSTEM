@@ -16,7 +16,8 @@ import {
   extractCoreVisualizationState,
   selectStratifiedRenderIndices,
   spawnSignalPacketsFromView,
-  stepSignalPackets
+  stepSignalPackets,
+  updateFocusNeighborhoodFast
 } from '../src/simulation/Nodal3DSceneProjection.js';
 import { ConsciousNode } from '../src/simulation/ConsciousNode.js';
 import { buildTowerToNodalFeedback } from '../src/simulation/NodalTowerCouplingBridge.js';
@@ -132,6 +133,25 @@ function runCouplingMode(mode, nodes = 120, ticks = 18) {
   assert(edgesFocus.totalEdges > 0);
   assert(wsDesktop.neighborSet.has(focusNodeIdx), 'Neighbor set must include focused node');
   assert(wsDesktop.neighborSet.size > 1, 'Neighbor set must expand along real incident edges');
+
+  // Verify O(deg+E) zero-rebuild fast hover focus update (no 15k-edge re-sort on hover)
+  const fastNbrSize = updateFocusNeighborhoodFast(
+    bidirFull.layer.nodes,
+    wsDesktop,
+    countDesktop,
+    edgesFocus.totalEdges,
+    7
+  );
+  assert(fastNbrSize > 1, `updateFocusNeighborhoodFast must populate focus + real neighbors (got ${fastNbrSize})`);
+  assert(wsDesktop.neighborSet.has(7), 'Fast focus update must include focused render index');
+  const clearedSize = updateFocusNeighborhoodFast(
+    bidirFull.layer.nodes,
+    wsDesktop,
+    countDesktop,
+    edgesFocus.totalEdges,
+    -1
+  );
+  assert.equal(clearedSize, 0, 'Fast focus update with -1 must clear neighborSet cleanly');
 }
 
 // 2. Causal negative controls geometrically & chromatically separate in 3D space
@@ -307,6 +327,11 @@ function runCouplingMode(mode, nodes = 120, ticks = 18) {
   assert(sceneText.includes('buildRealSynapticEdgeSelection'), 'NetworkScene3D must render real synaptic connections');
   assert(sceneText.includes('spawnSignalPacketsFromView'), 'NetworkScene3D must render live traveling signal packets');
   assert(sceneText.includes('3d-fine-mesh-toggle'), 'NetworkScene3D must expose live fine-mesh toggle gadget');
+  assert(sceneText.includes('updateFocusNeighborhoodFast'), 'NetworkScene3D must update hover focus in O(deg+E) without rebuilding edges');
+  assert(sceneText.includes('hoverClearTimer'), 'NetworkScene3D must use hover-clear hysteresis to prevent gap strobing');
+  assert(sceneText.includes('uFocusMix'), 'NetworkScene3D must fade edge highlights smoothly via uFocusMix');
+  assert(!sceneText.includes('raycaster.intersectObject(nodeMesh'), 'NetworkScene3D must use analytical ray-vs-sphere picking instead of CPU triangle raycasting');
+  assert(!sceneText.includes('backdrop-blur-md'), 'NetworkScene3D must not layer backdrop-blur over live WebGL canvas');
   assert(engineText.includes('bridgeMetrics={liveBridgeForCanvas}'), 'SimulationEngine must pass live bridge telemetry to NetworkCanvas');
   assert(engineText.includes('endogenousDecision={liveEndogenousForCanvas}'), 'SimulationEngine must pass live endogenous verdict to NetworkCanvas');
 }

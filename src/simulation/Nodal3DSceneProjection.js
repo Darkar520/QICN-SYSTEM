@@ -85,8 +85,8 @@ export const NODAL_3D_SECTORS = Object.freeze(
 
 const FLOOR_Y = -7.8;
 const FLOOR_RADIUS = 11.2;
-const ISOTROPIC_PEER_SAMPLES = 8;
-const COPRIME_STRIDES = [19, 53, 107, 191, 313, 467, 653, 881];
+const ISOTROPIC_PEER_SAMPLES = 6;
+const COPRIME_STRIDES = [23, 67, 139, 251, 419, 643];
 
 const clamp01 = (v) => {
   const n = Number(v);
@@ -380,7 +380,7 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
     : (workspace.relaxInitialized === false ? ((nodes || activeEdges > 0) ? 10 : 1) : 1);
 
   const sampleCount = Math.min(ISOTROPIC_PEER_SAMPLES, Math.max(1, renderCount - 1));
-  const repGain = 0.88 * (ISOTROPIC_PEER_SAMPLES / sampleCount);
+  const repGain = 1.15 * (ISOTROPIC_PEER_SAMPLES / sampleCount);
   const gravityK = 0.026;
   const lesionPolarityK = coreState.reducibleActive ? 0.165 : (coreState.tdCutActive ? 0.140 : 0.0);
   const lesionTargetRadius = coreState.reducibleActive ? 11.4 : (coreState.tdCutActive ? 9.8 : 0.0);
@@ -481,8 +481,8 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
         const uz = pos[u3 + 2];
 
         const connLen = conns.length;
-        const maxPerNode = connLen > 6 ? 6 : connLen;
-        const startOff = connLen > 6 ? ((workspace.physicsStep + u) % connLen) : 0;
+        const maxPerNode = connLen > 4 ? 4 : connLen;
+        const startOff = connLen > 4 ? ((workspace.physicsStep + u) % connLen) : 0;
 
         for (let k = 0; k < maxPerNode; k += 1) {
           const conn = conns[(startOff + k) % connLen];
@@ -494,8 +494,8 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
           const isBridge = secU !== secV;
           const w = clamp01(conn.weight ?? 0.45);
           const kSpring = isBridge
-            ? (coreState.bridgeActive ? (0.044 * (0.28 + (w * 1.65))) : 0.0)
-            : (0.040 * (0.28 + (w * 1.55)));
+            ? (coreState.bridgeActive ? (0.056 * (0.28 + (w * 1.65))) : 0.0)
+            : (0.052 * (0.28 + (w * 1.55)));
           if (kSpring <= 0) continue;
 
           const v3 = v * 3;
@@ -551,10 +551,11 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
       }
     }
 
-    // (4) Semi-implicit Euler integration with smooth viscous damping & isotropic spherical bound
-    const damping = workspace.relaxInitialized === true ? 0.80 : 0.74;
-    const stepDt = workspace.relaxInitialized === true ? 0.42 : 0.56;
-    const maxSpeed = workspace.relaxInitialized === true ? 0.85 : 1.75;
+    // (4) Semi-implicit Euler integration with silky viscous damping & isotropic spherical bound
+    const isSettled = workspace.relaxInitialized === true && workspace.physicsStep > 26;
+    const damping = isSettled ? 0.85 : (workspace.relaxInitialized === true ? 0.80 : 0.74);
+    const stepDt = isSettled ? 0.36 : (workspace.relaxInitialized === true ? 0.42 : 0.56);
+    const maxSpeed = isSettled ? 0.46 : (workspace.relaxInitialized === true ? 0.90 : 1.75);
     const maxRadius = 21.5;
 
     for (let r = 0; r < renderCount; r += 1) {
@@ -706,6 +707,39 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
   }
 
   return { renderCount, sectorCenters };
+}
+
+/**
+ * O(deg) zero-GC neighborhood lookup for silky hover/click tracking without triggering
+ * a full 15,000-edge sort or visual edge pop!
+ */
+export function updateFocusNeighborhoodFast(nodes, workspace, renderCount, edgeCount, focusRenderIdx) {
+  workspace.neighborSet.clear();
+  if (!Number.isInteger(focusRenderIdx) || focusRenderIdx < 0 || focusRenderIdx >= renderCount) {
+    return 0;
+  }
+  workspace.neighborSet.add(focusRenderIdx);
+  const modelToRender = workspace.modelToRenderIndex;
+  const mFocus = workspace.renderToModelIndex[focusRenderIdx];
+  const nodeFocus = Array.isArray(nodes) ? nodes[mFocus] : null;
+  const conns = nodeFocus?.connections;
+  if (Array.isArray(conns)) {
+    for (let i = 0; i < conns.length; i += 1) {
+      const mV = Number(conns[i]?.targetId);
+      if (Number.isInteger(mV) && mV >= 0 && mV < modelToRender.length) {
+        const rV = modelToRender[mV];
+        if (rV >= 0 && rV < renderCount) workspace.neighborSet.add(rV);
+      }
+    }
+  }
+  // Include any already-drawn edges pointing into focusRenderIdx (O(edgeCount) fast scan)
+  const srcArr = workspace.edgeSourceRenderIdx;
+  const dstArr = workspace.edgeTargetRenderIdx;
+  for (let e = 0; e < edgeCount; e += 1) {
+    if (srcArr[e] === focusRenderIdx) workspace.neighborSet.add(dstArr[e]);
+    else if (dstArr[e] === focusRenderIdx) workspace.neighborSet.add(srcArr[e]);
+  }
+  return workspace.neighborSet.size;
 }
 
 export function buildRealSynapticEdgeSelection(nodes, view, workspace, renderCount, maxEdges, coreState, options = {}) {

@@ -163,7 +163,7 @@ export class NodalProcessingLayer {
               cache.nodeSignalPulse = new Float32Array(this.nodes.length);
             } else {
               for (let i = 0; i < cache.nodeSignalPulse.length; i += 1) {
-                cache.nodeSignalPulse[i] *= 0.28;
+                cache.nodeSignalPulse[i] *= 0.62;
               }
             }
             if (!cache.rawTickSignalLoad || cache.rawTickSignalLoad.length !== this.nodes.length) {
@@ -261,7 +261,7 @@ export class NodalProcessingLayer {
                 const v = rawTickLoad[i];
                 if (v <= 0) continue;
                 const rel = v * invScale;
-                const burst = Math.min(1.65, rel * rel * 0.90);
+                const burst = Math.min(0.88, rel * rel * 0.46);
                 nodeSignalPulse[i] = Math.min(2.0, nodeSignalPulse[i] + burst);
               }
             }

@@ -979,59 +979,65 @@ const NetworkCanvas = ({
                     meta.lastMode = resolvedMode;
                     meta.lastLayoutMs = -999;
                 }
+                const isDormantFloor2d = !isRunning && (Number(liveTick) || 0) <= 0;
+                const isPausedFrozen2d = !isRunning && (Number(liveTick) || 0) > 0;
                 if (!ws.relaxInitialized || (frameNowMs - meta.lastLayoutMs) >= 95) {
                     meta.lastLayoutMs = frameNowMs;
                     computeCoupledNodeTargets(view3d, ws, rc, coreState, {
                         viewMode: NODAL_3D_VIEW_MODES.COUPLED,
                         nodes: layerInst.nodes,
-                        activeEdgeCount: meta.edgeStats.totalEdges
+                        activeEdgeCount: meta.edgeStats.totalEdges,
+                        dormantFloor: isDormantFloor2d,
+                        pausedFrozen: isPausedFrozen2d
                     });
                 }
 
-                // Spawn & step real traveling signal bursts along real synapses
-                spawnSignalPacketsFromView(sigPool, view3d, ws, rc, coreState, NODAL_3D_VIEW_MODES.COUPLED);
+                // Spawn & step real traveling signal bursts along real synapses (paused/off while dormant on floor)
                 const sigPulseBuf = view3d.buffers.signalPulse;
-                if (sigPool.activeCount < 24 && meta.edgeStats.totalEdges > 0 && sigPulseBuf) {
-                    const edgeTotal = meta.edgeStats.totalEdges;
-                    const stride = Math.max(1, Math.floor(edgeTotal / 28));
-                    const phaseOffset = Math.abs(liveTick) % stride;
-                    let added = 0;
-                    for (let eIdx = phaseOffset; eIdx < edgeTotal && added < 12; eIdx += stride) {
-                        const rU = ws.edgeSourceRenderIdx[eIdx];
-                        const rV = ws.edgeTargetRenderIdx[eIdx];
-                        const mU = ws.renderToModelIndex[rU];
-                        const pulseU = sigPulseBuf[mU] || 0;
-                        if (pulseU < 0.32) continue;
-                        const isInterEdge = ws.edgeIsBridge[eIdx] > 0 ? 1 : 0;
-                        if (isInterEdge && !coreState.bridgeActive) continue;
-                        const slot = sigPool.cursor % sigPool.capacity;
-                        sigPool.cursor = (sigPool.cursor + 1) % sigPool.capacity;
-                        sigPool.alive[slot] = 1;
-                        sigPool.fromRender[slot] = rU;
-                        sigPool.toRender[slot] = rV;
-                        sigPool.progress[slot] = 0.02 + ((eIdx % 5) * 0.04);
-                        sigPool.speed[slot] = 0.85 + (Math.min(1, pulseU * 0.5) * 0.75);
-                        sigPool.strength[slot] = clamp(pulseU * 0.65, 0.35, 1.0);
-                        sigPool.isInter[slot] = isInterEdge;
-                        added += 1;
-                    }
-                }
-                stepSignalPackets(sigPool, ws.targetPositions, rc, frameDtSec, false);
                 liveSignalBursts = [];
-                for (let sIdx = 0; sIdx < sigPool.capacity; sIdx += 1) {
-                    if (!sigPool.alive[sIdx]) continue;
-                    const mU = ws.renderToModelIndex[sigPool.fromRender[sIdx]];
-                    const mV = ws.renderToModelIndex[sigPool.toRender[sIdx]];
-                    const nU = layerInst.nodes[mU];
-                    const nV = layerInst.nodes[mV];
-                    if (!nU || !nV) continue;
-                    liveSignalBursts.push({
-                        fromId: nU.id,
-                        toId: nV.id,
-                        t: sigPool.progress[sIdx],
-                        strength: sigPool.strength[sIdx],
-                        isInter: sigPool.isInter[sIdx] > 0
-                    });
+                if (!isDormantFloor2d) {
+                    spawnSignalPacketsFromView(sigPool, view3d, ws, rc, coreState, NODAL_3D_VIEW_MODES.COUPLED);
+                    if (sigPool.activeCount < 24 && meta.edgeStats.totalEdges > 0 && sigPulseBuf) {
+                        const edgeTotal = meta.edgeStats.totalEdges;
+                        const stride = Math.max(1, Math.floor(edgeTotal / 28));
+                        const phaseOffset = Math.abs(liveTick) % stride;
+                        let added = 0;
+                        for (let eIdx = phaseOffset; eIdx < edgeTotal && added < 12; eIdx += stride) {
+                            const rU = ws.edgeSourceRenderIdx[eIdx];
+                            const rV = ws.edgeTargetRenderIdx[eIdx];
+                            const mU = ws.renderToModelIndex[rU];
+                            const pulseU = sigPulseBuf[mU] || 0;
+                            if (pulseU < 0.32) continue;
+                            const isInterEdge = ws.edgeIsBridge[eIdx] > 0 ? 1 : 0;
+                            if (isInterEdge && !coreState.bridgeActive) continue;
+                            const slot = sigPool.cursor % sigPool.capacity;
+                            sigPool.cursor = (sigPool.cursor + 1) % sigPool.capacity;
+                            sigPool.alive[slot] = 1;
+                            sigPool.fromRender[slot] = rU;
+                            sigPool.toRender[slot] = rV;
+                            sigPool.progress[slot] = 0.02 + ((eIdx % 5) * 0.04);
+                            sigPool.speed[slot] = 0.85 + (Math.min(1, pulseU * 0.5) * 0.75);
+                            sigPool.strength[slot] = clamp(pulseU * 0.65, 0.35, 1.0);
+                            sigPool.isInter[slot] = isInterEdge;
+                            added += 1;
+                        }
+                    }
+                    stepSignalPackets(sigPool, ws.targetPositions, rc, frameDtSec, false);
+                    for (let sIdx = 0; sIdx < sigPool.capacity; sIdx += 1) {
+                        if (!sigPool.alive[sIdx]) continue;
+                        const mU = ws.renderToModelIndex[sigPool.fromRender[sIdx]];
+                        const mV = ws.renderToModelIndex[sigPool.toRender[sIdx]];
+                        const nU = layerInst.nodes[mU];
+                        const nV = layerInst.nodes[mV];
+                        if (!nU || !nV) continue;
+                        liveSignalBursts.push({
+                            fromId: nU.id,
+                            toId: nV.id,
+                            t: sigPool.progress[sIdx],
+                            strength: sigPool.strength[sIdx],
+                            isInter: sigPool.isInter[sIdx] > 0
+                        });
+                    }
                 }
 
                 // Build clean 2.5D projected node descriptors centered on (center.x, center.y) for pinhole projection

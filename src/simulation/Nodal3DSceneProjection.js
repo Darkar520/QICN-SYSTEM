@@ -1,18 +1,18 @@
 /**
  * Nodal3DSceneProjection
  *
- * Motor fisico fuerza-dirigido O(N + E) 100% libre y organico para la Red Nodal
+ * Motor fisico fuerza-dirigido O(N + E) 100% isotropico (SO(3)) y organico para la Red Nodal
  * (1500 nodos reales + sinapsis reales `node.connections` + trafico real de senales).
  *
- * SIN cascaron esferico fijo, SIN toroide parametrico y SIN respiracion radial artificial:
- * toda estructura espacial emerge directamente de:
- *   1) Atraccion elastica real (Hooke) a lo largo de `node.connections` ponderada por
- *      `conn.weight` (donde la plasticidad resonante por fase consolida autopistas y hubs),
- *   2) Repulsion nodo-a-nodo real en O(N) mediante grilla hash espacial 3D (16x16x16)
- *      con centros de masa por celda (sin O(N^2)),
- *   3) Gravedad isotropica minima hacia el origen (sin direccion ni radio prefijado),
- *   4) Pool de paquetes reales de senal (`view.signals`) que viajan literalmente
- *      del nodo emisor al nodo receptor a lo largo de sus sinapsis activas.
+ * SIN cascaron esferico fijo, SIN toroide, SIN respiracion radial y SIN grilla cubica:
+ * toda estructura espacial emerge exclusivamente de:
+ *   1) Reposo inicial en el suelo plano (`dormantFloor`) cuando la simulacion esta apagada;
+ *      al encender, los nodos se levantan desde el suelo y se auto-organizan al interactuar,
+ *   2) Atraccion elastica real (Hooke) directamente sobre `node.connections` ponderada por
+ *      `conn.weight` (desacoplada del filtro visual `Puente`/`Torre` para no cristalizar),
+ *   3) Repulsion par-a-par 100% isotropica en O(N) mediante muestreo determinista rotatorio
+ *      con pasos coprimos (simetria rotacional continua SO(3), cero planos/ejes X/Y/Z),
+ *   4) Gravedad isotropica minima hacia el origen + trafico real de paquetes (`view.signals`).
  *
  * En controles negativos causales (td_cut_eta_zero eta=0 y reducible_control A=I),
  * los resortes inter-sector caen a 0 y la repulsion separa organicamente los sectores.
@@ -83,15 +83,10 @@ export const NODAL_3D_SECTORS = Object.freeze(
   })
 );
 
-const GRID_DIM = 12;
-const GRID_CELLS = GRID_DIM * GRID_DIM * GRID_DIM; // 1728
-const GRID_HALF_EXTENT = 24.0;
-const GRID_CELL_SIZE = (GRID_HALF_EXTENT * 2) / GRID_DIM; // 4.0 units per cell
-const FACE_OFFSETS = [
-  [-1, 0, 0], [1, 0, 0],
-  [0, -1, 0], [0, 1, 0],
-  [0, 0, -1], [0, 0, 1]
-];
+const FLOOR_Y = -7.8;
+const FLOOR_RADIUS = 11.2;
+const ISOTROPIC_PEER_SAMPLES = 22;
+const COPRIME_STRIDES = [13, 29, 47, 71, 101, 137, 179, 227, 281, 349, 419, 499, 587, 677, 773, 881, 991, 1109, 1237, 1367, 1487, 1609];
 
 const clamp01 = (v) => {
   const n = Number(v);
@@ -140,13 +135,7 @@ export function createProjectionWorkspace(nodeCapacity = 1500, edgeCapacity = 24
     relaxedPositions: new Float32Array(nCap * 3),
     velocities: new Float32Array(nCap * 3),
     forces: new Float32Array(nCap * 3),
-    cellHead: new Int32Array(GRID_CELLS),
-    cellNext: new Int32Array(nCap),
-    cellCount: new Uint16Array(GRID_CELLS),
-    cellSumX: new Float32Array(GRID_CELLS),
-    cellSumY: new Float32Array(GRID_CELLS),
-    cellSumZ: new Float32Array(GRID_CELLS),
-    occupiedCells: new Int32Array(GRID_CELLS),
+    physicsStep: 0,
     relaxInitialized: false,
     targetPositions: new Float32Array(nCap * 3),
     targetColors: new Float32Array(nCap * 3),
@@ -304,18 +293,13 @@ export function selectStratifiedRenderIndices(view, capacity, workspace) {
   return renderCount;
 }
 
-function cellCoord(val) {
-  const c = Math.floor((val + GRID_HALF_EXTENT) / GRID_CELL_SIZE);
-  return c < 0 ? 0 : (c >= GRID_DIM ? GRID_DIM - 1 : c);
-}
-
 /**
- * Pure O(N + E) Force-Directed 3D Graph Engine (Obsidian-like living network):
- * - Zero Fibonacci sphere anchor, zero torus formula, zero radial breathing!
- * - Uses 3D spatial-hash grid Coulomb repulsion + real weighted synaptic springs
- *   over `node.connections` + tiny direction-free centering gravity.
- * - Organic topological clusters, filamentary hubs, and bridges emerge purely from
- *   the graph's real evolving connectivity and phase-resonant weights.
+ * Pure O(N + E) SO(3)-Isotropic Force-Directed 3D Graph Engine:
+ * - Zero cubic grid, zero Fibonacci sphere anchor, zero torus formula, zero radial breathing!
+ * - When `options.dormantFloor` is true (simulation not yet started), all nodes rest quietly
+ *   on a flat circular floor plane (`y ≈ -7.8`, zero preset 3D structure).
+ * - When the simulation turns on, nodes lift off the floor and self-organize in 3D purely from
+ *   real weighted synaptic springs (`node.connections`) + SO(3)-isotropic pairwise repulsion.
  */
 export function computeCoupledNodeTargets(view, workspace, renderCount, coreState, options = {}) {
   const buffers = view?.buffers;
@@ -325,6 +309,8 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
 
   const viewMode = options.viewMode || NODAL_3D_VIEW_MODES.COUPLED;
   const nodes = Array.isArray(options.nodes) ? options.nodes : null;
+  const dormantFloor = Boolean(options.dormantFloor);
+  const pausedFrozen = Boolean(options.pausedFrozen);
   const outPos = workspace.targetPositions;
   const outCol = workspace.targetColors;
   const outRad = workspace.targetRadii;
@@ -332,19 +318,54 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
   const vel = workspace.velocities;
   const force = workspace.forces;
   const renderToModel = workspace.renderToModelIndex;
+  const modelToRender = workspace.modelToRenderIndex;
   const sectorCenters = workspace.sectorCenters;
 
-  const isCutOrReducible = coreState.tdCutActive || coreState.reducibleActive;
-
-  // One-time neutral volumetric scatter (no sphere, no torus; purely initial seeding before forces settle)
-  if (!workspace.relaxInitialized) {
-    const initExtent = 8.5;
+  // Dormant floor state: before simulation starts, all nodes rest quietly on a flat circular floor
+  if (dormantFloor) {
+    if (workspace.relaxInitialized !== 'floor') {
+      for (let r = 0; r < renderCount; r += 1) {
+        const mIdx = renderToModel[r];
+        const p3 = r * 3;
+        const uR = (hashUnitSigned((mIdx * 3) + 11) + 1.0) * 0.5;
+        const theta = (hashUnitSigned((mIdx * 3) + 29) + 1.0) * Math.PI;
+        const rad = Math.sqrt(uR) * FLOOR_RADIUS;
+        pos[p3] = Math.cos(theta) * rad;
+        pos[p3 + 1] = FLOOR_Y + (hashUnitSigned((mIdx * 3) + 47) * 0.14);
+        pos[p3 + 2] = Math.sin(theta) * rad;
+        vel[p3] = 0;
+        vel[p3 + 1] = 0;
+        vel[p3 + 2] = 0;
+      }
+      workspace.relaxInitialized = 'floor';
+      workspace.physicsStep = 0;
+    }
+  } else if (workspace.relaxInitialized === 'floor') {
+    // Organic wake-up from the floor: keep exact floor positions and apply a gentle upward lift impulse
     for (let r = 0; r < renderCount; r += 1) {
       const mIdx = renderToModel[r];
       const p3 = r * 3;
-      pos[p3] = hashUnitSigned((mIdx * 3) + 11) * initExtent;
-      pos[p3 + 1] = hashUnitSigned((mIdx * 3) + 29) * initExtent;
-      pos[p3 + 2] = hashUnitSigned((mIdx * 3) + 47) * initExtent;
+      const coh = clamp01(buffers.coherence[mIdx]);
+      const ph = Number.isFinite(buffers.phase[mIdx]) ? buffers.phase[mIdx] : (mIdx * 0.17);
+      vel[p3] = Math.cos(ph) * 0.08;
+      vel[p3 + 1] = 0.24 + (coh * 0.32);
+      vel[p3 + 2] = Math.sin(ph) * 0.08;
+    }
+    workspace.relaxInitialized = 'waking';
+  } else if (!workspace.relaxInitialized) {
+    // Cold-start non-dormant seeding (e.g., headless tests): uniform 3D ball (zero cubic bias!)
+    const initRadius = 8.5;
+    for (let r = 0; r < renderCount; r += 1) {
+      const mIdx = renderToModel[r];
+      const p3 = r * 3;
+      const cosPhi = hashUnitSigned((mIdx * 3) + 11);
+      const sinPhi = Math.sqrt(Math.max(0, 1.0 - (cosPhi * cosPhi)));
+      const theta = (hashUnitSigned((mIdx * 3) + 29) + 1.0) * Math.PI;
+      const uR = (hashUnitSigned((mIdx * 3) + 47) + 1.0) * 0.5;
+      const rad = Math.cbrt(uR) * initRadius;
+      pos[p3] = rad * sinPhi * Math.cos(theta);
+      pos[p3 + 1] = rad * cosPhi;
+      pos[p3 + 2] = rad * sinPhi * Math.sin(theta);
       vel[p3] = 0;
       vel[p3 + 1] = 0;
       vel[p3 + 2] = 0;
@@ -352,138 +373,84 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
   }
 
   const activeEdges = Math.min(workspace.edgeCapacity, Number(options.activeEdgeCount || 0));
-  const iterations = workspace.relaxInitialized ? 1 : (activeEdges > 0 ? 10 : 1);
+  const shouldIntegrate = !dormantFloor && !pausedFrozen;
+  const iterations = !shouldIntegrate
+    ? 0
+    : (workspace.relaxInitialized === false ? ((nodes || activeEdges > 0) ? 10 : 1) : 1);
 
-  const cellHead = workspace.cellHead;
-  const cellNext = workspace.cellNext;
-  const cellCount = workspace.cellCount;
-  const cellSumX = workspace.cellSumX;
-  const cellSumY = workspace.cellSumY;
-  const cellSumZ = workspace.cellSumZ;
-  const occupiedCells = workspace.occupiedCells;
-
-  // Scale Coulomb repulsion inversely with sqrt(N) so 120-node tests and 1500-node UI share balanced spatial volume
-  const repScale = 0.68 * Math.sqrt(1500 / Math.max(40, renderCount));
-  const coreOnlyPush = viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY ? 5.2 : 0.0;
-  const gravityK = viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY ? 0.012 : 0.026;
+  const sampleCount = Math.min(ISOTROPIC_PEER_SAMPLES, Math.max(1, renderCount - 1));
+  const repGain = 0.34 * (ISOTROPIC_PEER_SAMPLES / sampleCount);
+  const gravityK = 0.026;
   const lesionPolarityK = coreState.reducibleActive ? 0.165 : (coreState.tdCutActive ? 0.140 : 0.0);
   const lesionTargetRadius = coreState.reducibleActive ? 11.4 : (coreState.tdCutActive ? 9.8 : 0.0);
 
   for (let iter = 0; iter < iterations; iter += 1) {
     force.fill(0, 0, renderCount * 3);
+    workspace.physicsStep = (workspace.physicsStep + 1) | 0;
+    const stepShift = workspace.physicsStep * 131;
 
-    // (1) Hash all nodes into 12x12x12 spatial grid in O(N)
-    cellHead.fill(-1);
-    let occCount = 0;
+    // (1) Compute global center of mass in O(N)
     let globSumX = 0;
     let globSumY = 0;
     let globSumZ = 0;
-
     for (let r = 0; r < renderCount; r += 1) {
       const p3 = r * 3;
-      const x = pos[p3];
-      const y = pos[p3 + 1];
-      const z = pos[p3 + 2];
-      globSumX += x;
-      globSumY += y;
-      globSumZ += z;
-
-      const gx = cellCoord(x);
-      const gy = cellCoord(y);
-      const gz = cellCoord(z);
-      const cIdx = (gx * 144) + (gy * 12) + gz;
-      if (cellHead[cIdx] === -1) {
-        occupiedCells[occCount] = cIdx;
-        occCount += 1;
-        cellCount[cIdx] = 1;
-        cellSumX[cIdx] = x;
-        cellSumY[cIdx] = y;
-        cellSumZ[cIdx] = z;
-      } else {
-        cellCount[cIdx] += 1;
-        cellSumX[cIdx] += x;
-        cellSumY[cIdx] += y;
-        cellSumZ[cIdx] += z;
-      }
-      cellNext[r] = cellHead[cIdx];
-      cellHead[cIdx] = r;
+      globSumX += pos[p3];
+      globSumY += pos[p3 + 1];
+      globSumZ += pos[p3 + 2];
     }
-
     const gCx = globSumX / renderCount;
     const gCy = globSumY / renderCount;
     const gCz = globSumZ / renderCount;
 
-    // (2) Fast sqrt-free O(N) near-field repulsion (own cell up to 8 neighbors) + 6 face-adjacent cell centroids
+    // (2) 100% SO(3)-isotropic pairwise repulsion in O(N) via rotating coprime strides (Newton's 3rd law)
+    // Zero spatial grid, zero Cartesian face planes, zero cube/tesseract anisotropy!
     for (let r = 0; r < renderCount; r += 1) {
       const p3 = r * 3;
       const x = pos[p3];
       const y = pos[p3 + 1];
       const z = pos[p3 + 2];
-      const gx = cellCoord(x);
-      const gy = cellCoord(y);
-      const gz = cellCoord(z);
-
       let fx = 0;
       let fy = 0;
       let fz = 0;
 
-      // Exact local pairwise repulsion inside node's own cell (sqrt-free fast falloff)
-      const ownIdx = (gx * 144) + (gy * 12) + gz;
-      let other = cellHead[ownIdx];
-      let localChecks = 0;
-      while (other !== -1 && localChecks < 8) {
-        if (other !== r) {
-          const o3 = other * 3;
-          const dx = x - pos[o3];
-          const dy = y - pos[o3 + 1];
-          const dz = z - pos[o3 + 2];
-          const d2 = (dx * dx) + (dy * dy) + (dz * dz) + 0.45;
-          const inv = repScale / (d2 * (1.0 + (d2 * 0.22)));
-          fx += dx * inv;
-          fy += dy * inv;
-          fz += dz * inv;
-          localChecks += 1;
-        }
-        other = cellNext[other];
+      for (let k = 0; k < sampleCount; k += 1) {
+        const stride = COPRIME_STRIDES[k];
+        const other = (r + stride + ((stepShift + (k * 97)) % renderCount)) % renderCount;
+        if (other === r) continue;
+        const o3 = other * 3;
+        const dx = x - pos[o3];
+        const dy = y - pos[o3 + 1];
+        const dz = z - pos[o3 + 2];
+        const d2 = (dx * dx) + (dy * dy) + (dz * dz) + 0.65;
+        const inv = repGain / (d2 * (1.0 + (d2 * 0.085)));
+        const pfx = dx * inv;
+        const pfy = dy * inv;
+        const pfz = dz * inv;
+        fx += pfx;
+        fy += pfy;
+        fz += pfz;
+        force[o3] -= pfx;
+        force[o3 + 1] -= pfy;
+        force[o3 + 2] -= pfz;
       }
 
-      // 6 face-adjacent cell centroids (4x faster than 26-cell scan!)
-      for (let f = 0; f < 6; f += 1) {
-        const nx = gx + FACE_OFFSETS[f][0];
-        const ny = gy + FACE_OFFSETS[f][1];
-        const nz = gz + FACE_OFFSETS[f][2];
-        if (nx < 0 || nx >= GRID_DIM || ny < 0 || ny >= GRID_DIM || nz < 0 || nz >= GRID_DIM) continue;
-        const cIdx = (nx * 144) + (ny * 12) + nz;
-        const cnt = cellCount[cIdx];
-        if (cellHead[cIdx] === -1 || cnt === 0) continue;
-        const invC = 1 / cnt;
-        const dx = x - (cellSumX[cIdx] * invC);
-        const dy = y - (cellSumY[cIdx] * invC);
-        const dz = z - (cellSumZ[cIdx] * invC);
-        const d2 = (dx * dx) + (dy * dy) + (dz * dz) + 1.4;
-        const massScale = Math.min(cnt, 10) * repScale * 0.52;
-        const inv = massScale / (d2 * (1.0 + (d2 * 0.16)));
-        fx += dx * inv;
-        fy += dy * inv;
-        fz += dz * inv;
-      }
-
-      // Gentle long-range dispersion away from global center of mass if overcrowded near origin
+      // Gentle radial exclusion right around the central diamond (r < 2) without creating any shell
       const rx = x - gCx;
       const ry = y - gCy;
       const rz = z - gCz;
-      const r2 = (rx * rx) + (ry * ry) + (rz * rz) + 1.6;
-      const coreRepulse = (1.5 + coreOnlyPush) / (r2 * (1.0 + (r2 * 0.12)));
+      const r2 = (rx * rx) + (ry * ry) + (rz * rz) + 1.8;
+      const coreRepulse = 1.25 / (r2 * (1.0 + (r2 * 0.16)));
       fx += rx * coreRepulse;
       fy += ry * coreRepulse;
       fz += rz * coreRepulse;
 
-      // Direction-free isotropic centering gravity (frames entire organic silhouette cleanly without any spherical shell)
+      // Direction-free isotropic centering gravity
       fx -= x * gravityK;
       fy -= y * gravityK;
       fz -= z * gravityK;
 
-      // Causal negative controls ONLY: when eta=0 or A=I severs cross-sector bridges, uncoupled sectors separate cleanly
+      // Causal negative controls ONLY: when eta=0 or A=I severs cross-sector bridges, uncoupled sectors separate
       if (lesionPolarityK > 0) {
         const mIdx = renderToModel[r];
         const s = Math.max(0, Math.min(3, buffers.sectorId[mIdx] ?? sectorIdOf(mIdx)));
@@ -498,48 +465,91 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
       force[p3 + 2] += fz;
     }
 
-    // (3) Real weighted synaptic Hooke springs along active `node.connections` in O(E)
-    for (let e = 0; e < activeEdges; e += 1) {
-      const u = workspace.edgeSourceRenderIdx[e];
-      const v = workspace.edgeTargetRenderIdx[e];
-      if (u < 0 || u >= renderCount || v < 0 || v >= renderCount) continue;
-      const isBridge = workspace.edgeIsBridge[e] > 0;
-      const w = workspace.edgeWeight[e];
+    // (3) Real weighted synaptic Hooke springs directly over `node.connections` (independent of visual filter!)
+    // Switching to `Torre` or `Puente` never disables physical springs or crystallizes the network.
+    if (nodes && nodes.length > 0) {
+      for (let u = 0; u < renderCount; u += 1) {
+        const mU = renderToModel[u];
+        const nodeU = nodes[mU];
+        const conns = nodeU?.connections;
+        if (!conns || conns.length === 0) continue;
+        const secU = buffers.sectorId[mU] ?? sectorIdOf(mU);
+        const u3 = u * 3;
+        const ux = pos[u3];
+        const uy = pos[u3 + 1];
+        const uz = pos[u3 + 2];
 
-      // Cutting eta=0 or A=I physically zeros cross-sector spring tension!
-      const kSpring = isBridge
-        ? (coreState.bridgeActive ? (0.068 * (0.30 + (w * 1.65))) : 0.0)
-        : (0.062 * (0.30 + (w * 1.55)));
-      if (kSpring <= 0) continue;
+        for (let c = 0; c < conns.length; c += 1) {
+          const conn = conns[c];
+          const mV = Number(conn?.targetId);
+          if (!Number.isInteger(mV) || mV < 0 || mV >= modelToRender.length) continue;
+          const v = modelToRender[mV];
+          if (v < 0 || v >= renderCount || v === u) continue;
+          const secV = buffers.sectorId[mV] ?? sectorIdOf(mV);
+          const isBridge = secU !== secV;
+          const w = clamp01(conn.weight ?? 0.45);
+          const kSpring = isBridge
+            ? (coreState.bridgeActive ? (0.042 * (0.28 + (w * 1.65))) : 0.0)
+            : (0.038 * (0.28 + (w * 1.55)));
+          if (kSpring <= 0) continue;
 
-      const u3 = u * 3;
-      const v3 = v * 3;
-      const dx = pos[v3] - pos[u3];
-      const dy = pos[v3 + 1] - pos[u3 + 1];
-      const dz = pos[v3 + 2] - pos[u3 + 2];
-      const dist = Math.hypot(dx, dy, dz) || 0.001;
+          const v3 = v * 3;
+          const dx = pos[v3] - ux;
+          const dy = pos[v3 + 1] - uy;
+          const dz = pos[v3 + 2] - uz;
+          const dist = Math.hypot(dx, dy, dz) || 0.001;
+          const restLen = Math.max(0.85, 3.4 - (w * 2.15));
+          const mag = (kSpring * (dist - restLen)) / dist;
 
-      // Higher weight resonant synapses contract into crisp structural filaments & hubs; weak ones relax looser
-      const restLen = Math.max(0.85, 3.35 - (w * 2.15));
-      const stretch = dist - restLen;
-      const mag = (kSpring * stretch) / dist;
+          const sfx = dx * mag;
+          const sfy = dy * mag;
+          const sfz = dz * mag;
+          force[u3] += sfx;
+          force[u3 + 1] += sfy;
+          force[u3 + 2] += sfz;
+          force[v3] -= sfx;
+          force[v3 + 1] -= sfy;
+          force[v3 + 2] -= sfz;
+        }
+      }
+    } else {
+      for (let e = 0; e < activeEdges; e += 1) {
+        const u = workspace.edgeSourceRenderIdx[e];
+        const v = workspace.edgeTargetRenderIdx[e];
+        if (u < 0 || u >= renderCount || v < 0 || v >= renderCount) continue;
+        const isBridge = workspace.edgeIsBridge[e] > 0;
+        const w = workspace.edgeWeight[e];
+        const kSpring = isBridge
+          ? (coreState.bridgeActive ? (0.068 * (0.30 + (w * 1.65))) : 0.0)
+          : (0.062 * (0.30 + (w * 1.55)));
+        if (kSpring <= 0) continue;
 
-      const sfx = dx * mag;
-      const sfy = dy * mag;
-      const sfz = dz * mag;
-      force[u3] += sfx;
-      force[u3 + 1] += sfy;
-      force[u3 + 2] += sfz;
-      force[v3] -= sfx;
-      force[v3 + 1] -= sfy;
-      force[v3 + 2] -= sfz;
+        const u3 = u * 3;
+        const v3 = v * 3;
+        const dx = pos[v3] - pos[u3];
+        const dy = pos[v3 + 1] - pos[u3 + 1];
+        const dz = pos[v3 + 2] - pos[u3 + 2];
+        const dist = Math.hypot(dx, dy, dz) || 0.001;
+        const restLen = Math.max(0.85, 3.35 - (w * 2.15));
+        const mag = (kSpring * (dist - restLen)) / dist;
+
+        const sfx = dx * mag;
+        const sfy = dy * mag;
+        const sfz = dz * mag;
+        force[u3] += sfx;
+        force[u3 + 1] += sfy;
+        force[u3 + 2] += sfz;
+        force[v3] -= sfx;
+        force[v3 + 1] -= sfy;
+        force[v3 + 2] -= sfz;
+      }
     }
 
-    // (4) Semi-implicit Euler integration with smooth viscous damping & safe speed cap
-    const damping = workspace.relaxInitialized ? 0.80 : 0.72;
-    const stepDt = workspace.relaxInitialized ? 0.42 : 0.58;
-    const maxSpeed = workspace.relaxInitialized ? 0.85 : 1.85;
-    const maxBound = 22.5;
+    // (4) Semi-implicit Euler integration with smooth viscous damping & isotropic spherical bound
+    const damping = workspace.relaxInitialized === true ? 0.80 : 0.74;
+    const stepDt = workspace.relaxInitialized === true ? 0.42 : 0.56;
+    const maxSpeed = workspace.relaxInitialized === true ? 0.85 : 1.75;
+    const maxRadius = 21.5;
 
     for (let r = 0; r < renderCount; r += 1) {
       const p3 = r * 3;
@@ -563,12 +573,14 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
       let ny = pos[p3 + 1] + vy;
       let nz = pos[p3 + 2] + vz;
 
-      if (nx > maxBound) nx = maxBound;
-      else if (nx < -maxBound) nx = -maxBound;
-      if (ny > maxBound) ny = maxBound;
-      else if (ny < -maxBound) ny = -maxBound;
-      if (nz > maxBound) nz = maxBound;
-      else if (nz < -maxBound) nz = -maxBound;
+      // Spherical soft boundary (never a cube box clamp!)
+      const nr = Math.hypot(nx, ny, nz);
+      if (nr > maxRadius) {
+        const invR = maxRadius / nr;
+        nx *= invR;
+        ny *= invR;
+        nz *= invR;
+      }
 
       pos[p3] = nx;
       pos[p3 + 1] = ny;
@@ -576,7 +588,9 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
     }
   }
 
-  workspace.relaxInitialized = true;
+  if (!dormantFloor) {
+    workspace.relaxInitialized = true;
+  }
 
   // Pass 2: Export target positions, Obsidian-style degree+traffic node sizing, & live signal illumination
   const secAccumX = [0, 0, 0, 0];
@@ -615,27 +629,39 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
     const deg = workspace.nodeDegree[rIdx] || (nodes?.[mIdx]?.connections?.length || 4);
     const hubBoost = Math.min(0.085, Math.max(0, deg - 4) * 0.014);
     const trafficFlare = sigPulse * 0.055;
-    const baseRad = active ? (0.045 + intensity * 0.024 + coh * 0.020 + hubBoost + trafficFlare) : 0.028;
+    const baseRad = dormantFloor
+      ? 0.036
+      : (active ? (0.045 + intensity * 0.024 + coh * 0.020 + hubBoost + trafficFlare) : 0.028);
     const modeScale = viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY ? 0.52 : 1.0;
     outRad[rIdx] = baseRad * modeScale;
 
     const baseRgb = secMeta.colorRgb;
-    const lum = active ? (0.50 + coh * 0.36 + energy * 0.14) : (0.16 + coh * 0.14);
-    const lesionTint = coreState.tdCutActive ? 0.28 : (coreState.reducibleActive ? 0.20 : 0);
+    let cr;
+    let cg;
+    let cb;
+    if (dormantFloor) {
+      // Dimmed embers resting quietly on the floor before the network is powered on
+      cr = 0.10 + (baseRgb[0] * 0.14);
+      cg = 0.12 + (baseRgb[1] * 0.14);
+      cb = 0.20 + (baseRgb[2] * 0.16);
+    } else {
+      const lum = active ? (0.50 + coh * 0.36 + energy * 0.14) : (0.16 + coh * 0.14);
+      const lesionTint = coreState.tdCutActive ? 0.28 : (coreState.reducibleActive ? 0.20 : 0);
 
-    // Active signal traffic illuminates node crisply toward bright white-gold/cyan like a queried memory node!
-    let cr = (baseRgb[0] * lum) + (sigPulse * 0.42) + (lesionTint * 0.44);
-    let cg = (baseRgb[1] * lum) + (sigPulse * 0.52) - (lesionTint * 0.14);
-    let cb = (baseRgb[2] * lum) + (sigPulse * 0.48) - (lesionTint * 0.10);
+      // Active signal traffic illuminates node crisply toward bright white-gold/cyan like a queried memory node!
+      cr = (baseRgb[0] * lum) + (sigPulse * 0.42) + (lesionTint * 0.44);
+      cg = (baseRgb[1] * lum) + (sigPulse * 0.52) - (lesionTint * 0.14);
+      cb = (baseRgb[2] * lum) + (sigPulse * 0.48) - (lesionTint * 0.10);
 
-    if (viewMode === NODAL_3D_VIEW_MODES.BRIDGE_ONLY && interFlux < 0.01 && coh < 0.78) {
-      cr *= 0.25;
-      cg *= 0.25;
-      cb *= 0.25;
-    } else if (viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY) {
-      cr *= 0.20;
-      cg *= 0.20;
-      cb *= 0.20;
+      if (viewMode === NODAL_3D_VIEW_MODES.BRIDGE_ONLY && interFlux < 0.01 && coh < 0.78) {
+        cr *= 0.25;
+        cg *= 0.25;
+        cb *= 0.25;
+      } else if (viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY) {
+        cr *= 0.24;
+        cg *= 0.24;
+        cb *= 0.24;
+      }
     }
 
     outCol[p3] = clamp01(cr);

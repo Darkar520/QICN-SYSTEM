@@ -214,13 +214,60 @@ function runCouplingMode(mode, nodes = 120, ticks = 18) {
   );
 }
 
-// 4. Static integration check: zero spherical shell anchor / zero radial breathing + real signal packets
+// 4. Dormant floor start -> organic lift-off + CORE_ONLY keeps real springs active
+{
+  const wakeRun = runCouplingMode(NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL, 120, 12);
+  const wsWake = createProjectionWorkspace(120, 600);
+  const rcWake = selectStratifiedRenderIndices(wakeRun.view, 120, wsWake);
+  const coreState = extractCoreVisualizationState(wakeRun.view, wakeRun.core.ontologicalState);
+
+  // Before powering on: all nodes rest flat on the dormant floor (y ≈ -7.8)
+  computeCoupledNodeTargets(wakeRun.view, wsWake, rcWake, coreState, {
+    nodes: wakeRun.layer.nodes,
+    dormantFloor: true
+  });
+  let sumYFloor = 0;
+  let sumY2Floor = 0;
+  for (let r = 0; r < rcWake; r += 1) {
+    const y = wsWake.targetPositions[(r * 3) + 1];
+    sumYFloor += y;
+    sumY2Floor += y * y;
+  }
+  const meanYFloor = sumYFloor / rcWake;
+  const stdYFloor = Math.sqrt(Math.max(0, (sumY2Floor / rcWake) - (meanYFloor * meanYFloor)));
+  assert(meanYFloor < -7.2 && meanYFloor > -8.4, `Dormant floor must rest nodes near y=-7.8 (got ${meanYFloor.toFixed(2)})`);
+  assert(stdYFloor < 0.25, `Dormant floor must be flat before wake-up (stdY=${stdYFloor.toFixed(3)})`);
+
+  // After powering on: nodes lift off the floor and self-organize in 3D from real synaptic springs
+  for (let step = 0; step < 30; step += 1) {
+    computeCoupledNodeTargets(wakeRun.view, wsWake, rcWake, coreState, {
+      nodes: wakeRun.layer.nodes,
+      dormantFloor: false,
+      viewMode: NODAL_3D_VIEW_MODES.CORE_ONLY
+    });
+  }
+  let sumYWake = 0;
+  let sumY2Wake = 0;
+  for (let r = 0; r < rcWake; r += 1) {
+    const y = wsWake.targetPositions[(r * 3) + 1];
+    sumYWake += y;
+    sumY2Wake += y * y;
+  }
+  const meanYWake = sumYWake / rcWake;
+  const stdYWake = Math.sqrt(Math.max(0, (sumY2Wake / rcWake) - (meanYWake * meanYWake)));
+  assert(meanYWake > -3.5, `Waking up from floor must lift network toward 3D center (meanY=${meanYWake.toFixed(2)})`);
+  assert(stdYWake > 1.2, `Waking up must expand organically in 3D even under CORE_ONLY visual filter (stdY=${stdYWake.toFixed(2)})`);
+}
+
+// 5. Static integration check: zero spherical shell anchor, zero radial breathing, zero cubic grid walls
 {
   const sceneText = fs.readFileSync(path.join(root, 'src/components/NetworkScene3D.jsx'), 'utf8');
   const projText = fs.readFileSync(path.join(root, 'src/simulation/Nodal3DSceneProjection.js'), 'utf8');
   const engineText = fs.readFileSync(path.join(root, 'src/components/SimulationEngine.jsx'), 'utf8');
   assert(!projText.includes('targetShellR'), 'Nodal3DSceneProjection must not force a spherical shell anchor');
   assert(!projText.includes('phaseCos'), 'Nodal3DSceneProjection must not inject artificial radial breathing');
+  assert(!projText.includes('FACE_OFFSETS'), 'Nodal3DSceneProjection must not use 6-face Cartesian grid repulsion (prevents tesseract/cube artifact)');
+  assert(!projText.includes('GRID_DIM'), 'Nodal3DSceneProjection must not discretize repulsion onto a cubic grid');
   assert(sceneText.includes('Nodal3DSceneProjection'), 'NetworkScene3D must use Nodal3DSceneProjection');
   assert(sceneText.includes('get3DTelemetryView'), 'NetworkScene3D must consume live zero-GC get3DTelemetryView');
   assert(sceneText.includes('buildRealSynapticEdgeSelection'), 'NetworkScene3D must render real synaptic connections');
@@ -229,4 +276,4 @@ function runCouplingMode(mode, nodes = 120, ticks = 18) {
   assert(engineText.includes('endogenousDecision={liveEndogenousForCanvas}'), 'SimulationEngine must pass live endogenous verdict to NetworkCanvas');
 }
 
-console.log('OK: Organic force-directed 3D graph, resonant plasticity, live signal traffic, 1500-node 1:1 & negative controls verified');
+console.log('OK: SO(3)-isotropic organic 3D graph, dormant floor wake-up, resonant plasticity, live signal traffic, 1500-node 1:1 & negative controls verified');

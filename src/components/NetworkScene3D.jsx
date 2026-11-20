@@ -854,14 +854,18 @@ const NetworkScene3D = React.memo(({
           edgeMetaDirty = true;
         }
 
-        // 3. Recompute pure O(N+E) force-directed physics at ~10 Hz (smoothly interpolated at locked 30 FPS!)
+        // 3. Recompute pure O(N+E) SO(3)-isotropic force-directed physics at ~10 Hz (smoothly interpolated at locked 30 FPS!)
+        const isDormantFloor = !props.isRunning && (Number(props.tick) || 0) <= 0;
+        const isPausedFrozen = !props.isRunning && (Number(props.tick) || 0) > 0;
         if (!hasSeededInitialState || (now - lastLayoutTime) >= 95) {
           lastLayoutTime = now;
           computeCoupledNodeTargets(view, workspace, renderCount, coreState, {
             timeSeconds: prefersReducedMotion ? 0 : elapsedSec,
             viewMode: curViewMode,
             nodes: modelNodes,
-            activeEdgeCount: latestEdgeStats.totalEdges
+            activeEdgeCount: latestEdgeStats.totalEdges,
+            dormantFloor: isDormantFloor,
+            pausedFrozen: isPausedFrozen
           });
         }
 
@@ -901,7 +905,11 @@ const NetworkScene3D = React.memo(({
           }
 
           let rad = currentRadii[r];
-          computeNodeAccentColor(scratchColor, mIdx, secId, coh, energy, interFlux, coreState.bridgeActive, currentColors, i3);
+          if (isDormantFloor) {
+            scratchColor.setRGB(currentColors[i3], currentColors[i3 + 1], currentColors[i3 + 2]);
+          } else {
+            computeNodeAccentColor(scratchColor, mIdx, secId, coh, energy, interFlux, coreState.bridgeActive, currentColors, i3);
+          }
           if (hasFocus) {
             if (r === focusIdx) {
               rad *= 2.25;
@@ -950,8 +958,8 @@ const NetworkScene3D = React.memo(({
           focusHalo.visible = false;
         }
 
-        // 5. Update real synaptic web endpoints (only upload metadata attributes when dirty!)
-        const drawnEdges = latestEdgeStats.totalEdges;
+        // 5. Update real synaptic web endpoints (hidden while nodes rest dormant on the floor)
+        const drawnEdges = isDormantFloor ? 0 : latestEdgeStats.totalEdges;
         for (let e = 0; e < drawnEdges; e += 1) {
           const rU = workspace.edgeSourceRenderIdx[e];
           const rV = workspace.edgeTargetRenderIdx[e];
@@ -1016,12 +1024,16 @@ const NetworkScene3D = React.memo(({
         edgeGeom.setDrawRange(0, drawnEdges * 2);
 
         // 5b. Spawn & advance real traveling signal traffic packets emitted by processSignals()
-        spawnSignalPacketsFromView(signalPool, view, workspace, renderCount, coreState, curViewMode);
-        const visibleSignals = stepSignalPackets(signalPool, currentPositions, renderCount, dt, prefersReducedMotion);
-        signalGeom.setDrawRange(0, visibleSignals);
-        if (visibleSignals > 0) {
-          signalPosAttr.needsUpdate = true;
-          signalColAttr.needsUpdate = true;
+        if (isDormantFloor) {
+          signalGeom.setDrawRange(0, 0);
+        } else {
+          spawnSignalPacketsFromView(signalPool, view, workspace, renderCount, coreState, curViewMode);
+          const visibleSignals = stepSignalPackets(signalPool, currentPositions, renderCount, dt, prefersReducedMotion);
+          signalGeom.setDrawRange(0, visibleSignals);
+          if (visibleSignals > 0) {
+            signalPosAttr.needsUpdate = true;
+            signalColAttr.needsUpdate = true;
+          }
         }
 
         // 6. Central Constructive Core dynamics

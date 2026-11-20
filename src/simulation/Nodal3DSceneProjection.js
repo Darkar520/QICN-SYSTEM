@@ -85,8 +85,8 @@ export const NODAL_3D_SECTORS = Object.freeze(
 
 const FLOOR_Y = -7.8;
 const FLOOR_RADIUS = 11.2;
-const ISOTROPIC_PEER_SAMPLES = 22;
-const COPRIME_STRIDES = [13, 29, 47, 71, 101, 137, 179, 227, 281, 349, 419, 499, 587, 677, 773, 881, 991, 1109, 1237, 1367, 1487, 1609];
+const ISOTROPIC_PEER_SAMPLES = 8;
+const COPRIME_STRIDES = [19, 53, 107, 191, 313, 467, 653, 881];
 
 const clamp01 = (v) => {
   const n = Number(v);
@@ -379,7 +379,7 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
     : (workspace.relaxInitialized === false ? ((nodes || activeEdges > 0) ? 10 : 1) : 1);
 
   const sampleCount = Math.min(ISOTROPIC_PEER_SAMPLES, Math.max(1, renderCount - 1));
-  const repGain = 0.34 * (ISOTROPIC_PEER_SAMPLES / sampleCount);
+  const repGain = 0.88 * (ISOTROPIC_PEER_SAMPLES / sampleCount);
   const gravityK = 0.026;
   const lesionPolarityK = coreState.reducibleActive ? 0.165 : (coreState.tdCutActive ? 0.140 : 0.0);
   const lesionTargetRadius = coreState.reducibleActive ? 11.4 : (coreState.tdCutActive ? 9.8 : 0.0);
@@ -479,8 +479,12 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
         const uy = pos[u3 + 1];
         const uz = pos[u3 + 2];
 
-        for (let c = 0; c < conns.length; c += 1) {
-          const conn = conns[c];
+        const connLen = conns.length;
+        const maxPerNode = connLen > 6 ? 6 : connLen;
+        const startOff = connLen > 6 ? ((workspace.physicsStep + u) % connLen) : 0;
+
+        for (let k = 0; k < maxPerNode; k += 1) {
+          const conn = conns[(startOff + k) % connLen];
           const mV = Number(conn?.targetId);
           if (!Number.isInteger(mV) || mV < 0 || mV >= modelToRender.length) continue;
           const v = modelToRender[mV];
@@ -489,15 +493,16 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
           const isBridge = secU !== secV;
           const w = clamp01(conn.weight ?? 0.45);
           const kSpring = isBridge
-            ? (coreState.bridgeActive ? (0.042 * (0.28 + (w * 1.65))) : 0.0)
-            : (0.038 * (0.28 + (w * 1.55)));
+            ? (coreState.bridgeActive ? (0.044 * (0.28 + (w * 1.65))) : 0.0)
+            : (0.040 * (0.28 + (w * 1.55)));
           if (kSpring <= 0) continue;
 
           const v3 = v * 3;
           const dx = pos[v3] - ux;
           const dy = pos[v3 + 1] - uy;
           const dz = pos[v3 + 2] - uz;
-          const dist = Math.hypot(dx, dy, dz) || 0.001;
+          const d2 = (dx * dx) + (dy * dy) + (dz * dz);
+          const dist = Math.sqrt(d2) || 0.001;
           const restLen = Math.max(0.85, 3.4 - (w * 2.15));
           const mag = (kSpring * (dist - restLen)) / dist;
 
@@ -557,9 +562,9 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
       let vy = (vel[p3 + 1] + (force[p3 + 1] * stepDt)) * damping;
       let vz = (vel[p3 + 2] + (force[p3 + 2] * stepDt)) * damping;
 
-      const spd = Math.hypot(vx, vy, vz);
-      if (spd > maxSpeed) {
-        const sc = maxSpeed / spd;
+      const spd2 = (vx * vx) + (vy * vy) + (vz * vz);
+      if (spd2 > (maxSpeed * maxSpeed)) {
+        const sc = maxSpeed / Math.sqrt(spd2);
         vx *= sc;
         vy *= sc;
         vz *= sc;
@@ -574,9 +579,9 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
       let nz = pos[p3 + 2] + vz;
 
       // Spherical soft boundary (never a cube box clamp!)
-      const nr = Math.hypot(nx, ny, nz);
-      if (nr > maxRadius) {
-        const invR = maxRadius / nr;
+      const nr2 = (nx * nx) + (ny * ny) + (nz * nz);
+      if (nr2 > (maxRadius * maxRadius)) {
+        const invR = maxRadius / Math.sqrt(nr2);
         nx *= invR;
         ny *= invR;
         nz *= invR;

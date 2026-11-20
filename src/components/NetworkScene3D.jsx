@@ -835,7 +835,7 @@ const NetworkScene3D = React.memo(({
           ? selectedRenderIdxRef.current
           : hoveredRenderIdxRef.current;
         const needEdgeRebuild = !hasSeededInitialState
-          || (Math.abs(props.tick - lastEdgeRebuildTickRef.current) >= 8)
+          || (Math.abs(props.tick - lastEdgeRebuildTickRef.current) >= 16)
           || (coreState.bridgeActive && latestEdgeStats.bridgeEdges === 0 && coreState.interSectorRatio > 0.05)
           || lastEdgeModeRef.current !== coreState.bridgeMode
           || lastEdgeViewModeRef.current !== curViewMode
@@ -854,10 +854,11 @@ const NetworkScene3D = React.memo(({
           edgeMetaDirty = true;
         }
 
-        // 3. Recompute pure O(N+E) SO(3)-isotropic force-directed physics at ~10 Hz (smoothly interpolated at locked 30 FPS!)
+        // 3. Recompute pure O(N+E) SO(3)-isotropic force-directed physics (fast 70ms during floor wake-up, light 145ms once settled; smoothly interpolated at 30 FPS!)
         const isDormantFloor = !props.isRunning && (Number(props.tick) || 0) <= 0;
         const isPausedFrozen = !props.isRunning && (Number(props.tick) || 0) > 0;
-        if (!hasSeededInitialState || (now - lastLayoutTime) >= 95) {
+        const layoutIntervalMs = (workspace.physicsStep < 32 && !isDormantFloor) ? 70 : 145;
+        if (!hasSeededInitialState || (now - lastLayoutTime) >= layoutIntervalMs) {
           lastLayoutTime = now;
           computeCoupledNodeTargets(view, workspace, renderCount, coreState, {
             timeSeconds: prefersReducedMotion ? 0 : elapsedSec,

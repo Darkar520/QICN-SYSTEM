@@ -431,6 +431,7 @@ const NetworkCanvas = ({
     });
     const proj2dWorkspaceRef = useRef(null);
     const proj2dSignalPoolRef = useRef(null);
+    const bgCacheRef = useRef({ canvas: null, width: 0, height: 0 });
     const proj2dMetaRef = useRef({
         lastNodeCount: -1,
         renderCount: 0,
@@ -905,7 +906,7 @@ const NetworkCanvas = ({
 
             // 1. OBTENCIÓN DE DATOS (Alineado con física orgánica fuerza-dirigida 3D + señales reales)
             const adaptiveFps = stats.fps || 30;
-            const nodeBudget = liveViewportMode === 'mobile' ? 108 : (liveViewportMode === 'tablet' ? 168 : 240);
+            const nodeBudget = liveViewportMode === 'mobile' ? 96 : (liveViewportMode === 'tablet' ? 128 : 160);
             const cacheTtlMs = adaptiveFps < 18 ? 140 : 90;
             if (!nodalLayer?.current) {
                 setRenderStateSafe(
@@ -981,7 +982,8 @@ const NetworkCanvas = ({
                 }
                 const isDormantFloor2d = !isRunning && (Number(liveTick) || 0) <= 0;
                 const isPausedFrozen2d = !isRunning && (Number(liveTick) || 0) > 0;
-                if (!ws.relaxInitialized || (frameNowMs - meta.lastLayoutMs) >= 95) {
+                const layoutCadence2d = (ws.physicsStep < 32 && !isDormantFloor2d) ? 75 : 140;
+                if (!ws.relaxInitialized || (frameNowMs - meta.lastLayoutMs) >= layoutCadence2d) {
                     meta.lastLayoutMs = frameNowMs;
                     computeCoupledNodeTargets(view3d, ws, rc, coreState, {
                         viewMode: NODAL_3D_VIEW_MODES.COUPLED,
@@ -1353,187 +1355,222 @@ const NetworkCanvas = ({
             const neighborhoodIds = buildNeighborhoodSet(focusId, focusedNodes);
             const hasFocus = neighborhoodIds.size > 0;
 
-            // 4. DIBUJO — Fondo atmosférico ULTRATHINK
-            // === FONDO: Gradiente profundo multi-stop diagonal ===
-            const bgLinear = ctx.createLinearGradient(0, 0, canvas.width * 0.3, canvas.height);
-            bgLinear.addColorStop(0, '#020918');
-            bgLinear.addColorStop(0.4, '#030b1a');
-            bgLinear.addColorStop(0.8, '#040608');
-            bgLinear.addColorStop(1, '#010204');
-            ctx.fillStyle = bgLinear;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // 4. DIBUJO — Fast cached deep-space backdrop in live mode (rock-solid 30 FPS); full procedural in deterministic mode
+            const fastLive2d = !deterministic;
+            const isDormant2d = fastLive2d && !isRunning && (Number(liveTick) || 0) <= 0;
+            const visualPerf = clamp((frameStatsRef.current.fps || 30) / 30, 0.35, 1);
 
-            // === NEBULOSA TRIPLE: cyan + violeta + índigo ===
-            const nebCx = center.x + panX * 0.35;
-            const nebCy = center.y + panY * 0.35;
-            const maxNebR = Math.max(canvas.width, canvas.height) * 0.72;
-            const visualPerf = clamp((frameStatsRef.current.fps || 60) / 60, 0.35, 1);
-            const richBg = visualPerf > 0.48;
-            const cosmicT = now * 0.00012;
-
-            // Nebulosa 1 — cyan (centro)
-            const glow1 = ctx.createRadialGradient(nebCx, nebCy, 0, nebCx, nebCy, maxNebR * 0.62);
-            glow1.addColorStop(0, 'rgba(6,182,212,0.15)');
-            glow1.addColorStop(0.38, 'rgba(6,182,212,0.07)');
-            glow1.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = glow1;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Nebulosa 2 — violeta (desplazada)
-            const nebVx = nebCx + canvas.width * 0.22;
-            const nebVy = nebCy - canvas.height * 0.14;
-            const glow2 = ctx.createRadialGradient(nebVx, nebVy, 0, nebVx, nebVy, maxNebR * 0.48);
-            glow2.addColorStop(0, 'rgba(168,85,247,0.13)');
-            glow2.addColorStop(0.45, 'rgba(168,85,247,0.05)');
-            glow2.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = glow2;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Nebulosa 3 — índigo (esquina inferior)
-            const nebIx = nebCx - canvas.width * 0.18;
-            const nebIy = nebCy + canvas.height * 0.22;
-            const glow3 = ctx.createRadialGradient(nebIx, nebIy, 0, nebIx, nebIy, maxNebR * 0.36);
-            glow3.addColorStop(0, 'rgba(99,102,241,0.10)');
-            glow3.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = glow3;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            if (richBg) {
-                const nebPulseA = 0.5 + (0.5 * Math.sin(cosmicT * 1.7));
-                const nebPulseB = 0.5 + (0.5 * Math.cos(cosmicT * 1.15));
-                const driftX = Math.sin(cosmicT * 0.65) * canvas.width * 0.06;
-                const driftY = Math.cos(cosmicT * 0.53) * canvas.height * 0.05;
-
-                const auraA = ctx.createRadialGradient(
-                    nebCx - canvas.width * 0.2 + driftX,
-                    nebCy - canvas.height * 0.05 + driftY,
-                    0,
-                    nebCx - canvas.width * 0.2 + driftX,
-                    nebCy - canvas.height * 0.05 + driftY,
-                    maxNebR * 0.52
-                );
-                auraA.addColorStop(0, `rgba(34,211,238,${(0.07 + nebPulseA * 0.05).toFixed(3)})`);
-                auraA.addColorStop(0.52, `rgba(14,116,144,${(0.03 + nebPulseA * 0.02).toFixed(3)})`);
-                auraA.addColorStop(1, 'rgba(0,0,0,0)');
-                ctx.fillStyle = auraA;
+            if (fastLive2d && typeof document !== 'undefined') {
+                const cache = bgCacheRef.current;
+                if (!cache.canvas || cache.width !== canvas.width || cache.height !== canvas.height) {
+                    const off = document.createElement('canvas');
+                    off.width = canvas.width;
+                    off.height = canvas.height;
+                    const octx = off.getContext('2d', { alpha: false });
+                    if (octx) {
+                        const bgGrad = octx.createLinearGradient(0, 0, canvas.width * 0.3, canvas.height);
+                        bgGrad.addColorStop(0, '#020918');
+                        bgGrad.addColorStop(0.5, '#030b1a');
+                        bgGrad.addColorStop(1, '#010308');
+                        octx.fillStyle = bgGrad;
+                        octx.fillRect(0, 0, canvas.width, canvas.height);
+                        const neb = octx.createRadialGradient(center.x, center.y, 0, center.x, center.y, Math.max(canvas.width, canvas.height) * 0.56);
+                        neb.addColorStop(0, 'rgba(6,182,212,0.11)');
+                        neb.addColorStop(0.55, 'rgba(99,102,241,0.05)');
+                        neb.addColorStop(1, 'rgba(0,0,0,0)');
+                        octx.fillStyle = neb;
+                        octx.fillRect(0, 0, canvas.width, canvas.height);
+                        for (let i = 0; i < 48; i += 1) {
+                            const sx = ((i * 137.508) % 1) * canvas.width;
+                            const sy = ((i * 73.331) % 1) * canvas.height;
+                            octx.fillStyle = i % 5 === 0 ? 'rgba(255,255,255,0.28)' : 'rgba(203,213,225,0.14)';
+                            octx.fillRect(sx, sy, i % 5 === 0 ? 1.5 : 1, i % 5 === 0 ? 1.5 : 1);
+                        }
+                    }
+                    bgCacheRef.current = { canvas: off, width: canvas.width, height: canvas.height };
+                }
+                ctx.drawImage(bgCacheRef.current.canvas, 0, 0);
+            } else {
+                // === FONDO: Gradiente profundo multi-stop diagonal ===
+                const bgLinear = ctx.createLinearGradient(0, 0, canvas.width * 0.3, canvas.height);
+                bgLinear.addColorStop(0, '#020918');
+                bgLinear.addColorStop(0.4, '#030b1a');
+                bgLinear.addColorStop(0.8, '#040608');
+                bgLinear.addColorStop(1, '#010204');
+                ctx.fillStyle = bgLinear;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                const auraB = ctx.createRadialGradient(
-                    nebCx + canvas.width * 0.27 - driftX * 0.6,
-                    nebCy + canvas.height * 0.16 - driftY * 0.5,
-                    0,
-                    nebCx + canvas.width * 0.27 - driftX * 0.6,
-                    nebCy + canvas.height * 0.16 - driftY * 0.5,
-                    maxNebR * 0.44
-                );
-                auraB.addColorStop(0, `rgba(217,70,239,${(0.06 + nebPulseB * 0.04).toFixed(3)})`);
-                auraB.addColorStop(0.55, `rgba(79,70,229,${(0.02 + nebPulseB * 0.02).toFixed(3)})`);
-                auraB.addColorStop(1, 'rgba(0,0,0,0)');
-                ctx.fillStyle = auraB;
+                // === NEBULOSA TRIPLE: cyan + violeta + índigo ===
+                const nebCx = center.x + panX * 0.35;
+                const nebCy = center.y + panY * 0.35;
+                const maxNebR = Math.max(canvas.width, canvas.height) * 0.72;
+                const richBg = visualPerf > 0.48;
+                const cosmicT = now * 0.00012;
+
+                // Nebulosa 1 — cyan (centro)
+                const glow1 = ctx.createRadialGradient(nebCx, nebCy, 0, nebCx, nebCy, maxNebR * 0.62);
+                glow1.addColorStop(0, 'rgba(6,182,212,0.15)');
+                glow1.addColorStop(0.38, 'rgba(6,182,212,0.07)');
+                glow1.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = glow1;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
 
-            // === GRID DE REFERENCIA SUTIL (profundidad científica) ===
-            const gridStep = Math.max(40, Math.round(canvas.width / 14));
-            ctx.strokeStyle = 'rgba(6,182,212,0.04)';
-            ctx.lineWidth = 0.5;
-            for (let gx = 0; gx < canvas.width; gx += gridStep) {
-                ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, canvas.height); ctx.stroke();
-            }
-            for (let gy = 0; gy < canvas.height; gy += gridStep) {
-                ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(canvas.width, gy); ctx.stroke();
-            }
+                // Nebulosa 2 — violeta (desplazada)
+                const nebVx = nebCx + canvas.width * 0.22;
+                const nebVy = nebCy - canvas.height * 0.14;
+                const glow2 = ctx.createRadialGradient(nebVx, nebVy, 0, nebVx, nebVy, maxNebR * 0.48);
+                glow2.addColorStop(0, 'rgba(168,85,247,0.13)');
+                glow2.addColorStop(0.45, 'rgba(168,85,247,0.05)');
+                glow2.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = glow2;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // === ESTRELLAS con 3 tiers de brillo ===
-            for (let i = 0; i < 60; i++) {
-                const sx = ((i * 137.508) % 1) * canvas.width;
-                const sy = ((i * 73.331) % 1) * canvas.height;
-                const tier = i % 6;
-                const sr = tier === 0 ? 1.6 : tier === 1 ? 1.2 : 0.7;
-                const salpha = tier === 0 ? 0.35 : tier === 1 ? 0.22 : 0.14;
-                ctx.fillStyle = `rgba(255,255,255,${salpha})`;
-                ctx.beginPath();
-                ctx.arc(sx, sy, sr, 0, Math.PI * 2);
-                ctx.fill();
-            }
+                // Nebulosa 3 — índigo (esquina inferior)
+                const nebIx = nebCx - canvas.width * 0.18;
+                const nebIy = nebCy + canvas.height * 0.22;
+                const glow3 = ctx.createRadialGradient(nebIx, nebIy, 0, nebIx, nebIy, maxNebR * 0.36);
+                glow3.addColorStop(0, 'rgba(99,102,241,0.10)');
+                glow3.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = glow3;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const starLayers = richBg ? 3 : 2;
-            for (let layer = 0; layer < starLayers; layer++) {
-                const count = richBg ? (34 + layer * 16) : (22 + layer * 12);
-                const speed = 0.015 + layer * 0.011;
-                const driftX = (panX * (0.0009 + layer * 0.0006)) + (Math.sin(cosmicT * speed) * (8 + layer * 6));
-                const driftY = (panY * (0.0011 + layer * 0.0007)) + (Math.cos(cosmicT * speed * 1.2) * (6 + layer * 5));
-                for (let i = 0; i < count; i++) {
-                    const base = i + (layer * 97.31);
-                    const sx = ((((base * 127.1) % 1) * canvas.width) + driftX + canvas.width) % canvas.width;
-                    const sy = ((((base * 311.7) % 1) * canvas.height) + driftY + canvas.height) % canvas.height;
-                    const twinkle = 0.45 + (0.55 * Math.sin((cosmicT * (1.3 + layer * 0.4)) + (base * 0.13)));
-                    const alpha = (0.06 + layer * 0.06) * twinkle;
-                    const radius = 0.5 + layer * 0.35 + twinkle * 0.25;
-                    ctx.fillStyle = `rgba(226,232,240,${alpha.toFixed(3)})`;
+                if (richBg) {
+                    const nebPulseA = 0.5 + (0.5 * Math.sin(cosmicT * 1.7));
+                    const nebPulseB = 0.5 + (0.5 * Math.cos(cosmicT * 1.15));
+                    const driftX = Math.sin(cosmicT * 0.65) * canvas.width * 0.06;
+                    const driftY = Math.cos(cosmicT * 0.53) * canvas.height * 0.05;
+
+                    const auraA = ctx.createRadialGradient(
+                        nebCx - canvas.width * 0.2 + driftX,
+                        nebCy - canvas.height * 0.05 + driftY,
+                        0,
+                        nebCx - canvas.width * 0.2 + driftX,
+                        nebCy - canvas.height * 0.05 + driftY,
+                        maxNebR * 0.52
+                    );
+                    auraA.addColorStop(0, `rgba(34,211,238,${(0.07 + nebPulseA * 0.05).toFixed(3)})`);
+                    auraA.addColorStop(0.52, `rgba(14,116,144,${(0.03 + nebPulseA * 0.02).toFixed(3)})`);
+                    auraA.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = auraA;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    const auraB = ctx.createRadialGradient(
+                        nebCx + canvas.width * 0.27 - driftX * 0.6,
+                        nebCy + canvas.height * 0.16 - driftY * 0.5,
+                        0,
+                        nebCx + canvas.width * 0.27 - driftX * 0.6,
+                        nebCy + canvas.height * 0.16 - driftY * 0.5,
+                        maxNebR * 0.44
+                    );
+                    auraB.addColorStop(0, `rgba(217,70,239,${(0.06 + nebPulseB * 0.04).toFixed(3)})`);
+                    auraB.addColorStop(0.55, `rgba(79,70,229,${(0.02 + nebPulseB * 0.02).toFixed(3)})`);
+                    auraB.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = auraB;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+
+                // === GRID DE REFERENCIA SUTIL (profundidad científica) ===
+                const gridStep = Math.max(40, Math.round(canvas.width / 14));
+                ctx.strokeStyle = 'rgba(6,182,212,0.04)';
+                ctx.lineWidth = 0.5;
+                for (let gx = 0; gx < canvas.width; gx += gridStep) {
+                    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, canvas.height); ctx.stroke();
+                }
+                for (let gy = 0; gy < canvas.height; gy += gridStep) {
+                    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(canvas.width, gy); ctx.stroke();
+                }
+
+                // === ESTRELLAS con 3 tiers de brillo ===
+                for (let i = 0; i < 60; i++) {
+                    const sx = ((i * 137.508) % 1) * canvas.width;
+                    const sy = ((i * 73.331) % 1) * canvas.height;
+                    const tier = i % 6;
+                    const sr = tier === 0 ? 1.6 : tier === 1 ? 1.2 : 0.7;
+                    const salpha = tier === 0 ? 0.35 : tier === 1 ? 0.22 : 0.14;
+                    ctx.fillStyle = `rgba(255,255,255,${salpha})`;
                     ctx.beginPath();
-                    ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+                    ctx.arc(sx, sy, sr, 0, Math.PI * 2);
                     ctx.fill();
                 }
+
+                const starLayers = richBg ? 3 : 2;
+                for (let layer = 0; layer < starLayers; layer++) {
+                    const count = richBg ? (34 + layer * 16) : (22 + layer * 12);
+                    const speed = 0.015 + layer * 0.011;
+                    const driftX = (panX * (0.0009 + layer * 0.0006)) + (Math.sin(cosmicT * speed) * (8 + layer * 6));
+                    const driftY = (panY * (0.0011 + layer * 0.0007)) + (Math.cos(cosmicT * speed * 1.2) * (6 + layer * 5));
+                    for (let i = 0; i < count; i++) {
+                        const base = i + (layer * 97.31);
+                        const sx = ((((base * 127.1) % 1) * canvas.width) + driftX + canvas.width) % canvas.width;
+                        const sy = ((((base * 311.7) % 1) * canvas.height) + driftY + canvas.height) % canvas.height;
+                        const twinkle = 0.45 + (0.55 * Math.sin((cosmicT * (1.3 + layer * 0.4)) + (base * 0.13)));
+                        const alpha = (0.06 + layer * 0.06) * twinkle;
+                        const radius = 0.5 + layer * 0.35 + twinkle * 0.25;
+                        ctx.fillStyle = `rgba(226,232,240,${alpha.toFixed(3)})`;
+                        ctx.beginPath();
+                        ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                const vignette = ctx.createRadialGradient(
+                    canvas.width * 0.52,
+                    canvas.height * 0.48,
+                    Math.min(canvas.width, canvas.height) * 0.12,
+                    canvas.width * 0.52,
+                    canvas.height * 0.48,
+                    Math.max(canvas.width, canvas.height) * 0.68
+                );
+                vignette.addColorStop(0, 'rgba(2,6,23,0)');
+                vignette.addColorStop(1, 'rgba(2,6,23,0.45)');
+                ctx.fillStyle = vignette;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                drawCinematicDepthBackground(ctx, canvas, center, cameraRef.current, now, visualPerf);
             }
-
-            const vignette = ctx.createRadialGradient(
-                canvas.width * 0.52,
-                canvas.height * 0.48,
-                Math.min(canvas.width, canvas.height) * 0.12,
-                canvas.width * 0.52,
-                canvas.height * 0.48,
-                Math.max(canvas.width, canvas.height) * 0.68
-            );
-            vignette.addColorStop(0, 'rgba(2,6,23,0)');
-            vignette.addColorStop(1, 'rgba(2,6,23,0.45)');
-            ctx.fillStyle = vignette;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            drawCinematicDepthBackground(ctx, canvas, center, cameraRef.current, now, visualPerf);
 
             ctx.globalCompositeOperation = 'source-over';
 
-            // 4.1. Dibujar Conexiones (Entrelazamiento) - ordenadas por profundidad media
+            // 4.1. Dibujar Conexiones (Entrelazamiento) - ocultas si la red esta apagada en el suelo
             const edges = [];
-            const performanceFactor = clamp((stats.fps || 60) / 60, 0.35, 1);
-            const highFx = performanceFactor > 0.5;
-            const nowMs = (typeof performance !== 'undefined' && typeof performance.now === 'function')
-                ? performance.now()
-                : Date.now();
-            const pulseT = nowMs * 0.001;
-            const maxEdges = Math.max(140, Math.floor(focusedNodes.length * (4 + (3 * performanceFactor))));
+            const performanceFactor = clamp((stats.fps || 30) / 30, 0.35, 1);
+            const highFx = !fastLive2d && performanceFactor > 0.5;
+            const maxEdges = isDormant2d ? 0 : (fastLive2d ? 220 : Math.max(140, Math.floor(focusedNodes.length * (4 + (3 * performanceFactor)))));
             let edgeIndex = 0;
-            projectedNodes.forEach(pNode => {
-                const { node, x2d, y2d, scale } = pNode;
-                if (scale < 0.1 || !node.connections) return;
+            if (!isDormant2d) {
+                projectedNodes.forEach(pNode => {
+                    const { node, scale } = pNode;
+                    if (scale < 0.1 || !node.connections) return;
 
-                node.connections.forEach(conn => {
-                    if (edges.length >= maxEdges) return;
-                    const targetProj = projectedById.get(conn.targetId);
-                    if (!targetProj || targetProj.scale < 0.1) return;
+                    node.connections.forEach(conn => {
+                        if (edges.length >= maxEdges) return;
+                        const targetProj = projectedById.get(conn.targetId);
+                        if (!targetProj || targetProj.scale < 0.1) return;
 
-                    const opacity = Math.min(1, (conn.weight * 0.5 + node.coherenceState * 0.5) * scale);
-                    if (opacity < 0.05) return;
+                        const opacity = Math.min(1, (conn.weight * 0.5 + node.coherenceState * 0.5) * scale);
+                        if (opacity < 0.05) return;
 
-                    edges.push({
-                        __index: edgeIndex++,
-                        from: pNode,
-                        to: targetProj,
-                        weight: conn.weight,
-                        opacity,
-                        depth: (pNode.depth + targetProj.depth) * 0.5
+                        edges.push({
+                            __index: edgeIndex++,
+                            from: pNode,
+                            to: targetProj,
+                            weight: conn.weight,
+                            opacity,
+                            depth: (pNode.depth + targetProj.depth) * 0.5
+                        });
                     });
                 });
-            });
+            }
 
-            edges.sort((a, b) => {
-                const dz = b.depth - a.depth;
-                if (dz !== 0) return dz;
-                if (a.from.node.id !== b.from.node.id) return a.from.node.id - b.from.node.id;
-                if (a.to.node.id !== b.to.node.id) return a.to.node.id - b.to.node.id;
-                return a.__index - b.__index;
-            });
+            if (!fastLive2d) {
+                edges.sort((a, b) => {
+                    const dz = b.depth - a.depth;
+                    if (dz !== 0) return dz;
+                    if (a.from.node.id !== b.from.node.id) return a.from.node.id - b.from.node.id;
+                    if (a.to.node.id !== b.to.node.id) return a.to.node.id - b.to.node.id;
+                    return a.__index - b.__index;
+                });
+            }
 
             const bridgeActive2d = organicBridgeState ? Boolean(organicBridgeState.active) : true;
             const bridgeLesioned2d = Boolean(organicBridgeState && (organicBridgeState.tdCutActive || organicBridgeState.reducibleActive));
@@ -1552,8 +1589,25 @@ const NetworkCanvas = ({
                 const focusAlpha = edgeDim ? 0.15 : edgeInFocus ? 1.45 : 1;
                 const weightGain = 0.45 + (0.95 * clamp(Number(weight) || 0.35, 0, 1));
                 const bridgeGate = isBridgeEdge ? (bridgeActive2d ? 1.05 : 0.28) : 0.88;
-                const alpha = clamp(opacity * depthAlpha * performanceFactor * focusAlpha * weightGain * bridgeGate * 0.56, 0.03, isEntangled || edgeInFocus ? 0.82 : 0.46);
+                const alpha = clamp(opacity * depthAlpha * performanceFactor * focusAlpha * weightGain * bridgeGate * 0.52, 0.04, isEntangled || edgeInFocus ? 0.78 : 0.42);
                 const avgHue = (fromHue + toHue) * 0.5;
+
+                if (fastLive2d) {
+                    if (isBridgeEdge && bridgeLesioned2d) {
+                        ctx.strokeStyle = `hsla(348 82% 54% / ${(alpha * 0.85).toFixed(2)})`;
+                    } else if (isBridgeEdge && bridgeActive2d) {
+                        ctx.strokeStyle = `hsla(172 90% 66% / ${alpha.toFixed(2)})`;
+                    } else {
+                        ctx.strokeStyle = `hsla(${avgHue.toFixed(0)} 86% 62% / ${alpha.toFixed(2)})`;
+                    }
+                    ctx.lineWidth = (0.5 + weight * 0.9) * clamp(from.scale, 0.5, 1.2) * (edgeInFocus ? 1.5 : edgeDim ? 0.6 : 1);
+                    ctx.beginPath();
+                    ctx.moveTo(from.x2d, from.y2d);
+                    ctx.lineTo(to.x2d, to.y2d);
+                    ctx.stroke();
+                    return;
+                }
+
                 const grad = highFx ? ctx.createLinearGradient(from.x2d, from.y2d, to.x2d, to.y2d) : null;
 
                 if (isBridgeEdge && bridgeLesioned2d) {
@@ -1684,15 +1738,49 @@ const NetworkCanvas = ({
                 const sigPulse = clamp((Number(node.signalPulse) || 0) * 0.35, 0, 1);
                 const deg = Number(node.degree || (Array.isArray(node.connections) ? node.connections.length : 4));
                 const hubBoost = Math.min(2.0, Math.max(0, deg - 4) * 0.35);
-                const baseRadius = 2.0 + (inten * 2.6) + hubBoost + (sigPulse * 2.0);
+                const baseRadius = isDormant2d ? 2.4 : (2.0 + (inten * 2.4) + hubBoost + (sigPulse * 1.8));
                 const focusScale = nodeSelected ? 1.55 : nodeHovered ? 1.35 : nodeInFocus ? 1.15 : 1;
                 const radius = baseRadius * scale * focusScale;
                 const secId = resolveSectorId(node);
                 const hueVar = SECTOR_HUES[secId];
                 const coreLight = Math.min(84, 52 + (coh * 18) + (sigPulse * 18));
-                const coreColor = `hsl(${hueVar.toFixed(1)} 92% ${coreLight.toFixed(1)}%)`;
+                const coreColor = isDormant2d
+                    ? `hsl(${hueVar.toFixed(0)} 36% 30%)`
+                    : `hsl(${hueVar.toFixed(1)} 92% ${coreLight.toFixed(1)}%)`;
                 const dimFactor = nodeDim ? 0.34 : 1;
                 const opacity = clamp(Math.min(1, coh * 1.5 + 0.2) * scale * dimFactor, nodeDim ? 0.05 : 0.12, nodeSelected || nodeHovered ? 1 : 0.97);
+
+                if (fastLive2d) {
+                    // Ultra-fast minimalist Obsidian-style 2D node (zero gradients, zero shadowBlur -> 30 FPS)
+                    if (!isDormant2d && !nodeDim && (sigPulse > 0.25 || deg > 6 || nodeSelected || nodeHovered)) {
+                        ctx.fillStyle = `hsla(${hueVar.toFixed(0)} 95% 68% / ${(nodeSelected || nodeHovered ? 0.30 : 0.16).toFixed(2)})`;
+                        ctx.beginPath();
+                        ctx.arc(x2d, y2d, radius * 2.1, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    ctx.fillStyle = coreColor;
+                    ctx.globalAlpha = isDormant2d ? 0.55 : opacity;
+                    ctx.beginPath();
+                    ctx.arc(x2d, y2d, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    if (!isDormant2d && (sigPulse > 0.35 || coh > 0.80)) {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.globalAlpha = 0.72;
+                        ctx.beginPath();
+                        ctx.arc(x2d, y2d, radius * 0.42, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    ctx.globalAlpha = 1.0;
+                    if (nodeSelected || nodeHovered) {
+                        ctx.strokeStyle = nodeSelected ? 'rgba(255,245,157,0.92)' : 'rgba(103,232,249,0.78)';
+                        ctx.lineWidth = Math.max(1, 1.2 * scale);
+                        ctx.beginPath();
+                        ctx.arc(x2d, y2d, radius * (nodeSelected ? 1.85 : 1.6), 0, Math.PI * 2);
+                        ctx.stroke();
+                    }
+                    return;
+                }
+
                 const depthLift = clamp(scale, 0.25, 1.8);
                 const shadowAlpha = clamp(0.10 + depthLift * 0.07, 0.06, 0.20) * dimFactor;
                 ctx.save();

@@ -23,42 +23,71 @@ const QUALITY_PRESETS = Object.freeze({
     tier: 'webgl_desktop',
     maxNodes: 1500,
     maxEdges: 1800,
-    starCount: 280,
-    sphereSegments: 5,
-    enableBloom: true,
+    starCount: 240,
+    sphereSegments: 7,
+    enableBloom: false,
     bloomStrength: 0.16,
     bloomRadius: 0.26,
     bloomThreshold: 0.68,
-    maxPixelRatio: 1.0,
+    maxPixelRatio: 1.25,
+    antialias: true,
+    nodeScale: 1.15,
+    edgeAlphaBase: 0.22,
+    edgeAlphaBridge: 0.34,
+    signalPointScale: 1.35,
+    layoutIntervalMs: 145,
     targetFps: 30
   }),
   tablet: Object.freeze({
     tier: 'webgl_tablet',
-    maxNodes: 760,
-    maxEdges: 960,
-    starCount: 180,
-    sphereSegments: 5,
+    maxNodes: 640,
+    maxEdges: 820,
+    starCount: 140,
+    sphereSegments: 7,
     enableBloom: false,
     bloomStrength: 0,
     bloomRadius: 0,
     bloomThreshold: 1,
-    maxPixelRatio: 1.0,
+    maxPixelRatio: 1.35,
+    antialias: true,
+    nodeScale: 1.45,
+    edgeAlphaBase: 0.28,
+    edgeAlphaBridge: 0.42,
+    signalPointScale: 1.70,
+    layoutIntervalMs: 155,
     targetFps: 30
   }),
   mobile: Object.freeze({
     tier: 'webgl_mobile',
-    maxNodes: 420,
-    maxEdges: 520,
-    starCount: 100,
-    sphereSegments: 5,
+    maxNodes: 360,
+    maxEdges: 480,
+    starCount: 70,
+    sphereSegments: 8,
     enableBloom: false,
     bloomStrength: 0,
     bloomRadius: 0,
     bloomThreshold: 1,
-    maxPixelRatio: 1.0,
+    maxPixelRatio: 1.5,
+    antialias: true,
+    nodeScale: 1.55,
+    edgeAlphaBase: 0.34,
+    edgeAlphaBridge: 0.50,
+    signalPointScale: 2.15,
+    layoutIntervalMs: 165,
     targetFps: 30
   })
 });
+
+function computeResponsiveCameraPos(w, h, mode) {
+  const aspect = w / Math.max(1, h);
+  if (mode === 'mobile') {
+    return aspect < 1.0 ? [0, 3.0, 27.5] : [0, 2.5, 22.5];
+  }
+  if (mode === 'tablet') {
+    return aspect < 1.0 ? [0, 3.2, 26.5] : [0, 3.2, 25.0];
+  }
+  return [0, 4.0, 31.0];
+}
 
 const NEBULA_VERTEX_SHADER = `
   varying vec2 vUv;
@@ -131,27 +160,29 @@ const EDGE_FRAGMENT_SHADER = `
   varying float vDepth;
 
   void main() {
-    float depthFade = clamp(1.34 - (vDepth * 0.022), 0.22, 1.0);
-    float bridgeGate = mix(1.0, mix(0.20, 1.0, uBridgeActive), vIsBridge);
+    float depthFade = clamp(1.38 - (vDepth * 0.020), 0.28, 1.0);
+    float bridgeGate = mix(1.0, mix(0.22, 1.0, uBridgeActive), vIsBridge);
     // Real synaptic weight directly governs filament clarity: resonant highways shine cleanly
-    float weightGain = 0.42 + (0.95 * vWeight);
+    float weightGain = 0.55 + (1.05 * vWeight);
 
     float alpha = (uBaseAlpha * weightGain) * bridgeGate * depthFade;
-    vec3 finalCol = vColor * (0.72 + 0.36 * vWeight);
-    alpha = mix(alpha, 0.90, vHighlight);
-    finalCol = mix(finalCol, vec3(0.75, 0.99, 0.95), vHighlight * 0.58);
+    vec3 finalCol = vColor * (0.88 + 0.42 * vWeight);
+    alpha = mix(alpha, 0.94, vHighlight);
+    finalCol = mix(finalCol, vec3(0.78, 0.99, 0.95), vHighlight * 0.62);
 
-    gl_FragColor = vec4(finalCol, clamp(alpha, 0.04, 0.94));
+    gl_FragColor = vec4(finalCol, clamp(alpha, 0.06, 0.95));
   }
 `;
 
 const SIGNAL_VERTEX_SHADER = `
+  uniform float uPointScale;
   attribute vec3 color;
   varying vec3 vColor;
   void main() {
     vColor = color;
     vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = clamp(150.0 / max(1.0, -mvPos.z), 3.0, 10.5);
+    float rawSize = (185.0 * uPointScale) / max(1.0, -mvPos.z);
+    gl_PointSize = clamp(rawSize, 4.5 * uPointScale, 20.0 * uPointScale);
     gl_Position = projectionMatrix * mvPos;
   }
 `;
@@ -163,8 +194,10 @@ const SIGNAL_FRAGMENT_SHADER = `
     float r2 = dot(d, d);
     if (r2 > 0.25) discard;
     float g = max(0.0, 1.0 - (r2 * 4.0));
-    float glow = g * g;
-    gl_FragColor = vec4(vColor + vec3(0.24 * glow), clamp(glow * 1.15, 0.0, 0.96));
+    float halo = g * g;
+    float core = smoothstep(0.55, 0.95, g);
+    vec3 col = vColor * (0.85 + 0.45 * halo) + vec3(0.55 * core);
+    gl_FragColor = vec4(col, clamp(halo * 1.25 + core * 0.4, 0.0, 0.98));
   }
 `;
 
@@ -434,22 +467,25 @@ const NetworkScene3D = React.memo(({
       scene = new THREE.Scene();
       scene.fog = new THREE.FogExp2(0x030612, 0.007);
 
-      camera = new THREE.PerspectiveCamera(44, width / height, 0.25, 220);
-      camera.position.set(DEFAULT_CAMERA_POS[0], DEFAULT_CAMERA_POS[1], DEFAULT_CAMERA_POS[2]);
+      const initCam = computeResponsiveCameraPos(width, height, viewportMode);
+      camera = new THREE.PerspectiveCamera(viewportMode === 'mobile' ? 48 : 44, width / height, 0.25, 220);
+      camera.position.set(initCam[0], initCam[1], initCam[2]);
 
+      const effectiveDpr = Math.min(window.devicePixelRatio || 1, quality.maxPixelRatio);
       renderer = new THREE.WebGLRenderer({
-        antialias: false,
+        antialias: Boolean(quality.antialias),
         powerPreference: 'high-performance',
         alpha: false,
         stencil: false
       });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, quality.maxPixelRatio));
+      renderer.setPixelRatio(effectiveDpr);
       renderer.setSize(width, height);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.05;
+      renderer.toneMappingExposure = viewportMode === 'mobile' ? 1.16 : 1.08;
       renderer.domElement.style.display = 'block';
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
+      renderer.domElement.style.touchAction = 'none';
 
       container.innerHTML = '';
       container.appendChild(renderer.domElement);
@@ -644,7 +680,11 @@ const NetworkScene3D = React.memo(({
       signalGeom.setAttribute('position', signalPosAttr);
       signalGeom.setAttribute('color', signalColAttr);
       signalGeom.setDrawRange(0, 0);
+      const signalUniforms = {
+        uPointScale: { value: effectiveDpr * (quality.signalPointScale || 1.2) }
+      };
       const signalMaterial = new THREE.ShaderMaterial({
+        uniforms: signalUniforms,
         vertexShader: SIGNAL_VERTEX_SHADER,
         fragmentShader: SIGNAL_FRAGMENT_SHADER,
         transparent: true,
@@ -681,8 +721,11 @@ const NetworkScene3D = React.memo(({
           }
         },
         resetView: () => {
+          const curW = Math.max(240, container.clientWidth || width);
+          const curH = Math.max(240, container.clientHeight || height);
+          const posReset = computeResponsiveCameraPos(curW, curH, viewportMode);
           orbitControls.target.set(0, 0, 0);
-          camera.position.set(DEFAULT_CAMERA_POS[0], DEFAULT_CAMERA_POS[1], DEFAULT_CAMERA_POS[2]);
+          camera.position.set(posReset[0], posReset[1], posReset[2]);
           orbitControls.update();
         },
         focusCore: () => {
@@ -731,8 +774,8 @@ const NetworkScene3D = React.memo(({
       };
 
       const onPointerMove = (ev) => {
-        // Never raycast 1500 instances while actively dragging OrbitControls, and throttle hover picks to ~12 Hz
-        if (pointerDownPos) return;
+        // Skip hover raycasting on touch screens and while actively dragging OrbitControls
+        if (ev.pointerType === 'touch' || pointerDownPos) return;
         const tNow = performance.now();
         if ((tNow - lastRaycastMs) < 80) return;
         lastRaycastMs = tNow;
@@ -854,10 +897,10 @@ const NetworkScene3D = React.memo(({
           edgeMetaDirty = true;
         }
 
-        // 3. Recompute pure O(N+E) SO(3)-isotropic force-directed physics (fast 70ms during floor wake-up, light 145ms once settled; smoothly interpolated at 30 FPS!)
+        // 3. Recompute pure O(N+E) SO(3)-isotropic force-directed physics (fast 70ms during floor wake-up, adaptive light cadence once settled; interpolated at 30 FPS!)
         const isDormantFloor = !props.isRunning && (Number(props.tick) || 0) <= 0;
         const isPausedFrozen = !props.isRunning && (Number(props.tick) || 0) > 0;
-        const layoutIntervalMs = (workspace.physicsStep < 32 && !isDormantFloor) ? 70 : 145;
+        const layoutIntervalMs = (workspace.physicsStep < 32 && !isDormantFloor) ? 70 : (quality.layoutIntervalMs || 145);
         if (!hasSeededInitialState || (now - lastLayoutTime) >= layoutIntervalMs) {
           lastLayoutTime = now;
           computeCoupledNodeTargets(view, workspace, renderCount, coreState, {
@@ -905,7 +948,7 @@ const NetworkScene3D = React.memo(({
             currentColors[i3 + 2] += (workspace.targetColors[i3 + 2] - currentColors[i3 + 2]) * lerpAlpha;
           }
 
-          let rad = currentRadii[r];
+          let rad = currentRadii[r] * (quality.nodeScale || 1.0);
           if (isDormantFloor) {
             scratchColor.setRGB(currentColors[i3], currentColors[i3 + 1], currentColors[i3 + 2]);
           } else {
@@ -1029,6 +1072,33 @@ const NetworkScene3D = React.memo(({
           signalGeom.setDrawRange(0, 0);
         } else {
           spawnSignalPacketsFromView(signalPool, view, workspace, renderCount, coreState, curViewMode);
+          // On subsampled tiers (mobile/tablet), keep real firing-node traffic vivid across rendered synapses
+          const sigPulseBuf = view.buffers.signalPulse;
+          if (renderCount < view.nodeCount && signalPool.activeCount < 32 && latestEdgeStats.totalEdges > 0 && sigPulseBuf && curViewMode !== NODAL_3D_VIEW_MODES.CORE_ONLY) {
+            const edgeTotal = latestEdgeStats.totalEdges;
+            const stride = Math.max(1, Math.floor(edgeTotal / 32));
+            const phaseOffset = Math.abs(Number(props.tick) || 0) % stride;
+            let added = 0;
+            for (let eIdx = phaseOffset; eIdx < edgeTotal && added < 14; eIdx += stride) {
+              const rU = workspace.edgeSourceRenderIdx[eIdx];
+              const rV = workspace.edgeTargetRenderIdx[eIdx];
+              const mU = workspace.renderToModelIndex[rU];
+              const pulseU = sigPulseBuf[mU] || 0;
+              if (pulseU < 0.30) continue;
+              const isInterEdge = workspace.edgeIsBridge[eIdx] > 0 ? 1 : 0;
+              if (isInterEdge && !coreState.bridgeActive) continue;
+              const slot = signalPool.cursor % signalPool.capacity;
+              signalPool.cursor = (signalPool.cursor + 1) % signalPool.capacity;
+              signalPool.alive[slot] = 1;
+              signalPool.fromRender[slot] = rU;
+              signalPool.toRender[slot] = rV;
+              signalPool.progress[slot] = 0.02 + ((eIdx % 5) * 0.04);
+              signalPool.speed[slot] = 0.95 + (Math.min(1, pulseU * 0.5) * 0.85);
+              signalPool.strength[slot] = clamp01(pulseU * 0.72);
+              signalPool.isInter[slot] = isInterEdge;
+              added += 1;
+            }
+          }
           const visibleSignals = stepSignalPackets(signalPool, currentPositions, renderCount, dt, prefersReducedMotion);
           signalGeom.setDrawRange(0, visibleSignals);
           if (visibleSignals > 0) {
@@ -1047,7 +1117,9 @@ const NetworkScene3D = React.memo(({
 
         edgeUniforms.uTime.value = animTime;
         edgeUniforms.uBridgeActive.value = coreState.bridgeActive ? 1.0 : 0.0;
-        edgeUniforms.uBaseAlpha.value = curViewMode === NODAL_3D_VIEW_MODES.BRIDGE_ONLY ? 0.28 : 0.16;
+        edgeUniforms.uBaseAlpha.value = curViewMode === NODAL_3D_VIEW_MODES.BRIDGE_ONLY
+          ? (quality.edgeAlphaBridge || 0.28)
+          : (quality.edgeAlphaBase || 0.16);
 
         const jewelPulse = 1.0 + (0.12 * Math.sin((coreState.towerPhase || 0) + (animTime * 2.0)));
         coreGroup.scale.setScalar(jewelPulse * (curViewMode === NODAL_3D_VIEW_MODES.CORE_ONLY ? 1.85 : 1.0));
@@ -1202,7 +1274,6 @@ const NetworkScene3D = React.memo(({
         : 'relative h-full w-full min-h-[360px] select-none overflow-hidden rounded-xl border border-cyan-500/25 bg-[#030612]'}
       role="application"
       aria-label="Red nodal interactiva WebGL 3D acoplada a las torres constructivas"
-      style={!isExpanded && canvasScale !== 1 ? { transform: `scale(${canvasScale})` } : undefined}
     >
       <div ref={containerRef} data-testid="network-webgl-mount" className="h-full w-full" />
 
@@ -1229,9 +1300,13 @@ const NetworkScene3D = React.memo(({
           </div>
 
           <div className="pointer-events-auto inline-flex items-center overflow-hidden rounded-lg border border-slate-600/50 bg-slate-950/70 text-[11px] text-slate-200 backdrop-blur-md">
-            <button type="button" onClick={() => cameraApiRef.current.zoomBy?.(0.82)} title="Acercar" className="px-2 py-1 hover:bg-slate-800">+</button>
-            <button type="button" onClick={() => cameraApiRef.current.zoomBy?.(1.22)} title="Alejar" className="border-l border-slate-700/70 px-2 py-1 hover:bg-slate-800">−</button>
-            <button type="button" onClick={() => cameraApiRef.current.resetView?.()} title="Reiniciar camara" className="border-l border-slate-700/70 px-2 py-1 hover:bg-slate-800">Reset</button>
+            {!compactMode && (
+              <>
+                <button type="button" onClick={() => cameraApiRef.current.zoomBy?.(0.82)} title="Acercar" className="px-2 py-1 hover:bg-slate-800">+</button>
+                <button type="button" onClick={() => cameraApiRef.current.zoomBy?.(1.22)} title="Alejar" className="border-l border-slate-700/70 px-2 py-1 hover:bg-slate-800">−</button>
+              </>
+            )}
+            <button type="button" onClick={() => cameraApiRef.current.resetView?.()} title="Reiniciar camara" className={`${!compactMode ? 'border-l border-slate-700/70 ' : ''}px-2 py-1 hover:bg-slate-800`}>Reset</button>
           </div>
         </div>
 
@@ -1321,37 +1396,42 @@ const NetworkScene3D = React.memo(({
       {/* Ultra-Compact Bottom Floating Telemetry Strip (expandable on demand via Detalles) */}
       <div
         data-testid="network-3d-coupled-hud"
-        className="pointer-events-none absolute bottom-2.5 left-2.5 right-2.5 z-10 flex flex-wrap items-end justify-between gap-2"
+        className="pointer-events-none absolute bottom-2 left-2 right-2 z-10 flex flex-wrap items-end justify-between gap-1.5"
       >
-        <div className="pointer-events-auto rounded-xl border border-cyan-500/25 bg-slate-950/75 px-2.5 py-1.5 text-[11px] text-slate-200 shadow-xl backdrop-blur-md">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] font-semibold ${verdictColorClass}`}>
-              {verdictShort}
+        <div className={`pointer-events-auto rounded-xl border border-cyan-500/25 bg-slate-950/75 text-slate-200 shadow-xl backdrop-blur-md ${compactMode ? 'px-2 py-1 text-[10px]' : 'px-2.5 py-1.5 text-[11px]'}`}>
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] sm:text-[10px] font-semibold ${verdictColorClass}`}>
+              {compactMode ? (hudSummary.decisionTone === 'affirmative' ? 'PRESENCIA' : (hudSummary.decisionTone === 'negative' ? 'DESACOPLE' : 'RESERVA')) : verdictShort}
             </span>
             <span className="font-mono text-cyan-300">
-              {hudSummary.bridgeMode} (η={hudSummary.effectiveEta})
+              {compactMode ? `η=${hudSummary.effectiveEta}` : `${hudSummary.bridgeMode} (η=${hudSummary.effectiveEta})`}
             </span>
             <span className="font-mono text-slate-300">
-              Nodos: {hudSummary.renderCount}/{hudSummary.modelNodeCount}
+              {compactMode ? `${hudSummary.renderCount}N` : `Nodos: ${hudSummary.renderCount}/${hudSummary.modelNodeCount}`}
             </span>
-            <span className="font-mono text-teal-300">
-              Sinapsis: {hudSummary.intraEdges} + {hudSummary.bridgeEdges} puente
-            </span>
+            {!compactMode && (
+              <span className="font-mono text-teal-300">
+                Sinapsis: {hudSummary.intraEdges} + {hudSummary.bridgeEdges} puente
+              </span>
+            )}
             <span className="font-mono text-emerald-300">{hudSummary.fps} FPS</span>
             <button
               type="button"
               data-testid="3d-hud-details-toggle"
               aria-expanded={showHudDetails}
               onClick={() => setShowHudDetails((v) => !v)}
-              className="rounded border border-slate-600/70 bg-slate-900/80 px-1.5 py-0.5 font-mono text-[10px] text-slate-200 hover:bg-slate-800"
+              className="rounded border border-slate-600/70 bg-slate-900/80 px-1.5 py-0.5 font-mono text-[9px] sm:text-[10px] text-slate-200 hover:bg-slate-800"
             >
               {showHudDetails ? 'Ocultar ▾' : 'Detalles ▴'}
             </button>
           </div>
 
-          {showHudDetails && !compactMode && (
+          {showHudDetails && (
             <div className="mt-1.5 border-t border-slate-800/80 pt-1.5">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 font-mono text-[10px] text-slate-300">
+                {compactMode && (
+                  <span>Sinapsis: {hudSummary.intraEdges} + {hudSummary.bridgeEdges} puente</span>
+                )}
                 <span>CCC: {hudSummary.ccc.toFixed(4)}</span>
                 <span>Inter-sector: {hudSummary.interSectorRatio.toFixed(3)}</span>
                 <span>NF-Flux: {hudSummary.nonFactorizabilityFlux.toFixed(3)}</span>
@@ -1361,7 +1441,7 @@ const NetworkScene3D = React.memo(({
                 <span>Senales vivas: {hudSummary.activeSignals || 0}</span>
               </div>
               {hudSummary.sectors.length === 4 && (
-                <div className="mt-1.5 grid grid-cols-4 gap-1.5 font-mono text-[10px]">
+                <div className="mt-1.5 grid grid-cols-2 gap-1.5 font-mono text-[10px] sm:grid-cols-4">
                   {hudSummary.sectors.map((sec) => (
                     <div key={sec.key} className="rounded border border-slate-800 bg-slate-900/80 px-1.5 py-0.5">
                       <div className="flex items-center justify-between">

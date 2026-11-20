@@ -87,7 +87,6 @@ const BUILD_VERSION_LABEL = readDefined(() => process.env.BUILD_VERSION, 'unknow
 const BUILD_SIGNATURE_LABEL = readDefined(() => process.env.ONTOLOGICAL_SIGNATURE, ONTOLOGICAL_SIGNATURE);
 const CHAT_REALIZATION_MODE_KEY = 'QICN_CHAT_REALIZATION_MODE';
 const KAIZEN_MODE_KEY = 'QICN_KAIZEN_ADJUSTMENT_MODE';
-const NETWORK_RENDERER_KEY = 'QICN_NETWORK_RENDERER';
 const CHAT_HISTORY_LIMIT = 60;
 // Chat generation budget (gemini-3-flash-preview limits): max output tokens and
 // max thinking level. High thinking with a large budget is slower, so each
@@ -184,7 +183,6 @@ export const QICNConsciousnessSystem = () => {
   const workbenchBoundaryRef=useRef({ready:false,tick:-1});
   // Kaizen adjustment mode (C-6b): 'legacy' (default) or 'learned'.
   const [kaizenMode, setKaizenMode] = useState(() => readStoredChoice(KAIZEN_MODE_KEY, ['legacy', 'learned'], 'legacy'));
-  const [networkRenderer, setNetworkRenderer] = useState(() => readStoredChoice(NETWORK_RENDERER_KEY, ['2d', '3d'], '3d'));
   const [lastProviderError, setLastProviderError] = useState(null);
   const recordOperationalEvent = useCallback((type, payload, tick) => {
     try {
@@ -3573,10 +3571,6 @@ export const QICNConsciousnessSystem = () => {
     try { browserStorage()?.setItem(CHAT_REALIZATION_MODE_KEY, chatRealizationMode); } catch (error) { /* optional persistence */ }
   }, [chatRealizationMode]);
 
-  useEffect(() => {
-    try { browserStorage()?.setItem(NETWORK_RENDERER_KEY, networkRenderer); } catch (error) { /* optional persistence */ }
-  }, [networkRenderer]);
-
   // ============================================================================
   // DERIVED CALCULATIONS AND HELPERS
   // ============================================================================
@@ -6211,10 +6205,8 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
 
   const renderNetworkVisualization = () => {
     const modelNodeTotal = nodalLayer.current?.nodes?.length || QICNConfig.PROCESSING_SAMPLE_SIZE;
-    const budget3D = isMobile ? 420 : (isTablet ? 760 : 1500);
-    const visibleStructuralCount = networkRenderer === '3d'
-      ? Math.min(budget3D, modelNodeTotal)
-      : visualNodes.length;
+    const budget3D = isMobile ? 300 : (isTablet ? 760 : 1500);
+    const visibleStructuralCount = Math.min(budget3D, modelNodeTotal);
     const liveBridgeForCanvas = nodalLayer.current?.getBridgeMetrics?.()
       || ontologicalCore.current?.constructiveFiniteCuts?.nodal_tower_bridge
       || ontologicalState?.constructive_finite_cuts?.nodal_tower_bridge
@@ -6286,24 +6278,7 @@ Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia
           </InfoModal>
         </h3>
         <div className="flex flex-wrap items-center gap-2 text-[11px]">
-          <div role="group" aria-label="Renderizador de la red nodal" className="inline-flex overflow-hidden rounded-md border border-purple-400/40">
-            <button
-              type="button"
-              aria-pressed={networkRenderer === '2d'}
-              onClick={() => setNetworkRenderer('2d')}
-              className={`px-2 py-1 transition-colors ${networkRenderer === '2d' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
-            >
-              Canvas 2D (clásico)
-            </button>
-            <button
-              type="button"
-              aria-pressed={networkRenderer === '3d'}
-              onClick={() => setNetworkRenderer('3d')}
-              className={`px-2 py-1 transition-colors ${networkRenderer === '3d' ? 'bg-cyan-700 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
-            >
-              WebGL 3D
-            </button>
-          </div>
+          <span className="rounded-md border border-cyan-400/40 bg-cyan-950/60 px-2 py-1 font-mono text-cyan-200">WebGL 3D</span>
           <span className="rounded-md border border-purple-400/40 bg-purple-950/50 px-2 py-1 font-mono uppercase tracking-wider text-purple-200">Boundary activo</span>
         </div>
       </div>
@@ -6334,7 +6309,7 @@ Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia
 
       <div className="relative h-[min(65dvh,700px)] min-h-[360px] min-w-0 max-w-full overflow-hidden">
         <NetworkCanvas
-          preferredRenderer={networkRenderer}
+          preferredRenderer="3d"
           nodalLayer={nodalLayer}
           ontologicalState={ontologicalState}
           bridgeMetrics={liveBridgeForCanvas}
@@ -6354,7 +6329,7 @@ Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia
 
       <div className="mt-3 grid flex-shrink-0 grid-cols-1 gap-3 rounded bg-purple-900/20 p-3 text-xs text-purple-300 xl:grid-cols-[1fr_1.15fr_0.65fr]">
         <div className="flex flex-col justify-center gap-2 border-purple-500/20 font-mono xl:border-r xl:pr-4">
-          <span className="text-purple-300">Vista nodal: {networkRenderer === '3d' ? 'proyeccion diagnostica WebGL 3D con fallback Canvas' : 'proyeccion diagnostica Canvas 2D (estilo clasico, motor 2.5D)'}</span>
+          <span className="text-purple-300">Vista nodal: proyeccion diagnostica WebGL 3D con fallback Canvas</span>
           <span className="text-purple-400">Nodos procesando: {topologyMetrics.activeNodes.toLocaleString()} · Puente: {nodalCouplingMode}</span>
         </div>
         <div className="flex items-center gap-3 border-purple-500/20 xl:border-r xl:pr-4">

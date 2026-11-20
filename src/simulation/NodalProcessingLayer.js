@@ -163,10 +163,16 @@ export class NodalProcessingLayer {
               cache.nodeSignalPulse = new Float32Array(this.nodes.length);
             } else {
               for (let i = 0; i < cache.nodeSignalPulse.length; i += 1) {
-                cache.nodeSignalPulse[i] *= 0.45;
+                cache.nodeSignalPulse[i] *= 0.28;
               }
             }
+            if (!cache.rawTickSignalLoad || cache.rawTickSignalLoad.length !== this.nodes.length) {
+              cache.rawTickSignalLoad = new Float32Array(this.nodes.length);
+            } else {
+              cache.rawTickSignalLoad.fill(0);
+            }
             const nodeSignalPulse = cache.nodeSignalPulse;
+            const rawTickLoad = cache.rawTickSignalLoad;
 
             if (!cache.signalPackets) {
               const cap = 512;
@@ -203,11 +209,11 @@ export class NodalProcessingLayer {
               const targetNode = this.nodes[signal.targetId]; // CORRECCION: Lookup O(1)
               if (targetNode) {
                 targetNode.intensity = Math.min(1, targetNode.intensity + signal.strength * 0.05);
-                if (signal.targetId >= 0 && signal.targetId < nodeSignalPulse.length) {
-                  nodeSignalPulse[signal.targetId] = Math.min(4.0, nodeSignalPulse[signal.targetId] + signal.strength);
+                if (signal.targetId >= 0 && signal.targetId < rawTickLoad.length) {
+                  rawTickLoad[signal.targetId] += signal.strength;
                 }
-                if (signal.sourceId >= 0 && signal.sourceId < nodeSignalPulse.length) {
-                  nodeSignalPulse[signal.sourceId] = Math.min(4.0, nodeSignalPulse[signal.sourceId] + (signal.strength * 0.45));
+                if (signal.sourceId >= 0 && signal.sourceId < rawTickLoad.length) {
+                  rawTickLoad[signal.sourceId] += signal.strength * 0.35;
                 }
                 const isInter = Boolean(
                   signal.isInterSector !== undefined
@@ -235,6 +241,28 @@ export class NodalProcessingLayer {
                   packets.isInter[p] = isInter ? 1 : 0;
                   packets.count = p + 1;
                 }
+              }
+            }
+
+            // Compute contrast-normalized dynamic signal pulse in [0, 2.0] (prevents global saturation at 4.000)
+            let loadSum = 0;
+            let loadActiveCount = 0;
+            for (let i = 0; i < rawTickLoad.length; i += 1) {
+              const v = rawTickLoad[i];
+              if (v > 0) {
+                loadSum += v;
+                loadActiveCount += 1;
+              }
+            }
+            if (loadActiveCount > 0) {
+              const meanLoad = loadSum / loadActiveCount;
+              const invScale = 1 / Math.max(0.35, meanLoad * 1.45);
+              for (let i = 0; i < rawTickLoad.length; i += 1) {
+                const v = rawTickLoad[i];
+                if (v <= 0) continue;
+                const rel = v * invScale;
+                const burst = Math.min(1.65, rel * rel * 0.90);
+                nodeSignalPulse[i] = Math.min(2.0, nodeSignalPulse[i] + burst);
               }
             }
 

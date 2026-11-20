@@ -177,9 +177,43 @@ function runCouplingMode(mode, nodes = 120, ticks = 18) {
   );
   assert.equal(NODAL_3D_SECTORS.length, 4);
 
-  // 2b. Verify live real signal traffic telemetry & traveling signal packet pool
+  // 2b. Verify live real signal traffic telemetry, non-saturated signalPulse contrast, & dual-mode (classic vs fineMeshMode)
   assert(bidir.view.buffers.signalPulse instanceof Float32Array, '3D view must expose zero-GC signalPulse Float32Array');
   assert(bidir.view.signals && bidir.view.signals.count > 0, 'Live processSignals must populate real traveling signal packets');
+  let maxPulse = 0;
+  let minPulse = Infinity;
+  let sumRadClassic = 0;
+  for (let r = 0; r < bRes.rc; r += 1) {
+    const mIdx = bRes.ws.renderToModelIndex[r];
+    const pVal = bidir.view.buffers.signalPulse[mIdx];
+    if (pVal > maxPulse) maxPulse = pVal;
+    if (pVal < minPulse) minPulse = pVal;
+    sumRadClassic += bRes.ws.targetRadii[r];
+  }
+  const meanRadClassic = sumRadClassic / bRes.rc;
+  assert(maxPulse <= 2.01, `signalPulse must not saturate globally at 4.000 (maxPulse=${maxPulse.toFixed(3)})`);
+  assert((maxPulse - minPulse) > 0.15, `signalPulse must preserve genuine node-to-node dynamic contrast (${minPulse.toFixed(3)}..${maxPulse.toFixed(3)})`);
+
+  // Verify fineMeshMode toggle shrinks nodes to delicate hover-style jewels & preserves distinct 4-sector unbleached colors
+  const wsFine = createProjectionWorkspace(120, 600);
+  const rcFine = selectStratifiedRenderIndices(bidir.view, 120, wsFine);
+  computeCoupledNodeTargets(bidir.view, wsFine, rcFine, bRes.coreState, { nodes: bidir.layer.nodes, fineMeshMode: true });
+  let sumRadFine = 0;
+  const secRgbSum = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+  for (let r = 0; r < rcFine; r += 1) {
+    const mIdx = wsFine.renderToModelIndex[r];
+    sumRadFine += wsFine.targetRadii[r];
+    const sec = bidir.view.buffers.sectorId[mIdx] & 3;
+    secRgbSum[sec][0] += wsFine.targetColors[r * 3];
+    secRgbSum[sec][1] += wsFine.targetColors[(r * 3) + 1];
+    secRgbSum[sec][2] += wsFine.targetColors[(r * 3) + 2];
+    secRgbSum[sec][3] += 1;
+  }
+  const meanRadFine = sumRadFine / rcFine;
+  assert(meanRadFine < 0.095 && meanRadFine < meanRadClassic * 0.72, `fineMeshMode must render finer nodes than classic mode (fine=${meanRadFine.toFixed(4)} < classic=${meanRadClassic.toFixed(4)})`);
+  const s0R = secRgbSum[0][0] / Math.max(1, secRgbSum[0][3]);
+  const s1R = secRgbSum[1][0] / Math.max(1, secRgbSum[1][3]);
+  assert((s1R - s0R) > 0.35, `fineMeshMode must preserve distinct unbleached 4-sector colors (R diff=${(s1R - s0R).toFixed(3)})`);
   const pool = createSignalPacketPool(128);
   const spawned = spawnSignalPacketsFromView(pool, bidir.view, bRes.ws, bRes.rc, bRes.coreState, NODAL_3D_VIEW_MODES.COUPLED);
   assert(spawned > 0, 'SignalPacketPool must spawn traveling packets from live processSignals telemetry');
@@ -272,6 +306,7 @@ function runCouplingMode(mode, nodes = 120, ticks = 18) {
   assert(sceneText.includes('get3DTelemetryView'), 'NetworkScene3D must consume live zero-GC get3DTelemetryView');
   assert(sceneText.includes('buildRealSynapticEdgeSelection'), 'NetworkScene3D must render real synaptic connections');
   assert(sceneText.includes('spawnSignalPacketsFromView'), 'NetworkScene3D must render live traveling signal packets');
+  assert(sceneText.includes('3d-fine-mesh-toggle'), 'NetworkScene3D must expose live fine-mesh toggle gadget');
   assert(engineText.includes('bridgeMetrics={liveBridgeForCanvas}'), 'SimulationEngine must pass live bridge telemetry to NetworkCanvas');
   assert(engineText.includes('endogenousDecision={liveEndogenousForCanvas}'), 'SimulationEngine must pass live endogenous verdict to NetworkCanvas');
 }

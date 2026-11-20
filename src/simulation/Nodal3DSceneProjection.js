@@ -311,6 +311,7 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
   const nodes = Array.isArray(options.nodes) ? options.nodes : null;
   const dormantFloor = Boolean(options.dormantFloor);
   const pausedFrozen = Boolean(options.pausedFrozen);
+  const fineMeshMode = Boolean(options.fineMeshMode);
   const outPos = workspace.targetPositions;
   const outCol = workspace.targetColors;
   const outRad = workspace.targetRadii;
@@ -626,34 +627,53 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
     const energy = clamp01(buffers.energy[mIdx]);
     const intensity = clamp01(buffers.intensity[mIdx]);
     const interFlux = Math.max(0, Number(buffers.interFlux[mIdx]) || 0);
-    const sigPulse = signalPulseBuf ? clamp01((signalPulseBuf[mIdx] || 0) * 0.35) : 0;
+    const rawPulse = signalPulseBuf ? (signalPulseBuf[mIdx] || 0) : 0;
     const active = buffers.activeMask[mIdx] > 0;
-
-    // Obsidian-style hub & live query flare sizing:
-    // Real high-degree hubs & nodes actively receiving/firing signals shine noticeably brighter!
     const deg = workspace.nodeDegree[rIdx] || (nodes?.[mIdx]?.connections?.length || 4);
-    const hubBoost = Math.min(0.085, Math.max(0, deg - 4) * 0.014);
-    const trafficFlare = sigPulse * 0.055;
-    const baseRad = dormantFloor
-      ? 0.036
-      : (active ? (0.045 + intensity * 0.024 + coh * 0.020 + hubBoost + trafficFlare) : 0.028);
-    const modeScale = viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY ? 0.52 : 1.0;
-    outRad[rIdx] = baseRad * modeScale;
 
-    const baseRgb = secMeta.colorRgb;
+    let baseRad;
     let cr;
     let cg;
     let cb;
+    const baseRgb = secMeta.colorRgb;
+
     if (dormantFloor) {
-      // Dimmed embers resting quietly on the floor before the network is powered on
+      baseRad = fineMeshMode ? 0.026 : 0.036;
       cr = 0.10 + (baseRgb[0] * 0.14);
       cg = 0.12 + (baseRgb[1] * 0.14);
       cb = 0.20 + (baseRgb[2] * 0.16);
+    } else if (fineMeshMode) {
+      // Fine translucent hover-style mode: delicate pinpoint micro-jewels + true unbleached 4-sector colors
+      const sigFlare = clamp01((rawPulse - 0.50) * 0.78);
+      const hubBoost = Math.min(0.034, Math.max(0, deg - 5) * 0.0062);
+      const trafficFlare = sigFlare * 0.024;
+      baseRad = active ? (0.030 + (intensity * 0.012) + (coh * 0.011) + hubBoost + trafficFlare) : 0.020;
+
+      const lum = active ? (0.58 + (coh * 0.28) + (energy * 0.12)) : (0.20 + (coh * 0.14));
+      const lesionTint = coreState.tdCutActive ? 0.26 : (coreState.reducibleActive ? 0.18 : 0);
+      const flareMix = sigFlare * 0.26;
+      cr = (baseRgb[0] * lum * (1 - flareMix)) + (0.96 * flareMix) + (lesionTint * 0.42);
+      cg = (baseRgb[1] * lum * (1 - flareMix)) + (0.99 * flareMix) - (lesionTint * 0.14);
+      cb = (baseRgb[2] * lum * (1 - flareMix)) + (1.00 * flareMix) - (lesionTint * 0.10);
+
+      if (viewMode === NODAL_3D_VIEW_MODES.BRIDGE_ONLY && interFlux < 0.01 && coh < 0.78) {
+        cr *= 0.25;
+        cg *= 0.25;
+        cb *= 0.25;
+      } else if (viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY) {
+        cr *= 0.28;
+        cg *= 0.28;
+        cb *= 0.28;
+      }
     } else {
+      // Classic default mode (exact a909d97 look: full glowing spheres + dramatic hover reveal)
+      const sigPulse = clamp01(0.45 + (rawPulse * 0.45));
+      const hubBoost = Math.min(0.085, Math.max(0, deg - 4) * 0.014);
+      const trafficFlare = sigPulse * 0.055;
+      baseRad = active ? (0.045 + intensity * 0.024 + coh * 0.020 + hubBoost + trafficFlare) : 0.028;
+
       const lum = active ? (0.50 + coh * 0.36 + energy * 0.14) : (0.16 + coh * 0.14);
       const lesionTint = coreState.tdCutActive ? 0.28 : (coreState.reducibleActive ? 0.20 : 0);
-
-      // Active signal traffic illuminates node crisply toward bright white-gold/cyan like a queried memory node!
       cr = (baseRgb[0] * lum) + (sigPulse * 0.42) + (lesionTint * 0.44);
       cg = (baseRgb[1] * lum) + (sigPulse * 0.52) - (lesionTint * 0.14);
       cb = (baseRgb[2] * lum) + (sigPulse * 0.48) - (lesionTint * 0.10);
@@ -668,6 +688,9 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
         cb *= 0.24;
       }
     }
+
+    const modeScale = viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY ? (fineMeshMode ? 0.62 : 0.52) : 1.0;
+    outRad[rIdx] = baseRad * modeScale;
 
     outCol[p3] = clamp01(cr);
     outCol[p3 + 1] = clamp01(cg);

@@ -335,6 +335,7 @@ const NetworkScene3D = React.memo(({
   };
 
   const viewModeRef = useRef(NODAL_3D_VIEW_MODES.COUPLED);
+  const fineMeshModeRef = useRef(false);
   const selectedRenderIdxRef = useRef(-1);
   const hoveredRenderIdxRef = useRef(-1);
   const lastEdgeRebuildTickRef = useRef(-999);
@@ -344,6 +345,7 @@ const NetworkScene3D = React.memo(({
   const cameraApiRef = useRef({ zoomBy: null, resetView: null, focusCore: null });
 
   const [viewMode, setViewMode] = useState(NODAL_3D_VIEW_MODES.COUPLED);
+  const [fineMeshMode, setFineMeshMode] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showHudDetails, setShowHudDetails] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
@@ -381,6 +383,14 @@ const NetworkScene3D = React.memo(({
     viewModeRef.current = nextMode;
     lastEdgeViewModeRef.current = '';
     setViewMode(nextMode);
+  }, []);
+
+  const handleToggleFineMesh = useCallback(() => {
+    setFineMeshMode((prev) => {
+      const next = !prev;
+      fineMeshModeRef.current = next;
+      return next;
+    });
   }, []);
 
   const clearSelection = useCallback(() => {
@@ -805,6 +815,7 @@ const NetworkScene3D = React.memo(({
       let fpsWindowStart = clockStart;
       let smoothedFps = 30;
       let edgeMetaDirty = true;
+      let appliedFineMesh = false;
 
       const animate = (now) => {
         if (disposed) return;
@@ -880,6 +891,26 @@ const NetworkScene3D = React.memo(({
         // 3. Recompute pure O(N+E) SO(3)-isotropic force-directed physics (fast 70ms during floor wake-up, light 145ms once settled; smoothly interpolated at 30 FPS!)
         const isDormantFloor = !props.isRunning && (Number(props.tick) || 0) <= 0;
         const isPausedFrozen = !props.isRunning && (Number(props.tick) || 0) > 0;
+        const isFineMesh = Boolean(fineMeshModeRef.current);
+        if (appliedFineMesh !== isFineMesh) {
+          appliedFineMesh = isFineMesh;
+          if (isFineMesh) {
+            nodeMaterial.emissive.setHex(0x050b18);
+            nodeMaterial.emissiveIntensity = 0.34;
+            nodeMaterial.shininess = 42;
+            nodeMaterial.specular.setHex(0x3b4d6b);
+            directionalLight.intensity = 1.08;
+            ambientLight.intensity = 0.92;
+          } else {
+            nodeMaterial.emissive.setHex(0x0a162c);
+            nodeMaterial.emissiveIntensity = 0.48;
+            nodeMaterial.shininess = 92;
+            nodeMaterial.specular.setHex(0xa5f3fc);
+            directionalLight.intensity = 1.38;
+            ambientLight.intensity = 0.84;
+          }
+          lastLayoutTime = -999;
+        }
         const layoutIntervalMs = (workspace.physicsStep < 32 && !isDormantFloor) ? 70 : (quality.layoutIntervalMs || 145);
         if (!hasSeededInitialState || (now - lastLayoutTime) >= layoutIntervalMs) {
           lastLayoutTime = now;
@@ -889,7 +920,8 @@ const NetworkScene3D = React.memo(({
             nodes: modelNodes,
             activeEdgeCount: latestEdgeStats.totalEdges,
             dormantFloor: isDormantFloor,
-            pausedFrozen: isPausedFrozen
+            pausedFrozen: isPausedFrozen,
+            fineMeshMode: isFineMesh
           });
         }
 
@@ -929,20 +961,20 @@ const NetworkScene3D = React.memo(({
           }
 
           let rad = currentRadii[r] * (quality.nodeScale || 1.0);
-          if (isDormantFloor) {
+          if (isDormantFloor || isFineMesh) {
             scratchColor.setRGB(currentColors[i3], currentColors[i3 + 1], currentColors[i3 + 2]);
           } else {
             computeNodeAccentColor(scratchColor, mIdx, secId, coh, energy, interFlux, coreState.bridgeActive, currentColors, i3);
           }
           if (hasFocus) {
             if (r === focusIdx) {
-              rad *= 2.25;
-              scratchColor.lerp(colorWhite, 0.65);
+              rad *= isFineMesh ? 1.95 : 2.25;
+              scratchColor.lerp(colorWhite, isFineMesh ? 0.52 : 0.65);
             } else if (neighbors.has(r)) {
-              rad *= 1.48;
+              rad *= isFineMesh ? 1.38 : 1.48;
             } else {
-              rad *= 0.56;
-              scratchColor.multiplyScalar(0.20);
+              rad *= isFineMesh ? 0.62 : 0.56;
+              scratchColor.multiplyScalar(isFineMesh ? 0.22 : 0.20);
             }
           }
 
@@ -1096,9 +1128,10 @@ const NetworkScene3D = React.memo(({
 
         edgeUniforms.uTime.value = animTime;
         edgeUniforms.uBridgeActive.value = coreState.bridgeActive ? 1.0 : 0.0;
+        const fineBaseBoost = isFineMesh ? 0.09 : 0.0;
         edgeUniforms.uBaseAlpha.value = curViewMode === NODAL_3D_VIEW_MODES.BRIDGE_ONLY
-          ? (quality.edgeAlphaBridge || 0.28)
-          : (quality.edgeAlphaBase || 0.16);
+          ? ((quality.edgeAlphaBridge || 0.28) + fineBaseBoost)
+          : ((quality.edgeAlphaBase || 0.16) + fineBaseBoost);
 
         const jewelPulse = 1.0 + (0.12 * Math.sin((coreState.towerPhase || 0) + (animTime * 2.0)));
         coreGroup.scale.setScalar(jewelPulse * (curViewMode === NODAL_3D_VIEW_MODES.CORE_ONLY ? 1.85 : 1.0));
@@ -1288,6 +1321,17 @@ const NetworkScene3D = React.memo(({
             )}
             <button type="button" onClick={() => cameraApiRef.current.resetView?.()} title="Reiniciar camara" className={`${!compactMode ? 'border-l border-slate-700/70 ' : ''}px-2 py-1 hover:bg-slate-800`}>Reset</button>
           </div>
+
+          <button
+            type="button"
+            data-testid="3d-fine-mesh-toggle"
+            aria-pressed={fineMeshMode}
+            onClick={handleToggleFineMesh}
+            title={fineMeshMode ? 'Volver a vista estandar de nodos' : 'Activar malla fina traslucida (estilo hover)'}
+            className={`pointer-events-auto rounded-lg border px-2 py-1 text-[11px] font-medium backdrop-blur-md transition-colors ${fineMeshMode ? 'border-violet-400/70 bg-violet-600/85 text-white' : 'border-slate-600/50 bg-slate-950/70 text-slate-200 hover:bg-slate-800/80'}`}
+          >
+            {fineMeshMode ? '✦ Fino' : 'Fino'}
+          </button>
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5">

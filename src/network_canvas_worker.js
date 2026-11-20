@@ -68,16 +68,32 @@ const getSemanticState = (coh) => {
 const getCoherenceStyle = (coh) => getSemanticState(coh);
 const getNodeHueVariant = (h) => h;
 
+const SECTOR_HUES = [164, 322, 194, 262];
+const SECTOR_LABELS = ['Cuerpo v+', 'Cuerpo v-', 'Mundo w_rap', 'Mundo w_lento'];
+const SECTOR_ACCENTS = ['#24ebb8', '#f05cb8', '#2eccfa', '#9966fa'];
+
+const resolveSectorId = (node) => {
+  if (Number.isInteger(node?.sectorId)) return ((node.sectorId % 4) + 4) % 4;
+  return (((Number(node?.id) || 0) % 4) + 4) % 4;
+};
+
 const buildNodeSummary = (node) => {
   if (!node) return null;
   const coherence = clamp(Number(node.coherenceState) || 0, 0, 1);
   const intensity = clamp(Number(node.intensity) || 0, 0, 1);
-  const degree = Array.isArray(node.connections) ? node.connections.length : 0;
+  const degree = Number.isFinite(Number(node.degree))
+    ? Number(node.degree)
+    : (Array.isArray(node.connections) ? node.connections.length : 0);
+  const sectorId = resolveSectorId(node);
   return {
     id: node.id,
     coherence,
     intensity,
     degree,
+    sectorId,
+    sectorLabel: SECTOR_LABELS[sectorId],
+    sectorAccent: SECTOR_ACCENTS[sectorId],
+    signalPulse: Number(node.signalPulse || 0),
     stateName: getSemanticState(coherence).name
   };
 };
@@ -465,7 +481,7 @@ const clearCanvas = (nowMs = 0, visualPerf = 1) => {
 };
 
 
-const drawFrame = ({ nodes, edges, rotation, camera: frameCamera, interaction = {}, deterministic, seed, tick }) => {
+const drawFrame = ({ nodes, edges, rotation, camera: frameCamera, interaction = {}, bridgeState = null, signalBursts = null, deterministic, seed, tick }) => {
   if (!ctx || !canvas) return;
   if (deterministic && tick === lastFrameTick) return;
   lastFrameTick = tick;
@@ -604,61 +620,66 @@ const drawFrame = ({ nodes, edges, rotation, camera: frameCamera, interaction = 
     return a.__index - b.__index;
   });
 
+  const bridgeActive = bridgeState ? Boolean(bridgeState.active) : true;
+  const bridgeLesioned = Boolean(bridgeState && (bridgeState.tdCutActive || bridgeState.reducibleActive));
+
   for (let i = 0; i < edgeDraw.length; i++) {
     const { from, to, weight, opacity } = edgeDraw[i];
     const edgeInFocus = hasFocus && neighborhoodIds.has(from.node.id) && neighborhoodIds.has(to.node.id);
     const edgeDim = hasFocus && !edgeInFocus;
-    const fromC = clamp((Number(from.node.coherenceState) || 0) * 1.4, 0, 1);
-    const toC = clamp((Number(to.node.coherenceState) || 0) * 1.4, 0, 1);
-    const fromHue = getNodeHueVariant(10 + (fromC * 190), from.node.id, from.scale);
-    const toHue = getNodeHueVariant(10 + (toC * 190), to.node.id, to.scale);
-    const isEntangled = weight > 0.88;
-    const depthAlpha = clamp((from.scale + to.scale) * 0.45, 0.15, 1);
-    const focusAlpha = edgeDim ? 0.18 : edgeInFocus ? 1.35 : 1;
-    const alpha = clamp(opacity * depthAlpha * performanceFactor * focusAlpha, 0.025, isEntangled || edgeInFocus ? 0.78 : 0.40);
+    const fromSec = resolveSectorId(from.node);
+    const toSec = resolveSectorId(to.node);
+    const isBridgeEdge = fromSec !== toSec;
+    const fromHue = getNodeHueVariant(SECTOR_HUES[fromSec], from.node.id, from.scale);
+    const toHue = getNodeHueVariant(SECTOR_HUES[toSec], to.node.id, to.scale);
+    const isEntangled = weight > 0.84;
+    const depthAlpha = clamp((from.scale + to.scale) * 0.45, 0.14, 1);
+    const focusAlpha = edgeDim ? 0.15 : edgeInFocus ? 1.45 : 1;
+    const weightGain = 0.45 + (0.95 * clamp(Number(weight) || 0.35, 0, 1));
+    const bridgeGate = isBridgeEdge ? (bridgeActive ? 1.05 : 0.28) : 0.88;
+    const alpha = clamp(opacity * depthAlpha * performanceFactor * focusAlpha * weightGain * bridgeGate * 0.56, 0.03, isEntangled || edgeInFocus ? 0.82 : 0.46);
     const avgHue = (fromHue + toHue) * 0.5;
     const grad = highFx ? ctx.createLinearGradient(from.x2d, from.y2d, to.x2d, to.y2d) : null;
-    if (isEntangled) {
+    if (isBridgeEdge && bridgeLesioned) {
+      ctx.strokeStyle = `hsla(348 82% 54% / ${(alpha * 0.85).toFixed(3)})`;
+      ctx.shadowBlur = 0;
+      ctx.lineWidth = (0.55 + weight * 0.85) * clamp(from.scale, 0.45, 1.25) * (edgeInFocus ? 1.35 : edgeDim ? 0.65 : 1);
+    } else if (isEntangled || (isBridgeEdge && bridgeActive && weight > 0.62)) {
       if (grad) {
-        grad.addColorStop(0, `hsla(48 100% 72% / ${alpha.toFixed(3)})`);
-        grad.addColorStop(0.5, `hsla(56 100% 80% / ${Math.min(1, alpha * 1.3).toFixed(3)})`);
-        grad.addColorStop(1, `hsla(48 100% 72% / ${alpha.toFixed(3)})`);
+        grad.addColorStop(0, `hsla(${fromHue.toFixed(1)} 92% 66% / ${alpha.toFixed(3)})`);
+        grad.addColorStop(0.5, `hsla(${isBridgeEdge ? 172 : avgHue.toFixed(1)} 96% 74% / ${Math.min(0.92, alpha * 1.28).toFixed(3)})`);
+        grad.addColorStop(1, `hsla(${toHue.toFixed(1)} 92% 66% / ${alpha.toFixed(3)})`);
         ctx.strokeStyle = grad;
       } else {
-        ctx.strokeStyle = `hsla(48 100% 72% / ${alpha.toFixed(3)})`;
-      }
-      if (highFx) {
-        ctx.shadowBlur = 5 * clamp(from.scale, 0.5, 1.2);
-        ctx.shadowColor = 'rgba(255,200,0,0.6)';
-      } else {
-        ctx.shadowBlur = 0;
-      }
-      ctx.lineWidth = (1.8 + weight * 2.2) * clamp(from.scale, 0.4, 1.5) * (edgeInFocus ? 1.22 : edgeDim ? 0.72 : 1);
-    } else {
-      if (grad) {
-        grad.addColorStop(0, `hsla(${fromHue.toFixed(1)} 90% 60% / ${alpha.toFixed(3)})`);
-        grad.addColorStop(1, `hsla(${toHue.toFixed(1)} 90% 60% / ${alpha.toFixed(3)})`);
-        ctx.strokeStyle = grad;
-      } else {
-        ctx.strokeStyle = `hsla(${avgHue.toFixed(1)} 90% 60% / ${alpha.toFixed(3)})`;
+        ctx.strokeStyle = `hsla(${isBridgeEdge ? 172 : avgHue.toFixed(1)} 92% 68% / ${alpha.toFixed(3)})`;
       }
       ctx.shadowBlur = 0;
-      ctx.lineWidth = (0.8 + weight * 1.2) * clamp(from.scale, 0.45, 1.3) * (edgeInFocus ? 1.35 : edgeDim ? 0.68 : 1);
+      ctx.lineWidth = (0.85 + weight * 1.35) * clamp(from.scale, 0.42, 1.35) * (edgeInFocus ? 1.35 : edgeDim ? 0.65 : 1);
+    } else {
+      if (grad) {
+        grad.addColorStop(0, `hsla(${fromHue.toFixed(1)} 88% 60% / ${alpha.toFixed(3)})`);
+        grad.addColorStop(1, `hsla(${toHue.toFixed(1)} 88% 60% / ${alpha.toFixed(3)})`);
+        ctx.strokeStyle = grad;
+      } else {
+        ctx.strokeStyle = `hsla(${avgHue.toFixed(1)} 88% 60% / ${alpha.toFixed(3)})`;
+      }
+      ctx.shadowBlur = 0;
+      ctx.lineWidth = (0.55 + weight * 0.95) * clamp(from.scale, 0.45, 1.25) * (edgeInFocus ? 1.35 : edgeDim ? 0.65 : 1);
     }
     const midX = (from.x2d + to.x2d) * 0.5;
     const midY = (from.y2d + to.y2d) * 0.5;
     const dx = to.x2d - from.x2d;
     const dy = to.y2d - from.y2d;
-    const curve = clamp((weight - 0.48) * 18, -5, 12) * clamp((from.scale + to.scale) * 0.5, 0.45, 1.3);
-    const controlX = midX - dy * 0.018 * curve;
-    const controlY = midY + dx * 0.018 * curve;
-    if (edgeInFocus || isEntangled) {
+    const curve = clamp((weight - 0.48) * 14, -4, 9) * clamp((from.scale + to.scale) * 0.5, 0.45, 1.2);
+    const controlX = midX - dy * 0.015 * curve;
+    const controlY = midY + dx * 0.015 * curve;
+    if (edgeInFocus) {
       ctx.save();
       ctx.globalCompositeOperation = 'screen';
       ctx.strokeStyle = isEntangled
-        ? `rgba(253,224,71,${(alpha * 0.26).toFixed(3)})`
-        : `rgba(103,232,249,${(alpha * 0.22).toFixed(3)})`;
-      ctx.lineWidth *= 2.6;
+        ? `rgba(94,234,212,${(alpha * 0.35).toFixed(3)})`
+        : `rgba(103,232,249,${(alpha * 0.28).toFixed(3)})`;
+      ctx.lineWidth *= 2.2;
       ctx.beginPath();
       ctx.moveTo(from.x2d, from.y2d);
       ctx.quadraticCurveTo(controlX, controlY, to.x2d, to.y2d);
@@ -670,6 +691,33 @@ const drawFrame = ({ nodes, edges, rotation, camera: frameCamera, interaction = 
     ctx.quadraticCurveTo(controlX, controlY, to.x2d, to.y2d);
     ctx.stroke();
     ctx.shadowBlur = 0;
+  }
+
+  // Subtle Central Constructive Core Diamond & orbital hairline matching 3D view
+  const coreProj = projectWithTrig(center.x, center.y, 0, sinX, cosX, sinY, cosY, perspective, center, projectionLimits);
+  if (coreProj && coreProj.scale >= 0.1) {
+    const cx = ((coreProj.x2d - center.x) * zoom) + center.x + panX;
+    const cy = ((coreProj.y2d - center.y) * zoom) + center.y + panY;
+    const cs = coreProj.scale * clamp(zoom, 0.6, 1.8);
+    const dTone = bridgeState?.decisionTone || 'affirmative';
+    const diamondColor = dTone === 'negative' ? '#f43f5e' : (dTone === 'reserve' ? '#f59e0b' : '#24ebb8');
+    const rDiam = clamp(6.5 * cs, 3.5, 12);
+    ctx.save();
+    ctx.strokeStyle = dTone === 'negative' ? 'rgba(244,63,94,0.28)' : 'rgba(56,189,248,0.22)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rDiam * 3.8, rDiam * 1.9, 0.32, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = diamondColor;
+    ctx.globalAlpha = 0.85;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - rDiam);
+    ctx.lineTo(cx + rDiam * 0.85, cy);
+    ctx.lineTo(cx, cy + rDiam);
+    ctx.lineTo(cx - rDiam * 0.85, cy);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
   }
 
   ctx.shadowBlur = 0;
@@ -715,14 +763,15 @@ const drawFrame = ({ nodes, edges, rotation, camera: frameCamera, interaction = 
     const coh = clamp(Number(node.coherenceState) || 0, 0, 1);
     const cohBoost = clamp(coh * 1.4, 0, 1);
     const inten = clamp(Number(node.intensity) || 0, 0, 1);
-    const baseRadius = 4 + inten * 10;
-    const pulseAmp = 0.02 + coh * 0.04;
-    const pulseMod = 1 + pulseAmp * Math.sin(pulseT * 0.5 + (node.phase || 0));
-    const focusScale = nodeSelected ? 1.22 : nodeHovered ? 1.14 : nodeInFocus ? 1.06 : 1;
-    const radius = baseRadius * scale * pulseMod * focusScale;
-    const style = getCoherenceStyle(cohBoost);
-    const hueVar = getNodeHueVariant(style.hue, node.id, scale);
-    const coreLight = 48 + (cohBoost * 18);
+    const sigPulse = clamp((Number(node.signalPulse) || 0) * 0.35, 0, 1);
+    const deg = Number(node.degree || 4);
+    const hubBoost = Math.min(2.0, Math.max(0, deg - 4) * 0.35);
+    const baseRadius = 2.0 + (inten * 2.6) + hubBoost + (sigPulse * 2.0);
+    const focusScale = nodeSelected ? 1.55 : nodeHovered ? 1.35 : nodeInFocus ? 1.15 : 1;
+    const radius = baseRadius * scale * focusScale;
+    const secId = resolveSectorId(node);
+    const hueVar = getNodeHueVariant(SECTOR_HUES[secId], node.id, scale);
+    const coreLight = Math.min(84, 52 + (coh * 18) + (sigPulse * 18));
     const coreColor = `hsl(${hueVar.toFixed(1)} 92% ${coreLight.toFixed(1)}%)`;
     const dimFactor = nodeDim ? 0.34 : 1;
     const opacity = clamp(Math.min(1, coh * 1.5) * scale * dimFactor, nodeDim ? 0.05 : 0.10, nodeSelected || nodeHovered ? 1 : 0.97);
@@ -871,47 +920,76 @@ const drawFrame = ({ nodes, edges, rotation, camera: frameCamera, interaction = 
     }
   }
 
-  if (nodes.length > 0) {
-    const nodesKey = deterministic ? computeNodesKeyUnordered(nodes) : computeNodesKeyOrdered(nodes);
-    if (particles.length === 0 || (deterministic && particlesKey !== nodesKey)) {
-      particles = createParticles(nodes, seed, deterministic);
-      particlesKey = nodesKey;
-    }
-  }
-
-  ctx.globalCompositeOperation = 'source-over';
-  for (let i = 0; i < particles.length; i++) {
-    const p = particles[i];
-    const pNode = projectedById.get(p.nodeId);
-    if (!pNode || pNode.scale < 0.1) continue;
-    const angle = deterministic ? computeOrbitalAngle(p.baseAngle, p.speed, tick) : (p.angle += p.speed);
-    const ox = Math.cos(angle) * p.radius;
-    const oy = Math.sin(angle) * p.radius;
-    const px = pNode.x2d + ox * pNode.scale;
-    const py = pNode.y2d + oy * pNode.scale;
-    const pr = p.size * pNode.scale;
-
-    if (highFx) {
-      const glowAlpha = clamp((0.25 * pNode.scale) * performanceFactor, 0.05, 0.30);
-      const hslaColor = p.color.replace('hsl(', 'hsla(').replace(')', ` / ${glowAlpha.toFixed(3)})`);
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      const pGrad = ctx.createRadialGradient(px, py, 0, px, py, pr * 2.5);
-      pGrad.addColorStop(0, hslaColor);
-      pGrad.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = pGrad;
+  // Real traveling signal bursts emitted by processSignals() (matches 3D signal traffic)
+  if (Array.isArray(signalBursts) && signalBursts.length > 0 && !deterministic) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    for (let i = 0; i < signalBursts.length; i += 1) {
+      const sb = signalBursts[i];
+      const fromP = projectedById.get(sb.fromId);
+      const toP = projectedById.get(sb.toId);
+      if (!fromP || !toP || fromP.scale < 0.1 || toP.scale < 0.1) continue;
+      const t = clamp(Number(sb.t) || 0, 0, 1);
+      const px = fromP.x2d + ((toP.x2d - fromP.x2d) * t);
+      const py = fromP.y2d + ((toP.y2d - fromP.y2d) * t);
+      const sc = (fromP.scale + toP.scale) * 0.5;
+      const pr = clamp((2.0 + (sb.strength || 0.5) * 1.8) * sc, 1.4, 4.6);
+      const env = Math.sin(t * Math.PI);
+      ctx.fillStyle = sb.isInter
+        ? `rgba(110, 255, 200, ${(0.45 + 0.50 * env).toFixed(3)})`
+        : `rgba(145, 235, 255, ${(0.40 + 0.48 * env).toFixed(3)})`;
       ctx.beginPath();
-      ctx.arc(px, py, pr * 2.5, 0, Math.PI * 2);
+      ctx.arc(px, py, pr * 1.9, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(px, py, pr * 0.72, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  } else {
+    if (nodes.length > 0) {
+      const nodesKey = deterministic ? computeNodesKeyUnordered(nodes) : computeNodesKeyOrdered(nodes);
+      if (particles.length === 0 || (deterministic && particlesKey !== nodesKey)) {
+        particles = createParticles(nodes, seed, deterministic);
+        particlesKey = nodesKey;
+      }
     }
 
-    ctx.fillStyle = p.color;
-    ctx.globalAlpha = clamp((0.12 + (0.28 * pNode.scale)) * performanceFactor, 0.08, 0.35);
-    ctx.beginPath();
-    ctx.arc(px, py, pr, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalAlpha = 1.0;
+    ctx.globalCompositeOperation = 'source-over';
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const pNode = projectedById.get(p.nodeId);
+      if (!pNode || pNode.scale < 0.1) continue;
+      const angle = deterministic ? computeOrbitalAngle(p.baseAngle, p.speed, tick) : (p.angle += p.speed);
+      const ox = Math.cos(angle) * p.radius;
+      const oy = Math.sin(angle) * p.radius;
+      const px = pNode.x2d + ox * pNode.scale;
+      const py = pNode.y2d + oy * pNode.scale;
+      const pr = p.size * pNode.scale;
+
+      if (highFx) {
+        const glowAlpha = clamp((0.25 * pNode.scale) * performanceFactor, 0.05, 0.30);
+        const hslaColor = p.color.replace('hsl(', 'hsla(').replace(')', ` / ${glowAlpha.toFixed(3)})`);
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        const pGrad = ctx.createRadialGradient(px, py, 0, px, py, pr * 2.5);
+        pGrad.addColorStop(0, hslaColor);
+        pGrad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = pGrad;
+        ctx.beginPath();
+        ctx.arc(px, py, pr * 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = clamp((0.12 + (0.28 * pNode.scale)) * performanceFactor, 0.08, 0.35);
+      ctx.beginPath();
+      ctx.arc(px, py, pr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1.0;
+    }
   }
 
   ctx.globalCompositeOperation = 'source-over';

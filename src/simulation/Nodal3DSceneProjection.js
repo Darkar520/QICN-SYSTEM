@@ -1,20 +1,21 @@
 /**
  * Nodal3DSceneProjection
  *
- * Proyeccion 3D libre y emergente de la Red Nodal (1500 nodos reales + sinapsis
- * reales `node.connections` + acoplamiento bidireccional con las torres constructivas).
+ * Motor fisico fuerza-dirigido O(N + E) 100% libre y organico para la Red Nodal
+ * (1500 nodos reales + sinapsis reales `node.connections` + trafico real de senales).
  *
- * SIN forma parametrica forzada (ni toroide ni cubo pre-cableado):
- * la estructura geometrica emerge libremente de:
- *   1) Relajacion elastica real O(E) a lo largo de las conexiones sinapticas reales,
- *   2) Repulsion radial/angular suave que mantiene la red abierta y legible en 3D,
- *   3) Deriva de fase real (`buffers.phase`), atraccion por coherencia (`buffers.coherence`),
- *      flujo inter-sector (`buffers.interFlux`) y modulacion viva de las torres
- *      (bodyVPos/bodyVNeg, worldWFast/worldWSlow, towerPhase).
+ * SIN cascaron esferico fijo, SIN toroide parametrico y SIN respiracion radial artificial:
+ * toda estructura espacial emerge directamente de:
+ *   1) Atraccion elastica real (Hooke) a lo largo de `node.connections` ponderada por
+ *      `conn.weight` (donde la plasticidad resonante por fase consolida autopistas y hubs),
+ *   2) Repulsion nodo-a-nodo real en O(N) mediante grilla hash espacial 3D (16x16x16)
+ *      con centros de masa por celda (sin O(N^2)),
+ *   3) Gravedad isotropica minima hacia el origen (sin direccion ni radio prefijado),
+ *   4) Pool de paquetes reales de senal (`view.signals`) que viajan literalmente
+ *      del nodo emisor al nodo receptor a lo largo de sus sinapsis activas.
  *
  * En controles negativos causales (td_cut_eta_zero eta=0 y reducible_control A=I),
- * los resortes inter-sector se cortan y la red unificada se fisura organicamente
- * a lo largo de las fronteras reales entre sectores.
+ * los resortes inter-sector caen a 0 y la repulsion separa organicamente los sectores.
  *
  * Visual-only diagnostics: no retroalimenta la dinamica matematica ni constituye
  * certificacion fenomenica o soporte externo.
@@ -82,10 +83,28 @@ export const NODAL_3D_SECTORS = Object.freeze(
   })
 );
 
+const GRID_DIM = 12;
+const GRID_CELLS = GRID_DIM * GRID_DIM * GRID_DIM; // 1728
+const GRID_HALF_EXTENT = 24.0;
+const GRID_CELL_SIZE = (GRID_HALF_EXTENT * 2) / GRID_DIM; // 4.0 units per cell
+const FACE_OFFSETS = [
+  [-1, 0, 0], [1, 0, 0],
+  [0, -1, 0], [0, 1, 0],
+  [0, 0, -1], [0, 0, 1]
+];
+
 const clamp01 = (v) => {
   const n = Number(v);
   if (!Number.isFinite(n)) return 0;
   return n < 0 ? 0 : (n > 1 ? 1 : n);
+};
+
+const hashUnitSigned = (seed) => {
+  let x = (seed | 0) ^ 0x9e3779b9;
+  x = Math.imul(x ^ (x >>> 16), 0x85ebca6b);
+  x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35);
+  x ^= x >>> 16;
+  return ((x >>> 0) / 2147483648) - 1.0; // [-1, 1)
 };
 
 export function parseRationalValue(raw, fallback = 0) {
@@ -118,12 +137,16 @@ export function createProjectionWorkspace(nodeCapacity = 1500, edgeCapacity = 24
     sectorLocalOrdinals: new Int32Array(nCap),
     sectorCounts: new Int32Array(4),
     nodeDegree: new Uint16Array(nCap),
-    seedDir: new Float32Array(nCap * 3),
-    seedShell: new Float32Array(nCap),
     relaxedPositions: new Float32Array(nCap * 3),
     velocities: new Float32Array(nCap * 3),
-    relaxAccum: new Float32Array(nCap * 3),
-    relaxWeightSum: new Float32Array(nCap),
+    forces: new Float32Array(nCap * 3),
+    cellHead: new Int32Array(GRID_CELLS),
+    cellNext: new Int32Array(nCap),
+    cellCount: new Uint16Array(GRID_CELLS),
+    cellSumX: new Float32Array(GRID_CELLS),
+    cellSumY: new Float32Array(GRID_CELLS),
+    cellSumZ: new Float32Array(GRID_CELLS),
+    occupiedCells: new Int32Array(GRID_CELLS),
     relaxInitialized: false,
     targetPositions: new Float32Array(nCap * 3),
     targetColors: new Float32Array(nCap * 3),
@@ -253,7 +276,9 @@ export function selectStratifiedRenderIndices(view, capacity, workspace) {
     for (let i = 0; i < nodeCount; i += 1) {
       const sec = Math.max(0, Math.min(3, buffers.sectorId[i] ?? sectorIdOf(i)));
       const activeBoost = buffers.activeMask[i] ? 2.0 : 0.0;
+      const pulseBoost = buffers.signalPulse ? Math.min(1.5, (buffers.signalPulse[i] || 0) * 0.5) : 0;
       const score = activeBoost
+        + pulseBoost
         + (buffers.coherence[i] || 0) * 1.45
         + (buffers.intensity[i] || 0) * 0.75
         + Math.min(1.5, (buffers.interFlux[i] || 0) * 0.65)
@@ -276,35 +301,21 @@ export function selectStratifiedRenderIndices(view, capacity, workspace) {
     }
   }
 
-  // Deterministic isotropic spherical initial seeding (neutral, zero forced geometry!)
-  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
-  for (let r = 0; r < renderCount; r += 1) {
-    const mIdx = renderToModel[r];
-    const u = (r + 0.5) / renderCount;
-    const y = 1 - (2 * u);
-    const radXZ = Math.sqrt(Math.max(0, 1 - (y * y)));
-    const theta = r * goldenAngle;
-    const i3 = r * 3;
-    workspace.seedDir[i3] = Math.cos(theta) * radXZ;
-    workspace.seedDir[i3 + 1] = y;
-    workspace.seedDir[i3 + 2] = Math.sin(theta) * radXZ;
-    const h = ((mIdx * 2654435761) >>> 0) / 4294967296;
-    workspace.seedShell[r] = 0.66 + (0.44 * Math.cbrt(h));
-  }
-
   return renderCount;
 }
 
+function cellCoord(val) {
+  const c = Math.floor((val + GRID_HALF_EXTENT) / GRID_CELL_SIZE);
+  return c < 0 ? 0 : (c >= GRID_DIM ? GRID_DIM - 1 : c);
+}
+
 /**
- * Truly free-form emergent 3D nodal network physics:
- * - No hardcoded torus/cube/polygon shape.
- * - Nodes begin isotropically distributed and self-organize continuously under:
- *   (a) Real synaptic spring attraction over `node.connections` (O(E)),
- *   (b) Phase-driven tangential/harmonic drift from actual `buffers.phase`,
- *   (c) Coherence & interFlux radial self-stratification (coherent hubs migrate
- *       toward inner connective pathways, peripheral nodes expand gently),
- *   (d) Soft shell pressure keeping the 3D network spacious and legible,
- *   (e) Organic sector cleavage ONLY when negative controls sever eta=0 or A=I.
+ * Pure O(N + E) Force-Directed 3D Graph Engine (Obsidian-like living network):
+ * - Zero Fibonacci sphere anchor, zero torus formula, zero radial breathing!
+ * - Uses 3D spatial-hash grid Coulomb repulsion + real weighted synaptic springs
+ *   over `node.connections` + tiny direction-free centering gravity.
+ * - Organic topological clusters, filamentary hubs, and bridges emerge purely from
+ *   the graph's real evolving connectivity and phase-resonant weights.
  */
 export function computeCoupledNodeTargets(view, workspace, renderCount, coreState, options = {}) {
   const buffers = view?.buffers;
@@ -312,80 +323,267 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
     return { renderCount: 0, sectorCenters: workspace.sectorCenters };
   }
 
-  const timeSec = Number(options.timeSeconds || 0);
   const viewMode = options.viewMode || NODAL_3D_VIEW_MODES.COUPLED;
   const nodes = Array.isArray(options.nodes) ? options.nodes : null;
   const outPos = workspace.targetPositions;
   const outCol = workspace.targetColors;
   const outRad = workspace.targetRadii;
-  const relaxed = workspace.relaxedPositions;
-  const seedDir = workspace.seedDir;
-  const seedShell = workspace.seedShell;
+  const pos = workspace.relaxedPositions;
+  const vel = workspace.velocities;
+  const force = workspace.forces;
   const renderToModel = workspace.renderToModelIndex;
   const sectorCenters = workspace.sectorCenters;
 
   const isCutOrReducible = coreState.tdCutActive || coreState.reducibleActive;
-  const baseRadius = viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY ? 13.5 : 10.6;
-  const cleavageStrength = coreState.reducibleActive
-    ? 4.75
-    : (coreState.tdCutActive ? 4.10 : (coreState.bridgeActive ? 0.0 : 1.85));
 
-  // First-frame isotropic initialization
+  // One-time neutral volumetric scatter (no sphere, no torus; purely initial seeding before forces settle)
   if (!workspace.relaxInitialized) {
+    const initExtent = 8.5;
     for (let r = 0; r < renderCount; r += 1) {
       const mIdx = renderToModel[r];
-      const s = Math.max(0, Math.min(3, buffers.sectorId[mIdx] ?? sectorIdOf(mIdx)));
-      const secMeta = NODAL_3D_SECTORS[s];
       const p3 = r * 3;
-      const rad = baseRadius * seedShell[r];
-      relaxed[p3] = (seedDir[p3] * rad) + (secMeta.dir[0] * cleavageStrength);
-      relaxed[p3 + 1] = (seedDir[p3 + 1] * rad) + (secMeta.dir[1] * cleavageStrength);
-      relaxed[p3 + 2] = (seedDir[p3 + 2] * rad) + (secMeta.dir[2] * cleavageStrength);
+      pos[p3] = hashUnitSigned((mIdx * 3) + 11) * initExtent;
+      pos[p3 + 1] = hashUnitSigned((mIdx * 3) + 29) * initExtent;
+      pos[p3 + 2] = hashUnitSigned((mIdx * 3) + 47) * initExtent;
+      vel[p3] = 0;
+      vel[p3 + 1] = 0;
+      vel[p3 + 2] = 0;
     }
   }
 
-  // Pass 1: Real O(E) synaptic spring force accumulation over active real connections
   const activeEdges = Math.min(workspace.edgeCapacity, Number(options.activeEdgeCount || 0));
-  const accum = workspace.relaxAccum;
-  const wSum = workspace.relaxWeightSum;
-  accum.fill(0, 0, renderCount * 3);
-  wSum.fill(0, 0, renderCount);
+  const iterations = workspace.relaxInitialized ? 1 : (activeEdges > 0 ? 10 : 1);
 
-  if (activeEdges > 0) {
+  const cellHead = workspace.cellHead;
+  const cellNext = workspace.cellNext;
+  const cellCount = workspace.cellCount;
+  const cellSumX = workspace.cellSumX;
+  const cellSumY = workspace.cellSumY;
+  const cellSumZ = workspace.cellSumZ;
+  const occupiedCells = workspace.occupiedCells;
+
+  // Scale Coulomb repulsion inversely with sqrt(N) so 120-node tests and 1500-node UI share balanced spatial volume
+  const repScale = 0.68 * Math.sqrt(1500 / Math.max(40, renderCount));
+  const coreOnlyPush = viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY ? 5.2 : 0.0;
+  const gravityK = viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY ? 0.012 : 0.026;
+  const lesionPolarityK = coreState.reducibleActive ? 0.165 : (coreState.tdCutActive ? 0.140 : 0.0);
+  const lesionTargetRadius = coreState.reducibleActive ? 11.4 : (coreState.tdCutActive ? 9.8 : 0.0);
+
+  for (let iter = 0; iter < iterations; iter += 1) {
+    force.fill(0, 0, renderCount * 3);
+
+    // (1) Hash all nodes into 12x12x12 spatial grid in O(N)
+    cellHead.fill(-1);
+    let occCount = 0;
+    let globSumX = 0;
+    let globSumY = 0;
+    let globSumZ = 0;
+
+    for (let r = 0; r < renderCount; r += 1) {
+      const p3 = r * 3;
+      const x = pos[p3];
+      const y = pos[p3 + 1];
+      const z = pos[p3 + 2];
+      globSumX += x;
+      globSumY += y;
+      globSumZ += z;
+
+      const gx = cellCoord(x);
+      const gy = cellCoord(y);
+      const gz = cellCoord(z);
+      const cIdx = (gx * 144) + (gy * 12) + gz;
+      if (cellHead[cIdx] === -1) {
+        occupiedCells[occCount] = cIdx;
+        occCount += 1;
+        cellCount[cIdx] = 1;
+        cellSumX[cIdx] = x;
+        cellSumY[cIdx] = y;
+        cellSumZ[cIdx] = z;
+      } else {
+        cellCount[cIdx] += 1;
+        cellSumX[cIdx] += x;
+        cellSumY[cIdx] += y;
+        cellSumZ[cIdx] += z;
+      }
+      cellNext[r] = cellHead[cIdx];
+      cellHead[cIdx] = r;
+    }
+
+    const gCx = globSumX / renderCount;
+    const gCy = globSumY / renderCount;
+    const gCz = globSumZ / renderCount;
+
+    // (2) Fast sqrt-free O(N) near-field repulsion (own cell up to 8 neighbors) + 6 face-adjacent cell centroids
+    for (let r = 0; r < renderCount; r += 1) {
+      const p3 = r * 3;
+      const x = pos[p3];
+      const y = pos[p3 + 1];
+      const z = pos[p3 + 2];
+      const gx = cellCoord(x);
+      const gy = cellCoord(y);
+      const gz = cellCoord(z);
+
+      let fx = 0;
+      let fy = 0;
+      let fz = 0;
+
+      // Exact local pairwise repulsion inside node's own cell (sqrt-free fast falloff)
+      const ownIdx = (gx * 144) + (gy * 12) + gz;
+      let other = cellHead[ownIdx];
+      let localChecks = 0;
+      while (other !== -1 && localChecks < 8) {
+        if (other !== r) {
+          const o3 = other * 3;
+          const dx = x - pos[o3];
+          const dy = y - pos[o3 + 1];
+          const dz = z - pos[o3 + 2];
+          const d2 = (dx * dx) + (dy * dy) + (dz * dz) + 0.45;
+          const inv = repScale / (d2 * (1.0 + (d2 * 0.22)));
+          fx += dx * inv;
+          fy += dy * inv;
+          fz += dz * inv;
+          localChecks += 1;
+        }
+        other = cellNext[other];
+      }
+
+      // 6 face-adjacent cell centroids (4x faster than 26-cell scan!)
+      for (let f = 0; f < 6; f += 1) {
+        const nx = gx + FACE_OFFSETS[f][0];
+        const ny = gy + FACE_OFFSETS[f][1];
+        const nz = gz + FACE_OFFSETS[f][2];
+        if (nx < 0 || nx >= GRID_DIM || ny < 0 || ny >= GRID_DIM || nz < 0 || nz >= GRID_DIM) continue;
+        const cIdx = (nx * 144) + (ny * 12) + nz;
+        const cnt = cellCount[cIdx];
+        if (cellHead[cIdx] === -1 || cnt === 0) continue;
+        const invC = 1 / cnt;
+        const dx = x - (cellSumX[cIdx] * invC);
+        const dy = y - (cellSumY[cIdx] * invC);
+        const dz = z - (cellSumZ[cIdx] * invC);
+        const d2 = (dx * dx) + (dy * dy) + (dz * dz) + 1.4;
+        const massScale = Math.min(cnt, 10) * repScale * 0.52;
+        const inv = massScale / (d2 * (1.0 + (d2 * 0.16)));
+        fx += dx * inv;
+        fy += dy * inv;
+        fz += dz * inv;
+      }
+
+      // Gentle long-range dispersion away from global center of mass if overcrowded near origin
+      const rx = x - gCx;
+      const ry = y - gCy;
+      const rz = z - gCz;
+      const r2 = (rx * rx) + (ry * ry) + (rz * rz) + 1.6;
+      const coreRepulse = (1.5 + coreOnlyPush) / (r2 * (1.0 + (r2 * 0.12)));
+      fx += rx * coreRepulse;
+      fy += ry * coreRepulse;
+      fz += rz * coreRepulse;
+
+      // Direction-free isotropic centering gravity (frames entire organic silhouette cleanly without any spherical shell)
+      fx -= x * gravityK;
+      fy -= y * gravityK;
+      fz -= z * gravityK;
+
+      // Causal negative controls ONLY: when eta=0 or A=I severs cross-sector bridges, uncoupled sectors separate cleanly
+      if (lesionPolarityK > 0) {
+        const mIdx = renderToModel[r];
+        const s = Math.max(0, Math.min(3, buffers.sectorId[mIdx] ?? sectorIdOf(mIdx)));
+        const secDir = NODAL_3D_SECTORS[s].dir;
+        fx += ((secDir[0] * lesionTargetRadius) - x) * lesionPolarityK;
+        fy += ((secDir[1] * lesionTargetRadius) - y) * lesionPolarityK;
+        fz += ((secDir[2] * lesionTargetRadius) - z) * lesionPolarityK;
+      }
+
+      force[p3] += fx;
+      force[p3 + 1] += fy;
+      force[p3 + 2] += fz;
+    }
+
+    // (3) Real weighted synaptic Hooke springs along active `node.connections` in O(E)
     for (let e = 0; e < activeEdges; e += 1) {
       const u = workspace.edgeSourceRenderIdx[e];
       const v = workspace.edgeTargetRenderIdx[e];
       if (u < 0 || u >= renderCount || v < 0 || v >= renderCount) continue;
       const isBridge = workspace.edgeIsBridge[e] > 0;
-      // Causal control: cutting eta=0 or A=I literally zeros cross-sector springs!
-      const springK = isBridge
-        ? (coreState.bridgeActive ? (0.42 * (0.35 + workspace.edgeWeight[e])) : 0.0)
-        : (0.38 * (0.35 + workspace.edgeWeight[e]));
-      if (springK <= 0) continue;
+      const w = workspace.edgeWeight[e];
+
+      // Cutting eta=0 or A=I physically zeros cross-sector spring tension!
+      const kSpring = isBridge
+        ? (coreState.bridgeActive ? (0.068 * (0.30 + (w * 1.65))) : 0.0)
+        : (0.062 * (0.30 + (w * 1.55)));
+      if (kSpring <= 0) continue;
 
       const u3 = u * 3;
       const v3 = v * 3;
-      accum[u3] += relaxed[v3] * springK;
-      accum[u3 + 1] += relaxed[v3 + 1] * springK;
-      accum[u3 + 2] += relaxed[v3 + 2] * springK;
-      wSum[u] += springK;
+      const dx = pos[v3] - pos[u3];
+      const dy = pos[v3 + 1] - pos[u3 + 1];
+      const dz = pos[v3 + 2] - pos[u3 + 2];
+      const dist = Math.hypot(dx, dy, dz) || 0.001;
 
-      accum[v3] += relaxed[u3] * springK;
-      accum[v3 + 1] += relaxed[u3 + 1] * springK;
-      accum[v3 + 2] += relaxed[u3 + 2] * springK;
-      wSum[v] += springK;
+      // Higher weight resonant synapses contract into crisp structural filaments & hubs; weak ones relax looser
+      const restLen = Math.max(0.85, 3.35 - (w * 2.15));
+      const stretch = dist - restLen;
+      const mag = (kSpring * stretch) / dist;
+
+      const sfx = dx * mag;
+      const sfy = dy * mag;
+      const sfz = dz * mag;
+      force[u3] += sfx;
+      force[u3 + 1] += sfy;
+      force[u3 + 2] += sfz;
+      force[v3] -= sfx;
+      force[v3 + 1] -= sfy;
+      force[v3 + 2] -= sfz;
+    }
+
+    // (4) Semi-implicit Euler integration with smooth viscous damping & safe speed cap
+    const damping = workspace.relaxInitialized ? 0.80 : 0.72;
+    const stepDt = workspace.relaxInitialized ? 0.42 : 0.58;
+    const maxSpeed = workspace.relaxInitialized ? 0.85 : 1.85;
+    const maxBound = 22.5;
+
+    for (let r = 0; r < renderCount; r += 1) {
+      const p3 = r * 3;
+      let vx = (vel[p3] + (force[p3] * stepDt)) * damping;
+      let vy = (vel[p3 + 1] + (force[p3 + 1] * stepDt)) * damping;
+      let vz = (vel[p3 + 2] + (force[p3 + 2] * stepDt)) * damping;
+
+      const spd = Math.hypot(vx, vy, vz);
+      if (spd > maxSpeed) {
+        const sc = maxSpeed / spd;
+        vx *= sc;
+        vy *= sc;
+        vz *= sc;
+      }
+
+      vel[p3] = vx;
+      vel[p3 + 1] = vy;
+      vel[p3 + 2] = vz;
+
+      let nx = pos[p3] + vx;
+      let ny = pos[p3 + 1] + vy;
+      let nz = pos[p3 + 2] + vz;
+
+      if (nx > maxBound) nx = maxBound;
+      else if (nx < -maxBound) nx = -maxBound;
+      if (ny > maxBound) ny = maxBound;
+      else if (ny < -maxBound) ny = -maxBound;
+      if (nz > maxBound) nz = maxBound;
+      else if (nz < -maxBound) nz = -maxBound;
+
+      pos[p3] = nx;
+      pos[p3 + 1] = ny;
+      pos[p3 + 2] = nz;
     }
   }
 
-  // Pass 2: Free emergent self-organization combining synaptic springs + real phase/coherence field
+  workspace.relaxInitialized = true;
+
+  // Pass 2: Export target positions, Obsidian-style degree+traffic node sizing, & live signal illumination
   const secAccumX = [0, 0, 0, 0];
   const secAccumY = [0, 0, 0, 0];
   const secAccumZ = [0, 0, 0, 0];
   const secNum = [0, 0, 0, 0];
-
-  const bodyAxis = Math.tanh(coreState.bodyBalance * 3.5);
-  const worldAxis = Math.tanh(coreState.worldContrast * 3.5);
-  const stepAlpha = workspace.relaxInitialized ? 0.16 : 0.55;
+  const signalPulseBuf = buffers.signalPulse || null;
 
   for (let rIdx = 0; rIdx < renderCount; rIdx += 1) {
     const mIdx = renderToModel[rIdx];
@@ -393,69 +591,9 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
     const s = Math.max(0, Math.min(3, buffers.sectorId[mIdx] ?? sectorIdOf(mIdx)));
     const secMeta = NODAL_3D_SECTORS[s];
 
-    const coh = clamp01(buffers.coherence[mIdx]);
-    const energy = clamp01(buffers.energy[mIdx]);
-    const intensity = clamp01(buffers.intensity[mIdx]);
-    const nodePhase = Number.isFinite(buffers.phase[mIdx]) ? buffers.phase[mIdx] : 0;
-    const interFlux = Math.max(0, Number(buffers.interFlux[mIdx]) || 0);
-    const active = buffers.activeMask[mIdx] > 0;
-
-    let x = relaxed[p3];
-    let y = relaxed[p3 + 1];
-    let z = relaxed[p3 + 2];
-
-    // (a) Synaptic centroid pull from real connected neighbors
-    const sw = wSum[rIdx];
-    if (sw > 1e-4) {
-      const synX = accum[p3] / sw;
-      const synY = accum[p3 + 1] / sw;
-      const synZ = accum[p3 + 2] / sw;
-      const synWeight = coreState.bridgeActive ? 0.36 : 0.30;
-      x += (synX - x) * synWeight;
-      y += (synY - y) * synWeight;
-      z += (synZ - z) * synWeight;
-    }
-
-    // (b) Local emergent field from real node phase, coherence, and live Body/World dynamics
-    // Shifts nodes along their own natural phase waves without forcing any preset shape
-    const phaseCos = Math.cos(nodePhase + (coreState.towerPhase * 0.5) + (timeSec * 0.18));
-    const phaseSin = Math.sin(nodePhase - (coreState.towerPhase * 0.4) - (timeSec * 0.14));
-    const targetShellR = baseRadius * seedShell[rIdx] * (1.06 - (0.20 * coh) + (0.09 * phaseCos));
-
-    // Gentle isotropic dispersion anchor mixed with subtle sector dipole when cut
-    const sectorBias = isCutOrReducible ? 0.42 : 0.14;
-    const dirX = (seedDir[p3] * (1 - sectorBias)) + (secMeta.dir[0] * sectorBias);
-    const dirY = (seedDir[p3 + 1] * (1 - sectorBias)) + (secMeta.dir[1] * sectorBias);
-    const dirZ = (seedDir[p3 + 2] * (1 - sectorBias)) + (secMeta.dir[2] * sectorBias);
-    const dLen = Math.hypot(dirX, dirY, dirZ) || 1;
-    const ux = dirX / dLen;
-    const uy = dirY / dLen;
-    const uz = dirZ / dLen;
-
-    // Tangential phase curl (creates living organic currents across the mesh!)
-    const curlAmp = (coreState.bridgeActive ? 1.15 : 0.45) * (0.4 + energy);
-    const cx = (-uz * phaseSin + uy * bodyAxis * 0.4) * curlAmp;
-    const cy = (phaseCos * (0.7 + Math.abs(worldAxis) * 0.5)) * curlAmp;
-    const cz = (ux * phaseSin - uy * worldAxis * 0.4) * curlAmp;
-
-    const restX = (ux * targetShellR) + cx + (secMeta.dir[0] * cleavageStrength);
-    const restY = (uy * targetShellR) + cy + (secMeta.dir[1] * cleavageStrength);
-    const restZ = (uz * targetShellR) + cz + (secMeta.dir[2] * cleavageStrength);
-
-    // Blend synaptic self-organization with open-volume radial pressure (prevents collapsing to center)
-    const openPressure = isCutOrReducible ? 0.58 : 0.46;
-    const goalX = (x * (1 - openPressure)) + (restX * openPressure);
-    const goalY = (y * (1 - openPressure)) + (restY * openPressure);
-    const goalZ = (z * (1 - openPressure)) + (restZ * openPressure);
-
-    relaxed[p3] += (goalX - relaxed[p3]) * stepAlpha;
-    relaxed[p3 + 1] += (goalY - relaxed[p3 + 1]) * stepAlpha;
-    relaxed[p3 + 2] += (goalZ - relaxed[p3 + 2]) * stepAlpha;
-
-    const fx = relaxed[p3];
-    const fy = relaxed[p3 + 1];
-    const fz = relaxed[p3 + 2];
-
+    const fx = pos[p3];
+    const fy = pos[p3 + 1];
+    const fz = pos[p3 + 2];
     outPos[p3] = fx;
     outPos[p3 + 1] = fy;
     outPos[p3 + 2] = fz;
@@ -465,40 +603,45 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
     secAccumZ[s] += fz;
     secNum[s] += 1;
 
-    // Crisp jewel-like node proportions with clear hub hierarchy
+    const coh = clamp01(buffers.coherence[mIdx]);
+    const energy = clamp01(buffers.energy[mIdx]);
+    const intensity = clamp01(buffers.intensity[mIdx]);
+    const interFlux = Math.max(0, Number(buffers.interFlux[mIdx]) || 0);
+    const sigPulse = signalPulseBuf ? clamp01((signalPulseBuf[mIdx] || 0) * 0.35) : 0;
+    const active = buffers.activeMask[mIdx] > 0;
+
+    // Obsidian-style hub & live query flare sizing:
+    // Real high-degree hubs & nodes actively receiving/firing signals shine noticeably brighter!
     const deg = workspace.nodeDegree[rIdx] || (nodes?.[mIdx]?.connections?.length || 4);
-    const hubBoost = Math.min(0.068, Math.max(0, deg - 5) * 0.012);
-    const activityRadius = active ? (0.044 + intensity * 0.024 + coh * 0.022 + hubBoost) : 0.028;
-    const bridgePulse = (coreState.bridgeActive && interFlux > 0.08) ? Math.min(0.028, interFlux * 0.014) : 0;
+    const hubBoost = Math.min(0.085, Math.max(0, deg - 4) * 0.014);
+    const trafficFlare = sigPulse * 0.055;
+    const baseRad = active ? (0.045 + intensity * 0.024 + coh * 0.020 + hubBoost + trafficFlare) : 0.028;
     const modeScale = viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY ? 0.52 : 1.0;
-    outRad[rIdx] = (activityRadius + bridgePulse) * modeScale;
+    outRad[rIdx] = baseRad * modeScale;
 
-    // Multi-spectral sector colors smoothly blended by live state
     const baseRgb = secMeta.colorRgb;
-    const lum = active ? (0.54 + coh * 0.40 + energy * 0.16) : (0.18 + coh * 0.16);
-    const bridgeGlow = coreState.bridgeActive ? Math.min(0.30, interFlux * 0.20) : 0;
-    const lesionTint = coreState.tdCutActive ? 0.26 : (coreState.reducibleActive ? 0.18 : 0);
+    const lum = active ? (0.50 + coh * 0.36 + energy * 0.14) : (0.16 + coh * 0.14);
+    const lesionTint = coreState.tdCutActive ? 0.28 : (coreState.reducibleActive ? 0.20 : 0);
 
-    let cr = (baseRgb[0] * lum) + (bridgeGlow * 0.28) + (lesionTint * 0.44);
-    let cg = (baseRgb[1] * lum) + (bridgeGlow * 0.80) - (lesionTint * 0.14);
-    let cb = (baseRgb[2] * lum) + (bridgeGlow * 0.74) - (lesionTint * 0.10);
+    // Active signal traffic illuminates node crisply toward bright white-gold/cyan like a queried memory node!
+    let cr = (baseRgb[0] * lum) + (sigPulse * 0.42) + (lesionTint * 0.44);
+    let cg = (baseRgb[1] * lum) + (sigPulse * 0.52) - (lesionTint * 0.14);
+    let cb = (baseRgb[2] * lum) + (sigPulse * 0.48) - (lesionTint * 0.10);
 
     if (viewMode === NODAL_3D_VIEW_MODES.BRIDGE_ONLY && interFlux < 0.01 && coh < 0.78) {
-      cr *= 0.28;
-      cg *= 0.28;
-      cb *= 0.28;
+      cr *= 0.25;
+      cg *= 0.25;
+      cb *= 0.25;
     } else if (viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY) {
-      cr *= 0.22;
-      cg *= 0.22;
-      cb *= 0.22;
+      cr *= 0.20;
+      cg *= 0.20;
+      cb *= 0.20;
     }
 
     outCol[p3] = clamp01(cr);
     outCol[p3 + 1] = clamp01(cg);
     outCol[p3 + 2] = clamp01(cb);
   }
-
-  workspace.relaxInitialized = true;
 
   for (let s = 0; s < 4; s += 1) {
     const b = s * 3;
@@ -534,8 +677,6 @@ export function buildRealSynapticEdgeSelection(nodes, view, workspace, renderCou
   const candLimit = workspace.candidateSourceRender.length;
   const renderToModel = workspace.renderToModelIndex;
   const modelToRender = workspace.modelToRenderIndex;
-  const posArr = workspace.relaxedPositions;
-  const hasPositions = workspace.relaxInitialized;
   const seen = workspace.seenEdgeKeys;
   seen.clear();
 
@@ -593,28 +734,18 @@ export function buildRealSynapticEdgeSelection(nodes, view, workspace, renderCou
 
       const weight = clamp01(conn.weight ?? 0.35);
       const activeV = buffers.activeMask[mV] > 0;
+      const phaseAlign = 0.5 + (0.5 * Math.cos((buffers.phase[mU] || 0) - (buffers.phase[mV] || 0)));
 
-      let geometricClarityBoost = 0;
-      if (hasPositions) {
-        const u3 = lo * 3;
-        const v3 = hi * 3;
-        const dx = posArr[u3] - posArr[v3];
-        const dy = posArr[u3 + 1] - posArr[v3 + 1];
-        const dz = posArr[u3 + 2] - posArr[v3 + 2];
-        const dist = Math.hypot(dx, dy, dz);
-        geometricClarityBoost = 2.8 / (1.0 + (dist * 0.25));
-      }
-
+      // Prioritize genuinely strong resonant synaptic highways (no artificial geometry preference!)
       const bridgePriority = isBridge
-        ? (coreState.bridgeActive ? 1.80 : 0.40)
+        ? (coreState.bridgeActive ? 1.45 : 0.35)
         : 1.05;
 
       const priority = (touchesFocus ? 100.0 : 0.0)
         + bridgePriority
-        + geometricClarityBoost
-        + (weight * 1.45)
-        + (activeU && activeV ? 0.65 : 0.05)
-        + ((buffers.coherence[mU] + buffers.coherence[mV]) * 0.4);
+        + (weight * 2.4)
+        + (phaseAlign * 0.95)
+        + (activeU && activeV ? 0.55 : 0.05);
 
       workspace.candidateSourceRender[candCount] = lo;
       workspace.candidateTargetRender[candCount] = hi;
@@ -706,6 +837,120 @@ export function buildRealSynapticEdgeSelection(nodes, view, workspace, renderCou
   };
 }
 
+/**
+ * Reusable zero-GC particle pool for real per-tick synaptic signal bursts
+ * (`view.signals` emitted directly by `NodalProcessingLayer.processSignals`).
+ * Shared cleanly between WebGL 3D and Canvas 2D renderers.
+ */
+export function createSignalPacketPool(capacity = 360) {
+  const cap = Math.max(16, Math.floor(Number(capacity) || 360));
+  return {
+    capacity: cap,
+    lastTickVersion: -1,
+    activeCount: 0,
+    cursor: 0,
+    fromRender: new Int32Array(cap),
+    toRender: new Int32Array(cap),
+    progress: new Float32Array(cap),
+    speed: new Float32Array(cap),
+    strength: new Float32Array(cap),
+    isInter: new Uint8Array(cap),
+    alive: new Uint8Array(cap),
+    positions: new Float32Array(cap * 3),
+    colors: new Float32Array(cap * 3)
+  };
+}
+
+export function spawnSignalPacketsFromView(pool, view, workspace, renderCount, coreState, viewMode = NODAL_3D_VIEW_MODES.COUPLED) {
+  const sig = view?.signals;
+  if (!pool || !sig || sig.count <= 0 || renderCount <= 0) return 0;
+  if (sig.tickVersion === pool.lastTickVersion) return 0;
+  pool.lastTickVersion = sig.tickVersion;
+
+  if (viewMode === NODAL_3D_VIEW_MODES.CORE_ONLY) return 0;
+
+  const modelToRender = workspace.modelToRenderIndex;
+  const maxSpawn = Math.min(sig.count, Math.floor(pool.capacity * 0.45));
+  const stride = Math.max(1, Math.floor(sig.count / Math.max(1, maxSpawn)));
+  let spawned = 0;
+
+  for (let i = 0; i < sig.count && spawned < maxSpawn; i += stride) {
+    const isInter = sig.isInter[i] > 0;
+    if (viewMode === NODAL_3D_VIEW_MODES.BRIDGE_ONLY && !isInter) continue;
+    if (isInter && !coreState.bridgeActive) continue;
+
+    const mFrom = sig.from[i];
+    const mTo = sig.to[i];
+    if (mFrom < 0 || mFrom >= modelToRender.length || mTo < 0 || mTo >= modelToRender.length) continue;
+    const rFrom = modelToRender[mFrom];
+    const rTo = modelToRender[mTo];
+    if (rFrom < 0 || rTo < 0 || rFrom === rTo || rFrom >= renderCount || rTo >= renderCount) continue;
+
+    const slot = pool.cursor;
+    pool.cursor = (pool.cursor + 1) % pool.capacity;
+    pool.fromRender[slot] = rFrom;
+    pool.toRender[slot] = rTo;
+    pool.progress[slot] = 0.0;
+    pool.strength[slot] = clamp01(sig.strength[i]);
+    pool.speed[slot] = 1.15 + (pool.strength[slot] * 0.95);
+    pool.isInter[slot] = isInter ? 1 : 0;
+    pool.alive[slot] = 1;
+    spawned += 1;
+  }
+
+  return spawned;
+}
+
+export function stepSignalPackets(pool, currentPositions, renderCount, dtSeconds, reducedMotion = false) {
+  if (!pool || !currentPositions || renderCount <= 0) return 0;
+  const dt = reducedMotion ? (dtSeconds * 0.25) : dtSeconds;
+  let visible = 0;
+  const posOut = pool.positions;
+  const colOut = pool.colors;
+
+  for (let i = 0; i < pool.capacity; i += 1) {
+    if (!pool.alive[i]) continue;
+    const nextT = pool.progress[i] + (pool.speed[i] * dt);
+    if (nextT >= 1.0) {
+      pool.alive[i] = 0;
+      continue;
+    }
+    const rU = pool.fromRender[i];
+    const rV = pool.toRender[i];
+    if (rU < 0 || rU >= renderCount || rV < 0 || rV >= renderCount) {
+      pool.alive[i] = 0;
+      continue;
+    }
+    pool.progress[i] = nextT;
+    const u3 = rU * 3;
+    const v3 = rV * 3;
+    const out3 = visible * 3;
+
+    posOut[out3] = currentPositions[u3] + ((currentPositions[v3] - currentPositions[u3]) * nextT);
+    posOut[out3 + 1] = currentPositions[u3 + 1] + ((currentPositions[v3 + 1] - currentPositions[u3 + 1]) * nextT);
+    posOut[out3 + 2] = currentPositions[u3 + 2] + ((currentPositions[v3 + 2] - currentPositions[u3 + 2]) * nextT);
+
+    // Smooth fade-in and bright crest near destination arrival
+    const env = Math.sin(nextT * Math.PI);
+    const boost = 0.55 + (0.45 * env) + (0.25 * pool.strength[i]);
+    if (pool.isInter[i]) {
+      // Inter-sector bridge signal photon: radiant gold-emerald spark
+      colOut[out3] = clamp01(0.55 * boost);
+      colOut[out3 + 1] = clamp01(1.00 * boost);
+      colOut[out3 + 2] = clamp01(0.76 * boost);
+    } else {
+      // Intra-sector local signal photon: crisp electric ice-cyan spark
+      colOut[out3] = clamp01(0.60 * boost);
+      colOut[out3 + 1] = clamp01(0.92 * boost);
+      colOut[out3 + 2] = clamp01(1.00 * boost);
+    }
+    visible += 1;
+  }
+
+  pool.activeCount = visible;
+  return visible;
+}
+
 export function buildFallback3DView(nodes = [], ontologicalState = null, bridgeMetrics = null, endogenousDecision = null) {
   const list = Array.isArray(nodes) ? nodes : [];
   const n = list.length;
@@ -716,6 +961,7 @@ export function buildFallback3DView(nodes = [], ontologicalState = null, bridgeM
   const intensity = new Float32Array(n);
   const phase = new Float32Array(n);
   const interFlux = new Float32Array(n);
+  const signalPulse = new Float32Array(n);
   const couplingMatrix = new Float32Array(16);
 
   for (let i = 0; i < n; i += 1) {
@@ -728,6 +974,7 @@ export function buildFallback3DView(nodes = [], ontologicalState = null, bridgeM
     intensity[i] = clamp01(node.intensity ?? 0.5);
     phase[i] = Number.isFinite(Number(node.phase)) ? Number(node.phase) : 0;
     interFlux[i] = Math.max(0, Number(node.interFlux) || 0);
+    signalPulse[i] = Math.max(0, Number(node.signalPulse) || 0);
   }
 
   return {
@@ -742,8 +989,10 @@ export function buildFallback3DView(nodes = [], ontologicalState = null, bridgeM
       intensity,
       phase,
       interFlux,
+      signalPulse,
       couplingMatrix
     },
+    signals: null,
     bridge: bridgeMetrics || ontologicalState?.constructive_finite_cuts?.nodal_tower_bridge || null,
     tower: ontologicalState?.tower_telemetry || null,
     decisionCode: endogenousDecision?.decision_code

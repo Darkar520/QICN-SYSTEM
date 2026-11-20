@@ -94,14 +94,26 @@ export class NodalProcessingLayer {
               if (interCount >= 2) continue;
               for (let k = 1; k <= 3 && interCount < 2; k += 1) {
                 const desiredSector = (srcSector + k) % 4;
-                const base = (node.id + (k * 7) + (step * 4)) % total;
-                const offset = ((desiredSector - (base % 4)) + 4) % 4;
-                let targetId = (base + offset) % total;
-                if (targetId === node.id) targetId = (targetId + 4) % total;
-                if (targetId !== node.id
-                  && sectorIdOf(targetId) !== srcSector
-                  && !node.connections.some((c) => c.targetId === targetId)) {
-                  node.connections.push({ targetId, weight: sproutWeight });
+                let bestTargetId = -1;
+                let bestResonance = -2;
+                for (let probe = 0; probe < 3; probe += 1) {
+                  const base = (node.id + (k * 7) + (step * 4) + (probe * 13)) % total;
+                  const offset = ((desiredSector - (base % 4)) + 4) % 4;
+                  let candId = (base + offset) % total;
+                  if (candId === node.id) candId = (candId + 4) % total;
+                  if (candId === node.id || sectorIdOf(candId) === srcSector) continue;
+                  if (node.connections.some((c) => c.targetId === candId)) continue;
+                  const candNode = this.nodes[candId];
+                  const res = candNode
+                    ? (0.72 * Math.cos(node.phase - candNode.phase)) - (0.28 * Math.abs(node.coherenceState - candNode.coherenceState))
+                    : 0;
+                  if (res > bestResonance) {
+                    bestResonance = res;
+                    bestTargetId = candId;
+                  }
+                }
+                if (bestTargetId >= 0) {
+                  node.connections.push({ targetId: bestTargetId, weight: sproutWeight });
                   interCount += 1;
                   sprouted += 1;
                 }
@@ -141,15 +153,40 @@ export class NodalProcessingLayer {
               }
             }
 
+            const cache = getLayerCache(this);
             let sectorIntraFlux = null;
             let sectorInterFlux = null;
             let totalIntraFlux = 0;
             let totalInterFlux = 0;
             let nodeInterFlux = null;
+            if (!cache.nodeSignalPulse || cache.nodeSignalPulse.length !== this.nodes.length) {
+              cache.nodeSignalPulse = new Float32Array(this.nodes.length);
+            } else {
+              for (let i = 0; i < cache.nodeSignalPulse.length; i += 1) {
+                cache.nodeSignalPulse[i] *= 0.45;
+              }
+            }
+            const nodeSignalPulse = cache.nodeSignalPulse;
+
+            if (!cache.signalPackets) {
+              const cap = 512;
+              cache.signalPackets = {
+                capacity: cap,
+                count: 0,
+                tickVersion: 0,
+                from: new Int32Array(cap),
+                to: new Int32Array(cap),
+                strength: new Float32Array(cap),
+                isInter: new Uint8Array(cap)
+              };
+            }
+            const packets = cache.signalPackets;
+            packets.count = 0;
+            packets.tickVersion += 1;
+
             if (hasCoupling) {
               sectorIntraFlux = [0, 0, 0, 0];
               sectorInterFlux = [0, 0, 0, 0];
-              const cache = getLayerCache(this);
               if (!cache.nodeInterFlux || cache.nodeInterFlux.length !== this.nodes.length) {
                 cache.nodeInterFlux = new Float32Array(this.nodes.length);
               } else {
@@ -158,11 +195,25 @@ export class NodalProcessingLayer {
               nodeInterFlux = cache.nodeInterFlux;
             }
 
-            // Process incoming signals (Optimized O(1) lookup: nodes array is indexed by ID)
-            newSignals.forEach(signal => {
+            // Process incoming signals (Optimized O(1) lookup + real per-tick signal packet telemetry)
+            const totalSigs = newSignals.length;
+            const packetStride = Math.max(1, Math.floor(totalSigs / packets.capacity));
+            for (let idx = 0; idx < totalSigs; idx += 1) {
+              const signal = newSignals[idx];
               const targetNode = this.nodes[signal.targetId]; // CORRECCION: Lookup O(1)
               if (targetNode) {
                 targetNode.intensity = Math.min(1, targetNode.intensity + signal.strength * 0.05);
+                if (signal.targetId >= 0 && signal.targetId < nodeSignalPulse.length) {
+                  nodeSignalPulse[signal.targetId] = Math.min(4.0, nodeSignalPulse[signal.targetId] + signal.strength);
+                }
+                if (signal.sourceId >= 0 && signal.sourceId < nodeSignalPulse.length) {
+                  nodeSignalPulse[signal.sourceId] = Math.min(4.0, nodeSignalPulse[signal.sourceId] + (signal.strength * 0.45));
+                }
+                const isInter = Boolean(
+                  signal.isInterSector !== undefined
+                    ? signal.isInterSector
+                    : (sectorIdOf(signal.sourceId) !== sectorIdOf(signal.targetId))
+                );
                 if (hasCoupling) {
                   const targetS = Number.isInteger(signal.targetSector) ? signal.targetSector : ((signal.targetId % 4) + 4) % 4;
                   if (signal.isInterSector) {
@@ -176,11 +227,18 @@ export class NodalProcessingLayer {
                     totalIntraFlux += signal.strength;
                   }
                 }
+                if ((idx % packetStride === 0 || signal.strength >= 0.62) && packets.count < packets.capacity) {
+                  const p = packets.count;
+                  packets.from[p] = signal.sourceId;
+                  packets.to[p] = signal.targetId;
+                  packets.strength[p] = signal.strength;
+                  packets.isInter[p] = isInter ? 1 : 0;
+                  packets.count = p + 1;
+                }
               }
-            });
+            }
 
             if (hasCoupling) {
-              const cache = getLayerCache(this);
               cache.signalStats = {
                 sectorIntraFlux,
                 sectorInterFlux,
@@ -221,7 +279,9 @@ export class NodalProcessingLayer {
               towerTelemetry,
               endogenousDecision,
               cache,
-              cache.nodeInterFlux
+              cache.nodeInterFlux,
+              cache.nodeSignalPulse,
+              cache.signalPackets
             );
           }
 

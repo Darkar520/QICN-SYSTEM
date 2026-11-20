@@ -14,6 +14,17 @@ import { projectWithTrig } from './utils/pinhole';
 import { createRng, computeNodesKeyUnordered, compareDepthDesc, computeOrbitalAngle } from './utils/determinism';
 import { createCanvasTraceRecorder, shouldTraceRenderHash } from './utils/render_trace_hash';
 import { QICNConfig } from '../services/config.js';
+import {
+    NODAL_3D_VIEW_MODES,
+    buildRealSynapticEdgeSelection,
+    computeCoupledNodeTargets,
+    createProjectionWorkspace,
+    createSignalPacketPool,
+    extractCoreVisualizationState,
+    selectStratifiedRenderIndices,
+    spawnSignalPacketsFromView,
+    stepSignalPackets
+} from './simulation/Nodal3DSceneProjection.js';
 
 const computeNodesKeyOrdered = (nodes) => {
     let key = nodes.length | 0;
@@ -109,17 +120,33 @@ const getCoherenceStyle = (coh) => getSemanticState(coh);
 // Mantenida para compatibilidad con código generado por Codex
 const getNodeHueVariant = (baseHue, nodeId, scale = 1) => baseHue;
 
+const SECTOR_HUES = [164, 322, 194, 262];
+const SECTOR_LABELS = ['Cuerpo v+', 'Cuerpo v-', 'Mundo w_rap', 'Mundo w_lento'];
+const SECTOR_ACCENTS = ['#24ebb8', '#f05cb8', '#2eccfa', '#9966fa'];
+
+const resolveSectorId = (node) => {
+    if (Number.isInteger(node?.sectorId)) return ((node.sectorId % 4) + 4) % 4;
+    return (((Number(node?.id) || 0) % 4) + 4) % 4;
+};
+
 const buildNodeSummary = (node) => {
     if (!node) return null;
     const coherence = clamp(Number(node.coherenceState) || 0, 0, 1);
     const intensity = clamp(Number(node.intensity) || 0, 0, 1);
     const state = getSemanticState(coherence);
-    const degree = Array.isArray(node.connections) ? node.connections.length : 0;
+    const degree = Number.isFinite(Number(node.degree))
+        ? Number(node.degree)
+        : (Array.isArray(node.connections) ? node.connections.length : 0);
+    const sectorId = resolveSectorId(node);
     return {
         id: node.id,
         coherence,
         intensity,
         degree,
+        sectorId,
+        sectorLabel: SECTOR_LABELS[sectorId],
+        sectorAccent: SECTOR_ACCENTS[sectorId],
+        signalPulse: Number(node.signalPulse || 0),
         stateName: state.name
     };
 };
@@ -377,6 +404,9 @@ const RENDER_STATE_META = {
 const NetworkCanvas = ({
     nodalLayer,
     ontologicalState,
+    bridgeMetrics = null,
+    endogenousDecision = null,
+    onCouplingModeChange = null,
     isRunning,
     onTelemetry,
     deterministic = false,
@@ -389,7 +419,27 @@ const NetworkCanvas = ({
 }) => {
     const containerRef = useRef(null);
     const canvasRef = useRef(null);
-    const isCR = ontologicalState.phenomenology_class === 'C^R';
+    const latestPropsRef = useRef({ ontologicalState, endogenousDecision, bridgeMetrics, tick, viewportMode });
+    latestPropsRef.current = { ontologicalState, endogenousDecision, bridgeMetrics, tick, viewportMode };
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [showHudDetails, setShowHudDetails] = useState(false);
+    const [bridgeHudState, setBridgeHudState] = useState({
+        mode: 'bidirectional',
+        effectiveEta: 0.125,
+        decisionTone: 'affirmative',
+        activeSignals: 0
+    });
+    const proj2dWorkspaceRef = useRef(null);
+    const proj2dSignalPoolRef = useRef(null);
+    const proj2dMetaRef = useRef({
+        lastNodeCount: -1,
+        renderCount: 0,
+        lastEdgeTick: -999,
+        lastMode: '',
+        lastLayoutMs: -999,
+        lastSignalMs: 0,
+        edgeStats: { totalEdges: 0, bridgeEdges: 0, intraEdges: 0 }
+    });
     const renderCountRef = useRef(0);
     const lastRenderTimeRef = useRef(0);
     const animationFrameRef = useRef(null);
@@ -834,23 +884,29 @@ const NetworkCanvas = ({
                 stats.uiTs = frameNowMs;
             }
 
-            // Limitar FPS para evitar saturación (más conservador en pausa).
-            const now = deterministic ? tick : Date.now();
-            const minFrameInterval = isRunning ? 16 : 33;
+            const {
+                ontologicalState: liveOntologicalState,
+                endogenousDecision: liveEndogenousDecision,
+                bridgeMetrics: liveBridgeMetrics,
+                tick: liveTick,
+                viewportMode: liveViewportMode
+            } = latestPropsRef.current;
+
+            // Limitar a 30 FPS estables para paridad de fluidez con WebGL 3D.
+            const now = deterministic ? liveTick : Date.now();
+            const minFrameInterval = 33;
             if (deterministic) {
                 if (now === lastRenderTimeRef.current) return;
             } else if (now - lastRenderTimeRef.current < minFrameInterval) {
                 return;
             }
+            const frameDtSec = deterministic ? 0.033 : clamp((now - (lastRenderTimeRef.current || now - 33)) * 0.001, 0.008, 0.08);
             lastRenderTimeRef.current = now;
 
-            // 1. OBTENCIÓN DE DATOS (Zero Cloning)
-            const adaptiveFps = stats.fps || 60;
-            let nodeBudget = 150;
-            if (adaptiveFps < 18) nodeBudget = 80;
-            else if (adaptiveFps < 26) nodeBudget = 110;
-            else if (adaptiveFps < 40) nodeBudget = 130;
-            const cacheTtlMs = adaptiveFps < 20 ? 180 : 100;
+            // 1. OBTENCIÓN DE DATOS (Alineado con física orgánica fuerza-dirigida 3D + señales reales)
+            const adaptiveFps = stats.fps || 30;
+            const nodeBudget = liveViewportMode === 'mobile' ? 108 : (liveViewportMode === 'tablet' ? 168 : 240);
+            const cacheTtlMs = adaptiveFps < 18 ? 140 : 90;
             if (!nodalLayer?.current) {
                 setRenderStateSafe(
                     'data_fault',
@@ -863,7 +919,154 @@ const NetworkCanvas = ({
                 }
                 return;
             }
-            if ((frameNowMs - nodesCacheRef.current.ts) >= cacheTtlMs || nodesCacheRef.current.nodes.length === 0) {
+
+            let organicBridgeState = null;
+            let liveSignalBursts = null;
+            const layerInst = nodalLayer.current;
+
+            if (!deterministic && typeof layerInst?.get3DTelemetryView === 'function' && Array.isArray(layerInst.nodes) && layerInst.nodes.length > 0) {
+                if (!proj2dWorkspaceRef.current || proj2dWorkspaceRef.current.nodeCapacity < 260) {
+                    proj2dWorkspaceRef.current = createProjectionWorkspace(260, 720);
+                }
+                if (!proj2dSignalPoolRef.current) {
+                    proj2dSignalPoolRef.current = createSignalPacketPool(120);
+                }
+                const ws = proj2dWorkspaceRef.current;
+                const sigPool = proj2dSignalPoolRef.current;
+                const meta = proj2dMetaRef.current;
+
+                const view3d = layerInst.get3DTelemetryView(
+                    liveOntologicalState?.tower_telemetry || null,
+                    liveEndogenousDecision || liveOntologicalState?.constructive_finite_cuts?.endogenous_epistemic_decision || null
+                );
+                const coreState = extractCoreVisualizationState(view3d, liveOntologicalState);
+                const resolvedMode = coreState.bridgeMode || liveBridgeMetrics?.mode || 'bidirectional';
+                const resolvedEta = Number.isFinite(coreState.effectiveEta)
+                    ? coreState.effectiveEta
+                    : Number(liveBridgeMetrics?.effective_eta ?? 0.125);
+                organicBridgeState = {
+                    mode: resolvedMode,
+                    active: coreState.bridgeActive,
+                    tdCutActive: coreState.tdCutActive,
+                    reducibleActive: coreState.reducibleActive,
+                    effectiveEta: resolvedEta,
+                    decisionTone: coreState.decisionTone
+                };
+
+                const targetCap = Math.min(ws.nodeCapacity, nodeBudget);
+                if (view3d.nodeCount !== meta.lastNodeCount || meta.renderCount !== Math.min(view3d.nodeCount, targetCap)) {
+                    meta.lastNodeCount = view3d.nodeCount;
+                    meta.renderCount = selectStratifiedRenderIndices(view3d, targetCap, ws);
+                    ws.relaxInitialized = false;
+                    meta.lastEdgeTick = -999;
+                }
+                const rc = meta.renderCount;
+                const needEdges = !ws.relaxInitialized
+                    || Math.abs(liveTick - meta.lastEdgeTick) >= 8
+                    || (coreState.bridgeActive && meta.edgeStats.bridgeEdges === 0 && coreState.interSectorRatio > 0.05)
+                    || meta.lastMode !== resolvedMode;
+                if (needEdges && rc > 0) {
+                    meta.edgeStats = buildRealSynapticEdgeSelection(
+                        layerInst.nodes,
+                        view3d,
+                        ws,
+                        rc,
+                        ws.edgeCapacity,
+                        coreState,
+                        { viewMode: NODAL_3D_VIEW_MODES.COUPLED }
+                    );
+                    meta.lastEdgeTick = liveTick;
+                    meta.lastMode = resolvedMode;
+                    meta.lastLayoutMs = -999;
+                }
+                if (!ws.relaxInitialized || (frameNowMs - meta.lastLayoutMs) >= 95) {
+                    meta.lastLayoutMs = frameNowMs;
+                    computeCoupledNodeTargets(view3d, ws, rc, coreState, {
+                        viewMode: NODAL_3D_VIEW_MODES.COUPLED,
+                        nodes: layerInst.nodes,
+                        activeEdgeCount: meta.edgeStats.totalEdges
+                    });
+                }
+
+                // Spawn & step real traveling signal bursts along real synapses
+                spawnSignalPacketsFromView(sigPool, view3d, ws, rc, coreState, NODAL_3D_VIEW_MODES.COUPLED);
+                const sigPulseBuf = view3d.buffers.signalPulse;
+                if (sigPool.activeCount < 24 && meta.edgeStats.totalEdges > 0 && sigPulseBuf) {
+                    const edgeTotal = meta.edgeStats.totalEdges;
+                    const stride = Math.max(1, Math.floor(edgeTotal / 28));
+                    const phaseOffset = Math.abs(liveTick) % stride;
+                    let added = 0;
+                    for (let eIdx = phaseOffset; eIdx < edgeTotal && added < 12; eIdx += stride) {
+                        const rU = ws.edgeSourceRenderIdx[eIdx];
+                        const rV = ws.edgeTargetRenderIdx[eIdx];
+                        const mU = ws.renderToModelIndex[rU];
+                        const pulseU = sigPulseBuf[mU] || 0;
+                        if (pulseU < 0.32) continue;
+                        const isInterEdge = ws.edgeIsBridge[eIdx] > 0 ? 1 : 0;
+                        if (isInterEdge && !coreState.bridgeActive) continue;
+                        const slot = sigPool.cursor % sigPool.capacity;
+                        sigPool.cursor = (sigPool.cursor + 1) % sigPool.capacity;
+                        sigPool.alive[slot] = 1;
+                        sigPool.fromRender[slot] = rU;
+                        sigPool.toRender[slot] = rV;
+                        sigPool.progress[slot] = 0.02 + ((eIdx % 5) * 0.04);
+                        sigPool.speed[slot] = 0.85 + (Math.min(1, pulseU * 0.5) * 0.75);
+                        sigPool.strength[slot] = clamp(pulseU * 0.65, 0.35, 1.0);
+                        sigPool.isInter[slot] = isInterEdge;
+                        added += 1;
+                    }
+                }
+                stepSignalPackets(sigPool, ws.targetPositions, rc, frameDtSec, false);
+                liveSignalBursts = [];
+                for (let sIdx = 0; sIdx < sigPool.capacity; sIdx += 1) {
+                    if (!sigPool.alive[sIdx]) continue;
+                    const mU = ws.renderToModelIndex[sigPool.fromRender[sIdx]];
+                    const mV = ws.renderToModelIndex[sigPool.toRender[sIdx]];
+                    const nU = layerInst.nodes[mU];
+                    const nV = layerInst.nodes[mV];
+                    if (!nU || !nV) continue;
+                    liveSignalBursts.push({
+                        fromId: nU.id,
+                        toId: nV.id,
+                        t: sigPool.progress[sIdx],
+                        strength: sigPool.strength[sIdx],
+                        isInter: sigPool.isInter[sIdx] > 0
+                    });
+                }
+
+                // Build clean 2.5D projected node descriptors centered on (center.x, center.y) for pinhole projection
+                const scaleWorld = clamp(Math.min(canvas.width, canvas.height) * 0.036, 14, 34);
+                const organicNodes = new Array(rc);
+                for (let r = 0; r < rc; r += 1) {
+                    const mIdx = ws.renderToModelIndex[r];
+                    const srcNode = layerInst.nodes[mIdx];
+                    const p3 = r * 3;
+                    organicNodes[r] = {
+                        id: srcNode?.id ?? mIdx,
+                        x: center.x + (ws.targetPositions[p3] * scaleWorld),
+                        y: center.y + (ws.targetPositions[p3 + 1] * scaleWorld),
+                        z: ws.targetPositions[p3 + 2] * scaleWorld,
+                        coherenceState: view3d.buffers.coherence[mIdx],
+                        intensity: view3d.buffers.intensity[mIdx],
+                        phase: view3d.buffers.phase[mIdx],
+                        sectorId: view3d.buffers.sectorId[mIdx],
+                        signalPulse: sigPulseBuf ? sigPulseBuf[mIdx] : 0,
+                        degree: ws.nodeDegree[r] || (srcNode?.connections?.length || 0),
+                        connections: srcNode?.connections || []
+                    };
+                }
+                nodesCacheRef.current = { ts: frameNowMs, nodes: organicNodes };
+
+                if ((frameNowMs - meta.lastSignalMs) >= 450) {
+                    meta.lastSignalMs = frameNowMs;
+                    setBridgeHudState({
+                        mode: resolvedMode,
+                        effectiveEta: resolvedEta,
+                        decisionTone: coreState.decisionTone,
+                        activeSignals: liveSignalBursts.length
+                    });
+                }
+            } else if ((frameNowMs - nodesCacheRef.current.ts) >= cacheTtlMs || nodesCacheRef.current.nodes.length === 0) {
                 let refreshedNodes = nodalLayer.current?.getHighlyCoherentNodes?.(nodeBudget) || [];
                 if (refreshedNodes.length === 0) {
                     refreshedNodes = (nodalLayer.current?.getActiveNodes?.() || []).slice(0, nodeBudget);
@@ -971,7 +1174,7 @@ const NetworkCanvas = ({
             // 3. PROYECCIÓN Y Z-SORTING (determinista y acotado)
             if (!isDragging.current && isRunning && deterministic) {
                 const base = autoRotBaseRef.current;
-                currentRotY = base.rotY0 + (tick - base.tick0) * 0.002;
+                currentRotY = base.rotY0 + (liveTick - base.tick0) * 0.002;
             }
             rotationRef.current = { x: currentRotX, y: currentRotY };
 
@@ -988,7 +1191,12 @@ const NetworkCanvas = ({
                         z: node.z,
                         coherenceState: node.coherenceState,
                         intensity: node.intensity,
-                        phase: node.phase
+                        phase: node.phase,
+                        sectorId: resolveSectorId(node),
+                        signalPulse: Number(node.signalPulse || 0),
+                        degree: Number.isFinite(Number(node.degree))
+                            ? Number(node.degree)
+                            : (Array.isArray(node.connections) ? node.connections.length : 0)
                     });
                     focusIdSet.add(node.id);
                 }
@@ -1015,9 +1223,11 @@ const NetworkCanvas = ({
                         pointer: interactionRef.current.pointer,
                         selectedId: interactionRef.current.selectedId
                     },
+                    bridgeState: organicBridgeState,
+                    signalBursts: liveSignalBursts,
                     deterministic,
                     seed,
-                    tick
+                    tick: liveTick
                 });
                 renderCountRef.current++;
                 return;
@@ -1319,63 +1529,68 @@ const NetworkCanvas = ({
                 return a.__index - b.__index;
             });
 
+            const bridgeActive2d = organicBridgeState ? Boolean(organicBridgeState.active) : true;
+            const bridgeLesioned2d = Boolean(organicBridgeState && (organicBridgeState.tdCutActive || organicBridgeState.reducibleActive));
+
             edges.forEach(edge => {
                 const { from, to, weight, opacity } = edge;
                 const edgeInFocus = hasFocus && neighborhoodIds.has(from.node.id) && neighborhoodIds.has(to.node.id);
                 const edgeDim = hasFocus && !edgeInFocus;
-                const fromC = clamp((Number(from.node.coherenceState) || 0) * 1.4, 0, 1);
-                const toC = clamp((Number(to.node.coherenceState) || 0) * 1.4, 0, 1);
-                const fromHue = getNodeHueVariant(10 + (fromC * 190), from.node.id, from.scale);
-                const toHue = getNodeHueVariant(10 + (toC * 190), to.node.id, to.scale);
-                const isEntangled = weight > 0.88;
-                const depthAlpha = clamp((from.scale + to.scale) * 0.45, 0.15, 1);
-                const focusAlpha = edgeDim ? 0.18 : edgeInFocus ? 1.35 : 1;
-                const alpha = clamp(opacity * depthAlpha * performanceFactor * focusAlpha, 0.025, isEntangled || edgeInFocus ? 0.78 : 0.40);
+                const fromSec = resolveSectorId(from.node);
+                const toSec = resolveSectorId(to.node);
+                const isBridgeEdge = fromSec !== toSec;
+                const fromHue = getNodeHueVariant(SECTOR_HUES[fromSec], from.node.id, from.scale);
+                const toHue = getNodeHueVariant(SECTOR_HUES[toSec], to.node.id, to.scale);
+                const isEntangled = weight > 0.84;
+                const depthAlpha = clamp((from.scale + to.scale) * 0.45, 0.14, 1);
+                const focusAlpha = edgeDim ? 0.15 : edgeInFocus ? 1.45 : 1;
+                const weightGain = 0.45 + (0.95 * clamp(Number(weight) || 0.35, 0, 1));
+                const bridgeGate = isBridgeEdge ? (bridgeActive2d ? 1.05 : 0.28) : 0.88;
+                const alpha = clamp(opacity * depthAlpha * performanceFactor * focusAlpha * weightGain * bridgeGate * 0.56, 0.03, isEntangled || edgeInFocus ? 0.82 : 0.46);
                 const avgHue = (fromHue + toHue) * 0.5;
                 const grad = highFx ? ctx.createLinearGradient(from.x2d, from.y2d, to.x2d, to.y2d) : null;
 
-                if (isEntangled) {
+                if (isBridgeEdge && bridgeLesioned2d) {
+                    ctx.strokeStyle = `hsla(348 82% 54% / ${(alpha * 0.85).toFixed(3)})`;
+                    ctx.shadowBlur = 0;
+                    ctx.lineWidth = (0.55 + weight * 0.85) * clamp(from.scale, 0.45, 1.25) * (edgeInFocus ? 1.35 : edgeDim ? 0.65 : 1);
+                } else if (isEntangled || (isBridgeEdge && bridgeActive2d && weight > 0.62)) {
                     if (grad) {
-                        grad.addColorStop(0, `hsla(48 100% 72% / ${alpha.toFixed(3)})`);
-                        grad.addColorStop(0.5, `hsla(56 100% 80% / ${Math.min(1, alpha * 1.3).toFixed(3)})`);
-                        grad.addColorStop(1, `hsla(48 100% 72% / ${alpha.toFixed(3)})`);
+                        grad.addColorStop(0, `hsla(${fromHue.toFixed(1)} 92% 66% / ${alpha.toFixed(3)})`);
+                        grad.addColorStop(0.5, `hsla(${isBridgeEdge ? 172 : avgHue.toFixed(1)} 96% 74% / ${Math.min(0.92, alpha * 1.28).toFixed(3)})`);
+                        grad.addColorStop(1, `hsla(${toHue.toFixed(1)} 92% 66% / ${alpha.toFixed(3)})`);
                         ctx.strokeStyle = grad;
                     } else {
-                        ctx.strokeStyle = `hsla(48 100% 72% / ${alpha.toFixed(3)})`;
-                    }
-                    if (highFx) {
-                        ctx.shadowBlur = 5 * clamp(from.scale, 0.5, 1.2);
-                        ctx.shadowColor = 'rgba(255,200,0,0.6)';
-                    } else {
-                        ctx.shadowBlur = 0;
-                    }
-                    ctx.lineWidth = (1.8 + weight * 2.2) * clamp(from.scale, 0.4, 1.5) * (edgeInFocus ? 1.22 : edgeDim ? 0.72 : 1);
-                } else {
-                    if (grad) {
-                        grad.addColorStop(0, `hsla(${fromHue.toFixed(1)} 90% 60% / ${alpha.toFixed(3)})`);
-                        grad.addColorStop(1, `hsla(${toHue.toFixed(1)} 90% 60% / ${alpha.toFixed(3)})`);
-                        ctx.strokeStyle = grad;
-                    } else {
-                        ctx.strokeStyle = `hsla(${avgHue.toFixed(1)} 90% 60% / ${alpha.toFixed(3)})`;
+                        ctx.strokeStyle = `hsla(${isBridgeEdge ? 172 : avgHue.toFixed(1)} 92% 68% / ${alpha.toFixed(3)})`;
                     }
                     ctx.shadowBlur = 0;
-                    ctx.lineWidth = (0.8 + weight * 1.2) * clamp(from.scale, 0.45, 1.3) * (edgeInFocus ? 1.35 : edgeDim ? 0.68 : 1);
+                    ctx.lineWidth = (0.85 + weight * 1.35) * clamp(from.scale, 0.42, 1.35) * (edgeInFocus ? 1.35 : edgeDim ? 0.65 : 1);
+                } else {
+                    if (grad) {
+                        grad.addColorStop(0, `hsla(${fromHue.toFixed(1)} 88% 60% / ${alpha.toFixed(3)})`);
+                        grad.addColorStop(1, `hsla(${toHue.toFixed(1)} 88% 60% / ${alpha.toFixed(3)})`);
+                        ctx.strokeStyle = grad;
+                    } else {
+                        ctx.strokeStyle = `hsla(${avgHue.toFixed(1)} 88% 60% / ${alpha.toFixed(3)})`;
+                    }
+                    ctx.shadowBlur = 0;
+                    ctx.lineWidth = (0.55 + weight * 0.95) * clamp(from.scale, 0.45, 1.25) * (edgeInFocus ? 1.35 : edgeDim ? 0.65 : 1);
                 }
 
                 const midX = (from.x2d + to.x2d) * 0.5;
                 const midY = (from.y2d + to.y2d) * 0.5;
                 const dx = to.x2d - from.x2d;
                 const dy = to.y2d - from.y2d;
-                const curve = clamp((weight - 0.48) * 18, -5, 12) * clamp((from.scale + to.scale) * 0.5, 0.45, 1.3);
-                const controlX = midX - dy * 0.018 * curve;
-                const controlY = midY + dx * 0.018 * curve;
-                if (edgeInFocus || isEntangled) {
+                const curve = clamp((weight - 0.48) * 14, -4, 9) * clamp((from.scale + to.scale) * 0.5, 0.45, 1.2);
+                const controlX = midX - dy * 0.015 * curve;
+                const controlY = midY + dx * 0.015 * curve;
+                if (edgeInFocus) {
                     ctx.save();
                     ctx.globalCompositeOperation = 'screen';
                     ctx.strokeStyle = isEntangled
-                        ? `rgba(253,224,71,${(alpha * 0.26).toFixed(3)})`
-                        : `rgba(103,232,249,${(alpha * 0.22).toFixed(3)})`;
-                    ctx.lineWidth *= 2.6;
+                        ? `rgba(94,234,212,${(alpha * 0.35).toFixed(3)})`
+                        : `rgba(103,232,249,${(alpha * 0.28).toFixed(3)})`;
+                    ctx.lineWidth *= 2.2;
                     ctx.beginPath();
                     ctx.moveTo(from.x2d, from.y2d);
                     ctx.quadraticCurveTo(controlX, controlY, to.x2d, to.y2d);
@@ -1388,6 +1603,34 @@ const NetworkCanvas = ({
                 ctx.stroke();
                 ctx.shadowBlur = 0;
             });
+
+            // Central Constructive Core Diamond & orbital hairline matching 3D view
+            const coreProj2d = projectWithTrig(center.x, center.y, 0, sinX, cosX, sinY, cosY, perspective, center, projectionLimits);
+            if (coreProj2d && coreProj2d.scale >= 0.1) {
+                const zoom2d = clamp(Number(cameraRef.current.zoom) || 1, 0.35, 3.5);
+                const cx = ((coreProj2d.x2d - center.x) * zoom2d) + center.x + (Number(cameraRef.current.panX) || 0);
+                const cy = ((coreProj2d.y2d - center.y) * zoom2d) + center.y + (Number(cameraRef.current.panY) || 0);
+                const cs = coreProj2d.scale * clamp(zoom2d, 0.6, 1.8);
+                const dTone = organicBridgeState?.decisionTone || 'affirmative';
+                const diamondColor = dTone === 'negative' ? '#f43f5e' : (dTone === 'reserve' ? '#f59e0b' : '#24ebb8');
+                const rDiam = clamp(6.5 * cs, 3.5, 12);
+                ctx.save();
+                ctx.strokeStyle = dTone === 'negative' ? 'rgba(244,63,94,0.28)' : 'rgba(56,189,248,0.22)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, rDiam * 3.8, rDiam * 1.9, 0.32, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = diamondColor;
+                ctx.globalAlpha = 0.85;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - rDiam);
+                ctx.lineTo(cx + rDiam * 0.85, cy);
+                ctx.lineTo(cx, cy + rDiam);
+                ctx.lineTo(cx - rDiam * 0.85, cy);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
 
             ctx.shadowBlur = 0;
 
@@ -1432,15 +1675,16 @@ const NetworkCanvas = ({
 
                 const coh = clamp(Number(node.coherenceState) || 0, 0, 1);
                 const inten = clamp(Number(node.intensity) || 0, 0, 1);
-                const baseRadius = 4 + inten * 10;
-                // PULSO LENTO Y SUAVE: 0.5 rad/s, ±4% — elimina el flickering
-                const pulseAmp = 0.02 + coh * 0.04;  // max ±6% (era ±16%)
-                const pulseMod = 1 + pulseAmp * Math.sin(pulseT * 0.5 + (node.phase || 0));
-                const focusScale = nodeSelected ? 1.22 : nodeHovered ? 1.14 : nodeInFocus ? 1.06 : 1;
-                const radius = baseRadius * scale * pulseMod * focusScale;
-                const style = getSemanticState(coh);
-                const hueVar = style.hue;
-                const coreColor = style.core;
+                const sigPulse = clamp((Number(node.signalPulse) || 0) * 0.35, 0, 1);
+                const deg = Number(node.degree || (Array.isArray(node.connections) ? node.connections.length : 4));
+                const hubBoost = Math.min(2.0, Math.max(0, deg - 4) * 0.35);
+                const baseRadius = 2.0 + (inten * 2.6) + hubBoost + (sigPulse * 2.0);
+                const focusScale = nodeSelected ? 1.55 : nodeHovered ? 1.35 : nodeInFocus ? 1.15 : 1;
+                const radius = baseRadius * scale * focusScale;
+                const secId = resolveSectorId(node);
+                const hueVar = SECTOR_HUES[secId];
+                const coreLight = Math.min(84, 52 + (coh * 18) + (sigPulse * 18));
+                const coreColor = `hsl(${hueVar.toFixed(1)} 92% ${coreLight.toFixed(1)}%)`;
                 const dimFactor = nodeDim ? 0.34 : 1;
                 const opacity = clamp(Math.min(1, coh * 1.5 + 0.2) * scale * dimFactor, nodeDim ? 0.05 : 0.12, nodeSelected || nodeHovered ? 1 : 0.97);
                 const depthLift = clamp(scale, 0.25, 1.8);
@@ -1587,53 +1831,81 @@ const NetworkCanvas = ({
                 });
             }
 
-            // 4.3. Partículas Orbitantes (Efecto de Atomo Consciente)
-            const allowParticles = (stats.fps || 60) >= 26;
-            if (allowParticles && focusedNodes.length > 0) {
-                const nodesKey = deterministic ? computeNodesKeyUnordered(focusedNodes) : computeNodesKeyOrdered(focusedNodes);
-                if (particlesRef.current.length === 0 || (deterministic && particlesKeyRef.current !== nodesKey)) {
-                    particlesRef.current = createParticles(focusedNodes, seed);
-                    particlesKeyRef.current = nodesKey;
-                }
-            } else if (!allowParticles && particlesRef.current.length > 0) {
-                particlesRef.current = [];
-            }
-
-            ctx.globalCompositeOperation = 'source-over';
-            particlesRef.current.forEach(p => {
-                const pNode = projectedById.get(p.nodeId);
-                if (!pNode || pNode.scale < 0.1) return;
-
-                const angle = deterministic ? computeOrbitalAngle(p.baseAngle, p.speed, tick) : (p.angle += p.speed);
-                const ox = Math.cos(angle) * p.radius;
-                const oy = Math.sin(angle) * p.radius;
-
-                const px = pNode.x2d + ox * pNode.scale;
-                const py = pNode.y2d + oy * pNode.scale;
-                const pr = p.size * pNode.scale;
-
-                if (highFx) {
-                    const glowAlpha = clamp((0.25 * pNode.scale) * performanceFactor, 0.05, 0.30);
-                    const hslaColor = p.color.replace('hsl(', 'hsla(').replace(')', ` / ${glowAlpha.toFixed(3)})`);
-                    ctx.save();
-                    ctx.globalCompositeOperation = 'lighter';
-                    const pGrad = ctx.createRadialGradient(px, py, 0, px, py, pr * 2.5);
-                    pGrad.addColorStop(0, hslaColor);
-                    pGrad.addColorStop(1, 'rgba(0,0,0,0)');
-                    ctx.fillStyle = pGrad;
+            // 4.3. Señales reales viajando por sinapsis (o partículas deterministas en modo determinista)
+            if (Array.isArray(liveSignalBursts) && liveSignalBursts.length > 0 && !deterministic) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                for (let sIdx = 0; sIdx < liveSignalBursts.length; sIdx += 1) {
+                    const sb = liveSignalBursts[sIdx];
+                    const fromP = projectedById.get(sb.fromId);
+                    const toP = projectedById.get(sb.toId);
+                    if (!fromP || !toP || fromP.scale < 0.1 || toP.scale < 0.1) continue;
+                    const t = clamp(Number(sb.t) || 0, 0, 1);
+                    const px = fromP.x2d + ((toP.x2d - fromP.x2d) * t);
+                    const py = fromP.y2d + ((toP.y2d - fromP.y2d) * t);
+                    const sc = (fromP.scale + toP.scale) * 0.5;
+                    const pr = clamp((2.0 + (sb.strength || 0.5) * 1.8) * sc, 1.4, 4.6);
+                    const env = Math.sin(t * Math.PI);
+                    ctx.fillStyle = sb.isInter
+                        ? `rgba(110, 255, 200, ${(0.45 + 0.50 * env).toFixed(3)})`
+                        : `rgba(145, 235, 255, ${(0.40 + 0.48 * env).toFixed(3)})`;
                     ctx.beginPath();
-                    ctx.arc(px, py, pr * 2.5, 0, Math.PI * 2);
+                    ctx.arc(px, py, pr * 1.9, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.restore();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(px, py, pr * 0.72, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            } else {
+                const allowParticles = (stats.fps || 60) >= 26;
+                if (allowParticles && focusedNodes.length > 0) {
+                    const nodesKey = deterministic ? computeNodesKeyUnordered(focusedNodes) : computeNodesKeyOrdered(focusedNodes);
+                    if (particlesRef.current.length === 0 || (deterministic && particlesKeyRef.current !== nodesKey)) {
+                        particlesRef.current = createParticles(focusedNodes, seed);
+                        particlesKeyRef.current = nodesKey;
+                    }
+                } else if (!allowParticles && particlesRef.current.length > 0) {
+                    particlesRef.current = [];
                 }
 
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = clamp((0.12 + (0.28 * pNode.scale)) * performanceFactor, 0.08, 0.35);
-                ctx.beginPath();
-                ctx.arc(px, py, pr, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalAlpha = 1.0;
-            });
+                ctx.globalCompositeOperation = 'source-over';
+                particlesRef.current.forEach(p => {
+                    const pNode = projectedById.get(p.nodeId);
+                    if (!pNode || pNode.scale < 0.1) return;
+
+                    const angle = deterministic ? computeOrbitalAngle(p.baseAngle, p.speed, liveTick) : (p.angle += p.speed);
+                    const ox = Math.cos(angle) * p.radius;
+                    const oy = Math.sin(angle) * p.radius;
+
+                    const px = pNode.x2d + ox * pNode.scale;
+                    const py = pNode.y2d + oy * pNode.scale;
+                    const pr = p.size * pNode.scale;
+
+                    if (highFx) {
+                        const glowAlpha = clamp((0.25 * pNode.scale) * performanceFactor, 0.05, 0.30);
+                        const hslaColor = p.color.replace('hsl(', 'hsla(').replace(')', ` / ${glowAlpha.toFixed(3)})`);
+                        ctx.save();
+                        ctx.globalCompositeOperation = 'lighter';
+                        const pGrad = ctx.createRadialGradient(px, py, 0, px, py, pr * 2.5);
+                        pGrad.addColorStop(0, hslaColor);
+                        pGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                        ctx.fillStyle = pGrad;
+                        ctx.beginPath();
+                        ctx.arc(px, py, pr * 2.5, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = clamp((0.12 + (0.28 * pNode.scale)) * performanceFactor, 0.08, 0.35);
+                    ctx.beginPath();
+                    ctx.arc(px, py, pr, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.globalAlpha = 1.0;
+                });
+            }
 
             ctx.globalCompositeOperation = 'source-over';
 
@@ -1917,15 +2189,60 @@ const NetworkCanvas = ({
         };
     }, [draw]);
 
-    // Efecto de redibujo ante cambios en props
+    // Efecto de redibujo ante cambios en props y ticks deterministas
     useEffect(() => {
         draw();
-    }, [draw]);
+    }, [draw, deterministic, tick]);
+
+    const toggleExpand2d = useCallback((e) => {
+        e?.stopPropagation?.();
+        setIsExpanded((prev) => {
+            const next = !prev;
+            try {
+                if (next && containerRef.current && typeof containerRef.current.requestFullscreen === 'function' && !document.fullscreenElement) {
+                    containerRef.current.requestFullscreen().catch(() => {});
+                } else if (!next && typeof document !== 'undefined' && document.fullscreenElement && typeof document.exitFullscreen === 'function') {
+                    document.exitFullscreen().catch(() => {});
+                }
+            } catch {
+                // Fallback smoothly to fixed full-viewport overlay
+            }
+            return next;
+        });
+    }, []);
+
+    useEffect(() => {
+        if (typeof document === 'undefined' || typeof window === 'undefined') return undefined;
+        const onKeyDown = (ev) => {
+            if (ev.key === 'Escape' && isExpanded) setIsExpanded(false);
+        };
+        const onFsChange = () => {
+            if (!document.fullscreenElement && isExpanded) setIsExpanded(false);
+        };
+        window.addEventListener('keydown', onKeyDown);
+        document.addEventListener('fullscreenchange', onFsChange);
+        return () => {
+            window.removeEventListener('keydown', onKeyDown);
+            document.removeEventListener('fullscreenchange', onFsChange);
+        };
+    }, [isExpanded]);
+
+    const verdict2dLabel = bridgeHudState.decisionTone === 'affirmative'
+        ? 'PRESENCIA ESTRUCTURAL'
+        : (bridgeHudState.decisionTone === 'negative' ? 'CORTE / DESACOPLE' : 'RESERVA ESTRUCTURAL');
+    const verdict2dClass = bridgeHudState.decisionTone === 'affirmative'
+        ? 'border-emerald-400/50 bg-emerald-950/75 text-emerald-200'
+        : (bridgeHudState.decisionTone === 'negative'
+            ? 'border-rose-400/60 bg-rose-950/80 text-rose-200'
+            : 'border-amber-400/50 bg-amber-950/75 text-amber-200');
 
     return (
         <div
             ref={containerRef}
-            className="relative cursor-grab active:cursor-grabbing overflow-hidden rounded-xl border border-purple-500/30 shadow-2xl bg-gradient-to-b from-slate-950 via-[#040816] to-black"
+            data-expanded={isExpanded ? 'true' : 'false'}
+            className={isExpanded
+                ? 'fixed inset-0 z-[9999] h-dvh w-screen cursor-grab active:cursor-grabbing overflow-hidden bg-[#020510]'
+                : 'relative h-full w-full cursor-grab active:cursor-grabbing overflow-hidden rounded-xl border border-cyan-500/25 shadow-2xl bg-[#030612]'}
             role="application"
             aria-label="Red nodal interactiva: arrastra para rotar, usa los botones para acercar y click para fijar un nodo."
             tabIndex={0}
@@ -1945,7 +2262,7 @@ const NetworkCanvas = ({
                 ref={canvasRef}
                 width={canvasSize.width}
                 height={canvasSize.height}
-                className="w-full h-auto block"
+                className="h-full w-full block"
             />
 
             {(renderState === 'fallback_2d' || renderState === 'worker_fault' || renderState === 'projection_fault' || renderState === 'data_fault') && (
@@ -1976,110 +2293,121 @@ const NetworkCanvas = ({
                 </div>
             )}
 
+            {/* Minimalist Top Bar aligned with WebGL 3D */}
             <div
-                className="absolute top-4 left-4 pointer-events-auto flex items-center gap-1 bg-black/45 border border-cyan-500/30 rounded-lg p-1"
+                className="pointer-events-none absolute left-2.5 right-2.5 top-2.5 z-10 flex flex-wrap items-center justify-between gap-1.5"
                 onMouseDown={(e) => e.stopPropagation()}
                 onClick={(e) => e.stopPropagation()}
             >
-                <button
-                    type="button"
-                    className="text-[11px] font-mono text-cyan-200 px-2 py-1 rounded bg-cyan-900/30 hover:bg-cyan-800/40"
-                    onClick={() => {
-                        const canvas = canvasRef.current;
-                        if (!canvas) return;
-                        cameraRef.current = clampCamera({
-                            ...cameraRef.current,
-                            zoom: cameraRef.current.zoom * 1.12
-                        }, canvas);
-                    }}
-                >
-                    +
-                </button>
-                <button
-                    type="button"
-                    className="text-[11px] font-mono text-cyan-200 px-2 py-1 rounded bg-cyan-900/30 hover:bg-cyan-800/40"
-                    onClick={() => {
-                        const canvas = canvasRef.current;
-                        if (!canvas) return;
-                        cameraRef.current = clampCamera({
-                            ...cameraRef.current,
-                            zoom: cameraRef.current.zoom * 0.89
-                        }, canvas);
-                    }}
-                >
-                    -
-                </button>
-                <button
-                    type="button"
-                    className="text-[10px] font-mono text-emerald-200 px-2 py-1 rounded bg-emerald-900/30 hover:bg-emerald-800/40"
-                    onClick={handleDoubleClick}
-                >
-                    RESET
-                </button>
-                <button
-                    type="button"
-                    className="text-[10px] font-mono text-amber-200 px-2 py-1 rounded bg-amber-900/30 hover:bg-amber-800/40"
-                    onClick={handleReactivateNetwork}
-                >
-                    REACTIVAR
-                </button>
-            </div>
-
-            {/* Overlay de diagnóstico (Sutil) */}
-            <div className={`absolute top-4 right-4 pointer-events-none flex flex-col items-end gap-1 ${uiDensity === 'compact' ? 'scale-90 origin-top-right' : ''}`}>
-                <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-cyan-400 bg-cyan-900/30 px-2 py-0.5 rounded border border-cyan-500/30">
-                        2.5D ENGINE v8.1 Active
-                    </span>
-                    <span className="text-[10px] font-mono text-purple-400 bg-purple-900/30 px-2 py-0.5 rounded border border-purple-500/30">
-                        {fpsDisplay} FPS
-                    </span>
-                    <span className="text-[10px] font-mono text-emerald-300 bg-emerald-900/30 px-2 py-0.5 rounded border border-emerald-500/30">
-                        Z {cameraRef.current.zoom.toFixed(2)}x
-                    </span>
-                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${useWorkerRender ? 'text-sky-300 bg-sky-900/30 border-sky-500/30' : 'text-amber-300 bg-amber-900/30 border-amber-500/30'}`}>
-                        {useWorkerRender ? 'THREAD: WORKER' : 'THREAD: MAIN'}
-                    </span>
-                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${(RENDER_STATE_META[renderState] || RENDER_STATE_META.recovering).badgeClass}`}>
-                        {(RENDER_STATE_META[renderState] || RENDER_STATE_META.recovering).label}
-                    </span>
+                <div className="pointer-events-auto inline-flex items-center overflow-hidden rounded-lg border border-slate-600/50 bg-slate-950/75 text-[11px] font-mono text-slate-200 backdrop-blur-md">
+                    <button
+                        type="button"
+                        className="px-2 py-1 hover:bg-slate-800"
+                        onClick={() => {
+                            const canvas = canvasRef.current;
+                            if (!canvas) return;
+                            cameraRef.current = clampCamera({
+                                ...cameraRef.current,
+                                zoom: cameraRef.current.zoom * 1.12
+                            }, canvas);
+                        }}
+                    >
+                        +
+                    </button>
+                    <button
+                        type="button"
+                        className="border-l border-slate-700/70 px-2 py-1 hover:bg-slate-800"
+                        onClick={() => {
+                            const canvas = canvasRef.current;
+                            if (!canvas) return;
+                            cameraRef.current = clampCamera({
+                                ...cameraRef.current,
+                                zoom: cameraRef.current.zoom * 0.89
+                            }, canvas);
+                        }}
+                    >
+                        −
+                    </button>
+                    <button
+                        type="button"
+                        className="border-l border-slate-700/70 px-2 py-1 text-emerald-200 hover:bg-slate-800"
+                        onClick={handleDoubleClick}
+                    >
+                        Reset
+                    </button>
+                    <button
+                        type="button"
+                        className="border-l border-slate-700/70 px-2 py-1 text-amber-200 hover:bg-slate-800"
+                        onClick={handleReactivateNetwork}
+                    >
+                        Reactivar
+                    </button>
                 </div>
-                {!isRunning && (
-                    <div className="text-[9px] font-bold text-amber-400/70 animate-pulse">
-                        SISTEMA EN ESTADO DE REPOSO - OBSERVACIÓN ACTIVA
-                    </div>
-                )}
-                {renderStateDetail && (
-                    <div className="text-[9px] font-mono text-slate-300/80 max-w-[320px] text-right">
-                        {renderStateDetail}
-                    </div>
-                )}
-                <div className="text-[9px] font-mono text-cyan-200/80 max-w-[360px] text-right">
-                    N {drawStats.visibleNodes} | E {drawStats.edgeCount} | P {drawStats.projectedNodes} | OnScreen {drawStats.visibleOnScreen} | Recovery {drawStats.recoveryAttempts}
+
+                <div className="flex flex-wrap items-center gap-1.5">
+                    {onCouplingModeChange && (
+                        <div role="group" aria-label="Modo del puente en vivo 2D" className="pointer-events-auto inline-flex overflow-hidden rounded-lg border border-emerald-500/35 bg-slate-950/75 text-[10px] font-mono backdrop-blur-md">
+                            {[
+                                { id: 'bidirectional', label: 'η=1/8' },
+                                { id: 'td_cut_eta_zero', label: 'η=0' },
+                                { id: 'reducible_control', label: 'A=I' }
+                            ].map((m) => (
+                                <button
+                                    key={m.id}
+                                    type="button"
+                                    data-testid={`2d-coupling-btn-${m.id}`}
+                                    aria-pressed={bridgeHudState.mode === m.id}
+                                    onClick={() => onCouplingModeChange(m.id)}
+                                    className={`px-2 py-1 transition-colors ${bridgeHudState.mode === m.id ? 'bg-emerald-600/85 text-white' : 'text-slate-300 hover:bg-slate-800/80'}`}
+                                >
+                                    {m.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    <button
+                        type="button"
+                        data-testid="2d-expand-fullscreen-btn"
+                        aria-pressed={isExpanded}
+                        onClick={toggleExpand2d}
+                        title={isExpanded ? 'Salir de pantalla completa (ESC)' : 'Expandir a pantalla completa'}
+                        className="pointer-events-auto rounded-lg border border-cyan-400/50 bg-cyan-950/80 px-2.5 py-1 font-mono text-[11px] font-semibold text-cyan-100 backdrop-blur-md transition-colors hover:bg-cyan-800/80"
+                    >
+                        {isExpanded ? '✕ Salir (ESC)' : '⛶ Expandir'}
+                    </button>
                 </div>
             </div>
 
             {(selectedNode || hoverNode) && (
                 <div
-                    className="absolute pointer-events-none max-w-[240px] rounded-lg border border-cyan-400/35 bg-slate-950/88 px-3 py-2 text-[10px] font-mono text-slate-100 shadow-[0_0_22px_rgba(34,211,238,0.18)] backdrop-blur-sm"
+                    className="absolute pointer-events-none max-w-[250px] rounded-xl border border-cyan-400/45 bg-slate-950/90 px-3 py-2 text-[10px] font-mono text-slate-100 shadow-2xl backdrop-blur-md z-20"
                     style={{
                         left: interactionRef.current.pointer?.cssX
-                            ? `${Math.min(Math.max(12, interactionRef.current.pointer.cssX + 14), Math.max(12, (canvasSize.width / canvasSize.dpr) - 250))}px`
+                            ? `${Math.min(Math.max(12, interactionRef.current.pointer.cssX + 14), Math.max(12, (canvasSize.width / canvasSize.dpr) - 260))}px`
                             : '14px',
                         top: interactionRef.current.pointer?.cssY
-                            ? `${Math.min(Math.max(12, interactionRef.current.pointer.cssY + 14), Math.max(12, (canvasSize.height / canvasSize.dpr) - 116))}px`
-                            : '72px'
+                            ? `${Math.min(Math.max(48, interactionRef.current.pointer.cssY + 14), Math.max(48, (canvasSize.height / canvasSize.dpr) - 140))}px`
+                            : '54px'
                     }}
                     data-testid="network-node-focus-tooltip"
                 >
-                    <div className="mb-1 flex items-center justify-between gap-3 text-cyan-200">
-                        <span>{selectedNode ? 'Nodo fijado' : 'Nodo enfocado'}</span>
-                        <span className="text-amber-200">#{selectedNode?.id ?? hoverNode?.id}</span>
+                    <div className="mb-1 flex items-center justify-between gap-2 text-cyan-200 border-b border-slate-800 pb-1">
+                        <span>{selectedNode ? 'Nodo fijado' : 'Nodo enfocado'} #{selectedNode?.id ?? hoverNode?.id}</span>
+                        {(selectedNode?.sectorLabel || hoverNode?.sectorLabel) && (
+                            <span
+                                className="rounded px-1.5 py-0.5 text-[9px] font-semibold text-slate-950"
+                                style={{ backgroundColor: selectedNode?.sectorAccent || hoverNode?.sectorAccent || '#24ebb8' }}
+                            >
+                                {selectedNode?.sectorLabel ?? hoverNode?.sectorLabel}
+                            </span>
+                        )}
                     </div>
-                    <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-slate-300">
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-slate-300">
                         <span>estado</span><span className="text-right text-emerald-200">{selectedNode?.stateName ?? hoverNode?.stateName}</span>
                         <span>coh</span><span className="text-right">{(((selectedNode?.coherence ?? hoverNode?.coherence) || 0) * 100).toFixed(1)}%</span>
                         <span>int</span><span className="text-right">{(((selectedNode?.intensity ?? hoverNode?.intensity) || 0) * 100).toFixed(1)}%</span>
+                        <span>pulso</span><span className="text-right text-yellow-200">{Number(selectedNode?.signalPulse ?? hoverNode?.signalPulse ?? 0).toFixed(2)}</span>
                         <span>grado</span><span className="text-right">{selectedNode?.degree ?? hoverNode?.degree ?? 0}</span>
                     </div>
                     <div className="mt-1 border-t border-cyan-500/20 pt-1 text-[9px] text-cyan-200/70">
@@ -2088,11 +2416,47 @@ const NetworkCanvas = ({
                 </div>
             )}
 
-            {/* Guía Visual */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/20 text-[9px] uppercase tracking-widest font-bold text-center px-2">
-                {touchEnabled
-                    ? '1 dedo: Rotar | 2 dedos: Zoom/Pan | Doble tap: Reset vista'
-                    : 'Botones +/−: Zoom | Arrastrar: Rotar | Shift/Click Derecho: Pan | Doble Click: Reset vista'}
+            {/* Compact 1-Line Bottom HUD aligned with 3D (preserving 2.5D ENGINE v8.1 Active) */}
+            <div
+                data-testid="network-2d-coupled-hud"
+                className="pointer-events-none absolute bottom-2.5 left-2.5 right-2.5 z-10 flex flex-wrap items-end justify-between gap-2"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className={`pointer-events-auto rounded-xl border border-cyan-500/25 bg-slate-950/75 text-[10px] font-mono text-slate-200 shadow-xl backdrop-blur-md ${uiDensity === 'compact' ? 'px-2 py-1' : 'px-2.5 py-1.5'}`}>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className={`rounded border px-1.5 py-0.5 text-[9px] font-semibold ${verdict2dClass}`}>
+                            {verdict2dLabel}
+                        </span>
+                        <span className="text-cyan-300">2.5D ENGINE v8.1 Active</span>
+                        <span className="text-slate-300">
+                            {bridgeHudState.mode} (η={bridgeHudState.effectiveEta})
+                        </span>
+                        <span className="text-teal-300">
+                            N {drawStats.visibleNodes} | E {drawStats.edgeCount}
+                        </span>
+                        <span className="text-emerald-300">{Math.min(30, fpsDisplay)} FPS</span>
+                        <button
+                            type="button"
+                            data-testid="2d-hud-details-toggle"
+                            aria-expanded={showHudDetails}
+                            onClick={() => setShowHudDetails((v) => !v)}
+                            className="rounded border border-slate-600/70 bg-slate-900/80 px-1.5 py-0.5 text-[9px] text-slate-200 hover:bg-slate-800"
+                        >
+                            {showHudDetails ? 'Ocultar ▾' : 'Detalles ▴'}
+                        </button>
+                    </div>
+                    {showHudDetails && (
+                        <div className="mt-1.5 border-t border-slate-800/80 pt-1 text-[9px] text-slate-300 flex flex-wrap items-center gap-x-3 gap-y-0.5">
+                            <span>Z {cameraRef.current.zoom.toFixed(2)}x</span>
+                            <span>{useWorkerRender ? 'THREAD: WORKER' : 'THREAD: MAIN'}</span>
+                            <span>{(RENDER_STATE_META[renderState] || RENDER_STATE_META.recovering).label}</span>
+                            <span>P {drawStats.projectedNodes} · OnScreen {drawStats.visibleOnScreen}</span>
+                            <span>Senales vivas: {bridgeHudState.activeSignals}</span>
+                            <span>{touchEnabled ? '1 dedo: Rotar · 2 dedos: Zoom' : 'Arrastrar: Rotar · Shift: Pan · Doble click: Reset'}</span>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

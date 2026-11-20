@@ -343,7 +343,17 @@ export function computeNodalSectorMetrics(nodes, signalStats = null, towerTeleme
  * Populates a zero-allocation reusable TypedArray view for 60 FPS WebGL 3D
  * visualization (Bloque 2), updated in-place without cloning arrays per frame.
  */
-export function populate3DTelemetryView(nodes, activeNodeIds, bridgeMetrics, towerTelemetry, endogenousDecision, cache, nodeInterFlux = null) {
+export function populate3DTelemetryView(
+  nodes,
+  activeNodeIds,
+  bridgeMetrics,
+  towerTelemetry,
+  endogenousDecision,
+  cache,
+  nodeInterFlux = null,
+  nodeSignalPulse = null,
+  signalPackets = null
+) {
   const safeNodes = Array.isArray(nodes) ? nodes : [];
   const n = safeNodes.length;
   let buffers = cache.buffers;
@@ -357,9 +367,12 @@ export function populate3DTelemetryView(nodes, activeNodeIds, bridgeMetrics, tow
       intensity: new Float32Array(n),
       phase: new Float32Array(n),
       interFlux: new Float32Array(n),
+      signalPulse: new Float32Array(n),
       couplingMatrix: new Float32Array(16)
     };
     cache.buffers = buffers;
+  } else if (!buffers.signalPulse || buffers.signalPulse.length !== n) {
+    buffers.signalPulse = new Float32Array(n);
   }
 
   for (let i = 0; i < n; i += 1) {
@@ -374,6 +387,9 @@ export function populate3DTelemetryView(nodes, activeNodeIds, bridgeMetrics, tow
     buffers.phase[i] = Number.isFinite(node.phase) ? node.phase : 0;
     buffers.interFlux[i] = (nodeInterFlux && i < nodeInterFlux.length && Number.isFinite(nodeInterFlux[i]))
       ? nodeInterFlux[i]
+      : 0;
+    buffers.signalPulse[i] = (nodeSignalPulse && i < nodeSignalPulse.length && Number.isFinite(nodeSignalPulse[i]))
+      ? nodeSignalPulse[i]
       : 0;
   }
 
@@ -391,6 +407,7 @@ export function populate3DTelemetryView(nodes, activeNodeIds, bridgeMetrics, tow
     schema: 'qicn.nodal_3d_telemetry_view.v1',
     nodeCount: n,
     buffers,
+    signals: signalPackets || null,
     bridge: bridgeMetrics || null,
     tower: towerTelemetry ? {
       phase: Number(towerTelemetry.core?.phase ?? 0),

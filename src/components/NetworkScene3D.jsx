@@ -11,8 +11,11 @@ import {
   buildRealSynapticEdgeSelection,
   computeCoupledNodeTargets,
   createProjectionWorkspace,
+  createSignalPacketPool,
   extractCoreVisualizationState,
-  selectStratifiedRenderIndices
+  selectStratifiedRenderIndices,
+  spawnSignalPacketsFromView,
+  stepSignalPackets
 } from '../simulation/Nodal3DSceneProjection.js';
 
 const QUALITY_PRESETS = Object.freeze({
@@ -94,11 +97,13 @@ const EDGE_VERTEX_SHADER = `
   attribute float aEdgeProgress;
   attribute float aEdgeIsBridge;
   attribute float aEdgeHighlight;
+  attribute float aEdgeWeight;
   attribute vec3 color;
   varying vec3 vColor;
   varying float vProgress;
   varying float vIsBridge;
   varying float vHighlight;
+  varying float vWeight;
   varying float vDepth;
 
   void main() {
@@ -106,6 +111,7 @@ const EDGE_VERTEX_SHADER = `
     vProgress = aEdgeProgress;
     vIsBridge = aEdgeIsBridge;
     vHighlight = aEdgeHighlight;
+    vWeight = aEdgeWeight;
     vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
     vDepth = -mvPos.z;
     gl_Position = projectionMatrix * mvPos;
@@ -121,21 +127,44 @@ const EDGE_FRAGMENT_SHADER = `
   varying float vProgress;
   varying float vIsBridge;
   varying float vHighlight;
+  varying float vWeight;
   varying float vDepth;
 
   void main() {
-    float speed = mix(1.3 + vIsBridge * 1.1, 0.25, uReducedMotion);
-    float pulse = 0.5 + 0.5 * sin((vProgress * 6.0) - (uTime * speed));
-    float travelGlow = pulse * pulse;
-    float depthFade = clamp(1.32 - (vDepth * 0.024), 0.24, 1.0);
-    float bridgeGate = mix(1.0, mix(0.22, 1.0, uBridgeActive), vIsBridge);
+    float depthFade = clamp(1.34 - (vDepth * 0.022), 0.22, 1.0);
+    float bridgeGate = mix(1.0, mix(0.20, 1.0, uBridgeActive), vIsBridge);
+    // Real synaptic weight directly governs filament clarity: resonant highways shine cleanly
+    float weightGain = 0.42 + (0.95 * vWeight);
 
-    float alpha = (uBaseAlpha + (travelGlow * (0.07 + 0.11 * vIsBridge))) * bridgeGate * depthFade;
-    vec3 finalCol = vColor + (vec3(0.08, 0.20, 0.22) * travelGlow * vIsBridge * uBridgeActive);
-    alpha = mix(alpha, 0.88, vHighlight);
-    finalCol = mix(finalCol, vec3(0.72, 0.98, 0.95), vHighlight * 0.55);
+    float alpha = (uBaseAlpha * weightGain) * bridgeGate * depthFade;
+    vec3 finalCol = vColor * (0.72 + 0.36 * vWeight);
+    alpha = mix(alpha, 0.90, vHighlight);
+    finalCol = mix(finalCol, vec3(0.75, 0.99, 0.95), vHighlight * 0.58);
 
     gl_FragColor = vec4(finalCol, clamp(alpha, 0.04, 0.94));
+  }
+`;
+
+const SIGNAL_VERTEX_SHADER = `
+  attribute vec3 color;
+  varying vec3 vColor;
+  void main() {
+    vColor = color;
+    vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+    gl_PointSize = clamp(150.0 / max(1.0, -mvPos.z), 3.0, 10.5);
+    gl_Position = projectionMatrix * mvPos;
+  }
+`;
+
+const SIGNAL_FRAGMENT_SHADER = `
+  varying vec3 vColor;
+  void main() {
+    vec2 d = gl_PointCoord - 0.5;
+    float r2 = dot(d, d);
+    if (r2 > 0.25) discard;
+    float g = max(0.0, 1.0 - (r2 * 4.0));
+    float glow = g * g;
+    gl_FragColor = vec4(vColor + vec3(0.24 * glow), clamp(glow * 1.15, 0.0, 0.96));
   }
 `;
 
@@ -242,6 +271,7 @@ function buildNodeInspectorSummary(modelIdx, renderIdx, view, workspace, edgeSta
     intensity: clamp01(buffers.intensity[modelIdx]),
     phase: Number.isFinite(buffers.phase[modelIdx]) ? buffers.phase[modelIdx] : 0,
     interFlux: Number(buffers.interFlux[modelIdx] || 0),
+    signalPulse: buffers.signalPulse ? Number(buffers.signalPulse[modelIdx] || 0) : 0,
     intraDegree: intraDeg,
     interDegree: interDeg,
     totalDegree: intraDeg + interDeg,
@@ -250,7 +280,7 @@ function buildNodeInspectorSummary(modelIdx, renderIdx, view, workspace, edgeSta
   };
 }
 
-const DEFAULT_CAMERA_POS = [0, 3.0, 26.5];
+const DEFAULT_CAMERA_POS = [0, 4.4, 34.0];
 
 const NetworkScene3D = React.memo(({
   nodalLayer,
@@ -555,12 +585,13 @@ const NetworkScene3D = React.memo(({
       nodeMesh.frustumCulled = false;
       scene.add(nodeMesh);
 
-      // Real synaptic filaments (NormalBlending -> razor-sharp mesh, zero blowout!)
+      // Real synaptic filaments (NormalBlending -> razor-sharp weighted Obsidian mesh, zero blowout!)
       const edgePositions = new Float32Array(edgeCap * 6);
       const edgeColors = new Float32Array(edgeCap * 6);
       const edgeProgress = new Float32Array(edgeCap * 2);
       const edgeIsBridgeAttrArr = new Float32Array(edgeCap * 2);
       const edgeHighlightArr = new Float32Array(edgeCap * 2);
+      const edgeWeightArr = new Float32Array(edgeCap * 2);
       for (let i = 0; i < edgeCap; i += 1) {
         edgeProgress[i * 2] = 0;
         edgeProgress[i * 2 + 1] = 1;
@@ -574,12 +605,14 @@ const NetworkScene3D = React.memo(({
       const progAttr = new THREE.BufferAttribute(edgeProgress, 1);
       const bridgeAttr = new THREE.BufferAttribute(edgeIsBridgeAttrArr, 1);
       const highAttr = new THREE.BufferAttribute(edgeHighlightArr, 1);
+      const weightAttr = new THREE.BufferAttribute(edgeWeightArr, 1);
 
       edgeGeom.setAttribute('position', posAttr);
       edgeGeom.setAttribute('color', colAttr);
       edgeGeom.setAttribute('aEdgeProgress', progAttr);
       edgeGeom.setAttribute('aEdgeIsBridge', bridgeAttr);
       edgeGeom.setAttribute('aEdgeHighlight', highAttr);
+      edgeGeom.setAttribute('aEdgeWeight', weightAttr);
       edgeGeom.setDrawRange(0, 0);
 
       const edgeUniforms = {
@@ -599,6 +632,28 @@ const NetworkScene3D = React.memo(({
       const edgeSegments = new THREE.LineSegments(edgeGeom, edgeMaterial);
       edgeSegments.frustumCulled = false;
       scene.add(edgeSegments);
+
+      // Real traveling signal traffic photons (1 GPU draw call, zero per-tick allocations!)
+      const signalCap = viewportMode === 'mobile' ? 110 : (viewportMode === 'tablet' ? 180 : 240);
+      const signalPool = createSignalPacketPool(signalCap);
+      const signalGeom = new THREE.BufferGeometry();
+      const signalPosAttr = new THREE.BufferAttribute(signalPool.positions, 3);
+      signalPosAttr.setUsage(THREE.DynamicDrawUsage);
+      const signalColAttr = new THREE.BufferAttribute(signalPool.colors, 3);
+      signalColAttr.setUsage(THREE.DynamicDrawUsage);
+      signalGeom.setAttribute('position', signalPosAttr);
+      signalGeom.setAttribute('color', signalColAttr);
+      signalGeom.setDrawRange(0, 0);
+      const signalMaterial = new THREE.ShaderMaterial({
+        vertexShader: SIGNAL_VERTEX_SHADER,
+        fragmentShader: SIGNAL_FRAGMENT_SHADER,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+      const signalPoints = new THREE.Points(signalGeom, signalMaterial);
+      signalPoints.frustumCulled = false;
+      scene.add(signalPoints);
 
       // Initialize optional Bloom post-processing target (default direct single-pass render for rock-solid 30 FPS!)
       let useComposer = false;
@@ -780,20 +835,13 @@ const NetworkScene3D = React.memo(({
           ? selectedRenderIdxRef.current
           : hoveredRenderIdxRef.current;
         const needEdgeRebuild = !hasSeededInitialState
-          || (Math.abs(props.tick - lastEdgeRebuildTickRef.current) >= 30)
+          || (Math.abs(props.tick - lastEdgeRebuildTickRef.current) >= 8)
+          || (coreState.bridgeActive && latestEdgeStats.bridgeEdges === 0 && coreState.interSectorRatio > 0.05)
           || lastEdgeModeRef.current !== coreState.bridgeMode
           || lastEdgeViewModeRef.current !== curViewMode
           || lastFocusIdxRef.current !== focusIdx;
 
         if (needEdgeRebuild && renderCount > 0) {
-          if (!hasSeededInitialState) {
-            computeCoupledNodeTargets(view, workspace, renderCount, coreState, {
-              timeSeconds: 0,
-              viewMode: curViewMode,
-              nodes: modelNodes,
-              activeEdgeCount: 0
-            });
-          }
           latestEdgeStats = buildRealSynapticEdgeSelection(modelNodes, view, workspace, renderCount, edgeCap, coreState, {
             viewMode: curViewMode,
             focusRenderIdx: focusIdx
@@ -806,8 +854,8 @@ const NetworkScene3D = React.memo(({
           edgeMetaDirty = true;
         }
 
-        // 3. Recompute free-form emergent synaptic physics at ~15 Hz (interpolated smoothly at locked 30 FPS!)
-        if (!hasSeededInitialState || (now - lastLayoutTime) >= 66) {
+        // 3. Recompute pure O(N+E) force-directed physics at ~10 Hz (smoothly interpolated at locked 30 FPS!)
+        if (!hasSeededInitialState || (now - lastLayoutTime) >= 95) {
           lastLayoutTime = now;
           computeCoupledNodeTargets(view, workspace, renderCount, coreState, {
             timeSeconds: prefersReducedMotion ? 0 : elapsedSec,
@@ -922,10 +970,13 @@ const NetworkScene3D = React.memo(({
           if (edgeMetaDirty) {
             const v2 = e * 2;
             const isFocusEdge = hasFocus && (rU === focusIdx || rV === focusIdx);
+            const w = workspace.edgeWeight[e];
             edgeIsBridgeAttrArr[v2] = isBridge;
             edgeIsBridgeAttrArr[v2 + 1] = isBridge;
             edgeHighlightArr[v2] = isFocusEdge ? 1.0 : 0.0;
             edgeHighlightArr[v2 + 1] = isFocusEdge ? 1.0 : 0.0;
+            edgeWeightArr[v2] = w;
+            edgeWeightArr[v2 + 1] = w;
           }
 
           if (isBridge) {
@@ -959,9 +1010,19 @@ const NetworkScene3D = React.memo(({
         if (edgeMetaDirty) {
           bridgeAttr.needsUpdate = true;
           highAttr.needsUpdate = true;
+          weightAttr.needsUpdate = true;
           edgeMetaDirty = false;
         }
         edgeGeom.setDrawRange(0, drawnEdges * 2);
+
+        // 5b. Spawn & advance real traveling signal traffic packets emitted by processSignals()
+        spawnSignalPacketsFromView(signalPool, view, workspace, renderCount, coreState, curViewMode);
+        const visibleSignals = stepSignalPackets(signalPool, currentPositions, renderCount, dt, prefersReducedMotion);
+        signalGeom.setDrawRange(0, visibleSignals);
+        if (visibleSignals > 0) {
+          signalPosAttr.needsUpdate = true;
+          signalColAttr.needsUpdate = true;
+        }
 
         // 6. Central Constructive Core dynamics
         const animTime = prefersReducedMotion ? 0 : elapsedSec;
@@ -1044,6 +1105,7 @@ const NetworkScene3D = React.memo(({
             totalEdges: latestEdgeStats.totalEdges,
             bridgeEdges: latestEdgeStats.bridgeEdges,
             intraEdges: latestEdgeStats.intraEdges,
+            activeSignals: signalPool.activeCount,
             bridgeMode: coreState.bridgeMode,
             effectiveEta: coreState.effectiveEta,
             interSectorRatio: coreState.interSectorRatio,
@@ -1223,6 +1285,8 @@ const NetworkScene3D = React.memo(({
             <div className="text-right text-purple-200">{activeInspectNode.phase.toFixed(2)}</div>
             <div className="text-slate-400">Flujo cruzado:</div>
             <div className="text-right text-teal-300">{activeInspectNode.interFlux.toFixed(4)}</div>
+            <div className="text-slate-400">Pulso senal:</div>
+            <div className="text-right text-yellow-200">{(activeInspectNode.signalPulse || 0).toFixed(3)}</div>
             <div className="text-slate-400">Sinapsis (i/x):</div>
             <div className="text-right text-amber-200">{activeInspectNode.intraDegree} / {activeInspectNode.interDegree}</div>
           </div>
@@ -1281,6 +1345,7 @@ const NetworkScene3D = React.memo(({
                 <span>Sync N-T: {hudSummary.bridgeSyncIndex.toFixed(3)}</span>
                 <span>Ret: {hudSummary.writableRetention.toFixed(2)} (≥9/16)</span>
                 <span>T_d def: {hudSummary.sigmaExactDefect}</span>
+                <span>Senales vivas: {hudSummary.activeSignals || 0}</span>
               </div>
               {hudSummary.sectors.length === 4 && (
                 <div className="mt-1.5 grid grid-cols-4 gap-1.5 font-mono text-[10px]">

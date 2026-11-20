@@ -138,7 +138,7 @@ export class ConsciousNode {
             this.retroInductionFlux = weightedFuture - this.coherenceState;
           }
           
-          applyPlasticity(feedbackSignal, mutableConfig, towerFeedback = null) {
+          applyPlasticity(feedbackSignal, mutableConfig, towerFeedback = null, nodesById = null) {
             // Nodal Plasticity: Hebbian Reinforcement and Synaptic Pruning
             const HEBBIAN_FACTOR = mutableConfig.HEBBIAN_FACTOR;
             const SYNAPTIC_PRUNING_THRESHOLD = mutableConfig.SYNAPTIC_PRUNING_THRESHOLD;
@@ -146,10 +146,33 @@ export class ConsciousNode {
             const sourceSector = hasCoupling ? (Number.isInteger(this.sectorId) ? this.sectorId : sectorIdOf(this.id)) : 0;
             
             this.connections = this.connections.map(conn => {
-              // Hebbian learning
+              // Hebbian learning:
+              // - B0 ('off'): exact legacy formula (zero drift)
+              // - Coupled modes: genuinely structural pairwise phase & coherence resonance
+              //   ("fire together, wire together"), replacing any blind uniform bonus.
               const isInterSector = hasCoupling && (sectorIdOf(conn.targetId) !== sourceSector);
-              const hebbianBonus = isInterSector ? towerFeedback.interSectorHebbianBonus : 0;
-              const hebbianUpdate = (HEBBIAN_FACTOR * this.intensity * feedbackSignal) + hebbianBonus;
+              let hebbianUpdate;
+              if (hasCoupling) {
+                const target = nodesById ? nodesById[conn.targetId] : null;
+                let pairResonance = 0;
+                if (target) {
+                  const phaseAlign = Math.cos(this.phase - target.phase); // [-1, 1]
+                  const cohAffinity = 1 - Math.abs(this.coherenceState - target.coherenceState); // [0, 1]
+                  pairResonance = (0.68 * phaseAlign) + (0.32 * ((cohAffinity * 2) - 1));
+                }
+                const baseDrive = HEBBIAN_FACTOR * this.intensity * feedbackSignal;
+                const resonantTerm = pairResonance >= 0
+                  ? (0.044 * pairResonance * (0.5 + 0.5 * this.intensity))
+                  : (0.036 * pairResonance);
+                const bridgeTerm = isInterSector
+                  ? (towerFeedback.interSectorHebbianBonus >= 0
+                    ? towerFeedback.interSectorHebbianBonus * Math.max(0.12, 0.5 + (0.5 * pairResonance))
+                    : towerFeedback.interSectorHebbianBonus)
+                  : 0;
+                hebbianUpdate = (baseDrive * (0.45 + Math.max(0, pairResonance) * 0.55)) + resonantTerm + bridgeTerm;
+              } else {
+                hebbianUpdate = HEBBIAN_FACTOR * this.intensity * feedbackSignal;
+              }
               
               const newWeight = conn.weight + hebbianUpdate +
                                   (executionEnvironmentFor(this).random() - 0.5) * 0.01 * this.learningRate;
@@ -159,7 +182,7 @@ export class ConsciousNode {
                 weight: Math.max(0.1, Math.min(1.0, newWeight))
               };
             }).filter(conn => {
-              // Synaptic pruning (protects inter-sector links when bidirectional coupling is active)
+              // Synaptic pruning (protects resonant inter-sector links when bidirectional coupling is active)
               if (!hasCoupling) return conn.weight > SYNAPTIC_PRUNING_THRESHOLD;
               const isInterSector = sectorIdOf(conn.targetId) !== sourceSector;
               const threshold = isInterSector

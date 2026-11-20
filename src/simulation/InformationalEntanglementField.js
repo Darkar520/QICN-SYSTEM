@@ -93,9 +93,18 @@ export class InformationalEntanglementField {
 
           applyNodalPlasticity(nodes, ccc, mutableConfig, _core = null, towerFeedback = null) {
             const feedbackSignal = ccc > executionEnvironmentFor(this).config.COHERENCE_THRESHOLD ? 0.1 : -0.05;
+            const hasCoupling = Boolean(towerFeedback && towerFeedback.mode !== 'off');
+            let nodesById = null;
+            if (hasCoupling) {
+              nodesById = new Array(nodes.length);
+              for (let i = 0; i < nodes.length; i += 1) {
+                const n = nodes[i];
+                if (n) nodesById[n.id] = n;
+              }
+            }
             return nodes.map(node => {
-              if (towerFeedback && towerFeedback.mode !== 'off') {
-                node.applyPlasticity(feedbackSignal, mutableConfig, towerFeedback);
+              if (hasCoupling) {
+                node.applyPlasticity(feedbackSignal, mutableConfig, towerFeedback, nodesById);
               } else {
                 node.applyPlasticity(feedbackSignal, mutableConfig);
               }

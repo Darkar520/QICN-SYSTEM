@@ -551,11 +551,11 @@ export function computeCoupledNodeTargets(view, workspace, renderCount, coreStat
       }
     }
 
-    // (4) Semi-implicit Euler integration with silky viscous damping & isotropic spherical bound
-    const isSettled = workspace.relaxInitialized === true && workspace.physicsStep > 26;
-    const damping = isSettled ? 0.85 : (workspace.relaxInitialized === true ? 0.80 : 0.74);
-    const stepDt = isSettled ? 0.36 : (workspace.relaxInitialized === true ? 0.42 : 0.56);
-    const maxSpeed = isSettled ? 0.46 : (workspace.relaxInitialized === true ? 0.90 : 1.75);
+    // (4) Semi-implicit Euler integration with smooth viscous damping & isotropic spherical bound
+    // Preserves crisp 30 FPS organic fluidity & dramatic η=1/8 <-> η=0 split/merge transitions
+    const damping = workspace.relaxInitialized === true ? 0.82 : 0.74;
+    const stepDt = workspace.relaxInitialized === true ? 0.42 : 0.56;
+    const maxSpeed = workspace.relaxInitialized === true ? 0.85 : 1.75;
     const maxRadius = 21.5;
 
     for (let r = 0; r < renderCount; r += 1) {

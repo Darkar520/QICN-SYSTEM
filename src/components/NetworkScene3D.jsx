@@ -31,8 +31,8 @@ const QUALITY_PRESETS = Object.freeze({
     bloomRadius: 0.26,
     bloomThreshold: 0.68,
     maxPixelRatio: 1.0,
-    layoutIntervalMs: 360,
-    targetFps: 60
+    layoutIntervalMs: 145,
+    targetFps: 30
   }),
   tablet: Object.freeze({
     tier: 'webgl_tablet',
@@ -45,7 +45,7 @@ const QUALITY_PRESETS = Object.freeze({
     bloomRadius: 0,
     bloomThreshold: 1,
     maxPixelRatio: 1.0,
-    layoutIntervalMs: 380,
+    layoutIntervalMs: 165,
     targetFps: 30
   }),
   mobile: Object.freeze({
@@ -63,7 +63,7 @@ const QUALITY_PRESETS = Object.freeze({
     edgeAlphaBase: 0.20,
     edgeAlphaBridge: 0.32,
     signalPointScale: 1.28,
-    layoutIntervalMs: 420,
+    layoutIntervalMs: 185,
     targetFps: 30
   })
 });
@@ -906,9 +906,8 @@ const NetworkScene3D = React.memo(({
       const scratchColor = new THREE.Color();
       const colorWhite = new THREE.Color(0xffffff);
       const clockStart = performance.now();
-      const maxTargetFps = Math.max(15, Number(quality.targetFps) || 60);
+      const maxTargetFps = Math.max(15, Number(quality.targetFps) || 30);
       const targetFrameIntervalMs = 1000 / maxTargetFps;
-      const shouldGateFps = maxTargetFps < 55;
       let prevFrameTime = clockStart - targetFrameIntervalMs;
       let lastLayoutTime = -999;
       let lastHudEmitTime = 0;
@@ -922,12 +921,11 @@ const NetworkScene3D = React.memo(({
       let displayFocusIdx = -1;
       let frameParity = 0;
 
-      // Runtime-tick synchronization & per-tick telemetry view cache (zero redundant 1500-node copies at 60 FPS!)
+      // Runtime-tick synchronization & per-tick telemetry view cache (zero redundant 1500-node copies!)
       let lastSeenRuntimeTick = -1;
-      let lastTickArrivalMs = clockStart;
-      let estimatedTickMs = 1000;
-      let pendingTickPhysics = false;
-      let tickDeferFrames = 0;
+      let lastSelectedForEdges = -1;
+      let modeTransitionUntilMs = 0;
+      let tickJustArrived = false;
       let cachedViewTick = -999;
       let cachedViewOntoRef = null;
       let cachedViewBridgeRef = null;
@@ -940,21 +938,20 @@ const NetworkScene3D = React.memo(({
         if (disposed) return;
         rafId = requestAnimationFrame(animate);
 
-        // Native 60 FPS on desktop (zero 3:2 vsync pulldown judder!); forgiving 30 FPS gate on mobile/tablet
+        // Rock-solid 30 FPS vsync-aligned frame pacer (28.83ms gate locks dead-flat at 30 FPS on 60/120/144Hz GPUs!)
         const rawDtMs = now - prevFrameTime;
-        if (shouldGateFps && hasSeededInitialState && rawDtMs < (targetFrameIntervalMs - 5.0)) {
+        if (hasSeededInitialState && rawDtMs < (targetFrameIntervalMs - 4.5)) {
           return;
         }
-        // Anti-jump dt clamp keeps motion velvet-smooth even across transient OS hiccups
-        const dt = Math.min(0.036, Math.max(0.004, rawDtMs * 0.001));
+        const dt = Math.min(0.067, Math.max(0.008, rawDtMs * 0.001));
         prevFrameTime = now;
         const elapsedSec = (now - clockStart) * 0.001;
         frameParity = (frameParity + 1) & 1;
 
         fpsFrames += 1;
         if ((now - fpsWindowStart) >= 500) {
-          const instantFps = Math.min(maxTargetFps, (fpsFrames * 1000) / Math.max(1, now - fpsWindowStart));
-          smoothedFps = Math.min(maxTargetFps, Math.round((smoothedFps * 0.55) + (instantFps * 0.45)));
+          const instantFps = Math.min(maxTargetFps, Math.round((fpsFrames * 1000) / Math.max(1, now - fpsWindowStart)));
+          smoothedFps = Math.min(maxTargetFps, instantFps);
           fpsFrames = 0;
           fpsWindowStart = now;
         }
@@ -965,24 +962,15 @@ const NetworkScene3D = React.memo(({
         latestNodesRef = modelNodes;
 
         const curTick = Number(props.tick) || 0;
-        const tickAdvanced = curTick !== lastSeenRuntimeTick;
-        if (tickAdvanced) {
-          if (lastSeenRuntimeTick >= 0 && curTick > lastSeenRuntimeTick) {
-            const observedSpan = now - lastTickArrivalMs;
-            if (observedSpan >= 250 && observedSpan <= 3000) {
-              estimatedTickMs = (estimatedTickMs * 0.7) + (observedSpan * 0.3);
-            }
-          }
+        if (curTick !== lastSeenRuntimeTick) {
           lastSeenRuntimeTick = curTick;
-          lastTickArrivalMs = now;
           if (hasSeededInitialState) {
-            // Defer physics 1 rAF frame off the tick arrival so runtime tick JS & 3D physics NEVER collide!
-            pendingTickPhysics = true;
-            tickDeferFrames = 1;
+            // Stagger physics 1 frame off the runtime tick arrival so tick JS & physics NEVER stack in the same frame!
+            tickJustArrived = true;
           }
         }
 
-        // Refresh 1500-node telemetry view ONLY when runtime tick or state props change (once/tick instead of 60x/s!)
+        // Refresh 1500-node telemetry view ONLY when runtime tick or state props change (once/tick instead of 30x/s!)
         const viewDirty = !cachedViewObj
           || cachedViewTick !== curTick
           || cachedViewOntoRef !== props.ontologicalState
@@ -1019,15 +1007,20 @@ const NetworkScene3D = React.memo(({
         }
         const renderCount = cachedRenderCount;
 
-        // 2. Rebuild full synaptic edge selection ONLY on mode/view/count change or lazy 48-tick refresh (NEVER on hover!)
-        const focusIdx = selectedRenderIdxRef.current >= 0
-          ? selectedRenderIdxRef.current
-          : hoveredRenderIdxRef.current;
+        // 2. Rebuild full synaptic edges ONLY on mode/view/count change, explicit click-lock, or 48-tick refresh (NEVER on hover!)
+        const selectedIdx = selectedRenderIdxRef.current;
+        const focusIdx = selectedIdx >= 0 ? selectedIdx : hoveredRenderIdxRef.current;
+        const modeChanged = lastEdgeModeRef.current !== coreState.bridgeMode;
+        if (modeChanged && hasSeededInitialState) {
+          modeTransitionUntilMs = now + 2200;
+        }
+        const selectedChanged = selectedIdx !== lastSelectedForEdges;
         const needFullEdgeRebuild = !hasSeededInitialState
           || (Math.abs(curTick - lastEdgeRebuildTickRef.current) >= 48)
           || (coreState.bridgeActive && latestEdgeStats.bridgeEdges === 0 && coreState.interSectorRatio > 0.05)
-          || lastEdgeModeRef.current !== coreState.bridgeMode
-          || lastEdgeViewModeRef.current !== curViewMode;
+          || modeChanged
+          || lastEdgeViewModeRef.current !== curViewMode
+          || selectedChanged;
 
         if (needFullEdgeRebuild && renderCount > 0) {
           latestEdgeStats = buildRealSynapticEdgeSelection(modelNodes, view, workspace, renderCount, edgeCap, coreState, {
@@ -1037,15 +1030,15 @@ const NetworkScene3D = React.memo(({
           lastEdgeRebuildTickRef.current = curTick;
           lastEdgeModeRef.current = coreState.bridgeMode;
           lastEdgeViewModeRef.current = curViewMode;
+          lastSelectedForEdges = selectedIdx;
           lastFocusIdxRef.current = focusIdx;
           // Stagger physics off this frame so edge rebuild & physics NEVER spike on the same frame!
           if (hasSeededInitialState) {
-            lastLayoutTime = now;
-            if (pendingTickPhysics) tickDeferFrames = Math.max(tickDeferFrames, 2);
+            lastLayoutTime = now - 60;
           }
           edgeMetaDirty = true;
         } else if (lastFocusIdxRef.current !== focusIdx && renderCount > 0) {
-          // 0.03ms fast hover neighborhood update: ZERO 15k-edge sort, ZERO background edge pop!
+          // 0.07ms fast hover neighborhood update: ZERO 15k-edge sort, ZERO background edge pop!
           // Keep previous neighborSet/edge highlights intact while fading out (focusIdx < 0) so dissolve is silky!
           if (focusIdx >= 0) {
             updateFocusNeighborhoodFast(modelNodes, workspace, renderCount, latestEdgeStats.totalEdges, focusIdx);
@@ -1071,7 +1064,7 @@ const NetworkScene3D = React.memo(({
         }
         const effectiveFocusActive = focusMix > 0.015 && displayFocusIdx >= 0 && displayFocusIdx < renderCount;
 
-        // 3. Tick-synchronized O(N+E) SO(3)-isotropic physics (1 frame after each runtime tick + gentle mid-tick step)
+        // 3. Smooth continuous 30 FPS physics (70ms during floor lift-off & η=1/8<->η=0 splits, 145ms settled; 1-frame stagger off ticks)
         const isDormantFloor = !props.isRunning && curTick <= 0;
         const isPausedFrozen = !props.isRunning && curTick > 0;
         const isFineMesh = Boolean(fineMeshModeRef.current);
@@ -1095,20 +1088,15 @@ const NetworkScene3D = React.memo(({
           }
           forceStyleLayout = true;
         }
+        const inFastTransition = (!isDormantFloor && workspace.physicsStep < 32) || (now < modeTransitionUntilMs);
+        const layoutIntervalMs = inFastTransition ? 70 : (quality.layoutIntervalMs || 145);
         let runPhysicsThisFrame = !hasSeededInitialState || forceStyleLayout;
-        if (!runPhysicsThisFrame && pendingTickPhysics) {
-          if (tickDeferFrames > 0) {
-            tickDeferFrames -= 1;
-          } else {
-            pendingTickPhysics = false;
-            runPhysicsThisFrame = true;
-          }
-        }
         if (!runPhysicsThisFrame) {
-          const midTickIntervalMs = (workspace.physicsStep < 32 && !isDormantFloor)
-            ? 72
-            : Math.max(240, Math.min(520, Math.round(estimatedTickMs * 0.48)));
-          if ((now - lastLayoutTime) >= midTickIntervalMs && (!isPausedFrozen || workspace.physicsStep < 32)) {
+          if (tickJustArrived) {
+            // Defer physics to next 30 FPS frame so tick JS + physics never overlap
+            tickJustArrived = false;
+            lastLayoutTime = Math.min(lastLayoutTime, now - layoutIntervalMs);
+          } else if ((now - lastLayoutTime) >= layoutIntervalMs) {
             runPhysicsThisFrame = true;
           }
         }
@@ -1125,17 +1113,12 @@ const NetworkScene3D = React.memo(({
           });
         }
 
-        // Hold camera rotation calmly while inspecting/following a node so it never slips away under the cursor!
-        orbitControls.autoRotate = !prefersReducedMotion && !hasLiveFocus && !isDormantFloor;
+        // Keep gentle orbital rotation continuous (no abrupt stop/start cuts when cursor passes over a node!)
+        orbitControls.autoRotate = !prefersReducedMotion && !isDormantFloor;
 
-        // 4. Direct typed-array GPU InstancedMesh updates with tick-paced liquid exponential interpolation
-        const tickSec = Math.max(0.35, Math.min(2.2, estimatedTickMs * 0.001));
-        const posRate = (workspace.physicsStep < 32 && !isDormantFloor)
-          ? 6.0
-          : Math.max(2.6, Math.min(5.2, 3.2 / tickSec));
-        const styleRate = Math.max(2.4, Math.min(4.8, 2.8 / tickSec));
-        const posLerp = (!hasSeededInitialState || prefersReducedMotion) ? 1.0 : (1 - Math.exp(-posRate * dt));
-        const styleLerp = (!hasSeededInitialState || prefersReducedMotion) ? 1.0 : (1 - Math.exp(-styleRate * dt));
+        // 4. Direct typed-array GPU InstancedMesh updates with silky 30 FPS exponential interpolation
+        const posLerp = (!hasSeededInitialState || prefersReducedMotion) ? 1.0 : (1 - Math.exp(-7.5 * dt));
+        const styleLerp = (!hasSeededInitialState || prefersReducedMotion) ? 1.0 : (1 - Math.exp(-6.0 * dt));
         const neighbors = workspace.neighborSet;
         const matArr = nodeMesh.instanceMatrix.array;
         const colArr = nodeMesh.instanceColor ? nodeMesh.instanceColor.array : null;
@@ -1407,8 +1390,8 @@ const NetworkScene3D = React.memo(({
         if (useComposer && composer) composer.render();
         else renderer.render(scene, camera);
 
-        // 7. Throttled HUD & parent visual-only telemetry update (~2.2 Hz)
-        if ((now - lastHudEmitTime) >= 450) {
+        // 7. Throttled HUD & parent visual-only telemetry update (2 Hz, synced with 500ms FPS window)
+        if ((now - lastHudEmitTime) >= 500) {
           lastHudEmitTime = now;
           const sectorsSnapshot = Array.isArray(coreState.sectors)
             ? coreState.sectors.map((sec, idx) => ({

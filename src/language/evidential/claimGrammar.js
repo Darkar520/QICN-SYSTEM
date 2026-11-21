@@ -52,6 +52,42 @@ export function keysOnly(object, allowed, required = [], meta = null) {
   }
 }
 
+function extractBalancedJsonCandidate(text) {
+  const candidates = [];
+  let depth = 0;
+  let start = -1;
+  let inString = false;
+  let escape = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const ch = text[i];
+    if (inString) {
+      if (escape) {
+        escape = false;
+      } else if (ch === '\\') {
+        escape = true;
+      } else if (ch === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+    } else if (ch === '{') {
+      if (depth === 0) start = i;
+      depth += 1;
+    } else if (ch === '}') {
+      if (depth > 0) {
+        depth -= 1;
+        if (depth === 0 && start >= 0) {
+          candidates.push(text.slice(start, i + 1));
+          start = -1;
+        }
+      }
+    }
+  }
+  return candidates.find((c) => c.includes('"schema"')) || candidates[0] || null;
+}
+
 export function parseEvidentialRealization(value) {
   if (typeof value !== 'string' || value.length > 48000) throw new Error('v5_invalid_output');
   const trimmed = value.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
@@ -59,10 +95,9 @@ export function parseEvidentialRealization(value) {
   try {
     parsed = JSON.parse(trimmed);
   } catch (firstError) {
-    const firstBrace = trimmed.indexOf('{');
-    const lastBrace = trimmed.lastIndexOf('}');
-    if (firstBrace >= 0 && lastBrace > firstBrace) {
-      parsed = JSON.parse(trimmed.slice(firstBrace, lastBrace + 1));
+    const candidate = extractBalancedJsonCandidate(trimmed);
+    if (candidate) {
+      parsed = JSON.parse(candidate);
     } else {
       throw firstError;
     }

@@ -520,6 +520,7 @@ export function buildEvidentialProseContext({
     b2Values,
     snapshot,
     ledgerDigest: factualContext.ledgerDigest,
+    kaizenEffective: Boolean(kaizenEffective),
     sensorObserverDynamicsEnabled: Boolean(sensorObserverDynamicsEnabled),
     level2Telemetry: normalizedLevel2
   };
@@ -586,6 +587,23 @@ export function verifySentenceEvidential(text, proseCtx) {
   }
   if (WRONG_MODULE_OP_RE.test(normalized)) {
     reasons.push({ reason: 'v5_module_operation_scope', detail: 'invalid module operation target' });
+  }
+  if (proseCtx.kaizenEffective && !proseCtx.sensorObserverDynamicsEnabled) {
+    const claimsSixOfSix = /\b(?:6\s*\/\s*6|seis\s+de\s+seis)\b/.test(normalized)
+      && !/\b(?:no|ni|nunca|jamas)\b[^.;]{0,25}\b(?:6\s*\/\s*6|seis\s+de\s+seis)\b/.test(normalized);
+    const claimsPlasticityDecayIncluded = (
+      /\b(?:incluy\w*|activa\w*|aprend\w*)\b[^.;]{0,40}\bplasticity_decay\b/.test(normalized)
+      || /\bplasticity_decay\b[^.;]{0,30}\b(?:inclu\w*|aprend\w*|activ\w*)\b/.test(normalized)
+    ) && !(
+      /\b(?:excluy\w*|sin|excepto|no|ni|inactiv\w*|desactiv\w*)\b[^.;]{0,35}\bplasticity_decay\b/.test(normalized)
+      || /\bplasticity_decay\b[^.;]{0,25}\b(?:excluid\w*|inactiv\w*|desactiv\w*|no\s+se\s+aprend\w*)\b/.test(normalized)
+    );
+    if (claimsSixOfSix || claimsPlasticityDecayIncluded) {
+      reasons.push({
+        reason: 'known_false_kaizen_plasticity_decay_scope',
+        detail: 'SENSOR_OBSERVER_DYNAMICS_ENABLED=false (5/6 keys excluding PLASTICITY_DECAY)'
+      });
+    }
   }
   if (FALSE_CN3_RE.test(normalized) && !/\b(?:false|falso|no\s+paso|no\s+supero)\b/.test(normalized)) {
     const hasEndogenousCn3 = Boolean(resolveSnapshotEndogenousDecision(snapshot)?.axes?.historical_causal_dependence?.cn3_causal_architecture_active);

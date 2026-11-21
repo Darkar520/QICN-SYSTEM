@@ -44,6 +44,9 @@ jobs:
       - name: Verify module inventory is up to date
         run: node scripts/build-module-inventory.mjs --check
 
+      - name: Verify framework summary is up to date
+        run: node scripts/build-framework-summary.mjs --check
+
       - name: Verify descriptor registry
         run: npm run verify:descriptor-registry
 

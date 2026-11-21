@@ -395,14 +395,16 @@ export function sanitizeAndRepairPreTickInvariants({
     ) {
       const towerPhaseNorm = Number.isFinite(Number(towerTelemetry?.core?.phase)) ? Number(towerTelemetry.core.phase) : 0;
       const towerPhaseRad = (((towerPhaseNorm % 1) + 1) % 1) * TWO_PI;
+      // Derived from nodal coherence domain ceiling 0.96 minus maximum positive sector offset 1.5 / K^3
+      // so baseCoh + exactSectorOffset <= 0.96 without asymmetric clipping; rescues collapsed (<0.5) runs to midpoint 0.5.
+      const cohUnfreezeCeil = 0.96 - (1.5 / (K * K * K));
       for (let i = 0; i < nActive; i += 1) {
         const node = activeNodes[i];
         const sec = resolveNodeSector(node, node.id);
         const exactSubAngle = ((node.id % K) * TWO_PI) / (K * K);
         node.phase = wrapPhase(towerPhaseRad + NODAL_SECTORS[sec].phaseOffset + exactSubAngle);
         const exactSectorOffset = (sec - 1.5) / (K * K * K);
-        // Restore around canonical ConsciousNode midpoint floor 0.5 when collapsed below viability band
-        const baseCoh = clamp(node.coherenceState, 0.5, 0.88);
+        const baseCoh = clamp(node.coherenceState, 0.5, cohUnfreezeCeil);
         node.coherenceState = clamp(baseCoh + exactSectorOffset, 0.05, 0.96);
         node.energy = clamp(Math.max(0.5, node.energy) + exactSectorOffset, 0.1, 1.0);
         node.intensity = clamp(0.5 + (0.5 * node.coherenceState), 0, 1);
@@ -726,13 +728,14 @@ export function applyStructuralPlasticityLevel2({
     && (Math.max(...state.recentCcc) - Math.min(...state.recentCcc)) <= KINEMATIC_FREEZE_EPSILON;
 
   if (dispersionCollapse || cccFlatline) {
+    const cohUnfreezeCeil = 0.96 - (1.5 / (K * K * K));
     for (let i = 0; i < activeCount; i += 1) {
       const node = activeNow[i];
       const sec = resolveNodeSector(node, node.id);
       const exactSubAngle = ((node.id % K) * TWO_PI) / (K * K);
       node.phase = wrapPhase(towerPhaseRad + NODAL_SECTORS[sec].phaseOffset + exactSubAngle);
       const exactSectorOffset = (sec - 1.5) / (K * K * K);
-      const baseCoh = clamp(node.coherenceState, 0.5, 0.88);
+      const baseCoh = clamp(node.coherenceState, 0.5, cohUnfreezeCeil);
       node.coherenceState = clamp(baseCoh + exactSectorOffset, 0.05, 0.96);
       node.energy = clamp(Math.max(0.5, node.energy) + exactSectorOffset, 0.1, 1.0);
       node.intensity = clamp(0.5 + (0.5 * node.coherenceState), 0, 1);

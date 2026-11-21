@@ -21,8 +21,8 @@
    - **2B (`degreeFloorRewires`)**: todo nodo vivo subconectado con `0 < connections.length < NODE_CONNECTION_MIN` (`3`) refuerza localmente sus enlaces faltantes hasta `NODE_CONNECTION_MIN` sin contabilizarse como nodo regenerado.
 4. **Mecanismo 1 — Migración funcional de sector (`migrations`)**:
    - Cuando $\max_s n_s - \min_s n_s \ge 2$ bajo acoplamiento `bidirectional`, migra nodos desde $s_{\max}$ hacia $s_{\min}$ eligiendo $i^* = \arg\max_{i \in s_{\max}} \cos(\phi_i - (\theta_{\text{tower}} + \Delta\theta_{s_{\min}}))$ (desempate por menor `node.id`).
-5. **Watchdog W3 — Ruptura de bloqueo cinemático (`kinematicUnfreezes`)**:
-   - Si el rango de dispersión nodal o variación de `CCC` durante `TEMPORAL_HORIZON` (`10`) ticks consecutivos cae por debajo de la tolerancia explícita `KINEMATIC_FREEZE_EPSILON = 1e-9` (capturando bloqueos con ruido sub-epsilon `1e-12` sin falsos positivos en `S0`), rompe simetría determinísticamente usando las 4 fases `NODAL_SECTORS[s].phaseOffset` alrededor de la línea base homeostática `Math.max(0.5, node.coherenceState)`.
+5. **Watchdog W3 — Ruptura de bloqueo cinemático y rescate de suelo de viabilidad (`kinematicUnfreezes`)**:
+   - Si el rango de dispersión nodal o variación de `CCC` durante `TEMPORAL_HORIZON` (`10`) ticks consecutivos cae por debajo de la tolerancia explícita `KINEMATIC_FREEZE_EPSILON = 1e-9` (capturando bloqueos con ruido sub-epsilon `1e-12` sin falsos positivos en `S0`), rompe simetría determinísticamente usando las 4 fases `NODAL_SECTORS[s].phaseOffset` y desplazamientos `(s - 1.5) / K^3` alrededor de `clamp(node.coherenceState, 0.5, 0.96 - 1.5 / K^3)` (combinando rescate al punto medio nodal `0.5` cuando la red colapsa por debajo de `0.5` con techo derivado `0.9365625` para que `baseCoh + (s - 1.5)/K^3 <= 0.96` sin recortar asimétricamente la dispersión entre sectores).
 
 ---
 

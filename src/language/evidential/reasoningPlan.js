@@ -98,12 +98,32 @@ function buildEndogenousDecisionLines(snapshot) {
   ];
 }
 
-function buildB2AuthorityLines(evidenceRegistry, ledgerInfo, snapshot = null, level2Telemetry = null) {
+function buildB2AuthorityLines(
+  evidenceRegistry,
+  ledgerInfo,
+  snapshot = null,
+  level2Telemetry = null,
+  kaizenEffective = false,
+  sensorObserverDynamicsEnabled = false
+) {
   const lines = [
     '',
     'AUTORIDAD EVIDENCIAL SISTEMA B (Workbench B2, Ledger y Cotas Exactas)',
     `- Estado de evidencia experimental B2 en copia aislada: ${evidenceRegistry.status} (scope: isolated_copy_not_live_state, external_support_certified: false).`
   ];
+  if (kaizenEffective && sensorObserverDynamicsEnabled) {
+    lines.push(
+      '- Estado Kaizen y dinámica sensor/observador: Kaizen learned activo con 6/6 claves aprendibles incluyendo PLASTICITY_DECAY (sensor_observer_dynamics = activo, escalas acotadas [0.85, 1.15], canal chat desacoplado).'
+    );
+  } else if (kaizenEffective && !sensorObserverDynamicsEnabled) {
+    lines.push(
+      '- Estado Kaizen y dinámica sensor/observador: Kaizen learned activo con 5/6 claves aprendibles (PLASTICITY_DECAY EXCLUIDA porque sensor_observer_dynamics = inactivo; prohibido afirmar 6/6 o que PLASTICITY_DECAY se aprende).'
+    );
+  } else {
+    lines.push(
+      `- Estado Kaizen y dinámica sensor/observador: Kaizen en modo legacy (no modifica la dinámica; sensor_observer_dynamics = ${sensorObserverDynamicsEnabled ? 'activo' : 'inactivo'}).`
+    );
+  }
   if (level2Telemetry && typeof level2Telemetry === 'object') {
     lines.push(
       `- Plasticidad estructural viva (StructuralPlasticityLevel2): modo=${level2Telemetry.enabled ? 'Nivel 2 (activo)' : 'Nivel 1 (Nivel 2 inactivo)'}, migraciones_sector=${level2Telemetry.migrations}, regenerados_apoptosis_neurogenesis=${level2Telemetry.regeneratedNodes}, recableados_piso_grado=${level2Telemetry.degreeFloorRewires}, reparaciones_invariantes_W1_W4=${level2Telemetry.invariantRepairs} (config=${level2Telemetry.configRepairs}, worldModel=${level2Telemetry.worldModelRepairs}), desbloqueos_cinematicos_W3=${level2Telemetry.kinematicUnfreezes} (resiliencia topológica y numérica interna del runtime; external_support_certified = false).`
@@ -168,7 +188,14 @@ function buildUnifiedSystemBHeader(args, fullDigest, fullTick) {
     `Copia EXACTOS los 64 caracteres hex de "digest" (${fullDigest}) y el entero "tick" (${fullTick}).`,
     `Local intent orientativo: ${args.localIntent?.intent || 'unknown'}.`,
     ...buildEndogenousDecisionLines(args.snapshot),
-    ...buildB2AuthorityLines(args.evidenceRegistry, args.ledgerInfo, args.snapshot, args.level2Telemetry)
+    ...buildB2AuthorityLines(
+      args.evidenceRegistry,
+      args.ledgerInfo,
+      args.snapshot,
+      args.level2Telemetry,
+      Boolean(args.kaizenEffective),
+      Boolean(args.sensorObserverDynamicsEnabled)
+    )
   ].join('\n');
 }
 

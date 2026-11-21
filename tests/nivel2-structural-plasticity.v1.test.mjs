@@ -25,6 +25,8 @@ import { captureRuntimeSnapshot } from '../src/language/runtimeSnapshot.js';
 import { prepareTurn, finalizeTurn } from '../src/language/conversationEngine.js';
 import { verifySentenceEvidential } from '../src/language/evidential/factualVerifier.js';
 import { parseEvidentialRealization } from '../src/language/evidential/claimGrammar.js';
+import { buildEvidentialPrompt } from '../src/language/evidential/reasoningPlan.js';
+import { resolveIntent } from '../src/language/intentResolver.js';
 
 // 1. Default config stays B0-safe (only 1 boolean flag added, zero new configurable numeric hyperparameters)
 // while interactive browser UI promotes Level 2 ('on') by default.
@@ -467,9 +469,134 @@ async function warmCapture(seed = 11, couplingMode = NODAL_TOWER_COUPLING_MODES.
     'M-4 FAIL: expected 6/6 incluyendo PLASTICITY_DECAY when sensorObserverDynamicsEnabled=true'
   );
 
-  // [M-1] Solo motor outputs Level 2 telemetry summary when provided
+  // [R-1] Prompt to Gemini must differ between 5/6 (sensorObserverDynamicsEnabled=false) and 6/6 (true)
+  assert.notEqual(
+    buildEvidentialPrompt(prep5of6.reasoningPlan),
+    buildEvidentialPrompt(prep6of6.reasoningPlan),
+    'R-1 FAIL: buildEvidentialPrompt must differ between sensorObserverDynamicsEnabled=false and true'
+  );
+  assert.ok(
+    prep5of6.prompt.includes('5/6 claves aprendibles (PLASTICITY_DECAY EXCLUIDA'),
+    'R-1 FAIL: prep5of6 prompt must explicitly state 5/6 claves aprendibles (PLASTICITY_DECAY EXCLUIDA)'
+  );
+  assert.ok(
+    !prep5of6.prompt.includes('6/6 claves aprendibles incluyendo PLASTICITY_DECAY'),
+    'R-1 FAIL: prep5of6 prompt must not claim 6/6 incluyendo PLASTICITY_DECAY'
+  );
+  assert.ok(
+    prep6of6.prompt.includes('6/6 claves aprendibles incluyendo PLASTICITY_DECAY'),
+    'R-1 FAIL: prep6of6 prompt must explicitly state 6/6 claves aprendibles incluyendo PLASTICITY_DECAY'
+  );
+
+  // [R-1] verifySentenceEvidential rejects false 6/6 or PLASTICITY_DECAY inclusion when sensorObserverDynamicsEnabled=false
+  const false6of6In5of6Mode = verifySentenceEvidential(
+    'En este tick Kaizen aprende 6/6 claves incluyendo PLASTICITY_DECAY.',
+    prep5of6.proseContext
+  );
+  assert.equal(false6of6In5of6Mode.ok, false, 'R-1 FAIL: claiming 6/6 including PLASTICITY_DECAY when sensorObserverDynamicsEnabled=false must be rejected');
+  assert.ok(
+    false6of6In5of6Mode.reasons.some((r) => r.reason === 'known_false_kaizen_plasticity_decay_scope'),
+    `R-1 FAIL: expected known_false_kaizen_plasticity_decay_scope, got ${JSON.stringify(false6of6In5of6Mode.reasons)}`
+  );
+  const true6of6In6of6Mode = verifySentenceEvidential(
+    'En este tick Kaizen aprende 6/6 claves incluyendo PLASTICITY_DECAY.',
+    prep6of6.proseContext
+  );
+  assert.equal(true6of6In6of6Mode.ok, true, `R-1 FAIL: valid 6/6 sentence rejected in 6/6 mode: ${JSON.stringify(true6of6In6of6Mode.reasons)}`);
+  const true5of6In5of6Mode = verifySentenceEvidential(
+    'En este tick Kaizen aprende 5/6 claves excluyendo PLASTICITY_DECAY.',
+    prep5of6.proseContext
+  );
+  assert.equal(true5of6In5of6Mode.ok, true, `R-1 FAIL: valid 5/6 exclusion sentence rejected in 5/6 mode: ${JSON.stringify(true5of6In5of6Mode.reasons)}`);
+
+  // [M-1 & R-2] Solo motor outputs Level 2 telemetry summary AND definition when asked "¿Qué es la plasticidad estructural de Nivel 2?"
   const localTurn = finalizeTurn(prep6of6, { mode: 'local' });
   assert.match(localTurn.text, /StructuralPlasticityLevel2.*Nivel 2 activo.*migraciones de sector = 4.*regenerados.*= 9.*recableados de piso.*= 2/);
+
+  const defIntent = resolveIntent('¿Qué es la plasticidad estructural de Nivel 2?');
+  assert.equal(defIntent.intent, 'metric_definition', 'R-2 FAIL: expected metric_definition intent for Level 2 definition query');
+  assert.ok(defIntent.metrics.includes('structural_plasticity_level2'), 'R-2 FAIL: expected structural_plasticity_level2 metric in resolved intent');
+  const prepDef = prepareTurn({
+    question: '¿Qué es la plasticidad estructural de Nivel 2?',
+    snapshot: snap,
+    contract: 'evidential',
+    kaizenEffective: true,
+    sensorObserverDynamicsEnabled: true,
+    level2Telemetry: {
+      enabled: true,
+      migrations: 4,
+      regeneratedNodes: 9,
+      degreeFloorRewires: 2,
+      invariantRepairs: 1,
+      configRepairs: 0,
+      worldModelRepairs: 0,
+      kinematicUnfreezes: 1
+    }
+  });
+  const localDefTurn = finalizeTurn(prepDef, { mode: 'local' });
+  assert.match(localDefTurn.text, /resonancia trigonométrica/, 'R-2 FAIL: Solo motor definition query must include DEFINITIONS.structural_plasticity_level2');
+  assert.match(localDefTurn.text, /NODE_CONNECTION_MIN = 3/, 'R-2 FAIL: Solo motor definition query must include degree floor invariant');
+  assert.match(localDefTurn.text, /StructuralPlasticityLevel2.*Nivel 2 activo/, 'R-2 FAIL: Solo motor definition query must include live Level 2 telemetry summary');
+
+  // [R-3] W3 derived ceiling 0.96 - 1.5/K^3 = 0.9365625 (eliminating 0.88 magic constant) and 0.5 midpoint floor rescue
+  {
+    const sessionHi = createHeadlessRuntimeSession({
+      config: { ...QICNConfig, TOTAL_NODES: 48, STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: true },
+      seed: 71,
+      nodes: 48,
+      profile: 'paired_intervention'
+    });
+    sessionHi.initialize();
+    const nodalHi = sessionHi.bag.nodalLayer.current;
+    for (const node of nodalHi.getActiveNodes()) {
+      node.coherenceState = 0.94;
+      node.phase = 0;
+    }
+    const resHi = sanitizeAndRepairPreTickInvariants({
+      nodalLayer: nodalHi,
+      ontologicalCore: sessionHi.bag.ontologicalCore.current,
+      worldModel: sessionHi.bag.worldModelRef.current,
+      mutableConfig: sessionHi.environment.config,
+      simulationStep: 2,
+      couplingMode: NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL
+    });
+    assert.equal(resHi.kinematicUnfreeze, true, 'R-3 FAIL: high-coherence freeze must trigger W3 kinematicUnfreeze');
+    const activeHi = nodalHi.getActiveNodes();
+    const meanHi = activeHi.reduce((acc, n) => acc + n.coherenceState, 0) / activeHi.length;
+    const expectedCeil = 0.96 - (1.5 / (4 * 4 * 4)); // 0.9365625
+    assert.ok(
+      Math.abs(meanHi - expectedCeil) < 1e-9,
+      `R-3 FAIL: high-coherence unfreeze mean ${meanHi} must equal derived ceiling ${expectedCeil} (not 0.88)`
+    );
+
+    const sessionLo = createHeadlessRuntimeSession({
+      config: { ...QICNConfig, TOTAL_NODES: 48, STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: true },
+      seed: 71,
+      nodes: 48,
+      profile: 'paired_intervention'
+    });
+    sessionLo.initialize();
+    const nodalLo = sessionLo.bag.nodalLayer.current;
+    for (const node of nodalLo.getActiveNodes()) {
+      node.coherenceState = 0.10;
+      node.phase = 0;
+    }
+    const resLo = sanitizeAndRepairPreTickInvariants({
+      nodalLayer: nodalLo,
+      ontologicalCore: sessionLo.bag.ontologicalCore.current,
+      worldModel: sessionLo.bag.worldModelRef.current,
+      mutableConfig: sessionLo.environment.config,
+      simulationStep: 2,
+      couplingMode: NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL
+    });
+    assert.equal(resLo.kinematicUnfreeze, true, 'R-3 FAIL: low-coherence freeze must trigger W3 kinematicUnfreeze');
+    const activeLo = nodalLo.getActiveNodes();
+    const meanLo = activeLo.reduce((acc, n) => acc + n.coherenceState, 0) / activeLo.length;
+    assert.ok(
+      Math.abs(meanLo - 0.5) < 1e-9,
+      `R-3 FAIL: low-coherence unfreeze mean ${meanLo} must rescue to midpoint floor 0.5`
+    );
+  }
 
   // [H-2 & M-1] verifySentenceEvidential accepts StructuralPlasticityLevel2 and SensorObserverDynamicsBridge + live numbers,
   // and rejects FakeNonExistentBridge with unknown_module
@@ -486,15 +613,15 @@ async function warmCapture(seed = 11, couplingMode = NODAL_TOWER_COUPLING_MODES.
   assert.equal(fakeModSent.ok, false, 'H-2 FAIL: FakeNonExistentBridge should be rejected');
   assert.ok(fakeModSent.reasons.some((r) => r.reason === 'unknown_module'), `H-2 FAIL: expected unknown_module, got ${JSON.stringify(fakeModSent.reasons)}`);
 
-  // [B-3] parseEvidentialRealization extracts JSON object when auxiliary C2 text wraps it, but enforces strict schema/keys
-  const wrappedC2Json = `Aquí está la salida JSON solicitada:\n{"schema":"qicn.language_realization.v5","snapshot":{"digest":"${snap.digest}","tick":${snap.tick}},"answer":"Opero en el tick ${snap.tick} con soporte interno únicamente."}\nFin de respuesta.`;
+  // [B-3 & R-4] parseEvidentialRealization extracts balanced JSON object even when surrounding prose or string values contain braces {aux} / {fin}
+  const wrappedC2Json = `Nota {aux}: {"schema":"qicn.language_realization.v5","snapshot":{"digest":"${snap.digest}","tick":${snap.tick}},"answer":"Opero en el tick ${snap.tick} con {llaves} internas y soporte interno únicamente."} (nota {fin})`;
   const parsedWrapped = parseEvidentialRealization(wrappedC2Json);
   assert.equal(parsedWrapped.snapshot.digest, snap.digest);
   assert.equal(parsedWrapped.snapshot.tick, snap.tick);
   assert.throws(
-    () => parseEvidentialRealization(`Prefacio {"schema":"qicn.language_realization.v5","snapshot":{"digest":"${snap.digest}","tick":${snap.tick}},"answer":"ok","extraKey":1}`),
+    () => parseEvidentialRealization(`Prefacio {aux} {"schema":"qicn.language_realization.v5","snapshot":{"digest":"${snap.digest}","tick":${snap.tick}},"answer":"ok","extraKey":1} {fin}`),
     /v5_invalid_fields/
   );
 }
 
-console.log('OK: nivel2-structural-plasticity.v1 passed (H-1, H-2, M-1..M-5, B-1..B-3, S0-S5 across N=64/120/1500, dynamicState.v3 + Revocar, Sistema B, Workbench)');
+console.log('OK: nivel2-structural-plasticity.v1 passed (H-1, H-2, M-1..M-5, B-1..B-3, R-1..R-4, S0-S5 across N=64/120/1500, dynamicState.v3 + Revocar, Sistema B, Workbench)');

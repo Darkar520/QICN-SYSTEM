@@ -70,7 +70,8 @@ const METRIC_ALIASES = [
   [/\bccc_xn_divergence\b|divergencia ccc[- ]x_?n/, 'ccc_xn_divergence'],
   [/\bnode_coherence_dispersion\b|dispersion nodal/, 'node_coherence_dispersion'],
   [/\braw_winding_number\b|winding bruto/, 'raw_winding_number'],
-  [/prediccion(?:es)?\s+(?:pre-?desenlace|sellada)|dinamica\s+imprevista|sorpresa\s+informacional|maduracion\s+plastica|plasticidad\s+historica|dependencia\s+historica|engrama|viabilidad/, 'historical_dependence']
+  [/prediccion(?:es)?\s+(?:pre-?desenlace|sellada)|dinamica\s+imprevista|sorpresa\s+informacional|maduracion\s+plastica|plasticidad\s+historica|dependencia\s+historica|engrama|viabilidad/, 'historical_dependence'],
+  [/\bstructural_plasticity_level2\b|\bstructuralplasticitylevel2\b|plasticidad\s+estructural|\bnivel\s*2\b|\bwatchdog(?:s)?\b|migracion(?:es)?\s+de\s+sector|recableado(?:s)?\s+de\s+piso/, 'structural_plasticity_level2']
 ];
 
 const RULES = [

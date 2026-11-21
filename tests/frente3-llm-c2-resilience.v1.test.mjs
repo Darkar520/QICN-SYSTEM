@@ -191,6 +191,37 @@ try {
   assert.equal(strictRes.statusCode, 503);
   assert.equal(calledModels.length, 1);
 
+  // CASE 3B: [B-3] Non-strict 503 fallback when upstream returns non-JSON HTML error body (no SyntaxError abort)
+  process.env.GEMINI_STRICT_MODEL = 'false';
+  calledModels.length = 0;
+  globalThis.fetch = async (url) => {
+    calledModels.push(String(url));
+    if (String(url).includes('gemini-3-flash-preview')) {
+      return {
+        ok: false,
+        status: 503,
+        text: async () => '<!DOCTYPE html><html><body>503 Service Temporarily Unavailable</body></html>',
+        json: async () => { throw new SyntaxError('Unexpected token < in JSON at position 0'); }
+      };
+    }
+    return {
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({ candidates: [{ content: { parts: [{ text: 'html 503 fallback ok' }] } }] })
+    };
+  };
+  const htmlFallbackRes = await handler({
+    httpMethod: 'POST',
+    headers: {},
+    body: JSON.stringify({ provider: 'gemini', model: 'gemini-3-flash-preview', messages: [{ role: 'user', content: 'hi' }] })
+  }, {});
+  const htmlFallbackBody = JSON.parse(htmlFallbackRes.body);
+  assert.equal(htmlFallbackRes.statusCode, 200);
+  assert.equal(htmlFallbackBody.usedFallback, true);
+  assert.equal(htmlFallbackBody.model, 'gemini-2.5-flash');
+  assert.equal(htmlFallbackBody.content, 'html 503 fallback ok');
+  assert.equal(calledModels.length, 2);
+
   // CASE 4: stripC2EchoBlock + classifyLlmError matrix
   assert.equal(stripC2EchoBlock('{"ok":1}\n[C2_INTEGRITY_ECHO_BEGIN]\nsig\n[C2_INTEGRITY_ECHO_END]\n'), '{"ok":1}');
   assert.equal(classifyLlmError(new LlmRequestError('HTTP_429', 429, 'requests per day exceeded')).category, 'quota_exhausted_daily');

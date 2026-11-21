@@ -19,6 +19,7 @@ const dynamicsAndCutControls = [
   'reducible_control'
 ];
 const level2AndLesionControls = [
+  'structural_plasticity_level1',
   'structural_plasticity_level2',
   'lesion_sector_wipe',
   'lesion_sector_wipe_level2',
@@ -26,6 +27,21 @@ const level2AndLesionControls = [
   'lesion_synaptic_cut_level2',
   'fault_nan_injection_level2'
 ];
+
+function isInterventionNoOpAgainstCapture(intervention, capturedConfig) {
+  if (!capturedConfig || typeof capturedConfig !== 'object') return false;
+  const coupling = capturedConfig.NODAL_TOWER_COUPLING_MODE;
+  const l2 = capturedConfig.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED === true;
+  const kaizen = capturedConfig.KAIZEN_ADJUSTMENT_MODE;
+  const sensorObs = capturedConfig.SENSOR_OBSERVER_DYNAMICS_ENABLED === true;
+  if (intervention === 'structural_plasticity_level2') return coupling === 'bidirectional' && l2;
+  if (intervention === 'structural_plasticity_level1') return coupling === 'bidirectional' && !l2;
+  if (intervention === 'kaizen_learned_mode') return kaizen === 'learned' && sensorObs;
+  if (intervention === 'kaizen_legacy_mode') return kaizen === 'legacy' && !sensorObs;
+  if (intervention === 'td_cut_eta_zero') return coupling === 'td_cut_eta_zero';
+  if (intervention === 'reducible_control') return coupling === 'reducible_control';
+  return false;
+}
 
 export function MicroExperimentWorkbench({ workbench }) {
   const [profile, setProfile] = useState('paired_intervention');
@@ -155,7 +171,7 @@ export function MicroExperimentWorkbench({ workbench }) {
             <table className="w-full">
               <thead>
                 <tr>
-                  {['Rama', 'maxAbsDiff', 'actionDivergence', 'inTubeRate (base/copia)', 'meanObjectiveScore (base/copia)', 'Delta objetivo'].map((label) => (
+                  {['Rama', 'maxAbsDiff', 'actionDivergence', 'inTubeRate (base/copia)', 'meanObjectiveScore (base/copia)', 'Delta objetivo', 'Topología final (nodos/sectores/grado)'].map((label) => (
                     <th key={label} className="p-1 text-left">{label}</th>
                   ))}
                 </tr>
@@ -165,20 +181,60 @@ export function MicroExperimentWorkbench({ workbench }) {
                   const branch = bundle.result.branches.find((b) => b.id === row.branchId);
                   const base = bundle.result.branches[0];
                   const mean = (b) => b.trajectory.reduce((sum, p) => sum + p.values.viabilityObjectiveScore, 0) / b.trajectory.length;
+                  const termTopo = branch?.trajectory?.at(-1)?.topology || null;
+                  const matchesCapture = branch && branch.intervention?.intervention !== 'sham'
+                    && isInterventionNoOpAgainstCapture(branch.intervention?.intervention, bundle.capture?.configuration);
                   return (
                     <tr key={row.branchId}>
-                      <td>{row.branchId}</td>
+                      <td>
+                        {row.branchId}
+                        {matchesCapture && (
+                          <span className="ml-1 rounded bg-amber-900/60 px-1 text-[10px] text-amber-200" title="Esta rama fija el mismo modo que ya estaba activo en la captura viva; usa la rama opuesta como ablación.">
+                            (= config capturada)
+                          </span>
+                        )}
+                      </td>
                       <td>{row.maxAbsDiff}</td>
                       <td>{row.actionDivergence}</td>
                       <td>{row.baselineInTubeRate} / {row.branchInTubeRate}</td>
                       <td>{mean(base)} / {mean(branch)}</td>
                       <td>{row.deltaObjectiveScore}</td>
+                      <td>
+                        {termTopo
+                          ? `${termTopo.activeNodes}n · ${termTopo.populatedSectors}/4s · g=${termTopo.meanDegree}${termTopo.orphanCount > 0 ? ` · h=${termTopo.orphanCount}` : ''}`
+                          : '—'}
+                      </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
           </div>
+          {(() => {
+            const byId = Object.fromEntries((bundle.result.branches || []).map((b) => [b.id, b]));
+            const pairs = [
+              ['Amputación sector 0 (25 %)', byId.lesion_sector_wipe, byId.lesion_sector_wipe_level2],
+              ['Tormenta sináptica (85 %)', byId.lesion_synaptic_cut, byId.lesion_synaptic_cut_level2]
+            ].filter(([, n1, n2]) => n1 && n2);
+            if (!pairs.length) return null;
+            const meanScore = (b) => b.trajectory.reduce((sum, p) => sum + p.values.viabilityObjectiveScore, 0) / b.trajectory.length;
+            return (
+              <div data-testid="workbench-level2-lesion-contrast" className="my-2 rounded border border-cyan-700/70 bg-gray-900 p-2">
+                <div className="font-semibold text-cyan-200">Contraste directo de recuperación terminal bajo lesión (Nivel 2 vs Nivel 1)</div>
+                {pairs.map(([label, n1, n2]) => {
+                  const t1 = n1.trajectory.at(-1)?.topology || {};
+                  const t2 = n2.trajectory.at(-1)?.topology || {};
+                  const s1 = meanScore(n1);
+                  const s2 = meanScore(n2);
+                  return (
+                    <p key={label} className="text-[11px] text-cyan-100">
+                      {label}: Nivel 1 ({t1.activeNodes}n, {t1.populatedSectors}/4 sectores, grado={t1.meanDegree}, score={s1.toFixed(6)}) vs Nivel 2 ({t2.activeNodes}n, {t2.populatedSectors}/4 sectores, grado={t2.meanDegree}, score={s2.toFixed(6)}, Δ(N2−N1)={(s2 - s1 >= 0 ? '+' : '') + (s2 - s1).toFixed(6)})
+                    </p>
+                  );
+                })}
+              </div>
+            );
+          })()}
           {bundle.result.hybridLateQueryTieBreaker && (
             <div data-testid="workbench-hybrid-late-query" className="my-2 rounded border border-cyan-800 bg-gray-900 p-2">
               <div className="font-semibold text-cyan-200">Desempate Híbrido Paper IX/X (5 raíces acopladas + consulta tardía de paridad + separador atómico)</div>

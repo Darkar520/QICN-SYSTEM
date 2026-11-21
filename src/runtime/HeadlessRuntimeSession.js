@@ -250,14 +250,21 @@ export function createHeadlessRuntimeSession({ config = defaults, seed = 11, nod
         }
         if (environment.controls.faultKinematicFreeze) {
           environment.controls.faultKinematicFreeze = false;
+          environment.controls.kinematicFreezeTicksRemaining = Number.isInteger(environment.controls.kinematicFreezeTicks)
+            ? environment.controls.kinematicFreezeTicks
+            : 12;
+        }
+        if (Number(environment.controls.kinematicFreezeTicksRemaining) > 0) {
+          environment.controls.kinematicFreezeTicksRemaining -= 1;
           const active = bag.nodalLayer.current?.getActiveNodes?.() || [];
           for (let i = 0; i < active.length; i += 1) {
             const n = active[i];
             if (!n) continue;
-            n.coherenceState = 0.5;
-            n.energy = 0.5;
-            n.intensity = 0.75;
-            n.phase = 0;
+            const subEps = (i % 3) * 1e-12;
+            n.coherenceState = 0.10 + subEps;
+            n.energy = 0.12 + subEps;
+            n.intensity = 0.55;
+            n.phase = subEps;
             n.retroInductionFlux = 0;
           }
         }

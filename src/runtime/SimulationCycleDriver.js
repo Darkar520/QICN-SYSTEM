@@ -455,6 +455,7 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
             mutableConfig: currentMutableConfig,
             baseConfig: QICNConfig,
             kaizenEngine: kaizenEngine.current,
+            worldModel: worldModelRef.current || simulationControllerRef.current?.worldModel || null,
             towerTelemetry: ontologicalCore.current?.ontologicalState?.tower_telemetry || null,
             couplingMode: QICNConfig.NODAL_TOWER_COUPLING_MODE,
             simulationStep
@@ -1407,8 +1408,18 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
         const plasticityConfig = Number.isFinite(rawHebbianFactor) && ontologicalCore.current?.getEffectivePlasticity
           ? { ...activeNodeStepConfig, HEBBIAN_FACTOR: Math.max(0, ontologicalCore.current.getEffectivePlasticity(rawHebbianFactor)) }
           : activeNodeStepConfig;
+        let preRecoveryOrphanIds = null;
         if (towerFeedback) {
           entanglementField.current.applyNodalPlasticity(activeNodes, finalCCC, plasticityConfig, ontologicalCore.current, towerFeedback);
+          if (level2StructuralEnabled) {
+            preRecoveryOrphanIds = new Set();
+            for (let i = 0; i < activeNodes.length; i += 1) {
+              const n = activeNodes[i];
+              if (n && (!Array.isArray(n.connections) || n.connections.length === 0)) {
+                preRecoveryOrphanIds.add(n.id);
+              }
+            }
+          }
           if (towerFeedback.active) {
             nodalLayer.current.recoverInterSectorConnections?.(towerFeedback, simulationStep);
           }
@@ -1423,7 +1434,8 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
             couplingMode: nodalCouplingMode,
             config: QICNConfig,
             currentCCC: finalCCC,
-            simulationStep
+            simulationStep,
+            preRecoveryOrphanIds
           });
         }
         if (sensorObserverDynamicsActive) {

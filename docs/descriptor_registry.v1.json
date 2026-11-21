@@ -75,7 +75,9 @@
         "tests/runtime-parameter-registry.v400.test.js",
         "tests/runtime-parameter-functional.v400.test.js",
         "tests/sensor-capabilities.v46.test.js",
-        "tests/quantum-entropy-bridge-polling.v51.test.js"
+        "tests/quantum-entropy-bridge-polling.v51.test.js",
+        "tests/frente3-kaizen-sensor-dynamics.v1.test.mjs",
+        "tests/nivel2-structural-plasticity.v1.test.mjs"
       ],
       "gate_dependencies": [],
       "claim_projection_dependencies": [],
@@ -891,22 +893,29 @@
         "src/components/MicroExperimentWorkbench.jsx",
         "src/experiments/workbench/browserClient.js",
         "src/experiments/workbench/liveCapture.js",
+        "src/experiments/workbench/pheTransplantCampaign.js",
         "src/workers/microExperiment.worker.js"
       ],
       "source_artifact": [
         "qicn.workbench_capture.v1",
         "qicn.workbench_protocol.v1",
-        "qicn.workbench_result.v1"
+        "qicn.workbench_result.v1",
+        "qicn.workbench_phe_campaign.v1",
+        "qicn.workbench_export_bundle.v1"
       ],
       "source_signals": [
         "captured source tick",
         "isolated trajectory comparisons",
+        "terminal topology recovery diagnostics",
+        "P/H/E campaign and sealed state transplant digests",
         "experimental chain digests"
       ],
       "test_anchors": [
         "tests/workbench-browser-client.v1.test.mjs",
         "tests/workbench-worker-packaging.v1.test.mjs",
-        "tests/browser-workbench.v1.test.mjs"
+        "tests/browser-workbench.v1.test.mjs",
+        "tests/frente3-workbench-phe-transplant.v1.test.mjs",
+        "tests/nivel2-structural-plasticity.v1.test.mjs"
       ],
       "external_dependency": "none",
       "kind": "artifact_only",
@@ -940,7 +949,8 @@
       "test_anchors": [
         "tests/language-system-b-ui.v1.test.mjs",
         "tests/language-evidential-contract.v1.test.mjs",
-        "tests/workbench-language-invariance.v1.test.mjs"
+        "tests/workbench-language-invariance.v1.test.mjs",
+        "tests/frente3-llm-c2-resilience.v1.test.mjs"
       ],
       "external_dependency": "external_service",
       "kind": "artifact_only",
@@ -951,7 +961,42 @@
       "evidence_scope": "internal_support_only",
       "status": "documented_partial",
       "non_claim_boundary": "Internal copy/language audit only; external_support_certified=false. Not live primary evidence, external validation, claim_projection or gate_result.",
-      "notes_gaps": "Unified first-person Sistema B UI integrated (zero 4-box segmentation; high thinking preserved; continuous prose + snapshot/B2 concordance + Solo motor), verified by browser CDP (`browser-workbench.v1`) and Node v24.6.0 tests. Real Gemini probes remain exploratory internal checks (`external_support_certified=false`); Node 22.x local parity remains pending."
+      "notes_gaps": "Unified first-person Sistema B UI integrated (zero 4-box segmentation; high thinking preserved; continuous prose + snapshot/B2 concordance + Solo motor + opt-in Kaizen 5/6 vs 6/6 and Level 2 structural telemetry), verified by browser CDP (`browser-workbench.v1`) and Node v24.6.0 tests. Real Gemini probes remain exploratory internal checks (`external_support_certified=false`); Node 22.x local parity remains pending."
+    },
+    {
+      "id": "AO_level2_structural_plasticity_telemetry",
+      "source_module": [
+        "src/simulation/StructuralPlasticityLevel2.js",
+        "src/runtime/SimulationCycleDriver.js",
+        "scripts/run-nivel1-vs-nivel2-arena.mjs"
+      ],
+      "source_artifact": [
+        "qicn.nivel1_vs_nivel2_arena.v1"
+      ],
+      "source_signals": [
+        "migrations",
+        "regeneratedNodes",
+        "degreeFloorRewires",
+        "invariantRepairs",
+        "configRepairs",
+        "worldModelRepairs",
+        "kinematicUnfreezes",
+        "recentCcc"
+      ],
+      "test_anchors": [
+        "tests/nivel2-structural-plasticity.v1.test.mjs",
+        "tests/simulation-cycle-driver-equivalence.v1.test.mjs"
+      ],
+      "external_dependency": "none",
+      "kind": "artifact_only",
+      "layer": "runtime_derived",
+      "downstream_artifacts": [],
+      "gate_dependencies": [],
+      "claim_projection_dependencies": [],
+      "evidence_scope": "internal_support_only",
+      "status": "documented_real",
+      "non_claim_boundary": "Internal topological and numerical self-repair telemetry and paired Arena benchmark only (`internal_support_only`, `external_support_certified=false`). Not a descriptor, invariant, claim_projection or gate_result.",
+      "notes_gaps": "Persisted on `nodalLayer.level2StructuralState` in `dynamicState.v3` when active in `bidirectional` mode; omitted when `STRUCTURAL_PLASTICITY_LEVEL2_ENABLED=false` to preserve bit-for-bit B0 parity."
     }
   ]
 }

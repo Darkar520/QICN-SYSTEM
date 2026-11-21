@@ -1,7 +1,7 @@
 // @ts-check
 // claim_scope: internal_runtime_engineering
 // evidence_scope: internal_support_only
-// interpretation_boundary: Parameter-free Level 2 structural plasticity (dynamic sector migration, degree-0 apoptosis/neurogenesis) and mathematical invariant watchdog (W1-W4). Uses zero arbitrary heuristic constants, zero global RNG/clock, and strictly respects declared negative controls (reducible_control A=I, td_cut_eta_zero eta=0). Never implies consciousness or external validation.
+// interpretation_boundary: Level 2 structural plasticity (dynamic sector migration M1, degree-0 apoptosis/neurogenesis & degree-floor rewiring M2) and mathematical invariant watchdog (W1-W4). Introduces zero configurable numeric hyperparameters in services/config.js; uses only deterministic structural constants derived from K = NODAL_SECTORS.length (4), NODE_CONNECTION_MIN (3), TEMPORAL_HORIZON (10), and core domain bounds. Topological plasticity and symmetry-breaking (M1/M2/W3) are strictly inert under negative controls (off, reducible_control A=I, td_cut_eta_zero eta=0); numerical domain hygiene (W1/W4) is a zero-allocation read-only no-op on finite in-domain trajectories. Never implies consciousness or external validation.
 
 import { NODAL_SECTORS, NODAL_TOWER_COUPLING_MODES, normalizeCouplingMode, sectorIdOf } from './NodalTowerCouplingBridge.js';
 
@@ -9,52 +9,80 @@ const TWO_PI = Math.PI * 2;
 const wrapPhase = (angle) => ((angle % TWO_PI) + TWO_PI) % TWO_PI;
 const clamp = (value, min, max) => (value < min ? min : (value > max ? max : value));
 
-// Non-enumerable per-layer state so dynamicState.v3 and B0 captures remain 100% clean.
-const LEVEL2_TELEMETRY = new WeakMap();
+// Explicit numerical tolerance for kinematic dispersion/CCC collapse detection in W3
+// (captures sub-epsilon 1e-12 floating-point noise while remaining 7+ orders of magnitude
+// below normal active nodal dispersion ~1e-2).
+export const KINEMATIC_FREEZE_EPSILON = 1e-9;
 
-const getState = (nodalLayer) => {
-  let entry = LEVEL2_TELEMETRY.get(nodalLayer);
-  if (!entry) {
-    entry = {
-      migrations: 0,
-      regeneratedNodes: 0,
-      invariantRepairs: 0,
-      configRepairs: 0,
-      kinematicUnfreezes: 0,
-      recentCcc: [],
-      lastEvent: null
-    };
-    LEVEL2_TELEMETRY.set(nodalLayer, entry);
+function createEmptyLevel2State() {
+  return {
+    migrations: 0,
+    regeneratedNodes: 0,
+    degreeFloorRewires: 0,
+    invariantRepairs: 0,
+    configRepairs: 0,
+    worldModelRepairs: 0,
+    kinematicUnfreezes: 0,
+    recentCcc: [],
+    lastEvent: null
+  };
+}
+
+/**
+ * Ensures serializable Level 2 state on `nodalLayer.level2StructuralState`.
+ * Only invoked when Level 2 executes in bidirectional mode or records an actual
+ * W1/W4 repair, so B0 (`STRUCTURAL_PLASTICITY_LEVEL2_ENABLED === false`) and
+ * finite negative controls (`S5a`, `S5b`) preserve bit-for-bit v3 parity.
+ */
+function ensureState(nodalLayer) {
+  if (!nodalLayer || typeof nodalLayer !== 'object') return createEmptyLevel2State();
+  if (!nodalLayer.level2StructuralState || typeof nodalLayer.level2StructuralState !== 'object') {
+    nodalLayer.level2StructuralState = createEmptyLevel2State();
+  } else {
+    const s = nodalLayer.level2StructuralState;
+    if (!Number.isFinite(s.migrations)) s.migrations = 0;
+    if (!Number.isFinite(s.regeneratedNodes)) s.regeneratedNodes = 0;
+    if (!Number.isFinite(s.degreeFloorRewires)) s.degreeFloorRewires = 0;
+    if (!Number.isFinite(s.invariantRepairs)) s.invariantRepairs = 0;
+    if (!Number.isFinite(s.configRepairs)) s.configRepairs = 0;
+    if (!Number.isFinite(s.worldModelRepairs)) s.worldModelRepairs = 0;
+    if (!Number.isFinite(s.kinematicUnfreezes)) s.kinematicUnfreezes = 0;
+    if (!Array.isArray(s.recentCcc)) s.recentCcc = [];
+    if (!('lastEvent' in s)) s.lastEvent = null;
   }
-  return entry;
-};
+  return nodalLayer.level2StructuralState;
+}
 
 export const isStructuralPlasticityLevel2Enabled = (config = null) => config?.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED === true;
 
 export function resetStructuralPlasticityLevel2Telemetry(nodalLayer) {
   if (!nodalLayer || typeof nodalLayer !== 'object') return;
-  LEVEL2_TELEMETRY.delete(nodalLayer);
+  delete nodalLayer.level2StructuralState;
 }
 
+/**
+ * Pure read-only telemetry accessor: never mutates `nodalLayer` or attaches
+ * `level2StructuralState` when Level 2 is inactive.
+ */
 export function getStructuralPlasticityLevel2Telemetry(nodalLayer) {
-  if (!nodalLayer || typeof nodalLayer !== 'object') {
-    return {
-      migrations: 0,
-      regeneratedNodes: 0,
-      invariantRepairs: 0,
-      configRepairs: 0,
-      kinematicUnfreezes: 0,
-      lastEvent: null
-    };
-  }
-  const s = getState(nodalLayer);
+  const s = (
+    nodalLayer
+    && typeof nodalLayer === 'object'
+    && nodalLayer.level2StructuralState
+    && typeof nodalLayer.level2StructuralState === 'object'
+  )
+    ? nodalLayer.level2StructuralState
+    : null;
   return {
-    migrations: s.migrations,
-    regeneratedNodes: s.regeneratedNodes,
-    invariantRepairs: s.invariantRepairs,
-    configRepairs: s.configRepairs,
-    kinematicUnfreezes: s.kinematicUnfreezes,
-    lastEvent: s.lastEvent
+    migrations: Number(s?.migrations) || 0,
+    regeneratedNodes: Number(s?.regeneratedNodes) || 0,
+    degreeFloorRewires: Number(s?.degreeFloorRewires) || 0,
+    invariantRepairs: Number(s?.invariantRepairs) || 0,
+    configRepairs: Number(s?.configRepairs) || 0,
+    worldModelRepairs: Number(s?.worldModelRepairs) || 0,
+    kinematicUnfreezes: Number(s?.kinematicUnfreezes) || 0,
+    recentCcc: Array.isArray(s?.recentCcc) ? s.recentCcc.slice() : [],
+    lastEvent: s?.lastEvent ?? null
   };
 }
 
@@ -82,25 +110,27 @@ function boundConfigKey(key, value, kaizenEngine = null) {
 }
 
 /**
- * Watchdogs W1 (Finite Nodal & Synaptic Conservation) and W4 (Config Domain Conservation).
- * Fast-path zero-allocation scan when all values are finite and in-domain (0 false repairs on S0).
+ * Watchdogs W1 (Finite Nodal, Synaptic & WorldModel Conservation), W4 (Config Domain Conservation),
+ * and pre-tick W3 (Kinematic Dispersion/Phase Collapse with epsilon tolerance <= 1e-9).
+ * Fast-path zero-allocation scan when all values are finite and in-domain (0 false repairs on S0/S5).
  */
 export function sanitizeAndRepairPreTickInvariants({
   nodalLayer,
   mutableConfig,
   baseConfig,
   kaizenEngine = null,
+  worldModel = null,
   towerTelemetry = null,
   couplingMode = NODAL_TOWER_COUPLING_MODES.OFF,
   simulationStep = 0
 } = {}) {
   if (!nodalLayer || !Array.isArray(nodalLayer.nodes)) {
-    return { nodeRepairs: 0, edgeRepairs: 0, configRepairs: 0, kinematicUnfreeze: false };
+    return { nodeRepairs: 0, edgeRepairs: 0, configRepairs: 0, worldModelRepairs: 0, kinematicUnfreeze: false };
   }
-  const state = getState(nodalLayer);
   let configRepairs = 0;
   let nodeRepairs = 0;
   let edgeRepairs = 0;
+  let worldModelRepairs = 0;
   let kinematicUnfreeze = false;
 
   // --- W4: Exact config domain conservation using Kaizen's existing _boundValue bounds ---
@@ -139,9 +169,62 @@ export function sanitizeAndRepairPreTickInvariants({
     }
   }
 
-  // --- W1: Fast-path scan for any non-finite or out-of-domain nodal/synaptic state ---
+  // --- W1 (WorldModel): Surgical repair of non-finite linear predictor weights from EWC anchor W* ---
+  if (worldModel && typeof worldModel === 'object') {
+    const anchorFast = worldModel.plasticityState?.consolidatedWeights?.ccc || worldModel.plasticityState?.consolidatedWeights || null;
+    if (worldModel.weights && typeof worldModel.weights === 'object') {
+      for (const key of Object.keys(worldModel.weights)) {
+        if (!Number.isFinite(worldModel.weights[key])) {
+          const anchorVal = Number(anchorFast?.[key]);
+          worldModel.weights[key] = Number.isFinite(anchorVal) ? anchorVal : 0;
+          worldModelRepairs += 1;
+        }
+      }
+    }
+    const anchorMulti = worldModel.plasticityState?.consolidatedWeights?.multi || worldModel.plasticityState?.consolidatedMultiWeights || null;
+    if (worldModel.multiWeights && typeof worldModel.multiWeights === 'object') {
+      for (const target of Object.keys(worldModel.multiWeights)) {
+        const row = worldModel.multiWeights[target];
+        if (!row || typeof row !== 'object') continue;
+        for (const feat of Object.keys(row)) {
+          if (!Number.isFinite(row[feat])) {
+            const anchorVal = Number(anchorMulti?.[target]?.[feat]);
+            row[feat] = Number.isFinite(anchorVal) ? anchorVal : 0;
+            worldModelRepairs += 1;
+          }
+        }
+      }
+    }
+    const fisher = worldModel.plasticityState?.fisherStiffness || null;
+    if (fisher && typeof fisher === 'object') {
+      if (fisher.ccc && typeof fisher.ccc === 'object') {
+        for (const key of Object.keys(fisher.ccc)) {
+          if (!Number.isFinite(fisher.ccc[key]) || fisher.ccc[key] < 0) {
+            fisher.ccc[key] = 0;
+            worldModelRepairs += 1;
+          }
+        }
+      }
+      if (fisher.multi && typeof fisher.multi === 'object') {
+        for (const target of Object.keys(fisher.multi)) {
+          const row = fisher.multi[target];
+          if (!row || typeof row !== 'object') continue;
+          for (const feat of Object.keys(row)) {
+            if (!Number.isFinite(row[feat]) || row[feat] < 0) {
+              row[feat] = 0;
+              worldModelRepairs += 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // --- W1 (Nodal & Synaptic): Fast-path scan for non-finite, out-of-domain, dormant-target, or duplicate edges ---
   const nodes = nodalLayer.nodes;
   const nLen = nodes.length;
+  const activeNodeIds = nodalLayer.activeNodeIds;
+  const hasActiveSet = activeNodeIds instanceof Set;
   const activeNodes = nodalLayer.getActiveNodes();
   const nActive = activeNodes.length;
   let hasViolation = false;
@@ -166,16 +249,24 @@ export function sanitizeAndRepairPreTickInvariants({
       if (
         !c
         || !Number.isInteger(c.targetId) || c.targetId < 0 || c.targetId >= nLen || c.targetId === node.id
+        || (hasActiveSet && !activeNodeIds.has(c.targetId))
         || !Number.isFinite(c.weight) || c.weight < 0.1 || c.weight > 1.0
       ) {
         hasViolation = true;
         break;
       }
+      for (let k = 0; k < j; k += 1) {
+        if (conns[k]?.targetId === c.targetId) {
+          hasViolation = true;
+          break;
+        }
+      }
+      if (hasViolation) break;
     }
   }
 
   if (hasViolation) {
-    // Collect exact surviving medians from healthy active nodes (zero magic constants)
+    // Collect exact surviving medians from healthy active nodes
     const finiteCoh = [];
     const finiteEnergy = [];
     const finitePhase = [];
@@ -216,7 +307,7 @@ export function sanitizeAndRepairPreTickInvariants({
       for (let j = 0; j < node.connections.length; j += 1) {
         const tid = node.connections[j]?.targetId;
         const peer = Number.isInteger(tid) && tid >= 0 && tid < nLen ? nodes[tid] : null;
-        if (!peer) continue;
+        if (!peer || (hasActiveSet && !activeNodeIds.has(tid))) continue;
         if (Number.isFinite(peer.coherenceState) && peer.coherenceState >= 0 && peer.coherenceState <= 1) nbrCoh.push(peer.coherenceState);
         if (Number.isFinite(peer.energy) && peer.energy >= 0.1 && peer.energy <= 1) nbrEnergy.push(peer.energy);
         if (Number.isFinite(peer.phase)) nbrPhase.push(wrapPhase(peer.phase));
@@ -247,15 +338,25 @@ export function sanitizeAndRepairPreTickInvariants({
         touched = true;
       }
 
-      // Sanitize corrupted edges in-place
+      // Sanitize corrupted, dormant-pointing, or duplicate edges in-place
       const conns = node.connections;
+      const seenTargets = new Set();
       let writeIdx = 0;
       for (let j = 0; j < conns.length; j += 1) {
         const c = conns[j];
-        if (!c || !Number.isInteger(c.targetId) || c.targetId < 0 || c.targetId >= nLen || c.targetId === node.id) {
+        if (
+          !c
+          || !Number.isInteger(c.targetId)
+          || c.targetId < 0
+          || c.targetId >= nLen
+          || c.targetId === node.id
+          || (hasActiveSet && !activeNodeIds.has(c.targetId))
+          || seenTargets.has(c.targetId)
+        ) {
           edgeRepairs += 1;
           continue;
         }
+        seenTargets.add(c.targetId);
         if (!Number.isFinite(c.weight) || c.weight < 0.1 || c.weight > 1.0) {
           c.weight = clamp(medWeight, 0.1, 1.0);
           edgeRepairs += 1;
@@ -270,7 +371,7 @@ export function sanitizeAndRepairPreTickInvariants({
     }
   }
 
-  // --- W3 (pre-tick): Exact kinematic dispersion collapse (all active nodes collapsed to identical coherence & phase after step 0) ---
+  // --- W3 (pre-tick): Kinematic dispersion & phase collapse within KINEMATIC_FREEZE_EPSILON (<= 1e-9) ---
   const normalizedMode = normalizeCouplingMode(couplingMode);
   const K = NODAL_SECTORS.length;
   if (simulationStep > 0 && normalizedMode === NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL && nActive >= K) {
@@ -286,7 +387,12 @@ export function sanitizeAndRepairPreTickInvariants({
       if (p < minP) minP = p;
       if (p > maxP) maxP = p;
     }
-    if (Number.isFinite(minC) && (maxC - minC) === 0 && Number.isFinite(minP) && (maxP - minP) === 0) {
+    if (
+      Number.isFinite(minC)
+      && (maxC - minC) <= KINEMATIC_FREEZE_EPSILON
+      && Number.isFinite(minP)
+      && (maxP - minP) <= KINEMATIC_FREEZE_EPSILON
+    ) {
       const towerPhaseNorm = Number.isFinite(Number(towerTelemetry?.core?.phase)) ? Number(towerTelemetry.core.phase) : 0;
       const towerPhaseRad = (((towerPhaseNorm % 1) + 1) % 1) * TWO_PI;
       for (let i = 0; i < nActive; i += 1) {
@@ -295,29 +401,39 @@ export function sanitizeAndRepairPreTickInvariants({
         const exactSubAngle = ((node.id % K) * TWO_PI) / (K * K);
         node.phase = wrapPhase(towerPhaseRad + NODAL_SECTORS[sec].phaseOffset + exactSubAngle);
         const exactSectorOffset = (sec - 1.5) / (K * K * K);
-        node.coherenceState = clamp(node.coherenceState + exactSectorOffset, 0.05, 0.96);
+        // Restore around canonical ConsciousNode midpoint floor 0.5 when collapsed below viability band
+        const baseCoh = clamp(node.coherenceState, 0.5, 0.88);
+        node.coherenceState = clamp(baseCoh + exactSectorOffset, 0.05, 0.96);
+        node.energy = clamp(Math.max(0.5, node.energy) + exactSectorOffset, 0.1, 1.0);
         node.intensity = clamp(0.5 + (0.5 * node.coherenceState), 0, 1);
         node.retroInductionFlux = exactSectorOffset;
       }
-      state.recentCcc = [];
-      state.kinematicUnfreezes += 1;
       kinematicUnfreeze = true;
     }
   }
 
-  const totalRepairs = configRepairs + nodeRepairs + (edgeRepairs > 0 ? 1 : 0) + (kinematicUnfreeze ? 1 : 0);
-  if (totalRepairs > 0) {
-    state.configRepairs += configRepairs;
-    state.invariantRepairs += totalRepairs;
-    state.lastEvent = {
-      kind: kinematicUnfreeze ? 'pre_tick_kinematic_unfreeze' : 'pre_tick_invariant_repair',
-      configRepairs,
-      nodeRepairs,
-      edgeRepairs,
-      kinematicUnfreeze
-    };
+  const totalRepairs = configRepairs + nodeRepairs + worldModelRepairs + (edgeRepairs > 0 ? 1 : 0) + (kinematicUnfreeze ? 1 : 0);
+  if (totalRepairs > 0 || normalizedMode === NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL) {
+    const state = ensureState(nodalLayer);
+    if (kinematicUnfreeze) {
+      state.recentCcc = [];
+      state.kinematicUnfreezes += 1;
+    }
+    if (totalRepairs > 0) {
+      state.configRepairs += configRepairs;
+      state.worldModelRepairs += worldModelRepairs;
+      state.invariantRepairs += totalRepairs;
+      state.lastEvent = {
+        kind: kinematicUnfreeze ? 'pre_tick_kinematic_unfreeze' : 'pre_tick_invariant_repair',
+        configRepairs,
+        nodeRepairs,
+        edgeRepairs,
+        worldModelRepairs,
+        kinematicUnfreeze
+      };
+    }
   }
-  return { nodeRepairs, edgeRepairs, configRepairs, kinematicUnfreeze };
+  return { nodeRepairs, edgeRepairs, configRepairs, worldModelRepairs, kinematicUnfreeze };
 }
 
 function wireDeterministicPeers(node, targetSector, allNodes, activeNodeIds, minDegree, initialWeight, step) {
@@ -373,13 +489,16 @@ function wireDeterministicPeers(node, targetSector, allNodes, activeNodeIds, min
 }
 
 /**
- * Level 2 Structural Plasticity + Watchdogs W2/W3 (zero arbitrary heuristic constants):
- * - Mechanism 2: Apoptosis of degree-0 orphans & homeostatic neurogenesis of dormant lesion slots.
- * - Mechanism 1: Functional sector migration driven by exact integer imbalance (max - min >= 2)
- *   and pure trigonometric phase resonance argmax cos(phi_i - (theta_tower + offset_s)).
- * - Watchdog W3: Exact kinematic freeze detection (dispersion === 0 or exact CCC flatline across
- *   TEMPORAL_HORIZON ticks) with deterministic symmetry breaking from NODAL_SECTORS phases.
- * - Honesty guard (S5): strictly inert under off / reducible_control / td_cut_eta_zero.
+ * Level 2 Structural Plasticity + Watchdogs W2/W3 (zero new configurable hyperparameters in services/config.js):
+ * - Mechanism 2A (`regeneratedNodes`): True apoptosis rescue of degree-0 orphans (`deg === 0`) and
+ *   homeostatic neurogenesis of dormant lesion slots (`!activeNodeIds.has(id)`).
+ * - Mechanism 2B (`degreeFloorRewires`): Local synaptic floor reinforcement for living under-connected
+ *   nodes (`0 < deg < NODE_CONNECTION_MIN`).
+ * - Mechanism 1 (`migrations`): Functional sector migration driven by exact integer imbalance (`max - min >= 2`)
+ *   and pure trigonometric phase resonance `argmax cos(phi_i - (theta_tower + offset_s))`.
+ * - Watchdog W3 (`kinematicUnfreezes`): Kinematic freeze detection (`dispersion <= 1e-9` or `CCC` range `<= 1e-9`
+ *   across `TEMPORAL_HORIZON` ticks) with deterministic symmetry breaking from `NODAL_SECTORS` phases.
+ * - Honesty guard (S5): strictly inert under `off`, `reducible_control` ($A=I$), and `td_cut_eta_zero` ($\eta=0$).
  */
 export function applyStructuralPlasticityLevel2({
   nodalLayer,
@@ -388,7 +507,8 @@ export function applyStructuralPlasticityLevel2({
   couplingMode = NODAL_TOWER_COUPLING_MODES.OFF,
   config = null,
   currentCCC = null,
-  simulationStep = 0
+  simulationStep = 0,
+  preRecoveryOrphanIds = null
 } = {}) {
   const normalized = normalizeCouplingMode(couplingMode);
   if (
@@ -397,15 +517,15 @@ export function applyStructuralPlasticityLevel2({
     || normalized !== NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL
   ) {
     // Negative controls (off, reducible_control A=I, td_cut_eta_zero eta=0) are never violated.
-    return { migrations: 0, regenerated: 0, kinematicUnfreeze: false, skippedByNegativeControl: true };
+    return { migrations: 0, regenerated: 0, degreeFloorRewires: 0, kinematicUnfreeze: false, skippedByNegativeControl: true };
   }
 
-  const state = getState(nodalLayer);
+  const state = ensureState(nodalLayer);
   const allNodes = nodalLayer.nodes;
   const totalCap = allNodes.length;
   const K = NODAL_SECTORS.length;
   if (totalCap < K) {
-    return { migrations: 0, regenerated: 0, kinematicUnfreeze: false, skippedByNegativeControl: false };
+    return { migrations: 0, regenerated: 0, degreeFloorRewires: 0, kinematicUnfreeze: false, skippedByNegativeControl: false };
   }
 
   const minDegree = Math.max(1, Math.floor(Number(config?.NODE_CONNECTION_MIN) || 3));
@@ -417,6 +537,7 @@ export function applyStructuralPlasticityLevel2({
 
   const activeNodeIds = nodalLayer.activeNodeIds;
   const healthyConnected = [];
+  const orphanActiveNodes = [];
   const underConnectedActive = [];
   const dormantNodes = [];
   const sectorCounts = [0, 0, 0, 0];
@@ -430,9 +551,13 @@ export function applyStructuralPlasticityLevel2({
     }
     const sec = resolveNodeSector(node, node.id);
     const deg = Array.isArray(node.connections) ? node.connections.length : 0;
-    if (deg < minDegree) {
-      underConnectedActive.push(node);
+    const wasTrueOrphan = deg === 0 || (preRecoveryOrphanIds instanceof Set && preRecoveryOrphanIds.has(node.id));
+    if (wasTrueOrphan && deg < minDegree) {
+      orphanActiveNodes.push(node);
       if (deg > 0) sectorCounts[sec] += 1;
+    } else if (deg < minDegree) {
+      underConnectedActive.push(node);
+      sectorCounts[sec] += 1;
     } else {
       healthyConnected.push(node);
       sectorCounts[sec] += 1;
@@ -440,11 +565,12 @@ export function applyStructuralPlasticityLevel2({
   }
 
   let regenerated = 0;
+  let degreeFloorRewires = 0;
   let migrations = 0;
   let kinematicUnfreeze = false;
 
-  // --- Mechanism 2: Rescue under-connected nodes (degree < NODE_CONNECTION_MIN) & recruit dormant lesion slots ---
-  if (underConnectedActive.length > 0 || dormantNodes.length > 0) {
+  // --- Mechanism 2: Separate true apoptosis/neurogenesis (deg === 0 / dormant) from degree-floor rewiring (0 < deg < minDegree) ---
+  if (orphanActiveNodes.length > 0 || dormantNodes.length > 0 || underConnectedActive.length > 0) {
     const statPool = healthyConnected.length > 0 ? healthyConnected : nodalLayer.getActiveNodes();
     let cohSum = 0;
     let energySum = 0;
@@ -472,29 +598,29 @@ export function applyStructuralPlasticityLevel2({
       return best;
     };
 
-    // Repair nodes below exact NODE_CONNECTION_MIN floor (bounded per tick by ceil(deficit / K) >= K)
-    if (underConnectedActive.length > 0) {
-      const rescueQuota = Math.min(underConnectedActive.length, Math.max(K, Math.ceil(underConnectedActive.length / K)));
-      for (let idx = 0; idx < rescueQuota; idx += 1) {
-        const node = underConnectedActive[idx];
-        const hadZeroEdges = !Array.isArray(node.connections) || node.connections.length === 0;
+    // 2A-1: True apoptosis rescue for degree-0 active orphans (`deg === 0` or pre-recovery orphan -> counts in `regeneratedNodes`)
+    if (orphanActiveNodes.length > 0) {
+      const orphanQuota = Math.min(orphanActiveNodes.length, Math.max(K, Math.ceil(orphanActiveNodes.length / K)));
+      for (let idx = 0; idx < orphanQuota; idx += 1) {
+        const node = orphanActiveNodes[idx];
+        const hadZeroEdgesNow = !Array.isArray(node.connections) || node.connections.length === 0;
         if (!Array.isArray(node.connections)) node.connections = [];
         const maxCount = Math.max(...sectorCounts);
         const minCount = Math.min(...sectorCounts);
-        const targetSector = (hadZeroEdges && maxCount - minCount >= 2)
+        const targetSector = (hadZeroEdgesNow && maxCount - minCount >= 2)
           ? pickMinSector()
           : resolveNodeSector(node, node.id);
         node.sectorId = targetSector;
         node.sectorRole = NODAL_SECTORS[targetSector].key;
         const wired = wireDeterministicPeers(node, targetSector, allNodes, activeNodeIds, minDegree, medWeight, simulationStep);
         if (wired > 0) {
-          if (hadZeroEdges) sectorCounts[targetSector] += 1;
+          if (hadZeroEdgesNow) sectorCounts[targetSector] += 1;
           regenerated += 1;
         }
       }
     }
 
-    // Recruit dormant slots (neurogenesis after partial lesion / sector wipe), converging in <= TEMPORAL_HORIZON ticks
+    // 2A-2: Recruit dormant lesion slots (neurogenesis after focal amputation -> counts in `regeneratedNodes`)
     if (dormantNodes.length > 0) {
       const recruitQuota = Math.min(dormantNodes.length, Math.max(K, Math.ceil(dormantNodes.length / horizon)));
       for (let idx = 0; idx < recruitQuota; idx += 1) {
@@ -512,6 +638,21 @@ export function applyStructuralPlasticityLevel2({
         wireDeterministicPeers(slotNode, targetSector, allNodes, activeNodeIds, minDegree, medWeight, simulationStep);
         sectorCounts[targetSector] += 1;
         regenerated += 1;
+      }
+    }
+
+    // 2B: Degree-floor synaptic reinforcement for living nodes with `0 < deg < NODE_CONNECTION_MIN` (`degreeFloorRewires`)
+    if (underConnectedActive.length > 0) {
+      const rewireQuota = Math.min(underConnectedActive.length, Math.max(K, Math.ceil(underConnectedActive.length / K)));
+      for (let idx = 0; idx < rewireQuota; idx += 1) {
+        const node = underConnectedActive[idx];
+        const targetSector = resolveNodeSector(node, node.id);
+        node.sectorId = targetSector;
+        node.sectorRole = NODAL_SECTORS[targetSector].key;
+        const wired = wireDeterministicPeers(node, targetSector, allNodes, activeNodeIds, minDegree, medWeight, simulationStep);
+        if (wired > 0) {
+          degreeFloorRewires += 1;
+        }
       }
     }
   }
@@ -559,11 +700,11 @@ export function applyStructuralPlasticityLevel2({
     migrations += 1;
   }
 
-  if ((migrations > 0 || regenerated > 0) && towerFeedback?.active) {
+  if ((migrations > 0 || regenerated > 0 || degreeFloorRewires > 0) && towerFeedback?.active) {
     nodalLayer.recoverInterSectorConnections?.(towerFeedback, simulationStep);
   }
 
-  // --- Watchdog W3: Exact Kinematic Freeze Detection & Parameter-Free Symmetry Breaking ---
+  // --- Watchdog W3 (post-tick): Kinematic Freeze Detection (tolerance <= 1e-9) & Symmetry Breaking ---
   const activeNow = nodalLayer.getActiveNodes();
   const activeCount = activeNow.length;
   if (Number.isFinite(currentCCC)) {
@@ -577,18 +718,23 @@ export function applyStructuralPlasticityLevel2({
     if (c < minCoh) minCoh = c;
     if (c > maxCoh) maxCoh = c;
   }
-  const exactDispersionCollapse = activeCount >= K && Number.isFinite(minCoh) && Number.isFinite(maxCoh) && (maxCoh - minCoh) === 0;
-  const exactCccFlatline = state.recentCcc.length >= horizon
-    && (Math.max(...state.recentCcc) - Math.min(...state.recentCcc)) === 0;
+  const dispersionCollapse = activeCount >= K
+    && Number.isFinite(minCoh)
+    && Number.isFinite(maxCoh)
+    && (maxCoh - minCoh) <= KINEMATIC_FREEZE_EPSILON;
+  const cccFlatline = state.recentCcc.length >= horizon
+    && (Math.max(...state.recentCcc) - Math.min(...state.recentCcc)) <= KINEMATIC_FREEZE_EPSILON;
 
-  if (exactDispersionCollapse || exactCccFlatline) {
+  if (dispersionCollapse || cccFlatline) {
     for (let i = 0; i < activeCount; i += 1) {
       const node = activeNow[i];
       const sec = resolveNodeSector(node, node.id);
       const exactSubAngle = ((node.id % K) * TWO_PI) / (K * K);
       node.phase = wrapPhase(towerPhaseRad + NODAL_SECTORS[sec].phaseOffset + exactSubAngle);
       const exactSectorOffset = (sec - 1.5) / (K * K * K);
-      node.coherenceState = clamp(node.coherenceState + exactSectorOffset, 0.05, 0.96);
+      const baseCoh = clamp(node.coherenceState, 0.5, 0.88);
+      node.coherenceState = clamp(baseCoh + exactSectorOffset, 0.05, 0.96);
+      node.energy = clamp(Math.max(0.5, node.energy) + exactSectorOffset, 0.1, 1.0);
       node.intensity = clamp(0.5 + (0.5 * node.coherenceState), 0, 1);
       node.retroInductionFlux = exactSectorOffset;
     }
@@ -598,17 +744,19 @@ export function applyStructuralPlasticityLevel2({
     kinematicUnfreeze = true;
   }
 
-  if (migrations > 0 || regenerated > 0 || kinematicUnfreeze) {
+  if (migrations > 0 || regenerated > 0 || degreeFloorRewires > 0 || kinematicUnfreeze) {
     state.migrations += migrations;
     state.regeneratedNodes += regenerated;
+    state.degreeFloorRewires += degreeFloorRewires;
     state.lastEvent = {
       kind: 'level2_structural_adaptation',
       tick: simulationStep,
       migrations,
       regenerated,
+      degreeFloorRewires,
       kinematicUnfreeze
     };
   }
 
-  return { migrations, regenerated, kinematicUnfreeze, skippedByNegativeControl: false };
+  return { migrations, regenerated, degreeFloorRewires, kinematicUnfreeze, skippedByNegativeControl: false };
 }

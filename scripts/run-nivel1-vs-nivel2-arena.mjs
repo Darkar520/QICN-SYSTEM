@@ -201,6 +201,7 @@ export async function runNivel1VsNivel2Arena() {
           finalCrossSectorFluxShare: agg('nivel2', 'finalCrossSectorFluxShare'),
           totalMigrations: perSeed.reduce((s, r) => s + r.nivel2.l2Telemetry.migrations, 0),
           totalRegenerated: perSeed.reduce((s, r) => s + r.nivel2.l2Telemetry.regeneratedNodes, 0),
+          totalDegreeFloorRewires: perSeed.reduce((s, r) => s + (r.nivel2.l2Telemetry.degreeFloorRewires || 0), 0),
           totalInvariantRepairs: perSeed.reduce((s, r) => s + r.nivel2.l2Telemetry.invariantRepairs, 0),
           totalKinematicUnfreezes: perSeed.reduce((s, r) => s + r.nivel2.l2Telemetry.kinematicUnfreezes, 0)
         }

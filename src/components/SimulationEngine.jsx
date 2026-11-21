@@ -2302,6 +2302,10 @@ export const QICNConsciousnessSystem = () => {
       }
 
       const applied = applyDynamicState(getPersistenceRefs(), verdict.body, { config: QICNConfig });
+      if (['legacy', 'learned'].includes(verdict.body?.kaizenMode)) {
+        QICNConfig.KAIZEN_ADJUSTMENT_MODE = verdict.body.kaizenMode;
+        setKaizenMode(verdict.body.kaizenMode);
+      }
       if (simulationControllerRef.current) {
         simulationControllerRef.current.syncFromCore?.(ontologicalCore.current);
         worldModelRef.current = simulationControllerRef.current.worldModel;
@@ -2601,7 +2605,12 @@ export const QICNConsciousnessSystem = () => {
         workbenchEvidence: workbenchEvidenceRef.current ? [workbenchEvidenceRef.current] : [],
         // In learned mode Kaizen does reach the dynamics; the known-false
         // claim «Kaizen changes the dynamics» is then not checked.
-        kaizenEffective: QICNConfig.KAIZEN_ADJUSTMENT_MODE === 'learned'
+        kaizenEffective: QICNConfig.KAIZEN_ADJUSTMENT_MODE === 'learned',
+        sensorObserverDynamicsEnabled: QICNConfig.SENSOR_OBSERVER_DYNAMICS_ENABLED === true,
+        level2Telemetry: {
+          enabled: QICNConfig.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED === true,
+          ...getStructuralPlasticityLevel2Telemetry(nodalLayer.current)
+        }
       });
     } catch (error) {
       appendChatAudit('chat_snapshot_error', { reason: error?.message || String(error) });
@@ -6280,7 +6289,7 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
                     aria-pressed={structuralPlasticityLevel2Enabled === enabledVal}
                     onClick={() => setStructuralPlasticityLevel2Enabled(enabledVal)}
                     title={enabledVal
-                      ? 'Nivel 2 sin parámetros heurísticos: reasignación funcional de sectores, neurogénesis/reparación de grado mínimo y watchdog de invariantes (W1-W4); respeta controles negativos.'
+                      ? 'Nivel 2 (sin hiperparámetros configurables adicionales en config.js): migración funcional de sectores (M1), apoptosis por grado 0 / neurogénesis + recableado de piso (M2) y watchdog de invariantes (W1-W4); respeta controles negativos.'
                       : 'Nivel 1 base: plasticidad sináptica, poda y recuperación inter-sector sin migración funcional ni watchdog.'}
                     className={`px-2 py-0.5 transition-colors ${structuralPlasticityLevel2Enabled === enabledVal ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
                   >
@@ -6295,6 +6304,7 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
                 <div className="flex flex-wrap justify-between gap-1 rounded border border-cyan-800/50 bg-gray-900/60 px-2 py-1 text-[10px] font-mono text-cyan-200" data-testid="level2-structural-counters">
                   <span>Migraciones: {l2.migrations}</span>
                   <span>Regenerados: {l2.regeneratedNodes}</span>
+                  <span>Recableados: {l2.degreeFloorRewires ?? 0}</span>
                   <span>Reparaciones: {l2.invariantRepairs}</span>
                 </div>
               );

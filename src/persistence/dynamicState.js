@@ -236,6 +236,10 @@ function decodeValue(enc, existing, ctx, path) {
 }
 
 function restoreFields(target, fields, ctx, path, sourceForDefaults = target) {
+  if (target instanceof NodalProcessingLayer) {
+    if (!Object.hasOwn(fields, 'level2StructuralState')) delete target.level2StructuralState;
+    if (!Object.hasOwn(fields, 'lastBridgeMetrics')) delete target.lastBridgeMetrics;
+  }
   for (const [key, value] of Object.entries(fields)) {
     try {
       target[key] = decodeValue(value, sourceForDefaults?.[key], ctx, `${path}.${key}`);

@@ -55,7 +55,18 @@ export function keysOnly(object, allowed, required = [], meta = null) {
 export function parseEvidentialRealization(value) {
   if (typeof value !== 'string' || value.length > 48000) throw new Error('v5_invalid_output');
   const trimmed = value.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
-  const parsed = JSON.parse(trimmed);
+  let parsed;
+  try {
+    parsed = JSON.parse(trimmed);
+  } catch (firstError) {
+    const firstBrace = trimmed.indexOf('{');
+    const lastBrace = trimmed.lastIndexOf('}');
+    if (firstBrace >= 0 && lastBrace > firstBrace) {
+      parsed = JSON.parse(trimmed.slice(firstBrace, lastBrace + 1));
+    } else {
+      throw firstError;
+    }
+  }
   assertData(parsed);
   keysOnly(parsed, ['schema', 'snapshot', 'frame', 'answer', 'atoms'], ['schema', 'snapshot', 'answer'], { target: 'root' });
   if (parsed.schema !== EVIDENTIAL_SCHEMA || ('frame' in parsed && parsed.frame !== 'OPEN_FRAME')) {

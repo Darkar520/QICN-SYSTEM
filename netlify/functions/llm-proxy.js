@@ -248,7 +248,22 @@ export const handler = async (event, context) => {
         body: JSON.stringify(geminiPayload)
       }
     );
-    const data = await resp.json();
+    let data = null;
+    if (typeof resp.text === 'function') {
+      const rawText = await resp.text();
+      try {
+        data = rawText ? JSON.parse(rawText) : null;
+      } catch {
+        data = { error: { message: String(rawText || '').slice(0, 240) || `NON_JSON_UPSTREAM_${resp.status}` } };
+      }
+    } else if (typeof resp.json === 'function') {
+      try {
+        data = await resp.json();
+      } catch (err) {
+        if (['AbortError', 'TimeoutError'].includes(err?.name)) throw err;
+        data = { error: { message: `NON_JSON_UPSTREAM_${resp.status}` } };
+      }
+    }
     return { resp, data };
   };
 

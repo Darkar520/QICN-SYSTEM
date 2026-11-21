@@ -444,6 +444,42 @@ export const runtimeParameterRegistry = [
     verificationTestId: 'RPF_037',
     mutable: false,
     status: 'active'
+  },
+  {
+    key: 'NODAL_TOWER_COUPLING_MODE',
+    tier: 'core-threshold',
+    defaultValue: QICNConfig.NODAL_TOWER_COUPLING_MODE,
+    range: { allowed: ['off', 'bidirectional', 'td_cut_eta_zero', 'reducible_control'] },
+    ownerFile: 'src/simulation/NodalTowerCouplingBridge.js',
+    ownerFunction: 'normalizeCouplingMode',
+    usagePaths: ['src/runtime/SimulationCycleDriver.js', 'src/components/SimulationEngine.jsx', 'src/simulation/NodalProcessingLayer.js'],
+    verificationTestId: 'RPF_038',
+    mutable: false,
+    status: 'active'
+  },
+  {
+    key: 'SENSOR_OBSERVER_DYNAMICS_ENABLED',
+    tier: 'metacognitive-runtime',
+    defaultValue: QICNConfig.SENSOR_OBSERVER_DYNAMICS_ENABLED,
+    range: { min: 0, max: 1 },
+    ownerFile: 'src/simulation/SensorObserverDynamicsBridge.js',
+    ownerFunction: 'isSensorObserverDynamicsEnabled',
+    usagePaths: ['src/runtime/SimulationCycleDriver.js', 'src/components/SimulationEngine.jsx', 'src/simulation/KaizenMetamorphosisEngine.js'],
+    verificationTestId: 'RPF_039',
+    mutable: false,
+    status: 'active'
+  },
+  {
+    key: 'STRUCTURAL_PLASTICITY_LEVEL2_ENABLED',
+    tier: 'core-threshold',
+    defaultValue: QICNConfig.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED,
+    range: { min: 0, max: 1 },
+    ownerFile: 'src/simulation/StructuralPlasticityLevel2.js',
+    ownerFunction: 'isStructuralPlasticityLevel2Enabled',
+    usagePaths: ['src/runtime/SimulationCycleDriver.js', 'src/components/SimulationEngine.jsx'],
+    verificationTestId: 'RPF_040',
+    mutable: false,
+    status: 'active'
   }
 ];
 

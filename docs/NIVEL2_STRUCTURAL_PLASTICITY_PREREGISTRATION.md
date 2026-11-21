@@ -1,27 +1,28 @@
-# Nivel 2 — Preregistro Etapa 0: Plasticidad Estructural Sin Parámetros Arbitrarios, Watchdog de Invariantes y Arena Competitiva (Nivel 1 vs Nivel 2)
+# Nivel 2 — Preregistro Etapa 0: Plasticidad Estructural Sin Hiperparámetros Configurables Nuevos, Watchdog de Invariantes y Arena Competitiva (Nivel 1 vs Nivel 2)
 
 - **Repositorio**: `QICN-SYSTEM` (commit base congelado: `117bf2a` en `main`; `qicn-framework-ordenado` intacto).
 - **Alcance de evidencia (`evidence_scope`)**: `internal_support_only`.
 - **Certificación externa (`external_support_certified`)**: `false`.
 - **Restricción estricta de diseño**:
-  1. **Cero parámetros numéricos heurísticos o arbitrarios nuevos** en `services/config.js` o en la UI (solo un interruptor booleano `STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: false` para preservar paridad B0 bit-a-bit).
+  1. **Cero hiperparámetros numéricos configurables nuevos** en `services/config.js` o en la UI (solo el interruptor booleano `STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: false` para preservar paridad B0 bit-a-bit; las constantes estructurales internas son deterministas y se derivan de `K = NODAL_SECTORS.length = 4`, `NODE_CONNECTION_MIN = 3`, `TEMPORAL_HORIZON = 10` y cotas de dominio del núcleo).
   2. **Cero inferencia LLM local o externa** en los bucles de detección/reparación.
-  3. **Cero trampa en controles negativos**: bajo `reducible_control` ($A = I$) y `td_cut_eta_zero` ($\eta = 0$), Nivel 2 no reconstruye puentes inter-sector ni migra sectores.
+  3. **Separación explícita de fronteras bajo controles negativos (`S5`)**: bajo `off`, `reducible_control` ($A = I$) y `td_cut_eta_zero` ($\eta = 0$), la plasticidad topológica y ruptura de simetría (`M1`/`M2`/`W3`) permanece estrictamente inerte (`skippedByNegativeControl = true`), mientras que la higiene de dominio/finitud (`W1`/`W4`) es un escaneo read-only sin asignaciones que jamás altera trayectorias finitas en dominio.
 
 ---
 
-## 1. Mecanismos preregistrados (derivados únicamente de invariantes existentes)
+## 1. Mecanismos preregistrados (derivados de invariantes existentes del núcleo)
 
-1. **Roles dinámicos de sector**: `annotateNodesWithSectors`, `computeNodalSectorMetrics`, `recoverInterSectorConnections` y `ConsciousNode.applyPlasticity` leen el `sectorId` dinámico del nodo destino (en lugar de `id % 4` fijo), preservando migraciones a través de ticks y `dynamicState.v3`.
+1. **Roles dinámicos de sector y persistencia v3 determinista**: `annotateNodesWithSectors`, `computeNodalSectorMetrics`, `recoverInterSectorConnections` y `ConsciousNode.applyPlasticity` leen el `sectorId` dinámico del nodo destino (en lugar de `id % 4` fijo). El estado acumulado de Nivel 2 (`nodalLayer.level2StructuralState`, incluyendo `recentCcc` y contadores) se serializa y restaura limpiamente en `qicn.dynamic_state.v3` cuando Nivel 2 opera en modo `bidirectional` o registra reparaciones, sin añadir ni un byte a capturas B0 (`STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = false`).
 2. **Watchdog pre-tick W1 y W4 (`sanitizeAndRepairPreTickInvariants`)**:
-   - **W4**: verifica las 7 claves de `mutableConfig` contra el dominio exacto `_boundValue` de Kaizen; restaura cualquier clave no finita o fuera de dominio.
-   - **W1**: detecta campos no finitos (`!Number.isFinite`) o fuera de dominio en nodos/pesos activos y reconstruye únicamente los elementos dañados desde la mediana exacta de vecinos/nodos finitos supervivientes.
-3. **Mecanismo 2 — Apoptosis por grado 0 y Neurogénesis homeostática**:
-   - Todo nodo activo con grado `0` (`connections.length === 0`) o slot inactivo (`activeNodeIds.size < nodes.length`) tras una lesión se recablea o recluta determinísticamente en el sector más deficitario $s_{\min} = \arg\min_s n_s$, heredando media exacta de coherencia/energía y mediana exacta de pesos sinápticos supervivientes con grado exacto `NODE_CONNECTION_MIN` (`3`).
-4. **Mecanismo 1 — Migración funcional de sector**:
-   - Cuando $\max_s n_s - \min_s n_s \ge 2$ bajo acoplamiento `bidirectional`, migra 1 nodo por sector deficitario por tick desde $s_{\max}$ hacia $s_{\min}$ eligiendo $i^* = \arg\max_{i \in s_{\max}} \cos(\phi_i - (\theta_{\text{tower}} + \Delta\theta_{s_{\min}}))$ (desempate por menor `node.id`).
-5. **Watchdog W3 — Ruptura de bloqueo cinemático exacto**:
-   - Si `dispersion === 0` o variación total de `CCC` exactamente `0` durante `TEMPORAL_HORIZON` (`10`) ticks consecutivos, rompe simetría determinísticamente usando las 4 fases exactas `NODAL_SECTORS[s].phaseOffset`.
+   - **W4**: verifica las 7 claves de `mutableConfig` contra el dominio exacto `_boundValue` de Kaizen y la finitud de `kaizenEngine.adjustments`; restaura cualquier clave no finita o fuera de dominio.
+   - **W1**: detecta campos no finitos (`!Number.isFinite`) o fuera de dominio en nodos/pesos activos, poda aristas hacia nodos inactivos (`!activeNodeIds.has(targetId)`), deduplica `targetId` repetidos por nodo, reconstruye los campos dañados desde la mediana exacta de vecinos/nodos finitos supervivientes, y sanea coeficientes no finitos en `WorldModelEngine.weights` / `multiWeights` desde el ancla EWC `W*` (o `0`).
+3. **Mecanismo 2 — Separación entre Apoptosis/Neurogénesis (`regeneratedNodes`) y Recableado de Piso (`degreeFloorRewires`)**:
+   - **2A (`regeneratedNodes`)**: todo nodo activo huérfano real con grado `0` (`connections.length === 0`) o slot dormante (`!activeNodeIds.has(id)`) tras una lesión se rescata o recluta determinísticamente en el sector más deficitario $s_{\min} = \arg\min_s n_s$, heredando media exacta de coherencia/energía y mediana exacta de pesos sinápticos supervivientes con grado `NODE_CONNECTION_MIN` (`3`). En red sana `S0`, `regeneratedNodes === 0`.
+   - **2B (`degreeFloorRewires`)**: todo nodo vivo subconectado con `0 < connections.length < NODE_CONNECTION_MIN` (`3`) refuerza localmente sus enlaces faltantes hasta `NODE_CONNECTION_MIN` sin contabilizarse como nodo regenerado.
+4. **Mecanismo 1 — Migración funcional de sector (`migrations`)**:
+   - Cuando $\max_s n_s - \min_s n_s \ge 2$ bajo acoplamiento `bidirectional`, migra nodos desde $s_{\max}$ hacia $s_{\min}$ eligiendo $i^* = \arg\max_{i \in s_{\max}} \cos(\phi_i - (\theta_{\text{tower}} + \Delta\theta_{s_{\min}}))$ (desempate por menor `node.id`).
+5. **Watchdog W3 — Ruptura de bloqueo cinemático (`kinematicUnfreezes`)**:
+   - Si el rango de dispersión nodal o variación de `CCC` durante `TEMPORAL_HORIZON` (`10`) ticks consecutivos cae por debajo de la tolerancia explícita `KINEMATIC_FREEZE_EPSILON = 1e-9` (capturando bloqueos con ruido sub-epsilon `1e-12` sin falsos positivos en `S0`), rompe simetría determinísticamente usando las 4 fases `NODAL_SECTORS[s].phaseOffset` alrededor de la línea base homeostática `Math.max(0.5, node.coherenceState)`.
 
 ---
 

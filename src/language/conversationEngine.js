@@ -167,7 +167,19 @@ function factPropsFor(props, intentResult) {
   return keep;
 }
 
-export function prepareTurn({ question, snapshot, ledger = null, turns = [], turnIndex = 0, contract = 'verified', kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT, ledgerRecord = null, workbenchEvidence = [] }) {
+export function prepareTurn({
+  question,
+  snapshot,
+  ledger = null,
+  turns = [],
+  turnIndex = 0,
+  contract = 'verified',
+  kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT,
+  sensorObserverDynamicsEnabled = false,
+  level2Telemetry = null,
+  ledgerRecord = null,
+  workbenchEvidence = []
+}) {
   if (!snapshot || !verifySnapshotDigest(snapshot)) {
     throw new Error('snapshot_digest_invalid');
   }
@@ -193,13 +205,17 @@ export function prepareTurn({ question, snapshot, ledger = null, turns = [], tur
       turns,
       recall,
       factualContext: evidentialContext,
-      kaizenEffective
+      kaizenEffective,
+      sensorObserverDynamicsEnabled,
+      level2Telemetry
     });
     const reasoningPlan = createReasoningPlan(question, evidentialContext, {
       turns,
       previousMetrics,
       localIntent: intent,
       kaizenEffective,
+      sensorObserverDynamicsEnabled,
+      level2Telemetry,
       proseContext
     });
     return {

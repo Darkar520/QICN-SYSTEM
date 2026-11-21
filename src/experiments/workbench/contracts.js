@@ -16,6 +16,7 @@ export const INTERVENTIONS = Object.freeze([
   'sensor_observer_dynamics',
   'td_cut_eta_zero',
   'reducible_control',
+  'structural_plasticity_level1',
   'structural_plasticity_level2',
   'lesion_sector_wipe',
   'lesion_sector_wipe_level2',

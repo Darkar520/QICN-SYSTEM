@@ -16,6 +16,8 @@ export function createReasoningPlan(question, context, options = {}) {
     previousMetrics = null,
     localIntent = null,
     kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT,
+    sensorObserverDynamicsEnabled = false,
+    level2Telemetry = null,
     proseContext = null
   } = options;
   const resolvedProse = proseContext || buildEvidentialProseContext({
@@ -23,7 +25,9 @@ export function createReasoningPlan(question, context, options = {}) {
     previousMetrics,
     turns,
     factualContext: context,
-    kaizenEffective
+    kaizenEffective,
+    sensorObserverDynamicsEnabled,
+    level2Telemetry
   });
 
   const ledgerInfo = resolvedProse.ledgerSummary
@@ -60,6 +64,8 @@ export function createReasoningPlan(question, context, options = {}) {
       localIntent,
       previousMetrics,
       kaizenEffective,
+      sensorObserverDynamicsEnabled: resolvedProse.sensorObserverDynamicsEnabled,
+      level2Telemetry: resolvedProse.level2Telemetry,
       ledgerInfo,
       evidenceRegistry: context.evidenceRegistry
     }
@@ -92,12 +98,17 @@ function buildEndogenousDecisionLines(snapshot) {
   ];
 }
 
-function buildB2AuthorityLines(evidenceRegistry, ledgerInfo, snapshot = null) {
+function buildB2AuthorityLines(evidenceRegistry, ledgerInfo, snapshot = null, level2Telemetry = null) {
   const lines = [
     '',
     'AUTORIDAD EVIDENCIAL SISTEMA B (Workbench B2, Ledger y Cotas Exactas)',
     `- Estado de evidencia experimental B2 en copia aislada: ${evidenceRegistry.status} (scope: isolated_copy_not_live_state, external_support_certified: false).`
   ];
+  if (level2Telemetry && typeof level2Telemetry === 'object') {
+    lines.push(
+      `- Plasticidad estructural viva (StructuralPlasticityLevel2): modo=${level2Telemetry.enabled ? 'Nivel 2 (activo)' : 'Nivel 1 (Nivel 2 inactivo)'}, migraciones_sector=${level2Telemetry.migrations}, regenerados_apoptosis_neurogenesis=${level2Telemetry.regeneratedNodes}, recableados_piso_grado=${level2Telemetry.degreeFloorRewires}, reparaciones_invariantes_W1_W4=${level2Telemetry.invariantRepairs} (config=${level2Telemetry.configRepairs}, worldModel=${level2Telemetry.worldModelRepairs}), desbloqueos_cinematicos_W3=${level2Telemetry.kinematicUnfreezes} (resiliencia topológica y numérica interna del runtime; external_support_certified = false).`
+    );
+  }
   if (evidenceRegistry.status === 'verified_internal_copy' && evidenceRegistry.entries.length) {
     lines.push('- Experimentos verificados en copia aislada del Workbench (distínguelos siempre del estado vivo actual y nunca los llames validación externa ni soporte externo):');
     for (const entry of evidenceRegistry.entries) {
@@ -157,7 +168,7 @@ function buildUnifiedSystemBHeader(args, fullDigest, fullTick) {
     `Copia EXACTOS los 64 caracteres hex de "digest" (${fullDigest}) y el entero "tick" (${fullTick}).`,
     `Local intent orientativo: ${args.localIntent?.intent || 'unknown'}.`,
     ...buildEndogenousDecisionLines(args.snapshot),
-    ...buildB2AuthorityLines(args.evidenceRegistry, args.ledgerInfo, args.snapshot)
+    ...buildB2AuthorityLines(args.evidenceRegistry, args.ledgerInfo, args.snapshot, args.level2Telemetry)
   ].join('\n');
 }
 

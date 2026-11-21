@@ -319,7 +319,16 @@ export function summarizeLedgerPlain(ledger) {
   };
 }
 
-export function buildEvidentialProseContext({ snapshot, previousMetrics = null, turns = [], recall = null, factualContext, kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT }) {
+export function buildEvidentialProseContext({
+  snapshot,
+  previousMetrics = null,
+  turns = [],
+  recall = null,
+  factualContext,
+  kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT,
+  sensorObserverDynamicsEnabled = false,
+  level2Telemetry = null
+}) {
   const ledgerSummary = summarizeLedgerPlain(factualContext.ledger);
   const previousTurn = turns.length ? turns[turns.length - 1] : null;
   const rawProps = buildPropositions(snapshot, ledgerSummary, { previousTurn, recall });
@@ -371,10 +380,44 @@ export function buildEvidentialProseContext({ snapshot, previousMetrics = null, 
     }
   }
   if (kaizenEffective) {
+    if (sensorObserverDynamicsEnabled) {
+      extraPacketLines.push(
+        `Modo Kaizen learned activo claves 6/6 incluyendo PLASTICITY_DECAY sensor_observer_dynamics activo latency_strain ${snapshot?.structural_profile?.latency_strain ?? 0} canal chat desacoplado`
+      );
+      freeCtx.numbers.packetNumbers.push(6);
+    } else {
+      extraPacketLines.push(
+        `Modo Kaizen learned activo claves 5/6 excluyendo PLASTICITY_DECAY sensor_observer_dynamics inactivo latency_strain ${snapshot?.structural_profile?.latency_strain ?? 0} canal chat desacoplado`
+      );
+      freeCtx.numbers.packetNumbers.push(5, 6);
+    }
+  }
+  const normalizedLevel2 = level2Telemetry && typeof level2Telemetry === 'object'
+    ? {
+      enabled: Boolean(level2Telemetry.enabled),
+      migrations: Number(level2Telemetry.migrations) || 0,
+      regeneratedNodes: Number(level2Telemetry.regeneratedNodes) || 0,
+      degreeFloorRewires: Number(level2Telemetry.degreeFloorRewires) || 0,
+      invariantRepairs: Number(level2Telemetry.invariantRepairs) || 0,
+      configRepairs: Number(level2Telemetry.configRepairs) || 0,
+      worldModelRepairs: Number(level2Telemetry.worldModelRepairs) || 0,
+      kinematicUnfreezes: Number(level2Telemetry.kinematicUnfreezes) || 0
+    }
+    : null;
+  if (normalizedLevel2) {
     extraPacketLines.push(
-      `Modo Kaizen learned activo claves 6/6 incluyendo PLASTICITY_DECAY latency_strain ${snapshot?.structural_profile?.latency_strain ?? 0} canal chat desacoplado`
+      `Plasticidad estructural ${normalizedLevel2.enabled ? 'Nivel 2 activa' : 'Nivel 1 base (Nivel 2 inactiva)'} StructuralPlasticityLevel2 migraciones ${normalizedLevel2.migrations} regenerados_apoptosis_neurogenesis ${normalizedLevel2.regeneratedNodes} recableados_piso_grado ${normalizedLevel2.degreeFloorRewires} reparaciones_invariantes ${normalizedLevel2.invariantRepairs} reparaciones_config ${normalizedLevel2.configRepairs} reparaciones_world_model ${normalizedLevel2.worldModelRepairs} desbloqueos_cinematicos_W3 ${normalizedLevel2.kinematicUnfreezes} soporte_interno external_support_certified false`
     );
-    freeCtx.numbers.packetNumbers.push(6);
+    freeCtx.numbers.packetNumbers.push(
+      1, 2, 3, 4, 10,
+      normalizedLevel2.migrations,
+      normalizedLevel2.regeneratedNodes,
+      normalizedLevel2.degreeFloorRewires,
+      normalizedLevel2.invariantRepairs,
+      normalizedLevel2.configRepairs,
+      normalizedLevel2.worldModelRepairs,
+      normalizedLevel2.kinematicUnfreezes
+    );
   }
   for (const entry of b2Entries) {
     extraPacketLines.push(
@@ -476,7 +519,9 @@ export function buildEvidentialProseContext({ snapshot, previousMetrics = null, 
     b2Entries,
     b2Values,
     snapshot,
-    ledgerDigest: factualContext.ledgerDigest
+    ledgerDigest: factualContext.ledgerDigest,
+    sensorObserverDynamicsEnabled: Boolean(sensorObserverDynamicsEnabled),
+    level2Telemetry: normalizedLevel2
   };
 }
 

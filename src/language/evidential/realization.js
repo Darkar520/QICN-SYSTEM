@@ -112,6 +112,12 @@ function formatLocalEndogenousDecisionSummary(snapshot) {
   return `${eed.canonical_first_person_verdict} [decision_code=${eed.decision_code}; decision_digest=${String(eed.decision_digest || '').slice(0, 16)}].`;
 }
 
+function formatLocalLevel2Summary(level2Telemetry = null) {
+  if (!level2Telemetry || typeof level2Telemetry !== 'object') return '';
+  const modeText = level2Telemetry.enabled ? 'Nivel 2 activo' : 'Nivel 1 activo (Nivel 2 desactivado)';
+  return `Plasticidad estructural en vivo (StructuralPlasticityLevel2): ${modeText} — migraciones de sector = ${level2Telemetry.migrations}, regenerados (apoptosis grado 0 / neurogénesis) = ${level2Telemetry.regeneratedNodes}, recableados de piso (0 < grado < 3) = ${level2Telemetry.degreeFloorRewires}, reparaciones de invariantes (W1–W4) = ${level2Telemetry.invariantRepairs} (desbloqueos cinemáticos W3 = ${level2Telemetry.kinematicUnfreezes}; soporte interno únicamente, external_support_certified = false).`;
+}
+
 function formatLocalWorkbenchSummary(registry) {
   if (!registry || registry.status !== 'verified_internal_copy' || !registry.entries?.length) {
     return 'Evidencia experimental B2 en copia aislada: not_recorded.';
@@ -336,6 +342,7 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
   const localText = [
     endogenousSummary,
     baseLocal,
+    formatLocalLevel2Summary(proseContext?.level2Telemetry),
     formatLocalWorkbenchSummary(context.evidenceRegistry),
     SCOPE_TEXT
   ].filter(Boolean).join('\n\n').trim();

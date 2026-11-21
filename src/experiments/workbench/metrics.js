@@ -23,8 +23,25 @@ export function readWorkbenchMetrics(session, build) {
     build, now: session.environment.peekClock()
   });
   const stateDigest = dataDigest('qicn.workbench_tick_state.v1', body);
+  const populatedSectorSet = new Set();
+  let totalEdges = 0;
+  let orphanCount = 0;
+  for (let i = 0; i < nodes.length; i += 1) {
+    const n = nodes[i];
+    const sec = Number.isInteger(n.sectorId) ? n.sectorId : (((n.id % 4) + 4) % 4);
+    populatedSectorSet.add(sec);
+    const deg = Array.isArray(n.connections) ? n.connections.length : 0;
+    totalEdges += deg;
+    if (deg === 0) orphanCount += 1;
+  }
+  const topology = {
+    activeNodes: nodes.length,
+    populatedSectors: populatedSectorSet.size,
+    meanDegree: nodes.length > 0 ? Number((totalEdges / nodes.length).toFixed(4)) : 0,
+    orphanCount
+  };
   return {
-    tick: session.completedTick, values, stateDigest,
+    tick: session.completedTick, values, stateDigest, topology,
     action: viability.lastSelectedPolicyAction, inTube: viability.lastInTube,
     plasticity, anchorVector: wm.getConsolidatedAnchorVector(),
     predictorWeights: encodeForDiff({ fast: wm.weights, multi: wm.multiWeights, anchor: wm.plasticityState.consolidatedWeights, fisher: wm.plasticityState.fisherStiffness }),

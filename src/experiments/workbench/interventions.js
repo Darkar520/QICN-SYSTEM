@@ -77,6 +77,12 @@ export function applyWorkbenchIntervention(session, intervention) {
       effects.allowedFields = ['configuration.NODAL_TOWER_COUPLING_MODE'];
       effects.scope = 'reducible A = I sector-uncoupled negative control on isolated copy';
       break;
+    case 'structural_plasticity_level1':
+      session.environment.config.NODAL_TOWER_COUPLING_MODE = 'bidirectional';
+      session.environment.config.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = false;
+      effects.allowedFields = ['configuration.NODAL_TOWER_COUPLING_MODE', 'configuration.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED'];
+      effects.scope = 'negative ablation disabling Level 2 structural plasticity (forces Level 1 baseline under bidirectional coupling) on isolated copy';
+      break;
     case 'structural_plasticity_level2':
       session.environment.config.NODAL_TOWER_COUPLING_MODE = 'bidirectional';
       session.environment.config.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = true;

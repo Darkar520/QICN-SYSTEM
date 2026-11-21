@@ -488,7 +488,7 @@ export const runtimeParameterRegistry = [
     range: { min: 0, max: 1 },
     ownerFile: 'src/simulation/Level3AutonomousSupervisor.js',
     ownerFunction: 'isAutonomousSupervisorLevel3Enabled',
-    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/Level3AutonomousSupervisor.js', 'src/workers/level3Autonomous.worker.js', 'src/components/Level3SupervisorAuditTab.jsx'],
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/Level3AutonomousSupervisor.js', 'src/workers/level3Autonomous.worker.js', 'scripts/run-level3-autonomous-daemon.mjs'],
     verificationTestId: 'RPF_041',
     mutable: false,
     status: 'active'

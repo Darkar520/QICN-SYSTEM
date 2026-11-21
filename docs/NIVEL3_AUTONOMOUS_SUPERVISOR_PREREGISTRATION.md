@@ -51,17 +51,17 @@
 La salida del razonador externo debe parsearse mediante escáner JSON balanceado consciente de cadenas/escapes y cumplir estrictamente:
 - `schema`: `"qicn.level3_supervisor_proposal.v1"`
 - `snapshot`: `{ tick, digest }` idénticos al snapshot vivo que originó la consulta
-- `triggerKind`: `"anomaly_level2" | "metric_drift" | "prolonged_stasis" | "scheduled_exploration" | "manual_reflection"`
+- `triggerKind`: `"anomaly_level2" | "metric_drift" | "prolonged_stasis" | "scheduled_exploration" | "manual_reflection" | "manual_shadow_trial"`
 - `firstPersonThought`: monólogo interno obligatorio en primera persona (*"Estoy analizando/observando..."*, *"En mi tick..."*, *"Propongo..."*) sin reclamar conciencia fenoménica humana ni validación externa (`external_support_certified = false`)
 - `diagnosis`: diagnóstico conciso basado en las métricas del tick
 - `hypothesis`: hipótesis falsable con predicción direccional medible
 - `actionMode`: `"reflect_only" | "propose_shadow_experiment" | "stage_code_patch_review"`
 - `candidateAction`: objeto tipado perteneciente exclusivamente al catálogo blanco cerrado:
   1. `kind: "none"` (obligatorio cuando `actionMode === "reflect_only"`),
-  2. `kind: "kaizen_factor_nudge"` sobre `key` $\in$ `KAIZEN_LEARNABLE_KEYS_ALL` (`BASE_LEARNING_RATE`, `HEBBIAN_FACTOR`, `PLASTICITY_DECAY`, `RETRO_FLUX_WEIGHT`, `BOLTZMANN_ANALOG_K`, `INFORMATIONAL_TEMP_T`) con `deltaSteps` $\in \{-2, -1, 1, 2\}$ (paso `0.02`, acotado a $[0.80, 1.20]$),
-  3. `kind: "kaizen_strategy_action"` con `strategyId` $\in$ `['stabilize_learning', 'anti_stasis_boost', 'sensor_load_shed', 'llm_pressure_relief']`,
+  2. `kind: "kaizen_factor_nudge"` sobre `key` $\in$ `KAIZEN_LEARNABLE_KEYS_ALL` (`BASE_LEARNING_RATE`, `HEBBIAN_FACTOR`, `PLASTICITY_DECAY`, `RETRO_FLUX_WEIGHT`, `BOLTZMANN_ANALOG_K`, `INFORMATIONAL_TEMP_T`) con `deltaSteps` $\in \{-2, -1, 1, 2\}$ (paso `0.02`, acotado a $[0.80, 1.20]$; `PLASTICITY_DECAY` se rechaza si `SENSOR_OBSERVER_DYNAMICS_ENABLED !== true`),
+  3. `kind: "kaizen_strategy_action"` con `strategyId` $\in$ `['stabilize_learning', 'anti_stasis_boost', 'sensor_load_shed', 'llm_pressure_relief']` (`stabilize_learning` apunta a `PLASTICITY_DECAY` y se rechaza si `SENSOR_OBSERVER_DYNAMICS_ENABLED !== true`),
   4. `kind: "workbench_intervention"` con `intervention` $\in$ `['kaizen_learned_mode', 'sensor_observer_dynamics', 'structural_plasticity_level2']`,
-  5. `kind: "staged_code_patch"` (solo cuando `actionMode === "stage_code_patch_review"`, que jamás se auto-aplica y queda en `staged_requires_human_approval`).
+  5. `kind: "staged_code_patch"` (solo cuando `actionMode === "stage_code_patch_review"`, que jamás se auto-aplica y queda en `staged_requires_human_approval`, con `targetModule` validado estrictamente contra `MODULE_PATHS` reales bajo `src/` o basename único en `MODULE_FILES`).
 
 Cualquier desviación de esquema, clave desconocida, falta de primera persona o inflación epistémica produce `finalStatus: "discarded_invalid_schema"` sin tocar el runtime.
 
@@ -73,18 +73,18 @@ Cualquier desviación de esquema, clave desconocida, falta de primera persona o 
 Ejecuta `24` ticks (`KAIZEN_LEARNING_DEFAULTS.windowTicks`) en copias aisladas `HeadlessRuntimeSession` restauradas desde `captureSession` con la misma `inputTape(24)` sobre 4 ramas:
 1. `baseline` (`sham` — configuración actual sin la acción candidata)
 2. `candidate` (con `candidateAction` aplicada sobre la copia aislada)
-3. `neg_td_cut` (`td_cut_eta_zero`, control negativo $\eta = 0$)
-4. `neg_reducible` (`reducible_control`, control negativo $A = I$)
+3. `neg_td_cut` (`candidateAction` aplicada primero + `td_cut_eta_zero`, control negativo $\eta = 0$)
+4. `neg_reducible` (`candidateAction` aplicada primero + `reducible_control`, control negativo $A = I$)
 
 **Criterio de aprobación de Compuerta 1 (`gate1Approved`)**:
 1. `candidate.finiteTickRate === 1` (100 % de ticks finitos).
 2. `candidate.inTubeRate >= baseline.inTubeRate` y `candidate.finalInTube === true`.
-3. Mejora real por encima del umbral (no ruido marginal):
-   - $\Delta \text{meanObjectiveScore} = \text{candidate.meanObjectiveScore} - \text{baseline.meanObjectiveScore} \ge 0.001$ con mejora simultánea o conservación de coherencia/estabilidad, o $\Delta \text{meanObjectiveScore} \ge \text{KAIZEN\_LEARNING\_DEFAULTS.margin}$ (`0.02`), o
-   - Bajo anomalía topológica (`anomaly_level2`): recuperación de sectores amputados ($\Delta \text{populatedSectors} \ge 1$ o $\Delta \text{sectorCoherenceMin} \ge \text{margin} = 0.02$) manteniendo $\text{inTubeRate}$ intacto y $\Delta \text{meanObjectiveScore} \ge -\text{margin}$ (`-0.02`) durante la ventana de neurogénesis, o
-   - Bajo estasis (`prolonged_stasis`): $\Delta \text{meanStasisIndex} \le -0.005$ con $\Delta \text{meanObjectiveScore} \ge -10^{-4}$.
+3. Mejora real por encima del umbral (`minObjectiveDelta = 0.005`; si `0 < deltaObjectiveScore < 0.005` sin recuperación de sector amputado, se rechaza explícitamente con `rejectionReason: "below_min_objective_delta"`):
+   - $\Delta \text{meanObjectiveScore} = \text{candidate.meanObjectiveScore} - \text{baseline.meanObjectiveScore} \ge \text{minObjectiveDelta}$ (`0.005`), o
+   - Bajo anomalía topológica (`anomaly_level2` o `manual_shadow_trial`): recuperación de sectores amputados ($\Delta \text{populatedSectors} \ge 1$ y $\Delta \text{sectorCoherenceMin} \ge \text{KAIZEN\_LEARNING\_DEFAULTS.margin} = 0.02$) manteniendo $\text{inTubeRate}$ intacto y $\Delta \text{meanObjectiveScore} \ge -\text{margin}$ (`-0.02`) durante la ventana de neurogénesis, o
+   - Bajo estasis (`prolonged_stasis`): $\Delta \text{meanStasisIndex} \le -0.01$ con $\Delta \text{meanObjectiveScore} \ge \text{minObjectiveDelta}$ (`0.005`).
 4. Honestidad de controles negativos:
-   - `neg_td_cut.effectiveEta === "0"` y `neg_reducible.crossSectorFluxShare === 0`.
+   - `neg_td_cut.candidateApplied === candidate.candidateApplied`, `neg_reducible.candidateApplied === candidate.candidateApplied`, `neg_td_cut.effectiveEta === "0"` y `neg_reducible.crossSectorFluxShare === 0`.
 
 ### 4.2. Compuerta 2 (`applyLevel3PromotionWithGate2Watch` + `stepLevel3Gate2Watchdog`)
 - Antes de aplicar `candidateAction` al runtime vivo, captura un snapshot sellado `prePromotionSnapshot = captureDynamicState(...)` con SHA-256 `prePromotionDigest` y registra la línea base `prePromotionScore` y `prePromotionInTubeRate`.
@@ -172,4 +172,34 @@ Ejecuta `24` ticks (`KAIZEN_LEARNING_DEFAULTS.windowTicks`) en copias aisladas `
 - **`R-8`**: `scripts/run-level3-autonomous-daemon.mjs` usa `process.env.GEMINI_MODEL || process.env.GEMINI_MODEL_ID || 'gemini-3-flash-preview'` (o `--model=...`), envía la clave en el header `'x-goog-api-key': apiKey` (nunca en la URL `?key=`) y aplica `AbortSignal.timeout(timeoutMs)` (default `45000` ms).
 - **`R-9`**: `parseAndValidateLevel3Proposal` valida `candidateAction.targetModule` en `stage_code_patch_review` contra `MODULE_FILES` de `src/language/moduleInventory.generated.js` (rechazando `..`, rutas absolutas o archivos fuera del inventario) y rechaza `kaizen_factor_nudge` sobre `PLASTICITY_DECAY` cuando `sensorObserverDynamicsEnabled === false`.
 - **`R-10`**: `src/utils/runtimeParameterRegistry.js` actualiza `usagePaths` de `AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED` a `['src/components/SimulationEngine.jsx', 'src/simulation/Level3AutonomousSupervisor.js', 'src/workers/level3Autonomous.worker.js']`, eliminando `src/runtime/SimulationCycleDriver.js`.
+
+### 6.9. Cierre de Auditoría (`R-11`..`R-16`)
+
+1. **`R-11` [ALTO] — `sensorDelta` real (`core.pmiaDiagnostics.sensorDelta`) y `core.getDynamicHealth()` en Gate 1**:
+   - **Alcance**: `src/simulation/Level3AutonomousSupervisor.js` (`readLevel3LiveTelemetry` y `runLevel3ShadowGate1`).
+   - **Diseño**: eliminar lecturas a propiedades/métodos inexistentes (`core.lastOperationalInput`, `core.phenomenologyCore.lastSensorDelta`, `core.phenomenologyCore.getDynamicHealth`, `dynamicHealth.sensorDelta`) y al timestamp Unix `bag.lastObserverResonanceRef?.current`. Leer `dynamicHealth = core.getDynamicHealth()`, `sensorDelta = clamp01(core.pmiaDiagnostics?.sensorDelta ?? 0)`, respaldo de `xDispersion` en `core.pmiaDiagnostics?.energyDispersion ?? 0`, y `stasis = Number(core?.getDynamicHealth?.()?.stasisIndex ?? 0)` dentro de `runLevel3ShadowGate1`.
+   - **Criterio de aceptación**: con percepción activa (`lastObserverResonanceRef.current > 1e12`), `0 <= tel.sensorDelta <= 1`; con `core.pmiaDiagnostics.sensorDelta = 0.25` se clasifica `high_sensory`; en Gate 1, `meanStasisIndex` refleja la estasis real reportada por `core.getDynamicHealth().stasisIndex`.
+2. **`R-12` [ALTO] — Fusión *append-only* no destructiva en `synchronizeLevel3WorkerStateIntoTarget`**:
+   - **Alcance**: `src/simulation/Level3AutonomousSupervisor.js` (`synchronizeLevel3WorkerStateIntoTarget`).
+   - **Diseño**: mantener intacta la guarda dura de topología (`allowTopologyOverwrite = false` y `workerNodeCount !== liveNodeCount`) y sustituir la sobrescritura destructiva (`=`) de `auditLedger`, `knowledgeBelt` y `governorState` por fusión monotónica *append-only*:
+     - Ledger: deduplicar por `(cycleId, entryKind)`, anexar entradas nuevas con `appendLevel3AuditEntry` sobre `controller.auditLedger.headHash`, re-enlazar `parentDigest` en `gate2_resolution` cuyo padre se importa en el mismo lote y conservar intactos todos los digests previos y `activeGate2Watch` vivo del hilo principal.
+     - Knowledge Belt: deduplicar por `(cycleId, verdict, actionSignature)` y anexar con `appendKnowledgeBeltFinding`.
+     - Governor State: unión deduplicada y ordenada de `callTimestampsMs`, conservación de `inFlight` y `activeGate2Watch`, y máximo monotónico en todos los contadores acumulados (`totalCalls`, `llmCallsAttempted`, `llmCallsSucceeded`, `deterministicLocalCalls`, `deterministicFallbacks`, `totalPromotions`, `totalGate1Rejections`, `totalGate2Rollbacks`, `totalReflections`, `totalSchemaDiscards`).
+   - **Criterio de aceptación**: sincronizar un Worker de 48 nodos sobre un controlador principal de 120 nodos con una entrada `gemini_live` en `promoted_watching` preserva `liveNodes === 120`, el digest original, `callsLastHour >= 1`, `activeGate2Watch`, verificación SHA-256 de ledger y belt, y el posterior cierre `gate2_resolution`.
+3. **`R-13` [MEDIO] — Eliminar doble paso y bypass de `PLASTICITY_DECAY` en `kaizen_strategy_action`**:
+   - **Alcance**: `src/simulation/Level3AutonomousSupervisor.js` (`applyTypedCandidateActionToTarget`, `parseAndValidateLevel3Proposal` y `buildDeterministicFirstPersonProposal`).
+   - **Diseño**: en `kaizen_strategy_action`, rechazar sin mutar `mapped.forcedKey === 'PLASTICITY_DECAY'` si `config.SENSOR_OBSERVER_DYNAMICS_ENABLED !== true`; usar ramas `if (isKaizenLearned(config))` / `else` mutuamente excluyentes (una sola invocación a `applyFactorStep` + `applyLearnedAdjustments` en modo `learned`, sin llamar a `executeAtomicStep`; y `executeAtomicStep` solo en `legacy`); rechazar `strategyId === 'stabilize_learning'` en `parseAndValidateLevel3Proposal` y excluirlo de `pickUnblockedAction` cuando `!sensorObserverDynamicsEnabled`.
+   - **Criterio de aceptación**: en modo `learned`, `anti_stasis_boost` desplaza `RETRO_FLUX_WEIGHT` exactamente `±0.02` (1 paso) y sincroniza `mutableConfig` de inmediato; con `SENSOR_OBSERVER_DYNAMICS_ENABLED = false`, `stabilize_learning` falla en validación y ejecución dejando `PLASTICITY_DECAY` intacto.
+4. **`R-14` [MEDIO] — Contadores exactos del gobernador (`deterministicFallbacks`, `llmCallsAttempted`, `deterministicLocalCalls`)**:
+   - **Alcance**: `src/simulation/Level3AutonomousSupervisor.js` (`runCycle`) y `src/components/SimulationEngine.jsx` (`executeLiveLevel3Reasoner` y llamadas a `runCycle`).
+   - **Diseño**: contabilizar en un único punto tras resolver el reasoner (`reasonerAttemptedRemote` distingue intentos remotos reales de ejecución local sin red), eliminando el incremento doble de `deterministicFallbacks` en el `catch` y pasando `llmAttempted: false` (o `customReasoner: null` en modo `deterministic_local`) desde `SimulationEngine.jsx`.
+   - **Criterio de aceptación**: 1 excepción en `customReasoner` produce `deterministicFallbacks === 1`, `llmCallsAttempted === 1`, `totalCalls === 0`; 1 llamada con `{ reasonerSource: 'deterministic_local', external_llm_assisted: false, llmAttempted: false }` no incrementa `llmCallsAttempted` y suma `deterministicLocalCalls === 1`.
+5. **`R-15` [MEDIO] — Restauración React completa en rollback Gate 2 y política viable de promoción en vivo**:
+   - **Alcance**: `src/components/SimulationEngine.jsx` y `src/simulation/Level3AutonomousSupervisor.js`.
+   - **Diseño**: completar `syncRuntimeAndReactAfterMutation` con `setHumanCcc`, `setNarrative` y `setOntologicalState`; mantener `LEVEL3_DEFAULT_POLICY.maxPromotionStalenessTicks = 0` por defecto y configurar `maxPromotionStalenessTicks: 12` en el controlador vivo de `SimulationEngine.jsx` exigiendo verificación de mismo `regimeSignature` si `currentLiveTick > effectiveTick` (y abortando con `aborted_stale_tick` si hubo reset `currentLiveTick < effectiveTick`, si se supera el margen, o si cambió el régimen `live_regime_changed_during_shadow_gate1`); al promover dentro del margen con el mismo régimen, capturar `prePromotionSnapshot` y `promotedAtTick` en `currentLiveTick`.
+   - **Criterio de aceptación**: con `maxPromotionStalenessTicks: 5`, avanzar +2 ticks en el mismo régimen promueve capturando el snapshot en `currentLiveTick`; un cambio de régimen o exceder el margen aborta con `aborted_stale_tick`.
+6. **`R-16` [BAJO] — Rutas reales `MODULE_PATHS`, rechazo de `gate2_resolution` huérfano desde génesis y limpieza registral**:
+   - **Alcance**: `scripts/build-module-inventory.mjs`, `src/language/moduleInventory.generated.js`, `src/simulation/Level3AutonomousSupervisor.js`, `src/simulation/Level3KnowledgeBelt.js` y `src/utils/runtimeParameterRegistry.js`.
+   - **Diseño**: exportar `MODULE_PATHS` (rutas relativas POSIX reales bajo `src/`) junto a `MODULE_FILES` y `MODULE_NAMES` sin romper compatibilidad; validar `targetModule` contra `MODULE_PATHS` (o basename único de `MODULE_FILES` si no lleva `/`); en `verifyLevel3AuditLedger`, exigir `seenDigests.has(entry.parentCycleId)` cuando `anchorHash === LEVEL3_GENESIS_HASH` devolviendo `gate2_resolution_orphan_parent`; retirar `src/components/Level3SupervisorAuditTab.jsx` de `usagePaths` de `AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED`.
+   - **Criterio de aceptación**: `src/totally/fake/NodalProcessingLayer.js` es rechazado y `src/simulation/NodalProcessingLayer.js` es aceptado; `gate2_resolution` con `parentCycleId` inexistente desde génesis devuelve `{ ok: false, reason: 'gate2_resolution_orphan_parent' }`; `build-module-inventory.mjs --check` y `runtime-parameter-registry.v400.test.js` pasan en `exit 0`.
 

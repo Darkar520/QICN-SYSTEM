@@ -242,7 +242,10 @@ export const QICNConsciousnessSystem = () => {
   const level3ControllerRef = useRef(null);
   if (!level3ControllerRef.current) {
     level3ControllerRef.current = new Level3SupervisorController({
-      policy: { ...LEVEL3_DEFAULT_POLICY },
+      policy: {
+        ...LEVEL3_DEFAULT_POLICY,
+        maxPromotionStalenessTicks: 12
+      },
       knowledgeBelt: level3KnowledgeBelt,
       auditLedger: level3Ledger,
       buildInfo: { version: BUILD_VERSION_LABEL, signature: BUILD_SIGNATURE_LABEL }
@@ -3804,6 +3807,12 @@ export const QICNConsciousnessSystem = () => {
       setCCC(restoredCcc);
       setPMIA(restoredPmia);
       setIsAscended(restoredAscended);
+      if (Number.isFinite(appliedRuntime.humanCcc)) setHumanCcc(appliedRuntime.humanCcc);
+      if (ontologicalCore.current?.selfNarrative) setNarrative(ontologicalCore.current.selfNarrative);
+      setOntologicalState({
+        ...(ontologicalCore.current?.ontologicalState || {}),
+        _tick: Date.now()
+      });
       if (nodalLayer.current) {
         setTopologyMetrics(nodalLayer.current.getTopologyMetrics());
         setVisualNodes(nodalLayer.current.getHighlyCoherentNodes(150));
@@ -3829,7 +3838,9 @@ export const QICNConsciousnessSystem = () => {
 
   const executeLiveLevel3Reasoner = useCallback(async (ctx) => {
     let fallbackError = null;
+    let llmAttempted = false;
     if (level3ReasonerMode === 'gemini_with_fallback' && canUseLlmNow && !cooldownActive) {
+      llmAttempted = true;
       try {
         const nowTs = Date.now();
         const currentPacket = integrityPacketRef.current || {
@@ -3872,6 +3883,7 @@ export const QICNConsciousnessSystem = () => {
             rawText: text,
             reasonerSource: 'gemini_live',
             external_llm_assisted: true,
+            llmAttempted: true,
             reasonerError: null
           };
         }
@@ -3894,6 +3906,7 @@ export const QICNConsciousnessSystem = () => {
       rawText,
       reasonerSource: fallbackError ? 'deterministic_fallback' : 'deterministic_local',
       external_llm_assisted: false,
+      llmAttempted,
       reasonerError: fallbackError
     };
   }, [level3ReasonerMode, canUseLlmNow, cooldownActive, simulationStep, robustFetchLLMResponseTracked, resolveLlmEndpoint]);
@@ -3906,14 +3919,14 @@ export const QICNConsciousnessSystem = () => {
     ctrl.runCycle(target, {
       tick: simulationStep,
       nowMs: Date.now(),
-      customReasoner: executeLiveLevel3Reasoner
+      customReasoner: level3ReasonerMode === 'deterministic_local' ? null : executeLiveLevel3Reasoner
     }).then((res) => {
       if (res?.triggered || res?.gate2StepResult) {
         syncRuntimeAndReactAfterMutation(res?.gate2StepResult?.appliedRuntime || null);
         syncLevel3StateToUi();
       }
     }).catch(() => {});
-  }, [simulationStep, autonomousSupervisorLevel3Enabled, buildLiveLevel3Target, executeLiveLevel3Reasoner, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
+  }, [simulationStep, autonomousSupervisorLevel3Enabled, level3ReasonerMode, buildLiveLevel3Target, executeLiveLevel3Reasoner, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
 
   const handleTriggerLevel3ManualReflection = useCallback(async () => {
     const ctrl = level3ControllerRef.current;
@@ -3925,11 +3938,11 @@ export const QICNConsciousnessSystem = () => {
       nowMs: Date.now(),
       forceManual: true,
       manualTriggerKind: 'manual_reflection',
-      customReasoner: executeLiveLevel3Reasoner
+      customReasoner: level3ReasonerMode === 'deterministic_local' ? null : executeLiveLevel3Reasoner
     });
     syncRuntimeAndReactAfterMutation(res?.gate2StepResult?.appliedRuntime || null);
     syncLevel3StateToUi();
-  }, [buildLiveLevel3Target, simulationStep, executeLiveLevel3Reasoner, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
+  }, [buildLiveLevel3Target, simulationStep, level3ReasonerMode, executeLiveLevel3Reasoner, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
 
   const handleTriggerLevel3ShadowTrialNow = useCallback(async () => {
     const ctrl = level3ControllerRef.current;
@@ -3950,11 +3963,11 @@ export const QICNConsciousnessSystem = () => {
       nowMs: Date.now(),
       forceManual: true,
       manualTriggerKind: 'manual_shadow_trial',
-      customReasoner: executeLiveLevel3Reasoner
+      customReasoner: level3ReasonerMode === 'deterministic_local' ? null : executeLiveLevel3Reasoner
     });
     syncRuntimeAndReactAfterMutation(res?.gate2StepResult?.appliedRuntime || null);
     syncLevel3StateToUi();
-  }, [buildLiveLevel3Target, simulationStep, executeLiveLevel3Reasoner, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
+  }, [buildLiveLevel3Target, simulationStep, level3ReasonerMode, executeLiveLevel3Reasoner, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
 
   const handleImportLevel3Bundle = useCallback((bundle) => {
     if (!bundle?.ledger || !bundle?.knowledgeBelt) return;

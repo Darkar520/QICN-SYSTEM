@@ -5,7 +5,7 @@
 import { QICNConfig } from '../../services/config.js';
 import { AUTONOMY_RUNTIME_DEFAULTS } from '../config/simulationDefaults.js';
 import { sha256Hex, stableStringify } from '../utils/integrity.js';
-import { MODULE_FILES } from '../language/moduleInventory.generated.js';
+import { MODULE_FILES, MODULE_PATHS } from '../language/moduleInventory.generated.js';
 import {
   KAIZEN_ADJUSTABLE_KEYS,
   KAIZEN_LEARNABLE_KEYS_ALL,
@@ -19,6 +19,7 @@ import { captureSession } from '../experiments/workbench/capture.js';
 import { restoreWorkbenchCapture } from '../experiments/workbench/restore.js';
 import { applyWorkbenchIntervention } from '../experiments/workbench/interventions.js';
 import {
+  LEVEL3_GENESIS_HASH,
   LEVEL3_SCIENTIFIC_BOUNDARY,
   appendKnowledgeBeltFinding,
   appendLevel3AuditEntry,
@@ -78,6 +79,19 @@ export const LEVEL3_DEFAULT_POLICY = Object.freeze({
 });
 
 const MODULE_FILE_SET = new Set(MODULE_FILES);
+const MODULE_PATH_SET = new Set(MODULE_PATHS);
+const MODULE_UNIQUE_BASENAME_SET = (() => {
+  const counts = new Map();
+  for (const p of MODULE_PATHS) {
+    const base = p.split('/').pop();
+    if (base) counts.set(base, (counts.get(base) || 0) + 1);
+  }
+  const unique = new Set();
+  for (const [base, cnt] of counts.entries()) {
+    if (cnt === 1 && MODULE_FILE_SET.has(base)) unique.add(base);
+  }
+  return unique;
+})();
 const round6 = (v) => (typeof v === 'number' && Number.isFinite(v) ? Number(v.toFixed(6)) : 0);
 
 export function isAutonomousSupervisorLevel3Enabled(config = QICNConfig) {
@@ -351,11 +365,10 @@ function isValidInventoryTargetModule(targetModule) {
   if (!trimmed || trimmed.includes('..') || trimmed.includes('\\') || trimmed.includes(':') || trimmed.startsWith('/')) {
     return false;
   }
-  if (!/^(?:src\/[A-Za-z0-9_./-]+\.(?:js|jsx)|[A-Za-z0-9_.-]+\.(?:js|jsx))$/.test(trimmed)) {
-    return false;
+  if (trimmed.includes('/')) {
+    return MODULE_PATH_SET.has(trimmed);
   }
-  const baseName = trimmed.split('/').pop();
-  return Boolean(baseName && MODULE_FILE_SET.has(baseName));
+  return MODULE_UNIQUE_BASENAME_SET.has(trimmed);
 }
 
 /**
@@ -465,6 +478,13 @@ export function parseAndValidateLevel3Proposal(rawText, {
         !LEVEL3_ALLOWED_STRATEGY_IDS.includes(action.strategyId)
       ) {
         return { ok: false, status: 'discarded_invalid_schema', reason: 'invalid_kaizen_strategy_action' };
+      }
+      if (action.strategyId === 'stabilize_learning' && sensorObserverDynamicsEnabled === false) {
+        return {
+          ok: false,
+          status: 'discarded_invalid_schema',
+          reason: 'plasticity_decay_disabled_without_sensor_observer_dynamics'
+        };
       }
     } else if (action.kind === 'workbench_intervention') {
       const actionKeys = Object.keys(action);
@@ -604,6 +624,13 @@ export function buildDeterministicFirstPersonProposal({
       if (
         candidate.kind === 'kaizen_factor_nudge' &&
         candidate.key === 'PLASTICITY_DECAY' &&
+        !sensorObserverDynamicsEnabled
+      ) {
+        continue;
+      }
+      if (
+        candidate.kind === 'kaizen_strategy_action' &&
+        candidate.strategyId === 'stabilize_learning' &&
         !sensorObserverDynamicsEnabled
       ) {
         continue;
@@ -756,21 +783,32 @@ export function applyTypedCandidateActionToTarget(target, candidateAction) {
         sensorDelta: 0.2
       });
       if (mapped && mapped.forcedKey) {
+        if (mapped.forcedKey === 'PLASTICITY_DECAY' && config.SENSOR_OBSERVER_DYNAMICS_ENABLED !== true) {
+          return {
+            applied: false,
+            kind: 'kaizen_strategy_action',
+            strategyId,
+            forcedKey: mapped.forcedKey,
+            reason: 'plasticity_decay_requires_sensor_observer_dynamics'
+          };
+        }
         const prevAdjustments = typeof kaizen.getAdjustments === 'function' ? kaizen.getAdjustments() : (kaizen.adjustments || {});
         const prevFactor = Number.isFinite(Number(prevAdjustments[mapped.forcedKey]))
           ? Number(prevAdjustments[mapped.forcedKey])
           : 1.0;
+        let stepRes = null;
         if (isKaizenLearned(config) && typeof kaizen.applyFactorStep === 'function') {
-          kaizen.applyFactorStep(mapped.forcedKey, mapped.forcedDirection, KAIZEN_LEARNING_DEFAULTS);
+          stepRes = kaizen.applyFactorStep(mapped.forcedKey, mapped.forcedDirection, KAIZEN_LEARNING_DEFAULTS);
           kaizen.applyLearnedAdjustments?.(config);
+        } else {
+          stepRes = kaizen.executeAtomicStep(1.01, 0.2, 0, { vector: 0 }, mapped.forcedKey, mapped.forcedDirection);
         }
-        kaizen.executeAtomicStep(1.01, 0.2, 0, { vector: 0 }, mapped.forcedKey, mapped.forcedDirection);
         const nextAdjustments = typeof kaizen.getAdjustments === 'function' ? kaizen.getAdjustments() : (kaizen.adjustments || {});
         const nextFactor = Number.isFinite(Number(nextAdjustments[mapped.forcedKey]))
           ? Number(nextAdjustments[mapped.forcedKey])
           : prevFactor;
         return {
-          applied: true,
+          applied: Boolean(stepRes?.changeApplied ?? (nextFactor !== prevFactor)),
           kind: 'kaizen_strategy_action',
           strategyId,
           forcedKey: mapped.forcedKey,
@@ -919,7 +957,7 @@ export async function runLevel3ShadowGate1(capture, candidateAction, {
       const ccc = Number(core?.ontologicalState?.coherence);
       const pmia = Number(core?.pmiaValue);
       const score = Number(vs?.lastObjectiveScore ?? 0.85);
-      const stasis = Number(core?.phenomenologyCore?.getDynamicHealth?.()?.stasisIndex ?? 0);
+      const stasis = Number(core?.getDynamicHealth?.()?.stasisIndex ?? 0);
       const activeNodes = session.bag.nodalLayer.current?.getActiveNodes?.() || [];
       const meanCoh = activeNodes.length
         ? activeNodes.reduce((s, n) => s + Number(n.coherenceState || 0), 0) / activeNodes.length
@@ -1132,22 +1170,20 @@ export function readLevel3LiveTelemetry(target, previousLevel2Telemetry = null) 
     : (nodeMeanCoherence !== null ? nodeMeanCoherence : ccc);
 
   const bridgeDispersion = Number(bridge?.upward_projections?.coherence_dispersion);
+  const rawEnergyDisp = Number(core?.pmiaDiagnostics?.energyDispersion);
   const xDispersion = Number.isFinite(bridgeDispersion) && bridgeDispersion > 0
     ? bridgeDispersion
     : (nodeCoherenceDispersion > 0
         ? nodeCoherenceDispersion
-        : Number(core?.lastOperationalInput?.energyDispersion ?? 0));
+        : (Number.isFinite(rawEnergyDisp) ? rawEnergyDisp : 0));
 
-  const dynamicHealth = core?.phenomenologyCore?.getDynamicHealth?.() || core?.getDynamicHealth?.() || {};
+  const dynamicHealth = typeof core?.getDynamicHealth === 'function' ? core.getDynamicHealth() : {};
   const stasisIndex = Number(dynamicHealth.stasisIndex ?? 0);
   const metacognitiveStrain = Number(bag.latencyStrainRef?.current?.strain ?? core?.metacognitiveStrain ?? 0);
-  const sensorDelta = Number(
-    core?.lastOperationalInput?.sensorDelta ??
-    core?.phenomenologyCore?.lastSensorDelta ??
-    dynamicHealth.sensorDelta ??
-    bag.lastObserverResonanceRef?.current ??
-    0
-  );
+  const rawSensorDelta = Number(core?.pmiaDiagnostics?.sensorDelta);
+  const sensorDelta = Number.isFinite(rawSensorDelta)
+    ? Math.max(0, Math.min(1, rawSensorDelta))
+    : 0;
 
   const objectiveScore = Number(vs.lastObjectiveScore ?? 0.88);
   const inTube = vs.lastInTube !== false;
@@ -1491,9 +1527,9 @@ export class Level3SupervisorController {
       let reasonerSource = 'deterministic_local';
       let reasonerError = null;
       let externalLlmAssisted = false;
+      let reasonerAttemptedRemote = false;
 
       if (typeof activeReasoner === 'function') {
-        this.governorState.llmCallsAttempted += 1;
         try {
           const reasonerOut = await activeReasoner({
             prompt,
@@ -1511,16 +1547,20 @@ export class Level3SupervisorController {
             externalLlmAssisted = reasonerOut.external_llm_assisted !== undefined
               ? Boolean(reasonerOut.external_llm_assisted)
               : reasonerSource === 'gemini_live';
+            reasonerAttemptedRemote = reasonerOut.llmAttempted !== undefined
+              ? Boolean(reasonerOut.llmAttempted)
+              : reasonerSource !== 'deterministic_local';
           } else {
             rawResponse = String(reasonerOut || '');
             reasonerSource = 'gemini_live';
             externalLlmAssisted = true;
+            reasonerAttemptedRemote = true;
           }
         } catch (err) {
+          reasonerAttemptedRemote = true;
           reasonerError = String(err?.message || err);
           reasonerSource = 'deterministic_fallback';
           externalLlmAssisted = false;
-          this.governorState.deterministicFallbacks += 1;
           rawResponse = buildDeterministicFirstPersonProposal({
             snapshot: effectiveSnapshot,
             triggerKind: triggerEval.triggerKind,
@@ -1535,7 +1575,7 @@ export class Level3SupervisorController {
       } else {
         reasonerSource = 'deterministic_local';
         externalLlmAssisted = false;
-        this.governorState.deterministicLocalCalls += 1;
+        reasonerAttemptedRemote = false;
         rawResponse = buildDeterministicFirstPersonProposal({
           snapshot: effectiveSnapshot,
           triggerKind: triggerEval.triggerKind,
@@ -1548,13 +1588,18 @@ export class Level3SupervisorController {
         });
       }
 
-      // R-4: Only consume external LLM quota when externalLlmAssisted === true
+      // R-4 & R-14: Single authoritative accounting point after reasoner resolution
+      if (reasonerAttemptedRemote) {
+        this.governorState.llmCallsAttempted += 1;
+      }
       if (externalLlmAssisted) {
         this.governorState.callTimestampsMs.push(nowMs);
         this.governorState.totalCalls += 1;
         this.governorState.llmCallsSucceeded += 1;
       } else if (reasonerSource === 'deterministic_fallback') {
         this.governorState.deterministicFallbacks += 1;
+      } else {
+        this.governorState.deterministicLocalCalls += 1;
       }
 
       const cycleId = `l3-cycle-${++this.cycleSequence}-t${effectiveTick}`;
@@ -1782,20 +1827,42 @@ export class Level3SupervisorController {
         };
       }
 
-      // R-3.4: Stale-tick protection before promoting onto the live target
+      // R-3.4 & R-15: Stale-tick and regime-consistency protection before promoting onto the live target
       const currentLiveTick = Number(
         typeof target.getLiveTick === 'function'
           ? target.getLiveTick()
           : (target.completedTick ?? bag.simulationRuntimeRef?.current?.simulationStep ?? effectiveTick)
       );
-      const maxStaleness = Number(this.policy.maxPromotionStalenessTicks ?? 0);
-      if (currentLiveTick - effectiveTick > maxStaleness) {
+      const maxStaleness = Math.max(0, Number(this.policy.maxPromotionStalenessTicks ?? 0));
+      let staleAbortReason = null;
+      let promotionTel = liveTel;
+      let promotionTick = effectiveTick;
+
+      if (currentLiveTick < effectiveTick) {
+        staleAbortReason = 'live_runtime_reset_during_shadow_gate1';
+      } else if (currentLiveTick - effectiveTick > maxStaleness) {
+        staleAbortReason = 'live_runtime_advanced_during_shadow_gate1';
+      } else if (currentLiveTick > effectiveTick) {
+        const currentTel = readLevel3LiveTelemetry(target, this.lastLevel2Telemetry);
+        if (currentTel.regimeSignature !== liveTel.regimeSignature) {
+          staleAbortReason = 'live_regime_changed_during_shadow_gate1';
+        } else {
+          promotionTel = currentTel;
+          promotionTick = currentLiveTick;
+        }
+      }
+
+      if (staleAbortReason) {
         this.auditLedger = appendLevel3AuditEntry(this.auditLedger, {
           cycleId,
           tick: effectiveTick,
           timestampMs: nowMs,
           triggerKind: triggerEval.triggerKind,
-          triggerFacts: { ...triggerEval.triggerFacts, abortedAtLiveTick: currentLiveTick },
+          triggerFacts: {
+            ...triggerEval.triggerFacts,
+            abortedAtLiveTick: currentLiveTick,
+            staleAbortReason
+          },
           regimeSignature: liveTel.regimeSignature,
           snapshotDigest: effectiveSnapshot.digest,
           firstPersonThought: proposal.firstPersonThought,
@@ -1810,6 +1877,7 @@ export class Level3SupervisorController {
           gate1Summary: gate1Result,
           gate2Summary: {
             status: 'aborted_stale_tick',
+            reason: staleAbortReason,
             originTick: effectiveTick,
             currentLiveTick,
             rolledBack: false
@@ -1821,7 +1889,7 @@ export class Level3SupervisorController {
           triggered: true,
           cycleId,
           finalStatus: 'aborted_stale_tick',
-          reason: 'live_runtime_advanced_during_shadow_gate1',
+          reason: staleAbortReason,
           proposal,
           gate1Result,
           reasonerSource,
@@ -1839,13 +1907,18 @@ export class Level3SupervisorController {
         NODAL_TOWER_COUPLING_MODE: config.NODAL_TOWER_COUPLING_MODE,
         STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: config.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED
       };
+      const prePromotionRuntime = bag.simulationRuntimeRef?.current
+        ? (promotionTick === Number(bag.simulationRuntimeRef.current.simulationStep)
+            ? bag.simulationRuntimeRef.current
+            : { ...bag.simulationRuntimeRef.current, simulationStep: promotionTick })
+        : {
+            simulationStep: promotionTick,
+            ccc: promotionTel.ccc,
+            pmia: promotionTel.pmia,
+            isAscended: false
+          };
       const prePromotionSnapshot = captureDynamicState(bag, {
-        runtime: bag.simulationRuntimeRef?.current || {
-          simulationStep: effectiveTick,
-          ccc: liveTel.ccc,
-          pmia: liveTel.pmia,
-          isAscended: false
-        },
+        runtime: prePromotionRuntime,
         config,
         build: this.buildInfo,
         now: nowMs
@@ -1859,23 +1932,23 @@ export class Level3SupervisorController {
       const initialGate2Summary = {
         status: 'promoted_watching',
         prePromotionDigest,
-        promotedAtTick: effectiveTick,
+        promotedAtTick: promotionTick,
         observedTicks: 0,
         watchWindowTicks: this.policy.gate2WatchTicks,
-        prePromotionScore: liveTel.objectiveScore,
+        prePromotionScore: promotionTel.objectiveScore,
         rolledBack: false
       };
 
       const referenceFloorScore = Math.min(
-        liveTel.objectiveScore,
-        Number(gate1Result.branches?.baseline?.meanObjectiveScore ?? liveTel.objectiveScore),
-        Number(gate1Result.branches?.candidate?.meanObjectiveScore ?? liveTel.objectiveScore)
+        promotionTel.objectiveScore,
+        Number(gate1Result.branches?.baseline?.meanObjectiveScore ?? promotionTel.objectiveScore),
+        Number(gate1Result.branches?.candidate?.meanObjectiveScore ?? promotionTel.objectiveScore)
       );
 
       this.activeGate2Watch = {
         cycleId,
         triggerKind: triggerEval.triggerKind,
-        regimeSignature: liveTel.regimeSignature,
+        regimeSignature: promotionTel.regimeSignature,
         proposedAction: structuredClone(proposal.candidateAction),
         actionSignature,
         hypothesis: proposal.hypothesis,
@@ -1887,12 +1960,12 @@ export class Level3SupervisorController {
         prePromotionSnapshot,
         prePromotionModeFlags,
         prePromotionDigest,
-        promotedAtTick: effectiveTick,
+        promotedAtTick: promotionTick,
         watchWindowTicks: this.policy.gate2WatchTicks,
         observedTicks: 0,
-        prePromotionScore: liveTel.objectiveScore,
+        prePromotionScore: promotionTel.objectiveScore,
         referenceFloorScore,
-        prePromotionInTubeRate: liveTel.inTube ? 1 : 0,
+        prePromotionInTubeRate: promotionTel.inTube ? 1 : 0,
         scores: [],
         inTubeFlags: [],
         nonFiniteDetected: false
@@ -1941,8 +2014,10 @@ export class Level3SupervisorController {
 }
 
 /**
- * Safely synchronizes state from the anti-throttling Level 3 Web Worker into a live target (`R-2`).
+ * Safely synchronizes state from the anti-throttling Level 3 Web Worker into a live target (`R-2` & `R-12`).
  * - Verifies SHA-256 integrity of `auditLedger` and `knowledgeBelt` before importing.
+ * - Performs non-destructive monotonic append-only merging for ledger, knowledge belt, and governorState
+ *   (preserving all prior main-thread digests, callTimestampsMs, counters, inFlight, and activeGate2Watch).
  * - Enforces a strict node-count topology guard: never overwrites a live 120- or 1500-node network
  *   with a 48-node lightweight sandbox worker `dynamicState.v3`.
  */
@@ -1960,18 +2035,173 @@ export function synchronizeLevel3WorkerStateIntoTarget(liveTarget, workerPayload
   let governorSynced = false;
 
   if (workerPayload.auditLedger && verifyLevel3AuditLedger(workerPayload.auditLedger).ok) {
-    if (controller) controller.auditLedger = structuredClone(workerPayload.auditLedger);
+    if (controller) {
+      if (
+        !controller.auditLedger ||
+        !Array.isArray(controller.auditLedger.entries) ||
+        controller.auditLedger.entries.length === 0
+      ) {
+        controller.auditLedger = structuredClone(workerPayload.auditLedger);
+      } else {
+        const existingKeys = new Set();
+        const parentDigestByCycleId = new Map();
+        for (const existing of controller.auditLedger.entries) {
+          const kind = existing.entryKind || 'cycle_evaluation';
+          existingKeys.add(`${existing.cycleId}::${kind}`);
+          if (kind !== 'gate2_resolution') {
+            parentDigestByCycleId.set(existing.cycleId, existing.digest);
+          }
+        }
+        const isFromGenesis =
+          (controller.auditLedger.anchorHash || LEVEL3_GENESIS_HASH) === LEVEL3_GENESIS_HASH;
+        for (const incoming of workerPayload.auditLedger.entries) {
+          const kind = incoming.entryKind || 'cycle_evaluation';
+          const key = `${incoming.cycleId}::${kind}`;
+          if (existingKeys.has(key)) continue;
+
+          let resolvedParentDigest = incoming.parentDigest || null;
+          if (kind === 'gate2_resolution') {
+            const mappedParentDigest = parentDigestByCycleId.get(incoming.parentCycleId);
+            if (mappedParentDigest) {
+              resolvedParentDigest = mappedParentDigest;
+            } else if (isFromGenesis) {
+              continue;
+            }
+          }
+
+          const entryCopy = { ...incoming };
+          delete entryCopy.seq;
+          delete entryCopy.prevHash;
+          delete entryCopy.digest;
+          controller.auditLedger = appendLevel3AuditEntry(controller.auditLedger, {
+            ...entryCopy,
+            entryKind: kind,
+            parentDigest: resolvedParentDigest
+          });
+          const appended = controller.auditLedger.entries[controller.auditLedger.entries.length - 1];
+          existingKeys.add(key);
+          if (kind !== 'gate2_resolution' && appended?.digest) {
+            parentDigestByCycleId.set(appended.cycleId, appended.digest);
+          }
+        }
+      }
+      controller.cycleSequence = Math.max(
+        Number(controller.cycleSequence) || 0,
+        controller.auditLedger.entries.length
+      );
+    }
     ledgerSynced = true;
   }
+
   if (workerPayload.knowledgeBelt && verifyLevel3KnowledgeBelt(workerPayload.knowledgeBelt).ok) {
-    if (controller) controller.knowledgeBelt = structuredClone(workerPayload.knowledgeBelt);
+    if (controller) {
+      if (
+        !controller.knowledgeBelt ||
+        !Array.isArray(controller.knowledgeBelt.findings) ||
+        controller.knowledgeBelt.findings.length === 0
+      ) {
+        controller.knowledgeBelt = structuredClone(workerPayload.knowledgeBelt);
+      } else {
+        const existingFindings = new Set(
+          controller.knowledgeBelt.findings.map(
+            (f) => `${f.cycleId}::${f.verdict}::${f.actionSignature}`
+          )
+        );
+        for (const incoming of workerPayload.knowledgeBelt.findings) {
+          const key = `${incoming.cycleId}::${incoming.verdict}::${incoming.actionSignature}`;
+          if (existingFindings.has(key)) continue;
+          const findingCopy = { ...incoming };
+          delete findingCopy.seq;
+          delete findingCopy.prevHash;
+          delete findingCopy.digest;
+          controller.knowledgeBelt = appendKnowledgeBeltFinding(
+            controller.knowledgeBelt,
+            findingCopy
+          );
+          existingFindings.add(key);
+        }
+      }
+    }
     beltSynced = true;
   }
+
   if (workerPayload.governorState && typeof workerPayload.governorState === 'object' && controller) {
+    const currentGov = controller.governorState || createInitialGovernorState();
+    const incomingGov = workerPayload.governorState;
+    const mergedTimestamps = [
+      ...new Set(
+        [
+          ...(Array.isArray(currentGov.callTimestampsMs) ? currentGov.callTimestampsMs : []),
+          ...(Array.isArray(incomingGov.callTimestampsMs) ? incomingGov.callTimestampsMs : [])
+        ]
+          .map(Number)
+          .filter(Number.isFinite)
+      )
+    ].sort((a, b) => a - b);
+
+    const maxOrNegInf = (a, b) => {
+      const na = Number(a);
+      const nb = Number(b);
+      const fa = Number.isFinite(na);
+      const fb = Number.isFinite(nb);
+      if (fa && fb) return Math.max(na, nb);
+      if (fa) return na;
+      if (fb) return nb;
+      return -Infinity;
+    };
+
     controller.governorState = {
       ...createInitialGovernorState(),
-      ...structuredClone(workerPayload.governorState),
-      inFlight: false
+      ...currentGov,
+      callTimestampsMs: mergedTimestamps,
+      lastCallTick: maxOrNegInf(currentGov.lastCallTick, incomingGov.lastCallTick),
+      lastCallMs: maxOrNegInf(currentGov.lastCallMs, incomingGov.lastCallMs),
+      lastExplorationTick: Math.max(
+        Number(currentGov.lastExplorationTick) || 0,
+        Number(incomingGov.lastExplorationTick) || 0
+      ),
+      totalCalls: Math.max(
+        Number(currentGov.totalCalls) || 0,
+        Number(incomingGov.totalCalls) || 0,
+        mergedTimestamps.length
+      ),
+      llmCallsAttempted: Math.max(
+        Number(currentGov.llmCallsAttempted) || 0,
+        Number(incomingGov.llmCallsAttempted) || 0
+      ),
+      llmCallsSucceeded: Math.max(
+        Number(currentGov.llmCallsSucceeded) || 0,
+        Number(incomingGov.llmCallsSucceeded) || 0
+      ),
+      deterministicLocalCalls: Math.max(
+        Number(currentGov.deterministicLocalCalls) || 0,
+        Number(incomingGov.deterministicLocalCalls) || 0
+      ),
+      deterministicFallbacks: Math.max(
+        Number(currentGov.deterministicFallbacks) || 0,
+        Number(incomingGov.deterministicFallbacks) || 0
+      ),
+      totalPromotions: Math.max(
+        Number(currentGov.totalPromotions) || 0,
+        Number(incomingGov.totalPromotions) || 0
+      ),
+      totalGate1Rejections: Math.max(
+        Number(currentGov.totalGate1Rejections) || 0,
+        Number(incomingGov.totalGate1Rejections) || 0
+      ),
+      totalGate2Rollbacks: Math.max(
+        Number(currentGov.totalGate2Rollbacks) || 0,
+        Number(incomingGov.totalGate2Rollbacks) || 0
+      ),
+      totalReflections: Math.max(
+        Number(currentGov.totalReflections) || 0,
+        Number(incomingGov.totalReflections) || 0
+      ),
+      totalSchemaDiscards: Math.max(
+        Number(currentGov.totalSchemaDiscards) || 0,
+        Number(incomingGov.totalSchemaDiscards) || 0
+      ),
+      inFlight: Boolean(currentGov.inFlight)
     };
     governorSynced = true;
   }

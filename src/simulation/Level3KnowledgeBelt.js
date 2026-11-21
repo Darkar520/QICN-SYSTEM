@@ -282,9 +282,11 @@ export function verifyLevel3AuditLedger(ledger) {
   if (!Array.isArray(ledger.entries)) {
     return { ok: false, reason: 'ledger_entries_not_array' };
   }
-  let head = typeof ledger.anchorHash === 'string' && ledger.anchorHash.length === 64
+  const anchorHash = typeof ledger.anchorHash === 'string' && ledger.anchorHash.length === 64
     ? ledger.anchorHash
     : LEVEL3_GENESIS_HASH;
+  const isFromGenesis = anchorHash === LEVEL3_GENESIS_HASH;
+  let head = anchorHash;
   const seenDigests = new Map();
   for (let i = 0; i < ledger.entries.length; i += 1) {
     const entry = ledger.entries[i];
@@ -306,6 +308,9 @@ export function verifyLevel3AuditLedger(ledger) {
         return { ok: false, reason: 'gate2_resolution_missing_parent_link', index: i };
       }
       const parentDigest = seenDigests.get(entry.parentCycleId);
+      if (!parentDigest && isFromGenesis) {
+        return { ok: false, reason: 'gate2_resolution_orphan_parent', index: i };
+      }
       if (parentDigest && parentDigest !== entry.parentDigest) {
         return { ok: false, reason: 'gate2_resolution_parent_digest_mismatch', index: i };
       }

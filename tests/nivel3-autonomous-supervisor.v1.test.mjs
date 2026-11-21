@@ -15,8 +15,10 @@ import {
   LEVEL3_SUPERVISOR_PROPOSAL_SCHEMA,
   Level3SupervisorController,
   applyTypedCandidateActionToTarget,
-   evaluateLevel3Trigger,
+  buildDeterministicFirstPersonProposal,
+  evaluateLevel3Trigger,
   createInitialGovernorState,
+  getQuotaSnapshot,
   isAutonomousSupervisorLevel3Enabled,
   parseAndValidateLevel3Proposal,
   readLevel3LiveTelemetry,
@@ -25,7 +27,9 @@ import {
 } from '../src/simulation/Level3AutonomousSupervisor.js';
 import {
   LEVEL3_AUDIT_BUNDLE_SCHEMA,
+  appendLevel3AuditEntry,
   createEmptyKnowledgeBelt,
+  createEmptyLevel3AuditLedger,
   exportLevel3SealedAuditBundle,
   isActionBlockedByKnowledgeBelt,
   projectLedgerCyclesWithGate2,
@@ -390,13 +394,20 @@ assert.equal(
   assert.notEqual(telDisp.xN, telDisp.ccc, 'R-6 FAIL: xN must be distinct from ccc');
   assert.equal(telDisp.cluster, 'high_dispersion', `R-6 FAIL: expected high_dispersion cluster, got ${telDisp.cluster}`);
 
-  // Now set low dispersion (0.01) and high sensorDelta (0.22 >= 0.14) -> high_sensory
+  // Now set low dispersion (0.01) and real core.pmiaDiagnostics.sensorDelta (0.25 >= 0.14) -> high_sensory
   for (let i = 0; i < activeNodes.length; i += 1) {
     activeNodes[i].coherenceState = 0.76 + (i % 2 === 0 ? 0.01 : -0.01);
   }
-  session.bag.ontologicalCore.current.lastOperationalInput = { sensorDelta: 0.22, energyDispersion: 0.01 };
+  const savedPmiaDiag = session.bag.ontologicalCore.current.pmiaDiagnostics;
+  session.bag.ontologicalCore.current.pmiaDiagnostics = {
+    ...(savedPmiaDiag || {}),
+    sensorDelta: 0.25,
+    energyDispersion: 0.01
+  };
   const telSens = readLevel3LiveTelemetry(session);
-  assert.equal(telSens.cluster, 'high_sensory', `R-6 FAIL: expected high_sensory cluster, got ${telSens.cluster}`);
+  assert.equal(telSens.sensorDelta, 0.25, `R-11 FAIL: expected sensorDelta=0.25 from pmiaDiagnostics, got ${telSens.sensorDelta}`);
+  assert.equal(telSens.cluster, 'high_sensory', `R-6/R-11 FAIL: expected high_sensory cluster, got ${telSens.cluster}`);
+  session.bag.ontologicalCore.current.pmiaDiagnostics = savedPmiaDiag;
 
   session.bag.ontologicalCore.current.constructiveFiniteCuts = savedCuts;
   session.bag.ontologicalCore.current.ontologicalState.constructive_finite_cuts = savedStateCuts;
@@ -830,4 +841,505 @@ assert.equal(
   assert.equal(sentCheck.ok, true, `Level 3 module attribution rejected: ${JSON.stringify(sentCheck.reasons)}`);
 }
 
-console.log('OK: nivel3-autonomous-supervisor.v1 passed (R-1..R-10 adversarial checks, B0 parity, fact+scheduled triggers, first-person schema gate, Gate 1 isolated Workbench, Gate 2 append-only dynamicState.v3 rollback & confirmation, SHA-256 Knowledge Belt & Ledger, Worker + Daemon, Sistema B)');
+// 8. [R-11..R-16] Adversarial Closure Checks (every check would fail on 1ee94f6)
+{
+  // 8A. [R-11] Real sensorDelta from core.pmiaDiagnostics (never Unix timestamp from lastObserverResonanceRef)
+  // and real stasisIndex from core.getDynamicHealth() inside Gate 1
+  {
+    const session = createHeadlessRuntimeSession({
+      config: {
+        ...QICNConfig,
+        KAIZEN_ADJUSTMENT_MODE: 'learned',
+        SENSOR_OBSERVER_DYNAMICS_ENABLED: true,
+        NODAL_TOWER_COUPLING_MODE: NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL,
+        STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: true,
+        AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED: true
+      },
+      seed: 41,
+      nodes: 48,
+      profile: 'paired_intervention'
+    });
+    session.initialize();
+    for (let t = 1; t <= 8; t += 1) {
+      session.step(t, {
+        evaluationOffset: t,
+        perception: {
+          audio: { rms: 0.14, silenceDurationSec: 0.2 },
+          video: {
+            frameNovelty: 0.28,
+            faceCount: 1,
+            humanPresence: { detected: true, count: 1 },
+            faces: [{ probability: 0.9, engagement: { score: 0.72 } }]
+          },
+          awareness: {
+            addressedToSystem: true,
+            intentConfidence: 0.8,
+            currentFocus: 'r11_sensor_check',
+            meta: { fidelityIndex: 0.9, technicalStatus: 'mock' }
+          },
+          isReady: true,
+          summary: 'r11_sensor_check'
+        },
+        entropyValue: 0.55
+      });
+    }
+    assert.ok(
+      Number(session.bag.lastObserverResonanceRef.current) > 1e12,
+      `R-11 setup expected lastObserverResonanceRef to hold Unix timestamp (>1e12), got ${session.bag.lastObserverResonanceRef.current}`
+    );
+    assert.equal('lastOperationalInput' in session.bag.ontologicalCore.current, false);
+    const liveTel = readLevel3LiveTelemetry(session);
+    assert.ok(
+      Number.isFinite(liveTel.sensorDelta) && liveTel.sensorDelta >= 0 && liveTel.sensorDelta <= 1,
+      `R-11 FAIL: sensorDelta must be bounded in [0,1] (never Unix timestamp), got ${liveTel.sensorDelta}`
+    );
+
+    // Check high_sensory classification via real core.pmiaDiagnostics.sensorDelta = 0.25
+    const savedDiag = { ...(session.bag.ontologicalCore.current.pmiaDiagnostics || {}) };
+    const savedBridge = session.bag.ontologicalCore.current.constructiveFiniteCuts;
+    const savedStateCuts = session.bag.ontologicalCore.current.ontologicalState.constructive_finite_cuts;
+    const activeNodes = session.bag.nodalLayer.current.getActiveNodes();
+    for (const n of activeNodes) n.coherenceState = 0.78;
+    session.bag.ontologicalCore.current.constructiveFiniteCuts = {};
+    session.bag.ontologicalCore.current.ontologicalState.constructive_finite_cuts = {};
+    session.bag.ontologicalCore.current.pmiaDiagnostics = { ...savedDiag, sensorDelta: 0.25, energyDispersion: 0.01 };
+    const sensoryTel = readLevel3LiveTelemetry(session);
+    assert.equal(sensoryTel.sensorDelta, 0.25);
+    assert.equal(sensoryTel.cluster, 'high_sensory', `R-11 FAIL: expected high_sensory, got ${sensoryTel.cluster}`);
+    session.bag.ontologicalCore.current.pmiaDiagnostics = savedDiag;
+    session.bag.ontologicalCore.current.constructiveFiniteCuts = savedBridge;
+    session.bag.ontologicalCore.current.ontologicalState.constructive_finite_cuts = savedStateCuts;
+
+    // Gate 1 must read real core.getDynamicHealth().stasisIndex (not dead core.phenomenologyCore.getDynamicHealth())
+    // Use an uncoupled session with a stalled dynamicStasis window so core.getDynamicHealth().stasisIndex > 0 during Gate 1 ticks
+    const stasisSession = createHeadlessRuntimeSession({
+      config: {
+        ...QICNConfig,
+        KAIZEN_ADJUSTMENT_MODE: 'learned',
+        SENSOR_OBSERVER_DYNAMICS_ENABLED: true,
+        NODAL_TOWER_COUPLING_MODE: NODAL_TOWER_COUPLING_MODES.OFF,
+        STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: false,
+        AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED: true
+      },
+      seed: 41,
+      nodes: 32,
+      profile: 'paired_intervention'
+    });
+    stasisSession.initialize();
+    for (let t = 1; t <= 6; t += 1) {
+      stasisSession.step(t, { evaluationOffset: t, entropyValue: 0.5 });
+    }
+    const stasisCore = stasisSession.bag.ontologicalCore.current;
+    const lastSample = stasisCore.dynamicStasis.window[stasisCore.dynamicStasis.window.length - 1];
+    stasisCore.dynamicStasis.window = Array.from({ length: 28 }, (_, idx) => ({
+      ts: lastSample.ts - (28 - idx) * 1000,
+      ccc: lastSample.ccc,
+      pmia: lastSample.pmia,
+      omega: lastSample.omega
+    }));
+    const realHealthStasis = Number(stasisCore.getDynamicHealth().stasisIndex);
+    assert.ok(realHealthStasis > 0.5, `R-11 setup expected real core.getDynamicHealth().stasisIndex > 0.5, got ${realHealthStasis}`);
+    const capStasis = await captureSession(stasisSession);
+    const g1Stasis = await runLevel3ShadowGate1(
+      capStasis,
+      { kind: 'kaizen_factor_nudge', key: 'HEBBIAN_FACTOR', deltaSteps: 1 },
+      { triggerKind: 'prolonged_stasis', horizonTicks: 4 }
+    );
+    assert.ok(
+      g1Stasis.branches.baseline.meanStasisIndex > 0.5,
+      `R-11 FAIL: Gate 1 baseline meanStasisIndex must reflect core.getDynamicHealth().stasisIndex (>0.5), got ${g1Stasis.branches.baseline.meanStasisIndex}`
+    );
+  }
+
+  // 8B. [R-12] Non-destructive append-only merge from 48-node Worker into 120-node main controller with live gemini_live Gate 2 watch
+  {
+    const live120 = createHeadlessRuntimeSession({
+      config: {
+        ...QICNConfig,
+        KAIZEN_ADJUSTMENT_MODE: 'learned',
+        SENSOR_OBSERVER_DYNAMICS_ENABLED: true,
+        NODAL_TOWER_COUPLING_MODE: NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL,
+        STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: false,
+        AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED: true
+      },
+      seed: 53,
+      nodes: 120,
+      profile: 'paired_intervention'
+    });
+    live120.initialize();
+    for (let t = 1; t <= 6; t += 1) {
+      live120.step(t, { evaluationOffset: t });
+    }
+    live120.environment.controls.lesionSectorWipe = true;
+    live120.step(7, { evaluationOffset: 7 });
+    live120.environment.controls.lesionSectorWipe = false;
+
+    const mainCtrl = new Level3SupervisorController({
+      policy: {
+        ...LEVEL3_DEFAULT_POLICY,
+        minCooldownTicks: 1,
+        minCooldownMs: 0,
+        gate1HorizonTicks: 10,
+        gate2WatchTicks: 4
+      }
+    });
+    let tMs = 1_800_050_000_000;
+    const promoRes = await mainCtrl.runCycle(live120, {
+      tick: 7,
+      nowMs: tMs,
+      customReasoner: async ({ snapshot, triggerKind }) => ({
+        rawText: JSON.stringify({
+          schema: LEVEL3_SUPERVISOR_PROPOSAL_SCHEMA,
+          snapshot,
+          triggerKind,
+          firstPersonThought: 'Estoy detectando un sector amputado en mi red de 120 nodos y propongo activar structural_plasticity_level2 tras verificar en Compuerta 1 (external_support_certified = false).',
+          diagnosis: 'Sector amputado en red viva de 120 nodos.',
+          hypothesis: 'Activar Nivel 2 recupera los 4 sectores.',
+          actionMode: 'propose_shadow_experiment',
+          candidateAction: { kind: 'workbench_intervention', intervention: 'structural_plasticity_level2' }
+        }),
+        reasonerSource: 'gemini_live',
+        external_llm_assisted: true,
+        llmAttempted: true
+      })
+    });
+    assert.equal(promoRes.finalStatus, 'promoted_watching');
+    assert.ok(mainCtrl.activeGate2Watch);
+    const mainEntryBefore = mainCtrl.auditLedger.entries.find((e) => e.cycleId === promoRes.cycleId);
+    assert.ok(mainEntryBefore);
+    const mainDigestBefore = mainEntryBefore.digest;
+    assert.equal(getQuotaSnapshot(mainCtrl.governorState, mainCtrl.policy, tMs, 7).callsLastHour, 1);
+
+    // Run 48-node Worker independently so it emits its own ledger/belt entries
+    await handleLevel3WorkerRequest({
+      id: 'r12-w-init',
+      type: 'level3_init_or_sync',
+      seed: 71,
+      nodes: 48,
+      policy: {
+        ...LEVEL3_DEFAULT_POLICY,
+        scheduledExplorationEveryTicks: 4,
+        minCooldownTicks: 1,
+        minCooldownMs: 0
+      }
+    });
+    const workerStep = await handleLevel3WorkerRequest({
+      id: 'r12-w-step',
+      type: 'level3_step_ticks',
+      ticks: 6,
+      includeDynamicState: true
+    });
+    assert.equal(workerStep.type, 'level3_step_result');
+    assert.ok(workerStep.auditLedger.entries.length >= 1);
+
+    const mergeRes = synchronizeLevel3WorkerStateIntoTarget(live120, workerStep, {
+      controller: mainCtrl,
+      allowTopologyOverwrite: true
+    });
+    assert.equal(mergeRes.topologyOverwritten, false);
+    assert.equal(live120.bag.nodalLayer.current.nodes.length, 120, 'R-12 FAIL: 120-node live network must remain intact');
+    const mainEntryAfter = mainCtrl.auditLedger.entries.find((e) => e.cycleId === promoRes.cycleId);
+    assert.ok(mainEntryAfter, 'R-12 FAIL: main thread entry was overwritten by worker sync');
+    assert.equal(mainEntryAfter.digest, mainDigestBefore, 'R-12 FAIL: main thread entry digest changed after worker sync');
+    assert.ok(mainCtrl.auditLedger.entries.length >= 2, 'R-12 FAIL: worker entries must be appended alongside main entry');
+    assert.ok(
+      getQuotaSnapshot(mainCtrl.governorState, mainCtrl.policy, tMs, 7).callsLastHour >= 1,
+      'R-12 FAIL: main thread LLM callTimestampsMs were wiped by worker sync'
+    );
+    assert.equal(mainCtrl.activeGate2Watch?.cycleId, promoRes.cycleId, 'R-12 FAIL: activeGate2Watch must be preserved');
+    assert.equal(verifyLevel3AuditLedger(mainCtrl.auditLedger).ok, true, 'R-12 FAIL: merged ledger failed SHA-256 verification');
+    assert.equal(verifyLevel3KnowledgeBelt(mainCtrl.knowledgeBelt).ok, true, 'R-12 FAIL: merged belt failed SHA-256 verification');
+
+    // Finish Gate 2 watch on the 120-node live session and confirm gate2_resolution links cleanly to mainDigestBefore
+    for (let k = 1; k <= 5; k += 1) {
+      tMs += 5_000;
+      live120.step(7 + k, { evaluationOffset: 7 + k });
+      await mainCtrl.runCycle(live120, { tick: 7 + k, nowMs: tMs });
+    }
+    assert.equal(mainCtrl.activeGate2Watch, null);
+    const gate2ResEntry = mainCtrl.auditLedger.entries.find(
+      (e) => e.entryKind === 'gate2_resolution' && e.parentCycleId === promoRes.cycleId
+    );
+    assert.ok(gate2ResEntry, 'R-12 FAIL: Gate 2 resolution entry was dropped after worker merge');
+    assert.equal(gate2ResEntry.parentDigest, mainDigestBefore);
+    assert.equal(verifyLevel3AuditLedger(mainCtrl.auditLedger).ok, true);
+  }
+
+  // 8C. [R-13] kaizen_strategy_action single ±0.02 step in learned mode (no double-step) + PLASTICITY_DECAY guard for stabilize_learning
+  {
+    const session = createHeadlessRuntimeSession({
+      config: {
+        ...QICNConfig,
+        KAIZEN_ADJUSTMENT_MODE: 'learned',
+        SENSOR_OBSERVER_DYNAMICS_ENABLED: true,
+        NODAL_TOWER_COUPLING_MODE: NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL,
+        STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: true
+      },
+      seed: 61,
+      nodes: 32,
+      profile: 'paired_intervention'
+    });
+    session.initialize();
+    session.step(1, { evaluationOffset: 1 });
+    const kaizen = session.bag.kaizenEngine.current;
+    const beforeFactor = kaizen.getAdjustments().RETRO_FLUX_WEIGHT;
+    const stratRes = applyTypedCandidateActionToTarget(session, {
+      kind: 'kaizen_strategy_action',
+      strategyId: 'anti_stasis_boost'
+    });
+    assert.equal(stratRes.applied, true);
+    assert.equal(stratRes.forcedKey, 'RETRO_FLUX_WEIGHT');
+    const expectedDelta = stratRes.forcedDirection * 0.02;
+    assert.ok(
+      Math.abs((stratRes.nextFactor - beforeFactor) - expectedDelta) < 1e-9,
+      `R-13 FAIL: expected single step ${expectedDelta}, got ${stratRes.nextFactor - beforeFactor}`
+    );
+    const expectedMutable = kaizen._boundValue(
+      'RETRO_FLUX_WEIGHT',
+      session.environment.config.RETRO_FLUX_WEIGHT * stratRes.nextFactor
+    );
+    assert.ok(
+      Math.abs(kaizen.mutableConfig.RETRO_FLUX_WEIGHT - expectedMutable) < 1e-12,
+      `R-13 FAIL: mutableConfig.RETRO_FLUX_WEIGHT (${kaizen.mutableConfig.RETRO_FLUX_WEIGHT}) out of sync with base*factor (${expectedMutable})`
+    );
+
+    // With SENSOR_OBSERVER_DYNAMICS_ENABLED = false, stabilize_learning must be rejected in schema AND execution
+    session.environment.config.SENSOR_OBSERVER_DYNAMICS_ENABLED = false;
+    const snap = { tick: 1, digest: 'c'.repeat(64) };
+    const stabProposal = JSON.stringify({
+      schema: LEVEL3_SUPERVISOR_PROPOSAL_SCHEMA,
+      snapshot: snap,
+      triggerKind: 'metric_drift',
+      firstPersonThought: 'Estoy proponiendo stabilize_learning en mi tick 1 sin sensor_observer_dynamics activo.',
+      diagnosis: 'Deriva.',
+      hypothesis: 'Estabilizar aprendizaje.',
+      actionMode: 'propose_shadow_experiment',
+      candidateAction: { kind: 'kaizen_strategy_action', strategyId: 'stabilize_learning' }
+    });
+    const stabVal = parseAndValidateLevel3Proposal(stabProposal, {
+      expectedTick: 1,
+      expectedDigest: snap.digest,
+      sensorObserverDynamicsEnabled: false
+    });
+    assert.equal(stabVal.ok, false, 'R-13 FAIL: stabilize_learning must be rejected when sensorObserverDynamicsEnabled=false');
+    assert.equal(stabVal.reason, 'plasticity_decay_disabled_without_sensor_observer_dynamics');
+
+    const pdFactorBefore = kaizen.getAdjustments().PLASTICITY_DECAY;
+    const pdMutableBefore = kaizen.mutableConfig.PLASTICITY_DECAY;
+    const stabExec = applyTypedCandidateActionToTarget(session, {
+      kind: 'kaizen_strategy_action',
+      strategyId: 'stabilize_learning'
+    });
+    assert.equal(stabExec.applied, false);
+    assert.equal(stabExec.reason, 'plasticity_decay_requires_sensor_observer_dynamics');
+    assert.equal(kaizen.getAdjustments().PLASTICITY_DECAY, pdFactorBefore);
+    assert.equal(kaizen.mutableConfig.PLASTICITY_DECAY, pdMutableBefore);
+
+    // Deterministic deliberator must skip stabilize_learning when sensorObserverDynamicsEnabled=false
+    const detRaw = buildDeterministicFirstPersonProposal({
+      snapshot: snap,
+      triggerKind: 'metric_drift',
+      sensorObserverDynamicsEnabled: false
+    });
+    const detParsed = JSON.parse(detRaw);
+    assert.notEqual(
+      detParsed.candidateAction?.strategyId,
+      'stabilize_learning',
+      'R-13 FAIL: deterministic deliberator picked stabilize_learning when sensorObserverDynamicsEnabled=false'
+    );
+  }
+
+  // 8D. [R-14] Exact governor counters (no double fallback count, no false llmCallsAttempted on local customReasoner)
+  {
+    const session = createHeadlessRuntimeSession({
+      config: { ...QICNConfig, AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED: true },
+      seed: 67,
+      nodes: 24,
+      profile: 'paired_intervention'
+    });
+    session.initialize();
+    session.step(1, { evaluationOffset: 1 });
+    const ctrl = new Level3SupervisorController({
+      policy: { ...LEVEL3_DEFAULT_POLICY, minCooldownTicks: 0, minCooldownMs: 0 }
+    });
+    let tMs = 1_800_100_000_000;
+
+    // 1 thrown error -> deterministicFallbacks === 1 (NOT 2), llmCallsAttempted === 1, totalCalls === 0
+    const errRes = await ctrl.runCycle(session, {
+      tick: 1,
+      nowMs: tMs,
+      forceManual: true,
+      manualTriggerKind: 'manual_reflection',
+      customReasoner: async () => {
+        throw new Error('simulated_503_upstream');
+      }
+    });
+    assert.equal(errRes.reasonerSource, 'deterministic_fallback');
+    assert.equal(ctrl.governorState.deterministicFallbacks, 1, 'R-14 FAIL: deterministicFallbacks double-counted');
+    assert.equal(ctrl.governorState.llmCallsAttempted, 1);
+    assert.equal(ctrl.governorState.totalCalls, 0);
+    assert.equal(ctrl.governorState.deterministicLocalCalls, 0);
+
+    // 1 local return with llmAttempted: false -> llmCallsAttempted stays 1, deterministicLocalCalls === 1
+    tMs += 5_000;
+    const localRes = await ctrl.runCycle(session, {
+      tick: 1,
+      nowMs: tMs,
+      forceManual: true,
+      manualTriggerKind: 'manual_reflection',
+      customReasoner: async ({ snapshot, triggerKind }) => ({
+        rawText: buildDeterministicFirstPersonProposal({ snapshot, triggerKind }),
+        reasonerSource: 'deterministic_local',
+        external_llm_assisted: false,
+        llmAttempted: false
+      })
+    });
+    assert.equal(localRes.reasonerSource, 'deterministic_local');
+    assert.equal(ctrl.governorState.llmCallsAttempted, 1, 'R-14 FAIL: llmCallsAttempted incremented for deterministic_local');
+    assert.equal(ctrl.governorState.deterministicLocalCalls, 1);
+    assert.equal(ctrl.governorState.deterministicFallbacks, 1);
+    assert.equal(ctrl.governorState.totalCalls, 0);
+  }
+
+  // 8E. [R-15] Controlled live staleness window: same regime within margin promotes at currentLiveTick; regime change or exceeding margin aborts
+  {
+    const makeLesionedSession = (seedVal) => {
+      const s = createHeadlessRuntimeSession({
+        config: {
+          ...QICNConfig,
+          KAIZEN_ADJUSTMENT_MODE: 'learned',
+          SENSOR_OBSERVER_DYNAMICS_ENABLED: true,
+          NODAL_TOWER_COUPLING_MODE: NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL,
+          STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: false,
+          AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED: true
+        },
+        seed: seedVal,
+        nodes: 48,
+        profile: 'paired_intervention'
+      });
+      s.initialize();
+      for (let t = 1; t <= 5; t += 1) s.step(t, { evaluationOffset: t });
+      s.environment.controls.lesionSectorWipe = true;
+      s.step(6, { evaluationOffset: 6 });
+      s.environment.controls.lesionSectorWipe = false;
+      return s;
+    };
+
+    // Case 1: +2 ticks within maxPromotionStalenessTicks=5 and SAME regime -> promotes at tick 8
+    const sSame = makeLesionedSession(73);
+    const ctrlSame = new Level3SupervisorController({
+      policy: {
+        ...LEVEL3_DEFAULT_POLICY,
+        minCooldownTicks: 0,
+        minCooldownMs: 0,
+        gate1HorizonTicks: 10,
+        gate2WatchTicks: 4,
+        maxPromotionStalenessTicks: 5
+      }
+    });
+    const targetSame = {
+      ...sSame,
+      getLiveTick: () => 8
+    };
+    const resSame = await ctrlSame.runCycle(targetSame, { tick: 6, nowMs: 1_800_200_000_000 });
+    assert.equal(resSame.finalStatus, 'promoted_watching', 'R-15 FAIL: +2 ticks with same regime within staleness margin must promote');
+    assert.equal(resSame.gate2Summary.promotedAtTick, 8);
+    assert.equal(ctrlSame.activeGate2Watch.prePromotionSnapshot.tick, 8);
+    assert.equal(ctrlSame.activeGate2Watch.prePromotionSnapshot.components.runtime.simulationStep, 8);
+
+    // Case 2: +2 ticks within margin BUT regimeSignature changed during Gate 1 -> aborts with aborted_stale_tick
+    const sRegimeChange = makeLesionedSession(73);
+    const ctrlChange = new Level3SupervisorController({
+      policy: {
+        ...LEVEL3_DEFAULT_POLICY,
+        minCooldownTicks: 0,
+        minCooldownMs: 0,
+        gate1HorizonTicks: 10,
+        gate2WatchTicks: 4,
+        maxPromotionStalenessTicks: 5
+      }
+    });
+    const targetRegimeChange = {
+      ...sRegimeChange,
+      getLiveTick: () => {
+        // Flip live regime before promotion check
+        sRegimeChange.environment.config.KAIZEN_ADJUSTMENT_MODE = 'legacy';
+        return 8;
+      }
+    };
+    const resChange = await ctrlChange.runCycle(targetRegimeChange, { tick: 6, nowMs: 1_800_200_000_000 });
+    assert.equal(resChange.finalStatus, 'aborted_stale_tick', 'R-15 FAIL: regime change during Gate 1 must abort promotion');
+    assert.equal(resChange.reason, 'live_regime_changed_during_shadow_gate1');
+
+    // Case 3: +6 ticks > maxPromotionStalenessTicks=5 -> aborts with aborted_stale_tick
+    const sTooStale = makeLesionedSession(73);
+    const ctrlTooStale = new Level3SupervisorController({
+      policy: {
+        ...LEVEL3_DEFAULT_POLICY,
+        minCooldownTicks: 0,
+        minCooldownMs: 0,
+        gate1HorizonTicks: 10,
+        gate2WatchTicks: 4,
+        maxPromotionStalenessTicks: 5
+      }
+    });
+    const resTooStale = await ctrlTooStale.runCycle(
+      { ...sTooStale, getLiveTick: () => 12 },
+      { tick: 6, nowMs: 1_800_200_000_000 }
+    );
+    assert.equal(resTooStale.finalStatus, 'aborted_stale_tick');
+    assert.equal(resTooStale.reason, 'live_runtime_advanced_during_shadow_gate1');
+  }
+
+  // 8F. [R-16] Fake directory path rejection via MODULE_PATHS & orphan gate2_resolution rejection from genesis
+  {
+    const snap = { tick: 9, digest: 'd'.repeat(64) };
+    const mkPatch = (targetModule) => JSON.stringify({
+      schema: LEVEL3_SUPERVISOR_PROPOSAL_SCHEMA,
+      snapshot: snap,
+      triggerKind: 'manual_reflection',
+      firstPersonThought: 'Estoy preparando un parche revisable por humanos en mi tick 9.',
+      diagnosis: 'Optimización candidata.',
+      hypothesis: 'Mejorar legibilidad.',
+      actionMode: 'stage_code_patch_review',
+      candidateAction: {
+        kind: 'staged_code_patch',
+        targetModule,
+        patchSummary: 'Refactor menor'
+      }
+    });
+    const fakeDir = parseAndValidateLevel3Proposal(mkPatch('src/totally/fake/NodalProcessingLayer.js'), {
+      expectedTick: 9,
+      expectedDigest: snap.digest
+    });
+    assert.equal(fakeDir.ok, false, 'R-16 FAIL: fake directory path with real basename must be rejected');
+    assert.equal(fakeDir.reason, 'invalid_or_unknown_target_module');
+
+    const realPath = parseAndValidateLevel3Proposal(mkPatch('src/simulation/NodalProcessingLayer.js'), {
+      expectedTick: 9,
+      expectedDigest: snap.digest
+    });
+    assert.equal(realPath.ok, true);
+
+    const uniqueBase = parseAndValidateLevel3Proposal(mkPatch('NodalProcessingLayer.js'), {
+      expectedTick: 9,
+      expectedDigest: snap.digest
+    });
+    assert.equal(uniqueBase.ok, true);
+
+    // Orphan gate2_resolution from genesis must fail verification
+    const orphanLedger = appendLevel3AuditEntry(createEmptyLevel3AuditLedger(), {
+      entryKind: 'gate2_resolution',
+      cycleId: 'missing-parent:gate2',
+      parentCycleId: 'nonexistent-parent-cycle',
+      parentDigest: 'e'.repeat(64),
+      tick: 15,
+      finalStatus: 'promoted_confirmed'
+    });
+    const orphanVerify = verifyLevel3AuditLedger(orphanLedger);
+    assert.equal(orphanVerify.ok, false, 'R-16 FAIL: orphan gate2_resolution from genesis must fail ledger verification');
+    assert.equal(orphanVerify.reason, 'gate2_resolution_orphan_parent');
+  }
+}
+
+console.log('OK: nivel3-autonomous-supervisor.v1 passed (R-1..R-16 adversarial checks, B0 parity, fact+scheduled triggers, first-person schema gate, Gate 1 isolated Workbench, Gate 2 append-only dynamicState.v3 rollback & confirmation, SHA-256 Knowledge Belt & Ledger, Worker non-destructive merge + Daemon, Sistema B)');

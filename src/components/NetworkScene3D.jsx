@@ -1007,20 +1007,30 @@ const NetworkScene3D = React.memo(({
         }
         const renderCount = cachedRenderCount;
 
-        // 2. Rebuild full synaptic edges ONLY on mode/view/count change, explicit click-lock, or 48-tick refresh (NEVER on hover!)
+        // 2. Rebuild full synaptic edges ONLY on mode/view/count change, explicit click-lock, or 48-tick refresh (NEVER on hover in Red/Puente!)
         const selectedIdx = selectedRenderIdxRef.current;
         const focusIdx = selectedIdx >= 0 ? selectedIdx : hoveredRenderIdxRef.current;
         const modeChanged = lastEdgeModeRef.current !== coreState.bridgeMode;
+        const viewModeChanged = lastEdgeViewModeRef.current !== curViewMode;
+        const isCoreOnly = curViewMode === NODAL_3D_VIEW_MODES.CORE_ONLY;
         if (modeChanged && hasSeededInitialState) {
           modeTransitionUntilMs = now + 2200;
         }
         const selectedChanged = selectedIdx !== lastSelectedForEdges;
+        const periodicEdgeRefresh = Math.abs(curTick - lastEdgeRebuildTickRef.current) >= 48;
+        // CRITICAL: Never trigger bridge-edge recovery in CORE_ONLY (Torre intentionally hides unfocused edges = 0 bridgeEdges!)
+        const needBridgeRecovery = !isCoreOnly
+          && coreState.bridgeActive
+          && latestEdgeStats.bridgeEdges === 0
+          && coreState.interSectorRatio > 0.05;
+        const coreOnlyFocusRebuild = isCoreOnly && lastFocusIdxRef.current !== focusIdx && focusIdx >= 0;
         const needFullEdgeRebuild = !hasSeededInitialState
-          || (Math.abs(curTick - lastEdgeRebuildTickRef.current) >= 48)
-          || (coreState.bridgeActive && latestEdgeStats.bridgeEdges === 0 && coreState.interSectorRatio > 0.05)
+          || periodicEdgeRefresh
+          || needBridgeRecovery
           || modeChanged
-          || lastEdgeViewModeRef.current !== curViewMode
-          || selectedChanged;
+          || viewModeChanged
+          || selectedChanged
+          || coreOnlyFocusRebuild;
 
         if (needFullEdgeRebuild && renderCount > 0) {
           latestEdgeStats = buildRealSynapticEdgeSelection(modelNodes, view, workspace, renderCount, edgeCap, coreState, {
@@ -1032,8 +1042,8 @@ const NetworkScene3D = React.memo(({
           lastEdgeViewModeRef.current = curViewMode;
           lastSelectedForEdges = selectedIdx;
           lastFocusIdxRef.current = focusIdx;
-          // Stagger physics off this frame so edge rebuild & physics NEVER spike on the same frame!
-          if (hasSeededInitialState) {
+          // Only stagger physics on heavy periodic 48-tick refresh (never starve physics on Torre/Puente view switch!)
+          if (hasSeededInitialState && periodicEdgeRefresh && !viewModeChanged && !modeChanged && !coreOnlyFocusRebuild) {
             lastLayoutTime = now - 60;
           }
           edgeMetaDirty = true;
@@ -1058,6 +1068,11 @@ const NetworkScene3D = React.memo(({
           if (displayFocusIdx >= 0) {
             workspace.neighborSet.clear();
             highlightAttrDirty = true;
+            // In CORE_ONLY (Torre), clear temporary focused edges cleanly once fade-out completes
+            if (isCoreOnly && latestEdgeStats.totalEdges > 0) {
+              latestEdgeStats = { totalEdges: 0, bridgeEdges: 0, intraEdges: 0, focusDegreeIntra: 0, focusDegreeInter: 0 };
+              edgeMetaDirty = true;
+            }
           }
           focusMix = 0.0;
           displayFocusIdx = -1;
@@ -1068,7 +1083,7 @@ const NetworkScene3D = React.memo(({
         const isDormantFloor = !props.isRunning && curTick <= 0;
         const isPausedFrozen = !props.isRunning && curTick > 0;
         const isFineMesh = Boolean(fineMeshModeRef.current);
-        let forceStyleLayout = false;
+        let forceStyleLayout = viewModeChanged;
         if (appliedFineMesh !== isFineMesh) {
           appliedFineMesh = isFineMesh;
           if (isFineMesh) {

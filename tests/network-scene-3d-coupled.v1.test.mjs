@@ -333,6 +333,7 @@ function runCouplingMode(mode, nodes = 120, ticks = 18) {
   assert(!sceneText.includes('raycaster.intersectObject(nodeMesh'), 'NetworkScene3D must use analytical ray-vs-sphere picking instead of CPU triangle raycasting');
   assert(!sceneText.includes('backdrop-blur-md'), 'NetworkScene3D must not layer backdrop-blur over live WebGL canvas');
   assert(sceneText.includes('targetFps: 30') && !sceneText.includes('targetFps: 60'), 'NetworkScene3D must stay locked to steady 30 FPS for drop-free continuity');
+  assert(sceneText.includes('!isCoreOnly') && sceneText.includes('needBridgeRecovery'), 'NetworkScene3D must exclude CORE_ONLY (Torre) from bridge-edge recovery so physics never freezes');
   assert(engineText.includes('bridgeMetrics={liveBridgeForCanvas}'), 'SimulationEngine must pass live bridge telemetry to NetworkCanvas');
   assert(engineText.includes('endogenousDecision={liveEndogenousForCanvas}'), 'SimulationEngine must pass live endogenous verdict to NetworkCanvas');
 }

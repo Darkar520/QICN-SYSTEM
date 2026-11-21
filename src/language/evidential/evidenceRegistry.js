@@ -22,7 +22,26 @@ export function createEvidenceRegistry(attachments = []) {
     if(sha256Hex(capture.dynamicRecord.text)!==capture.dynamicRecord.digest) throw new Error('v5_evidence_inner_digest');
     const inner=JSON.parse(capture.dynamicRecord.text);
     if(inner.schema!=='qicn.dynamic_state.v3' || inner.tick!==capture.sourceTick || inner.nodeCount!==capture.nodeCount || inner.build.version!==capture.sourceBuild.version || inner.build.signature!==capture.sourceBuild.signature || capture.evidence_scope!=='internal_support_only' || capture.external_support_certified!==false) throw new Error('v5_evidence_capture_context');
-    records.push({resultDigest:result.digest,captureDigest:capture.digest,protocolDigest:protocol.digest});
+    const phe = result.pheTransplantCampaign || null;
+    const pheSummary = phe
+      ? {
+        digest: phe.digest,
+        campaignTicks: phe.campaignTicks,
+        midpointTick: phe.midpointTick,
+        armEMaxAbsDiff: phe.armE?.maxAbsDiff ?? 0,
+        armEReplicaR: phe.armE?.replicaSeparationR ?? '0',
+        transplantedMaxAbsDiff: phe.sealedTransplant?.transplantedVsSourceMaxAbsDiff ?? 0,
+        untransplantedMaxAbsDiff: phe.sealedTransplant?.untransplantedVsSourceMaxAbsDiff ?? 0,
+        integrationFluxContrast: phe.dynamicAtomicSeparator?.integrationFluxContrast ?? 0,
+        reducibleInterSectorFluxShare: phe.dynamicAtomicSeparator?.reducibleInterSectorFluxShare ?? 0
+      }
+      : null;
+    records.push({
+      resultDigest: result.digest,
+      captureDigest: capture.digest,
+      protocolDigest: protocol.digest,
+      ...(pheSummary ? { pheSummary } : {})
+    });
     for(const comparison of result.comparisons) {
       if(protocol.branches.find(branch=>branch.id===comparison.branchId).intervention==='sham')continue;
       entries.push({resultDigest:result.digest,captureDigest:capture.digest,protocolDigest:protocol.digest,sourceTick:capture.sourceTick,endTick:capture.sourceTick+result.ticks,sourceBuild:capture.sourceBuild,branchId:comparison.branchId,intervention:protocol.branches.find(b=>b.id===comparison.branchId).intervention,measures:Object.fromEntries(EFFECT_MEASURES.map(key=>[key,comparison[key]])),evidence_scope:'internal_support_only',external_support_certified:false,scope:'isolated_copy_not_live_state'});

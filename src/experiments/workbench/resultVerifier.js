@@ -48,5 +48,29 @@ export function verifyWorkbenchResult(result, capture, protocol) {
   ) {
     throw new Error('workbench_hybrid_tie_breaker_mismatch');
   }
+  if (body.pheTransplantCampaign) {
+    const campaign = verifyData(body.pheTransplantCampaign, 'qicn.workbench_phe_campaign.v1');
+    if (
+      campaign.captureDigest !== capture.digest
+      || campaign.sourceTick !== capture.sourceTick
+      || campaign.evidence_scope !== 'internal_support_only'
+      || campaign.external_support_certified !== false
+      || campaign.armP?.effectiveEta !== '1/8'
+      || campaign.armE?.fullStateIdentical !== true
+      || campaign.armE?.maxAbsDiff !== 0
+      || campaign.armE?.replicaSeparationR !== '0'
+      || campaign.armH?.boundedMarginPositive !== true
+      || campaign.armH?.sufficientBudgetCollapsesToZero !== true
+      || campaign.armH?.tdCutParityResponse !== '0'
+      || campaign.sealedTransplant?.digestVerified !== true
+      || campaign.sealedTransplant?.transplantedFullStateIdentical !== true
+      || campaign.sealedTransplant?.transplantedVsSourceMaxAbsDiff !== 0
+      || campaign.dynamicAtomicSeparator?.reducibleInterSectorFluxShare !== 0
+      || campaign.dynamicAtomicSeparator?.algebraicDeltaIntF2 !== '1/4'
+      || campaign.dynamicAtomicSeparator?.algebraicReducibleControlAeqI !== '0'
+    ) {
+      throw new Error('workbench_phe_campaign_mismatch');
+    }
+  }
   return true;
 }

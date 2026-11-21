@@ -229,3 +229,16 @@ export const verifyC2Echo = (responseText, {
     signature: parsed.signature
   };
 };
+
+/**
+ * Strips the verified C2 echo block from model output so downstream JSON/prose
+ * parsers (e.g. Sistema B v5) receive the clean model payload.
+ */
+export const stripC2EchoBlock = (responseText) => {
+  const text = String(responseText || '');
+  const stripRe = new RegExp(
+    `\\s*${escapeRegExp(C2_ECHO_MARKERS.echoBegin)}[\\s\\S]*?${escapeRegExp(C2_ECHO_MARKERS.echoEnd)}\\s*`,
+    'g'
+  );
+  return text.replace(stripRe, '\n').trim();
+};

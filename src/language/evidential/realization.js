@@ -120,6 +120,14 @@ function formatLocalWorkbenchSummary(registry) {
     (e) =>
       `Copia aislada ${e.captureDigest.slice(0, 12)} (ticks ${e.sourceTick + 1}-${e.endTick}, rama ${e.branchId}, intervención ${e.intervention}): maxAbsDiff = ${e.measures.maxAbsDiff}, actionDivergence = ${e.measures.actionDivergence}, deltaInTubeRate = ${e.measures.deltaInTubeRate}, deltaObjectiveScore = ${e.measures.deltaObjectiveScore} (resultado en copia aislada, no del estado vivo ni soporte externo).`
   );
+  for (const rec of registry.records || []) {
+    if (rec?.pheSummary) {
+      const p = rec.pheSummary;
+      lines.push(
+        `Campaña P/H/E y trasplante sellado en copia aislada (${rec.resultDigest.slice(0, 12)}): réplica total igual costo E maxAbsDiff = ${p.armEMaxAbsDiff} (R = ${p.armEReplicaR}), trasplante sellado continuación maxAbsDiff = ${p.transplantedMaxAbsDiff} vs sin trasplante = ${p.untransplantedMaxAbsDiff}, contraste integrativo dinámico = ${p.integrationFluxContrast} vs control reducible A=I flujo inter-sector = ${p.reducibleInterSectorFluxShare} (soporte interno únicamente, external_support_certified = false).`
+      );
+    }
+  }
   return lines.join(' ');
 }
 

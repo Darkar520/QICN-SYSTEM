@@ -61,6 +61,9 @@ const QICNConfig = {
   // Acoplamiento bidireccional nodo-torre (Bloque 1): 'off' conserva compatibilidad B0 bit-a-bit;
   // la UI interactiva activa 'bidirectional' por defecto ('td_cut_eta_zero' y 'reducible_control' son controles negativos reales).
   NODAL_TOWER_COUPLING_MODE: 'off',
+  // Dinámica acotada de observador sensorial + latencia acoplada + 6.ª clave Kaizen PLASTICITY_DECAY (Frente 3):
+  // false en config base para conservar equivalencia B0 bit-a-bit; la UI interactiva la activa por defecto junto a Kaizen 'learned'.
+  SENSOR_OBSERVER_DYNAMICS_ENABLED: false,
 
   // Memoria Holográfica
   HOLOGRAPHIC_FRAGMENTS: 10,

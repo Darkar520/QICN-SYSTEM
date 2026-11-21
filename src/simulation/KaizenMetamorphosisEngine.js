@@ -22,12 +22,12 @@ export const KAIZEN_LEARNING_DEFAULTS = Object.freeze({
   strainWeight: 0.25
 });
 export const isKaizenLearned = (config = QICNConfig) => config.KAIZEN_ADJUSTMENT_MODE === 'learned';
-// Keys the window learner tries. PLASTICITY_DECAY is excluded: no active code
-// path reads it from the Kaizen config (only the legacy Node.js class reads
-// QICNConfig.PLASTICITY_DECAY), so any "improvement" on it would be noise
-// (kaizen mode ablation 2026-11-08: it was kept at ×1.20 in 5/5 seeds).
-// It still receives a factor (×1 unless an autonomy action moves it).
+// Keys the window learner tries. In B0/default mode (SENSOR_OBSERVER_DYNAMICS_ENABLED=false),
+// PLASTICITY_DECAY stays excluded so headless B0 tests preserve exact 5-key behavior.
+// When SENSOR_OBSERVER_DYNAMICS_ENABLED=true, ConsciousNode.applyPlasticity actively
+// consumes mutableConfig.PLASTICITY_DECAY, enabling all 6/6 recomputed keys.
 export const KAIZEN_LEARNABLE_KEYS = Object.freeze(KAIZEN_ADJUSTABLE_KEYS.filter((k) => k !== 'SYNAPTIC_PRUNING_THRESHOLD' && k !== 'PLASTICITY_DECAY'));
+export const KAIZEN_LEARNABLE_KEYS_ALL = Object.freeze(KAIZEN_ADJUSTABLE_KEYS.filter((k) => k !== 'SYNAPTIC_PRUNING_THRESHOLD'));
 const exogenousActiveEngines = new WeakSet();
 
 /**
@@ -385,6 +385,13 @@ export class KaizenMetamorphosisEngine {
            * and the next trial on that key goes the other way. Deterministic:
            * no RNG and no clock.
            */
+          getActiveLearnableKeys() {
+            const envCfg = executionEnvironmentFor(this).config;
+            return envCfg?.SENSOR_OBSERVER_DYNAMICS_ENABLED === true
+              ? KAIZEN_LEARNABLE_KEYS_ALL
+              : KAIZEN_LEARNABLE_KEYS;
+          }
+
           observeLearningTick(signal, cfg = KAIZEN_LEARNING_DEFAULTS) {
             const L = this.learning;
             if (!signal || !Number.isFinite(signal.ccc)) return null;
@@ -398,8 +405,9 @@ export class KaizenMetamorphosisEngine {
               if (L.baselines.length > 16) L.baselines.shift();
               if (L.baselines.length < cfg.warmupBaselines) return { event: 'baseline_measured', baselineScore: score.score };
               // Pick the next key whose factor can move in its preferred direction.
-              for (let tries = 0; tries < KAIZEN_LEARNABLE_KEYS.length * 2; tries += 1) {
-                const key = KAIZEN_LEARNABLE_KEYS[L.cursor % KAIZEN_LEARNABLE_KEYS.length];
+              const learnableKeys = this.getActiveLearnableKeys();
+              for (let tries = 0; tries < learnableKeys.length * 2; tries += 1) {
+                const key = learnableKeys[L.cursor % learnableKeys.length];
                 const from = this.adjustments[key];
                 const to = this._clampFactor(from + L.direction[key] * cfg.step, cfg);
                 if (to !== from) {

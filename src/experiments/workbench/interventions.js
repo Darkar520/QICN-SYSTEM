@@ -49,6 +49,34 @@ export function applyWorkbenchIntervention(session, intervention) {
       effects.allowedFields = ['execution.controls.sensorImpulse'];
       effects.scope = 'positive detector sensitivity control; declared intervention on synthetic sensory input';
       break;
+    case 'kaizen_learned_mode':
+      session.environment.config.KAIZEN_ADJUSTMENT_MODE = 'learned';
+      session.environment.config.SENSOR_OBSERVER_DYNAMICS_ENABLED = true;
+      effects.allowedFields = ['configuration.KAIZEN_ADJUSTMENT_MODE', 'configuration.SENSOR_OBSERVER_DYNAMICS_ENABLED'];
+      effects.scope = 'enables bounded Kaizen learned factors across all 6 recomputed keys including PLASTICITY_DECAY on isolated copy';
+      break;
+    case 'kaizen_legacy_mode':
+      session.environment.config.KAIZEN_ADJUSTMENT_MODE = 'legacy';
+      session.environment.config.SENSOR_OBSERVER_DYNAMICS_ENABLED = false;
+      effects.allowedFields = ['configuration.KAIZEN_ADJUSTMENT_MODE', 'configuration.SENSOR_OBSERVER_DYNAMICS_ENABLED'];
+      effects.scope = 'negative ablation forcing legacy Kaizen overwrite behavior and disabling sensor/observer coupling';
+      break;
+    case 'sensor_observer_dynamics':
+      session.environment.config.SENSOR_OBSERVER_DYNAMICS_ENABLED = true;
+      session.environment.controls.observerLatencyProbe = true;
+      effects.allowedFields = ['configuration.SENSOR_OBSERVER_DYNAMICS_ENABLED', 'execution.controls.observerLatencyProbe'];
+      effects.scope = 'activates bounded sensory observer presence + coupled latency strain dynamics with deterministic probe (chat remains decoupled)';
+      break;
+    case 'td_cut_eta_zero':
+      session.environment.config.NODAL_TOWER_COUPLING_MODE = 'td_cut_eta_zero';
+      effects.allowedFields = ['configuration.NODAL_TOWER_COUPLING_MODE'];
+      effects.scope = 'physical T_d coupling cut (eta = 0) negative control on isolated copy';
+      break;
+    case 'reducible_control':
+      session.environment.config.NODAL_TOWER_COUPLING_MODE = 'reducible_control';
+      effects.allowedFields = ['configuration.NODAL_TOWER_COUPLING_MODE'];
+      effects.scope = 'reducible A = I sector-uncoupled negative control on isolated copy';
+      break;
     default: throw new Error('unknown_workbench_intervention');
   }
   effects.physicalDigestBefore = before;

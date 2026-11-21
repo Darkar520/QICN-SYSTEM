@@ -4,7 +4,19 @@
 import { sha256Hex, stableStringify } from '../../utils/integrity.js';
 export const WORKBENCH_BOUNDARY = Object.freeze({ evidence_scope: 'internal_support_only', external_support_certified: false });
 export const PROFILES = Object.freeze(['legacy_compatibility', 'paired_intervention']);
-export const INTERVENTIONS = Object.freeze(['sham', 'block_history_read', 'suspend_consolidation', 'freeze_predictor_weights', 'erase_declared_history', 'sensor_impulse']);
+export const INTERVENTIONS = Object.freeze([
+  'sham',
+  'block_history_read',
+  'suspend_consolidation',
+  'freeze_predictor_weights',
+  'erase_declared_history',
+  'sensor_impulse',
+  'kaizen_learned_mode',
+  'kaizen_legacy_mode',
+  'sensor_observer_dynamics',
+  'td_cut_eta_zero',
+  'reducible_control'
+]);
 
 export function assertData(value, ancestors = new Set()) {
   if (value === null || typeof value === 'string' || typeof value === 'boolean') return;

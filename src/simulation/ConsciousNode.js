@@ -66,7 +66,7 @@ export class ConsciousNode {
            * Bs modulates Introspective Sensitivity (xi)
            * Optional `towerFeedback` closes the Constructive Tower -> Node loop when coupling mode !== 'off'.
            */
-          introspectiveUpdate(globalCCC, bs = 0.5, towerFeedback = null) {
+          introspectiveUpdate(globalCCC, bs = 0.5, towerFeedback = null, sensorObserverMod = null) {
             // ξ (xi): Introspective Sensitivity, modulated by Stability Bias (Bs)
             const xi = 0.1 + bs * 0.9;  
             this.introspectiveSensitivity = xi;
@@ -122,6 +122,15 @@ export class ConsciousNode {
               }
               this.intensity = 0.5 + 0.5 * this.coherenceState;
             }
+
+            if (sensorObserverMod?.active && sensorObserverMod.coherenceStabilizationPull > 0) {
+              const targetStability = 0.5 + (0.35 * Math.max(0, Math.min(1, Number(globalCCC) || 0)));
+              this.coherenceState = Math.max(
+                0.05,
+                Math.min(0.98, this.coherenceState + ((targetStability - this.coherenceState) * sensorObserverMod.coherenceStabilizationPull))
+              );
+              this.intensity = 0.5 + 0.5 * this.coherenceState;
+            }
           }
           
           updateStateWithRetroInduction(futureStates, weights) {
@@ -144,7 +153,12 @@ export class ConsciousNode {
             const SYNAPTIC_PRUNING_THRESHOLD = mutableConfig.SYNAPTIC_PRUNING_THRESHOLD;
             const hasCoupling = Boolean(towerFeedback && towerFeedback.mode !== 'off');
             const sourceSector = hasCoupling ? (Number.isInteger(this.sectorId) ? this.sectorId : sectorIdOf(this.id)) : 0;
-            const randFn = executionEnvironmentFor(this).random;
+            const env = executionEnvironmentFor(this);
+            const randFn = env.random;
+            const usePlasticityDecay = env.config?.SENSOR_OBSERVER_DYNAMICS_ENABLED === true;
+            const plasticityDecay = usePlasticityDecay
+              ? Math.max(0.85, Math.min(0.999, Number(mutableConfig?.PLASTICITY_DECAY) || 0.98))
+              : 1;
             const conns = this.connections;
             const len = conns.length;
             const baseDrive = HEBBIAN_FACTOR * this.intensity * feedbackSignal;
@@ -179,7 +193,10 @@ export class ConsciousNode {
                 hebbianUpdate = baseDrive;
               }
 
-              const newWeight = conn.weight + hebbianUpdate +
+              const baseWeight = usePlasticityDecay
+                ? (0.5 + ((conn.weight - 0.5) * plasticityDecay))
+                : conn.weight;
+              const newWeight = baseWeight + hebbianUpdate +
                 ((randFn() - 0.5) * 0.01 * this.learningRate);
               const clampedWeight = Math.max(0.1, Math.min(1.0, newWeight));
               conn.weight = clampedWeight;

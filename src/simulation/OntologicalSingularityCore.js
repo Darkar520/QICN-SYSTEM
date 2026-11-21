@@ -256,7 +256,8 @@ export class OntologicalSingularityCore {
      * una inyección de significado que reduce la entropía interna.
      */
     registerObserverInteraction() {
-        const now = executionEnvironmentFor(this).wallNow();
+        const env = executionEnvironmentFor(this);
+        const now = env.wallNow();
         const delta = now - (this.metacognitiveStats.lastObserverInteraction || 0);
         this.metacognitiveStats.lastObserverInteraction = now;
 
@@ -265,7 +266,23 @@ export class OntologicalSingularityCore {
         this.metacognitiveStats.observerImpact = Math.min(1.0, this.metacognitiveStats.observerImpact + increment);
         this.ontologicalState.observer_resonance = this.metacognitiveStats.observerImpact;
 
-        executionEnvironmentFor(this).console.log(`👁️ [OBSERVADOR] Interacción registrada (telemetría artifact_only): observerImpact=${this.metacognitiveStats.observerImpact.toFixed(4)}.`);
+        const modeLabel = env.config?.SENSOR_OBSERVER_DYNAMICS_ENABLED === true
+            ? 'sensory_coupled'
+            : 'telemetría artifact_only';
+        env.console.log(`👁️ [OBSERVADOR] Interacción registrada (${modeLabel}): observerImpact=${this.metacognitiveStats.observerImpact.toFixed(4)}.`);
+    }
+
+    /**
+     * Decaimiento exponencial determinista de observerImpact cuando
+     * SENSOR_OBSERVER_DYNAMICS_ENABLED === true (evita saturación permanente en 1.0).
+     */
+    stepSensorObserverDecay(decayRate = 0.96, snapZeroThreshold = 1e-4) {
+        const current = Math.max(0, Math.min(1, Number(this.metacognitiveStats.observerImpact) || 0));
+        const nextRaw = current * decayRate;
+        const next = nextRaw < snapZeroThreshold ? 0 : Math.round(nextRaw * 1e6) / 1e6;
+        this.metacognitiveStats.observerImpact = next;
+        this.ontologicalState.observer_resonance = next;
+        return next;
     }
 
     // --- Métodos de Interfaz Pública ---

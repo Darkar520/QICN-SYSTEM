@@ -56,11 +56,30 @@ const readProviderMessage = (body) => {
   return null;
 };
 
+export const stripC2EchoBlock = (text) => String(text || '')
+  .replace(/\s*\[C2_INTEGRITY_ECHO_BEGIN\][\s\S]*?\[C2_INTEGRITY_ECHO_END\]\s*/g, '\n')
+  .trim();
+
 export const getLlmRequestGuidance = (error) => {
   if (error.code === 'UNAUTHORIZED') return 'La sesión del servidor no está autorizada. Vuelve a iniciar sesión y reenvía la consulta.';
   if (error.code === 'MISSING_GEMINI_API_KEY') return 'Falta la clave Gemini del servidor. Revisa la configuración en Control API.';
   if ([LLM_AUTH_ERROR_TOKEN, 'GEMINI_API_KEY_INVALID'].includes(error.code)) {
     return 'Gemini rechazó la credencial. Revisa la clave y sus permisos en Control API.';
+  }
+  if (error.code === 'C2_INTEGRITY_REJECTED') {
+    return 'El proxy rechazó la respuesta por fallo de firma/eco de integridad C2 (HTTP 422). Reenvía la consulta o cambia a Solo motor.';
+  }
+  if (error.code === 'C2_SECRET_MISSING') {
+    return 'El servidor activó el modelo de integridad C2 pero falta INTEGRITY_HMAC_SECRET en la configuración.';
+  }
+  if (['C2_INTEGRITY_ENVELOPE_MISSING', 'C2_INTEGRITY_PACKET_INVALID', 'C2_INTEGRITY_CONTEXT_INVALID'].includes(error.code)) {
+    return 'El sobre de integridad C2 estuvo incompleto en esta solicitud. Reenvía la consulta desde el runtime.';
+  }
+  if (error.code === 'UPSTREAM_EMPTY_RESPONSE') {
+    return 'El proveedor remoto devolvió una respuesta vacía. Reenvía la consulta o usa Solo motor.';
+  }
+  if (error.code === 'ALL_MODELS_UNAVAILABLE') {
+    return 'Ningún modelo remoto de la cadena estuvo disponible. Revisa Control API o usa Solo motor.';
   }
   if (error.status === 429) return 'Gemini alcanzó un límite de solicitudes o cuota. Espera un momento antes de reenviar.';
   if (error.status === 503) return 'Gemini no está disponible en este momento. Vuelve a enviar la consulta en unos momentos.';
@@ -69,6 +88,32 @@ export const getLlmRequestGuidance = (error) => {
   if (error.code === 'LLM_INVALID_RESPONSE') return 'La ruta del chat devolvió una respuesta inesperada. Comprueba que abriste el runtime con su servidor.';
   if (error.status === 404 || error.code === 'STRICT_MODEL_ENFORCED') return 'El modelo o la ruta de Gemini no están disponibles. Revisa la configuración en Control API.';
   return 'El servicio de chat no pudo completar la consulta. Revisa Control API e inténtalo de nuevo.';
+};
+
+export const classifyLlmError = (error) => {
+  const code = String(error?.code || 'UNKNOWN');
+  const status = Number(error?.status) || null;
+  const message = String(error?.providerMessage || error?.message || '');
+  const retryable = transientRetryDelayMs(error, 0) !== null;
+  let category = 'unknown';
+  if (['UNAUTHORIZED', LLM_AUTH_ERROR_TOKEN, 'GEMINI_API_KEY_INVALID', 'MISSING_GEMINI_API_KEY'].includes(code) || status === 401 || status === 403) {
+    category = 'auth_invalid';
+  } else if (code.startsWith('C2_')) {
+    category = 'c2_integrity_error';
+  } else if (status === 429 && /per ?day|perday|requests per day|daily|diari/i.test(message)) {
+    category = 'quota_exhausted_daily';
+  } else if (status === 429) {
+    category = 'rate_limited_transient';
+  } else if (code === 'LLM_TIMEOUT' || status === 504) {
+    category = 'network_timeout';
+  } else if (code === 'LLM_NETWORK') {
+    category = 'network_unavailable';
+  } else if ([500, 502, 503].includes(status) || code === 'UPSTREAM_EMPTY_RESPONSE') {
+    category = 'upstream_5xx';
+  } else if (status === 404 || code === 'STRICT_MODEL_ENFORCED' || code === 'ALL_MODELS_UNAVAILABLE') {
+    category = 'model_unavailable';
+  }
+  return { category, retryable, userGuidance: getLlmRequestGuidance(error || {}) };
 };
 
 const readErrorCode = (body, fallback) => {
@@ -194,11 +239,24 @@ export const robustFetchLLMResponse = async (apiUrl, payload, timeout = 120000, 
     }
     if (proxyMode) {
       if (!parsed.ok) throw new LlmRequestError(readErrorCode(text, 'LLM_INVALID_RESPONSE'));
+      const isC2 = parsed.integrityThreatModel === 'C2';
+      const cleanedText = typeof parsed.cleanContent === 'string'
+        ? parsed.cleanContent
+        : (isC2 ? stripC2EchoBlock(parsed.content || '') : (parsed.content || ''));
+      const baseCandidatePayload = isC2
+        ? { candidates: [{ content: { parts: [{ text: cleanedText }] } }] }
+        : (parsed.raw || { candidates: [{ content: { parts: [{ text: cleanedText }] } }] });
       return {
-        ...(parsed.raw || { candidates: [{ content: { parts: [{ text: parsed.content || '' }] } }] }),
+        ...baseCandidatePayload,
         qicnInference: {
-          provider: parsed.provider, model: parsed.model, requestId: parsed.requestId,
-          usedFallback: Boolean(parsed.usedFallback), usage: parsed.usage || null
+          provider: parsed.provider,
+          model: parsed.model,
+          requestId: parsed.requestId,
+          usedFallback: Boolean(parsed.usedFallback),
+          usage: parsed.usage || null,
+          integrityThreatModel: parsed.integrityThreatModel || null,
+          integrityVerification: parsed.integrityVerification || null,
+          c2Verified: Boolean(parsed.integrityVerification?.verified)
         }
       };
     }

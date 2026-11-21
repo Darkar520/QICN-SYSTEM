@@ -348,8 +348,34 @@ export function buildEvidentialProseContext({ snapshot, previousMetrics = null, 
   freeCtx.numbers.packetNumbers.push(929, 383, 42, 367);
 
   const b2Entries = factualContext.evidenceRegistry?.entries || [];
+  const b2Records = factualContext.evidenceRegistry?.records || [];
   const b2Values = new Map();
   const extraPacketLines = [];
+  for (const rec of b2Records) {
+    if (rec?.pheSummary) {
+      const p = rec.pheSummary;
+      extraPacketLines.push(
+        `Campana PHE Workbench ${rec.resultDigest} ticks ${p.campaignTicks} midpoint ${p.midpointTick} armE_diff ${p.armEMaxAbsDiff} replica_R ${p.armEReplicaR} transplant_diff ${p.transplantedMaxAbsDiff} untransplanted_diff ${p.untransplantedMaxAbsDiff} integration_contrast ${p.integrationFluxContrast} reducible_flux ${p.reducibleInterSectorFluxShare}`
+      );
+      for (const v of [
+        p.campaignTicks,
+        p.midpointTick,
+        p.armEMaxAbsDiff,
+        p.transplantedMaxAbsDiff,
+        p.untransplantedMaxAbsDiff,
+        p.integrationFluxContrast,
+        p.reducibleInterSectorFluxShare
+      ]) {
+        if (Number.isFinite(v)) freeCtx.numbers.packetNumbers.push(v);
+      }
+    }
+  }
+  if (kaizenEffective) {
+    extraPacketLines.push(
+      `Modo Kaizen learned activo claves 6/6 incluyendo PLASTICITY_DECAY latency_strain ${snapshot?.structural_profile?.latency_strain ?? 0} canal chat desacoplado`
+    );
+    freeCtx.numbers.packetNumbers.push(6);
+  }
   for (const entry of b2Entries) {
     extraPacketLines.push(
       `Copia aislada Workbench ${entry.captureDigest} ticks ${entry.sourceTick + 1}-${entry.endTick} result ${entry.resultDigest} rama ${entry.branchId} intervencion ${entry.intervention} sham`

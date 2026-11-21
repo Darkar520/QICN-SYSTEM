@@ -172,6 +172,25 @@ export function createHeadlessRuntimeSession({ config = defaults, seed = 11, nod
           : sensorGenerator;
         syntheticSensors.getFullPerception = () => {
           const frame = provider();
+          if (environment.controls.observerLatencyProbe) {
+            return {
+              ...frame,
+              audio: { ...frame.audio, rms: 0.65 },
+              video: {
+                ...frame.video,
+                frameNovelty: 0.6,
+                faceCount: 1,
+                humanPresence: { detected: true, count: 1 },
+                faces: [{ probability: 0.95, engagement: { score: 0.9 } }]
+              },
+              awareness: {
+                ...(frame.awareness || {}),
+                addressedToSystem: true,
+                intentConfidence: 0.85,
+                currentFocus: 'observer_latency_probe'
+              }
+            };
+          }
           if (!environment.controls.sensorImpulse) return frame;
           return {
             ...frame, audio: { ...frame.audio, rms: 1 },
@@ -181,6 +200,18 @@ export function createHeadlessRuntimeSession({ config = defaults, seed = 11, nod
           };
         };
         environment.beginTick(tick, evaluationOffset);
+        if (environment.controls.observerLatencyProbe) {
+          bag.apiCallLog.current.push({
+            timestamp: environment.wallNow(),
+            latency: 4800,
+            success: true,
+            context: 'workbench_observer_latency_probe',
+            dynamicsCoupled: true
+          });
+          if (bag.apiCallLog.current.length > 50) {
+            bag.apiCallLog.current = bag.apiCallLog.current.slice(-50);
+          }
+        }
         environment.controls.entropyValue = entropyValue;
         simulationRuntimeRef.current.simulationStep = tick;
         runSimulationCycle();

@@ -9,7 +9,7 @@ import { GROUNDED_CONCEPTS, GUIDE_LEVELS, TELEMETRY_PARAMETERS, ONBOARDING_STEPS
 import { buildIntegrityPacket, validateIntegrityPacket, validateIntegrityEcho, IntegrityError, INTEGRITY_ECHO_MARKERS, stableStringify, sha256Hex } from '../utils/integrity';
 import { getSystemHealth } from '../utils/healthCheck.js';
 import { runWithLivenessInvariant, recoverIfEmpty } from '../utils/tick_invariants';
-import { getLlmRequestGuidance, LlmRequestError, requestGemini, transientRetryDelayMs } from '../utils/llmTransport.js';
+import { classifyLlmError, getLlmRequestGuidance, LlmRequestError, requestGemini, transientRetryDelayMs } from '../utils/llmTransport.js';
 import { renderAvailableReadings } from '../utils/runtimeLanguageBoundary.js';
 import { captureRuntimeSnapshot, RECOMPUTED_EACH_TICK } from '../language/runtimeSnapshot.js';
 import { prepareTurn, finalizeTurn, evaluateRealization, correctionPromptFor, loadConversationTurns, saveConversationTurns, CONTROLLABLE_PARAMETERS, MAX_ATTEMPTS, normalizeIntegrityMode, canPublishGracefully } from '../language/conversationEngine.js';
@@ -24,6 +24,7 @@ import { InformationalEntanglementField } from '../simulation/InformationalEntan
 import { KaizenMetamorphosisEngine } from '../simulation/KaizenMetamorphosisEngine.js';
 import { NodalProcessingLayer } from '../simulation/NodalProcessingLayer.js';
 import { NODAL_TOWER_COUPLING_MODES, normalizeCouplingMode } from '../simulation/NodalTowerCouplingBridge.js';
+import { computeSensorObserverDynamicsModulation } from '../simulation/SensorObserverDynamicsBridge.js';
 import { MetaSovereigntyCheck } from '../simulation/MetaSovereigntyCheck.js';
 import { QuantumEntropyBridge } from '../simulation/QuantumEntropyBridge.js';
 import { SensoryPerceptionEngine } from '../simulation/SensoryPerceptionEngine.js';
@@ -86,7 +87,8 @@ const readDefined = (read, fallback) => {
 const BUILD_VERSION_LABEL = readDefined(() => process.env.BUILD_VERSION, 'unknown');
 const BUILD_SIGNATURE_LABEL = readDefined(() => process.env.ONTOLOGICAL_SIGNATURE, ONTOLOGICAL_SIGNATURE);
 const CHAT_REALIZATION_MODE_KEY = 'QICN_CHAT_REALIZATION_MODE';
-const KAIZEN_MODE_KEY = 'QICN_KAIZEN_ADJUSTMENT_MODE';
+const KAIZEN_MODE_KEY = 'QICN_KAIZEN_ADJUSTMENT_MODE_V2';
+const SENSOR_OBSERVER_DYNAMICS_KEY = 'QICN_SENSOR_OBSERVER_DYNAMICS_ENABLED';
 const CHAT_HISTORY_LIMIT = 60;
 // Chat generation budget (gemini-3-flash-preview limits): max output tokens and
 // max thinking level. High thinking with a large budget is slower, so each
@@ -181,8 +183,18 @@ export const QICNConsciousnessSystem = () => {
   const [workbenchAttachmentDigest,setWorkbenchAttachmentDigest]=useState(null);
   const workbenchEvidenceRef=useRef(null);
   const workbenchBoundaryRef=useRef({ready:false,tick:-1});
-  // Kaizen adjustment mode (C-6b): 'legacy' (default) or 'learned'.
-  const [kaizenMode, setKaizenMode] = useState(() => readStoredChoice(KAIZEN_MODE_KEY, ['legacy', 'learned'], 'legacy'));
+  // Kaizen adjustment mode (Frente 3): interactive UI defaults to 'learned' (config.js stays 'legacy' for B0 parity).
+  const [kaizenMode, setKaizenMode] = useState(() => {
+    const initial = readStoredChoice(KAIZEN_MODE_KEY, ['legacy', 'learned'], 'learned');
+    if (typeof window !== 'undefined') QICNConfig.KAIZEN_ADJUSTMENT_MODE = initial;
+    return initial;
+  });
+  // Sensor/observer + latency bounded dynamics & 6th Kaizen key (PLASTICITY_DECAY): interactive UI defaults to enabled.
+  const [sensorObserverDynamicsEnabled, setSensorObserverDynamicsEnabled] = useState(() => {
+    const initial = readStoredChoice(SENSOR_OBSERVER_DYNAMICS_KEY, ['on', 'off'], 'on') === 'on';
+    if (typeof window !== 'undefined') QICNConfig.SENSOR_OBSERVER_DYNAMICS_ENABLED = initial;
+    return initial;
+  });
   const [lastProviderError, setLastProviderError] = useState(null);
   const recordOperationalEvent = useCallback((type, payload, tick) => {
     try {
@@ -2633,7 +2645,8 @@ export const QICNConsciousnessSystem = () => {
         requestId: `req_chat_${userTimestamp}_${chatReqSeq}`,
         runId: String(currentPacket.runId || operationalLedgerRef.current?.currentSession?.sessionId || `ui_session_${QICNConfig.CORE_SEED || 0}`),
         versionHash: String(currentPacket.versionHash || BUILD_SIGNATURE_LABEL || 'qicn-chat-v3'),
-        configHash: String(currentPacket.configHash || prepared?.snapshot?.configHash || '')
+        configHash: String(currentPacket.configHash || prepared?.snapshot?.configHash || ''),
+        threatModelRequested: 'C2'
       };
       const result = await robustFetchLLMResponseTracked(resolveLlmEndpoint(), payload, 'chat-conversation', {
         integrityEnvelope: chatIntegrityEnvelope,
@@ -2651,7 +2664,10 @@ export const QICNConsciousnessSystem = () => {
       provider = {
         provider: inference.provider || 'gemini',
         model: inference.model || null,
-        route: inference.transportFallback ? 'netlify_proxy_after_direct_error' : (hasFrontendGeminiKey && frontendGeminiEnabled ? 'frontend_direct_gemini' : 'netlify_proxy')
+        route: inference.transportFallback ? 'netlify_proxy_after_direct_error' : (hasFrontendGeminiKey && frontendGeminiEnabled ? 'frontend_direct_gemini' : 'netlify_proxy'),
+        integrityThreatModel: inference.integrityThreatModel || null,
+        c2Verified: Boolean(inference.c2Verified),
+        integrityVerification: inference.integrityVerification || null
       };
       if (inference.recoveredFrom) {
         recoveredFrom = inference.recoveredFrom;
@@ -2696,9 +2712,12 @@ export const QICNConsciousnessSystem = () => {
           systemText = correctionPromptFor(prepared, modelText, evaluation);
         } catch (error) {
           attempts.push({ modelError: error });
+          const classified = error instanceof LlmRequestError ? classifyLlmError(error) : null;
           providerError = {
             code: error?.code || error?.message || 'unknown',
             status: error?.status ?? null,
+            category: classified?.category || 'unknown',
+            retryable: Boolean(classified?.retryable),
             providerMessage: error?.providerMessage || null,
             originalError: error?.originalError || null,
             guidance: error instanceof LlmRequestError ? getLlmRequestGuidance(error) : String(error?.message || 'Error de transporte.')
@@ -3631,6 +3650,14 @@ export const QICNConsciousnessSystem = () => {
     }
     try { browserStorage()?.setItem(KAIZEN_MODE_KEY, kaizenMode); } catch (error) { /* optional persistence */ }
   }, [kaizenMode]);
+
+  useEffect(() => {
+    if (QICNConfig.SENSOR_OBSERVER_DYNAMICS_ENABLED !== sensorObserverDynamicsEnabled) {
+      QICNConfig.SENSOR_OBSERVER_DYNAMICS_ENABLED = sensorObserverDynamicsEnabled;
+      recordOperationalEvent('parameter_change', { key: 'SENSOR_OBSERVER_DYNAMICS_ENABLED', to: sensorObserverDynamicsEnabled, source: 'ui' }, simulationRuntimeRef.current?.simulationStep ?? 0);
+    }
+    try { browserStorage()?.setItem(SENSOR_OBSERVER_DYNAMICS_KEY, sensorObserverDynamicsEnabled ? 'on' : 'off'); } catch (error) { /* optional persistence */ }
+  }, [sensorObserverDynamicsEnabled]);
 
   useEffect(() => {
     chatRealizationModeRef.current = chatRealizationMode;
@@ -6208,10 +6235,59 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
                 ))}
               </div>
             </div>
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+              <span className="text-gray-400">Sensor/Observador + 6/6 Kaizen:</span>
+              <div role="group" aria-label="Dinámica Sensor Observador" className="inline-flex overflow-hidden rounded-md border border-emerald-400/40">
+                {[[true, 'Activo'], [false, 'Inactivo']].map(([enabledVal, label]) => (
+                  <button
+                    key={String(enabledVal)}
+                    type="button"
+                    aria-pressed={sensorObserverDynamicsEnabled === enabledVal}
+                    onClick={() => setSensorObserverDynamicsEnabled(enabledVal)}
+                    title={enabledVal
+                      ? 'Activa consumo real de PLASTICITY_DECAY (6/6 claves Kaizen) y modulación acotada [0.85, 1.15] por presencia sensorial del observador y tensión de latencia acoplada (el chat permanece desacoplado).'
+                      : 'Desactiva el acoplamiento observador/latencia y mantiene solo 5/6 claves Kaizen (compatibilidad B0).'}
+                    className={`px-2 py-0.5 transition-colors ${sensorObserverDynamicsEnabled === enabledVal ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {(() => {
+              const liveObs = Number(ontologicalCore.current?.metacognitiveStats?.observerImpact ?? 0);
+              const liveStrain = Number(latencyStrainRef.current?.strain ?? ontologicalCore.current?.metacognitiveStrain ?? 0);
+              const liveMod = computeSensorObserverDynamicsModulation({
+                observerImpact: liveObs,
+                latencyStrain: liveStrain,
+                enabled: sensorObserverDynamicsEnabled
+              });
+              return (
+                <div className="rounded border border-emerald-800/50 bg-gray-900/60 p-2 text-[11px] font-mono text-gray-300" data-testid="sensor-observer-dynamics-telemetry">
+                  <div className="flex justify-between">
+                    <span className="text-emerald-300">Observador sensorial (ι): {liveObs.toFixed(3)}</span>
+                    <span className="text-amber-300">Latencia acoplada: {liveStrain.toFixed(3)}</span>
+                  </div>
+                  <div className="mt-1 flex flex-wrap justify-between gap-1 text-[10px] text-gray-400">
+                    <span>LR ×{liveMod.learningRateScale.toFixed(2)}</span>
+                    <span>Hebb ×{liveMod.hebbianScale.toFixed(2)}</span>
+                    <span>T ×{liveMod.temperatureScale.toFixed(2)}</span>
+                    <span>Retro ×{liveMod.retroFluxScale.toFixed(2)}</span>
+                    <span>Claves: {sensorObserverDynamicsEnabled ? '6/6' : '5/6'}</span>
+                  </div>
+                  <p className="mt-1 font-sans text-[10px] text-gray-500">
+                    Canal de chat desacoplado (dynamicsCoupling = false); evidencia interna únicamente.
+                  </p>
+                </div>
+              );
+            })()}
             {kaizenMode === 'learned' && (
               <div className="text-[11px] font-mono text-gray-400" data-testid="kaizen-learned-factors">
                 {Object.entries(kaizenEngine.current.getAdjustments?.() || {}).map(([key, factor]) => (
-                  <div key={key} className="flex justify-between"><span>{key}</span><span>×{Number(factor).toFixed(2)}</span></div>
+                  <div key={key} className="flex justify-between">
+                    <span>{key}{key === 'PLASTICITY_DECAY' && !sensorObserverDynamicsEnabled ? ' (off B0)' : ''}</span>
+                    <span>×{Number(factor).toFixed(2)}</span>
+                  </div>
                 ))}
                 {kaizenEngine.current.lastLearningEvent && (
                   <p className="mt-1 not-italic text-gray-500">Último evento (tick {kaizenEngine.current.lastLearningEvent.tick}): {kaizenEngine.current.lastLearningEvent.event} · {kaizenEngine.current.lastLearningEvent.key}</p>

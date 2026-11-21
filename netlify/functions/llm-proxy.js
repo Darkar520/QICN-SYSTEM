@@ -7,6 +7,7 @@ import {
   buildC2ContractBlock,
   buildC2Signature,
   stableStringify,
+  stripC2EchoBlock,
   verifyC2Echo,
   IntegrityC2Error
 } from './lib/integrity-c2.js';
@@ -210,6 +211,13 @@ export const handler = async (event, context) => {
     return asJson(400, { ok: false, error: error.message });
   }
   if (c2Context) {
+    const requestedJsonMode = geminiPayload?.generationConfig?.responseMimeType === 'application/json';
+    if (requestedJsonMode) {
+      // Gemini's grammar-constrained JSON mode forbids appending the plain-text
+      // C2 echo markers after the closing brace; keep JSON instructions in prompt
+      // and strip the verified C2 block before returning `cleanContent`.
+      delete geminiPayload.generationConfig.responseMimeType;
+    }
     const c2Contract = buildC2ContractBlock({
       packetCanonical: c2Context.packetCanonical,
       nonce: c2Context.nonce,
@@ -219,7 +227,10 @@ export const handler = async (event, context) => {
       configHash: c2Context.configHash,
       signature: c2Context.signature
     });
-    appendSystemContract(geminiPayload, c2Contract);
+    const fullContract = requestedJsonMode
+      ? `${c2Contract}\n- If the main prompt asks for JSON, output the single JSON object first, followed by a blank line and the exact C2 block above.`
+      : c2Contract;
+    appendSystemContract(geminiPayload, fullContract);
   }
 
   // Función auxiliar: intenta llamar a un modelo específico
@@ -266,10 +277,11 @@ export const handler = async (event, context) => {
         });
       }
 
-      // 404: el modelo no está disponible → intentar el siguiente de la cadena
-      if (resp.status === 404) {
-        console.warn(`[PROXY_FALLBACK] Modelo "${modelId}" retornó 404. Probando siguiente...`);
-        lastError = data?.error?.message || `MODEL_NOT_FOUND: ${modelId}`;
+      // 404 (or 503 overloaded when non-strict and more fallback models remain) → probar siguiente
+      const hasNextFallback = !isStrictModelEnabled() && modelChain.indexOf(modelId) < modelChain.length - 1;
+      if (resp.status === 404 || (resp.status === 503 && hasNextFallback)) {
+        console.warn(`[PROXY_FALLBACK] Modelo "${modelId}" retornó ${resp.status}. Probando siguiente...`);
+        lastError = data?.error?.message || `MODEL_UNAVAILABLE_${resp.status}: ${modelId}`;
         continue;
       }
 
@@ -289,9 +301,11 @@ export const handler = async (event, context) => {
       if (!content) {
         return asJson(502, { ok: false, provider, model: modelId, requestId, error: 'UPSTREAM_EMPTY_RESPONSE' });
       }
+      let integrityVerification = null;
+      let cleanContent = content;
       if (c2Context) {
         try {
-          verifyC2Echo(content, {
+          const verified = verifyC2Echo(content, {
             expectedPacketCanonical: c2Context.packetCanonical,
             expectedNonce: c2Context.nonce,
             expectedRequestId: c2Context.requestId,
@@ -300,6 +314,14 @@ export const handler = async (event, context) => {
             expectedConfigHash: c2Context.configHash,
             secret: c2Config.secret
           });
+          cleanContent = stripC2EchoBlock(content);
+          integrityVerification = {
+            threatModel: 'C2',
+            verified: true,
+            signaturePrefix: String(verified.signature || '').slice(0, 16),
+            nonce: c2Context.nonce,
+            requestId: c2Context.requestId
+          };
         } catch (error) {
           const detail = error instanceof IntegrityC2Error
             ? error.message
@@ -319,9 +341,11 @@ export const handler = async (event, context) => {
         provider,
         model: modelId,
         integrityThreatModel: threatModel,
+        integrityVerification,
         usedFallback: modelId !== enforcedModel,
         requestId,
         content,
+        cleanContent,
         usage: data?.usageMetadata || null,
         raw: data
       });

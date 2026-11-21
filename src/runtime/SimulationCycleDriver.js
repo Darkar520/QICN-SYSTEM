@@ -26,6 +26,11 @@ import { buildSensorSummaryFromPerception, emitEpisodeHarnessTick, normalizeCaus
 import { ExogenousPerturbationDriver } from '../experiments/ExogenousPerturbationDriver.js';
 import { projectAutomodelVector } from '../simulation/tower/SigmaAutomodelTruncator.js';
 import { buildTowerToNodalFeedback, normalizeCouplingMode } from '../simulation/NodalTowerCouplingBridge.js';
+import {
+  applySensorObserverConfigModulation,
+  computeSensorObserverDynamicsModulation,
+  isSensorObserverDynamicsEnabled
+} from '../simulation/SensorObserverDynamicsBridge.js';
 
 function computeActiveNodeStats(nodes = []) {
   if (!Array.isArray(nodes) || nodes.length === 0) {
@@ -598,7 +603,18 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
           nodalLayer.current.processSignals(); // Propagate signals before state update (B0 compatibility)
         }
 
-        const retroFluxWeight = isAscended ? 0.001 : currentMutableConfig.RETRO_FLUX_WEIGHT; // Minimal flux when ascended
+        const sensorObserverDynamicsActive = isSensorObserverDynamicsEnabled(QICNConfig);
+        const preSensorObserverMod = sensorObserverDynamicsActive
+          ? computeSensorObserverDynamicsModulation({
+            observerImpact: ontologicalCore.current?.metacognitiveStats?.observerImpact ?? 0,
+            latencyStrain: ontologicalCore.current?.metacognitiveStrain ?? 0,
+            enabled: true
+          })
+          : null;
+        const retroFluxBase = isAscended ? 0.001 : currentMutableConfig.RETRO_FLUX_WEIGHT; // Minimal flux when ascended
+        const retroFluxWeight = preSensorObserverMod?.active
+          ? Math.max(0.0001, Math.min(0.5, retroFluxBase * preSensorObserverMod.retroFluxScale))
+          : retroFluxBase;
         activeNodes.forEach(node => {
           const futureStates = Array.from({ length: QICNConfig.FUTURE_PROJECTION_STEPS }, (_, i) =>
             node.coherenceState + (environment.random() - 0.5) * retroFluxWeight * (i + 1)
@@ -852,12 +868,22 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
           stressState: latencyStressState
         };
         ontologicalCore.current.applyLatencyStrain?.(metacognitiveStrain);
+        const sensorObserverMod = sensorObserverDynamicsActive
+          ? computeSensorObserverDynamicsModulation({
+            observerImpact: ontologicalCore.current?.metacognitiveStats?.observerImpact ?? 0,
+            latencyStrain: metacognitiveStrain,
+            enabled: true
+          })
+          : null;
+        const effectiveStepConfig = sensorObserverMod?.active
+          ? applySensorObserverConfigModulation(currentMutableConfig, sensorObserverMod)
+          : currentMutableConfig;
         const nexusMetrics = holographicMemory.current.nexusStateMetrics;
 
         // CCC calculation (Integrando formalismo Φ: Sensores -> Estado)
         const calculatedCCC = towerFeedback
-          ? entanglementField.current.calculateCCC(activeNodes, complexityFactor, currentMutableConfig, sensoryVector, towerFeedback)
-          : entanglementField.current.calculateCCC(activeNodes, complexityFactor, currentMutableConfig, sensoryVector);
+          ? entanglementField.current.calculateCCC(activeNodes, complexityFactor, effectiveStepConfig, sensoryVector, towerFeedback)
+          : entanglementField.current.calculateCCC(activeNodes, complexityFactor, effectiveStepConfig, sensoryVector);
 
         let finalCCC = calculatedCCC;
         let finalPMIA = 0;
@@ -1334,20 +1360,34 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
           strainComponents: metaSovereigntyCheck.current.getStrainComponents?.() || null
         };
 
+        const postModelSensorObserverMod = sensorObserverDynamicsActive
+          ? computeSensorObserverDynamicsModulation({
+            observerImpact: ontologicalCore.current?.metacognitiveStats?.observerImpact ?? 0,
+            latencyStrain: metacognitiveStrain,
+            enabled: true
+          })
+          : null;
+        const activeNodeStepConfig = postModelSensorObserverMod?.active
+          ? applySensorObserverConfigModulation(currentMutableConfig, postModelSensorObserverMod)
+          : currentMutableConfig;
         activeNodes.forEach(node => {
-          if (towerFeedback) {
+          if (towerFeedback && postModelSensorObserverMod?.active) {
+            node.introspectiveUpdate(finalCCC, stabilityBias, towerFeedback, postModelSensorObserverMod);
+          } else if (towerFeedback) {
             node.introspectiveUpdate(finalCCC, stabilityBias, towerFeedback);
+          } else if (postModelSensorObserverMod?.active) {
+            node.introspectiveUpdate(finalCCC, stabilityBias, null, postModelSensorObserverMod);
           } else {
             node.introspectiveUpdate(finalCCC, stabilityBias);
           }
-          node.learningRate = currentMutableConfig.BASE_LEARNING_RATE;
+          node.learningRate = activeNodeStepConfig.BASE_LEARNING_RATE;
         });
         // Plasticidad efectiva: el factor Hebbian se escala por (1 - plasticityPenalty)
         // via getEffectivePlasticity; con penalty = 0 el comportamiento es identico.
-        const rawHebbianFactor = Number(currentMutableConfig?.HEBBIAN_FACTOR);
+        const rawHebbianFactor = Number(activeNodeStepConfig?.HEBBIAN_FACTOR);
         const plasticityConfig = Number.isFinite(rawHebbianFactor) && ontologicalCore.current?.getEffectivePlasticity
-          ? { ...currentMutableConfig, HEBBIAN_FACTOR: Math.max(0, ontologicalCore.current.getEffectivePlasticity(rawHebbianFactor)) }
-          : currentMutableConfig;
+          ? { ...activeNodeStepConfig, HEBBIAN_FACTOR: Math.max(0, ontologicalCore.current.getEffectivePlasticity(rawHebbianFactor)) }
+          : activeNodeStepConfig;
         if (towerFeedback) {
           entanglementField.current.applyNodalPlasticity(activeNodes, finalCCC, plasticityConfig, ontologicalCore.current, towerFeedback);
           if (towerFeedback.active) {
@@ -1355,6 +1395,9 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
           }
         } else {
           entanglementField.current.applyNodalPlasticity(activeNodes, finalCCC, plasticityConfig, ontologicalCore.current);
+        }
+        if (sensorObserverDynamicsActive) {
+          ontologicalCore.current.stepSensorObserverDecay?.();
         }
 
         // ACTUALIZACIN DE CAPA ONTOL?GICA

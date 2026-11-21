@@ -2,6 +2,8 @@
 // evidence_scope: internal_support_only
 // interpretation_boundary: Automated verification of parameter-free Level 2 structural plasticity & invariant watchdog (S0-S5, B0 parity, dynamicState.v3 migrated sector conservation, Workbench interventions).
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { QICNConfig } from '../services/config.js';
 import { createHeadlessRuntimeSession } from '../src/runtime/HeadlessRuntimeSession.js';
 import { captureSession } from '../src/experiments/workbench/capture.js';
@@ -13,7 +15,13 @@ import { getStructuralPlasticityLevel2Telemetry } from '../src/simulation/Struct
 import { NODAL_TOWER_COUPLING_MODES } from '../src/simulation/NodalTowerCouplingBridge.js';
 
 // 1. Default config stays B0-safe (only 1 boolean flag added, zero numeric heuristic parameters)
+// while interactive browser UI promotes Level 2 ('on') by default.
 assert.equal(QICNConfig.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED, false, 'B0 default STRUCTURAL_PLASTICITY_LEVEL2_ENABLED must stay false');
+{
+  const engineSrc = fs.readFileSync(path.join(process.cwd(), 'src/components/SimulationEngine.jsx'), 'utf8');
+  assert.match(engineSrc, /STRUCTURAL_PLASTICITY_LEVEL2_KEY\s*=\s*'QICN_STRUCTURAL_PLASTICITY_LEVEL2_ENABLED_V2'/);
+  assert.match(engineSrc, /readStoredChoice\(STRUCTURAL_PLASTICITY_LEVEL2_KEY,\s*\['on',\s*'off'\],\s*'on'\)/);
+}
 
 async function warmCapture(seed = 11, couplingMode = NODAL_TOWER_COUPLING_MODES.BIDIRECTIONAL, nodes = 48) {
   const session = createHeadlessRuntimeSession({

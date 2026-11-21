@@ -997,6 +997,46 @@
       "status": "documented_real",
       "non_claim_boundary": "Internal topological and numerical self-repair telemetry and paired Arena benchmark only (`internal_support_only`, `external_support_certified=false`). Not a descriptor, invariant, claim_projection or gate_result.",
       "notes_gaps": "Persisted on `nodalLayer.level2StructuralState` in `dynamicState.v3` when active in `bidirectional` mode; omitted when `STRUCTURAL_PLASTICITY_LEVEL2_ENABLED=false` to preserve bit-for-bit B0 parity."
+    },
+    {
+      "id": "AO_level3_autonomous_supervisor_ledger",
+      "source_module": [
+        "src/simulation/Level3AutonomousSupervisor.js",
+        "src/simulation/Level3KnowledgeBelt.js",
+        "src/components/Level3SupervisorAuditTab.jsx",
+        "src/workers/level3Autonomous.worker.js",
+        "scripts/run-level3-autonomous-daemon.mjs"
+      ],
+      "source_artifact": [
+        "qicn.level3_supervisor_proposal.v1",
+        "qicn.level3_knowledge_belt.v1",
+        "qicn.level3_audit_ledger.v1",
+        "qicn.level3_audit_bundle.v1"
+      ],
+      "source_signals": [
+        "firstPersonThought",
+        "triggerKind",
+        "actionSignature",
+        "reasonerSource",
+        "entryKind",
+        "gate1Summary",
+        "gate2Summary",
+        "finalStatus",
+        "external_llm_assisted"
+      ],
+      "test_anchors": [
+        "tests/nivel3-autonomous-supervisor.v1.test.mjs"
+      ],
+      "external_dependency": "external_service",
+      "kind": "artifact_only",
+      "layer": "runtime_derived",
+      "downstream_artifacts": [],
+      "gate_dependencies": [],
+      "claim_projection_dependencies": [],
+      "evidence_scope": "internal_support_only",
+      "status": "documented_real",
+      "non_claim_boundary": "Internal first-person reflection, isolated Workbench Gate 1 shadow verification (applying candidateAction in negative controls + minObjectiveDelta), and strictly append-only Gate 2 dynamicState.v3 surveillance/rollback ledger (`external_llm_assisted` true only when external LLM responded, false on deterministic local fallback; `internal_support_only`, `external_support_certified=false`). Never mixed with pure unassisted benchmarks.",
+      "notes_gaps": "R-1..R-10 remediated: real Kaizen `getAdjustments()`/`applyFactorStep()`, pure non-mutating `readLevel3LiveTelemetry`, 1500-node Worker topology guard + `inFlight` lock, C2 `integrityEnvelope`, stale-tick abort, header-only daemon auth, and append-only `gate2_resolution` ledger verified in `tests/nivel3-autonomous-supervisor.v1.test.mjs`."
     }
   ]
 }

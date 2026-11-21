@@ -57,7 +57,23 @@ import { captureLiveWorkbench } from '../experiments/workbench/liveCapture.js';
 import { EvidentialConversation, EvidentialConcordance } from './EvidentialConversation.jsx';
 import { CollapsibleSection, SECTION_ACCENT_STYLES, readPersistedCollapsibleState, persistCollapsibleState } from './CollapsibleSection.jsx';
 import { InfoModal, PersistentInfoModal } from './InfoModal.jsx';
-import { primaryTabs, moreTabs, LazyQICNBTab, LazyApiControlTab, LazySensoryTab, LazySovereigntyTab, LazyAutonomyEvolutionTab, TabLoadingFallback, renderLazyMoreTab, tabHelpMeta, tabTourSteps, NavigationTabButton } from './TabConfig.jsx';
+import { primaryTabs, moreTabs, LazyQICNBTab, LazyApiControlTab, LazySensoryTab, LazySovereigntyTab, LazyAutonomyEvolutionTab, LazyLevel3SupervisorTab, TabLoadingFallback, renderLazyMoreTab, tabHelpMeta, tabTourSteps, NavigationTabButton } from './TabConfig.jsx';
+import Level3SupervisorAuditTab from './Level3SupervisorAuditTab.jsx';
+import {
+  LEVEL3_DEFAULT_POLICY,
+  Level3SupervisorController,
+  buildDeterministicFirstPersonProposal,
+  isAutonomousSupervisorLevel3Enabled,
+  synchronizeLevel3WorkerStateIntoTarget
+} from '../simulation/Level3AutonomousSupervisor.js';
+import {
+  LEVEL3_AUDIT_LEDGER_STORAGE_KEY,
+  LEVEL3_KNOWLEDGE_BELT_STORAGE_KEY,
+  createEmptyKnowledgeBelt,
+  createEmptyLevel3AuditLedger,
+  verifyLevel3AuditLedger,
+  verifyLevel3KnowledgeBelt
+} from '../simulation/Level3KnowledgeBelt.js';
 
 
 const getPreregisterScheduleDoc = () => {
@@ -91,6 +107,7 @@ const CHAT_REALIZATION_MODE_KEY = 'QICN_CHAT_REALIZATION_MODE';
 const KAIZEN_MODE_KEY = 'QICN_KAIZEN_ADJUSTMENT_MODE_V2';
 const SENSOR_OBSERVER_DYNAMICS_KEY = 'QICN_SENSOR_OBSERVER_DYNAMICS_ENABLED';
 const STRUCTURAL_PLASTICITY_LEVEL2_KEY = 'QICN_STRUCTURAL_PLASTICITY_LEVEL2_ENABLED_V2';
+const AUTONOMOUS_SUPERVISOR_LEVEL3_KEY = 'QICN_AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED_V1';
 const CHAT_HISTORY_LIMIT = 60;
 // Chat generation budget (gemini-3-flash-preview limits): max output tokens and
 // max thinking level. High thinking with a large budget is slower, so each
@@ -203,6 +220,34 @@ export const QICNConsciousnessSystem = () => {
     if (typeof window !== 'undefined') QICNConfig.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = initial;
     return initial;
   });
+  // Level 3 autonomous supervisor (first-person reflection + Gate 1 isolated Workbench + Gate 2 dynamicState.v3 watch/rollback):
+  // defaults to off so pure runs stay unassisted unless explicitly enabled (external_llm_assisted=true).
+  const [autonomousSupervisorLevel3Enabled, setAutonomousSupervisorLevel3Enabled] = useState(() => {
+    const initial = readStoredChoice(AUTONOMOUS_SUPERVISOR_LEVEL3_KEY, ['on', 'off'], 'off') === 'on';
+    if (typeof window !== 'undefined') QICNConfig.AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED = initial;
+    return initial;
+  });
+  const [level3ExploreEveryTicks, setLevel3ExploreEveryTicks] = useState(LEVEL3_DEFAULT_POLICY.scheduledExplorationEveryTicks);
+  const [level3ReasonerMode, setLevel3ReasonerMode] = useState('gemini_with_fallback');
+  const [level3Ledger, setLevel3Ledger] = useState(() => {
+    const stored = readLocalStorageJSON(LEVEL3_AUDIT_LEDGER_STORAGE_KEY, null);
+    return stored && verifyLevel3AuditLedger(stored).ok ? stored : createEmptyLevel3AuditLedger();
+  });
+  const [level3KnowledgeBelt, setLevel3KnowledgeBelt] = useState(() => {
+    const stored = readLocalStorageJSON(LEVEL3_KNOWLEDGE_BELT_STORAGE_KEY, null);
+    return stored && verifyLevel3KnowledgeBelt(stored).ok ? stored : createEmptyKnowledgeBelt();
+  });
+  const [level3ActionNotice, setLevel3ActionNotice] = useState('');
+  const [, setLevel3Revision] = useState(0);
+  const level3ControllerRef = useRef(null);
+  if (!level3ControllerRef.current) {
+    level3ControllerRef.current = new Level3SupervisorController({
+      policy: { ...LEVEL3_DEFAULT_POLICY },
+      knowledgeBelt: level3KnowledgeBelt,
+      auditLedger: level3Ledger,
+      buildInfo: { version: BUILD_VERSION_LABEL, signature: BUILD_SIGNATURE_LABEL }
+    });
+  }
   const [lastProviderError, setLastProviderError] = useState(null);
   const recordOperationalEvent = useCallback((type, payload, tick) => {
     try {
@@ -3606,6 +3651,11 @@ export const QICNConsciousnessSystem = () => {
     nodalLayer.current = new NodalProcessingLayer();
     metaSovereigntyCheck.current = new MetaSovereigntyCheck();
     kaizenPendingEvalRef.current = null;
+    level3ControllerRef.current?.resetTransientRuntimeState({
+      keepKnowledgeBelt: true,
+      keepAuditLedger: true
+    });
+    setLevel3ActionNotice('');
 
     initializeSystem();
   };
@@ -3683,6 +3733,248 @@ export const QICNConsciousnessSystem = () => {
     }
     try { browserStorage()?.setItem(STRUCTURAL_PLASTICITY_LEVEL2_KEY, structuralPlasticityLevel2Enabled ? 'on' : 'off'); } catch (error) { /* optional persistence */ }
   }, [structuralPlasticityLevel2Enabled]);
+
+  useEffect(() => {
+    if (QICNConfig.AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED !== autonomousSupervisorLevel3Enabled) {
+      QICNConfig.AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED = autonomousSupervisorLevel3Enabled;
+      recordOperationalEvent('parameter_change', { key: 'AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED', to: autonomousSupervisorLevel3Enabled, source: 'ui' }, simulationRuntimeRef.current?.simulationStep ?? 0);
+    }
+    try { browserStorage()?.setItem(AUTONOMOUS_SUPERVISOR_LEVEL3_KEY, autonomousSupervisorLevel3Enabled ? 'on' : 'off'); } catch (error) { /* optional persistence */ }
+  }, [autonomousSupervisorLevel3Enabled]);
+
+  useEffect(() => {
+    if (level3ControllerRef.current) {
+      level3ControllerRef.current.policy = {
+        ...level3ControllerRef.current.policy,
+        scheduledExplorationEveryTicks: level3ExploreEveryTicks
+      };
+    }
+  }, [level3ExploreEveryTicks]);
+
+  const buildLiveLevel3Target = useCallback(() => ({
+    bag: {
+      ...getPersistenceRefs(),
+      quantumEntropyBridgeRef,
+      interventionSchedulerRef,
+      interventionSchedulerMetaRef,
+      interventionScheduleAbortRef,
+      lastSaveTimestampRef,
+      apiCallLog,
+      canvasTelemetryRef,
+      simulationRuntimeRef
+    },
+    config: QICNConfig,
+    completedTick: simulationRuntimeRef.current?.simulationStep ?? simulationStep,
+    getLiveTick: () => Number(simulationRuntimeRef.current?.simulationStep ?? simulationStep),
+    captureWorkbench: captureWorkbenchAtBoundary
+  }), [getPersistenceRefs, simulationStep, captureWorkbenchAtBoundary]);
+
+  const syncRuntimeAndReactAfterMutation = useCallback((appliedRuntime = null) => {
+    if (['legacy', 'learned'].includes(QICNConfig.KAIZEN_ADJUSTMENT_MODE)) {
+      setKaizenMode(QICNConfig.KAIZEN_ADJUSTMENT_MODE);
+    }
+    setSensorObserverDynamicsEnabled(Boolean(QICNConfig.SENSOR_OBSERVER_DYNAMICS_ENABLED));
+    setStructuralPlasticityLevel2Enabled(Boolean(QICNConfig.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED));
+    if (kaizenEngine.current?.mutableConfig) {
+      setMutableConfig({ ...kaizenEngine.current.mutableConfig });
+    }
+    if (appliedRuntime && typeof appliedRuntime === 'object') {
+      if (simulationControllerRef.current) {
+        simulationControllerRef.current.syncFromCore?.(ontologicalCore.current);
+        worldModelRef.current = simulationControllerRef.current.worldModel;
+        cogPlannerRef.current = simulationControllerRef.current.planner;
+      }
+      const restoredTick = Number.isFinite(appliedRuntime.simulationStep)
+        ? appliedRuntime.simulationStep
+        : (simulationRuntimeRef.current?.simulationStep ?? simulationStep);
+      const restoredCcc = Number.isFinite(appliedRuntime.ccc)
+        ? appliedRuntime.ccc
+        : (ontologicalCore.current?.ontologicalState?.coherence ?? 0.5);
+      const restoredPmia = Number.isFinite(appliedRuntime.pmia)
+        ? appliedRuntime.pmia
+        : (ontologicalCore.current?.pmiaValue ?? 0);
+      const restoredAscended = Boolean(appliedRuntime.isAscended ?? ontologicalCore.current?.isAscended);
+      Object.assign(simulationRuntimeRef.current, appliedRuntime, {
+        simulationStep: restoredTick,
+        ccc: restoredCcc,
+        pmia: restoredPmia,
+        isAscended: restoredAscended
+      });
+      setSimulationStep(restoredTick);
+      setCCC(restoredCcc);
+      setPMIA(restoredPmia);
+      setIsAscended(restoredAscended);
+      if (nodalLayer.current) {
+        setTopologyMetrics(nodalLayer.current.getTopologyMetrics());
+        setVisualNodes(nodalLayer.current.getHighlyCoherentNodes(150));
+      }
+    }
+  }, [simulationStep]);
+
+  const syncLevel3StateToUi = useCallback(() => {
+    const ctrl = level3ControllerRef.current;
+    if (!ctrl) return;
+    const nextLedger = { ...ctrl.auditLedger, entries: [...ctrl.auditLedger.entries] };
+    const nextBelt = { ...ctrl.knowledgeBelt, findings: [...ctrl.knowledgeBelt.findings] };
+    setLevel3Ledger(nextLedger);
+    setLevel3KnowledgeBelt(nextBelt);
+    setLevel3Revision((v) => v + 1);
+    try {
+      browserStorage()?.setItem(LEVEL3_AUDIT_LEDGER_STORAGE_KEY, JSON.stringify(nextLedger));
+      browserStorage()?.setItem(LEVEL3_KNOWLEDGE_BELT_STORAGE_KEY, JSON.stringify(nextBelt));
+    } catch {
+      /* optional persistence */
+    }
+  }, []);
+
+  const executeLiveLevel3Reasoner = useCallback(async (ctx) => {
+    let fallbackError = null;
+    if (level3ReasonerMode === 'gemini_with_fallback' && canUseLlmNow && !cooldownActive) {
+      try {
+        const nowTs = Date.now();
+        const currentPacket = integrityPacketRef.current || {
+          versionHash: String(BUILD_SIGNATURE_LABEL || 'qicn-level3-v1'),
+          configHash: String(sha256Hex(stableStringify(QICNConfig || {}))),
+          tick: Number(ctx.snapshot?.tick ?? simulationStep ?? 0),
+          snapshotId: String(ctx.snapshot?.digest || '')
+        };
+        const level3IntegrityEnvelope = {
+          packet: currentPacket,
+          nonce: `l3_${nowTs}_${typeof globalThis.crypto?.randomUUID === 'function' ? globalThis.crypto.randomUUID() : Math.random().toString(36).slice(2, 10)}`,
+          requestId: `req_l3_${nowTs}`,
+          runId: String(currentPacket.runId || operationalLedgerRef.current?.currentSession?.sessionId || `ui_session_${QICNConfig.CORE_SEED || 0}`),
+          versionHash: String(currentPacket.versionHash || BUILD_SIGNATURE_LABEL || 'qicn-level3-v1'),
+          configHash: String(currentPacket.configHash || sha256Hex(stableStringify(QICNConfig || {}))),
+          threatModelRequested: 'C2'
+        };
+        const payload = {
+          contents: [{ role: 'user', parts: [{ text: ctx.prompt }] }],
+          generationConfig: {
+            temperature: 0.2,
+            maxOutputTokens: 2048,
+            responseMimeType: 'application/json'
+          }
+        };
+        const result = await robustFetchLLMResponseTracked(resolveLlmEndpoint(), payload, 'level3-supervisor', {
+          integrityEnvelope: level3IntegrityEnvelope,
+          dynamicsCoupling: false,
+          writeCycleLog: false,
+          timeoutMs: 45000
+        });
+        const parts = result?.candidates?.[0]?.content?.parts || [];
+        const text = parts
+          .filter((p) => !p.thought && typeof p.text === 'string')
+          .map((p) => p.text)
+          .join('\n')
+          .trim();
+        if (text) {
+          return {
+            rawText: text,
+            reasonerSource: 'gemini_live',
+            external_llm_assisted: true,
+            reasonerError: null
+          };
+        }
+        fallbackError = 'empty_gemini_response';
+      } catch (err) {
+        fallbackError = String(err?.message || err);
+      }
+    }
+    const rawText = buildDeterministicFirstPersonProposal({
+      snapshot: ctx.snapshot,
+      triggerKind: ctx.triggerKind,
+      triggerFacts: ctx.triggerFacts,
+      telemetry: ctx.telemetry,
+      level2Telemetry: ctx.telemetry?.level2Telemetry,
+      knowledgeBelt: ctx.knowledgeBelt,
+      regimeSignature: ctx.regimeSignature,
+      sensorObserverDynamicsEnabled: QICNConfig.SENSOR_OBSERVER_DYNAMICS_ENABLED !== false
+    });
+    return {
+      rawText,
+      reasonerSource: fallbackError ? 'deterministic_fallback' : 'deterministic_local',
+      external_llm_assisted: false,
+      reasonerError: fallbackError
+    };
+  }, [level3ReasonerMode, canUseLlmNow, cooldownActive, simulationStep, robustFetchLLMResponseTracked, resolveLlmEndpoint]);
+
+  useEffect(() => {
+    if (!autonomousSupervisorLevel3Enabled || simulationStep < 1) return;
+    const ctrl = level3ControllerRef.current;
+    if (!ctrl || ctrl.governorState.inFlight) return;
+    const target = buildLiveLevel3Target();
+    ctrl.runCycle(target, {
+      tick: simulationStep,
+      nowMs: Date.now(),
+      customReasoner: executeLiveLevel3Reasoner
+    }).then((res) => {
+      if (res?.triggered || res?.gate2StepResult) {
+        syncRuntimeAndReactAfterMutation(res?.gate2StepResult?.appliedRuntime || null);
+        syncLevel3StateToUi();
+      }
+    }).catch(() => {});
+  }, [simulationStep, autonomousSupervisorLevel3Enabled, buildLiveLevel3Target, executeLiveLevel3Reasoner, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
+
+  const handleTriggerLevel3ManualReflection = useCallback(async () => {
+    const ctrl = level3ControllerRef.current;
+    if (!ctrl) return;
+    setLevel3ActionNotice('');
+    const target = buildLiveLevel3Target();
+    const res = await ctrl.runCycle(target, {
+      tick: Math.max(0, simulationStep),
+      nowMs: Date.now(),
+      forceManual: true,
+      manualTriggerKind: 'manual_reflection',
+      customReasoner: executeLiveLevel3Reasoner
+    });
+    syncRuntimeAndReactAfterMutation(res?.gate2StepResult?.appliedRuntime || null);
+    syncLevel3StateToUi();
+  }, [buildLiveLevel3Target, simulationStep, executeLiveLevel3Reasoner, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
+
+  const handleTriggerLevel3ShadowTrialNow = useCallback(async () => {
+    const ctrl = level3ControllerRef.current;
+    if (!ctrl) return;
+    if (
+      simulationStep < 1 ||
+      !workbenchBoundaryRef.current?.ready ||
+      workbenchBoundaryRef.current.tick < 1 ||
+      workbenchBoundaryRef.current.tick !== (simulationRuntimeRef.current?.simulationStep ?? simulationStep)
+    ) {
+      setLevel3ActionNotice('No se puede ejecutar Compuerta 1 del Workbench en tick 0: inicia o avanza al menos 1 tick real de simulación.');
+      return;
+    }
+    setLevel3ActionNotice('');
+    const target = buildLiveLevel3Target();
+    const res = await ctrl.runCycle(target, {
+      tick: simulationStep,
+      nowMs: Date.now(),
+      forceManual: true,
+      manualTriggerKind: 'manual_shadow_trial',
+      customReasoner: executeLiveLevel3Reasoner
+    });
+    syncRuntimeAndReactAfterMutation(res?.gate2StepResult?.appliedRuntime || null);
+    syncLevel3StateToUi();
+  }, [buildLiveLevel3Target, simulationStep, executeLiveLevel3Reasoner, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
+
+  const handleImportLevel3Bundle = useCallback((bundle) => {
+    if (!bundle?.ledger || !bundle?.knowledgeBelt) return;
+    if (level3ControllerRef.current) {
+      level3ControllerRef.current.auditLedger = bundle.ledger;
+      level3ControllerRef.current.knowledgeBelt = bundle.knowledgeBelt;
+    }
+    syncLevel3StateToUi();
+  }, [syncLevel3StateToUi]);
+
+  const handleSyncLevel3FromWorker = useCallback((workerPayload) => {
+    const syncRes = synchronizeLevel3WorkerStateIntoTarget(buildLiveLevel3Target(), workerPayload, {
+      controller: level3ControllerRef.current,
+      allowTopologyOverwrite: false
+    });
+    if (syncRes?.topologyOverwritten && syncRes.appliedRuntime) {
+      syncRuntimeAndReactAfterMutation(syncRes.appliedRuntime);
+    }
+    syncLevel3StateToUi();
+  }, [buildLiveLevel3Target, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
 
   useEffect(() => {
     chatRealizationModeRef.current = chatRealizationMode;
@@ -6309,6 +6601,30 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
                 </div>
               );
             })()}
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+              <span className="text-gray-400">Supervisor Nivel 3 (Shadow + Ledger):</span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  aria-pressed={autonomousSupervisorLevel3Enabled}
+                  onClick={() => setAutonomousSupervisorLevel3Enabled((v) => !v)}
+                  className={`rounded border px-2 py-0.5 text-[11px] transition-colors ${
+                    autonomousSupervisorLevel3Enabled
+                      ? 'border-emerald-400 bg-emerald-600/40 text-emerald-100'
+                      : 'border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  {autonomousSupervisorLevel3Enabled ? 'Nivel 3 Activo' : 'Nivel 3 Off'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTabSelect('level3-supervisor')}
+                  className="rounded border border-cyan-500/50 bg-cyan-950/60 px-2 py-0.5 text-[11px] text-cyan-200 hover:bg-cyan-900/70"
+                >
+                  Abrir Bitácora Nivel 3 ({level3Ledger.entries.length})
+                </button>
+              </div>
+            </div>
             {(() => {
               const liveObs = Number(ontologicalCore.current?.metacognitiveStats?.observerImpact ?? 0);
               const liveStrain = Number(latencyStrainRef.current?.strain ?? ontologicalCore.current?.metacognitiveStrain ?? 0);
@@ -8716,6 +9032,31 @@ const renderCurrentTab = () => {
       return renderLazyMoreTab(LazySovereigntyTab, 'Soberania', renderSovereigntyChannel());
     case 'autonomy-evolution':
       return renderLazyMoreTab(LazyAutonomyEvolutionTab, 'Autoevolucion', renderAutonomyEvolutionTab());
+    case 'level3-supervisor':
+      return renderLazyMoreTab(
+        LazyLevel3SupervisorTab,
+        'Bitácora Nivel 3',
+        <Level3SupervisorAuditTab
+          level3Enabled={autonomousSupervisorLevel3Enabled}
+          onToggleLevel3={setAutonomousSupervisorLevel3Enabled}
+          controllerRef={level3ControllerRef}
+          ledger={level3Ledger}
+          knowledgeBelt={level3KnowledgeBelt}
+          governorState={level3ControllerRef.current?.governorState}
+          activeGate2Watch={level3ControllerRef.current?.activeGate2Watch}
+          exploreEveryTicks={level3ExploreEveryTicks}
+          onChangeExploreEveryTicks={setLevel3ExploreEveryTicks}
+          reasonerMode={level3ReasonerMode}
+          onChangeReasonerMode={setLevel3ReasonerMode}
+          onTriggerManualReflection={handleTriggerLevel3ManualReflection}
+          onTriggerShadowTrialNow={handleTriggerLevel3ShadowTrialNow}
+          onImportSealedBundle={handleImportLevel3Bundle}
+          onSyncFromWorkerState={handleSyncLevel3FromWorker}
+          lastActionNotice={level3ActionNotice}
+          currentTick={simulationStep}
+          buildInfo={{ version: BUILD_VERSION_LABEL, signature: BUILD_SIGNATURE_LABEL }}
+        />
+      );
     default:
       return renderEmpiricalValidation();
   }

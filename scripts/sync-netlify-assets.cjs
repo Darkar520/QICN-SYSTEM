@@ -41,7 +41,7 @@ function run() {
   writeTextFile(rootRedirectsPath, redirectsContent);
   writeTextFile(distRedirectsPath, redirectsContent);
 
-  const distRuntimeAssets = ['bundle.js', 'tailwind.css', 'network_canvas_worker.js', 'microExperiment.worker.js'];
+  const distRuntimeAssets = ['bundle.js', 'tailwind.css', 'network_canvas_worker.js', 'microExperiment.worker.js', 'level3Autonomous.worker.js'];
   const copiedToRoot = [];
   for (const file of distRuntimeAssets) {
     const src = path.join(distDir, file);

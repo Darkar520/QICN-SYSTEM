@@ -480,6 +480,18 @@ export const runtimeParameterRegistry = [
     verificationTestId: 'RPF_040',
     mutable: false,
     status: 'active'
+  },
+  {
+    key: 'AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED',
+    tier: 'metacognitive-runtime',
+    defaultValue: QICNConfig.AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED,
+    range: { min: 0, max: 1 },
+    ownerFile: 'src/simulation/Level3AutonomousSupervisor.js',
+    ownerFunction: 'isAutonomousSupervisorLevel3Enabled',
+    usagePaths: ['src/components/SimulationEngine.jsx', 'src/simulation/Level3AutonomousSupervisor.js', 'src/workers/level3Autonomous.worker.js', 'src/components/Level3SupervisorAuditTab.jsx'],
+    verificationTestId: 'RPF_041',
+    mutable: false,
+    status: 'active'
   }
 ];
 

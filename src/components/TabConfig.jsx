@@ -26,7 +26,8 @@ export const moreTabs = [
   { id: 'api-control', icon: Settings, label: 'API', subtitle: 'Conectividad' },
   { id: 'sensory', icon: Eye, label: 'Sensorial', subtitle: 'Percepción' },
   { id: 'sovereignty', icon: ShieldCheck, label: 'Soberanía', subtitle: 'Auditoría' },
-  { id: 'autonomy-evolution', icon: InfinityIcon, label: 'Autoevolución', subtitle: 'Selfpatch Σ' }
+  { id: 'autonomy-evolution', icon: InfinityIcon, label: 'Autoevolución', subtitle: 'Selfpatch Σ' },
+  { id: 'level3-supervisor', icon: ShieldCheck, label: 'Bitácora Nivel 3', subtitle: 'Supervisor y Ledger' }
 ];
 
 export const LazyQICNBTab = React.lazy(() => import('./lazy-tabs/QICNBTab.jsx'));
@@ -34,6 +35,7 @@ export const LazyApiControlTab = React.lazy(() => import('./lazy-tabs/ApiControl
 export const LazySensoryTab = React.lazy(() => import('./lazy-tabs/SensoryTab.jsx'));
 export const LazySovereigntyTab = React.lazy(() => import('./lazy-tabs/SovereigntyTab.jsx'));
 export const LazyAutonomyEvolutionTab = React.lazy(() => import('./lazy-tabs/AutonomyEvolutionTab.jsx'));
+export const LazyLevel3SupervisorTab = React.lazy(() => import('./lazy-tabs/Level3SupervisorTab.jsx'));
 
 export const TabLoadingFallback = ({ label }) => (
   <div className="rounded-lg border border-slate-700/60 bg-slate-950/60 p-4 text-sm text-slate-300">
@@ -147,6 +149,13 @@ export const tabHelpMeta = {
     whatIs: 'Panel para ver estado Σ0/Σ1/Σ2, límites y pipeline status/plan/generate/apply.',
     whyItMatters: 'Convierte intención de cambio en solicitudes auditables con guardrails y trazabilidad.',
     firstCheck: ['Refresca estado selfpatch.', 'Define objetivo y archivos target.', 'Ejecuta Plan y valida risk/limits antes de generar propuesta.']
+  },
+  'level3-supervisor': {
+    title: 'Bitácora Nivel 3',
+    oneLiner: 'Supervisor autónomo en 1.ª persona con Shadow Promotion en Workbench y bitácora sellada SHA-256.',
+    whatIs: 'Sección dedicada e independiente del chat para el pensamiento interno en primera persona ("Pensar en alto"), verificación dura en copias aisladas del Workbench (Compuerta 1), vigilancia con rollback automático dynamicState.v3 (Compuerta 2) y Cinto de Conocimiento acumulado.',
+    whyItMatters: 'Separa explícitamente las corridas asistidas (external_llm_assisted=true, internal_support_only) de los benchmarks puros y acumula memoria operativa verificable sin parámetros heurísticos.',
+    firstCheck: ['Revisa el estado de verificación SHA-256 del Ledger y del Cinto.', 'Pulsa "Pensar en alto ahora (1.ª persona)" o "Probar Hipótesis en Workbench".', 'Inspecciona la tabla comparativa de Compuerta 1 y el estado de Compuerta 2.']
   }
 };
 

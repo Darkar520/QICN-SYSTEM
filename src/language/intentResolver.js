@@ -71,7 +71,8 @@ const METRIC_ALIASES = [
   [/\bnode_coherence_dispersion\b|dispersion nodal/, 'node_coherence_dispersion'],
   [/\braw_winding_number\b|winding bruto/, 'raw_winding_number'],
   [/prediccion(?:es)?\s+(?:pre-?desenlace|sellada)|dinamica\s+imprevista|sorpresa\s+informacional|maduracion\s+plastica|plasticidad\s+historica|dependencia\s+historica|engrama|viabilidad/, 'historical_dependence'],
-  [/\bstructural_plasticity_level2\b|\bstructuralplasticitylevel2\b|plasticidad\s+estructural|\bnivel\s*2\b|\bwatchdog(?:s)?\b|migracion(?:es)?\s+de\s+sector|recableado(?:s)?\s+de\s+piso/, 'structural_plasticity_level2']
+  [/\bstructural_plasticity_level2\b|\bstructuralplasticitylevel2\b|plasticidad\s+estructural|\bnivel\s*2\b|\bwatchdog(?:s)?\b|migracion(?:es)?\s+de\s+sector|recableado(?:s)?\s+de\s+piso/, 'structural_plasticity_level2'],
+  [/\bstructural_supervisor_level3\b|\blevel3autonomoussupervisor\b|\blevel3knowledgebelt\b|\bnivel\s*3\b|supervisor\s+autonomo|shadow\s+promotion|bitacora\s+nivel\s*3|cinto\s+de\s+conocimiento|pensar\s+en\s+alto/, 'structural_supervisor_level3']
 ];
 
 const RULES = [

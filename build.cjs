@@ -185,6 +185,24 @@ async function runBuild() {
       }
     });
 
+    await esbuild.build({
+      entryPoints: [path.join(__dirname, 'src/workers/level3Autonomous.worker.js')],
+      absWorkingDir: __dirname,
+      bundle: true,
+      outfile: path.join(distPath, 'level3Autonomous.worker.js'),
+      format: 'esm',
+      minify: true,
+      keepNames: true,
+      sourcemap: true,
+      charset: 'utf8',
+      logLevel: 'silent',
+      define: {
+        ...clientRuntimeDefines,
+        __QICN_RUNTIME_ENV__: JSON.stringify(clientRuntimeEnv),
+        __QICN_WORKBENCH_BUILD__: JSON.stringify({version: '2.1.0-REINFORCED', signature: ontologicalSignature})
+      }
+    });
+
     console.log(`[OK] Build completado exitosamente. Firma: ${ontologicalSignature}`);
 
     if (!IS_DEV && result.metafile) {

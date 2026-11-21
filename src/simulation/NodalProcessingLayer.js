@@ -87,9 +87,13 @@ export class NodalProcessingLayer {
               const node = activeNodes[i];
               if (!node || !Array.isArray(node.connections)) continue;
               const srcSector = Number.isInteger(node.sectorId) ? node.sectorId : sectorIdOf(node.id);
+              const nodeSector = (id) => {
+                const candidate = this.nodes[id];
+                return Number.isInteger(candidate?.sectorId) ? candidate.sectorId : sectorIdOf(id);
+              };
               let interCount = 0;
               for (let j = 0; j < node.connections.length; j += 1) {
-                if (sectorIdOf(node.connections[j].targetId) !== srcSector) interCount += 1;
+                if (nodeSector(node.connections[j].targetId) !== srcSector) interCount += 1;
               }
               if (interCount >= 2) continue;
               for (let k = 1; k <= 3 && interCount < 2; k += 1) {
@@ -101,7 +105,8 @@ export class NodalProcessingLayer {
                   const offset = ((desiredSector - (base % 4)) + 4) % 4;
                   let candId = (base + offset) % total;
                   if (candId === node.id) candId = (candId + 4) % total;
-                  if (candId === node.id || sectorIdOf(candId) === srcSector) continue;
+                  if (candId === node.id || nodeSector(candId) === srcSector) continue;
+                  if (!this.activeNodeIds.has(candId)) continue;
                   if (node.connections.some((c) => c.targetId === candId)) continue;
                   const candNode = this.nodes[candId];
                   const res = candNode

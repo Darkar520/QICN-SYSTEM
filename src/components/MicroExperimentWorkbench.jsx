@@ -18,6 +18,14 @@ const dynamicsAndCutControls = [
   'td_cut_eta_zero',
   'reducible_control'
 ];
+const level2AndLesionControls = [
+  'structural_plasticity_level2',
+  'lesion_sector_wipe',
+  'lesion_sector_wipe_level2',
+  'lesion_synaptic_cut',
+  'lesion_synaptic_cut_level2',
+  'fault_nan_injection_level2'
+];
 
 export function MicroExperimentWorkbench({ workbench }) {
   const [profile, setProfile] = useState('paired_intervention');
@@ -109,6 +117,15 @@ export function MicroExperimentWorkbench({ workbench }) {
         <div>
           <span className="font-semibold text-pink-200">Kaizen / Sensores / Cortes físicos:</span>
           {dynamicsAndCutControls.map((control) => (
+            <label key={control} className="mx-2 inline-block">
+              <input type="checkbox" checked={selected.includes(control)} onChange={(e) => toggleControl(control, e.target.checked)} />
+              {' '}{control}
+            </label>
+          ))}
+        </div>
+        <div>
+          <span className="font-semibold text-emerald-200">Nivel 2 / Lesiones y Autoreparación:</span>
+          {level2AndLesionControls.map((control) => (
             <label key={control} className="mx-2 inline-block">
               <input type="checkbox" checked={selected.includes(control)} onChange={(e) => toggleControl(control, e.target.checked)} />
               {' '}{control}

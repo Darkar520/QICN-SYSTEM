@@ -200,6 +200,67 @@ export function createHeadlessRuntimeSession({ config = defaults, seed = 11, nod
           };
         };
         environment.beginTick(tick, evaluationOffset);
+        if (environment.controls.lesionSectorWipe) {
+          environment.controls.lesionSectorWipe = false;
+          const nodes = bag.nodalLayer.current?.nodes || [];
+          const wipedIds = new Set();
+          for (let i = 0; i < nodes.length; i += 1) {
+            const n = nodes[i];
+            if (!n) continue;
+            const sec = Number.isInteger(n.sectorId) ? n.sectorId : (((n.id % 4) + 4) % 4);
+            if (sec === 0) {
+              wipedIds.add(n.id);
+              bag.nodalLayer.current.activeNodeIds.delete(n.id);
+              n.connections = [];
+            }
+          }
+          for (let i = 0; i < nodes.length; i += 1) {
+            const n = nodes[i];
+            if (!n || wipedIds.has(n.id) || !Array.isArray(n.connections)) continue;
+            n.connections = n.connections.filter((c) => !wipedIds.has(c.targetId));
+          }
+        }
+        if (environment.controls.lesionSynapticCut) {
+          environment.controls.lesionSynapticCut = false;
+          const nodes = bag.nodalLayer.current?.nodes || [];
+          for (let i = 0; i < nodes.length; i += 1) {
+            const n = nodes[i];
+            if (!n || !Array.isArray(n.connections)) continue;
+            // Deterministic 85% edge severance (keep every 7th edge -> ~14.3% retained)
+            n.connections = n.connections.filter((_c, edgeIdx) => ((n.id + edgeIdx) % 7) === 0);
+          }
+        }
+        if (environment.controls.faultNanInjection) {
+          environment.controls.faultNanInjection = false;
+          const active = bag.nodalLayer.current?.getActiveNodes?.() || [];
+          const corruptCount = Math.max(1, Math.floor(active.length / 10));
+          for (let i = 0; i < corruptCount; i += 1) {
+            const n = active[i];
+            if (!n) continue;
+            n.coherenceState = Number.NaN;
+            n.energy = Number.POSITIVE_INFINITY;
+            if (Array.isArray(n.connections) && n.connections.length > 0) {
+              n.connections[0].weight = Number.NaN;
+            }
+          }
+          if (bag.kaizenEngine.current?.mutableConfig) {
+            bag.kaizenEngine.current.mutableConfig.BASE_LEARNING_RATE = Number.NaN;
+            bag.kaizenEngine.current.mutableConfig.INFORMATIONAL_TEMP_T = -999;
+          }
+        }
+        if (environment.controls.faultKinematicFreeze) {
+          environment.controls.faultKinematicFreeze = false;
+          const active = bag.nodalLayer.current?.getActiveNodes?.() || [];
+          for (let i = 0; i < active.length; i += 1) {
+            const n = active[i];
+            if (!n) continue;
+            n.coherenceState = 0.5;
+            n.energy = 0.5;
+            n.intensity = 0.75;
+            n.phase = 0;
+            n.retroInductionFlux = 0;
+          }
+        }
         if (environment.controls.observerLatencyProbe) {
           bag.apiCallLog.current.push({
             timestamp: environment.wallNow(),

@@ -49,6 +49,10 @@ export function annotateNodesWithSectors(nodes, mode = NODAL_TOWER_COUPLING_MODE
   for (let i = 0; i < nodes.length; i += 1) {
     const node = nodes[i];
     if (!node) continue;
+    if (Number.isInteger(node.sectorId) && node.sectorId >= 0 && node.sectorId < NODAL_SECTORS.length) {
+      if (!node.sectorRole) node.sectorRole = NODAL_SECTORS[node.sectorId].key;
+      continue;
+    }
     const s = sectorMetaOf(node.id ?? i);
     node.sectorId = s.id;
     node.sectorRole = s.key;
@@ -151,6 +155,22 @@ export function computeNodalSectorMetrics(nodes, signalStats = null, towerTeleme
   let globalCohSum = 0;
   let globalEnergySum = 0;
 
+  // Dynamic sector lookup map so migrated node roles are respected in O(1)
+  let maxNodeId = count - 1;
+  for (let i = 0; i < count; i += 1) {
+    const id = safeNodes[i]?.id ?? i;
+    if (id > maxNodeId) maxNodeId = id;
+  }
+  const sectorById = new Int8Array(Math.max(1, maxNodeId + 1));
+  sectorById.fill(-1);
+  for (let i = 0; i < count; i += 1) {
+    const node = safeNodes[i];
+    if (!node) continue;
+    const id = node.id ?? i;
+    const s = Number.isInteger(node.sectorId) ? node.sectorId : sectorIdOf(id);
+    if (id >= 0 && id < sectorById.length) sectorById[id] = s;
+  }
+
   for (let i = 0; i < count; i += 1) {
     const node = safeNodes[i];
     if (!node) continue;
@@ -173,7 +193,9 @@ export function computeNodalSectorMetrics(nodes, signalStats = null, towerTeleme
     for (let j = 0; j < conns.length; j += 1) {
       const c = conns[j];
       if (!c) continue;
-      const targetS = sectorIdOf(c.targetId);
+      const tid = c.targetId;
+      const dynSector = (tid >= 0 && tid < sectorById.length) ? sectorById[tid] : -1;
+      const targetS = dynSector >= 0 ? dynSector : sectorIdOf(tid);
       const w = Number.isFinite(c.weight) ? Math.max(0, c.weight) : 0;
       totalEdges += 1;
       totalWeightedEdges += w;

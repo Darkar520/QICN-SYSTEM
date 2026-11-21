@@ -64,6 +64,9 @@ const QICNConfig = {
   // Dinámica acotada de observador sensorial + latencia acoplada + 6.ª clave Kaizen PLASTICITY_DECAY (Frente 3):
   // false en config base para conservar equivalencia B0 bit-a-bit; la UI interactiva la activa por defecto junto a Kaizen 'learned'.
   SENSOR_OBSERVER_DYNAMICS_ENABLED: false,
+  // Plasticidad estructural Nivel 2 (reasignación de sector, apoptosis/neurogénesis y Watchdog de invariantes sin parámetros heurísticos):
+  // false en config base para conservar equivalencia B0 bit-a-bit.
+  STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: false,
 
   // Memoria Holográfica
   HOLOGRAPHIC_FRAGMENTS: 10,

@@ -25,6 +25,7 @@ import { KaizenMetamorphosisEngine } from '../simulation/KaizenMetamorphosisEngi
 import { NodalProcessingLayer } from '../simulation/NodalProcessingLayer.js';
 import { NODAL_TOWER_COUPLING_MODES, normalizeCouplingMode } from '../simulation/NodalTowerCouplingBridge.js';
 import { computeSensorObserverDynamicsModulation } from '../simulation/SensorObserverDynamicsBridge.js';
+import { getStructuralPlasticityLevel2Telemetry } from '../simulation/StructuralPlasticityLevel2.js';
 import { MetaSovereigntyCheck } from '../simulation/MetaSovereigntyCheck.js';
 import { QuantumEntropyBridge } from '../simulation/QuantumEntropyBridge.js';
 import { SensoryPerceptionEngine } from '../simulation/SensoryPerceptionEngine.js';
@@ -89,6 +90,7 @@ const BUILD_SIGNATURE_LABEL = readDefined(() => process.env.ONTOLOGICAL_SIGNATUR
 const CHAT_REALIZATION_MODE_KEY = 'QICN_CHAT_REALIZATION_MODE';
 const KAIZEN_MODE_KEY = 'QICN_KAIZEN_ADJUSTMENT_MODE_V2';
 const SENSOR_OBSERVER_DYNAMICS_KEY = 'QICN_SENSOR_OBSERVER_DYNAMICS_ENABLED';
+const STRUCTURAL_PLASTICITY_LEVEL2_KEY = 'QICN_STRUCTURAL_PLASTICITY_LEVEL2_ENABLED';
 const CHAT_HISTORY_LIMIT = 60;
 // Chat generation budget (gemini-3-flash-preview limits): max output tokens and
 // max thinking level. High thinking with a large budget is slower, so each
@@ -193,6 +195,12 @@ export const QICNConsciousnessSystem = () => {
   const [sensorObserverDynamicsEnabled, setSensorObserverDynamicsEnabled] = useState(() => {
     const initial = readStoredChoice(SENSOR_OBSERVER_DYNAMICS_KEY, ['on', 'off'], 'on') === 'on';
     if (typeof window !== 'undefined') QICNConfig.SENSOR_OBSERVER_DYNAMICS_ENABLED = initial;
+    return initial;
+  });
+  // Level 2 structural plasticity & invariant watchdog (explicit selector; config.js stays false for B0 parity).
+  const [structuralPlasticityLevel2Enabled, setStructuralPlasticityLevel2Enabled] = useState(() => {
+    const initial = readStoredChoice(STRUCTURAL_PLASTICITY_LEVEL2_KEY, ['on', 'off'], 'off') === 'on';
+    if (typeof window !== 'undefined') QICNConfig.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = initial;
     return initial;
   });
   const [lastProviderError, setLastProviderError] = useState(null);
@@ -3660,6 +3668,14 @@ export const QICNConsciousnessSystem = () => {
   }, [sensorObserverDynamicsEnabled]);
 
   useEffect(() => {
+    if (QICNConfig.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED !== structuralPlasticityLevel2Enabled) {
+      QICNConfig.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = structuralPlasticityLevel2Enabled;
+      recordOperationalEvent('parameter_change', { key: 'STRUCTURAL_PLASTICITY_LEVEL2_ENABLED', to: structuralPlasticityLevel2Enabled, source: 'ui' }, simulationRuntimeRef.current?.simulationStep ?? 0);
+    }
+    try { browserStorage()?.setItem(STRUCTURAL_PLASTICITY_LEVEL2_KEY, structuralPlasticityLevel2Enabled ? 'on' : 'off'); } catch (error) { /* optional persistence */ }
+  }, [structuralPlasticityLevel2Enabled]);
+
+  useEffect(() => {
     chatRealizationModeRef.current = chatRealizationMode;
     try { browserStorage()?.setItem(CHAT_REALIZATION_MODE_KEY, chatRealizationMode); } catch (error) { /* optional persistence */ }
   }, [chatRealizationMode]);
@@ -6254,6 +6270,35 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
                 ))}
               </div>
             </div>
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+              <span className="text-gray-400">Plasticidad Estructural:</span>
+              <div role="group" aria-label="Plasticidad Estructural" className="inline-flex overflow-hidden rounded-md border border-cyan-400/40">
+                {[[false, 'Nivel 1'], [true, 'Nivel 2']].map(([enabledVal, label]) => (
+                  <button
+                    key={String(enabledVal)}
+                    type="button"
+                    aria-pressed={structuralPlasticityLevel2Enabled === enabledVal}
+                    onClick={() => setStructuralPlasticityLevel2Enabled(enabledVal)}
+                    title={enabledVal
+                      ? 'Nivel 2 sin parámetros heurísticos: reasignación funcional de sectores, apoptosis/neurogénesis por grado 0 y watchdog de invariantes (W1-W4); respeta controles negativos.'
+                      : 'Nivel 1 base: plasticidad sináptica, poda y recuperación inter-sector sin migración funcional ni watchdog.'}
+                    className={`px-2 py-0.5 transition-colors ${structuralPlasticityLevel2Enabled === enabledVal ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {structuralPlasticityLevel2Enabled && (() => {
+              const l2 = getStructuralPlasticityLevel2Telemetry(nodalLayer.current);
+              return (
+                <div className="flex flex-wrap justify-between gap-1 rounded border border-cyan-800/50 bg-gray-900/60 px-2 py-1 text-[10px] font-mono text-cyan-200" data-testid="level2-structural-counters">
+                  <span>Migraciones: {l2.migrations}</span>
+                  <span>Regenerados: {l2.regeneratedNodes}</span>
+                  <span>Reparaciones: {l2.invariantRepairs}</span>
+                </div>
+              );
+            })()}
             {(() => {
               const liveObs = Number(ontologicalCore.current?.metacognitiveStats?.observerImpact ?? 0);
               const liveStrain = Number(latencyStrainRef.current?.strain ?? ontologicalCore.current?.metacognitiveStrain ?? 0);

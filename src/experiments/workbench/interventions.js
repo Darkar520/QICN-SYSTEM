@@ -77,6 +77,47 @@ export function applyWorkbenchIntervention(session, intervention) {
       effects.allowedFields = ['configuration.NODAL_TOWER_COUPLING_MODE'];
       effects.scope = 'reducible A = I sector-uncoupled negative control on isolated copy';
       break;
+    case 'structural_plasticity_level2':
+      session.environment.config.NODAL_TOWER_COUPLING_MODE = 'bidirectional';
+      session.environment.config.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = true;
+      effects.allowedFields = ['configuration.NODAL_TOWER_COUPLING_MODE', 'configuration.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED'];
+      effects.scope = 'enables parameter-free Level 2 structural plasticity and invariant watchdog on isolated copy';
+      break;
+    case 'lesion_sector_wipe':
+      session.environment.config.NODAL_TOWER_COUPLING_MODE = 'bidirectional';
+      session.environment.config.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = false;
+      session.environment.controls.lesionSectorWipe = true;
+      effects.allowedFields = ['configuration.NODAL_TOWER_COUPLING_MODE', 'configuration.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED', 'execution.controls.lesionSectorWipe'];
+      effects.scope = 'Level 1 baseline under focal 25% sector-0 amputation on evaluation tick 1';
+      break;
+    case 'lesion_sector_wipe_level2':
+      session.environment.config.NODAL_TOWER_COUPLING_MODE = 'bidirectional';
+      session.environment.config.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = true;
+      session.environment.controls.lesionSectorWipe = true;
+      effects.allowedFields = ['configuration.NODAL_TOWER_COUPLING_MODE', 'configuration.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED', 'execution.controls.lesionSectorWipe'];
+      effects.scope = 'Level 2 structural plasticity recovery under focal 25% sector-0 amputation on evaluation tick 1';
+      break;
+    case 'lesion_synaptic_cut':
+      session.environment.config.NODAL_TOWER_COUPLING_MODE = 'bidirectional';
+      session.environment.config.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = false;
+      session.environment.controls.lesionSynapticCut = true;
+      effects.allowedFields = ['configuration.NODAL_TOWER_COUPLING_MODE', 'configuration.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED', 'execution.controls.lesionSynapticCut'];
+      effects.scope = 'Level 1 baseline under 85% synaptic severance storm on evaluation tick 1';
+      break;
+    case 'lesion_synaptic_cut_level2':
+      session.environment.config.NODAL_TOWER_COUPLING_MODE = 'bidirectional';
+      session.environment.config.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = true;
+      session.environment.controls.lesionSynapticCut = true;
+      effects.allowedFields = ['configuration.NODAL_TOWER_COUPLING_MODE', 'configuration.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED', 'execution.controls.lesionSynapticCut'];
+      effects.scope = 'Level 2 structural plasticity recovery under 85% synaptic severance storm on evaluation tick 1';
+      break;
+    case 'fault_nan_injection_level2':
+      session.environment.config.NODAL_TOWER_COUPLING_MODE = 'bidirectional';
+      session.environment.config.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED = true;
+      session.environment.controls.faultNanInjection = true;
+      effects.allowedFields = ['configuration.NODAL_TOWER_COUPLING_MODE', 'configuration.STRUCTURAL_PLASTICITY_LEVEL2_ENABLED', 'execution.controls.faultNanInjection'];
+      effects.scope = 'Level 2 Watchdog W1/W4 surgical self-repair under 10% NaN/Infinity node & config corruption';
+      break;
     default: throw new Error('unknown_workbench_intervention');
   }
   effects.physicalDigestBefore = before;

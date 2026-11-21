@@ -31,6 +31,12 @@ import {
   computeSensorObserverDynamicsModulation,
   isSensorObserverDynamicsEnabled
 } from '../simulation/SensorObserverDynamicsBridge.js';
+import {
+  applyStructuralPlasticityLevel2,
+  isStructuralPlasticityLevel2Enabled,
+  resetStructuralPlasticityLevel2Telemetry,
+  sanitizeAndRepairPreTickInvariants
+} from '../simulation/StructuralPlasticityLevel2.js';
 
 function computeActiveNodeStats(nodes = []) {
   if (!Array.isArray(nodes) || nodes.length === 0) {
@@ -337,6 +343,7 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
     entanglementField.current = new InformationalEntanglementField(environment);
 
     // CORRECCIN: Pasar el mutableConfig para la inicialización correcta
+    resetStructuralPlasticityLevel2Telemetry(nodalLayer.current);
     const initialNodes = nodalLayer.current.initializeNodes(initialMutConfig);
 
     // CORRECCIN ULTRATHINK: Fijar las posiciones visuales EN los nodos para evitar el jitter
@@ -441,6 +448,18 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
           ? environment.measureNow()
           : environment.wallNow();
         const currentMutableConfig = kaizenEngine.current.mutableConfig;
+        const level2StructuralEnabled = isStructuralPlasticityLevel2Enabled(QICNConfig);
+        if (level2StructuralEnabled) {
+          sanitizeAndRepairPreTickInvariants({
+            nodalLayer: nodalLayer.current,
+            mutableConfig: currentMutableConfig,
+            baseConfig: QICNConfig,
+            kaizenEngine: kaizenEngine.current,
+            towerTelemetry: ontologicalCore.current?.ontologicalState?.tower_telemetry || null,
+            couplingMode: QICNConfig.NODAL_TOWER_COUPLING_MODE,
+            simulationStep
+          });
+        }
         let activeNodes = nodalLayer.current.getActiveNodes();
         let frictionState = ontologicalCore.current.frictionProtocolState;
         let recoveryTriggeredThisTick = false;
@@ -1395,6 +1414,17 @@ export function createSimulationCycleDriver(deps, { environment = LEGACY_EXECUTI
           }
         } else {
           entanglementField.current.applyNodalPlasticity(activeNodes, finalCCC, plasticityConfig, ontologicalCore.current);
+        }
+        if (level2StructuralEnabled) {
+          applyStructuralPlasticityLevel2({
+            nodalLayer: nodalLayer.current,
+            towerTelemetry: ontologicalCore.current?.ontologicalState?.tower_telemetry || null,
+            towerFeedback,
+            couplingMode: nodalCouplingMode,
+            config: QICNConfig,
+            currentCCC: finalCCC,
+            simulationStep
+          });
         }
         if (sensorObserverDynamicsActive) {
           ontologicalCore.current.stepSensorObserverDecay?.();

@@ -15,7 +15,13 @@ export const INTERVENTIONS = Object.freeze([
   'kaizen_legacy_mode',
   'sensor_observer_dynamics',
   'td_cut_eta_zero',
-  'reducible_control'
+  'reducible_control',
+  'structural_plasticity_level2',
+  'lesion_sector_wipe',
+  'lesion_sector_wipe_level2',
+  'lesion_synaptic_cut',
+  'lesion_synaptic_cut_level2',
+  'fault_nan_injection_level2'
 ]);
 
 export function assertData(value, ancestors = new Set()) {

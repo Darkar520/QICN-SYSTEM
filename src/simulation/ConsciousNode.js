@@ -170,10 +170,13 @@ export class ConsciousNode {
             let writeIdx = 0;
             for (let i = 0; i < len; i += 1) {
               const conn = conns[i];
-              const isInterSector = hasCoupling && (sectorIdOf(conn.targetId) !== sourceSector);
+              const target = hasCoupling && nodesById ? nodesById[conn.targetId] : null;
+              const targetSector = hasCoupling
+                ? (Number.isInteger(target?.sectorId) ? target.sectorId : sectorIdOf(conn.targetId))
+                : 0;
+              const isInterSector = hasCoupling && (targetSector !== sourceSector);
               let hebbianUpdate;
               if (hasCoupling) {
-                const target = nodesById ? nodesById[conn.targetId] : null;
                 let pairResonance = 0;
                 if (target) {
                   const phaseAlign = Math.cos(this.phase - target.phase);

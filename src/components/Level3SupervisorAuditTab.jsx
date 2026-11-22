@@ -46,7 +46,7 @@ const STATUS_BADGES = {
     cls: 'border-fuchsia-400/60 bg-fuchsia-950/80 text-fuchsia-200'
   },
   aborted_stale_tick: {
-    label: 'ABORTED_STALE_TICK · Abortado por Avance de Tick Vivo',
+    label: 'ABORTED_STALE_TICK · Abortado por Avance de Tick/Régimen',
     cls: 'border-yellow-400/50 bg-yellow-950/70 text-yellow-200'
   },
   blocked_by_knowledge_belt: {
@@ -498,7 +498,9 @@ export function Level3SupervisorAuditTab({
               ['promoted_confirmed', 'Confirmados'],
               ['promoted_watching', 'En Vigilancia'],
               ['rejected_gate1', 'Rechazados Gate 1'],
-              ['rolled_back_gate2', 'Rollback Gate 2']
+              ['rolled_back_gate2', 'Rollback Gate 2'],
+              ['aborted_stale_tick', 'Abortados (Tick)'],
+              ['blocked_by_knowledge_belt', 'Bloqueados (Cinto)']
             ].map(([val, lbl]) => (
               <button
                 key={val}

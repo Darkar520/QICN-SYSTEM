@@ -20,6 +20,7 @@ export const LEVEL3_SCIENTIFIC_BOUNDARY = Object.freeze({
 });
 
 const round6 = (v) => (typeof v === 'number' && Number.isFinite(v) ? Number(v.toFixed(6)) : 0);
+const HEX64_RE = /^[0-9a-f]{64}$/i;
 
 export function computeActionSignature(candidateAction) {
   if (!candidateAction || typeof candidateAction !== 'object') return 'none';
@@ -90,7 +91,10 @@ export function verifyLevel3KnowledgeBelt(belt) {
   if (!Array.isArray(belt.findings)) {
     return { ok: false, reason: 'belt_findings_not_array' };
   }
-  let head = typeof belt.anchorHash === 'string' && belt.anchorHash.length === 64
+  if (belt.anchorHash !== undefined && (typeof belt.anchorHash !== 'string' || !HEX64_RE.test(belt.anchorHash))) {
+    return { ok: false, reason: 'belt_anchor_hash_invalid' };
+  }
+  let head = typeof belt.anchorHash === 'string'
     ? belt.anchorHash
     : LEVEL3_GENESIS_HASH;
   for (let i = 0; i < belt.findings.length; i += 1) {
@@ -117,6 +121,10 @@ export function verifyLevel3KnowledgeBelt(belt) {
   }
   if (belt.headHash !== head) {
     return { ok: false, reason: 'belt_head_hash_mismatch' };
+  }
+  const expectedLlmAssisted = belt.findings.some((f) => f.external_llm_assisted === true);
+  if (belt.external_llm_assisted !== expectedLlmAssisted) {
+    return { ok: false, reason: 'belt_external_llm_assisted_mismatch' };
   }
   return { ok: true, count: belt.findings.length, headHash: head };
 }
@@ -282,7 +290,10 @@ export function verifyLevel3AuditLedger(ledger) {
   if (!Array.isArray(ledger.entries)) {
     return { ok: false, reason: 'ledger_entries_not_array' };
   }
-  const anchorHash = typeof ledger.anchorHash === 'string' && ledger.anchorHash.length === 64
+  if (ledger.anchorHash !== undefined && (typeof ledger.anchorHash !== 'string' || !HEX64_RE.test(ledger.anchorHash))) {
+    return { ok: false, reason: 'ledger_anchor_hash_invalid' };
+  }
+  const anchorHash = typeof ledger.anchorHash === 'string'
     ? ledger.anchorHash
     : LEVEL3_GENESIS_HASH;
   const isFromGenesis = anchorHash === LEVEL3_GENESIS_HASH;
@@ -327,6 +338,10 @@ export function verifyLevel3AuditLedger(ledger) {
   }
   if (ledger.headHash !== head) {
     return { ok: false, reason: 'ledger_head_hash_mismatch' };
+  }
+  const expectedLlmAssisted = ledger.entries.some((e) => e.external_llm_assisted === true);
+  if (ledger.external_llm_assisted !== expectedLlmAssisted) {
+    return { ok: false, reason: 'ledger_external_llm_assisted_mismatch' };
   }
   return { ok: true, count: ledger.entries.length, headHash: head };
 }

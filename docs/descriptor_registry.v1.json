@@ -1036,7 +1036,7 @@
       "evidence_scope": "internal_support_only",
       "status": "documented_real",
       "non_claim_boundary": "Internal first-person reflection, isolated Workbench Gate 1 shadow verification (applying candidateAction in negative controls + minObjectiveDelta), and strictly append-only Gate 2 dynamicState.v3 surveillance/rollback ledger (`external_llm_assisted` true only when external LLM responded, false on deterministic local fallback; `internal_support_only`, `external_support_certified=false`). Never mixed with pure unassisted benchmarks.",
-      "notes_gaps": "R-1..R-10 remediated: real Kaizen `getAdjustments()`/`applyFactorStep()`, pure non-mutating `readLevel3LiveTelemetry`, 1500-node Worker topology guard + `inFlight` lock, C2 `integrityEnvelope`, stale-tick abort, header-only daemon auth, and append-only `gate2_resolution` ledger verified in `tests/nivel3-autonomous-supervisor.v1.test.mjs`."
+      "notes_gaps": "R-1..R-21 + A-1..A-5 hardened: real Kaizen `getAdjustments()`/`applyFactorStep()`, pure non-mutating telemetry (`core.pmiaDiagnostics.sensorDelta`, `core.getDynamicHealth()`), `MODULE_PATHS`/`MODULE_UNIQUE_BASENAME_SET` patch validation, 1500-node Worker topology guard + append-only merge (`l3-worker` prefix, `parentDigest` collision guard, clean `level3_stop_loop` drain), `sessionEpoch` post-reset guard, immutable UI snapshots, C2 `integrityEnvelope`, live staleness+regime check, header-only daemon auth, strict ledger/belt `external_llm_assisted` verification, and append-only `gate2_resolution` (orphan-parent & tick-dedup guards) verified in `tests/nivel3-autonomous-supervisor.v1.test.mjs`."
     }
   ]
 }

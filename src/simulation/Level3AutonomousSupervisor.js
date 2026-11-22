@@ -19,7 +19,6 @@ import { captureSession } from '../experiments/workbench/capture.js';
 import { restoreWorkbenchCapture } from '../experiments/workbench/restore.js';
 import { applyWorkbenchIntervention } from '../experiments/workbench/interventions.js';
 import {
-  LEVEL3_GENESIS_HASH,
   LEVEL3_SCIENTIFIC_BOUNDARY,
   appendKnowledgeBeltFinding,
   appendLevel3AuditEntry,
@@ -1243,6 +1242,7 @@ export class Level3SupervisorController {
     auditLedger = createEmptyLevel3AuditLedger(),
     governorState = createInitialGovernorState(),
     reasoner = null,
+    cycleIdPrefix = 'l3-cycle',
     buildInfo = { version: '2.1.0-REINFORCED', signature: 'QICN-SIG-LOCAL' }
   } = {}) {
     this.policy = { ...LEVEL3_DEFAULT_POLICY, ...policy };
@@ -1250,20 +1250,24 @@ export class Level3SupervisorController {
     this.auditLedger = auditLedger;
     this.governorState = { ...createInitialGovernorState(), ...(governorState || {}) };
     this.reasoner = reasoner;
+    this.cycleIdPrefix = String(cycleIdPrefix || 'l3-cycle').trim() || 'l3-cycle';
     this.buildInfo = buildInfo;
     this.activeGate2Watch = null;
     this.lastLevel2Telemetry = null;
     this.recentScores = [];
     this.cycleSequence = this.auditLedger.entries.length;
+    this.sessionEpoch = 0;
   }
 
   /**
-   * Resets transient runtime state on simulation reset (`R-3.1`), preventing phantom Gate 2 rollbacks.
+   * Resets transient runtime state on simulation reset (`R-3.1` & `R-19`), preventing phantom Gate 2 rollbacks
+   * and invalidating any in-flight asynchronous deliberation from a prior session epoch.
    */
   resetTransientRuntimeState({
     keepKnowledgeBelt = true,
     keepAuditLedger = true
   } = {}) {
+    this.sessionEpoch += 1;
     this.activeGate2Watch = null;
     this.lastLevel2Telemetry = null;
     this.recentScores = [];
@@ -1300,6 +1304,22 @@ export class Level3SupervisorController {
   stepGate2Surveillance(target, { tick = 0, nowMs = Date.now() } = {}) {
     if (!this.activeGate2Watch) return null;
     const watch = this.activeGate2Watch;
+    const numericTick = Number(tick);
+    if (
+      Number.isFinite(watch.lastObservedTick) &&
+      Number.isFinite(numericTick) &&
+      numericTick <= watch.lastObservedTick
+    ) {
+      return {
+        status: 'promoted_watching',
+        observedTicks: watch.observedTicks,
+        watchWindowTicks: watch.watchWindowTicks,
+        duplicateTickIgnored: true
+      };
+    }
+    if (Number.isFinite(numericTick)) {
+      watch.lastObservedTick = numericTick;
+    }
     const bag = target.bag || target;
     const config = target.environment?.config || target.config || QICNConfig;
     const core = bag.ontologicalCore?.current;
@@ -1496,6 +1516,7 @@ export class Level3SupervisorController {
       };
     }
 
+    const cycleEpoch = this.sessionEpoch;
     this.governorState.inFlight = true;
     try {
       const effectiveSnapshot = snapshot && typeof snapshot.digest === 'string'
@@ -1515,12 +1536,6 @@ export class Level3SupervisorController {
         knowledgeBelt: this.knowledgeBelt,
         regimeSignature: liveTel.regimeSignature
       });
-
-      this.governorState.lastCallTick = effectiveTick;
-      this.governorState.lastCallMs = nowMs;
-      if (triggerEval.triggerKind === 'scheduled_exploration' || triggerEval.triggerKind === 'manual_reflection') {
-        this.governorState.lastExplorationTick = effectiveTick;
-      }
 
       const activeReasoner = customReasoner || this.reasoner;
       let rawResponse = '';
@@ -1588,6 +1603,23 @@ export class Level3SupervisorController {
         });
       }
 
+      // R-19: Discard late asynchronous responses if resetTransientRuntimeState ran while awaiting
+      if (cycleEpoch !== this.sessionEpoch) {
+        return {
+          triggered: false,
+          finalStatus: 'aborted_session_reset',
+          reason: 'session_reset_during_async_cycle',
+          gate2StepResult,
+          quota: getQuotaSnapshot(this.governorState, this.policy, nowMs, effectiveTick)
+        };
+      }
+
+      this.governorState.lastCallTick = effectiveTick;
+      this.governorState.lastCallMs = nowMs;
+      if (triggerEval.triggerKind === 'scheduled_exploration' || triggerEval.triggerKind === 'manual_reflection') {
+        this.governorState.lastExplorationTick = effectiveTick;
+      }
+
       // R-4 & R-14: Single authoritative accounting point after reasoner resolution
       if (reasonerAttemptedRemote) {
         this.governorState.llmCallsAttempted += 1;
@@ -1602,7 +1634,7 @@ export class Level3SupervisorController {
         this.governorState.deterministicLocalCalls += 1;
       }
 
-      const cycleId = `l3-cycle-${++this.cycleSequence}-t${effectiveTick}`;
+      const cycleId = `${this.cycleIdPrefix}-${++this.cycleSequence}-t${effectiveTick}`;
       const quotaAfterCall = getQuotaSnapshot(this.governorState, this.policy, nowMs, effectiveTick);
 
       const validation = parseAndValidateLevel3Proposal(rawResponse, {
@@ -1769,6 +1801,17 @@ export class Level3SupervisorController {
         minObjectiveDelta: this.policy.minObjectiveDelta,
         expectedBuild: this.buildInfo
       });
+
+      // R-19: Abort cleanly without touching ledger/belt/live state if a reset occurred during Gate 1
+      if (cycleEpoch !== this.sessionEpoch) {
+        return {
+          triggered: false,
+          finalStatus: 'aborted_session_reset',
+          reason: 'session_reset_during_shadow_gate1',
+          gate2StepResult,
+          quota: getQuotaSnapshot(this.governorState, this.policy, nowMs, effectiveTick)
+        };
+      }
 
       if (!gate1Result.approved) {
         this.governorState.totalGate1Rejections += 1;
@@ -1961,6 +2004,7 @@ export class Level3SupervisorController {
         prePromotionModeFlags,
         prePromotionDigest,
         promotedAtTick: promotionTick,
+        lastObservedTick: promotionTick,
         watchWindowTicks: this.policy.gate2WatchTicks,
         observedTicks: 0,
         prePromotionScore: promotionTel.objectiveScore,
@@ -2008,16 +2052,20 @@ export class Level3SupervisorController {
         quota: quotaAfterCall
       };
     } finally {
-      this.governorState.inFlight = false;
+      if (cycleEpoch === this.sessionEpoch) {
+        this.governorState.inFlight = false;
+      }
     }
   }
 }
 
 /**
- * Safely synchronizes state from the anti-throttling Level 3 Web Worker into a live target (`R-2` & `R-12`).
+ * Safely synchronizes state from the anti-throttling Level 3 Web Worker into a live target (`R-2`, `R-12` & `R-18`).
  * - Verifies SHA-256 integrity of `auditLedger` and `knowledgeBelt` before importing.
  * - Performs non-destructive monotonic append-only merging for ledger, knowledge belt, and governorState
  *   (preserving all prior main-thread digests, callTimestampsMs, counters, inFlight, and activeGate2Watch).
+ * - Separates imported worker parents from existing main-thread parents so incoming `gate2_resolution` entries
+ *   never re-link onto an unrelated colliding `cycleId`.
  * - Enforces a strict node-count topology guard: never overwrites a live 120- or 1500-node network
  *   with a 48-node lightweight sandbox worker `dynamicState.v3`.
  */
@@ -2044,16 +2092,15 @@ export function synchronizeLevel3WorkerStateIntoTarget(liveTarget, workerPayload
         controller.auditLedger = structuredClone(workerPayload.auditLedger);
       } else {
         const existingKeys = new Set();
-        const parentDigestByCycleId = new Map();
+        const existingParentDigestByCycleId = new Map();
+        const importedParentDigestByCycleId = new Map();
         for (const existing of controller.auditLedger.entries) {
           const kind = existing.entryKind || 'cycle_evaluation';
           existingKeys.add(`${existing.cycleId}::${kind}`);
           if (kind !== 'gate2_resolution') {
-            parentDigestByCycleId.set(existing.cycleId, existing.digest);
+            existingParentDigestByCycleId.set(existing.cycleId, existing.digest);
           }
         }
-        const isFromGenesis =
-          (controller.auditLedger.anchorHash || LEVEL3_GENESIS_HASH) === LEVEL3_GENESIS_HASH;
         for (const incoming of workerPayload.auditLedger.entries) {
           const kind = incoming.entryKind || 'cycle_evaluation';
           const key = `${incoming.cycleId}::${kind}`;
@@ -2061,10 +2108,15 @@ export function synchronizeLevel3WorkerStateIntoTarget(liveTarget, workerPayload
 
           let resolvedParentDigest = incoming.parentDigest || null;
           if (kind === 'gate2_resolution') {
-            const mappedParentDigest = parentDigestByCycleId.get(incoming.parentCycleId);
-            if (mappedParentDigest) {
-              resolvedParentDigest = mappedParentDigest;
-            } else if (isFromGenesis) {
+            if (importedParentDigestByCycleId.has(incoming.parentCycleId)) {
+              resolvedParentDigest = importedParentDigestByCycleId.get(incoming.parentCycleId);
+            } else if (
+              existingParentDigestByCycleId.has(incoming.parentCycleId) &&
+              existingParentDigestByCycleId.get(incoming.parentCycleId) === incoming.parentDigest
+            ) {
+              resolvedParentDigest = incoming.parentDigest;
+            } else {
+              // R-18: Never re-link an incoming gate2_resolution onto an unrelated cycleId collision or orphan parent
               continue;
             }
           }
@@ -2081,7 +2133,7 @@ export function synchronizeLevel3WorkerStateIntoTarget(liveTarget, workerPayload
           const appended = controller.auditLedger.entries[controller.auditLedger.entries.length - 1];
           existingKeys.add(key);
           if (kind !== 'gate2_resolution' && appended?.digest) {
-            parentDigestByCycleId.set(appended.cycleId, appended.digest);
+            importedParentDigestByCycleId.set(appended.cycleId, appended.digest);
           }
         }
       }

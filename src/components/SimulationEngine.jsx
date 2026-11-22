@@ -72,7 +72,8 @@ import {
   createEmptyKnowledgeBelt,
   createEmptyLevel3AuditLedger,
   verifyLevel3AuditLedger,
-  verifyLevel3KnowledgeBelt
+  verifyLevel3KnowledgeBelt,
+  verifyLevel3SealedAuditBundle
 } from '../simulation/Level3KnowledgeBelt.js';
 
 
@@ -221,7 +222,7 @@ export const QICNConsciousnessSystem = () => {
     return initial;
   });
   // Level 3 autonomous supervisor (first-person reflection + Gate 1 isolated Workbench + Gate 2 dynamicState.v3 watch/rollback):
-  // defaults to off so pure runs stay unassisted unless explicitly enabled (external_llm_assisted=true).
+  // defaults to off so pure runs stay unassisted unless explicitly enabled (external_llm_assisted=true only when live external LLM reasoning is used; false on deterministic local fallback).
   const [autonomousSupervisorLevel3Enabled, setAutonomousSupervisorLevel3Enabled] = useState(() => {
     const initial = readStoredChoice(AUTONOMOUS_SUPERVISOR_LEVEL3_KEY, ['on', 'off'], 'off') === 'on';
     if (typeof window !== 'undefined') QICNConfig.AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED = initial;
@@ -238,7 +239,6 @@ export const QICNConsciousnessSystem = () => {
     return stored && verifyLevel3KnowledgeBelt(stored).ok ? stored : createEmptyKnowledgeBelt();
   });
   const [level3ActionNotice, setLevel3ActionNotice] = useState('');
-  const [, setLevel3Revision] = useState(0);
   const level3ControllerRef = useRef(null);
   if (!level3ControllerRef.current) {
     level3ControllerRef.current = new Level3SupervisorController({
@@ -251,6 +251,11 @@ export const QICNConsciousnessSystem = () => {
       buildInfo: { version: BUILD_VERSION_LABEL, signature: BUILD_SIGNATURE_LABEL }
     });
   }
+  const [level3GovernorState, setLevel3GovernorState] = useState(() => ({
+    ...level3ControllerRef.current.governorState,
+    callTimestampsMs: [...(level3ControllerRef.current.governorState.callTimestampsMs || [])]
+  }));
+  const [level3ActiveGate2Watch, setLevel3ActiveGate2Watch] = useState(null);
   const [lastProviderError, setLastProviderError] = useState(null);
   const recordOperationalEvent = useCallback((type, payload, tick) => {
     try {
@@ -3654,10 +3659,17 @@ export const QICNConsciousnessSystem = () => {
     nodalLayer.current = new NodalProcessingLayer();
     metaSovereigntyCheck.current = new MetaSovereigntyCheck();
     kaizenPendingEvalRef.current = null;
-    level3ControllerRef.current?.resetTransientRuntimeState({
-      keepKnowledgeBelt: true,
-      keepAuditLedger: true
-    });
+    if (level3ControllerRef.current) {
+      level3ControllerRef.current.resetTransientRuntimeState({
+        keepKnowledgeBelt: true,
+        keepAuditLedger: true
+      });
+      setLevel3GovernorState({
+        ...level3ControllerRef.current.governorState,
+        callTimestampsMs: [...(level3ControllerRef.current.governorState.callTimestampsMs || [])]
+      });
+      setLevel3ActiveGate2Watch(null);
+    }
     setLevel3ActionNotice('');
 
     initializeSystem();
@@ -3825,9 +3837,21 @@ export const QICNConsciousnessSystem = () => {
     if (!ctrl) return;
     const nextLedger = { ...ctrl.auditLedger, entries: [...ctrl.auditLedger.entries] };
     const nextBelt = { ...ctrl.knowledgeBelt, findings: [...ctrl.knowledgeBelt.findings] };
+    const nextGovernorState = {
+      ...ctrl.governorState,
+      callTimestampsMs: [...(ctrl.governorState.callTimestampsMs || [])]
+    };
+    const nextWatch = ctrl.activeGate2Watch
+      ? {
+          ...ctrl.activeGate2Watch,
+          scores: [...(ctrl.activeGate2Watch.scores || [])],
+          inTubeFlags: [...(ctrl.activeGate2Watch.inTubeFlags || [])]
+        }
+      : null;
     setLevel3Ledger(nextLedger);
     setLevel3KnowledgeBelt(nextBelt);
-    setLevel3Revision((v) => v + 1);
+    setLevel3GovernorState(nextGovernorState);
+    setLevel3ActiveGate2Watch(nextWatch);
     try {
       browserStorage()?.setItem(LEVEL3_AUDIT_LEDGER_STORAGE_KEY, JSON.stringify(nextLedger));
       browserStorage()?.setItem(LEVEL3_KNOWLEDGE_BELT_STORAGE_KEY, JSON.stringify(nextBelt));
@@ -3940,6 +3964,9 @@ export const QICNConsciousnessSystem = () => {
       manualTriggerKind: 'manual_reflection',
       customReasoner: level3ReasonerMode === 'deterministic_local' ? null : executeLiveLevel3Reasoner
     });
+    if (res && res.triggered === false && res.reason) {
+      setLevel3ActionNotice(`Reflexión Nivel 3 no disparada (${res.reason}).`);
+    }
     syncRuntimeAndReactAfterMutation(res?.gate2StepResult?.appliedRuntime || null);
     syncLevel3StateToUi();
   }, [buildLiveLevel3Target, simulationStep, level3ReasonerMode, executeLiveLevel3Reasoner, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
@@ -3965,16 +3992,30 @@ export const QICNConsciousnessSystem = () => {
       manualTriggerKind: 'manual_shadow_trial',
       customReasoner: level3ReasonerMode === 'deterministic_local' ? null : executeLiveLevel3Reasoner
     });
+    if (res && res.triggered === false && res.reason) {
+      setLevel3ActionNotice(`Prueba en Workbench Nivel 3 no disparada (${res.reason}).`);
+    }
     syncRuntimeAndReactAfterMutation(res?.gate2StepResult?.appliedRuntime || null);
     syncLevel3StateToUi();
   }, [buildLiveLevel3Target, simulationStep, level3ReasonerMode, executeLiveLevel3Reasoner, syncRuntimeAndReactAfterMutation, syncLevel3StateToUi]);
 
   const handleImportLevel3Bundle = useCallback((bundle) => {
-    if (!bundle?.ledger || !bundle?.knowledgeBelt) return;
-    if (level3ControllerRef.current) {
-      level3ControllerRef.current.auditLedger = bundle.ledger;
-      level3ControllerRef.current.knowledgeBelt = bundle.knowledgeBelt;
+    const check = verifyLevel3SealedAuditBundle(bundle);
+    if (!check.ok || !bundle?.ledger || !bundle?.knowledgeBelt) {
+      setLevel3ActionNotice(`Importación rechazada: integridad SHA-256 inválida (${check.reason || 'bundle_invalid'}).`);
+      return;
     }
+    const ctrl = level3ControllerRef.current;
+    if (ctrl) {
+      const clonedLedger = structuredClone(bundle.ledger);
+      const clonedBelt = structuredClone(bundle.knowledgeBelt);
+      ctrl.auditLedger = clonedLedger;
+      ctrl.knowledgeBelt = clonedBelt;
+      ctrl.activeGate2Watch = null;
+      ctrl.lastLevel2Telemetry = null;
+      ctrl.cycleSequence = Math.max(Number(ctrl.cycleSequence) || 0, clonedLedger.entries.length);
+    }
+    setLevel3ActionNotice('');
     syncLevel3StateToUi();
   }, [syncLevel3StateToUi]);
 
@@ -9055,8 +9096,8 @@ const renderCurrentTab = () => {
           controllerRef={level3ControllerRef}
           ledger={level3Ledger}
           knowledgeBelt={level3KnowledgeBelt}
-          governorState={level3ControllerRef.current?.governorState}
-          activeGate2Watch={level3ControllerRef.current?.activeGate2Watch}
+          governorState={level3GovernorState}
+          activeGate2Watch={level3ActiveGate2Watch}
           exploreEveryTicks={level3ExploreEveryTicks}
           onChangeExploreEveryTicks={setLevel3ExploreEveryTicks}
           reasonerMode={level3ReasonerMode}

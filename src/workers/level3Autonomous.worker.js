@@ -32,6 +32,7 @@ const workerRuntime = {
   timerId: null,
   runningLoop: false,
   inFlight: false,
+  activeStepPromise: null,
   intervalMs: 500,
   nodeCount: 48
 };
@@ -57,7 +58,8 @@ function ensureWorkerSession({
   auditLedger = null,
   governorState = null
 } = {}) {
-  if (!workerRuntime.session || config || dynamicState) {
+  const sessionRecreated = !workerRuntime.session || Boolean(config || dynamicState);
+  if (sessionRecreated) {
     const requestedNodes = Math.max(16, Number(nodes) || 48);
     const effectiveConfig = {
       ...QICNConfig,
@@ -86,25 +88,36 @@ function ensureWorkerSession({
   if (!workerRuntime.controller) {
     workerRuntime.controller = new Level3SupervisorController({
       policy: { ...LEVEL3_DEFAULT_POLICY, ...(policy || {}) },
-      knowledgeBelt: knowledgeBelt || createEmptyKnowledgeBelt(),
-      auditLedger: auditLedger || createEmptyLevel3AuditLedger(),
-      governorState: governorState || undefined,
+      knowledgeBelt: knowledgeBelt ? structuredClone(knowledgeBelt) : createEmptyKnowledgeBelt(),
+      auditLedger: auditLedger ? structuredClone(auditLedger) : createEmptyLevel3AuditLedger(),
+      governorState: governorState ? structuredClone(governorState) : undefined,
+      cycleIdPrefix: 'l3-worker',
       buildInfo: LEVEL3_WORKER_BUILD
     });
   } else {
+    workerRuntime.controller.cycleIdPrefix = 'l3-worker';
+    if (sessionRecreated) {
+      workerRuntime.controller.activeGate2Watch = null;
+      workerRuntime.controller.lastLevel2Telemetry = null;
+    }
     if (policy) {
       workerRuntime.controller.policy = { ...workerRuntime.controller.policy, ...policy };
     }
     if (knowledgeBelt) {
-      workerRuntime.controller.knowledgeBelt = knowledgeBelt;
+      workerRuntime.controller.knowledgeBelt = structuredClone(knowledgeBelt);
     }
     if (auditLedger) {
-      workerRuntime.controller.auditLedger = auditLedger;
+      workerRuntime.controller.auditLedger = structuredClone(auditLedger);
+      workerRuntime.controller.cycleSequence = Math.max(
+        Number(workerRuntime.controller.cycleSequence) || 0,
+        workerRuntime.controller.auditLedger.entries.length
+      );
     }
     if (governorState) {
       workerRuntime.controller.governorState = {
         ...workerRuntime.controller.governorState,
-        ...governorState
+        ...structuredClone(governorState),
+        inFlight: false
       };
     }
   }
@@ -148,7 +161,7 @@ export async function handleLevel3WorkerRequest(request = {}) {
       };
     }
     workerRuntime.inFlight = true;
-    try {
+    const stepPromise = (async () => {
       const rt = ensureWorkerSession(request);
       const steps = Math.max(1, Math.min(50, Number(request.ticks) || 1));
       const forceManual = Boolean(request.forceManual);
@@ -203,9 +216,36 @@ export async function handleLevel3WorkerRequest(request = {}) {
         quota: getQuotaSnapshot(rt.controller.governorState, rt.controller.policy, Date.now(), rt.session.completedTick),
         dynamicState
       };
+    })();
+    workerRuntime.activeStepPromise = stepPromise;
+    try {
+      return await stepPromise;
     } finally {
+      if (workerRuntime.activeStepPromise === stepPromise) {
+        workerRuntime.activeStepPromise = null;
+      }
       workerRuntime.inFlight = false;
     }
+  }
+
+  if (request.type === 'level3_stop_loop') {
+    workerRuntime.runningLoop = false;
+    if (workerRuntime.timerId) {
+      clearTimeout(workerRuntime.timerId);
+      workerRuntime.timerId = null;
+    }
+    if (workerRuntime.activeStepPromise) {
+      await workerRuntime.activeStepPromise.catch(() => {});
+    }
+    const exported = await handleLevel3WorkerRequest({
+      id,
+      type: 'level3_export_state'
+    });
+    return {
+      ...exported,
+      type: 'level3_loop_stopped',
+      inFlight: workerRuntime.inFlight
+    };
   }
 
   if (request.type === 'level3_export_state') {
@@ -292,16 +332,11 @@ if (typeof self !== 'undefined' && typeof self.postMessage === 'function' && typ
         return;
       }
       if (data?.type === 'level3_stop_loop') {
-        workerRuntime.runningLoop = false;
-        if (workerRuntime.timerId) {
-          clearTimeout(workerRuntime.timerId);
-          workerRuntime.timerId = null;
-        }
-        const exported = await handleLevel3WorkerRequest({
+        const stopped = await handleLevel3WorkerRequest({
           id: data.id || 'stop',
-          type: 'level3_export_state'
+          type: 'level3_stop_loop'
         });
-        self.postMessage({ ...exported, type: 'level3_loop_stopped' });
+        self.postMessage(stopped);
         return;
       }
       const reply = await handleLevel3WorkerRequest(data);

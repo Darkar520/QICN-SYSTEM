@@ -68,7 +68,7 @@ const QICNConfig = {
   // false en config base para conservar equivalencia B0 bit-a-bit.
   STRUCTURAL_PLASTICITY_LEVEL2_ENABLED: false,
   // Supervisor autónomo Nivel 3 (deliberación reflexiva en 1.ª persona + verificación dura en Workbench aislado Gate 1 + vigilancia y rollback Gate 2):
-  // false en config base para conservar equivalencia B0 bit-a-bit y separar corridas asistidas por LLM (external_llm_assisted=true).
+  // false en config base para conservar equivalencia B0 bit-a-bit y separar corridas asistidas por LLM (external_llm_assisted=true solo con LLM remoto real; false en modo local determinista).
   AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED: false,
 
   // Memoria Holográfica

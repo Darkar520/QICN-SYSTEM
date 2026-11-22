@@ -154,7 +154,7 @@ export const tabHelpMeta = {
     title: 'Bitácora Nivel 3',
     oneLiner: 'Supervisor autónomo en 1.ª persona con Shadow Promotion en Workbench y bitácora sellada SHA-256.',
     whatIs: 'Sección dedicada e independiente del chat para el pensamiento interno en primera persona ("Pensar en alto"), verificación dura en copias aisladas del Workbench (Compuerta 1), vigilancia con rollback automático dynamicState.v3 (Compuerta 2) y Cinto de Conocimiento acumulado.',
-    whyItMatters: 'Separa explícitamente las corridas asistidas (external_llm_assisted=true, internal_support_only) de los benchmarks puros y acumula memoria operativa verificable sin parámetros heurísticos.',
+    whyItMatters: 'Separa explícitamente las corridas con LLM externo (external_llm_assisted=true solo con Gemini en vivo; false en modo local determinista, bajo internal_support_only) de los benchmarks puros y acumula memoria operativa verificable sin parámetros heurísticos.',
     firstCheck: ['Revisa el estado de verificación SHA-256 del Ledger y del Cinto.', 'Pulsa "Pensar en alto ahora (1.ª persona)" o "Probar Hipótesis en Workbench".', 'Inspecciona la tabla comparativa de Compuerta 1 y el estado de Compuerta 2.']
   }
 };

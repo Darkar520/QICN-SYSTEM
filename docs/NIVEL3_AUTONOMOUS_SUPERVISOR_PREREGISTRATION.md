@@ -4,7 +4,7 @@
 - **Punto de partida**: `main` = `9c7f2d3` (`qicn-framework-ordenado` en `e3ee6bf4e533138b179c6caeee679509a57e13f5`, solo lectura)
 - **Alcance de evidencia (`evidence_scope`)**: `"internal_support_only"`
 - **Certificación externa (`external_support_certified`)**: `false`
-- **Etiqueta de separación científica**: `external_llm_assisted: true` cuando el supervisor Nivel 3 interviene o delibera con modelo externo, para no mezclar jamás corridas asistidas con benchmarks puros de motor (`S0–S5` de Nivel 1 vs Nivel 2).
+- **Etiqueta de separación científica**: `external_llm_assisted: true` única y exclusivamente cuando el supervisor Nivel 3 recibe respuesta real de un LLM externo (`gemini_live`), y `external_llm_assisted: false` en deliberación local determinista/respaldo offline (consumiendo `0` cuota LLM), para no mezclar jamás corridas asistidas con benchmarks puros de motor (`S0–S5` de Nivel 1 vs Nivel 2).
 
 ---
 
@@ -202,4 +202,30 @@ Ejecuta `24` ticks (`KAIZEN_LEARNING_DEFAULTS.windowTicks`) en copias aisladas `
    - **Alcance**: `scripts/build-module-inventory.mjs`, `src/language/moduleInventory.generated.js`, `src/simulation/Level3AutonomousSupervisor.js`, `src/simulation/Level3KnowledgeBelt.js` y `src/utils/runtimeParameterRegistry.js`.
    - **Diseño**: exportar `MODULE_PATHS` (rutas relativas POSIX reales bajo `src/`) junto a `MODULE_FILES` y `MODULE_NAMES` sin romper compatibilidad; validar `targetModule` contra `MODULE_PATHS` (o basename único de `MODULE_FILES` si no lleva `/`); en `verifyLevel3AuditLedger`, exigir `seenDigests.has(entry.parentCycleId)` cuando `anchorHash === LEVEL3_GENESIS_HASH` devolviendo `gate2_resolution_orphan_parent`; retirar `src/components/Level3SupervisorAuditTab.jsx` de `usagePaths` de `AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED`.
    - **Criterio de aceptación**: `src/totally/fake/NodalProcessingLayer.js` es rechazado y `src/simulation/NodalProcessingLayer.js` es aceptado; `gate2_resolution` con `parentCycleId` inexistente desde génesis devuelve `{ ok: false, reason: 'gate2_resolution_orphan_parent' }`; `build-module-inventory.mjs --check` y `runtime-parameter-registry.v400.test.js` pasan en `exit 0`.
+
+### 6.10. Pulido Final Pre-Merge (`R-17`..`R-21` y hallazgos de auditoría cruzada `A-1`..`A-5`)
+
+1. **`R-17` [MEDIO — Eje 1] — Descongelar `quota` y `activeGate2Watch` en React (`SimulationEngine.jsx` / `Level3SupervisorAuditTab.jsx`)**:
+   - **Alcance**: reemplazar el paso de referencias mutables in-place (`level3ControllerRef.current?.governorState`, `activeGate2Watch`) y el estado descartado `level3Revision` por estados React inmutables (`level3GovernorState` y `level3ActiveGate2Watch`) clonados en `syncLevel3StateToUi()` e invocados también en `handleReset()` (`A-1`).
+   - **Feedback de bloqueo manual (`A-1`)**: cuando `handleTriggerLevel3ManualReflection` o `handleTriggerLevel3ShadowTrialNow` reciben `{ triggered: false, reason }`, informar el motivo en `level3ActionNotice`.
+   - **Criterio de aceptación**: con `currentTick` constante (simulación en pausa), cada acción manual, importación o sincronización entrega un nuevo objeto `governorState` y recalcula `quota` inmediatamente.
+2. **`R-18` [BAJO-MEDIO — Eje 2] — Prefijo `l3-worker` y blindaje criptográfico de `parentDigest` en `synchronizeLevel3WorkerStateIntoTarget`**:
+   - **Alcance**: `Level3SupervisorController` acepta `cycleIdPrefix = 'l3-cycle'`; `src/workers/level3Autonomous.worker.js` instancia con `cycleIdPrefix: 'l3-worker'`. En `synchronizeLevel3WorkerStateIntoTarget`, separar `importedParentDigestByCycleId` de `existingParentDigestByCycleId` y jamás re-enlazar un `gate2_resolution` entrante sobre un ciclo principal existente con digest distinto.
+   - **Criterio de aceptación**: entradas del Worker llevan prefijo `l3-worker-`; bajo colisión sintética `PROBE_K_COLLISION` (`l3-cycle-1-t50` principal `reflect_only` vs Worker `promoted_watching` + `:gate2`), el ciclo principal conserva `actionMode === 'reflect_only'` y `finalStatus === 'reflect_only'`, con `verifyLevel3AuditLedger().ok === true`.
+3. **`R-19` [BAJO — Eje 2] — `handleImportLevel3Bundle`, protección `sessionEpoch` en `resetTransientRuntimeState` y drenaje limpio de `level3_stop_loop`**:
+   - **Alcance**:
+     - `handleImportLevel3Bundle` revalida `verifyLevel3SealedAuditBundle(bundle).ok`, clona con `structuredClone`, limpia `activeGate2Watch` / `lastLevel2Telemetry`, actualiza `cycleSequence` y sincroniza la UI.
+     - `Level3SupervisorController` introduce `sessionEpoch` monotónico incrementado en `resetTransientRuntimeState`; `runCycle` aborta silenciosamente (`aborted_session_reset`) tras cualquier `await` si `cycleEpoch !== this.sessionEpoch` y en `finally` solo limpia `inFlight` si `cycleEpoch === this.sessionEpoch` (`A-2`).
+     - `level3Autonomous.worker.js` guarda `workerRuntime.activeStepPromise`, drena dicho paso antes de exportar estado en `level3_stop_loop`, y al re-sincronizar en `ensureWorkerSession` alinea `cycleSequence` y limpia `activeGate2Watch` si se recreó `session` (`A-3`).
+   - **Criterio de aceptación**: un `customReasoner` lento que resuelve tras `resetTransientRuntimeState` no escribe en `auditLedger`/`knowledgeBelt`, no promueve ni libera `inFlight` de una nueva sesión; detener el Worker en paralelo con un paso en vuelo deja `inFlight === false` y estado íntegro.
+4. **`A-4` [MEDIO — Eje 3] — Verificación estricta de `external_llm_assisted` y `anchorHash` en `verifyLevel3AuditLedger` y `verifyLevel3KnowledgeBelt`**:
+   - **Alcance**: `src/simulation/Level3KnowledgeBelt.js`.
+   - **Diseño**: rechazar `anchorHash` distinto de hex de 64 caracteres (`ledger_anchor_hash_invalid` / `belt_anchor_hash_invalid`) y exigir que `ledger.external_llm_assisted === ledger.entries.some((e) => e.external_llm_assisted === true)` (`ledger_external_llm_assisted_mismatch`) y `belt.external_llm_assisted === belt.findings.some((f) => f.external_llm_assisted === true)` (`belt_external_llm_assisted_mismatch`).
+   - **Criterio de aceptación**: alterar `ledger.external_llm_assisted` o `belt.external_llm_assisted` en contradicción con sus entradas falla verificación explícitamente.
+5. **`A-5` [MEDIO — Eje 4] — Deduplicación de tick en `stepGate2Surveillance`**:
+   - **Alcance**: `src/simulation/Level3AutonomousSupervisor.js`.
+   - **Diseño**: registrar `lastObservedTick: promotionTick` en `activeGate2Watch` y en `stepGate2Surveillance` ignorar ticks repetidos o no crecientes (`tick <= watch.lastObservedTick`, devolviendo `{ status: 'promoted_watching', duplicateTickIgnored: true }`) para impedir que clics manuales en pausa aceleren la ventana de 20 ticks de Gate 2.
+   - **Criterio de aceptación**: invocar `runCycle` varias veces en el mismo tick con `activeGate2Watch` activo no incrementa `observedTicks` ni confirma Gate 2 prematuramente.
+6. **`R-20` & `R-21` [BAJO — Eje 5] — Coherencia total de `Sistema B`, filtros UI, registros y batería adversaria**:
+   - **Alcance**: alinear `src/language/definitionCatalog.js:331` (`EVIDENTIAL_OPERATIONS` para `Level3KnowledgeBelt`), `services/config.js:71`, `src/components/SimulationEngine.jsx:224`, `src/components/TabConfig.jsx:157`; añadir filtros `aborted_stale_tick` y `blocked_by_knowledge_belt` en `src/components/Level3SupervisorAuditTab.jsx`; sincronizar `docs/IMPLEMENTATION_STATUS.md`, `docs/DESCRIPTOR_REGISTRY.md`, `docs/descriptor_registry.v1.json` y `docs/TRACEABILITY_MATRIX.md` con `R-1..R-21` y `A-1..A-5`; añadir pruebas adversarias reproducibles en `tests/nivel3-autonomous-supervisor.v1.test.mjs`.
 

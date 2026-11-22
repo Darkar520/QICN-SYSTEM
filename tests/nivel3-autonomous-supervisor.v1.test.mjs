@@ -27,7 +27,9 @@ import {
 } from '../src/simulation/Level3AutonomousSupervisor.js';
 import {
   LEVEL3_AUDIT_BUNDLE_SCHEMA,
+  appendKnowledgeBeltFinding,
   appendLevel3AuditEntry,
+  appendLevel3Gate2ResolutionEntry,
   createEmptyKnowledgeBelt,
   createEmptyLevel3AuditLedger,
   exportLevel3SealedAuditBundle,
@@ -45,6 +47,7 @@ import { captureRuntimeSnapshot } from '../src/language/runtimeSnapshot.js';
 import { prepareTurn, finalizeTurn } from '../src/language/conversationEngine.js';
 import { resolveIntent } from '../src/language/intentResolver.js';
 import { verifySentenceEvidential } from '../src/language/evidential/factualVerifier.js';
+import { EVIDENTIAL_OPERATIONS } from '../src/language/definitionCatalog.js';
 
 // 1. Default B0 configuration safety
 assert.equal(
@@ -1342,4 +1345,287 @@ assert.equal(
   }
 }
 
-console.log('OK: nivel3-autonomous-supervisor.v1 passed (R-1..R-16 adversarial checks, B0 parity, fact+scheduled triggers, first-person schema gate, Gate 1 isolated Workbench, Gate 2 append-only dynamicState.v3 rollback & confirmation, SHA-256 Knowledge Belt & Ledger, Worker non-destructive merge + Daemon, Sistema B)');
+// 9. [R-17..R-21 + A-2, A-4, A-5] Final Pre-Merge Adversarial Hardening Checks (every check would fail on 6a769c8)
+{
+  // 9A. [R-18] Worker cycleIdPrefix ('l3-worker-') & PROBE_K_COLLISION defense against cross-linking gate2_resolution
+  {
+    await handleLevel3WorkerRequest({
+      id: 'r18-w-init',
+      type: 'level3_init_or_sync',
+      seed: 83,
+      nodes: 48,
+      auditLedger: createEmptyLevel3AuditLedger(),
+      knowledgeBelt: createEmptyKnowledgeBelt(),
+      policy: {
+        ...LEVEL3_DEFAULT_POLICY,
+        scheduledExplorationEveryTicks: 3,
+        minCooldownTicks: 1,
+        minCooldownMs: 0
+      }
+    });
+    const wPrefixStep = await handleLevel3WorkerRequest({
+      id: 'r18-w-step',
+      type: 'level3_step_ticks',
+      ticks: 4
+    });
+    assert.equal(wPrefixStep.type, 'level3_step_result');
+    assert.ok(wPrefixStep.auditLedger.entries.length >= 1);
+    assert.ok(
+      wPrefixStep.auditLedger.entries.every((e) => String(e.cycleId).startsWith('l3-worker-')),
+      `R-18 FAIL: worker entries must use l3-worker- prefix, got ${wPrefixStep.auditLedger.entries.map((e) => e.cycleId).join(', ')}`
+    );
+
+    // PROBE_K_COLLISION: main has l3-cycle-1-t50 (reflect_only); synthetic worker payload has colliding l3-cycle-1-t50 (promoted_watching) + l3-cycle-1-t50:gate2 (promoted_confirmed)
+    let mainLedger = appendLevel3AuditEntry(createEmptyLevel3AuditLedger(), {
+      cycleId: 'l3-cycle-1-t50',
+      tick: 50,
+      triggerKind: 'scheduled_exploration',
+      actionMode: 'reflect_only',
+      proposedAction: { kind: 'none' },
+      finalStatus: 'reflect_only',
+      firstPersonThought: 'Estoy reflexionando en alto en mi tick 50 sin mutar parámetros.',
+      external_llm_assisted: false
+    });
+    const mainCtrl = new Level3SupervisorController({ auditLedger: mainLedger });
+    const mainOriginalDigest = mainCtrl.auditLedger.entries[0].digest;
+
+    let workerCollidingLedger = appendLevel3AuditEntry(createEmptyLevel3AuditLedger(), {
+      cycleId: 'l3-cycle-1-t50',
+      tick: 50,
+      triggerKind: 'anomaly_level2',
+      actionMode: 'propose_shadow_experiment',
+      proposedAction: { kind: 'workbench_intervention', intervention: 'structural_plasticity_level2' },
+      finalStatus: 'promoted_watching',
+      firstPersonThought: 'Estoy promoviendo una intervención en el sandbox worker en tick 50.',
+      external_llm_assisted: false
+    });
+    workerCollidingLedger = appendLevel3Gate2ResolutionEntry(workerCollidingLedger, 'l3-cycle-1-t50', {
+      tick: 70,
+      finalStatus: 'promoted_confirmed',
+      gate2Summary: { status: 'promoted_confirmed', rolledBack: false, observedTicks: 20, watchWindowTicks: 20 }
+    });
+    assert.equal(verifyLevel3AuditLedger(workerCollidingLedger).ok, true);
+
+    const dummyTarget = { bag: { nodalLayer: { current: { nodes: new Array(120) } } }, config: QICNConfig };
+    synchronizeLevel3WorkerStateIntoTarget(
+      dummyTarget,
+      { auditLedger: workerCollidingLedger, nodeCount: 48 },
+      { controller: mainCtrl, allowTopologyOverwrite: false }
+    );
+    assert.equal(verifyLevel3AuditLedger(mainCtrl.auditLedger).ok, true);
+    const projectedColliding = projectLedgerCyclesWithGate2(mainCtrl.auditLedger).find(
+      (c) => c.cycleId === 'l3-cycle-1-t50'
+    );
+    assert.ok(projectedColliding);
+    assert.equal(projectedColliding.digest, mainOriginalDigest);
+    assert.equal(projectedColliding.actionMode, 'reflect_only', 'R-18 FAIL: colliding main cycle actionMode corrupted');
+    assert.equal(projectedColliding.finalStatus, 'reflect_only', 'R-18 FAIL: colliding gate2_resolution corrupted main reflect_only cycle!');
+    assert.equal(projectedColliding.gate2ResolutionDigest, null, 'R-18 FAIL: colliding gate2_resolution must not attach to unrelated main cycle');
+
+    // Idempotence check: syncing same worker payload twice produces zero duplicate entries and identical headHash
+    const headBeforeDupSync = mainCtrl.auditLedger.headHash;
+    const countBeforeDupSync = mainCtrl.auditLedger.entries.length;
+    synchronizeLevel3WorkerStateIntoTarget(dummyTarget, wPrefixStep, { controller: mainCtrl });
+    const headAfterFirst = mainCtrl.auditLedger.headHash;
+    const countAfterFirst = mainCtrl.auditLedger.entries.length;
+    assert.ok(countAfterFirst > countBeforeDupSync);
+    assert.notEqual(headAfterFirst, headBeforeDupSync);
+    synchronizeLevel3WorkerStateIntoTarget(dummyTarget, wPrefixStep, { controller: mainCtrl });
+    assert.equal(mainCtrl.auditLedger.entries.length, countAfterFirst, 'R-18/R-12 FAIL: duplicate sync added duplicate entries');
+    assert.equal(mainCtrl.auditLedger.headHash, headAfterFirst, 'R-18/R-12 FAIL: duplicate sync changed headHash');
+  }
+
+  // 9B. [R-19] Clean in-flight drain on level3_stop_loop
+  {
+    const [stepRes, stopRes] = await Promise.all([
+      handleLevel3WorkerRequest({
+        id: 'r19-slow-step',
+        type: 'level3_step_ticks',
+        ticks: 2,
+        simulateDelayMs: 60
+      }),
+      handleLevel3WorkerRequest({
+        id: 'r19-stop',
+        type: 'level3_stop_loop'
+      })
+    ]);
+    assert.equal(stepRes.type, 'level3_step_result');
+    assert.equal(stopRes.type, 'level3_loop_stopped');
+    assert.equal(stopRes.inFlight, false, 'R-19 FAIL: level3_stop_loop must wait for active step and leave inFlight=false');
+    assert.ok(stopRes.tick >= stepRes.tick, `R-19 FAIL: stop exported stale tick ${stopRes.tick} < ${stepRes.tick}`);
+    assert.equal(verifyLevel3AuditLedger(stopRes.auditLedger).ok, true);
+  }
+
+  // 9C. [R-19 & A-2] sessionEpoch guard during async runCycle across resetTransientRuntimeState (never contaminates new session or clears new session inFlight)
+  {
+    const session = createHeadlessRuntimeSession({
+      config: { ...QICNConfig, AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED: true },
+      seed: 89,
+      nodes: 24,
+      profile: 'paired_intervention'
+    });
+    session.initialize();
+    session.step(1, { evaluationOffset: 1 });
+    const ctrl = new Level3SupervisorController({
+      policy: { ...LEVEL3_DEFAULT_POLICY, minCooldownTicks: 0, minCooldownMs: 0 }
+    });
+
+    let resolveCycleA;
+    const promiseA = ctrl.runCycle(session, {
+      tick: 1,
+      nowMs: 1_800_300_000_000,
+      forceManual: true,
+      manualTriggerKind: 'manual_reflection',
+      customReasoner: ({ snapshot, triggerKind }) =>
+        new Promise((resolve) => {
+          resolveCycleA = () =>
+            resolve({
+              rawText: buildDeterministicFirstPersonProposal({ snapshot, triggerKind }),
+              reasonerSource: 'gemini_live',
+              external_llm_assisted: true,
+              llmAttempted: true
+            });
+        })
+    });
+    assert.equal(ctrl.governorState.inFlight, true);
+
+    // Reset session while Cycle A is still awaiting remote LLM
+    ctrl.resetTransientRuntimeState({ keepKnowledgeBelt: false, keepAuditLedger: false });
+    assert.equal(ctrl.governorState.inFlight, false);
+
+    // Start Cycle B on the new epoch before Cycle A resolves
+    let resolveCycleB;
+    const promiseB = ctrl.runCycle(session, {
+      tick: 1,
+      nowMs: 1_800_300_005_000,
+      forceManual: true,
+      manualTriggerKind: 'manual_reflection',
+      customReasoner: ({ snapshot, triggerKind }) =>
+        new Promise((resolve) => {
+          resolveCycleB = () =>
+            resolve({
+              rawText: buildDeterministicFirstPersonProposal({ snapshot, triggerKind }),
+              reasonerSource: 'deterministic_local',
+              external_llm_assisted: false,
+              llmAttempted: false
+            });
+        })
+    });
+    assert.equal(ctrl.governorState.inFlight, true);
+
+    // Late resolution of Cycle A from prior epoch must abort without mutating ledger/belt/watch OR clearing Cycle B's inFlight
+    resolveCycleA();
+    const resA = await promiseA;
+    assert.equal(resA.triggered, false);
+    assert.equal(resA.finalStatus, 'aborted_session_reset');
+    assert.equal(ctrl.auditLedger.entries.length, 0, 'R-19 FAIL: stale post-reset cycle contaminated new auditLedger');
+    assert.equal(ctrl.activeGate2Watch, null, 'R-19 FAIL: stale post-reset cycle set activeGate2Watch');
+    assert.equal(ctrl.governorState.totalCalls, 0, 'R-19 FAIL: stale post-reset cycle incremented totalCalls');
+    assert.equal(ctrl.governorState.inFlight, true, 'A-2 FAIL: stale cycle finally block cleared inFlight of active new-epoch cycle!');
+
+    // Now Cycle B completes cleanly on the new epoch
+    resolveCycleB();
+    const resB = await promiseB;
+    assert.equal(resB.triggered, true);
+    assert.equal(resB.finalStatus, 'reflect_only');
+    assert.equal(ctrl.auditLedger.entries.length, 1);
+    assert.equal(ctrl.governorState.inFlight, false);
+  }
+
+  // 9D. [A-4] Strict header external_llm_assisted & anchorHash verification on standalone Ledger and Knowledge Belt
+  {
+    const localLedger = appendLevel3AuditEntry(createEmptyLevel3AuditLedger(), {
+      cycleId: 'a4-local-1',
+      tick: 2,
+      finalStatus: 'reflect_only',
+      external_llm_assisted: false
+    });
+    assert.equal(verifyLevel3AuditLedger(localLedger).ok, true);
+    const spoofedLedgerFlag = { ...localLedger, external_llm_assisted: true };
+    const spoofedLedgerCheck = verifyLevel3AuditLedger(spoofedLedgerFlag);
+    assert.equal(spoofedLedgerCheck.ok, false, 'A-4 FAIL: spoofed ledger.external_llm_assisted must fail verification');
+    assert.equal(spoofedLedgerCheck.reason, 'ledger_external_llm_assisted_mismatch');
+
+    const badAnchorLedger = { ...createEmptyLevel3AuditLedger(), anchorHash: 'not-64-hex' };
+    const badAnchorLedgerCheck = verifyLevel3AuditLedger(badAnchorLedger);
+    assert.equal(badAnchorLedgerCheck.ok, false, 'A-4 FAIL: malformed ledger.anchorHash must fail verification');
+    assert.equal(badAnchorLedgerCheck.reason, 'ledger_anchor_hash_invalid');
+
+    const localBelt = appendKnowledgeBeltFinding(createEmptyKnowledgeBelt(), {
+      cycleId: 'a4-local-1',
+      tick: 2,
+      verdict: 'reflect_only',
+      external_llm_assisted: false
+    });
+    assert.equal(verifyLevel3KnowledgeBelt(localBelt).ok, true);
+    const spoofedBeltFlag = { ...localBelt, external_llm_assisted: true };
+    const spoofedBeltCheck = verifyLevel3KnowledgeBelt(spoofedBeltFlag);
+    assert.equal(spoofedBeltCheck.ok, false, 'A-4 FAIL: spoofed belt.external_llm_assisted must fail verification');
+    assert.equal(spoofedBeltCheck.reason, 'belt_external_llm_assisted_mismatch');
+
+    const badAnchorBelt = { ...createEmptyKnowledgeBelt(), anchorHash: 'bad' };
+    const badAnchorBeltCheck = verifyLevel3KnowledgeBelt(badAnchorBelt);
+    assert.equal(badAnchorBeltCheck.ok, false, 'A-4 FAIL: malformed belt.anchorHash must fail verification');
+    assert.equal(badAnchorBeltCheck.reason, 'belt_anchor_hash_invalid');
+  }
+
+  // 9E. [A-5] Gate 2 surveillance deduplicates repeated calls on the same tick (no premature confirmation while paused)
+  {
+    const session = createHeadlessRuntimeSession({
+      config: { ...QICNConfig, AUTONOMOUS_SUPERVISOR_LEVEL3_ENABLED: true },
+      seed: 97,
+      nodes: 24,
+      profile: 'paired_intervention'
+    });
+    session.initialize();
+    session.step(1, { evaluationOffset: 1 });
+    const ctrl = new Level3SupervisorController({
+      policy: { ...LEVEL3_DEFAULT_POLICY, gate2WatchTicks: 3 }
+    });
+    ctrl.activeGate2Watch = {
+      cycleId: 'a5-watch-1',
+      triggerKind: 'anomaly_level2',
+      regimeSignature: 'balanced|bidirectional|L2:on|K:learned',
+      proposedAction: { kind: 'none' },
+      actionSignature: 'none',
+      hypothesis: 'test',
+      diagnosis: 'test',
+      reasonerSource: 'deterministic_local',
+      externalLlmAssisted: false,
+      promotedAtTick: 10,
+      lastObservedTick: 10,
+      watchWindowTicks: 3,
+      observedTicks: 0,
+      prePromotionScore: 0.85,
+      referenceFloorScore: 0.85,
+      prePromotionInTubeRate: 1,
+      scores: [],
+      inTubeFlags: [],
+      nonFiniteDetected: false
+    };
+    for (let rep = 0; rep < 5; rep += 1) {
+      const dupRes = ctrl.stepGate2Surveillance(session, { tick: 10, nowMs: 1_800_400_000_000 + rep * 1000 });
+      assert.equal(dupRes.duplicateTickIgnored, true);
+      assert.equal(ctrl.activeGate2Watch.observedTicks, 0, 'A-5 FAIL: duplicate tick incremented Gate 2 observedTicks');
+    }
+    const tick11First = ctrl.stepGate2Surveillance(session, { tick: 11, nowMs: 1_800_400_010_000 });
+    assert.equal(tick11First.observedTicks, 1);
+    const tick11Dup = ctrl.stepGate2Surveillance(session, { tick: 11, nowMs: 1_800_400_011_000 });
+    assert.equal(tick11Dup.duplicateTickIgnored, true);
+    assert.equal(ctrl.activeGate2Watch.observedTicks, 1, 'A-5 FAIL: repeated tick 11 incremented Gate 2 observedTicks');
+  }
+
+  // 9F. [R-20] Sistema B definitionCatalog coherence for Level3KnowledgeBelt
+  {
+    const beltOp = EVIDENTIAL_OPERATIONS.find((op) => op.module === 'Level3KnowledgeBelt');
+    assert.ok(beltOp, 'R-20 FAIL: Level3KnowledgeBelt missing from EVIDENTIAL_OPERATIONS');
+    assert.ok(
+      !beltOp.description.includes('bajo external_llm_assisted=true'),
+      `R-20 FAIL: Level3KnowledgeBelt description still hardcodes unconditional external_llm_assisted=true: ${beltOp.description}`
+    );
+    assert.match(beltOp.description, /external_llm_assisted = true solo con LLM externo/);
+    assert.match(beltOp.description, /false en deliberación determinista local/);
+  }
+}
+
+console.log('OK: nivel3-autonomous-supervisor.v1 passed (R-1..R-21 + A-1..A-5 adversarial checks, B0 parity, fact+scheduled triggers, first-person schema gate, Gate 1 isolated Workbench, Gate 2 append-only dynamicState.v3 rollback/confirmation & tick dedup, SHA-256 Knowledge Belt & Ledger strict flags, Worker l3-worker merge/collision/stop-drain + sessionEpoch + Daemon, Sistema B)');

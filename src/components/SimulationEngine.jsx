@@ -4620,6 +4620,13 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
               </button>
             )}
           </div>
+          {microWorkbench.error && !microWorkbench.bundle && (
+            <div role="status" className="mx-3 mt-1 rounded border border-amber-500/40 bg-amber-950/40 px-2.5 py-1 text-[11px] text-amber-200">
+              {microWorkbench.error.includes('completed_committed')
+                ? 'Inicia la simulación al menos 1 paso (botón «Iniciar simulación») para capturar y ejecutar la copia aislada B2.'
+                : microWorkbench.error}
+            </div>
+          )}
           {geminiSelected && !canUseLlmNow && (
             <div role="status" className="mx-3 mt-2 flex flex-wrap items-center justify-between gap-2 rounded-md border border-amber-500/60 bg-amber-900/40 px-3 py-1.5 text-xs text-amber-100">
               <span>El canal de lenguaje no está disponible (sin sesión ni clave). Las respuestas las compone el motor; configura tu clave en la pestaña API.</span>

@@ -72,13 +72,16 @@ const ACCENT_PALETTE = {
  * Dual casual + technical metric header so both casual readers and auditors stay oriented at a glance.
  */
 export const MetricDualLabel = React.memo(function MetricDualLabel({
-  casual,
+  casual = '',
+  label = '',
   technical = '',
+  accent = '',
   className = ''
 }) {
+  const primaryText = casual || label;
   return (
-    <div className={`flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 ${className}`}>
-      <span className="font-semibold text-slate-100">{casual}</span>
+    <div className={`flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-xs ${className}`}>
+      <span className={`font-semibold ${accent || 'text-slate-100'}`}>{primaryText}</span>
       {technical && (
         <span className="font-mono text-[10px] text-slate-400">· {technical}</span>
       )}
@@ -98,6 +101,7 @@ export const TabPlainHeader = React.memo(function TabPlainHeader({
   technicalTag = null,
   plainSummary = null,
   actions = null,
+  rightSlot = null,
   badges = null,
   extraDetails = null,
   compact = false,
@@ -147,7 +151,7 @@ export const TabPlainHeader = React.memo(function TabPlainHeader({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {actions}
+          {actions || rightSlot}
           <button
             type="button"
             onClick={toggle}

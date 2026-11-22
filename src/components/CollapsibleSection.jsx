@@ -54,6 +54,7 @@ export const persistCollapsibleState = (sectionId, isOpen) => {
 export const CollapsibleSection = React.memo(function CollapsibleSection({
   sectionId = '',
   title,
+  subtitle = null,
   accent = 'cyan',
   defaultOpen = false,
   badge = null,
@@ -76,15 +77,20 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between px-4 py-3 cursor-pointer select-none font-semibold text-sm ${styles.text} ${styles.header} transition-colors`}
+        className={`w-full flex items-center justify-between gap-2 px-4 py-3 cursor-pointer select-none font-semibold text-sm ${styles.text} ${styles.header} transition-colors`}
         aria-expanded={isOpen}
       >
-        <span className="text-left">{title}</span>
+        <span className="min-w-0 text-left">
+          <span className="block">{title}</span>
+          {subtitle && (
+            <span className="mt-0.5 block text-[11px] font-normal text-slate-400">{subtitle}</span>
+          )}
+        </span>
         <div className="flex items-center gap-2 flex-shrink-0 ml-2">
           {badge != null && (
-            <span className="text-[11px] font-mono opacity-60 font-normal">{badge}</span>
+            <span className="text-[11px] font-mono opacity-70 font-normal">{badge}</span>
           )}
-          <span className={`text-[10px] opacity-50 transition-transform duration-200 inline-block ${isOpen ? 'rotate-180' : 'rotate-0'}`}>v</span>
+          <span className={`text-[11px] opacity-60 transition-transform duration-200 inline-block ${isOpen ? 'rotate-180' : 'rotate-0'}`}>▾</span>
         </div>
       </button>
       {isOpen && (

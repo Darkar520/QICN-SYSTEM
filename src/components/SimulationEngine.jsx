@@ -8653,12 +8653,12 @@ return (
         {/* MATRIZ DE SOBERANÍA (compacta con Detalles ▾) */}
         {renderSovereigntyMatrix()}
 
-        {/* PANEL DE PERCEPCIÓN SENSORIAL (colapsable cuando está apagado) */}
+        {/* PANEL DE PERCEPCIÓN SENSORIAL (colapsado por defecto con Detalles ▾) */}
         <div className="rounded-xl border border-cyan-500/35 bg-gradient-to-br from-cyan-950/40 to-purple-950/40 p-3 shadow-lg">
           <DetailToggleStrip
             sectionId="sidebar-sensory-card"
             accent="cyan"
-            defaultOpen={Boolean(sensoryEnabled.video || sensoryEnabled.audio)}
+            defaultOpen={false}
             summary={(
               <div className="flex items-center gap-2">
                 <Eye className="h-4 w-4 text-cyan-300" />

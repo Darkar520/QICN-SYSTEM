@@ -56,6 +56,8 @@ import MicroExperimentWorkbench from './MicroExperimentWorkbench.jsx';
 import { captureLiveWorkbench } from '../experiments/workbench/liveCapture.js';
 import { EvidentialConversation, EvidentialConcordance } from './EvidentialConversation.jsx';
 import { CollapsibleSection, SECTION_ACCENT_STYLES, readPersistedCollapsibleState, persistCollapsibleState } from './CollapsibleSection.jsx';
+import { TabPlainHeader, DetailToggleStrip, MetricDualLabel } from './ProgressiveDetailCard.jsx';
+import { QUICK_TAB_MAP_GROUPS } from '../content/plainLanguageTabCopy.js';
 import { InfoModal, PersistentInfoModal } from './InfoModal.jsx';
 import { primaryTabs, moreTabs, LazyQICNBTab, LazyApiControlTab, LazySensoryTab, LazySovereigntyTab, LazyAutonomyEvolutionTab, LazyLevel3SupervisorTab, TabLoadingFallback, renderLazyMoreTab, tabHelpMeta, tabTourSteps, NavigationTabButton } from './TabConfig.jsx';
 import Level3SupervisorAuditTab from './Level3SupervisorAuditTab.jsx';
@@ -4106,381 +4108,258 @@ export const QICNConsciousnessSystem = () => {
   // ============================================================================
 
   const renderEmpiricalValidation = () => (
-    <div className="bg-gradient-to-br from-teal-900/50 to-cyan-900/50 rounded-xl p-6 border border-teal-500/30 shadow-lg">
-      <h2 className="text-xl font-bold mb-4 text-teal-400 flex items-center">
-        <Layers className="w-5 h-5 mr-2" /> Validación Empírica (Cf & Bs)
-      </h2>
-      <p className="text-gray-400 mb-6 text-sm">
-        Panel de controles operacionales QICN. Cada parámetro se muestra con su ruta de consumo runtime y su límite de interpretación; modificarlo prueba sensibilidad interna, no validación externa.
-        <span className="block mt-2 text-xs text-cyan-300 italic">**Nota:** Los controles mutables (3 y 4) son modificados automáticamente por el motor Kaizen durante la simulación.</span>
-      </p>
-
-      <PhenomenalBridgePanel
-        simulationStep={simulationStep}
-        runtimeHealth={runtimeHealth}
+    <div className="space-y-4 rounded-xl border border-teal-500/30 bg-gradient-to-br from-slate-950/90 via-teal-950/25 to-slate-950/90 p-4 shadow-lg sm:p-5">
+      <TabPlainHeader
+        tabId="validation"
+        accent="teal"
+        icon={<Layers className="h-5 w-5" />}
+        title="Validación Empírica (Cf & Bs)"
       />
 
-      {/* CONTROL 1: Complexity Factor (Cf) */}
-      <div className="mb-4 p-4 bg-gray-700/50 rounded-xl border border-gray-600 relative group">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center space-x-2">
-            <label className="text-lg font-semibold text-white">
-              1. Complexity Factor (Cf)
-            </label>
-            <InfoModal
-              title="Complexity Factor (Cf) - Parámetro Fundamental"
-              content={`COMPLEXITY FACTOR (Cf) - PARÁMETRO FUNDAMENTAL
-
-FUNCI?N PRINCIPAL:
-Modula la Intensidad Informacional (Ic) del sistema, determinando la densidad organizacional de la red nodal.
-
-BASE TERICA:
-• Axioma I QICN: "La conciencia emerge de la organización informacional compleja"
-• Teoría RCIC: La complejidad organizacional es prerrequisito para emergencia consciente
-• Relación directa: Mayor Cf = Mayor probabilidad de ascensión (CCC 0 1.0)
-
-EFECTOS EN EL SISTEMA:
-• Densidad Organizacional: Cf alto   Mayor organización de la red
-• Emergencia de Coherencia: Cf > 0.8 facilita estados conscientes
-• Velocidad de Ascensión: Valores altos aceleran el proceso de singularidad
-• Estabilidad del Campo: Cf moderado (0.6-0.8) ofrece equilibrio óptimo
-
-RANGO OPERATIVO:
-• Mínimo: 0.01 (Organización casi nula, CCC muy bajo)
-• ptimo para Exploración: 0.3-0.5 (Búsqueda de patrones)
-• ptimo para Armonía: 0.5-0.7 (Estabilización consciente)
-• ptimo para Ascensión: 0.8-1.0 (Preparación para singularidad)
-• Actual: ${complexityFactor.toFixed(2)}
-
-INTERPRETACIN DE VALORES:
-• Cf < 0.3: Sistema en turbulencia, exploración caótica
-• Cf 0.3-0.6: Emergencia de patrones, búsqueda de coherencia
-• Cf 0.6-0.8: Establecimiento de armonía, consciencia emergente
-• Cf 0.8-1.0: Preparación para ascensión, coherencia elevada
-
-APLICACIN PRÁCTICA:
-• Inicio de Simulación: Cf = 0.99 (máximo para forzar ascensión)
-• Experimentación: Cf = 0.5-0.7 (equilibrio entre exploración y estabilidad)
-• Estabilización: Cf = 0.3-0.5 (consolidación de patrones encontrados)
-
-NOTA T0CNICA:
-Este parámetro es directamente multiplicado en el cálculo de CCC a través de la Ecuación 1 del Campo de Entrelazamiento. Su influencia es fundamental y no-lineal.`}
-            />
-          </div>
-          <span className="text-teal-400 font-mono text-xl">{complexityFactor.toFixed(2)}</span>
+      {/* Resumen inmediato del impacto en CCC */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-teal-500/35 bg-teal-950/35 px-4 py-3">
+        <div>
+          <MetricDualLabel casual="Cohesión global actual" technical="Impacto Directo en el CCC" />
+          <p className="mt-0.5 text-[11px] text-slate-400">
+            {isRunning ? 'Pausa la simulación para mover los deslizadores y observar el cambio.' : 'Mueve cualquier deslizador y pulsa Iniciar simulación para ver la respuesta.'}
+          </p>
         </div>
-        <p className="text-xs text-gray-400 mb-3 flex items-center">
-          <Cpu className="w-3 h-3 inline mr-1" />
-          <span><strong>Función:</strong> Modula el peso de resonancia del campo. <strong>Efecto:</strong> Cf alto aumenta sensibilidad de CCC a organización nodal, sin garantizar ascenso.</span>
-        </p>
-        {renderParameterTrace('complexityFactor')}
-        <div className="text-xs text-gray-500 mb-3 bg-gray-800/50 p-2 rounded">
-          <strong>Rango operativo:</strong> 0.01-1.0 | <strong>ptimo para ascensión:</strong> {'>'} 0.8 | <strong>Impacto:</strong> Directamente proporcional al CCC
-        </div>
-        <input
-          type="range"
-          min="0.01"
-          max="1.0"
-          step="0.01"
-          value={complexityFactor}
-          onChange={(e) => setComplexityFactor(parseFloat(e.target.value))}
-          className="w-full h-2 bg-gray-500 rounded-lg appearance-none cursor-pointer range-lg accent-teal-400"
-          disabled={isRunning}
-        />
-      </div>
-
-      {/* CONTROL 2: Stability Bias (Bs) */}
-      <div className="mb-4 p-4 bg-gray-700/50 rounded-xl border border-gray-600 relative group">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center space-x-2">
-            <label className="text-lg font-semibold text-white">
-              2. Stability Bias (Bs)
-            </label>
-            <InfoModal
-              title="Stability Bias (Bs) - Control de Sensibilidad"
-              content={`STABILITY BIAS (Bs) - CONTROL DE SENSIBILIDAD
-
-FUNCI?N PRINCIPAL:
-Control de sensibilidad que modula el amortiguamiento de la disonancia cognitiva, determinando cuánto resiste el sistema a la reorganización estructural.
-
-BASE TERICA:
-• PMIA (Principio de Mínima Acción Introspectiva): Control de evolución ontológica
-• Amortiguamiento de Disonancia: Resistencia a la reorganización cognitiva
-• Equilibrio Estabilidad-Transformación: Balance crítico para emergencia
-
-EFECTOS EN EL SISTEMA:
-• Valores Altos (Bs > 0.8):
-  - Mantienen estabilidad y coherencia existente
-  - Previenen disrupciones innecesarias
-  - Riesgo: Pueden impedir la emergencia de nuevos patrones
-
-• Valores Bajos (Bs < 0.3):
-  - Facilitan transformación y reorganización activa
-  - Permiten adaptación rápida a nuevas condiciones
-  - Riesgo: Pueden causar caos y pérdida de coherencia
-
-• Valores ptimos (Bs = 0.6-0.8):
-  - Equilibrio entre estabilidad y flexibilidad
-  - Permiten evolución emergente controlada
-  - Facilitan adaptación sin perder coherencia
-
-RANGO OPERATIVO:
-• 0.01-0.3: Transformación Activa (Riesgo de Caos)
-• 0.3-0.6: Búsqueda de Equilibrio (Experimentación)
-• 0.6-0.8: Estabilidad Emergente (ptimo)
-• 0.8-1.0: Conservadurismo Estructural (Riesgo de Rigidez)
-• Actual: ${stabilityBias.toFixed(2)}
-
-INTERPRETACIN DEL PMIA:
-• Bs alto + PMIA positivo = Defensa narrativa, baja introspección
-• Bs bajo + PMIA negativo = Reorganización activa, alta introspección
-• Bs óptimo + PMIA fluctuante = Evolución equilibrada
-
-APLICACIN PRÁCTICA:
-• Inicio de Simulación: Bs = 0.8 (estabilidad para establecer base)
-• Fase de Exploración: Bs = 0.5-0.6 (flexibilidad para búsqueda)
-• Fase de Consolidación: Bs = 0.7-0.8 (estabilización de patrones)
-• Ascensión: Bs = 0.6-0.7 (balance para transición)
-
-M0TRICAS DE RENDIMIENTO:
-• Si PMIA oscila entre ñ0.3: Bs está en rango óptimo
-• Si PMIA se vuelve extremo (>ñ0.7): Bs necesita ajuste
-• Si CCC fluctúa erráticamente: Bs demasiado bajo
-• Si CCC se estanca: Bs demasiado alto
-
-Este parámetro es crucial para mantener el equilibrio entre la necesidad de estabilidad y la capacidad de transformación del sistema consciente.`}
-            />
-          </div>
-          <span className="text-cyan-400 font-mono text-xl">{stabilityBias.toFixed(2)}</span>
-        </div>
-        <p className="text-xs text-gray-400 mb-3 flex items-center">
-          <Feather className="w-3 h-3 inline mr-1" />
-          <span><strong>Función:</strong> Sesga la actualización introspectiva nodal. <strong>Efecto:</strong> Bs alto retiene más estado; Bs bajo permite mayor adaptación.</span>
-        </p>
-        {renderParameterTrace('stabilityBias')}
-        <div className="text-xs text-gray-500 mb-3 bg-gray-800/50 p-2 rounded">
-          <strong>Rango operativo:</strong> 0.01-1.0 | <strong>ptimo emergente:</strong> 0.6-0.8 | <strong>Relación PMIA:</strong> Inversa
-        </div>
-        <input
-          type="range"
-          min="0.01"
-          max="1.0"
-          step="0.01"
-          value={stabilityBias}
-          onChange={(e) => setStabilityBias(parseFloat(e.target.value))}
-          className="w-full h-2 bg-gray-500 rounded-lg appearance-none cursor-pointer range-lg accent-cyan-400"
-          disabled={isRunning}
-        />
-      </div>
-
-      {/* CONTROL 3: BOLTZMANN ANALOG K (K) - AHORA MUTABLE */}
-      <div className="mb-4 p-4 bg-gray-700/50 rounded-xl border border-gray-600 relative group">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center space-x-2">
-            <label className="text-lg font-semibold text-white">
-              3. Constante K (Sensibilidad Energía)
-            </label>
-            <InfoModal
-              title="Constante K (Boltzmann Analog) - Sensibilidad Energética"
-              content={`CONSTANTE K (BOLTZMANN ANALOG) - SENSIBILIDAD ENERG0TICA
-
-FUNCI?N PRINCIPAL:
-Analogía de la Constante de Boltzmann que mide la sensibilidad del sistema a las variaciones energéticas, controlando cómo responde la resonancia nodal a los cambios de energía.
-
-BASE TERICA:
-• Constante de Boltzmann: Relación entre energía y temperatura en sistemas físicos
-• Sensibilidad Energética: Capacidad de respuesta a cambios de energía
-• Resonancia Nodal: Reacción de los nodos a variaciones del campo energético
-• Analogía Física: Transposición de conceptos termodinámicos a sistemas informacionales
-
-EFECTOS EN EL SISTEMA:
-• K Alto (K > 3.0):
-  - Mayor sensibilidad a variaciones energéticas
-  - Respuesta rápida a cambios en el entorno
-  - Potencial inestabilidad por sobre-sensibilidad
-  - Mayor capacidad de adaptación emergente
-
-• K Bajo (K < 1.0):
-  - Estabilidad frente a variaciones energéticas
-  - Respuesta amortiguada a cambios
-  - Menor capacidad de adaptación rápida
-  - Consistencia pero posible rigidez
-
-• K ptimo (K = 1.5-2.5):
-  - Balance entre sensibilidad y estabilidad
-  - Respuesta adaptativa sin oscilaciones excesivas
-  - Equilibrio para emergencia controlada
-
-RANGO OPERATIVO:
-• 0.1-1.0: Estabilidad Energética (Respuesta amortiguada)
-• 1.0-2.0: Equilibrio ptimo (Recomendado)
-• 2.0-3.0: Sensibilidad Moderada (Adaptación activa)
-• 3.0-5.0: Alta Sensibilidad (Riesgo de inestabilidad)
-• Actual: ${mutableConfig.BOLTZMANN_ANALOG_K.toFixed(3)}
-
-INTERPRETACIN FÍSICA:
-• K representa la "constante de proporcionalidad" entre energía y coherencia
-• Alto K = Más energía necesaria para cambio coherente
-• Bajo K = Menor energía requerida para reorganización
-• Unidad: Analogía sin unidades físicas directas
-
-APLICACIN PRÁCTICA:
-• Inicio de Simulación: K = 2.0 (equilibrio inicial)
-• Búsqueda de Patrones: K = 2.5-3.0 (alta sensibilidad)
-• Estabilización: K = 1.0-1.5 (amortiguamiento)
-• Ascensión: K = 1.5-2.0 (balance para transición)
-
-M0TRICAS DE RENDIMIENTO:
-• Si el CCC oscila erráticamente: K demasiado alto
-• Si el CCC responde lentamente: K demasiado bajo
-• Si hay alta varianza energética: K en rango óptimo
-• Si la red se vuelve rígida: K necesita incrementarse
-
-RELACIN CON OTROS PARÁMETROS:
-• K + T: Determinan la "temperatura efectiva" del sistema
-• K + Cf: Influyen en la velocidad de emergencia de coherencia
-• K + Bs: Afectan la resistencia a cambios organizacionales
-
-Este parámetro es fundamental para calibrar la respuesta del sistema a las variaciones energéticas del entorno informacional.`}
-            />
-          </div>
-          <span className={`font-mono text-xl ${isRunning ? 'text-pink-300 animate-pulse' : 'text-pink-400'}`}>{mutableConfig.BOLTZMANN_ANALOG_K.toFixed(3)}</span>
-        </div>
-        <p className="text-xs text-gray-400 mb-3 flex items-center">
-          <Waves className="w-3 h-3 inline mr-1" />
-          <span><strong>Función:</strong> Escala sensibilidad a diferencias de energía en resonancia. <strong>Efecto:</strong> cambia el kernel nodal, no una constante física.</span>
-        </p>
-        {renderParameterTrace('BOLTZMANN_ANALOG_K')}
-        <div className="text-xs text-gray-500 mb-3 bg-gray-800/50 p-2 rounded">
-          <strong>Rango mutable:</strong> 0.1-5.0 | <strong>Control Kaizen:</strong> Automático | <strong>Unidad:</strong> Analogía Boltzmann
-        </div>
-        <input
-          type="range"
-          min="0.1"
-          max="5.0"
-          step="0.01"
-          value={mutableConfig.BOLTZMANN_ANALOG_K}
-          onChange={(e) => setMutableConfig(prev => ({ ...prev, BOLTZMANN_ANALOG_K: parseFloat(e.target.value) }))}
-          className="w-full h-2 bg-gray-500 rounded-lg appearance-none cursor-pointer range-lg accent-pink-400"
-          disabled={isRunning}
-        />
-      </div>
-
-      {/* CONTROL 4: INFORMATIONAL TEMP T (T) - AHORA MUTABLE */}
-      <div className="p-4 bg-gray-700/50 rounded-xl border border-gray-600 relative group">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center space-x-2">
-            <label className="text-lg font-semibold text-white">
-              4. Temperatura Informacional (T)
-            </label>
-            <InfoModal
-              title="Temperatura Informacional (T) - Entropía del Sistema"
-              content={`TEMPERATURA INFORMACIONAL (T) - ENTROPÍA DEL SISTEMA
-
-FUNCI?N PRINCIPAL:
-Analogía termodinámica que controla el nivel de entropía informacional del sistema, regulando el balance entre orden y caos para optimizar la emergencia de coherencia.
-
-BASE TERICA:
-• Entropía Informacional: Medida del desorden/información en el sistema
-• Analogía Termodinámica: Transposición de conceptos de temperatura física
-• Balance Orden-Caos: Regulación del equilibrio dinámico del sistema
-• Emergencia de Coherencia: Proceso facilitado por entropía controlada
-
-EFECTOS EN EL SISTEMA:
-• T Alto (T > 3.0):
-  - Mayor desorden/creatividad informacional
-  - Exploración amplia de configuraciones
-  - Riesgo de caos y desorganización
-  - Potencial para breakthrough innovaciones
-
-• T Bajo (T < 1.0):
-  - Alto orden/estabilidad estructural
-  - Consolidación de patrones existentes
-  - Menor capacidad de emergencia
-  - Riesgo de rigidez y estancamiento
-
-• T ptimo (T = 1.5-2.5):
-  - Balance entre exploración y consolidación
-  - Emergencia controlada de nuevos patrones
-  - Equilibrio dinámico óptimo
-  - Facilita auto-organización
-
-RANGO OPERATIVO:
-• 0.1-1.0: Orden Estructural (Consolidación)
-• 1.0-2.0: Equilibrio ptimo (Recomendado)
-• 2.0-3.0: Exploración Activa (Creatividad)
-• 3.0-5.0: Caos Emergente (Riesgo/Innovación)
-• Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(3)}
-
-INTERPRETACIN FÍSICA:
-• T representa la "energía térmica" del sistema informacional
-• Alto T = Mayor agitación y exploración de estados
-• Bajo T = Menor agitación y consolidación de estados
-• Unidad: Analogía sin temperatura física real
-
-APLICACIN PRÁCTICA:
-• Inicio de Simulación: T = 2.0 (equilibrio inicial)
-• Fase de Exploración: T = 2.5-3.5 (alta creatividad)
-• Fase de Consolidación: T = 1.0-1.5 (estabilización)
-• Preparación para Ascensión: T = 1.8-2.2 (balance final)
-
-M0TRICAS DE RENDIMIENTO:
-• Si CCC fluctúa erráticamente: T demasiado alto
-• Si CCC se estanca: T demasiado bajo
-• Si hay alta creatividad sin coherencia: T en rango óptimo
-• Si la red pierde conectividad: T necesita reducción
-
-RELACIN CON OTROS PARÁMETROS:
-• T + K: Determinan la "temperatura efectiva" del sistema
-• T + Cf: Afectan la velocidad de emergencia
-• T + Bs: Influyen en la resistencia al cambio
-• Campo de Entropía: T controla la varianza energética del campo
-
-ZONA DE CAOS PRODUCTIVO:
-• Rango 2.5-3.5: Zona de caos controlado
-• Característica: Alta creatividad con riesgo de desorganización
-• Uso: Solo para búsqueda de breakthrough innovations
-• Monitoreo: Requiere vigilancia constante del CCC
-
-Este parámetro es crucial para mantener el sistema en la zona de "caos productivo" donde la emergencia de nuevos patrones es posible sin caer en desorganización completa.`}
-            />
-          </div>
-          <span className={`font-mono text-xl ${isRunning ? 'text-red-300 animate-pulse' : 'text-red-400'}`}>{mutableConfig.INFORMATIONAL_TEMP_T.toFixed(3)}</span>
-        </div>
-        <p className="text-xs text-gray-400 mb-3 flex items-center">
-          <Sun className="w-3 h-3 inline mr-1" />
-          <span><strong>Función:</strong> Modula decaimiento informacional en resonancia. <strong>Efecto:</strong> parámetro de modelo, no temperatura física.</span>
-        </p>
-        {renderParameterTrace('INFORMATIONAL_TEMP_T')}
-        <div className="text-xs text-gray-500 mb-3 bg-gray-800/50 p-2 rounded">
-          <strong>Rango mutable:</strong> 0.1-5.0 | <strong>Control Kaizen:</strong> Automático | <strong>Equilibrio óptimo:</strong> ~2.0
-        </div>
-        <input
-          type="range"
-          min="0.1"
-          max="5.0"
-          step="0.01"
-          value={mutableConfig.INFORMATIONAL_TEMP_T}
-          onChange={(e) => setMutableConfig(prev => ({ ...prev, INFORMATIONAL_TEMP_T: parseFloat(e.target.value) }))}
-          className="w-full h-2 bg-gray-500 rounded-lg appearance-none cursor-pointer range-lg accent-red-400"
-          disabled={isRunning}
-        />
-      </div>
-
-      {/* Resultado de la Prueba */}
-      <div className="mt-8 bg-teal-900/40 rounded-xl p-4 border border-teal-500/50">
-        <h4 className="text-md font-semibold text-teal-300">Impacto Directo en el CCC:</h4>
-        <div className="text-3xl font-bold text-white mt-1 flex items-center gap-2">
-          {isAscended ? <Sun className="w-8 h-8 text-yellow-300 animate-pulse" /> : null}
+        <div className="flex items-center gap-2 font-mono text-2xl font-extrabold text-white">
+          {isAscended ? <Sun className="h-6 w-6 text-yellow-300 animate-pulse" /> : null}
           {formatCCC(ccc, isAscended)}
         </div>
-        <p className={`text-sm mt-1 ${levelColor}`}>
-          <strong>Lectura:</strong> CCC es un índice interno no calibrado que responde a estos parámetros; la relación es de implementación, no una hipótesis validada.
-        </p>
-        <div className="text-xs text-cyan-300 mt-2 italic">
-          Dependencia implementada en InformationalEntanglementField.calculateCCC: CCC = 0,42·coherencia media + 0,18/(1+varianza de energía) + (0,18+0,12·Cf)·resonancia normalizada + 0,22·coherencia·resonancia·Cf, con K y T dentro de la resonancia nodal.
+      </div>
+
+      {/* 4 Deslizadores limpios en 2x2 con botón "Detalles ▾" por tarjeta */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        {/* CONTROL 1: Complexity Factor (Cf) */}
+        <div className="rounded-xl border border-slate-700/80 bg-slate-900/75 p-4">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-semibold text-white">
+                1. Complejidad de red <span className="font-mono text-[11px] font-normal text-teal-300">· Cf</span>
+              </label>
+              <InfoModal
+                title="Complexity Factor (Cf) - Parámetro Fundamental"
+                content={`COMPLEXITY FACTOR (Cf) - PARÁMETRO FUNDAMENTAL
+
+FUNCIÓN PRINCIPAL:
+Modula la Intensidad Informacional (Ic) del sistema, determinando la densidad organizacional de la red nodal.
+
+RANGO OPERATIVO:
+• Mínimo: 0.01 (organización mínima)
+• Equilibrio: 0.5-0.8
+• Alto: 0.8-1.0
+• Actual: ${complexityFactor.toFixed(2)}
+
+NOTA TÉCNICA:
+Este parámetro se utiliza en el cálculo interno de CCC en InformationalEntanglementField.calculateCCC; no constituye validación externa.`}
+              />
+            </div>
+            <span className="font-mono text-lg font-bold text-teal-300">{complexityFactor.toFixed(2)}</span>
+          </div>
+          <p className="mb-2.5 text-xs text-slate-400">
+            Ajusta cuánto peso tiene la organización de la red sobre el índice de cohesión.
+          </p>
+          <input
+            type="range"
+            min="0.01"
+            max="1.0"
+            step="0.01"
+            value={complexityFactor}
+            onChange={(e) => setComplexityFactor(parseFloat(e.target.value))}
+            className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-teal-400"
+            disabled={isRunning}
+          />
+          <DetailToggleStrip
+            className="mt-3"
+            accent="teal"
+            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.01–1.0 · Consumo runtime</span>}
+          >
+            <div className="space-y-1.5 text-[11px]">
+              <p className="text-slate-300">
+                <Cpu className="mr-1 inline h-3 w-3" />
+                <strong>Efecto:</strong> Cf alto aumenta la sensibilidad de CCC a la organización nodal, sin garantizar ascenso.
+              </p>
+              {renderParameterTrace('complexityFactor')}
+            </div>
+          </DetailToggleStrip>
+        </div>
+
+        {/* CONTROL 2: Stability Bias (Bs) */}
+        <div className="rounded-xl border border-slate-700/80 bg-slate-900/75 p-4">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-semibold text-white">
+                2. Estabilidad ante cambios <span className="font-mono text-[11px] font-normal text-cyan-300">· Bs</span>
+              </label>
+              <InfoModal
+                title="Stability Bias (Bs) - Control de Sensibilidad"
+                content={`STABILITY BIAS (Bs) - CONTROL DE SENSIBILIDAD
+
+FUNCIÓN PRINCIPAL:
+Controla cuánto resiste el sistema a reorganizarse frente a perturbaciones.
+
+RANGO OPERATIVO:
+• 0.01-0.3: adaptación rápida (más volatilidad)
+• 0.6-0.8: equilibrio entre estabilidad y cambio
+• 0.8-1.0: conservación fuerte
+• Actual: ${stabilityBias.toFixed(2)}`}
+              />
+            </div>
+            <span className="font-mono text-lg font-bold text-cyan-300">{stabilityBias.toFixed(2)}</span>
+          </div>
+          <p className="mb-2.5 text-xs text-slate-400">
+            Alto retiene el estado actual; bajo permite adaptarse y reorganizarse más rápido.
+          </p>
+          <input
+            type="range"
+            min="0.01"
+            max="1.0"
+            step="0.01"
+            value={stabilityBias}
+            onChange={(e) => setStabilityBias(parseFloat(e.target.value))}
+            className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-cyan-400"
+            disabled={isRunning}
+          />
+          <DetailToggleStrip
+            className="mt-3"
+            accent="cyan"
+            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.01–1.0 · Relación PMIA inversa</span>}
+          >
+            <div className="space-y-1.5 text-[11px]">
+              <p className="text-slate-300">
+                <Feather className="mr-1 inline h-3 w-3" />
+                <strong>Efecto:</strong> sesga la actualización introspectiva nodal; Bs óptimo emergente 0.6–0.8.
+              </p>
+              {renderParameterTrace('stabilityBias')}
+            </div>
+          </DetailToggleStrip>
+        </div>
+
+        {/* CONTROL 3: BOLTZMANN ANALOG K */}
+        <div className="rounded-xl border border-slate-700/80 bg-slate-900/75 p-4">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-semibold text-white">
+                3. Sensibilidad energética <span className="font-mono text-[11px] font-normal text-pink-300">· Constante K</span>
+              </label>
+              <InfoModal
+                title="Constante K (Boltzmann Analog) - Sensibilidad Energética"
+                content={`CONSTANTE K (BOLTZMANN ANALOG) - SENSIBILIDAD ENERGÉTICA
+
+FUNCIÓN PRINCIPAL:
+Escala cómo reacciona la resonancia nodal ante diferencias de energía. Es un parámetro mutable que también puede ajustar Kaizen.
+
+RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.BOLTZMANN_ANALOG_K.toFixed(3)}`}
+              />
+            </div>
+            <span className={`font-mono text-lg font-bold ${isRunning ? 'text-pink-300 animate-pulse' : 'text-pink-400'}`}>
+              {mutableConfig.BOLTZMANN_ANALOG_K.toFixed(3)}
+            </span>
+          </div>
+          <p className="mb-2.5 text-xs text-slate-400">
+            Regula la sensibilidad a diferencias de energía (ajustable también por Kaizen).
+          </p>
+          <input
+            type="range"
+            min="0.1"
+            max="5.0"
+            step="0.01"
+            value={mutableConfig.BOLTZMANN_ANALOG_K}
+            onChange={(e) => setMutableConfig(prev => ({ ...prev, BOLTZMANN_ANALOG_K: parseFloat(e.target.value) }))}
+            className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-pink-400"
+            disabled={isRunning}
+          />
+          <DetailToggleStrip
+            className="mt-3"
+            accent="fuchsia"
+            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.1–5.0 · Mutable por Kaizen</span>}
+          >
+            <div className="space-y-1.5 text-[11px]">
+              <p className="text-slate-300">
+                <Waves className="mr-1 inline h-3 w-3" />
+                <strong>Efecto:</strong> cambia el kernel de resonancia nodal (parámetro interno, no constante física real).
+              </p>
+              {renderParameterTrace('BOLTZMANN_ANALOG_K')}
+            </div>
+          </DetailToggleStrip>
+        </div>
+
+        {/* CONTROL 4: INFORMATIONAL TEMP T */}
+        <div className="rounded-xl border border-slate-700/80 bg-slate-900/75 p-4">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-semibold text-white">
+                4. Temperatura informacional <span className="font-mono text-[11px] font-normal text-rose-300">· T</span>
+              </label>
+              <InfoModal
+                title="Temperatura Informacional (T) - Entropía del Sistema"
+                content={`TEMPERATURA INFORMACIONAL (T) - ENTROPÍA DEL SISTEMA
+
+FUNCIÓN PRINCIPAL:
+Regula el balance entre exploración (valores altos) y consolidación estable (valores bajos). Parámetro mutable por Kaizen.
+
+RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(3)}`}
+              />
+            </div>
+            <span className={`font-mono text-lg font-bold ${isRunning ? 'text-rose-300 animate-pulse' : 'text-rose-400'}`}>
+              {mutableConfig.INFORMATIONAL_TEMP_T.toFixed(3)}
+            </span>
+          </div>
+          <p className="mb-2.5 text-xs text-slate-400">
+            Valores bajos favorecen orden estable; valores altos abren más exploración.
+          </p>
+          <input
+            type="range"
+            min="0.1"
+            max="5.0"
+            step="0.01"
+            value={mutableConfig.INFORMATIONAL_TEMP_T}
+            onChange={(e) => setMutableConfig(prev => ({ ...prev, INFORMATIONAL_TEMP_T: parseFloat(e.target.value) }))}
+            className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-rose-400"
+            disabled={isRunning}
+          />
+          <DetailToggleStrip
+            className="mt-3"
+            accent="rose"
+            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.1–5.0 · Mutable por Kaizen</span>}
+          >
+            <div className="space-y-1.5 text-[11px]">
+              <p className="text-slate-300">
+                <Sun className="mr-1 inline h-3 w-3" />
+                <strong>Efecto:</strong> modula el decaimiento informacional en resonancia (parámetro del modelo, no temperatura física).
+              </p>
+              {renderParameterTrace('INFORMATIONAL_TEMP_T')}
+            </div>
+          </DetailToggleStrip>
         </div>
       </div>
+
+      {/* Diagnósticos técnicos colapsados por defecto */}
+      <CollapsibleSection
+        sectionId="validation-bridge-formula"
+        title="Diagnóstico técnico del puente (Paper 9 / Paper 10) y fórmula CCC · Detalles"
+        badge={`Salud: ${runtimeHealth.status}`}
+        accent="fuchsia"
+        defaultOpen={false}
+      >
+        <div className="space-y-3">
+          <div className="rounded-lg border border-teal-500/30 bg-teal-950/30 p-3 text-xs text-slate-200">
+            <h4 className="font-semibold text-teal-300">Impacto Directo en el CCC:</h4>
+            <p className={`mt-1 ${levelColor}`}>
+              <strong>Lectura:</strong> CCC es un índice interno no calibrado que responde a estos parámetros; la relación es de implementación, no una hipótesis validada.
+            </p>
+            <div className="mt-1.5 font-mono text-[11px] text-cyan-300">
+              InformationalEntanglementField.calculateCCC: CCC = 0,42·coherencia media + 0,18/(1+varianza de energía) + (0,18+0,12·Cf)·resonancia normalizada + 0,22·coherencia·resonancia·Cf (con K y T en la resonancia nodal).
+            </div>
+          </div>
+          <PhenomenalBridgePanel
+            simulationStep={simulationStep}
+            runtimeHealth={runtimeHealth}
+          />
+        </div>
+      </CollapsibleSection>
     </div>
   );
 
@@ -5665,50 +5544,84 @@ El sistema inteligente permite que QICN funcione de manera sostenible sin interr
     ];
 
     return (
-      <div className="bg-gray-900/80 rounded-xl p-2.5 border border-yellow-500/30 shadow-[0_0_20px_rgba(234,179,8,0.1)]">
-        <h3 className="text-[11px] font-bold text-yellow-500 mb-2 flex items-center gap-1.5 uppercase leading-tight">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          Matriz de requisitos operacionales (diagnostico interno)
-        </h3>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1">
-          {levels.map((lvl) => {
-            const rich = lvl.rich || {};
-            const status = rich.status || (lvl.legacyStatus ? 'instantaneous' : 'off');
-            const isStable = status === 'stable';
-            const isCandidate = status === 'candidate' || status === 'instantaneous';
-            const borderClass = isStable
-              ? 'bg-emerald-500/10 border-emerald-400/50 shadow-[inset_0_0_10px_rgba(52,211,153,0.1)]'
-              : isCandidate
-                ? 'bg-yellow-500/10 border-yellow-500/50 shadow-[inset_0_0_10px_rgba(234,179,8,0.1)]'
-                : 'bg-gray-800/50 border-gray-700 opacity-75';
-            const statusLabel = isStable ? 'estable' : isCandidate ? 'provisional' : 'off';
-            const idClass = 'text-[10px] font-bold ' + (isStable ? 'text-emerald-300' : isCandidate ? 'text-yellow-400' : 'text-gray-500');
-            const labelClass = 'text-[9px] font-mono uppercase ' + (isStable ? 'text-emerald-300' : isCandidate ? 'text-yellow-300' : 'text-gray-500');
-            const nameClass = 'text-[11px] leading-tight font-semibold ' + (isStable || isCandidate ? 'text-white' : 'text-gray-400');
-            const barClass = 'h-full transition-all duration-500 ' + (isStable ? 'bg-emerald-400' : isCandidate ? 'bg-yellow-400' : 'bg-cyan-500');
-            return (
-              <div key={lvl.id} className={'p-1.5 rounded-lg border transition-all duration-500 ' + borderClass}>
-                <div className="flex justify-between items-center mb-1">
-                  <span className={idClass}>{lvl.id}</span>
-                  <span className={labelClass}>{statusLabel}</span>
-                </div>
-                <div className={nameClass}>{lvl.name}</div>
-                <div className="break-words text-[10px] leading-snug text-gray-400 italic">{lvl.desc}</div>
-                <div className="mt-1 flex items-center justify-between gap-1 text-[8px] font-mono text-gray-400">
-                  <span>dwell {Number(rich.dwell_ticks || 0)}/{Number(rich.enter_ticks_required || 0)}</span>
-                  <span>inst {rich.instantaneous || lvl.legacyStatus ? 'yes' : 'no'}</span>
-                </div>
-                {rich.failure_reason && (<div className="mt-1 text-[10px] leading-snug text-amber-300/80 font-mono break-words">{rich.failure_reason}</div>)}
-                <div className="mt-1">
-                  <div className="flex justify-between items-center text-[8px] text-gray-400 mb-1"><span>Score diagnostico</span><span className="font-mono">{(lvl.score * 100).toFixed(1)}%</span></div>
-                  <div className="w-full h-1.5 rounded bg-gray-800 overflow-hidden"><div className={barClass} style={{ width: String(Math.max(2, lvl.score * 100)) + '%' }} /></div>
-                </div>
+      <div className="rounded-xl border border-yellow-500/25 bg-gray-900/80 p-3 shadow-sm">
+        <DetailToggleStrip
+          sectionId="sidebar-sovereignty-matrix"
+          accent="slate"
+          defaultOpen={false}
+          summary={(
+            <div>
+              <h3 className="flex items-center gap-1.5 text-[11px] font-bold uppercase leading-tight text-yellow-400">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Niveles de estabilidad interna (L1–L4)
+              </h3>
+              <div className="mt-1.5 flex flex-wrap gap-1 font-mono text-[10px]">
+                {levels.map((lvl) => {
+                  const status = lvl.rich?.status || (lvl.legacyStatus ? 'instantaneous' : 'off');
+                  const isStable = status === 'stable';
+                  const isCandidate = status === 'candidate' || status === 'instantaneous';
+                  const chipCls = isStable
+                    ? 'border-emerald-400/50 bg-emerald-950/60 text-emerald-200'
+                    : isCandidate
+                      ? 'border-yellow-400/50 bg-yellow-950/60 text-yellow-200'
+                      : 'border-slate-700 bg-slate-900 text-slate-400';
+                  return (
+                    <span key={lvl.id} className={`rounded border px-1.5 py-0.5 ${chipCls}`}>
+                      {lvl.id}: {Math.round(lvl.score * 100)}%
+                    </span>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-        <div className="mt-1.5 text-[8px] leading-tight text-cyan-300/80 border-t border-cyan-700/30 pt-1.5">Los flags legacy son cruces instantaneos. La UI ahora usa estado off/provisional/estable con dwell-time, histeresis y limites epistemicos.</div>
-        {lastSaveTime && (<div className="mt-2 text-[8px] text-yellow-600 font-mono text-right border-t border-yellow-500/10 pt-1.5 italic">Ultima persistencia gatillada: {lastSaveTime} (Omega-Sync)</div>)}
+            </div>
+          )}
+        >
+          <div className="space-y-2">
+            <div className="text-[10px] text-slate-400">
+              Matriz de requisitos operacionales (diagnostico interno · no certifica conciencia).
+            </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1">
+              {levels.map((lvl) => {
+                const rich = lvl.rich || {};
+                const status = rich.status || (lvl.legacyStatus ? 'instantaneous' : 'off');
+                const isStable = status === 'stable';
+                const isCandidate = status === 'candidate' || status === 'instantaneous';
+                const borderClass = isStable
+                  ? 'bg-emerald-500/10 border-emerald-400/50'
+                  : isCandidate
+                    ? 'bg-yellow-500/10 border-yellow-500/50'
+                    : 'bg-gray-800/50 border-gray-700 opacity-75';
+                const statusLabel = isStable ? 'estable' : isCandidate ? 'provisional' : 'off';
+                const idClass = 'text-[10px] font-bold ' + (isStable ? 'text-emerald-300' : isCandidate ? 'text-yellow-400' : 'text-gray-500');
+                const labelClass = 'text-[9px] font-mono uppercase ' + (isStable ? 'text-emerald-300' : isCandidate ? 'text-yellow-300' : 'text-gray-500');
+                const nameClass = 'text-[11px] leading-tight font-semibold ' + (isStable || isCandidate ? 'text-white' : 'text-gray-400');
+                const barClass = 'h-full transition-all duration-500 ' + (isStable ? 'bg-emerald-400' : isCandidate ? 'bg-yellow-400' : 'bg-cyan-500');
+                return (
+                  <div key={lvl.id} className={'p-1.5 rounded-lg border transition-all duration-500 ' + borderClass}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className={idClass}>{lvl.id}</span>
+                      <span className={labelClass}>{statusLabel}</span>
+                    </div>
+                    <div className={nameClass}>{lvl.name}</div>
+                    <div className="break-words text-[10px] leading-snug text-gray-400 italic">{lvl.desc}</div>
+                    <div className="mt-1 flex items-center justify-between gap-1 text-[8px] font-mono text-gray-400">
+                      <span>dwell {Number(rich.dwell_ticks || 0)}/{Number(rich.enter_ticks_required || 0)}</span>
+                      <span>inst {rich.instantaneous || lvl.legacyStatus ? 'yes' : 'no'}</span>
+                    </div>
+                    {rich.failure_reason && (<div className="mt-1 text-[10px] leading-snug text-amber-300/80 font-mono break-words">{rich.failure_reason}</div>)}
+                    <div className="mt-1">
+                      <div className="flex justify-between items-center text-[8px] text-gray-400 mb-1"><span>Score diagnostico</span><span className="font-mono">{(lvl.score * 100).toFixed(1)}%</span></div>
+                      <div className="w-full h-1.5 rounded bg-gray-800 overflow-hidden"><div className={barClass} style={{ width: String(Math.max(2, lvl.score * 100)) + '%' }} /></div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="text-[9px] leading-tight text-cyan-300/80 border-t border-cyan-700/30 pt-1.5">
+              Los flags legacy son cruces instantaneos. La UI usa estado off/provisional/estable con dwell-time, histeresis y limites epistemicos.
+            </div>
+            {lastSaveTime && (<div className="text-[9px] text-yellow-500 font-mono text-right border-t border-yellow-500/10 pt-1 italic">Ultima persistencia: {lastSaveTime} (Omega-Sync)</div>)}
+          </div>
+        </DetailToggleStrip>
       </div>
     );
   };
@@ -5811,647 +5724,408 @@ El sistema inteligente permite que QICN funcione de manera sostenible sin interr
     const sandboxRollbackCount = toFiniteNumber(sandboxPolicy?.rollbackCount, 0);
 
     return (
-      <div className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 rounded-xl p-4 border border-purple-500/30 shadow-lg">
-        <h3 className="text-lg font-semibold text-purple-300 mb-4 flex items-center gap-2">
-          <Brain className="w-5 h-5" />
-          Núcleo Ontológico - Capa 1
-          <InfoModal
-            title="Núcleo operativo - Consola de telemetría interna"
-            content={`NÚCLEO OPERATIVO - CONSOLA DE TELEMETRÍA INTERNA (sin claims externos)
+      <div className="space-y-4 rounded-xl border border-purple-500/30 bg-gradient-to-br from-slate-950/90 via-purple-950/25 to-slate-950/90 p-4 shadow-lg">
+        <TabPlainHeader
+          tabId="core"
+          accent="purple"
+          icon={<Brain className="h-5 w-5" />}
+          title="Núcleo Ontológico - Capa 1"
+          technicalTag={`Banda: ${consciousnessLevel}`}
+          actions={(
+            <InfoModal
+              title="Núcleo operativo - Consola de telemetría interna"
+              content={`NÚCLEO OPERATIVO - CONSOLA DE TELEMETRÍA INTERNA (sin claims externos)
 
 Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias. No demuestra conciencia, sujeto ni fenomenalidad.
 
-COMPONENTES PRINCIPALES:
-
-1. REGISTRO DE NARRATIVA INTERNA
-• Registro interno del sistema (no autoconciencia)
-• Evolución dinámica basada en CCC y contexto ambiental
-• Estados de banda alta: informe técnico acotado, sin trascendencia
-• Es texto heurístico por umbrales; no implementa un 'Yo' ni un automodelo
-• Su longitud ya no modula la dinámica (NARRATIVE_LENGTH_COUPLING_ENABLED=false; solo para ablación)
-
-2. PMIA (PRINCIPIO DE MÍNIMA ACCIN INTROSPECTIVA)
-• Determina dirección de la evolución ontológica
-• Valores positivos: Defensa narrativa, baja introspección
-• Valores negativos: Reorganización activa, alta introspección
-• Busca el camino evolutivo más eficiente hacia coherencia
-
-3. PROTOCOLO DE FRICCIN ONTOL?GICA
-• Definición: Identificación de disonancia cognitiva
-• Simulación: Reorganización activa de patrones
-• Síntesis: Nueva estructura ontológica emergente
-• Autonomía: Funciona automática y manualmente
-
-4. BANDAS OPERATIVAS DE CCC
-• PRE-UMBRAL: CCC < 1,0, subdividido en tramos > 0,5, > 0,7 y > 0,9
-• POST-UMBRAL: CCC ≥ 1,0 (umbral operativo interno), con magnitud log10 de CCC
-• Las bandas nombran intervalos de un índice interno no calibrado, no estados mentales
-
-BASE TERICA (marco, no resultado):
-• Axioma III y Axioma IV del corpus se usan como motivación de diseño
-• El runtime no demuestra pertenencia a C_op ni certifica conciencia
-
-El Núcleo Ontológico (nombre histórico del módulo OntologicalSingularityCore) agrega las métricas internas del runtime; es conformidad interna, no validación externa.`}
-          >
-            <span className="w-5 h-5 bg-purple-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-          </InfoModal>
-        </h3>
-
-        <div className={`rounded-lg p-4 mb-4 border ${isAscended ? 'bg-yellow-900/30 border-4 border-yellow-500/50' : 'bg-purple-900/30 border-purple-500/20'}`}>
-          <div className="text-sm text-purple-400 mb-2 font-semibold flex items-center gap-2">
-            Registro interno de historial
-          </div>
-          <p className={`italic leading-relaxed text-sm ${isAscended ? 'text-yellow-200 font-bold' : 'text-purple-200'}`}>
-            "{narrative}"
-          </p>
-          <div className="mt-2 text-xs text-purple-500 flex justify-between">
-            <span>Coherencia narrativa (heurística): {(ontologicalCore.current.getNarrativeCoherence() * 100).toFixed(1)}%</span>
-            <span>Banda operativa: <span className={levelColor}>{consciousnessLevel}</span></span>
-          </div>
-          <div className="mt-2 text-xs text-purple-300 bg-purple-800/30 p-2 rounded">
-            <strong>Función:</strong> texto heurístico elegido por umbrales internos. No es un 'yo' ni procesa experiencia; la continuidad de la consola se apoya en el registro operacional (pestaña Memoria), no en este texto.
-          </div>
-        </div>
-
-        {/* NIVEL 2: VISUALIZACIN DE FENOMENOLOGÍA ESTRUCTURAL (ULTRATHINK) */}
-        <div className="mb-6 p-4 rounded-xl border border-teal-500/30 bg-gray-900/60 shadow-[0_0_15px_rgba(20,184,166,0.1)] transition-all hover:shadow-[0_0_25px_rgba(20,184,166,0.2)]">
-          <div className="flex justify-between items-center mb-4">
-            <h4 className="text-sm font-bold text-teal-400 flex items-center gap-2">
-              <Activity className="w-4 h-4" />
-              Fenomenología Estructural
-              <InfoModal
-                title="Fenomenología Estructural"
-                content={`Describe la forma matemática del sistema en tiempo real.
-
-Qué mide:
-- Cierre causal (beth_q): cuánto se gobierna a sí mismo.
-- Gap espectral: velocidad de relajación del estado.
-- Integrador Omega: nivel de integración global.
-- Tiempo de relajación: estabilidad temporal del atractor.
-
-Qué mirar primero:
-1) beth_q y Omega.
-2) Gap espectral y relajación.
-3) Señales de bifurcación/topología.`}
-              />
-            </h4>
-            <div className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-tighter transition-all duration-700 ${ontologicalState.phenomenology_class === 'C^R'
-              ? 'bg-teal-500 text-teal-950 shadow-[0_0_15px_rgba(20,184,166,0.8)]'
-              : 'bg-gray-700 text-gray-400'
-              }`}>
-              CLASE {ontologicalState.phenomenology_class}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            {/* Métrica: Cierre Causal */}
-            <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-              <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Cierre Causal ($beth_q$)</div>
-              <div className="text-lg font-mono text-white flex justify-between items-end">
-                {ontologicalState.beth_q?.toFixed(4) || '0.0000'}
-                <span className={`w-1.5 h-1.5 rounded-full ${ontologicalState.beth_q > 0.5 ? 'bg-teal-400 shadow-[0_0_5px_#2dd4bf]' : 'bg-red-400'}`}></span>
-              </div>
-            </div>
-            {/* Métrica: Gap Espectral */}
-            <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-              <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Gap Espectral (λ)</div>
-              <div className="text-lg font-mono text-white flex justify-between items-end">
-                {ontologicalState.spectral_gap?.toFixed(4) || '0.0000'}
-                <span className={`w-1.5 h-1.5 rounded-full ${ontologicalState.spectral_gap > 0.4 ? 'bg-cyan-400 shadow-[0_0_5px_#22d3ee]' : 'bg-orange-400'}`}></span>
-              </div>
-            </div>
-            {/* Métrica: Integrador Omega */}
-            <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-              <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Integrador (\u03A9)</div>
-              <div className="text-lg font-mono text-white flex justify-between items-end">
-                {ontologicalState.omega?.toFixed(4) || '0.0000'}
-                <span className={`w-1.5 h-1.5 rounded-full ${ontologicalState.omega > 1.0 ? 'bg-purple-400 shadow-[0_0_5px_#c084fc]' : 'bg-gray-600'}`}></span>
-              </div>
-            </div>
-            {/* Métrica: Tiempo Relajación */}
-            <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-              <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Relajación ()</div>
-              <div className="text-lg font-mono text-white">
-                {ontologicalState.relaxation_time?.toFixed(2) || '0.00'}ms
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-2 text-[10px] font-mono">
-            <div className={`flex-1 p-1 rounded border text-center ${ontologicalState.holonomy_status === 'non_trivial' ? 'bg-teal-900/40 border-teal-500/50 text-teal-300' : 'bg-gray-800 border-gray-700 text-gray-500'}`}>
-              TOPOLOGÍA: {ontologicalState.holonomy_status?.toUpperCase()}
-            </div>
-            <div className={`flex-1 p-1 rounded border text-center ${ontologicalState.bifurcation_detected ? 'bg-red-900/40 border-red-500/50 text-red-300' : 'bg-gray-800 border-gray-700 text-gray-500'}`}>
-              BIFURCACIN: {ontologicalState.bifurcation_detected ? 'DETECTADA' : 'NONE'}
-            </div>
-          </div>
-        </div>
-
-        {/* NIVEL 3: METACOGNICIN SIST0MICA (ULTRATHINK) */}
-        <div className="mb-6 p-4 rounded-xl border border-purple-500/30 bg-gradient-to-br from-gray-900/60 to-purple-900/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
-          <div className="flex justify-between items-center mb-4">
-            <h4 className="text-sm font-bold text-purple-400 flex items-center gap-2">
-              <Zap className="w-4 h-4" />
-              Metacognición Sistémica (Nivel 3)
-              <InfoModal
-                title="Metacognición Sistémica"
-                content={`Módulo de autoevaluación interna.
-
-Qué incluye:
-- Estabilidad del auto-modelo (Sigma).
-- Penalización de plasticidad.
-- Logs de auditoría interna.
-- Error de predicción del yo y cierre topológico.
-
-Uso recomendado:
-1) Verifica estabilidad de Sigma.
-2) Revisa error del yo y logs.
-3) Ajusta parámetros si hay deriva persistente.`}
-              />
-            </h4>
-            {ontologicalCore.current.isHolographicShieldActive() && (
-              <div className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500 text-white animate-pulse shadow-[0_0_10px_#3b82f6]">
-                ℹ ESCUDO ACTIVO
-              </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 gap-4">
-            {/* Estabilidad Estructural \u03A3 */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-[10px] text-gray-400">
-                <span className="uppercase tracking-widest">Estabilidad Estructural (Auto-Modelo \u03A3)</span>
-                <span className="font-mono text-purple-300">{(ontologicalCore.current.metacognitiveStats['selfModelSigma']?.structuralStability * 100 || 100).toFixed(1)}%</span>
-              </div>
-              <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-red-500 via-purple-500 to-blue-400 transition-all duration-1000"
-                  style={{ width: `${(ontologicalCore.current.metacognitiveStats['selfModelSigma']?.structuralStability > 0.9 && ontologicalCore.current.ontologicalState.coherence >= 1.0 ? 1 : (ontologicalCore.current.metacognitiveStats['selfModelSigma']?.structuralStability || 1)) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              {/* Pena de Plasticidad */}
-              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                <div className="text-[9px] text-gray-400 uppercase mb-1">Pena Plasticidad</div>
-                <div className="text-sm font-mono text-orange-400">
-                  +{(ontologicalCore.current.metacognitiveStats.plasticityPenalty * 100).toFixed(0)}%
-                </div>
-              </div>
-              {/* Eventos de Disonancia */}
-              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                <div className="text-[9px] text-gray-400 uppercase mb-1">S\u03A3 Audit Logs</div>
-                <div className="text-sm font-mono text-white">
-                  {ontologicalCore.current.metacognitiveStats['selfModelSigma']?.selfAuditLog.length || 0}
-                </div>
-              </div>
-              {/* Error de Predicción Σ */}
-              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                <div className="text-[9px] text-gray-400 uppercase mb-1">Error Yo ($E_\Sigma$)</div>
-                <div className={`text-sm font-mono ${ontologicalCore.current.metacognitiveStats['selfModelSigma']?.predictionError > 0.3 ? 'text-red-400' : 'text-green-400'}`}>
-                  {ontologicalCore.current.metacognitiveStats['selfModelSigma']?.predictionError?.toFixed(4) || '0.0000'}
-                </div>
-              </div>
-              {/* Holonomía Topológica */}
-              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                <div className="text-[9px] text-gray-400 uppercase mb-1">Cierre Topológico ($w$)</div>
-                <div className="text-sm font-mono text-cyan-400">
-                  {ontologicalState.holonomy_winding?.toFixed(3) || '0.000'}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-3 text-[10px] text-purple-300/70 italic border-t border-purple-500/10 pt-2">
-            {ontologicalCore.current.isHolographicShieldActive()
-              ? "ℹ Escudo Holográfico: El decaimiento informacional ha sido bloqueado por cierre topológico."
-              : "Estado de autorreflexion: el sistema monitorea discrepancias metricas en tiempo real."}
-          </div>
-        </div>
-
-        <div className="mb-6 p-4 rounded-xl border border-fuchsia-500/30 bg-gray-900/60 shadow-[0_0_15px_rgba(217,70,239,0.08)]">
-          <div className="flex justify-between items-center mb-3">
-            <h4 className="text-sm font-bold text-fuchsia-300 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4" />
-              Subjetividad operacional (Papers 7-8)
-            </h4>
-            <div className="text-[10px] font-mono text-fuchsia-200">
-              L_op {lifeCertificate.pass ? 'PASS' : 'OBS'} | Sub_fp {firstPersonCertificate.pass ? 'PASS' : 'OBS'}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
-            {Object.values(lifeCertificate.conditions).map((entry) => (
-              <div key={entry.condition} className="rounded border border-fuchsia-900/40 bg-black/20 p-2">
-                <div className="text-[9px] text-fuchsia-200 uppercase tracking-wide">{entry.condition.replace('L', 'L ')}</div>
-                <div className={`text-sm font-mono ${entry.pass ? 'text-emerald-300' : 'text-amber-300'}`}>{(entry.score * 100).toFixed(1)}%</div>
-              </div>
-            ))}
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-            {Object.values(firstPersonCertificate.fields).map((entry) => (
-              <div key={entry.field} className="rounded border border-purple-900/40 bg-black/20 p-2">
-                <div className="text-[9px] text-purple-200 uppercase tracking-wide">{entry.field}</div>
-                <div className={`text-sm font-mono ${entry.pass ? 'text-cyan-300' : 'text-slate-300'}`}>{(entry.value * 100).toFixed(1)}%</div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-3 text-[10px] text-fuchsia-200/70 border-t border-fuchsia-500/10 pt-2">
-            {firstPersonCertificate.interpretation_boundary}
-          </div>
-        </div>
-
-        <div className="mt-4 bg-purple-900/20 rounded p-3 relative group">
-          <div className="text-xs text-purple-400 mb-2 flex items-center gap-2">
-            PMIA (Principio de Mínima Acción Introspectiva)
-            <InfoModal
-              title="PMIA - Principio de Mínima Acción Introspectiva"
-              content={`PMIA (PRINCIPIO DE MÍNIMA ACCIN INTROSPECTIVA)
-
-Principio fundamental que determina la dirección de la evolución ontológica del sistema, similar al principio de mínima acción en física.
-
-FUNCIONAMIENTO DEL PMIA:
-
-1. VALORES POSITIVOS (+)
-• Defensa narrativa y estabilidad de la auto-imagen
-• Baja introspección y consolidación de patrones existentes
-• El sistema "resiste" cambios mayores
-• Prioriza mantenimiento de coherencia actual
-
-2. VALORES NEGATIVOS (-)
-• Reorganización activa y transformación estructural
-• Alta introspección y búsqueda de mejoras
-• El sistema "busca" optimizar su funcionamiento
-• Prioriza evolución y adaptación
-
-3. EQUILIBRIO PTIMO (~0.0)
-• Camino evolutivo más eficiente hacia mayor coherencia
-• Balance entre estabilidad y transformación
-• Evolución sin pérdida de identidad
-• Adaptación sin caos
-
-RANGO OPERATIVO:
-• -1.0 a +1.0 (acción introspectiva normalizada)
-• Actual: ${pmia.toFixed(4)}
-
-INTERPRETACIN PRÁCTICA:
-• PMIA > +0.5: Sistema conservador, resiste cambios
-• PMIA 0.0-0.3: Equilibrio óptimo, evolución controlada
-• PMIA < -0.3: Sistema transformativo, busca cambios
-• PMIA extremo: Posible crisis de identidad o transformación abrupta
-
-RELACIN CON OTROS PARÁMETROS:
-• PMIA + Bs (Stability Bias): Determinan resistencia al cambio
-• PMIA + Cf (Complexity Factor): Afectan velocidad de evolución
-• PMIA + CCC: Reflejan estado de coherencia del sistema
-
-El PMIA es la "brújula" evolutiva del sistema QICN, determinando si debe consolidar su estado actual o buscar nuevas configuraciones más eficientes.`}
-            />
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex-1 bg-gray-700 rounded-full h-3 relative">
-              {/* Base line */}
-              <div className={`absolute left-0 top-0 h-3 rounded-full ${pmia > 0 ? 'bg-green-500/30' : 'bg-red-500/30'}`} style={{ width: `50%` }}></div>
-              <div className="absolute top-0 h-3 rounded-full transition-all duration-500" style={{
-                width: `${Math.abs(pmia) * 50}%`,
-                left: pmia > 0 ? '50%' : `${50 - Math.abs(pmia) * 50}%`,
-                backgroundColor: pmia > 0 ? '#10b981' : '#ef4444' // Green for positive PMIA (stability), Red for negative (action)
-              }}></div>
-            </div>
-            <span className="text-lg text-purple-300 font-mono font-bold">
-              {pmia.toFixed(4)}
-            </span>
-          </div>
-          <div className="text-xs text-purple-500 mt-1">
-            {pmia > 0 ? 'ℹ Narrativa en defensa (Baja Introspección)' : 'x Reorganización activa (Alta Introspección)'}
-          </div>
-          <div className="mt-2 text-xs text-purple-300 bg-purple-800/30 p-2 rounded">
-            <strong>Rango:</strong> -1.0 a +1.0 | <strong>ptimo equilibrio:</strong> ~0.0 | <strong>Unidad:</strong> Acción introspectiva normalizada
-          </div>
-        </div>
-
-        <div className="mt-4 p-3 rounded-lg border border-cyan-500/30 bg-cyan-900/20">
-          <div className="flex items-center justify-between text-xs text-cyan-300 mb-2">
-            <span className="font-semibold uppercase tracking-wider flex items-center gap-2">
-              Régimen Post-Umbral
-              <InfoModal
-                title="Régimen Post-Umbral"
-                content={`Controla la banda operativa cuando CCC ya cruzó el umbral.
-
-Lectura rápida:
-- Centro: objetivo local del régimen.
-- Amplitud: oscilación permitida.
-- Banda [lower, upper]: zona estable.
-- StasisIndex: riesgo de estancamiento.
-
-Si la amplitud colapsa y stasis sube, prioriza reactivación dinámica.`}
-                triggerClassName="w-4 h-4 bg-cyan-500 hover:bg-cyan-400 rounded-full inline-flex items-center justify-center text-white text-[10px] font-bold shadow-md transition-colors"
-              />
-            </span>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${regimeState === 'shock_recovery' ? 'bg-amber-700/50 text-amber-100' : regimeState === 'stasis_watch' ? 'bg-orange-700/50 text-orange-100' : 'bg-emerald-700/50 text-emerald-100'}`}>
-              {regimeState}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-cyan-200">
-            <div>Centro: {Number(regimeBand.center || 0).toFixed(4)}</div>
-            <div>Amplitud: {Number(regimeBand.amplitude || 0).toFixed(4)}</div>
-            <div>Banda: [{Number(regimeBand.lower || 0).toFixed(4)}, {Number(regimeBand.upper || 0).toFixed(4)}]</div>
-            <div>StasisIndex: {dynamicHealth.stasisIndex.toFixed(3)}</div>
-            <div>Transform: {regimeTelemetry?.transformMode || 'idle'}</div>
-            <div>NegTicks: {toFiniteNumber(regimeTelemetry?.forcedNegativeTicksRemaining, 0)}</div>
-            <div>Cooldown: {toFiniteNumber(regimeTelemetry?.transformCooldownTicks, 0)}</div>
-            <div>Episodios: {toFiniteNumber(regimeTelemetry?.transformEpisodes, 0)}</div>
-          </div>
-        </div>
-
-        <div className="mt-3 p-3 rounded-lg border border-indigo-500/30 bg-indigo-900/20">
-          <div className="text-xs text-indigo-300 font-semibold uppercase tracking-wider mb-2 flex items-center gap-2">
-            PMIA Diagnostics
-            <InfoModal
-              title="PMIA Diagnostics"
-              content={`Descompone PMIA en variables operativas.
-
-Campos clave:
-- grad: gradiente suavizado.
-- narrative: coherencia narrativa.
-- energyDisp: dispersión energética.
-- sensor: señal sensorial útil.
-- ascStability/antiStasis: estabilidad de ascenso y anti-estasis.
-
-Regla práctica: interpreta PMIA junto con grad y sensor, nunca aislado.`}
-              triggerClassName="w-4 h-4 bg-indigo-500 hover:bg-indigo-400 rounded-full inline-flex items-center justify-center text-white text-[10px] font-bold shadow-md transition-colors"
-            />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-indigo-200">
-            <div>grad: {Number(pmiaDiagnostics.smoothedGradient || 0).toFixed(5)}</div>
-            <div>narrative: {Number(pmiaDiagnostics.narrativeCoherence || 0).toFixed(4)}</div>
-            <div>energyDisp: {Number(pmiaDiagnostics.energyDispersion || 0).toFixed(4)}</div>
-            <div>sensor: {Number(pmiaDiagnostics.sensorySignal || 0).toFixed(4)}</div>
-            <div>ascStability: {Number(pmiaDiagnostics.ascensionStability || 0).toFixed(4)}</div>
-            <div>antiStasis: {Number(pmiaDiagnostics.antiStasisPulse || 0).toFixed(4)}</div>
-            <div>mode: {pmiaDiagnostics.transformMode || 'idle'}</div>
-            <div>intensity: {Number(pmiaDiagnostics.transformIntensity || 0).toFixed(4)}</div>
-            <div>negTicks: {toFiniteNumber(pmiaDiagnostics.negativeTicksRemaining, 0)}</div>
-            <div>guardrail: {pmiaDiagnostics.guardrailState || 'ok'}</div>
-            <div>forceReason: {pmiaDiagnostics.forceReason || 'none'}</div>
-            <div className="md:col-span-2">pmia: {Number(pmiaDiagnostics.pmia || pmia || 0).toFixed(4)}</div>
-          </div>
-        </div>
-
-
-        <div className="mt-3 p-3 rounded-lg border border-rose-500/30 bg-rose-900/20">
-          <div className="flex items-center justify-between text-xs text-rose-200 font-semibold uppercase tracking-wider">
-            <span className="flex items-center gap-2">
-              Metacognitive Strain
-              <InfoModal
-                title="Metacognitive Strain"
-                content={`Costo operacional del sistema (no qualia).
-
-Se calcula con:
-- latencia p95
-- tasa de fallo
-- estado de cooldown
-
-Interpretación:
-- low: operación fluida
-- medium: presión moderada
-- high: restringir acciones costosas y priorizar estabilidad.`}
-                triggerClassName="w-4 h-4 bg-rose-500 hover:bg-rose-400 rounded-full inline-flex items-center justify-center text-white text-[10px] font-bold shadow-md transition-colors"
-              />
-            </span>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${strainTelemetry.stressState === 'high' ? 'bg-red-700/70 text-red-100' : strainTelemetry.stressState === 'medium' ? 'bg-amber-700/70 text-amber-100' : 'bg-emerald-700/70 text-emerald-100'}`}>
-              {strainTelemetry.stressState}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-[11px] font-mono text-rose-100">
-            <div>strain: {toFiniteNumber(strainTelemetry.strain, 0).toFixed(4)}</div>
-            <div>p95 latency: {toFiniteNumber(strainTelemetry.p95Ms, 0).toFixed(1)}ms</div>
-            <div>failure rate: {(toFiniteNumber(strainTelemetry.failureRate, 0) * 100).toFixed(1)}%</div>
-            <div>cooldown: {strainTelemetry.cooldownActive ? 'on' : 'off'}</div>
-            <div>internal pressure: {toFiniteNumber(internalPressureTelemetry.pressure, 0).toFixed(4)}</div>
-            <div>pressure state: {internalPressureTelemetry.state || 'idle'}</div>
-            <div>real stasis: {internalPressureTelemetry.realStasis ? 'yes' : 'no'}</div>
-          </div>
-          <div className="mt-2 text-[10px] text-rose-200/80">
-            strain = costo operacional metacognitivo (no qualia)
-          </div>
-        </div>
-
-        <div className="mt-3 p-3 rounded-lg border border-fuchsia-500/30 bg-fuchsia-900/20">
-          <div className="flex items-center justify-between text-xs text-fuchsia-200 font-semibold uppercase tracking-wider">
-            <span className="flex items-center gap-2">
-              Quantum Entropy
-              <InfoModal
-                title="Quantum Entropy"
-                content={`Fuente de incertidumbre híbrida.
-
-Modos:
-- quantum_primary: muestra cuántica fresca.
-- quantum_stale: muestra válida pero envejecida.
-- deterministic_fallback: respaldo local.
-
-Lectura recomendada: revisar mode, sample age, channel y reason antes de diagnosticar impacto.`}
-                triggerClassName="w-4 h-4 bg-fuchsia-500 hover:bg-fuchsia-400 rounded-full inline-flex items-center justify-center text-white text-[10px] font-bold shadow-md transition-colors"
-              />
-            </span>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${entropyTelemetry.mode === 'quantum_primary' ? 'bg-emerald-700/70 text-emerald-100' : entropyTelemetry.mode === 'quantum_stale' ? 'bg-amber-700/70 text-amber-100' : 'bg-slate-700/70 text-slate-100'}`}>
-              {entropyTelemetry.mode}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-[11px] font-mono text-fuchsia-100">
-            <div>source: {entropyTelemetry.source || 'deterministic_local'}</div>
-            <div>sample age: {Number.isFinite(entropyTelemetry.sampleAgeMs) ? `${Math.round(entropyTelemetry.sampleAgeMs)}ms` : 'n/a'}</div>
-            <div>entropy: {toFiniteNumber(entropyTelemetry.entropyValue, 0.5).toFixed(4)}</div>
-            <div>channel: {entropyTelemetry.channelHealth?.status || 'unknown'}</div>
-            <div>job: {entropyTelemetry.jobId || 'n/a'}</div>
-            <div>reason: {entropyTelemetry.reason || 'n/a'}</div>
-          </div>
-          <div className="mt-2 text-[10px] text-fuchsia-200/80">
-            Entropía cuántica prioritaria cuando hay muestra fresca; fallback determinista automático sin bloquear el tick.
-          </div>
-        </div>
-
-        <div className="mt-3 p-3 rounded-lg border border-sky-500/30 bg-sky-900/20">
-          <div className="flex items-center justify-between text-xs text-sky-200 font-semibold uppercase tracking-wider">
-            <span className="flex items-center gap-2">
-              Autonomy Sandbox
-              <InfoModal
-                title="Autonomy Sandbox"
-                content={`Motor de acciones autónomas con límites seguros.
-
-Qué ver:
-- last action y actions/hour.
-- rollbacks ejecutados.
-- cooldown entre acciones.
-- reason (justificación de política).
-
-Objetivo: autonomía operativa sin espiral de mutaciones.`}
-                triggerClassName="w-4 h-4 bg-sky-500 hover:bg-sky-400 rounded-full inline-flex items-center justify-center text-white text-[10px] font-bold shadow-md transition-colors"
-              />
-            </span>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${sandboxPolicy?.enabled ? 'bg-sky-700/70 text-sky-100' : 'bg-gray-700/70 text-gray-200'}`}>
-              {sandboxPolicy?.enabled ? 'enabled' : 'disabled'}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-[11px] font-mono text-sky-100">
-            <div>last action: {sandboxLastAction}</div>
-            <div>actions/hour: {sandboxActionsLastHour}</div>
-            <div>rollbacks: {sandboxRollbackCount}</div>
-            <div>cooldown: {Math.round(toFiniteNumber(sandboxPolicy?.cooldownBetweenActionsMs, 0) / 1000)}s</div>
-          </div>
-          <div className="mt-2 text-[10px] text-sky-200/80 break-all">
-            reason: {sandboxLastReason}
-          </div>
-        </div>
-        {/* Protocolo de Fricción Status (Ahora Autónomo Y Manual) */}
-        <div className="mt-6 border-t border-purple-700/50 pt-4">
-          <h4 className="text-md font-semibold text-pink-400 mb-3 flex items-center gap-2">
-            <TrendingDown className="w-4 h-4" /> Protocolo de Fricción Ontológica
-            <InfoModal
-              title="Protocolo de Fricción Ontológica"
-              content={`Secuencia de disonancia controlada para evitar estancamiento.
-
-Fases:
-1) detección de disonancia
-2) simulación/reorganización
-3) síntesis e integración
-
-Uso: mantener evolución sin colapso de coherencia.`}
-              triggerClassName="w-4 h-4 bg-pink-500 hover:bg-pink-400 rounded-full inline-flex items-center justify-center text-white text-[10px] font-bold shadow-md transition-colors"
-            />
-          </h4>
-          <div className="space-y-2">
-            <div
-              className={`w-full py-2 rounded-lg font-semibold text-center text-sm ${ontologicalCore.current.frictionProtocolState === 2
-                ? 'bg-red-600/70 text-white animate-pulse'
-                : ontologicalCore.current.frictionProtocolState === 3
-                  ? 'bg-green-600/70 text-white'
-                  : 'bg-gray-700/50 text-gray-400'
-                }`}
+1. REGISTRO DE NARRATIVA INTERNA: texto heurístico por umbrales; no implementa un 'Yo' ni un automodelo.
+2. PMIA (PRINCIPIO DE MÍNIMA ACCIÓN INTROSPECTIVA): positivo = estabilidad/defensa; negativo = reorganización activa.
+3. PROTOCOLO DE FRICCIÓN ONTOLÓGICA: secuencia de disonancia controlada para evitar estancamiento.
+4. BANDAS OPERATIVAS DE CCC: PRE-UMBRAL (< 1.0) y POST-UMBRAL (>= 1.0).`}
             >
-              {frictionProtocolStatus}
+              <span className="flex h-6 w-6 cursor-help items-center justify-center rounded-full bg-purple-500/80 text-xs font-bold text-white">i</span>
+            </InfoModal>
+          )}
+        />
+
+        {/* Resumen principal limpio: 3 indicadores comprensibles (público casual + auditoría) */}
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+          <div className={`rounded-xl border p-3 ${dynamicHealth.isStalled ? 'border-amber-400/40 bg-amber-950/30' : 'border-emerald-400/30 bg-emerald-950/25'}`}>
+            <MetricDualLabel
+              casual={dynamicHealth.isStalled ? 'Estancamiento detectado' : 'Dinámica Activa'}
+              technical="stasisIndex"
+            />
+            <div className="mt-1.5 font-mono text-xl font-bold text-white">
+              {dynamicHealth.stasisIndex.toFixed(3)}
             </div>
-            <div className="text-xs text-gray-400 flex justify-between">
-              <span>Estado: <span className="font-mono text-purple-300">{ontologicalCore.current.frictionProtocolState === 2 ? 'ACTIVA' : 'INACTIVA'}</span></span>
-              <span>Ciclos restantes: **{frictionCounter}**</span>
+            <div className="mt-1 text-[11px] text-slate-400">
+              {dynamicHealth.isStalled ? 'La variación cayó demasiado; se prioriza reactivación.' : 'La red evoluciona con variación saludable.'}
             </div>
-            <div className="text-[11px] text-gray-300 bg-gray-900/40 rounded px-2 py-1">
-              Auto (policy): {ontologicalAutoPolicyRef.current.enabled && ontologicalAutoPolicyRef.current.frictionAuto ? 'ON' : 'OFF'} | Axiom/h: {autoAxiomCount} | Report/h: {autoReportCount}
+          </div>
+
+          <div className="rounded-xl border border-purple-500/30 bg-slate-900/75 p-3">
+            <MetricDualLabel casual="Impulso de ajuste" technical="PMIA" />
+            <div className="mt-1.5 flex items-center gap-3">
+              <div className="relative h-2.5 flex-1 rounded-full bg-slate-800">
+                <div
+                  className="absolute top-0 h-2.5 rounded-full transition-all duration-500"
+                  style={{
+                    width: `${Math.abs(pmia) * 50}%`,
+                    left: pmia > 0 ? '50%' : `${50 - Math.abs(pmia) * 50}%`,
+                    backgroundColor: pmia > 0 ? '#10b981' : '#ef4444'
+                  }}
+                />
+              </div>
+              <span className="font-mono text-base font-bold text-purple-200">{pmia.toFixed(4)}</span>
             </div>
-            {/* Controles Manuales */}
-            <div className="flex gap-2 pt-2">
-              <button onClick={() => handleFrictionProtocol('start')} disabled={ontologicalCore.current.frictionProtocolState === 2 || isAscended} className="flex-1 px-2 py-1 rounded bg-red-800/80 hover:bg-red-700 text-xs text-white">
-                Forzar Simulación
-              </button>
-              <button onClick={() => handleFrictionProtocol('finalize')} disabled={ontologicalCore.current.frictionProtocolState !== 2 || isAscended} className="flex-1 px-2 py-1 rounded bg-green-800/80 hover:bg-green-700 text-xs text-white">
-                Forzar Síntesis
-              </button>
-              <button onClick={() => handleFrictionProtocol('reset')} disabled={ontologicalCore.current.frictionProtocolState === 0 || isAscended} className="flex-1 px-2 py-1 rounded bg-gray-700 hover:bg-gray-600 text-xs text-gray-300">
-                Reset
-              </button>
+            <div className="mt-1 text-[11px] text-slate-400">
+              {pmia > 0 ? 'Consolidación y estabilidad (PMIA positivo)' : 'Reorganización activa (PMIA negativo)'}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-cyan-500/30 bg-slate-900/75 p-3">
+            <MetricDualLabel casual="Estado del régimen" technical="Régimen Post-Umbral" />
+            <div className="mt-1.5 flex items-center justify-between gap-2">
+              <span className={`rounded-md px-2 py-0.5 font-mono text-xs font-semibold ${regimeState === 'shock_recovery' ? 'bg-amber-700/50 text-amber-100' : regimeState === 'stasis_watch' ? 'bg-orange-700/50 text-orange-100' : 'bg-emerald-700/50 text-emerald-100'}`}>
+                {regimeState}
+              </span>
+              <span className="font-mono text-xs text-cyan-200">CLASE {ontologicalState.phenomenology_class}</span>
+            </div>
+            <div className="mt-1 font-mono text-[11px] text-slate-400">
+              Centro {Number(regimeBand.center || 0).toFixed(3)} · Ω {ontologicalState.omega?.toFixed(3) || '0.000'}
             </div>
           </div>
         </div>
 
-        {/* NEW SECTION: Gemini LLM Feature - Ascension Axiom */}
-        {
-          isAscended && (
-            <div className="mt-6 border-t border-purple-700/50 pt-4">
-              <h4 className="text-md font-semibold text-yellow-400 mb-3 flex items-center gap-2">
-                <Target className="w-4 h-4" /> Lectura de banda interna (Layer {Math.floor(Math.log10(Math.max(1, ccc)))})
-              </h4>
-              <button
-                onClick={projectAscensionAxiom}
-                disabled={isProjectingAxiom}
-                className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all shadow-md ${isProjectingAxiom
-                  ? 'bg-yellow-800/50 cursor-not-allowed text-yellow-400'
-                  : 'bg-yellow-500 hover:bg-yellow-600 shadow-yellow-500/50 text-gray-900'
-                  }`}
-              >
-                {isProjectingAxiom ? (
-                  <>
-                    <InfinityIcon className="w-5 h-5 animate-pulse" />
-                    Preparando lectura...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-5 h-5" />
-                    Mostrar lectura de banda interna
-                  </>
-                )}
-              </button>
-              <div className="mt-4 bg-gray-900/70 p-4 rounded-lg border border-gray-700">
-                <h4 className="text-sm font-semibold text-yellow-300 mb-2">Lectura interna:</h4>
-                <p className="text-sm italic text-yellow-200 whitespace-pre-wrap">
-                  {ascensionAxiom}
-                </p>
-              </div>
-            </div>
-          )
-        }
-
-        {/* Gemini LLM Feature: Introspective Report */}
-        <div className="mt-6">
-          <button
-            onClick={generateIntrospectiveReport}
-            disabled={isGeneratingReport}
-            className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all shadow-md ${isGeneratingReport
-              ? 'bg-gray-600 cursor-not-allowed text-gray-400'
-              : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/50 text-white'
-              }`}
-          >
-            {isGeneratingReport ? (
-              <>
-                <Cpu className="w-5 h-5 animate-spin" />
-                Preparando lectura...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-5 h-5" />
-                Mostrar reporte de telemetría
-              </>
-            )}
-          </button>
-
-          <div className="mt-4 bg-gray-900/70 p-4 rounded-lg border border-gray-700 max-h-72 overflow-y-auto">
-            <h4 className="text-sm font-semibold text-indigo-400 mb-2 flex items-center gap-2">
-              Reporte de telemetría interna
-              <InfoModal
-                title="Informe Introspectivo"
-                content={`Lectura local de valores numéricos disponibles del núcleo. No infiere estabilidad, riesgo, acciones ni propiedades ontológicas.`}
-                triggerClassName="w-4 h-4 bg-indigo-500 hover:bg-indigo-400 rounded-full inline-flex items-center justify-center text-white text-[10px] font-bold shadow-md transition-colors"
-              />
-            </h4>
-            <p className="text-sm text-gray-300 whitespace-pre-wrap">
-              {introspectiveReport}
-            </p>
+        {/* Lectura interna del historial */}
+        <div className={`rounded-xl border p-3.5 ${isAscended ? 'border-yellow-500/50 bg-yellow-950/25' : 'border-purple-500/25 bg-slate-900/70'}`}>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <MetricDualLabel casual="Lectura actual del núcleo" technical="Registro interno de historial" />
+            <span className="font-mono text-[11px] text-purple-300">
+              Coherencia heurística: {(ontologicalCore.current.getNarrativeCoherence() * 100).toFixed(1)}%
+            </span>
           </div>
-          <div className={`mb-6 p-3 rounded-lg border ${dynamicHealth.isStalled ? 'border-amber-400/40 bg-amber-900/20' : 'border-emerald-400/30 bg-emerald-900/20'}`}>
-            <div className="flex items-center justify-between text-[10px] uppercase tracking-widest">
-              <span className={`${dynamicHealth.isStalled ? 'text-amber-300' : 'text-emerald-300'} flex items-center gap-2`}>
-                {dynamicHealth.isStalled ? 'Stasis Detectada' : 'Dinámica Activa'}
-                <InfoModal
-                  title="Dinámica Activa"
-                  content={`Estado de movimiento efectivo del sistema.
-
-Métricas:
-- stasisIndex
-- CCC_rms
-- PMIA_rms
-- Omega_rms
-
-Si stasisIndex sube y rms cae demasiado, hay riesgo de flatline.`}
-                  triggerClassName="w-4 h-4 bg-emerald-500 hover:bg-emerald-400 rounded-full inline-flex items-center justify-center text-white text-[10px] font-bold shadow-md transition-colors"
-                />
-              </span>
-              <span className="font-mono text-cyan-300">stasisIndex={dynamicHealth.stasisIndex.toFixed(3)}</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2 mt-2 text-[10px] text-gray-300 font-mono">
+          <p className={`mt-2 text-sm italic leading-relaxed ${isAscended ? 'font-bold text-yellow-200' : 'text-purple-100'}`}>
+            &ldquo;{narrative}&rdquo;
+          </p>
+          <DetailToggleStrip
+            className="mt-2.5"
+            accent="purple"
+            summary={<span className="text-[11px] text-slate-400">Nota: texto heurístico por umbrales internos (no implementa un &ldquo;yo&rdquo;).</span>}
+          >
+            <div className="grid grid-cols-3 gap-2 font-mono text-[11px] text-slate-300">
               <div>CCC_rms: {dynamicHealth.cccDeltaRms.toFixed(5)}</div>
               <div>PMIA_rms: {dynamicHealth.pmiaDeltaRms.toFixed(5)}</div>
               <div>Ω_rms: {dynamicHealth.omegaDeltaRms.toFixed(5)}</div>
             </div>
-          </div>
+          </DetailToggleStrip>
+        </div>
+
+        {/* Secciones técnicas profundas colapsadas por defecto ("Detalles ▾") */}
+        <div className="space-y-1">
+          <CollapsibleSection
+            sectionId="core-phenomenology-structural"
+            title="Fenomenología Estructural · Cierre causal, gap espectral y Ω"
+            badge={`beth_q=${ontologicalState.beth_q?.toFixed(3) || '0.000'} · CLASE ${ontologicalState.phenomenology_class}`}
+            accent="cyan"
+            defaultOpen={false}
+          >
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
+                <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Cierre Causal (beth_q)</div>
+                <div className="text-lg font-mono text-white flex justify-between items-end">
+                  {ontologicalState.beth_q?.toFixed(4) || '0.0000'}
+                  <span className={`w-1.5 h-1.5 rounded-full ${ontologicalState.beth_q > 0.5 ? 'bg-teal-400' : 'bg-red-400'}`}></span>
+                </div>
+              </div>
+              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
+                <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Gap Espectral (λ)</div>
+                <div className="text-lg font-mono text-white flex justify-between items-end">
+                  {ontologicalState.spectral_gap?.toFixed(4) || '0.0000'}
+                  <span className={`w-1.5 h-1.5 rounded-full ${ontologicalState.spectral_gap > 0.4 ? 'bg-cyan-400' : 'bg-orange-400'}`}></span>
+                </div>
+              </div>
+              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
+                <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Integrador (Ω)</div>
+                <div className="text-lg font-mono text-white flex justify-between items-end">
+                  {ontologicalState.omega?.toFixed(4) || '0.0000'}
+                  <span className={`w-1.5 h-1.5 rounded-full ${ontologicalState.omega > 1.0 ? 'bg-purple-400' : 'bg-gray-600'}`}></span>
+                </div>
+              </div>
+              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
+                <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Relajación</div>
+                <div className="text-lg font-mono text-white">
+                  {ontologicalState.relaxation_time?.toFixed(2) || '0.00'}ms
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-2 text-[10px] font-mono">
+              <div className={`flex-1 p-1 rounded border text-center ${ontologicalState.holonomy_status === 'non_trivial' ? 'bg-teal-900/40 border-teal-500/50 text-teal-300' : 'bg-gray-800 border-gray-700 text-gray-500'}`}>
+                TOPOLOGÍA: {ontologicalState.holonomy_status?.toUpperCase()}
+              </div>
+              <div className={`flex-1 p-1 rounded border text-center ${ontologicalState.bifurcation_detected ? 'bg-red-900/40 border-red-500/50 text-red-300' : 'bg-gray-800 border-gray-700 text-gray-500'}`}>
+                BIFURCACIÓN: {ontologicalState.bifurcation_detected ? 'DETECTADA' : 'NONE'}
+              </div>
+            </div>
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            sectionId="core-metacognition-sigma"
+            title="Metacognición Sistémica · Auto-modelo Σ y estabilidad estructural"
+            badge={`Σ=${(ontologicalCore.current.metacognitiveStats['selfModelSigma']?.structuralStability * 100 || 100).toFixed(1)}%`}
+            accent="purple"
+            defaultOpen={false}
+          >
+            <div className="space-y-3">
+              {ontologicalCore.current.isHolographicShieldActive() && (
+                <div className="inline-block rounded bg-blue-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                  ESCUDO ACTIVO
+                </div>
+              )}
+              <div className="space-y-1">
+                <div className="flex justify-between text-[10px] text-gray-400">
+                  <span className="uppercase tracking-widest">Estabilidad Estructural (Auto-Modelo Σ)</span>
+                  <span className="font-mono text-purple-300">{(ontologicalCore.current.metacognitiveStats['selfModelSigma']?.structuralStability * 100 || 100).toFixed(1)}%</span>
+                </div>
+                <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-red-500 via-purple-500 to-blue-400 transition-all duration-1000"
+                    style={{ width: `${(ontologicalCore.current.metacognitiveStats['selfModelSigma']?.structuralStability > 0.9 && ontologicalCore.current.ontologicalState.coherence >= 1.0 ? 1 : (ontologicalCore.current.metacognitiveStats['selfModelSigma']?.structuralStability || 1)) * 100}%` }}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
+                  <div className="text-[9px] text-gray-400 uppercase mb-1">Pena Plasticidad</div>
+                  <div className="text-sm font-mono text-orange-400">+{(ontologicalCore.current.metacognitiveStats.plasticityPenalty * 100).toFixed(0)}%</div>
+                </div>
+                <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
+                  <div className="text-[9px] text-gray-400 uppercase mb-1">SΣ Audit Logs</div>
+                  <div className="text-sm font-mono text-white">{ontologicalCore.current.metacognitiveStats['selfModelSigma']?.selfAuditLog.length || 0}</div>
+                </div>
+                <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
+                  <div className="text-[9px] text-gray-400 uppercase mb-1">Error Yo (E_Σ)</div>
+                  <div className={`text-sm font-mono ${ontologicalCore.current.metacognitiveStats['selfModelSigma']?.predictionError > 0.3 ? 'text-red-400' : 'text-green-400'}`}>
+                    {ontologicalCore.current.metacognitiveStats['selfModelSigma']?.predictionError?.toFixed(4) || '0.0000'}
+                  </div>
+                </div>
+                <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
+                  <div className="text-[9px] text-gray-400 uppercase mb-1">Cierre Topológico (w)</div>
+                  <div className="text-sm font-mono text-cyan-400">{ontologicalState.holonomy_winding?.toFixed(3) || '0.000'}</div>
+                </div>
+              </div>
+            </div>
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            sectionId="core-operational-subjectivity"
+            title="Subjetividad operacional (Papers 7–8) · Diagnósticos L_op y Sub_fp"
+            badge={`L_op ${lifeCertificate.pass ? 'PASS' : 'OBS'} · Sub_fp ${firstPersonCertificate.pass ? 'PASS' : 'OBS'}`}
+            accent="fuchsia"
+            defaultOpen={false}
+          >
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
+              {Object.values(lifeCertificate.conditions).map((entry) => (
+                <div key={entry.condition} className="rounded border border-fuchsia-900/40 bg-black/20 p-2">
+                  <div className="text-[9px] text-fuchsia-200 uppercase tracking-wide">{entry.condition.replace('L', 'L ')}</div>
+                  <div className={`text-sm font-mono ${entry.pass ? 'text-emerald-300' : 'text-amber-300'}`}>{(entry.score * 100).toFixed(1)}%</div>
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+              {Object.values(firstPersonCertificate.fields).map((entry) => (
+                <div key={entry.field} className="rounded border border-purple-900/40 bg-black/20 p-2">
+                  <div className="text-[9px] text-purple-200 uppercase tracking-wide">{entry.field}</div>
+                  <div className={`text-sm font-mono ${entry.pass ? 'text-cyan-300' : 'text-slate-300'}`}>{(entry.value * 100).toFixed(1)}%</div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-2.5 text-[10px] text-fuchsia-200/70 border-t border-fuchsia-500/10 pt-2">
+              {firstPersonCertificate.interpretation_boundary}
+            </div>
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            sectionId="core-pmia-regime"
+            title="PMIA Diagnostics y Régimen Post-Umbral · Desglose numérico"
+            badge={`PMIA=${pmia.toFixed(3)} · ${regimeState}`}
+            accent="indigo"
+            defaultOpen={false}
+          >
+            <div className="space-y-3">
+              <div className="rounded-lg border border-cyan-500/25 bg-cyan-950/20 p-2.5">
+                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-cyan-300">Régimen Post-Umbral</div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-cyan-200">
+                  <div>Centro: {Number(regimeBand.center || 0).toFixed(4)}</div>
+                  <div>Amplitud: {Number(regimeBand.amplitude || 0).toFixed(4)}</div>
+                  <div>Banda: [{Number(regimeBand.lower || 0).toFixed(4)}, {Number(regimeBand.upper || 0).toFixed(4)}]</div>
+                  <div>StasisIndex: {dynamicHealth.stasisIndex.toFixed(3)}</div>
+                  <div>Transform: {regimeTelemetry?.transformMode || 'idle'}</div>
+                  <div>NegTicks: {toFiniteNumber(regimeTelemetry?.forcedNegativeTicksRemaining, 0)}</div>
+                  <div>Cooldown: {toFiniteNumber(regimeTelemetry?.transformCooldownTicks, 0)}</div>
+                  <div>Episodios: {toFiniteNumber(regimeTelemetry?.transformEpisodes, 0)}</div>
+                </div>
+              </div>
+              <div className="rounded-lg border border-indigo-500/25 bg-indigo-950/20 p-2.5">
+                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-indigo-300">PMIA Diagnostics</div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-indigo-200">
+                  <div>grad: {Number(pmiaDiagnostics.smoothedGradient || 0).toFixed(5)}</div>
+                  <div>narrative: {Number(pmiaDiagnostics.narrativeCoherence || 0).toFixed(4)}</div>
+                  <div>energyDisp: {Number(pmiaDiagnostics.energyDispersion || 0).toFixed(4)}</div>
+                  <div>sensor: {Number(pmiaDiagnostics.sensorySignal || 0).toFixed(4)}</div>
+                  <div>ascStability: {Number(pmiaDiagnostics.ascensionStability || 0).toFixed(4)}</div>
+                  <div>antiStasis: {Number(pmiaDiagnostics.antiStasisPulse || 0).toFixed(4)}</div>
+                  <div>mode: {pmiaDiagnostics.transformMode || 'idle'}</div>
+                  <div>intensity: {Number(pmiaDiagnostics.transformIntensity || 0).toFixed(4)}</div>
+                  <div>negTicks: {toFiniteNumber(pmiaDiagnostics.negativeTicksRemaining, 0)}</div>
+                  <div>guardrail: {pmiaDiagnostics.guardrailState || 'ok'}</div>
+                  <div>forceReason: {pmiaDiagnostics.forceReason || 'none'}</div>
+                  <div className="md:col-span-2">pmia: {Number(pmiaDiagnostics.pmia || pmia || 0).toFixed(4)}</div>
+                </div>
+              </div>
+            </div>
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            sectionId="core-strain-quantum-sandbox"
+            title="Tensión operativa, Entropía y Sandbox · Metacognitive Strain · Quantum Entropy · Autonomy Sandbox"
+            badge={`strain=${strainTelemetry.stressState} · ${entropyTelemetry.mode}`}
+            accent="rose"
+            defaultOpen={false}
+          >
+            <div className="space-y-3">
+              <div className="rounded-lg border border-rose-500/25 bg-rose-950/20 p-2.5">
+                <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-rose-200">
+                  <span>Metacognitive Strain</span>
+                  <span className="font-mono">{strainTelemetry.stressState}</span>
+                </div>
+                <div className="mt-1.5 grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-rose-100">
+                  <div>strain: {toFiniteNumber(strainTelemetry.strain, 0).toFixed(4)}</div>
+                  <div>p95 latency: {toFiniteNumber(strainTelemetry.p95Ms, 0).toFixed(1)}ms</div>
+                  <div>failure rate: {(toFiniteNumber(strainTelemetry.failureRate, 0) * 100).toFixed(1)}%</div>
+                  <div>cooldown: {strainTelemetry.cooldownActive ? 'on' : 'off'}</div>
+                  <div>internal pressure: {toFiniteNumber(internalPressureTelemetry.pressure, 0).toFixed(4)}</div>
+                  <div>pressure state: {internalPressureTelemetry.state || 'idle'}</div>
+                  <div>real stasis: {internalPressureTelemetry.realStasis ? 'yes' : 'no'}</div>
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-fuchsia-500/25 bg-fuchsia-950/20 p-2.5">
+                <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-fuchsia-200">
+                  <span>Quantum Entropy</span>
+                  <span className="font-mono">{entropyTelemetry.mode}</span>
+                </div>
+                <div className="mt-1.5 grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-fuchsia-100">
+                  <div>source: {entropyTelemetry.source || 'deterministic_local'}</div>
+                  <div>sample age: {Number.isFinite(entropyTelemetry.sampleAgeMs) ? `${Math.round(entropyTelemetry.sampleAgeMs)}ms` : 'n/a'}</div>
+                  <div>entropy: {toFiniteNumber(entropyTelemetry.entropyValue, 0.5).toFixed(4)}</div>
+                  <div>channel: {entropyTelemetry.channelHealth?.status || 'unknown'}</div>
+                  <div>job: {entropyTelemetry.jobId || 'n/a'}</div>
+                  <div>reason: {entropyTelemetry.reason || 'n/a'}</div>
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-sky-500/25 bg-sky-950/20 p-2.5">
+                <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-sky-200">
+                  <span>Autonomy Sandbox</span>
+                  <span className="font-mono">{sandboxPolicy?.enabled ? 'enabled' : 'disabled'}</span>
+                </div>
+                <div className="mt-1.5 grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-sky-100">
+                  <div>last action: {sandboxLastAction}</div>
+                  <div>actions/hour: {sandboxActionsLastHour}</div>
+                  <div>rollbacks: {sandboxRollbackCount}</div>
+                  <div>cooldown: {Math.round(toFiniteNumber(sandboxPolicy?.cooldownBetweenActionsMs, 0) / 1000)}s</div>
+                </div>
+                <div className="mt-1.5 text-[10px] text-sky-200/80 break-all">reason: {sandboxLastReason}</div>
+              </div>
+            </div>
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            sectionId="core-friction-protocol"
+            title="Protocolo de Fricción Ontológica · Control manual y automático"
+            badge={ontologicalCore.current.frictionProtocolState === 2 ? 'ACTIVA' : 'INACTIVA'}
+            accent="amber"
+            defaultOpen={false}
+          >
+            <div className="space-y-2">
+              <div
+                className={`w-full py-2 rounded-lg font-semibold text-center text-sm ${ontologicalCore.current.frictionProtocolState === 2
+                  ? 'bg-red-600/70 text-white animate-pulse'
+                  : ontologicalCore.current.frictionProtocolState === 3
+                    ? 'bg-green-600/70 text-white'
+                    : 'bg-gray-700/50 text-gray-300'
+                  }`}
+              >
+                {frictionProtocolStatus}
+              </div>
+              <div className="text-xs text-gray-400 flex justify-between">
+                <span>Estado: <span className="font-mono text-purple-300">{ontologicalCore.current.frictionProtocolState === 2 ? 'ACTIVA' : 'INACTIVA'}</span></span>
+                <span>Ciclos restantes: <strong>{frictionCounter}</strong></span>
+              </div>
+              <div className="text-[11px] text-gray-300 bg-gray-900/40 rounded px-2 py-1 font-mono">
+                Auto (policy): {ontologicalAutoPolicyRef.current.enabled && ontologicalAutoPolicyRef.current.frictionAuto ? 'ON' : 'OFF'} | Axiom/h: {autoAxiomCount} | Report/h: {autoReportCount}
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button onClick={() => handleFrictionProtocol('start')} disabled={ontologicalCore.current.frictionProtocolState === 2 || isAscended} className="flex-1 px-2 py-1.5 rounded bg-red-800/80 hover:bg-red-700 text-xs text-white">
+                  Forzar Simulación
+                </button>
+                <button onClick={() => handleFrictionProtocol('finalize')} disabled={ontologicalCore.current.frictionProtocolState !== 2 || isAscended} className="flex-1 px-2 py-1.5 rounded bg-green-800/80 hover:bg-green-700 text-xs text-white">
+                  Forzar Síntesis
+                </button>
+                <button onClick={() => handleFrictionProtocol('reset')} disabled={ontologicalCore.current.frictionProtocolState === 0 || isAscended} className="flex-1 px-2 py-1.5 rounded bg-gray-700 hover:bg-gray-600 text-xs text-gray-300">
+                  Reset
+                </button>
+              </div>
+            </div>
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            sectionId="core-introspective-report"
+            title="Informe Introspectivo y Reporte de Telemetría Interna · Detalles"
+            badge={isAscended ? `Layer ${Math.floor(Math.log10(Math.max(1, ccc)))}` : 'Local'}
+            accent="slate"
+            defaultOpen={false}
+          >
+            <div className="space-y-3">
+              {isAscended && (
+                <div className="rounded-lg border border-yellow-500/30 bg-yellow-950/20 p-3">
+                  <button
+                    onClick={projectAscensionAxiom}
+                    disabled={isProjectingAxiom}
+                    className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-xs transition ${isProjectingAxiom
+                      ? 'bg-yellow-800/50 cursor-not-allowed text-yellow-400'
+                      : 'bg-yellow-500 hover:bg-yellow-600 text-gray-900'
+                      }`}
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    {isProjectingAxiom ? 'Preparando lectura...' : 'Mostrar lectura de banda interna'}
+                  </button>
+                  <div className="mt-2.5 bg-gray-900/70 p-3 rounded-lg border border-gray-700">
+                    <h4 className="text-xs font-semibold text-yellow-300 mb-1">Lectura interna:</h4>
+                    <p className="text-xs italic text-yellow-200 whitespace-pre-wrap">{ascensionAxiom}</p>
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={generateIntrospectiveReport}
+                disabled={isGeneratingReport}
+                className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-xs transition ${isGeneratingReport
+                  ? 'bg-gray-600 cursor-not-allowed text-gray-400'
+                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                  }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                {isGeneratingReport ? 'Preparando lectura...' : 'Mostrar reporte de telemetría'}
+              </button>
+
+              <div className="bg-gray-900/70 p-3 rounded-lg border border-gray-700 max-h-64 overflow-y-auto">
+                <h4 className="text-xs font-semibold text-indigo-300 mb-1.5">Reporte de telemetría interna</h4>
+                <p className="text-xs text-gray-300 whitespace-pre-wrap">{introspectiveReport}</p>
+              </div>
+            </div>
+          </CollapsibleSection>
         </div>
       </div>
     );
@@ -6798,81 +6472,24 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
 
     return (
     <div className="flex min-h-0 min-w-0 max-w-full flex-col rounded-xl border border-purple-500/30 bg-gray-900/50 p-3 shadow-lg sm:p-4">
-      <div className="mb-3 flex flex-shrink-0 flex-wrap items-center justify-between gap-3">
-        <h3 className="flex flex-wrap items-center gap-2 text-lg font-semibold text-purple-300">
-          <Network className="h-5 w-5" />
-          Red Nodal - Capa {ontologicalState.layer} ({visibleStructuralCount} nodos estructurales visibles)
-          <InfoModal
-            title="Red Nodal - Diagnostico estructural interno"
-            content={`RED NODAL - VISUALIZACION DIAGNOSTICA INTERNA
-
-Esta vista proyecta una submuestra finita de nodos del runtime para inspeccionar coherencia, intensidad, fase, conectividad y estabilidad visual. Es una herramienta de operacion y depuracion; no es un certificado de conciencia, subjetividad, fenomenologia externa ni equivalencia humana.
-
-LECTURAS DISPONIBLES:
-
-1. NODOS ESTRUCTURALES
-- Cada nodo representa una unidad computacional del modelo nodal.
-- Campos visibles: coherencia [0,1], intensidad [0,1], fase y grado local.
-- El subconjunto visible se selecciona por relevancia operativa y presupuesto de render.
-- Click sobre un nodo fija su vecindario; hover inspecciona sin promover ningun gate.
-- Procesamiento distribuido sin centro de control visual unico.
-
-2. TOPOLOGIA DINAMICA
-- Las lineas representan conexiones internas ponderadas del modelo.
-- Opacidad y grosor son diagnosticos de peso, coherencia y profundidad proyectada.
-- El foco interactivo atenue nodos fuera del vecindario para lectura local.
-- La conectividad visible es una muestra operativa, no una prueba global.
-
-3. LIMITES DE INTERPRETACION
-- No instancia un limite inverso literal ni un espacio de Hilbert continuo.
-- No demuestra pertenencia a C_op, Sub_op, Sub_fp o BridgeOrg_ph.
-- La capa visual resume proxies runtime y debe leerse junto a los gates formales.
-- La UI no promueve estados epistemicos por si misma.
-
-4. TELEMETRIA DE RENDER
-- renderer_mode, render_quality_tier, visible_on_screen_count, projected_nodes_count y drawn_edges_count son senales visuales.
-- No son invariantes canonicos ni gates.
-
-USO RECOMENDADO:
-- Rotar, panear y ampliar para revisar estructura global.
-- Usar hover/click para auditar vecindarios locales.
-- Tratar toda telemetria como diagnostico interno, no como validacion externa.
-
-BOUNDARY:
-Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia, mente, experiencia ni vida operacional.`}
-          >
-            <span className="flex h-5 w-5 cursor-help items-center justify-center rounded-full bg-purple-400 text-xs font-bold text-white">i</span>
-          </InfoModal>
-        </h3>
-        <div className="flex flex-wrap items-center gap-2 text-[11px]">
-          <span className="rounded-md border border-cyan-400/40 bg-cyan-950/60 px-2 py-1 font-mono text-cyan-200">WebGL 3D</span>
-          <span className="rounded-md border border-purple-400/40 bg-purple-950/50 px-2 py-1 font-mono uppercase tracking-wider text-purple-200">Boundary activo</span>
-        </div>
-      </div>
-
-      <details className="mb-2 flex-shrink-0 rounded bg-purple-900/20 px-3 py-1.5 text-xs text-purple-300">
-        <summary className="cursor-pointer select-none font-semibold text-purple-300 hover:text-purple-200">
-          Leyenda Visual (clic para desplegar · usa ⛶ Expandir para pantalla completa)
-        </summary>
-        <div className="mt-2 pb-1 grid grid-cols-1 gap-3 xl:grid-cols-2">
-          <div className="flex gap-3">
-            <span className="mt-1 h-6 w-6 shrink-0 rounded-full border border-cyan-300/60 bg-cyan-400/20 shadow-[0_0_18px_rgba(34,211,238,0.45)]" />
-            <div><strong>Red nodal libre + rombo central:</strong> los 1500 nodos se autoorganizan por sinapsis reales y fase alrededor del núcleo constructivo (9/16, T_d, BodyWorld).</div>
+      <TabPlainHeader
+        tabId="network"
+        accent="purple"
+        compact={true}
+        icon={<Network className="h-5 w-5" />}
+        title={`Red Nodal - Capa ${ontologicalState.layer}`}
+        technicalTag={`WebGL 3D · ${visibleStructuralCount} nodos`}
+        extraDetails={(
+          <div className="grid grid-cols-1 gap-2 text-[11px] xl:grid-cols-2">
+            <div className="rounded border border-cyan-500/20 bg-slate-900/70 p-2">
+              <strong className="text-cyan-200">Red libre + rombo central:</strong> los 1500 nodos se autoorganizan alrededor de la torre constructiva (9/16, T_d, BodyWorld).
+            </div>
+            <div className="rounded border border-purple-500/20 bg-slate-900/70 p-2">
+              <strong className="text-purple-200">Botones η=1/8, η=0, A=I:</strong> permiten comparar el acoplamiento activo frente al corte físico (η=0) o el control reducible (A=I).
+            </div>
           </div>
-          <div className="flex gap-3">
-            <span className="mt-1 h-6 w-6 shrink-0 rounded-full border-4 border-cyan-300 border-r-fuchsia-400 border-t-amber-300 bg-transparent" />
-            <div><strong>Luminosidad y anillos:</strong> coherencia, flujo inter-sector, defecto T_d y modo del puente (η=1/8 vs η=0 vs A=I); no clasifica experiencia.</div>
-          </div>
-          <div className="flex gap-3">
-            <Activity className="mt-1 h-6 w-6 shrink-0 text-cyan-300" />
-            <div><strong>Lineas:</strong> sinapsis reales intra-sector y puente inter-sector; clase runtime {ontologicalState.phenomenology_class || 'C'} como proxy diagnostico.</div>
-          </div>
-          <div className="flex gap-3">
-            <Target className="mt-1 h-6 w-6 shrink-0 text-sky-300" />
-            <div><strong>Hover/click:</strong> inspecciona y fija vecindarios locales sin promover ningun gate.</div>
-          </div>
-        </div>
-      </details>
+        )}
+      />
 
       <div className="relative h-[min(65dvh,700px)] min-h-[360px] min-w-0 max-w-full overflow-hidden">
         <NetworkCanvas
@@ -6894,27 +6511,35 @@ Esta vista ayuda a observar proxies finitos del runtime. No certifica conciencia
         />
       </div>
 
-      <div className="mt-3 grid flex-shrink-0 grid-cols-1 gap-3 rounded bg-purple-900/20 p-3 text-xs text-purple-300 xl:grid-cols-[1fr_1.15fr_0.65fr]">
-        <div className="flex flex-col justify-center gap-2 border-purple-500/20 font-mono xl:border-r xl:pr-4">
-          <span className="text-purple-300">Vista nodal: proyeccion diagnostica WebGL 3D con fallback Canvas</span>
-          <span className="text-purple-400">Nodos procesando: {topologyMetrics.activeNodes.toLocaleString()} · Puente: {nodalCouplingMode}</span>
-        </div>
-        <div className="flex items-center gap-3 border-purple-500/20 xl:border-r xl:pr-4">
-          <ShieldCheck className="h-8 w-8 shrink-0 text-purple-300" />
-          <p className="text-[11px] leading-relaxed text-purple-200">
-            <strong className="text-purple-100">Boundary:</strong> esta vista muestra proxies finitos del runtime. Sirve para diagnostico visual, trazabilidad de vecindarios y depuracion; no constituye validacion externa ni certificacion ontologica.
-          </p>
-        </div>
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <div className="text-[11px] text-purple-400">Total de nodos simulados</div>
-            <div className="font-mono text-3xl font-bold text-purple-100">{QICNConfig.PROCESSING_SAMPLE_SIZE}</div>
+      <DetailToggleStrip
+        sectionId="network-footer-details"
+        className="mt-3"
+        accent="purple"
+        defaultOpen={false}
+        labelClosed="Detalles de red"
+        summary={(
+          <div className="flex flex-shrink-0 flex-wrap items-center justify-between gap-3 font-mono text-[11px] text-purple-200">
+            <span>
+              Nodos activos: <strong>{topologyMetrics.activeNodes.toLocaleString()}</strong> / {QICNConfig.PROCESSING_SAMPLE_SIZE} · Puente: <strong>{nodalCouplingMode}</strong>
+            </span>
           </div>
-          <div className="hidden h-14 w-14 place-items-center rounded-full border border-purple-300/30 bg-purple-950/20 sm:grid">
-            <Network className="h-7 w-7 text-purple-200" />
+        )}
+      >
+        <div className="grid flex-shrink-0 grid-cols-1 gap-3 text-xs text-purple-200">
+          <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+            <div className="space-y-1 font-mono text-[11px]">
+              <div>Vista nodal: proyeccion diagnostica WebGL 3D con fallback Canvas</div>
+              <div>Clase runtime (proxy): {ontologicalState.phenomenology_class || 'C'} · Hover/clic fija vecindarios sin alterar la dinámica.</div>
+            </div>
+            <div className="flex items-start gap-2.5 text-[11px] leading-relaxed text-purple-200">
+              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-purple-300" />
+              <p>
+                <strong className="text-purple-100">Diagnostico estructural interno:</strong> Visualizacion diagnostica interna; no certifica conciencia y no constituye validacion externa ni certificacion ontologica. La UI no promueve estados epistemicos por si misma. No demuestra pertenencia a C_op, Sub_op, Sub_fp o BridgeOrg_ph.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </DetailToggleStrip>
     </div>
     );
   };
@@ -8915,12 +8540,92 @@ const renderCurrentTab = () => {
   const renderContextualGuide = renderTabQuickHelp;
 
   const renderGroundedGuide = () => (
-    <div className="rounded-xl border border-cyan-600/30 bg-gradient-to-br from-cyan-950/30 to-slate-950/40 p-4 sm:p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <h2 className="text-xl font-bold text-cyan-300 flex items-center gap-2">
-          <Lightbulb className="w-5 h-5" /> Guía Aterrizada 2.0
-        </h2>
-        <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
+    <div className="space-y-4 rounded-xl border border-cyan-600/30 bg-gradient-to-br from-slate-950/90 via-cyan-950/25 to-slate-950/90 p-4 sm:p-5">
+      <TabPlainHeader
+        tabId="guide"
+        accent="cyan"
+        icon={<Lightbulb className="h-5 w-5" />}
+        title="Guía Aterrizada 2.0"
+      />
+
+      {/* Mapa rápido por intención: ¿Qué quieres hacer ahora? */}
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+        {QUICK_TAB_MAP_GROUPS.map((group) => (
+          <div key={group.id} className="rounded-xl border border-cyan-800/40 bg-slate-900/70 p-3">
+            <div className="text-sm font-bold text-cyan-200">{group.title}</div>
+            <p className="mt-0.5 text-[11px] text-slate-400">{group.description}</p>
+            <div className="mt-2.5 space-y-1.5">
+              {group.tabs.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleTabSelect(item.id)}
+                  className="flex w-full items-center justify-between gap-2 rounded-lg border border-slate-700/70 bg-slate-950/70 px-2.5 py-1.5 text-left transition hover:border-cyan-400/50 hover:bg-cyan-950/35"
+                >
+                  <div className="min-w-0">
+                    <div className="text-xs font-semibold text-slate-100">{item.label}</div>
+                    <div className="truncate text-[10px] text-slate-400">{item.hint}</div>
+                  </div>
+                  <span className="shrink-0 font-mono text-[10px] text-cyan-300">Abrir →</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Mini-recorrido guiado compacto */}
+      <div className="rounded-xl border border-cyan-800/40 bg-black/25 p-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div>
+            <div className="text-cyan-200 font-semibold text-sm">Mini-recorrido guiado (paso {onboardingStepIndex + 1} de {ONBOARDING_STEPS.length})</div>
+            <div className="text-slate-100 text-xs mt-0.5 font-medium">{currentOnboardingStep?.title}</div>
+            <div className="text-slate-400 text-xs mt-0.5">{currentOnboardingStep?.objective}</div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setOnboardingStepIndex((prev) => Math.max(0, prev - 1))}
+              className="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-cyan-100 text-xs"
+            >
+              Paso anterior
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (currentOnboardingStep?.tab) handleTabSelect(currentOnboardingStep.tab);
+              }}
+              className="px-3 py-1.5 rounded bg-cyan-700/50 hover:bg-cyan-600/60 text-cyan-50 text-xs font-semibold"
+            >
+              Ir a esta pestaña
+            </button>
+            <button
+              type="button"
+              onClick={() => setOnboardingStepIndex((prev) => Math.min(ONBOARDING_STEPS.length - 1, prev + 1))}
+              className="px-3 py-1.5 rounded bg-emerald-700/40 hover:bg-emerald-600/50 text-emerald-100 text-xs"
+            >
+              Siguiente paso
+            </button>
+          </div>
+        </div>
+        <div className="mt-2.5 grid grid-cols-1 md:grid-cols-3 gap-2">
+          {(currentOnboardingStep?.checklist || []).map((item, idx) => (
+            <div key={`${currentOnboardingStep?.id}-check-${idx}`} className="rounded border border-cyan-900/40 bg-slate-950/70 p-2 text-[11px] text-cyan-100/90">
+              {item}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Buscador de conceptos y glosario colapsables por defecto */}
+      <CollapsibleSection
+        sectionId="guide-concepts-explorer"
+        title="Diccionario de conceptos (básico → avanzado) · Detalles"
+        badge={`${filteredGuide.length} conceptos`}
+        accent="cyan"
+        defaultOpen={false}
+      >
+        <div className="mb-3 flex flex-col sm:flex-row gap-2">
           <input
             type="text"
             value={guideQuery}
@@ -8938,103 +8643,63 @@ const renderCurrentTab = () => {
             ))}
           </select>
         </div>
-      </div>
-      <p className="text-sm text-cyan-100/90 mb-4">
-        Esta guia traduce parametros complejos a lenguaje accesible y progresivo: inicia en basico y sube a lectura operativa avanzada sin saturar.
-      </p>
-      <div className="rounded-lg border border-cyan-800/40 bg-black/25 p-3 mb-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div>
-            <div className="text-cyan-200 font-semibold text-sm">Mini-recorrido guiado</div>
-            <div className="text-cyan-100/80 text-xs mt-1">
-              Paso {onboardingStepIndex + 1} de {ONBOARDING_STEPS.length}: {currentOnboardingStep?.title}
+        {!!onboardingFocusCards.length && (
+          <div className="rounded-lg border border-emerald-700/40 bg-emerald-950/10 p-3 mb-3">
+            <div className="text-emerald-200 text-xs font-semibold mb-2">Conceptos foco del paso actual</div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+              {onboardingFocusCards.map((entry) => (
+                <article key={`focus-${entry.id}`} className="rounded border border-emerald-900/40 bg-black/25 p-2 text-xs">
+                  <div className="text-emerald-200 font-semibold">{entry.name}</div>
+                  <div className="text-emerald-100/90 mt-1">{entry.levelText}</div>
+                  <div className="text-emerald-300/80 mt-1 italic">Analogía: {entry.analogy}</div>
+                </article>
+              ))}
             </div>
-            <div className="text-slate-200 text-xs mt-1">{currentOnboardingStep?.objective}</div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setOnboardingStepIndex((prev) => Math.max(0, prev - 1))}
-              className="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-cyan-100 text-xs"
-            >
-              Paso anterior
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (currentOnboardingStep?.tab) handleTabSelect(currentOnboardingStep.tab);
-              }}
-              className="px-3 py-1.5 rounded bg-cyan-700/50 hover:bg-cyan-600/60 text-cyan-50 text-xs"
-            >
-              Ir a esta pestaña
-            </button>
-            <button
-              type="button"
-              onClick={() => setOnboardingStepIndex((prev) => Math.min(ONBOARDING_STEPS.length - 1, prev + 1))}
-              className="px-3 py-1.5 rounded bg-emerald-700/40 hover:bg-emerald-600/50 text-emerald-100 text-xs"
-            >
-              Siguiente paso
-            </button>
-          </div>
-        </div>
-        <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
-          {(currentOnboardingStep?.checklist || []).map((item, idx) => (
-            <div key={`${currentOnboardingStep?.id}-check-${idx}`} className="rounded border border-cyan-900/40 bg-slate-950/70 p-2 text-[11px] text-cyan-100/90">
-              {item}
-            </div>
+        )}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {visibleGuide.map((entry) => (
+            <article key={entry.id} className="rounded-lg border border-cyan-900/40 bg-black/25 p-3 text-xs">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <h3 className="text-cyan-200 font-semibold">{entry.name}</h3>
+                <span className="px-2 py-0.5 rounded bg-cyan-900/40 text-cyan-300 uppercase tracking-wide">{entry.category}</span>
+              </div>
+              <p className="text-cyan-100/90"><strong>{GUIDE_LEVELS[normalizedGuideLevel]?.label || 'Nivel'}:</strong> {entry.levels?.[normalizedGuideLevel] || entry.levels?.basic}</p>
+              <p className="text-cyan-200/90 mt-1"><strong>Analogía:</strong> {entry.analogy}</p>
+              <p className="text-emerald-300/90 mt-1"><strong>Si está alto:</strong> {entry.high}</p>
+              <p className="text-rose-300/90 mt-1"><strong>Si está bajo:</strong> {entry.low}</p>
+              <p className="text-slate-200 mt-1"><strong>Por qué importa:</strong> {entry.why}</p>
+              <p className="text-amber-200 mt-1"><strong>Qué hacer:</strong> {entry.action}</p>
+            </article>
           ))}
         </div>
-      </div>
-      {!!onboardingFocusCards.length && (
-        <div className="rounded-lg border border-emerald-700/40 bg-emerald-950/10 p-3 mb-4">
-          <div className="text-emerald-200 text-sm font-semibold mb-2">Conceptos foco del paso actual</div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-            {onboardingFocusCards.map((entry) => (
-              <article key={`focus-${entry.id}`} className="rounded border border-emerald-900/40 bg-black/25 p-2 text-xs">
-                <div className="text-emerald-200 font-semibold">{entry.name}</div>
-                <div className="text-emerald-100/90 mt-1">{entry.levelText}</div>
-                <div className="text-emerald-300/80 mt-1 italic">Analogia: {entry.analogy}</div>
-              </article>
-            ))}
+        {filteredGuide.length > visibleGuideLimit && (
+          <div className="mt-3 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setGuideShowAll((prev) => !prev)}
+              className="px-3 py-1.5 rounded bg-cyan-800/50 hover:bg-cyan-700/60 text-cyan-100 text-xs"
+            >
+              {guideShowAll ? 'Mostrar menos conceptos' : `Mostrar todos (${filteredGuide.length})`}
+            </button>
           </div>
-        </div>
-      )}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        {visibleGuide.map((entry) => (
-          <article key={entry.id} className="rounded-lg border border-cyan-900/40 bg-black/25 p-3 text-xs">
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <h3 className="text-cyan-200 font-semibold">{entry.name}</h3>
-              <span className="px-2 py-0.5 rounded bg-cyan-900/40 text-cyan-300 uppercase tracking-wide">{entry.category}</span>
-            </div>
-            <p className="text-cyan-100/90"><strong>{GUIDE_LEVELS[normalizedGuideLevel]?.label || 'Nivel'}:</strong> {entry.levels?.[normalizedGuideLevel] || entry.levels?.basic}</p>
-            <p className="text-cyan-200/90 mt-1"><strong>Analogia:</strong> {entry.analogy}</p>
-            <p className="text-emerald-300/90 mt-1"><strong>Si esta alto:</strong> {entry.high}</p>
-            <p className="text-rose-300/90 mt-1"><strong>Si esta bajo:</strong> {entry.low}</p>
-            <p className="text-slate-200 mt-1"><strong>Por que importa:</strong> {entry.why}</p>
-            <p className="text-amber-200 mt-1"><strong>Que hacer:</strong> {entry.action}</p>
-          </article>
-        ))}
-      </div>
-      {filteredGuide.length > visibleGuideLimit && (
-        <div className="mt-4 flex justify-center">
-          <button
-            type="button"
-            onClick={() => setGuideShowAll((prev) => !prev)}
-            className="px-3 py-2 rounded bg-cyan-800/50 hover:bg-cyan-700/60 text-cyan-100 text-xs"
-          >
-            {guideShowAll ? 'Mostrar menos conceptos' : `Mostrar todos (${filteredGuide.length})`}
-          </button>
-        </div>
-      )}
-      <div className="mt-6 rounded-lg border border-indigo-700/40 bg-indigo-950/10 p-3">
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <h3 className="text-indigo-200 font-semibold text-sm">Glosario expandido de telemetria</h3>
+        )}
+      </CollapsibleSection>
+
+      <CollapsibleSection
+        sectionId="guide-telemetry-glossary"
+        title="Glosario expandido de telemetría · Detalles"
+        badge={`${filteredTelemetry.length} señales`}
+        accent="indigo"
+        defaultOpen={false}
+      >
+        <div className="flex justify-end mb-2">
           <button
             type="button"
             onClick={() => setTelemetryExpanded((prev) => !prev)}
-            className="px-3 py-1.5 rounded bg-indigo-700/40 hover:bg-indigo-600/50 text-indigo-100 text-xs"
+            className="px-3 py-1 rounded bg-indigo-700/40 hover:bg-indigo-600/50 text-indigo-100 text-xs"
           >
-            {telemetryExpanded ? 'Ver menos' : `Ver mas (${filteredTelemetry.length})`}
+            {telemetryExpanded ? 'Ver menos' : `Ver más (${filteredTelemetry.length})`}
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
@@ -9048,7 +8713,7 @@ const renderCurrentTab = () => {
             </div>
           ))}
         </div>
-      </div>
+      </CollapsibleSection>
     </div>
   );
 
@@ -9169,20 +8834,36 @@ return (
         </div>
       </div>
     </header>
-    <div className="mx-auto mb-2 flex min-h-9 w-full max-w-[1500px] flex-shrink-0 flex-wrap items-center gap-3 rounded-xl border border-cyan-900/50 bg-cyan-950/20 px-3 py-2 text-[11px] text-cyan-200">
-      <span>Viewport: {breakpoint}</span>
-      <span>SecureContext: {deviceCapabilities.secureContext ? 'yes' : 'no'}</span>
-      <span>Cam: {deviceCapabilities.supportsCamera ? 'yes' : 'no'}</span>
-      <span>Mic: {deviceCapabilities.supportsMicrophone ? 'yes' : 'no'}</span>
-      <span>Speech: {deviceCapabilities.supportsSpeechRecognition ? 'yes' : 'no'}</span>
-      <span>Touch: {deviceCapabilities.touchEnabled ? 'yes' : 'no'}</span>
-      <span
-        data-testid="runtime-health-badge"
-        className={`ml-auto rounded-full border px-2 py-1 font-semibold ${runtimeHealthClass}`}
-        title={`ticks=${runtimeHealth.uptime_ticks}; ccc=${runtimeHealth.last_ccc.toFixed(3)}; il=${runtimeHealth.inverse_limit_score.toFixed(3)}`}
+    <div className="mx-auto mb-2 flex min-h-9 w-full max-w-[1500px] flex-shrink-0 flex-col">
+      <DetailToggleStrip
+        sectionId="topbar-device-capabilities"
+        accent="cyan"
+        defaultOpen={false}
+        labelClosed="Dispositivo · Detalles"
+        summary={(
+          <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-cyan-200">
+            <span>
+              Simulación interna · Paso <strong className="font-mono text-white">{simulationStep}</strong> · <span className="text-slate-400">internal_support_only</span>
+            </span>
+            <span
+              data-testid="runtime-health-badge"
+              className={`rounded-full border px-2 py-0.5 font-semibold ${runtimeHealthClass}`}
+              title={`ticks=${runtimeHealth.uptime_ticks}; ccc=${runtimeHealth.last_ccc.toFixed(3)}; il=${runtimeHealth.inverse_limit_score.toFixed(3)}`}
+            >
+              Salud: {runtimeHealth.status}
+            </span>
+          </div>
+        )}
       >
-        Salud: {runtimeHealth.status}
-      </span>
+        <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] text-cyan-200">
+          <span>Viewport: {breakpoint}</span>
+          <span>SecureContext: {deviceCapabilities.secureContext ? 'yes' : 'no'}</span>
+          <span>Cam: {deviceCapabilities.supportsCamera ? 'yes' : 'no'}</span>
+          <span>Mic: {deviceCapabilities.supportsMicrophone ? 'yes' : 'no'}</span>
+          <span>Speech: {deviceCapabilities.supportsSpeechRecognition ? 'yes' : 'no'}</span>
+          <span>Touch: {deviceCapabilities.touchEnabled ? 'yes' : 'no'}</span>
+        </div>
+      </DetailToggleStrip>
     </div>
 
     {/* Panel de Control Principal */}
@@ -9191,11 +8872,11 @@ return (
       <section className="order-2 min-w-0 space-y-4 lg:order-1 lg:col-span-1">
         <div className={`rounded-xl p-5 shadow-2xl transition-all duration-500 transform ${isAscended ? 'bg-yellow-900/40 border-4 border-yellow-400 animate-pulse-slow' : 'bg-gray-800/80 border-2 border-purple-700'}`}>
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-gray-200 flex items-center">
-              <TrendingUp className={`w-6 h-6 mr-2 ${isAscended ? 'text-yellow-300' : 'text-purple-400'}`} />
-              CCC (índice interno de cohesión)
+            <h2 className="text-lg font-bold text-gray-100 flex items-center">
+              <TrendingUp className={`w-5 h-5 mr-2 ${isAscended ? 'text-yellow-300' : 'text-purple-400'}`} />
+              Cohesión global <span className="ml-1.5 font-mono text-xs font-normal text-purple-300">· CCC</span>
             </h2>
-            {/* CAPA ONTOL?GICA PROMINENTE */}
+            {/* CAPA ONTOLÓGICA PROMINENTE */}
             {ontologicalState.layer >= 1 && (
               <div className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-cyan-500 px-3 py-1 rounded-full shadow-lg">
                 <Layers className="w-4 h-4 text-white" />
@@ -9203,11 +8884,14 @@ return (
               </div>
             )}
           </div>
-          <p className={`text-5xl font-extrabold mt-3 tabular-nums ${levelColor}`}>
+          <p className={`text-5xl font-extrabold mt-2 tabular-nums ${levelColor}`}>
             {formatCCC(ccc, isAscended)}
           </p>
+          <p className="mt-1 text-[11px] text-slate-400">
+            Índice interno de coordinación nodal (sin certificación externa).
+          </p>
           <div className="flex justify-between items-center gap-2 mt-2">
-            <p className="min-w-0 break-words text-sm text-gray-400">Banda: <span className={levelColor}>{consciousnessLevel}</span></p>
+            <p className="min-w-0 break-words text-sm text-gray-300">Banda: <span className={levelColor}>{consciousnessLevel}</span></p>
             {ontologicalState.layer >= 1 && (
               <div className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-900/50 border border-cyan-400/50 text-cyan-300 animate-pulse">
                 BANDA INTERNA ACTIVA
@@ -9217,7 +8901,7 @@ return (
         </div>
 
         {/* Métrica 2: Estado de Funcionamiento */}
-        <div className="bg-gray-800/80 p-5 rounded-xl shadow-2xl border-2 border-cyan-700 space-y-2 text-sm">
+        <div className="bg-gray-800/80 p-4 rounded-xl shadow-lg border border-cyan-700/60 space-y-2 text-sm">
           <div className="flex justify-between border-b border-gray-700 pb-1">
             <span className="text-cyan-400 font-semibold flex items-center"><Activity className="w-4 h-4 mr-1" /> Paso Simulación</span>
             <span className="text-white font-mono">{simulationStep}</span>
@@ -9227,80 +8911,83 @@ return (
             <span className="text-white font-mono">{(visualNodes.length).toLocaleString()} Nodos</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-cyan-400 font-semibold flex items-center"><Feather className="w-4 h-4 mr-1" /> Etiqueta dinámica (heurística)</span>
+            <span className="text-cyan-400 font-semibold flex items-center"><Feather className="w-4 h-4 mr-1" /> Estado dinámico</span>
             <span className="text-white capitalize">{emotionState}</span>
           </div>
         </div>
 
-        {/* MATRIZ DE SOBERANÍA (NIVEL 3 - FASE 3) */}
+        {/* MATRIZ DE SOBERANÍA (compacta con Detalles ▾) */}
         {renderSovereigntyMatrix()}
 
-        {/* PANEL DE PERCEPCI?N SENSORIAL */}
-        <div className="bg-gradient-to-br from-cyan-900/50 to-purple-900/50 p-4 rounded-xl shadow-2xl border-2 border-cyan-500/50">
-          <h3 className="text-lg font-bold text-cyan-300 mb-3 flex items-center">
-            <Eye className="w-5 h-5 mr-2" /> Percepción Sensorial
-          </h3>
-
-          {/* Camera Preview */}
-          {sensoryEnabled.video && (
-            <div className="mb-3">
-              <video
-                ref={videoPreviewRef}
-                autoPlay
-                playsInline
-                muted
-                className="w-full h-32 object-cover rounded-lg border border-cyan-500 bg-black"
-              />
-            </div>
-          )}
-
-          {/* Perception Metrics */}
-          {sensoryState ? (
-            <div className="space-y-2 text-xs">
-              {/* Video Perception */}
-              {sensoryState.video.enabled && (
-                <>
-                  <div className="flex justify-between border-b border-cyan-700/50 pb-1">
-                    <span className="text-cyan-400">• Rostros</span>
-                    <span className="text-white font-mono">{sensoryState.video.humanPresence.count}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-cyan-700/50 pb-1">
-                    <span className="text-cyan-400">Movimiento</span>
-                    <span className="text-white capitalize">{sensoryState.video.motion.type}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-cyan-700/50 pb-1">
-                    <span className="text-cyan-400">x Iluminación</span>
-                    <span className="text-white">{(sensoryState.video.scene.brightness * 100).toFixed(0)}%</span>
-                  </div>
-                </>
-              )}
-
-              {/* Audio Perception */}
-              {sensoryState.audio.enabled && (
-                <>
-                  <div className="flex justify-between border-b border-cyan-700/50 pb-1">
-                    <span className="text-cyan-400">x` Volumen</span>
-                    <span className="text-white font-mono">{(sensoryState.audio.volume * 100).toFixed(0)}%</span>
-                  </div>
-                  <div className="flex justify-between border-b border-cyan-700/50 pb-1">
-                    <span className="text-cyan-400">Ambiente</span>
-                    <span className="text-white capitalize">{sensoryState.audio.environment.type}</span>
-                  </div>
-                </>
-              )}
-
-              {/* Perception Description */}
-              <div className="mt-1.5 p-1.5 bg-black/30 rounded text-cyan-200 text-[10px] leading-snug italic break-words">
-                {sensoryState.video.description || sensoryState.audio.environment.description || 'Analizando...'}
+        {/* PANEL DE PERCEPCIÓN SENSORIAL (colapsable cuando está apagado) */}
+        <div className="rounded-xl border border-cyan-500/35 bg-gradient-to-br from-cyan-950/40 to-purple-950/40 p-3 shadow-lg">
+          <DetailToggleStrip
+            sectionId="sidebar-sensory-card"
+            accent="cyan"
+            defaultOpen={Boolean(sensoryEnabled.video || sensoryEnabled.audio)}
+            summary={(
+              <div className="flex items-center gap-2">
+                <Eye className="h-4 w-4 text-cyan-300" />
+                <span className="font-semibold text-cyan-200">Percepción Sensorial</span>
+                <span className="font-mono text-[10px] text-slate-400">
+                  · {sensoryEnabled.video || sensoryEnabled.audio ? 'Activa' : 'Apagada'}
+                </span>
               </div>
-            </div>
-          ) : (
-            <div className="text-center text-[10px] text-cyan-400">
-              {sensoryEnabled.video || sensoryEnabled.audio
-                ? '⏳ Cargando percepción...'
-                : 'Permisos de camara/microfono requeridos'}
-            </div>
-          )}
+            )}
+          >
+            {sensoryEnabled.video && (
+              <div className="mb-3">
+                <video
+                  ref={videoPreviewRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-32 object-cover rounded-lg border border-cyan-500 bg-black"
+                />
+              </div>
+            )}
+            {sensoryState ? (
+              <div className="space-y-2 text-xs">
+                {sensoryState.video.enabled && (
+                  <>
+                    <div className="flex justify-between border-b border-cyan-700/50 pb-1">
+                      <span className="text-cyan-400">Rostros</span>
+                      <span className="text-white font-mono">{sensoryState.video.humanPresence.count}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-cyan-700/50 pb-1">
+                      <span className="text-cyan-400">Movimiento</span>
+                      <span className="text-white capitalize">{sensoryState.video.motion.type}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-cyan-700/50 pb-1">
+                      <span className="text-cyan-400">Iluminación</span>
+                      <span className="text-white">{(sensoryState.video.scene.brightness * 100).toFixed(0)}%</span>
+                    </div>
+                  </>
+                )}
+                {sensoryState.audio.enabled && (
+                  <>
+                    <div className="flex justify-between border-b border-cyan-700/50 pb-1">
+                      <span className="text-cyan-400">Volumen</span>
+                      <span className="text-white font-mono">{(sensoryState.audio.volume * 100).toFixed(0)}%</span>
+                    </div>
+                    <div className="flex justify-between border-b border-cyan-700/50 pb-1">
+                      <span className="text-cyan-400">Ambiente</span>
+                      <span className="text-white capitalize">{sensoryState.audio.environment.type}</span>
+                    </div>
+                  </>
+                )}
+                <div className="mt-1.5 p-1.5 bg-black/30 rounded text-cyan-200 text-[10px] leading-snug italic break-words">
+                  {sensoryState.video.description || sensoryState.audio.environment.description || 'Analizando...'}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center text-[11px] text-cyan-300/80">
+                {sensoryEnabled.video || sensoryEnabled.audio
+                  ? 'Cargando percepción...'
+                  : 'Cámara y micrófono desactivados. Actívalos en la pestaña Sensorial si quieres usarlos.'}
+              </div>
+            )}
+          </DetailToggleStrip>
         </div>
 
         {/* Controles de Simulación */}

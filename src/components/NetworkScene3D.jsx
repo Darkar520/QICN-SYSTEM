@@ -1723,6 +1723,14 @@ const NetworkScene3D = React.memo(({
                   ))}
                 </div>
               )}
+              <div className="mt-1.5 rounded border border-cyan-500/20 bg-slate-900/75 px-2 py-1 text-[10px] leading-snug text-slate-200">
+                <strong className="text-cyan-200">Lectura simple:</strong>{' '}
+                {hudSummary.decisionTone === 'affirmative'
+                  ? 'PRESENCIA ESTRUCTURAL indica que los 4 sectores y la torre central se coordinan por encima de los cortes de control.'
+                  : (hudSummary.decisionTone === 'negative'
+                    ? 'DESACOPLE indica que el puente está cortado (η=0) o en control reducible (A=I) sin flujo inter-sector.'
+                    : 'RESERVA indica que la red está calentando o en un régimen intermedio; usa η=1/8 (activo), η=0 (corte) o A=I (control) arriba para comparar.')}
+              </div>
               <div className="mt-1 text-[10px] font-mono text-slate-400">
                 Rombo central = Nucleo Constructivo (Torres 9/16, T_d, BodyWorld) · Visualizacion diagnostica interna · no certifica conciencia
               </div>

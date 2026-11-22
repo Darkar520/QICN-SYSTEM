@@ -10,24 +10,24 @@ import {
 } from './icons/SimulationIcons.jsx';
 
 export const primaryTabs = [
-  { id: 'guide', icon: Lightbulb, label: 'Guía', subtitle: 'Mapa inicial' },
-  { id: 'validation', icon: Layers, label: 'Validación', subtitle: 'Estado global' },
-  { id: 'core', icon: Brain, label: 'Núcleo', subtitle: 'Autodinámica' },
-  { id: 'network', icon: Network, label: 'Red Nodal', subtitle: 'Visual 3D' },
-  { id: 'history', icon: LineChart, label: 'Historial', subtitle: 'Serie temporal' }
+  { id: 'guide', icon: Lightbulb, label: 'Guía', subtitle: 'Inicio rápido' },
+  { id: 'validation', icon: Layers, label: 'Validación', subtitle: '4 ajustes base' },
+  { id: 'core', icon: Brain, label: 'Núcleo', subtitle: 'Estado del motor' },
+  { id: 'network', icon: Network, label: 'Red Nodal', subtitle: 'Red viva 3D' },
+  { id: 'history', icon: LineChart, label: 'Historial', subtitle: 'Curvas en tiempo' }
 ];
 
 export const moreTabs = [
-  { id: 'field', icon: Waves, label: 'Campo', subtitle: 'Entrelazamiento' },
-  { id: 'memory', icon: Database, label: 'Memoria', subtitle: 'Registro y snapshots' },
-  { id: 'controls', icon: Code, label: 'Controles', subtitle: 'Parámetros' },
-  { id: 'chat', icon: MessageSquare, label: 'Chat', subtitle: 'Consola del motor' },
+  { id: 'field', icon: Waves, label: 'Campo', subtitle: 'Cohesión global' },
+  { id: 'memory', icon: Database, label: 'Memoria', subtitle: 'Guardar y registro' },
+  { id: 'controls', icon: Code, label: 'Controles', subtitle: 'Modos del motor' },
+  { id: 'chat', icon: MessageSquare, label: 'Chat', subtitle: 'Conversar (v5)' },
   { id: 'qicn-b', icon: Users, label: 'QICN-B', subtitle: 'Canal humano' },
-  { id: 'api-control', icon: Settings, label: 'API', subtitle: 'Conectividad' },
-  { id: 'sensory', icon: Eye, label: 'Sensorial', subtitle: 'Percepción' },
-  { id: 'sovereignty', icon: ShieldCheck, label: 'Soberanía', subtitle: 'Auditoría' },
-  { id: 'autonomy-evolution', icon: InfinityIcon, label: 'Autoevolución', subtitle: 'Selfpatch Σ' },
-  { id: 'level3-supervisor', icon: ShieldCheck, label: 'Bitácora Nivel 3', subtitle: 'Supervisor y Ledger' }
+  { id: 'api-control', icon: Settings, label: 'API', subtitle: 'Conexión e IA' },
+  { id: 'sensory', icon: Eye, label: 'Sensorial', subtitle: 'Cámara y audio' },
+  { id: 'sovereignty', icon: ShieldCheck, label: 'Soberanía', subtitle: 'Integridad' },
+  { id: 'autonomy-evolution', icon: InfinityIcon, label: 'Autoevolución', subtitle: 'Parches de código' },
+  { id: 'level3-supervisor', icon: ShieldCheck, label: 'Bitácora Nivel 3', subtitle: 'Supervisor autónomo' }
 ];
 
 export const LazyQICNBTab = React.lazy(() => import('./lazy-tabs/QICNBTab.jsx'));

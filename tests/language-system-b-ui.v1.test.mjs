@@ -70,11 +70,12 @@ for (const marker of [
   'EvidentialConversation conversation={conversation} text={message.text}',
   'EvidentialConcordance rows=',
   'attachWorkbenchEvidence',
-  'Clave rápida de API de Gemini en navegador',
+  'Clave de API de Gemini',
   'responseMimeType: \'application/json\''
 ]) {
   assert.ok(ui.includes(marker), `missing UI marker: ${marker}`);
 }
+assert.ok(!ui.includes('Clave rápida de API de Gemini en navegador'), 'duplicate quick Gemini API key input must stay removed from Chat (managed in dedicated API tab)');
 assert.ok(!ui.includes("setChatRealizationMode('gemini')"), 'legacy separate free button removed in unified UI');
 assert.ok(!ui.includes("setChatRealizationMode('verified')"), 'legacy separate verified button removed in unified UI');
 assert.ok(ui.includes("['evidential', 'local'], 'evidential'"), 'unified Sistema B must be default UI mode');

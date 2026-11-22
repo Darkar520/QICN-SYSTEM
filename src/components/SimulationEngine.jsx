@@ -561,7 +561,8 @@ export const QICNConsciousnessSystem = () => {
   const [onboardingStepIndex, setOnboardingStepIndex] = useState(0);
   const [entanglementUiState, setEntanglementUiState] = useState({
     smoothing: 6,
-    freezeChart: false
+    freezeChart: false,
+    autoScale: true
   });
   const [entanglementHoverIndex, setEntanglementHoverIndex] = useState(-1);
   const [cccHistoryUiState, setCccHistoryUiState] = useState({
@@ -663,7 +664,6 @@ export const QICNConsciousnessSystem = () => {
       return '';
     }
   });
-  const [editingQuickGeminiKey, setEditingQuickGeminiKey] = useState(false);
   const [customCodexKey, setCustomCodexKey] = useState(() => {
     try {
       return localStorage.getItem(FRONTEND_CODEX_KEY_STORAGE) || '';
@@ -1699,24 +1699,44 @@ export const QICNConsciousnessSystem = () => {
     const resonanceSeries = smoothSeries(timeline.map((point) => Number(point.normalizedResonance || 0)), entanglementUiState.smoothing);
     const varianceSeries = smoothSeries(timeline.map((point) => Number(point.coherenceVariance || 0)), entanglementUiState.smoothing);
     const cccContributionSeries = smoothSeries(timeline.map((point) => Number(point.cccContributionEstimate || 0)), entanglementUiState.smoothing);
-    const maxVariance = Math.max(0.0001, ...varianceSeries, 1);
+    const maxVariance = Math.max(0.0005, ...varianceSeries);
+    const autoScale = entanglementUiState.autoScale !== false;
+    const combinedMain = [...resonanceSeries, ...cccContributionSeries].filter(Number.isFinite);
+    const rawMin = combinedMain.length > 0 ? Math.min(...combinedMain) : 0;
+    const rawMax = combinedMain.length > 0 ? Math.max(...combinedMain) : 1;
+    const pad = Math.max(0.02, (rawMax - rawMin) * 0.25);
+    const domainMin = autoScale && combinedMain.length >= 2 ? Math.max(0, rawMin - pad) : 0;
+    const domainMax = autoScale && combinedMain.length >= 2 ? Math.min(1, rawMax + pad) : 1;
+    const domainSpan = Math.max(1e-4, domainMax - domainMin);
+    const normalizeMain = (value) => clamp01((Number(value || 0) - domainMin) / domainSpan);
     const len = Math.max(1, resonanceSeries.length);
-    const toPolyline = (series, normalizeFn) => series.map((value, idx) => {
-      const x = len <= 1 ? 0 : (idx / (len - 1)) * chartWidth;
+    const toCoords = (series, normalizeFn) => series.map((value, idx) => {
+      const x = len <= 1 ? chartWidth * 0.5 : (idx / (len - 1)) * chartWidth;
       const y = chartHeight - (normalizeFn(value) * chartHeight);
-      return `${x},${y}`;
-    }).join(' ');
+      return { x, y };
+    });
+    const resCoords = toCoords(resonanceSeries, normalizeMain);
+    const varCoords = toCoords(varianceSeries, (value) => clamp01(Number(value || 0) / maxVariance));
+    const cccCoords = toCoords(cccContributionSeries, normalizeMain);
+    const toPolyline = (coords) => coords.map((pt) => `${pt.x},${pt.y}`).join(' ');
 
     return {
       timeline,
       latestPoint,
       chartWidth,
       chartHeight,
-      resonancePolyline: toPolyline(resonanceSeries, (value) => clamp01(value)),
-      variancePolyline: toPolyline(varianceSeries, (value) => clamp01(value / maxVariance)),
-      cccPolyline: toPolyline(cccContributionSeries, (value) => clamp01(value))
+      domainMin,
+      domainMax,
+      maxVariance,
+      normalizeMain,
+      resonancePolyline: toPolyline(resCoords),
+      variancePolyline: toPolyline(varCoords),
+      cccPolyline: toPolyline(cccCoords),
+      lastResPoint: resCoords.length > 0 ? resCoords[resCoords.length - 1] : null,
+      lastVarPoint: varCoords.length > 0 ? varCoords[varCoords.length - 1] : null,
+      lastCccPoint: cccCoords.length > 0 ? cccCoords[cccCoords.length - 1] : null
     };
-  }, [simulationStep, fieldMetrics, entanglementUiState.smoothing, smoothSeries]);
+  }, [simulationStep, fieldMetrics, entanglementUiState.smoothing, entanglementUiState.autoScale, smoothSeries]);
 
   const cccHistoryRenderModel = useMemo(() => {
     const timeline = cccHistoryTimelineRef.current?.points || [];
@@ -3090,8 +3110,32 @@ export const QICNConsciousnessSystem = () => {
     ledgerHeadHash:operationalLedgerRef.current?.data?.headHash||null,seed,profile
   }),[getPersistenceRefs]);
   const microWorkbench=useMicroExperimentWorkbench(captureWorkbenchAtBoundary);
+  const pendingAutoAttachB2Ref = useRef(false);
   const attachWorkbenchEvidence=workbenchAttachmentDigest===microWorkbench.bundle?.result.digest;
-  useEffect(()=>{setWorkbenchAttachmentDigest(null);},[microWorkbench.bundle]);
+  useEffect(()=>{
+    if (microWorkbench.bundle && pendingAutoAttachB2Ref.current) {
+      pendingAutoAttachB2Ref.current = false;
+      setWorkbenchAttachmentDigest(microWorkbench.bundle.result.digest);
+      return;
+    }
+    setWorkbenchAttachmentDigest(null);
+  },[microWorkbench.bundle]);
+  useEffect(() => {
+    if (['error', 'timed_out', 'cancelled'].includes(microWorkbench.status)) {
+      pendingAutoAttachB2Ref.current = false;
+    }
+  }, [microWorkbench.status]);
+  useEffect(() => {
+    if (!isRunning) return;
+    const liveCfg = kaizenEngine.current?.mutableConfig;
+    if (!liveCfg) return;
+    setMutableConfig((prev) => {
+      const changed = Object.keys(liveCfg).some(
+        (key) => Math.abs((Number(prev?.[key]) || 0) - (Number(liveCfg[key]) || 0)) > 1e-6
+      );
+      return changed ? { ...liveCfg } : prev;
+    });
+  }, [simulationStep, isRunning]);
   workbenchEvidenceRef.current=attachWorkbenchEvidence?microWorkbench.bundle:null;
   simulationRuntimeRef.current = {
     complexityFactor,
@@ -4121,7 +4165,9 @@ export const QICNConsciousnessSystem = () => {
         <div>
           <MetricDualLabel casual="Cohesión global actual" technical="Impacto Directo en el CCC" />
           <p className="mt-0.5 text-[11px] text-slate-400">
-            {isRunning ? 'Pausa la simulación para mover los deslizadores y observar el cambio.' : 'Mueve cualquier deslizador y pulsa Iniciar simulación para ver la respuesta.'}
+            {isRunning
+              ? 'Ajuste en vivo activo: puedes mover Cf, Bs, K y T mientras corre la simulación; el núcleo y Kaizen recalibran K y T de forma autónoma.'
+              : 'Mueve cualquier deslizador ahora o en tiempo real tras pulsar Iniciar simulación.'}
           </p>
         </div>
         <div className="flex items-center gap-2 font-mono text-2xl font-extrabold text-white">
@@ -4169,7 +4215,6 @@ Este parámetro se utiliza en el cálculo interno de CCC en InformationalEntangl
             value={complexityFactor}
             onChange={(e) => setComplexityFactor(parseFloat(e.target.value))}
             className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-teal-400"
-            disabled={isRunning}
           />
           <DetailToggleStrip
             className="mt-3"
@@ -4220,7 +4265,6 @@ RANGO OPERATIVO:
             value={stabilityBias}
             onChange={(e) => setStabilityBias(parseFloat(e.target.value))}
             className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-cyan-400"
-            disabled={isRunning}
           />
           <DetailToggleStrip
             className="mt-3"
@@ -4267,9 +4311,15 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.BOLTZMANN_ANALOG_K.toFixed(3)
             max="5.0"
             step="0.01"
             value={mutableConfig.BOLTZMANN_ANALOG_K}
-            onChange={(e) => setMutableConfig(prev => ({ ...prev, BOLTZMANN_ANALOG_K: parseFloat(e.target.value) }))}
+            onChange={(e) => {
+              const nextVal = parseFloat(e.target.value);
+              QICNConfig.BOLTZMANN_ANALOG_K = nextVal;
+              if (kaizenEngine.current?.mutableConfig) {
+                kaizenEngine.current.mutableConfig = { ...kaizenEngine.current.mutableConfig, BOLTZMANN_ANALOG_K: nextVal };
+              }
+              setMutableConfig((prev) => ({ ...prev, BOLTZMANN_ANALOG_K: nextVal }));
+            }}
             className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-pink-400"
-            disabled={isRunning}
           />
           <DetailToggleStrip
             className="mt-3"
@@ -4316,9 +4366,15 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
             max="5.0"
             step="0.01"
             value={mutableConfig.INFORMATIONAL_TEMP_T}
-            onChange={(e) => setMutableConfig(prev => ({ ...prev, INFORMATIONAL_TEMP_T: parseFloat(e.target.value) }))}
+            onChange={(e) => {
+              const nextVal = parseFloat(e.target.value);
+              QICNConfig.INFORMATIONAL_TEMP_T = nextVal;
+              if (kaizenEngine.current?.mutableConfig) {
+                kaizenEngine.current.mutableConfig = { ...kaizenEngine.current.mutableConfig, INFORMATIONAL_TEMP_T: nextVal };
+              }
+              setMutableConfig((prev) => ({ ...prev, INFORMATIONAL_TEMP_T: nextVal }));
+            }}
             className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-rose-400"
-            disabled={isRunning}
           />
           <DetailToggleStrip
             className="mt-3"
@@ -4421,6 +4477,7 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
           <TabPlainHeader
             tabId="chat"
             accent="indigo"
+            compact={true}
             icon={<MessageSquare className="size-5" />}
             title="Conversar con QICN"
             technicalTag="Consola · Sistema B unificado"
@@ -4447,7 +4504,7 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
           />
         </div>
 
-        <div className="flex h-[min(70dvh,640px)] min-h-[430px] flex-col overflow-hidden rounded-xl border border-purple-700/70 bg-gray-900/75">
+        <div className="flex h-[min(85dvh,860px)] min-h-[580px] flex-col overflow-hidden rounded-xl border border-purple-700/70 bg-gray-900/75">
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-purple-800/60 bg-indigo-900/30 px-3 py-2 text-xs text-indigo-100">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-semibold">Consola</span>
@@ -4503,32 +4560,72 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
             </span>
           </div>
 
-          <label className="mx-3 mt-2 flex items-center gap-2 text-xs text-indigo-100/90"><input type="checkbox" checked={attachWorkbenchEvidence} disabled={isChatting||!microWorkbench.bundle} onChange={e=>setWorkbenchAttachmentDigest(e.target.checked?microWorkbench.bundle.result.digest:null)}/> Adjuntar resultado Workbench verificado (copia aislada B2) · {attachWorkbenchEvidence?microWorkbench.evidenceStatus:'not_recorded'}{attachWorkbenchEvidence&&microWorkbench.bundle&&<span className="break-all font-mono text-[11px] opacity-80"> · tick {microWorkbench.bundle.capture.sourceTick}, digest {microWorkbench.bundle.result.digest.slice(0, 16)}…</span>}</label>
-          {geminiSelected && frontendGeminiEnabled && (!hasFrontendGeminiKey || editingQuickGeminiKey) && (
-            <div className="mx-3 mt-2 flex flex-wrap items-center gap-2 rounded-md border border-cyan-500/40 bg-cyan-950/40 px-3 py-1.5 text-xs text-cyan-100">
-              <span className="shrink-0 font-medium text-cyan-200">API Key Gemini (navegador):</span>
+          <div className="mx-3 mt-1.5 flex flex-wrap items-center justify-between gap-2 text-xs text-indigo-100/90">
+            <label className="flex cursor-pointer items-center gap-2 select-none">
               <input
-                type="password"
-                value={customGeminiKey}
-                onFocus={() => setEditingQuickGeminiKey(true)}
-                onBlur={() => setEditingQuickGeminiKey(false)}
-                onChange={(e) => setCustomGeminiKey(e.target.value)}
-                aria-label="Clave rápida de API de Gemini en navegador"
-                placeholder="Pega tu clave Gemini (AIza… o AQ.…)"
-                className="min-w-[200px] flex-1 rounded border border-cyan-500/40 bg-gray-900/90 px-2 py-1 font-mono text-xs text-cyan-100 placeholder:text-cyan-200/50 focus:border-cyan-400 focus:outline-none"
+                type="checkbox"
+                checked={attachWorkbenchEvidence}
+                disabled={isChatting || microWorkbench.status === 'running' || microWorkbench.status === 'capturing'}
+                onChange={(e) => {
+                  const wantAttach = e.target.checked;
+                  if (!wantAttach) {
+                    pendingAutoAttachB2Ref.current = false;
+                    setWorkbenchAttachmentDigest(null);
+                    return;
+                  }
+                  if (microWorkbench.bundle) {
+                    setWorkbenchAttachmentDigest(microWorkbench.bundle.result.digest);
+                    return;
+                  }
+                  pendingAutoAttachB2Ref.current = true;
+                  microWorkbench.run({
+                    profile: 'paired_intervention',
+                    ticks: 12,
+                    seed: 11,
+                    interventions: ['kaizen_learned_mode']
+                  });
+                }}
               />
+              <span>
+                Adjuntar resultado Workbench verificado (copia aislada B2) ·{' '}
+                {microWorkbench.status === 'running' || microWorkbench.status === 'capturing'
+                  ? <span className="text-amber-300">ejecutando copia aislada…</span>
+                  : attachWorkbenchEvidence
+                    ? <span className="text-emerald-300">{microWorkbench.evidenceStatus}</span>
+                    : microWorkbench.bundle
+                      ? <span className="text-cyan-300">listo para adjuntar</span>
+                      : <span className="text-slate-400">al marcar ejecuta una prueba B2 rápida</span>}
+              </span>
+              {attachWorkbenchEvidence && microWorkbench.bundle && (
+                <span className="break-all font-mono text-[11px] opacity-80">
+                  · tick {microWorkbench.bundle.capture.sourceTick}, digest {microWorkbench.bundle.result.digest.slice(0, 16)}…
+                </span>
+              )}
+            </label>
+            {microWorkbench.bundle && microWorkbench.status !== 'running' && microWorkbench.status !== 'capturing' && (
               <button
                 type="button"
-                onClick={() => handleTabSelect('api-control')}
-                className="shrink-0 rounded border border-cyan-400/50 px-2 py-1 text-[11px] text-cyan-100 hover:bg-cyan-800/40"
+                onClick={() => {
+                  pendingAutoAttachB2Ref.current = attachWorkbenchEvidence;
+                  microWorkbench.run({
+                    profile: 'paired_intervention',
+                    ticks: 12,
+                    seed: 11,
+                    interventions: ['kaizen_learned_mode']
+                  });
+                }}
+                className="rounded border border-indigo-400/40 px-2 py-0.5 text-[11px] text-indigo-200 hover:bg-indigo-800/40"
               >
-                Control API
+                Actualizar B2
               </button>
-            </div>
-          )}
+            )}
+          </div>
           {geminiSelected && !canUseLlmNow && (
-            <div role="status" className="mx-3 mt-3 rounded-md border border-amber-500/60 bg-amber-900/40 px-3 py-2 text-xs text-amber-100">
-              El canal de lenguaje no está disponible (sin sesión ni clave). Las respuestas las compone el motor; revisa la clave en Control API para la redacción verificada.
+            <div role="status" className="mx-3 mt-2 flex flex-wrap items-center justify-between gap-2 rounded-md border border-amber-500/60 bg-amber-900/40 px-3 py-1.5 text-xs text-amber-100">
+              <span>El canal de lenguaje no está disponible (sin sesión ni clave). Las respuestas las compone el motor; configura tu clave en la pestaña API.</span>
+              <button type="button" onClick={() => handleTabSelect('api-control')} className="shrink-0 rounded border border-amber-300/50 px-2 py-0.5 text-[11px] text-amber-100 hover:bg-amber-800/50">
+                Ir a API
+              </button>
             </div>
           )}
           {lastProviderError && (
@@ -4604,7 +4701,7 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
               const proposal = conversation?.controlProposal || null;
               return (
                 <div key={`${message.timestamp || 't'}-${index}`} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                  <article className={`min-w-0 max-w-full rounded-xl p-3 shadow-md sm:max-w-[85%] ${bubbleClass}`}>
+                  <article className={`min-w-0 max-w-full rounded-xl p-3.5 shadow-md sm:max-w-[92%] ${bubbleClass}`}>
                     <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                       <span className="text-xs font-mono opacity-80">
                         {isUser ? 'Observador' : isRuntimeEvent ? 'Consola QICN · aviso automático del runtime' : isLegacy ? 'Consola QICN · versión anterior, sin verificación semántica' : 'Consola QICN'}
@@ -6614,24 +6711,38 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
       latestPoint,
       chartWidth,
       chartHeight,
+      domainMin,
+      domainMax,
+      maxVariance,
+      normalizeMain,
       resonancePolyline,
       variancePolyline,
-      cccPolyline
+      cccPolyline,
+      lastResPoint,
+      lastVarPoint,
+      lastCccPoint
     } = entanglementRenderModel;
+    const effectiveDensity = latestPoint.entanglementDensity > 0
+      ? latestPoint.entanglementDensity
+      : Math.round((topologyMetrics.activeNodes || 0) * (topologyMetrics.averageConnections || 0));
+    const liveBridge = nodalLayer.current?.getBridgeMetrics?.()
+      || ontologicalCore.current?.constructiveFiniteCuts?.nodal_tower_bridge
+      || ontologicalState?.constructive_finite_cuts?.nodal_tower_bridge
+      || null;
     const safeHoverIndex = Number.isInteger(entanglementHoverIndex)
       ? Math.max(-1, Math.min(entanglementHoverIndex, timeline.length - 1))
       : -1;
     const hoverPoint = safeHoverIndex >= 0 ? timeline[safeHoverIndex] : null;
     const hoverX = timeline.length > 1 && safeHoverIndex >= 0
       ? (safeHoverIndex / (timeline.length - 1)) * chartWidth
-      : 0;
+      : chartWidth * 0.5;
 
     const exportSnapshot = () => {
       const payload = {
         generatedAt: Date.now(),
         smoothing: entanglementUiState.smoothing,
         freezeChart: entanglementUiState.freezeChart,
-        latestPoint,
+        latestPoint: { ...latestPoint, entanglementDensity: effectiveDensity },
         points: timeline
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -6655,6 +6766,9 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
       setEntanglementHoverIndex(index);
     };
 
+    const yMid = ((domainMin + domainMax) / 2).toFixed(3);
+    const autoScaleEnabled = entanglementUiState.autoScale !== false;
+
     return (
       <div className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/85 p-4 shadow-lg">
         <TabPlainHeader
@@ -6662,7 +6776,7 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
           accent="cyan"
           icon={<Waves className="w-5 h-5" />}
           title="Campo de Entrelazamiento"
-          technicalTag={`Capa ${ontologicalState.layer} · 120 ticks`}
+          technicalTag={`Capa ${ontologicalState.layer} · ${timeline.length} muestras`}
         />
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -6673,25 +6787,39 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
           </div>
           <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
             <MetricDualLabel label="Variabilidad" technical="varianza" accent="text-cyan-200" />
-            <div className="mt-1 font-mono text-2xl font-bold text-cyan-100">{latestPoint.coherenceVariance.toFixed(4)}</div>
-            <div className="text-[10px] text-slate-400">Sana: 0.10 – 0.40</div>
+            <div className="mt-1 font-mono text-2xl font-bold text-amber-200">{latestPoint.coherenceVariance.toFixed(5)}</div>
+            <div className="text-[10px] text-slate-400">Pico ventana: {maxVariance.toFixed(4)}</div>
           </div>
           <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
-            <MetricDualLabel label="Conexiones" technical="densidad" accent="text-cyan-200" />
-            <div className="mt-1 font-mono text-2xl font-bold text-cyan-100">{latestPoint.entanglementDensity.toFixed(0)}</div>
-            <div className="text-[10px] text-slate-400">Enlaces activos est.</div>
+            <MetricDualLabel label="Conexiones" technical="enlaces activos" accent="text-cyan-200" />
+            <div className="mt-1 font-mono text-2xl font-bold text-cyan-100">{effectiveDensity.toLocaleString()}</div>
+            <div className="text-[10px] text-slate-400">~{Number(topologyMetrics.averageConnections || 0).toFixed(1)} por nodo</div>
           </div>
           <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
             <MetricDualLabel label="Aporte global" technical="CCC*" accent="text-cyan-200" />
-            <div className="mt-1 font-mono text-2xl font-bold text-cyan-100">{latestPoint.cccContributionEstimate.toFixed(4)}</div>
+            <div className="mt-1 font-mono text-2xl font-bold text-violet-200">{latestPoint.cccContributionEstimate.toFixed(4)}</div>
             <div className="text-[10px] text-slate-400">Estimador [0, 1]</div>
           </div>
         </div>
 
         <div className="rounded-xl border border-cyan-800/50 bg-black/35 p-3">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="font-semibold uppercase tracking-wider text-cyan-300">Evolución del campo (últimos 120 ticks)</div>
             <div className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold uppercase tracking-wider text-cyan-300">Evolución del campo (últimos 120 ticks)</span>
+              <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[10px] ${isRunning && !entanglementUiState.freezeChart ? 'border-emerald-400/50 bg-emerald-950/60 text-emerald-300' : 'border-slate-600 bg-slate-900 text-slate-300'}`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${isRunning && !entanglementUiState.freezeChart ? 'animate-pulse bg-emerald-400' : 'bg-slate-400'}`} />
+                {isRunning && !entanglementUiState.freezeChart ? `EN VIVO · tick ${simulationStep}` : `PAUSADO · tick ${simulationStep}`}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setEntanglementUiState((prev) => ({ ...prev, autoScale: !(prev.autoScale !== false) }))}
+                className={`rounded border px-2.5 py-1 text-[11px] font-medium ${autoScaleEnabled ? 'border-cyan-400/50 bg-cyan-950/70 text-cyan-200' : 'border-slate-600 bg-slate-800/80 text-slate-200'}`}
+                title="Auto ajusta el eje vertical al rango activo para hacer visibles las variaciones finas."
+              >
+                {autoScaleEnabled ? 'Escala: Auto' : 'Escala: 0–1'}
+              </button>
               <button
                 onClick={() => setEntanglementUiState((prev) => ({ ...prev, freezeChart: !prev.freezeChart }))}
                 className={`rounded px-2.5 py-1 text-[11px] font-medium ${entanglementUiState.freezeChart ? 'bg-amber-700/70 text-amber-100' : 'bg-cyan-800/70 text-cyan-100 hover:bg-cyan-700/70'}`}
@@ -6707,37 +6835,107 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
             </div>
           </div>
 
-          <svg
-            viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-            className="h-56 w-full rounded border border-cyan-900/40 bg-[#08101a]"
-            onMouseMove={handleChartHover}
-            onMouseLeave={() => setEntanglementHoverIndex(-1)}
-          >
-            <line x1="0" y1={chartHeight * 0.3} x2={chartWidth} y2={chartHeight * 0.3} stroke="#0e7490" strokeDasharray="4 4" strokeWidth="1" />
-            <polyline fill="none" stroke="#22d3ee" strokeWidth="2" points={resonancePolyline} />
-            <polyline fill="none" stroke="#f59e0b" strokeWidth="2" points={variancePolyline} />
-            <polyline fill="none" stroke="#a78bfa" strokeWidth="2" points={cccPolyline} />
-            {hoverPoint && (
-              <>
-                <line x1={hoverX} y1="0" x2={hoverX} y2={chartHeight} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 2" opacity="0.6" />
-                <circle cx={hoverX} cy={chartHeight - (clamp01(Number(hoverPoint.normalizedResonance || 0)) * chartHeight)} r="3" fill="#22d3ee" />
-              </>
+          <div className="relative">
+            <svg
+              viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+              className="h-56 w-full rounded border border-cyan-900/40 bg-[#08101a]"
+              onMouseMove={handleChartHover}
+              onMouseLeave={() => setEntanglementHoverIndex(-1)}
+            >
+              {[0.2, 0.5, 0.8].map((ratio) => (
+                <line
+                  key={`grid-${ratio}`}
+                  x1="0"
+                  y1={chartHeight * ratio}
+                  x2={chartWidth}
+                  y2={chartHeight * ratio}
+                  stroke="#0e7490"
+                  strokeDasharray="4 4"
+                  strokeWidth="1"
+                  opacity="0.35"
+                />
+              ))}
+              <text x="8" y="14" fill="#67e8f9" fontSize="10" fontFamily="monospace" opacity="0.75">{domainMax.toFixed(3)}</text>
+              <text x="8" y={(chartHeight / 2) - 4} fill="#67e8f9" fontSize="10" fontFamily="monospace" opacity="0.55">{yMid}</text>
+              <text x="8" y={chartHeight - 6} fill="#67e8f9" fontSize="10" fontFamily="monospace" opacity="0.75">{domainMin.toFixed(3)}</text>
+
+              {timeline.length >= 2 && (
+                <>
+                  <polyline fill="none" stroke="#22d3ee" strokeWidth="2.2" points={resonancePolyline} />
+                  <polyline fill="none" stroke="#f59e0b" strokeWidth="2" points={variancePolyline} />
+                  <polyline fill="none" stroke="#a78bfa" strokeWidth="2.2" points={cccPolyline} />
+                </>
+              )}
+
+              {lastResPoint && <circle cx={lastResPoint.x} cy={lastResPoint.y} r="4" fill="#22d3ee" />}
+              {lastVarPoint && <circle cx={lastVarPoint.x} cy={lastVarPoint.y} r="3.5" fill="#f59e0b" />}
+              {lastCccPoint && <circle cx={lastCccPoint.x} cy={lastCccPoint.y} r="4" fill="#a78bfa" />}
+
+              {hoverPoint && (
+                <>
+                  <line x1={hoverX} y1="0" x2={hoverX} y2={chartHeight} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 2" opacity="0.6" />
+                  <circle cx={hoverX} cy={chartHeight - (normalizeMain(hoverPoint.normalizedResonance) * chartHeight)} r="3.5" fill="#22d3ee" />
+                </>
+              )}
+            </svg>
+            {timeline.length < 2 && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="rounded-lg border border-cyan-500/35 bg-slate-950/85 px-4 py-2 text-center text-xs text-cyan-200 shadow-lg">
+                  {isRunning
+                    ? 'Recolectando primeros puntos del campo en tiempo real…'
+                    : 'Simulación en pausa: pulsa «Iniciar simulación» en la barra izquierda para ver las curvas de campo en vivo.'}
+                </div>
+              </div>
             )}
-          </svg>
+          </div>
+
           {hoverPoint && (
             <div className="mt-2 inline-flex flex-wrap gap-3 rounded border border-cyan-700/50 bg-cyan-950/60 px-2 py-1 font-mono text-[11px] text-cyan-100">
               <span>tick={hoverPoint.tick}</span>
               <span>res={Number(hoverPoint.normalizedResonance || 0).toFixed(4)}</span>
-              <span>var={Number(hoverPoint.coherenceVariance || 0).toFixed(4)}</span>
+              <span>var={Number(hoverPoint.coherenceVariance || 0).toFixed(5)}</span>
               <span>ccc*={Number(hoverPoint.cccContributionEstimate || 0).toFixed(4)}</span>
             </div>
           )}
           <div className="mt-2 flex flex-wrap gap-4 text-[11px] text-cyan-300">
             <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-cyan-300"></span>Resonancia</span>
-            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400"></span>Variabilidad (varianza)</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400"></span>Variabilidad (escala relativa a pico)</span>
             <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-violet-400"></span>Aporte CCC</span>
           </div>
         </div>
+
+        {/* ACTIVIDAD EN VIVO POR SECTOR (4 SECTORES DEL PUENTE NODO–TORRE) */}
+        {liveBridge && Array.isArray(liveBridge.sectors) && liveBridge.sectors.length > 0 && (
+          <div className="rounded-xl border border-cyan-800/40 bg-slate-900/75 p-3">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <MetricDualLabel label="Actividad de campo por sector" technical={`Puente ${liveBridge.mode} · η=${liveBridge.effective_eta}`} accent="text-cyan-200" />
+              <span className="font-mono text-[11px] text-cyan-300">
+                Sincronía nodo–torre: {Number(liveBridge.bridge_nodal_sync_index || 0).toFixed(3)} · Flujo cruzado: {Number(liveBridge.inter_sector_signal_flux || 0).toFixed(2)}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {liveBridge.sectors.map((sec) => {
+                const cohPct = Math.round(clamp01(sec.mean_coherence) * 100);
+                const rPct = Math.round(clamp01(sec.phase_order_r) * 100);
+                return (
+                  <div key={sec.key} className="rounded-lg border border-cyan-900/50 bg-slate-950/80 p-2.5 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-semibold text-cyan-300">{sec.key}</span>
+                      <span className="font-mono text-[11px] text-white">{cohPct}%</span>
+                    </div>
+                    <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                      <div className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-violet-400 transition-all duration-300" style={{ width: `${cohPct}%` }} />
+                    </div>
+                    <div className="mt-1.5 flex justify-between font-mono text-[10px] text-slate-400">
+                      <span>fase R: {rPct}%</span>
+                      <span>flujo: {Number(sec.inter_flux || 0).toFixed(2)}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <CollapsibleSection
           sectionId="entanglement-details"

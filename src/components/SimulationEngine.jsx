@@ -4947,141 +4947,176 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
     const entropyDiagnostics = quantumEntropyBridgeRef.current.getConnectionDiagnostics?.(Date.now()) || {};
     const selfPatchStatus = selfPatchTelemetry.status || {};
     const codeGenerationStatus = selfPatchStatus.codeGeneration || {};
+    const keyInfo = describeGeminiKey(customGeminiKey);
+    const geminiFormatText = {
+      empty: 'Sin clave propia: el chat y Nivel 3 usan el proxy del servidor si está disponible.',
+      auth_key: 'Formato reconocido: clave de autenticación de AI Studio (AQ.…).',
+      standard_key: 'Formato reconocido: clave estándar (AIza…).',
+      unrecognized: 'Formato no reconocido localmente; se enviará igualmente y decidirá el proveedor.',
+      invalid_characters: 'La clave contiene espacios o caracteres no válidos; revisa que la copiaste completa.'
+    }[keyInfo.format];
+    const geminiRouteText = !canUseLlmNow
+      ? 'sin acceso LLM (solo motor local)'
+      : (frontendGeminiEnabled && hasFrontendGeminiKey ? 'frontend_direct_gemini (clave propia)' : 'netlify_proxy (clave del servidor)');
+    const apiChannelStatusText = timeBasedRateLimit
+      ? `Rate limiting (${timeBasedCooldownRemaining}s)`
+      : cooldownActive
+        ? `Cooldown (${cooldownTimeRemaining}s)`
+        : rateLimitExceeded
+          ? 'Umbral excedido'
+          : 'Operativa';
+
     return (
-      <div className="bg-gradient-to-br from-blue-900/50 to-indigo-900/50 rounded-xl p-6 border border-blue-500/30 shadow-lg">
-        <h2 className="text-xl font-bold mb-4 text-blue-400 flex items-center">
-          <Settings className="w-5 h-5 mr-2" /> Control Inteligente de API
-          <InfoModal
-            title="Control API - Sistema Inteligente de Limitación"
-            content={`CONTROL API - SISTEMA INTELIGENTE DE LIMITACIN
+      <div className="space-y-4 rounded-xl border border-blue-500/35 bg-slate-950/85 p-4 shadow-lg">
+        <TabPlainHeader
+          tabId="api-control"
+          accent="blue"
+          icon={<Settings className="h-5 w-5" />}
+          title="Conexiones y APIs"
+          technicalTag="Gemini · Codex · Canal Cuántico"
+        />
 
-Sistema avanzado de control de llamadas API con rate limiting adaptativo, detección de patrones de uso excesivo, y cooldown inteligente basado en el Modo Axiomático para prevenir sobrecarga.
+        {/* RESUMEN RÁPIDO EN 3 TARJETAS */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Chat y Bitácora L3" technical="Gemini" accent="text-cyan-200" />
+            <div className="mt-1 truncate font-mono text-xs font-semibold text-cyan-100">{GEMINI_ENGINE_CONFIG.MODEL_ID}</div>
+            <div className="mt-0.5 text-[11px] text-slate-400">{hasFrontendGeminiKey ? 'Clave local cargada' : 'Proxy / solo motor'}</div>
+          </div>
+          <div className="rounded-lg border border-blue-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Estado del canal" technical="rate limit" accent="text-blue-200" />
+            <div className={`mt-1 text-sm font-semibold ${timeBasedRateLimit || cooldownActive || rateLimitExceeded ? 'text-amber-300' : 'text-emerald-300'}`}>
+              {apiChannelStatusText}
+            </div>
+            <div className="mt-0.5 font-mono text-[11px] text-slate-400">
+              {apiCallMetrics.totalCalls} calls/min · {apiCallMetrics.avgLatency}ms
+            </div>
+          </div>
+          <div className="rounded-lg border border-fuchsia-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Fuente cuántica" technical="entropy" accent="text-fuchsia-200" />
+            <div className="mt-1 text-sm font-semibold text-fuchsia-200">
+              {quantumUiConfig.enabled ? 'Activada' : 'Determinista local'}
+            </div>
+            <div className="mt-0.5 font-mono text-[11px] text-slate-400">
+              {entropyTelemetry.mode || 'deterministic_fallback'}
+            </div>
+          </div>
+        </div>
 
-ARQUITECTURA DE CONTROL INTELIGENTE:
+        {/* ALERTAS DE COOLDOWN SOLO SI ESTÁN ACTIVAS */}
+        {timeBasedRateLimit ? (
+          <div className="rounded-xl border border-orange-500/70 bg-orange-950/50 p-3.5 text-xs">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="font-bold text-orange-300">Rate limiting inteligente activo ({isInAxionMode ? 'AXION' : 'NORMAL'})</div>
+                <p className="mt-0.5 text-orange-200/90">
+                  {isInAxionMode ? 'Modo Axiomático: pausa adaptativa de 3 minutos para estabilidad.' : 'Pausa adaptativa activada para evitar saturar la API.'}
+                </p>
+              </div>
+              <div className="text-right font-mono text-2xl font-bold text-white">{timeBasedCooldownRemaining}s</div>
+            </div>
+          </div>
+        ) : null}
 
-1. MONITOREO EN TIEMPO REAL
-• Total de llamadas (último minuto)
-• Llamadas exitosas vs fallidas
-• Latencia promedio de respuesta
-• Tasa de éxito (porcentaje)
+        {cooldownActive ? (
+          <div className="rounded-xl border border-red-500/70 bg-red-950/50 p-3.5 text-xs">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <div>
+                <div className="font-bold text-red-300">Cooldown de protección activo</div>
+                <p className="mt-0.5 text-red-200/90">{cooldownReason}</p>
+              </div>
+              <div className="font-mono text-2xl font-bold text-white">{cooldownTimeRemaining}s</div>
+            </div>
+            <button
+              onClick={forceResetCooldown}
+              className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-red-700"
+            >
+              Forzar reset de cooldown
+            </button>
+          </div>
+        ) : null}
 
-2. DETECCI?N DE PATRONES INTELIGENTE
-• Análisis de ventanas temporales (2, 5, 10 minutos)
-• Criterios de exceso: >8 llamadas/2min, >15 llamadas/5min
-• Patrones de aceleración (incremento de frecuencia)
-
-3. MODO AXIOMÁTICO (DETECCI?N AUTOMÁTICA)
-Activación: >2 llamadas axiomáticas en 5 minutos
-Tipos Críticos: 'ascension-axiom', 'introspective', 'kaizen-critique'
-Efecto: Cambio automático a intervalos de seguridad extendidos
-
-4. COOLDOWN ADAPTATIVO INTELIGENTE
-• Normal: 120s entre llamadas
-• Axiomático: 180s entre llamadas
-• Uso Muy Alto: 150s entre llamadas
-• Uso Normal: 60s base
-
-ESTADOS DEL SISTEMA:
-xx API Operativa: Funcionamiento normal
-xx Rate Limiting Activo: Cooldown adaptativo en curso
-xa Cooldown Legacy: Umbral excedido, bloqueo completo
-
-Este sistema asegura comunicación sostenible con APIs externas mientras mantiene funcionalidad crítica intacta.`}
-          />
-        </h2>
-        <div className="bg-blue-900/20 rounded p-3 mb-6 text-xs text-blue-300">
-          <h4 className="text-blue-400 font-semibold mb-2">Mapa de conectores API</h4>
-          <div className="space-y-2 leading-relaxed">
-            <p>
-              <strong>1) Gemini API Key:</strong> canal conversacional del sistema (chat, reportes, introspección).
+        {/* TARJETA PRINCIPAL VISIBLE: CLAVE DE GEMINI */}
+        <div className="rounded-xl border border-cyan-700/50 bg-slate-900/80 p-4 text-xs">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <MetricDualLabel label="Clave de Gemini (Chat y Supervisor Nivel 3)" technical="localStorage" accent="text-cyan-200" />
+            <span className="font-mono text-[11px] text-slate-400">Ruta: {geminiRouteText}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <input
+              type="password"
+              value={customGeminiKey}
+              onChange={(e) => setCustomGeminiKey(e.target.value)}
+              aria-label="Clave de API de Gemini"
+              placeholder="Pega tu clave de Gemini (AIza… o AQ.…)"
+              className="min-w-[220px] flex-1 rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-cyan-200"
+            />
+            <button
+              type="button"
+              onClick={() => setCustomGeminiKey('')}
+              className="rounded border border-red-700/70 bg-red-950/40 px-3 py-1.5 text-xs text-red-200 hover:bg-red-900/50"
+            >
+              Limpiar
+            </button>
+          </div>
+          <div className="mt-2 space-y-1 text-[11px]">
+            <p className={keyInfo.usable || keyInfo.format === 'empty' ? 'text-cyan-200/90' : 'text-amber-200'}>{geminiFormatText}</p>
+            {!frontendGeminiEnabled && customGeminiKey.trim() && (
+              <p className="text-amber-200">El servidor no permite claves del navegador (FRONTEND_GEMINI_ALLOWED desactivado); se usa el proxy.</p>
+            )}
+            <p className="text-slate-400">
+              Modelo: <span className="font-mono text-slate-200">{GEMINI_ENGINE_CONFIG.MODEL_ID}</span> · chat: {chatRealizationMode !== 'local' ? 'Sistema B unificado' : 'solo motor'} · integridad {integrityMode} · {CHAT_MAX_OUTPUT_TOKENS} tokens · razonamiento {CHAT_THINKING_LEVEL}
             </p>
-            <p>
-              <strong>2) Codex API Key:</strong> canal exclusivo de automodificación de código (selfpatch generate/apply).
-            </p>
-            <p>
-              <strong>3) Canal cuántico:</strong> fuente entrópica no determinista (estocástica) para el puente de incertidumbre.
+            {lastProviderError && (
+              <p className="break-words text-amber-200">
+                Último error del proveedor: <span className="font-mono">{String(lastProviderError.code)}{lastProviderError.status ? ` · HTTP ${lastProviderError.status}` : ''}</span>
+                {lastProviderError.providerMessage ? ` · ${lastProviderError.providerMessage}` : ''}
+                {lastProviderError.recovered ? ' (recuperado por el proxy)' : ''}
+              </p>
+            )}
+            <p className="text-slate-500">
+              {frontendGeminiEnabled ? 'La clave se guarda solo en este navegador y nunca se borra automáticamente.' : 'El chat usa la configuración del servidor.'}
             </p>
           </div>
         </div>
 
-        <div className="mb-6 p-4 bg-gray-800 rounded-xl border border-blue-500/50 shadow-inner text-xs">
-          <h4 className="text-sm font-bold text-blue-400 mb-3 flex items-center gap-2">
-            <Settings className="w-4 h-4" /> Configuración API por función
-          </h4>
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 mb-4">
-            <div className="rounded border border-cyan-700/50 bg-cyan-950/20 p-3">
-              <div className="text-cyan-300 font-semibold mb-2">Gemini (comunicación con el sistema)</div>
-              <input
-                type="password"
-                value={customGeminiKey}
-                onChange={(e) => setCustomGeminiKey(e.target.value)}
-                aria-label="Clave de API de Gemini"
-                placeholder="Pega tu clave de Gemini"
-                className="w-full p-2 rounded bg-gray-900 border border-gray-700 text-cyan-200 font-mono text-xs"
-              />
-              {(() => {
-                const keyInfo = describeGeminiKey(customGeminiKey);
-                const formatText = {
-                  empty: 'Sin clave propia: el chat usa el proxy del servidor si está disponible.',
-                  auth_key: 'Formato reconocido: clave de autenticación de AI Studio (AQ.…).',
-                  standard_key: 'Formato reconocido: clave estándar (AIza…).',
-                  unrecognized: 'Formato no reconocido localmente; se enviará igualmente y decidirá el proveedor.',
-                  invalid_characters: 'La clave contiene espacios o caracteres no válidos; revisa que la copiaste completa.'
-                }[keyInfo.format];
-                const routeText = !canUseLlmNow
-                  ? 'sin acceso LLM (solo motor local)'
-                  : (frontendGeminiEnabled && hasFrontendGeminiKey ? 'frontend_direct_gemini (clave propia)' : 'netlify_proxy (clave del servidor)');
-                return (
-                  <div className="mt-2 space-y-1 text-[11px]">
-                    <p className={keyInfo.usable || keyInfo.format === 'empty' ? 'text-cyan-200/90' : 'text-amber-200'}>{formatText}</p>
-                    {!frontendGeminiEnabled && customGeminiKey.trim() && (
-                      <p className="text-amber-200">El servidor no permite claves del navegador (FRONTEND_GEMINI_ALLOWED desactivado); se usa el proxy.</p>
-                    )}
-                    <p className="text-gray-300">Ruta activa: <span className="font-mono">{routeText}</span></p>
-                    <p className="text-gray-300">Modelo: <span className="font-mono">{GEMINI_ENGINE_CONFIG.MODEL_ID}</span> · chat: {chatRealizationMode === 'gemini' ? 'redacción verificada' : 'solo motor'} · integridad {integrityMode} · {CHAT_MAX_OUTPUT_TOKENS} tokens · razonamiento {CHAT_THINKING_LEVEL}</p>
-                    {lastProviderError && (
-                      <p className="break-words text-amber-200">
-                        Último error del proveedor: <span className="font-mono">{String(lastProviderError.code)}{lastProviderError.status ? ` · HTTP ${lastProviderError.status}` : ''}</span>
-                        {lastProviderError.providerMessage ? ` · ${lastProviderError.providerMessage}` : ''}
-                        {lastProviderError.recovered ? ' (recuperado por el proxy)' : ''}
-                      </p>
-                    )}
-                  </div>
-                );
-              })()}
-              <div className="mt-2 flex items-center justify-between text-[11px] text-gray-400">
-                <span>{frontendGeminiEnabled ? 'La clave se guarda solo en este navegador y nunca se borra automáticamente.' : 'El chat usa la configuración del servidor.'}</span>
-                <button
-                  type="button"
-                  onClick={() => setCustomGeminiKey('')}
-                  className="px-2 py-1 rounded bg-red-900/40 border border-red-700 text-red-200 hover:bg-red-800/50"
-                >
-                  Limpiar
-                </button>
-              </div>
+        {/* CAJÓN 1: CODEX + MAPA DE CONECTORES + RUTAS */}
+        <CollapsibleSection
+          sectionId="api-codex-routing"
+          title="Codex (autoevolución de código) y mapa de conectores"
+          subtitle="Clave opcional de OpenAI/Codex para Selfpatch, selector de modelo y diagnóstico de rutas."
+          badge={hasFrontendCodexKey ? `Codex · ${resolvedCodexModel}` : 'opcional'}
+          defaultOpen={false}
+          className="border-fuchsia-700/40 bg-slate-900/70"
+        >
+          <div className="space-y-3 text-xs">
+            <div className="rounded-lg border border-blue-800/40 bg-slate-950/70 p-3 text-[11px] leading-relaxed text-slate-300">
+              <p><strong className="text-cyan-300">1) Gemini API Key:</strong> canal conversacional y razonamiento interno (Chat, reportes y Bitácora Nivel 3).</p>
+              <p><strong className="text-fuchsia-300">2) Codex API Key:</strong> canal exclusivo de generación de parches de código (Autoevolución / Selfpatch).</p>
+              <p><strong className="text-purple-300">3) Canal cuántico:</strong> fuente opcional de entropía física; si está inactivo, el motor usa su generador determinista local.</p>
             </div>
 
-            <div className="rounded border border-fuchsia-700/50 bg-fuchsia-950/20 p-3">
-              <div className="text-fuchsia-300 font-semibold mb-2">Codex (automodificación de código)</div>
+            <div className="rounded-lg border border-fuchsia-700/40 bg-fuchsia-950/15 p-3">
+              <div className="mb-2 font-semibold text-fuchsia-300">Codex (automodificación de código)</div>
               <input
                 type="password"
                 value={customCodexKey}
                 onChange={(e) => setCustomCodexKey(e.target.value)}
                 placeholder="Pega tu OpenAI/Codex API Key (sk-...)"
-                className="w-full p-2 rounded bg-gray-900 border border-gray-700 text-fuchsia-200 font-mono text-xs"
+                className="w-full rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-fuchsia-200"
               />
-              <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-4">
                 <input
                   type="text"
                   value={customCodexModel}
                   onChange={(e) => setCustomCodexModel(e.target.value)}
                   placeholder="Modelo Codex"
-                  className="sm:col-span-2 p-2 rounded bg-gray-900 border border-gray-700 text-fuchsia-200 font-mono text-xs"
+                  className="rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-fuchsia-200 sm:col-span-2"
                 />
                 <select
                   value={resolvedCodexReasoningEffort}
                   onChange={(e) => setCustomCodexReasoningEffort(e.target.value)}
-                  className="p-2 rounded bg-gray-900 border border-gray-700 text-fuchsia-200 font-mono text-xs"
+                  className="rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-fuchsia-200"
                 >
                   {CODEX_REASONING_EFFORT_OPTIONS.map((option) => (
                     <option key={option} value={option}>{option}</option>
@@ -5094,446 +5129,203 @@ Este sistema asegura comunicación sostenible con APIs externas mientras mantien
                     setCustomCodexModel(runtimeEnv.SELF_PATCH_CODE_MODEL || 'gpt-5.3-codex');
                     setCustomCodexReasoningEffort(runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT || 'high');
                   }}
-                  className="px-2 py-1 rounded bg-red-900/40 border border-red-700 text-red-200 hover:bg-red-800/50"
+                  className="rounded border border-red-700/70 bg-red-950/40 px-2 py-1 text-red-200 hover:bg-red-900/50"
                 >
                   Limpiar
                 </button>
               </div>
-              <div className="mt-2 text-[11px] text-gray-400">
-                Uso: motor dedicado para reescritura de código con razonamiento configurable (`auto/low/medium/high/xhigh`).
+              <div className="mt-2 text-[11px] text-slate-400">
+                Motor dedicado para reescritura de código con esfuerzo de razonamiento configurable (auto / low / medium / high / xhigh).
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-2 text-[11px] sm:grid-cols-2">
+              <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Frontend Gemini habilitado:</span> {runtimeEnv.FRONTEND_GEMINI_ALLOWED ? 'sí' : 'no'}</div>
+              <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Auth / Sesión:</span> {runtimeEnv.AUTH_REQUIRED ? 'requerida' : 'libre'} · {isAuthenticated ? 'activa' : 'inactiva'}</div>
+              <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Endpoint proxy:</span> <span className="font-mono">{runtimeEnv.LLM_PROXY_ENDPOINT}</span></div>
+              <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Backend acepta key Codex:</span> <span className="font-mono">{(typeof codeGenerationStatus.allowClientCodexKey === 'boolean' ? codeGenerationStatus.allowClientCodexKey : runtimeEnv.ALLOW_CLIENT_CODEX_KEY) ? 'true' : 'false'}</span></div>
+              <div className="rounded border border-cyan-800/50 bg-cyan-950/20 p-2 sm:col-span-2">
+                <span className="text-slate-300">Ruta activa de conversación:</span>{' '}
+                <span className="font-mono text-cyan-200">{hasFrontendGeminiKey ? 'frontend_direct_gemini' : 'netlify_proxy'}</span>
+              </div>
+              <div className="rounded border border-fuchsia-800/50 bg-fuchsia-950/20 p-2 sm:col-span-2">
+                <span className="text-slate-300">Ruta activa de automodificación:</span>{' '}
+                <span className="font-mono text-fuchsia-200">
+                  {hasFrontendCodexKey
+                    ? `frontend_codex_key -> ${resolvedCodexModel} (${resolvedCodexReasoningEffort})`
+                    : `${runtimeEnv.SELF_PATCH_CODE_PROVIDER}:${runtimeEnv.SELF_PATCH_CODE_MODEL} (${runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT || 'high'})`}
+                  {' · backend: '}
+                  {(codeGenerationStatus.reasoningEffort || runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT || 'high')} / {(codeGenerationStatus.reasoningMode || 'config_default')}
+                </span>
               </div>
             </div>
           </div>
+        </CollapsibleSection>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div className="rounded border border-gray-700 bg-gray-900/60 p-2">
-              <span className="text-gray-400">Frontend Gemini habilitado:</span> {runtimeEnv.FRONTEND_GEMINI_ALLOWED ? 'si' : 'no'}
-            </div>
-            <div className="rounded border border-gray-700 bg-gray-900/60 p-2">
-              <span className="text-gray-400">Gemini local:</span> {hasFrontendGeminiKey ? 'cargada' : 'no cargada'}
-            </div>
-            <div className="rounded border border-gray-700 bg-gray-900/60 p-2">
-              <span className="text-gray-400">Codex local:</span> {hasFrontendCodexKey ? 'cargada' : 'no cargada'}
-            </div>
-            <div className="rounded border border-gray-700 bg-gray-900/60 p-2">
-              <span className="text-gray-400">Modelo Codex activo:</span> <span className="font-mono">{resolvedCodexModel || 'n/a'}</span>
-            </div>
-            <div className="rounded border border-gray-700 bg-gray-900/60 p-2">
-              <span className="text-gray-400">Reasoning effort Codex:</span> <span className="font-mono">{resolvedCodexReasoningEffort}</span>
-            </div>
-            <div className="rounded border border-gray-700 bg-gray-900/60 p-2">
-              <span className="text-gray-400">Auth requerida:</span> {runtimeEnv.AUTH_REQUIRED ? 'si' : 'no'}
-            </div>
-            <div className="rounded border border-gray-700 bg-gray-900/60 p-2">
-              <span className="text-gray-400">Sesion:</span> {isAuthenticated ? 'activa' : 'inactiva'}
-            </div>
-            <div className="rounded border border-gray-700 bg-gray-900/60 p-2 sm:col-span-2">
-              <span className="text-gray-400">Endpoint proxy:</span> {runtimeEnv.LLM_PROXY_ENDPOINT}
-            </div>
-            <div className="rounded border border-cyan-700 bg-cyan-900/20 p-2 sm:col-span-2">
-              <span className="text-gray-300">Ruta activa de conversación:</span>{' '}
-              <span className="text-cyan-200 font-mono">
-                {hasFrontendGeminiKey ? 'frontend_direct_gemini' : 'netlify_proxy'}
-              </span>
-            </div>
-            <div className="rounded border border-fuchsia-700 bg-fuchsia-900/20 p-2 sm:col-span-2">
-              <span className="text-gray-300">Ruta activa de automodificación:</span>{' '}
-              <span className="text-fuchsia-200 font-mono">
-                {hasFrontendCodexKey
-                  ? `frontend_codex_key -> ${resolvedCodexModel} (${resolvedCodexReasoningEffort})`
-                  : `${runtimeEnv.SELF_PATCH_CODE_PROVIDER}:${runtimeEnv.SELF_PATCH_CODE_MODEL} (${runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT || 'high'})`}
-              </span>
-            </div>
-            <div className="rounded border border-fuchsia-700 bg-fuchsia-900/20 p-2 sm:col-span-2">
-              <span className="text-gray-300">Backend acepta key local Codex:</span>{' '}
-              <span className="text-fuchsia-200 font-mono">
-                {(typeof codeGenerationStatus.allowClientCodexKey === 'boolean'
-                  ? codeGenerationStatus.allowClientCodexKey
-                  : runtimeEnv.ALLOW_CLIENT_CODEX_KEY) ? 'true' : 'false'}
-              </span>
-            </div>
-            <div className="rounded border border-fuchsia-700 bg-fuchsia-900/20 p-2 sm:col-span-2">
-              <span className="text-gray-300">Reasoning backend (selfpatch-status):</span>{' '}
-              <span className="text-fuchsia-200 font-mono">
-                {(codeGenerationStatus.reasoningEffort || runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT || 'high')}
-                {' / '}
-                {(codeGenerationStatus.reasoningMode || 'config_default')}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-6 p-4 rounded-xl border border-fuchsia-500/40 bg-fuchsia-950/20">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-            <h4 className="text-sm font-bold text-fuchsia-300 flex items-center gap-2">
-              <Sparkles className="w-4 h-4" /> Entropía Cuántica (Híbrido UI + Bridge)
-            </h4>
-            <div className="flex items-center gap-2 text-[10px] font-mono">
-              <span className={`px-2 py-0.5 rounded ${entropyTelemetry.mode === 'quantum_primary' ? 'bg-emerald-700/70 text-emerald-100' : entropyTelemetry.mode === 'quantum_stale' ? 'bg-amber-700/70 text-amber-100' : 'bg-slate-700/70 text-slate-100'}`}>
-                {entropyTelemetry.mode || 'deterministic_fallback'}
-              </span>
-              <span className={`px-2 py-0.5 rounded ${quantumUiStatus.connectionState === 'ok' ? 'bg-cyan-700/70 text-cyan-100' : quantumUiStatus.connectionState === 'testing' ? 'bg-indigo-700/70 text-indigo-100' : quantumUiStatus.connectionState === 'pending' ? 'bg-amber-700/70 text-amber-100' : 'bg-rose-700/70 text-rose-100'}`}>
-                {quantumUiStatus.connectionState}
-              </span>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-            <div>
-              <label className="block text-fuchsia-200 mb-1">Modo</label>
-              <select
-                value={quantumUiConfig.mode}
-                onChange={(e) => {
-                  const nextMode = e.target.value;
-                  setQuantumUiConfig((prev) => ({ ...prev, mode: nextMode }));
-                  appendIntegrityAudit('quantum_ui_config_change', { field: 'mode', value: nextMode });
-                }}
-                className="w-full p-2 rounded bg-gray-900 border border-fuchsia-700/60 text-fuchsia-100"
-              >
-                <option value="auto_hybrid">auto_hybrid</option>
-                <option value="bridge">bridge</option>
-                <option value="ui_direct">ui_direct</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-fuchsia-200 mb-1">Provider</label>
-              <select
-                value={quantumUiConfig.provider}
-                onChange={(e) => {
-                  const nextProvider = e.target.value;
-                  setQuantumUiConfig((prev) => ({ ...prev, provider: nextProvider }));
-                  appendIntegrityAudit('quantum_ui_config_change', { field: 'provider', value: nextProvider });
-                }}
-                className="w-full p-2 rounded bg-gray-900 border border-fuchsia-700/60 text-fuchsia-100"
-              >
-                <option value="custom">custom</option>
-                <option value="ibm">ibm</option>
-                <option value="braket">braket</option>
-                <option value="anu_qrng">anu_qrng</option>
-              </select>
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-fuchsia-200 mb-1">Endpoint</label>
-              <input
-                type="text"
-                value={quantumUiConfig.endpoint}
-                onChange={(e) => setQuantumUiConfig((prev) => ({ ...prev, endpoint: e.target.value }))}
-                onBlur={() => appendIntegrityAudit('quantum_ui_config_change', { field: 'endpoint', value: quantumUiConfig.endpoint })}
-                className="w-full p-2 rounded bg-gray-900 border border-fuchsia-700/60 text-fuchsia-100 font-mono"
-                placeholder="/.netlify/functions/quantum-entropy"
-              />
-            </div>
-            <div>
-              <label className="block text-fuchsia-200 mb-1">TTL (ms)</label>
-              <input
-                type="number"
-                min={1000}
-                value={quantumUiConfig.ttlMs}
-                onChange={(e) => setQuantumUiConfig((prev) => ({ ...prev, ttlMs: Math.max(1000, Number(e.target.value) || prev.ttlMs) }))}
-                className="w-full p-2 rounded bg-gray-900 border border-fuchsia-700/60 text-fuchsia-100 font-mono"
-              />
-            </div>
-            <div>
-              <label className="block text-fuchsia-200 mb-1">Poll (ms)</label>
-              <input
-                type="number"
-                min={1000}
-                value={quantumUiConfig.pollMs}
-                onChange={(e) => setQuantumUiConfig((prev) => ({ ...prev, pollMs: Math.max(1000, Number(e.target.value) || prev.pollMs) }))}
-                className="w-full p-2 rounded bg-gray-900 border border-fuchsia-700/60 text-fuchsia-100 font-mono"
-              />
-            </div>
-            <div>
-              <label className="block text-fuchsia-200 mb-1">qualityMin (0..1)</label>
-              <input
-                type="number"
-                min={0}
-                max={1}
-                step={0.01}
-                value={quantumUiConfig.qualityMin}
-                onChange={(e) => setQuantumUiConfig((prev) => ({ ...prev, qualityMin: clamp01(e.target.value) }))}
-                className="w-full p-2 rounded bg-gray-900 border border-fuchsia-700/60 text-fuchsia-100 font-mono"
-              />
-            </div>
-            <div>
-              <label className="block text-fuchsia-200 mb-1">Key (opcional)</label>
-              <input
-                type="password"
-                value={quantumUiConfig.apiKeyRef}
-                onChange={(e) => setQuantumUiConfig((prev) => ({ ...prev, apiKeyRef: e.target.value }))}
-                className="w-full p-2 rounded bg-gray-900 border border-fuchsia-700/60 text-fuchsia-100 font-mono"
-                placeholder="x-api-key"
-              />
-            </div>
-          </div>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setQuantumUiConfig((prev) => ({ ...prev, enabled: !prev.enabled }));
-                appendIntegrityAudit('quantum_ui_config_change', { field: 'enabled', value: !quantumUiConfig.enabled });
-              }}
-              className={`px-3 py-1.5 rounded text-xs font-semibold ${quantumUiConfig.enabled ? 'bg-emerald-700/60 text-emerald-100' : 'bg-slate-700/60 text-slate-100'}`}
-            >
-              {quantumUiConfig.enabled ? 'Canal cuántico ON' : 'Canal cuántico OFF'}
-            </button>
-            <button
-              type="button"
-              onClick={runQuantumConnectionTest}
-              disabled={quantumUiStatus.connectionState === 'testing'}
-              className="px-3 py-1.5 rounded text-xs font-semibold bg-fuchsia-700/60 text-fuchsia-100 hover:bg-fuchsia-600/70 disabled:opacity-60"
-            >
-              {quantumUiStatus.connectionState === 'testing' ? 'Probando...' : 'Probar conexión'}
-            </button>
-            <span className="text-[11px] text-fuchsia-100/80">
-              sampleAge: {Number.isFinite(entropyTelemetry.sampleAgeMs) ? `${Math.round(entropyTelemetry.sampleAgeMs)}ms` : 'n/a'} | reason: {quantumUiStatus.lastReason || entropyTelemetry.reason || 'n/a'}
-            </span>
-          </div>
-          <div className="mt-2 text-[10px] text-fuchsia-200/80 font-mono break-all">
-            channel={entropyDiagnostics.channelHealth?.status || entropyTelemetry.channelHealth?.status || 'unknown'} | job={quantumUiStatus.lastJobId || entropyTelemetry.jobId || 'n/a'} | source={entropyTelemetry.source || 'deterministic_local'}
-          </div>
-        </div>
-
-        <div className="mb-6 p-4 bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-xl border border-green-500/50 shadow-inner">
-          <h4 className="text-sm font-bold text-green-400 mb-2 flex items-center gap-2">
-            Motores activos por función
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
-            <div className="rounded border border-green-700/40 bg-black/20 p-2">
-              <div className="text-green-300">Conversación (Gemini)</div>
-              <div className="text-white font-mono mt-1 break-all">{GEMINI_ENGINE_CONFIG.MODEL_ID}</div>
-            </div>
-            <div className="rounded border border-fuchsia-700/40 bg-black/20 p-2">
-              <div className="text-fuchsia-300">Selfpatch código (Codex)</div>
-              <div className="text-white font-mono mt-1 break-all">
-                {resolvedCodexModel || runtimeEnv.SELF_PATCH_CODE_MODEL} ({resolvedCodexReasoningEffort})
+        {/* CAJÓN 2: ENTROPÍA CUÁNTICA (conserva título literal para test v4.9) */}
+        <CollapsibleSection
+          sectionId="api-quantum-entropy"
+          title="Entropía Cuántica (Híbrido UI + Bridge)"
+          subtitle="Conector opcional para muestreo cuántico externo (IBM, Braket, ANU QRNG o proxy)."
+          badge={`${quantumUiConfig.enabled ? 'ON' : 'OFF'} · ${quantumUiStatus.connectionState}`}
+          defaultOpen={false}
+          className="border-fuchsia-500/35 bg-slate-900/70"
+        >
+          <div className="space-y-3 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 font-mono text-[11px]">
+                <span className={`rounded px-2 py-0.5 ${entropyTelemetry.mode === 'quantum_primary' ? 'bg-emerald-700/70 text-emerald-100' : entropyTelemetry.mode === 'quantum_stale' ? 'bg-amber-700/70 text-amber-100' : 'bg-slate-700/70 text-slate-100'}`}>
+                  {entropyTelemetry.mode || 'deterministic_fallback'}
+                </span>
+                <span className={`rounded px-2 py-0.5 ${quantumUiStatus.connectionState === 'ok' ? 'bg-cyan-700/70 text-cyan-100' : quantumUiStatus.connectionState === 'testing' ? 'bg-indigo-700/70 text-indigo-100' : quantumUiStatus.connectionState === 'pending' ? 'bg-amber-700/70 text-amber-100' : 'bg-rose-700/70 text-rose-100'}`}>
+                  {quantumUiStatus.connectionState}
+                </span>
               </div>
-            </div>
-            <div className="rounded border border-cyan-700/40 bg-black/20 p-2">
-              <div className="text-cyan-300">Incertidumbre cuántica</div>
-              <div className="text-white font-mono mt-1 break-all">{quantumUiConfig.mode} / {quantumUiConfig.provider}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-
-          {/* INTELLIGENT MODE STATUS */}
-          <div className="bg-purple-900/30 rounded-lg p-4 border border-purple-500/50">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-lg font-bold text-purple-400 flex items-center gap-2">
-                x Modo Inteligente
-                <InfoModal
-                  title="Modo Inteligente - Control Automático"
-                  content={`MODO INTELIGENTE - CONTROL AUTOMÁTICO
-
-Sistema de control automático que detecta patrones de uso y ajusta los límites dinámicamente para proteger la API contra sobrecarga mientras permite operaciones críticas.
-
-FUNCIONAMIENTO AUTOMÁTICO:
-• Monitoreo continuo de patrones de uso
-• Ajuste dinámico de intervalos según contexto
-• Detección de procesos críticos (Modo Axiomático)
-• Prevención proactiva de sobrecarga
-
-PROTECCIN INTELIGENTE:
-• Operaciones Críticas: Permite llamadas esenciales sin interrupción
-• Procesos de Ascensión: Extiende intervalos para estabilidad
-• Uso Normal: Mantiene eficiencia sin restricciones
-• Emergencia: Reset manual disponible
-
-DETECCI?N DE CONTEXTO:
-• Análisis de tipo de llamada (general vs crítica)
-• Evaluación de frecuencia y patrones temporales
-• Clasificación automática de prioridad
-• Ajuste de límites en tiempo real
-
-BENEFICIOS DEL SISTEMA:
-• Prevención de sobrecarga sin perder funcionalidad
-• Adaptación automática al contexto operativo
-• Protección de servicios externos
-• Mantenimiento de procesos críticos
-
-El sistema inteligente permite que QICN funcione de manera sostenible sin interrumpir procesos de alta coherencia como la ascensión axiomática.`}
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuantumUiConfig((prev) => ({ ...prev, enabled: !prev.enabled }));
+                    appendIntegrityAudit('quantum_ui_config_change', { field: 'enabled', value: !quantumUiConfig.enabled });
+                  }}
+                  className={`rounded px-3 py-1 text-xs font-semibold ${quantumUiConfig.enabled ? 'bg-emerald-700/60 text-emerald-100' : 'bg-slate-700/70 text-slate-100'}`}
                 >
-                  <span className="w-4 h-4 bg-green-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-                </InfoModal>
-              </h3>
-              <div className="flex items-center space-x-2">
-                <span className={`w-3 h-3 rounded-full ${intelligentModeEnabled ? 'bg-green-400' : 'bg-gray-400'}`}></span>
-                <span className={`text-sm font-semibold ${intelligentModeEnabled ? 'text-green-400' : 'text-gray-400'}`}>
-                  {intelligentModeEnabled ? 'ACTIVO' : 'INACTIVO'}
-                </span>
+                  {quantumUiConfig.enabled ? 'Canal cuántico ON' : 'Canal cuántico OFF'}
+                </button>
+                <button
+                  type="button"
+                  onClick={runQuantumConnectionTest}
+                  disabled={quantumUiStatus.connectionState === 'testing'}
+                  className="rounded bg-fuchsia-700/60 px-3 py-1 text-xs font-semibold text-fuchsia-100 hover:bg-fuchsia-600/70 disabled:opacity-60"
+                >
+                  {quantumUiStatus.connectionState === 'testing' ? 'Probando...' : 'Probar conexión'}
+                </button>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
+
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div>
-                <span className="text-gray-400">?ltima Llamada:</span>
-                <span className="ml-2 font-mono text-white">
-                  {lastApiCall > 0 ? `${Math.floor((Date.now() - lastApiCall) / 1000)}s` : 'Nunca'}
-                </span>
-              </div>
-              <div>
-                <span className="text-gray-400">Patrón Detectado:</span>
-                <span className={`ml-2 font-semibold ${apiCallPattern.excessiveUsage ? 'text-red-400' : 'text-green-400'}`}>
-                  {apiCallPattern.excessiveUsage ? 'Uso Excesivo' : 'Normal'}
-                </span>
-              </div>
-              <div className="col-span-2 text-xs text-blue-300 bg-blue-900/30 p-2 rounded">
-                <strong>Función:</strong> Monitoreo continuo con ajuste automático de límites según contexto operativo.
-              </div>
-            </div>
-          </div>
-
-          {/* INTELLIGENT COOLDOWN STATUS */}
-          {timeBasedRateLimit ? (
-            <div className="bg-orange-900/50 rounded-xl p-4 border-2 border-orange-500 animate-pulse">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-bold text-orange-400">⏳ RATE LIMITING INTELIGENTE</h3>
-                <div className="text-right">
-                  <div className="text-3xl font-mono text-white">{timeBasedCooldownRemaining}s</div>
-                  <div className="text-xs text-orange-300">Restantes</div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <p className="text-orange-200">
-                  {isInAxionMode ? 'x} Modo Axiomático: Cooldown de 3 minutos' : 'x" Cooldown adaptativo activado'}
-                </p>
-                <span className="text-orange-300 font-semibold">
-                  {isInAxionMode ? 'AXION' : 'NORMAL'}
-                </span>
-              </div>
-            </div>
-          ) : null}
-
-          {/* LEGACY COOLDOWN STATUS */}
-          {cooldownActive ? (
-            <div className="bg-red-900/50 rounded-xl p-4 border-2 border-red-500 animate-pulse">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-bold text-red-400">xa COOLDOWN LEGACY</h3>
-                <div className="text-right">
-                  <div className="text-3xl font-mono text-white">{cooldownTimeRemaining}s</div>
-                  <div className="text-xs text-red-300">Restantes</div>
-                </div>
-              </div>
-              <p className="text-sm text-red-200 mb-3">{cooldownReason}</p>
-              <button
-                onClick={forceResetCooldown}
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-all"
-              >
-                x Forzar Reset de Cooldown
-              </button>
-            </div>
-          ) : null}
-
-          {/* API METRICS */}
-          <div className="bg-blue-900/30 rounded-lg p-3">
-            <h4 className="text-sm font-semibold text-blue-400 mb-2">x` Métricas en Tiempo Real</h4>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-blue-400">Total (1 min):</span>
-                <span className={`font-mono ${timeBasedRateLimit || cooldownActive ? 'text-gray-400' : 'text-white'}`}>
-                  {apiCallMetrics.totalCalls}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-green-400">Exitosas:</span>
-                <span className={`font-mono ${timeBasedRateLimit || cooldownActive ? 'text-gray-400' : 'text-white'}`}>
-                  {apiCallMetrics.successfulCalls}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-red-400">Fallidas:</span>
-                <span className={`font-mono ${timeBasedRateLimit || cooldownActive ? 'text-gray-400' : 'text-white'}`}>
-                  {apiCallMetrics.failedCalls}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-blue-400">Latencia:</span>
-                <span className={`font-mono ${timeBasedRateLimit || cooldownActive ? 'text-gray-400' : 'text-white'}`}>
-                  {apiCallMetrics.avgLatency}ms
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* PATTERN ANALYSIS */}
-          <div className="bg-gray-700/50 rounded-xl p-4 border border-gray-600">
-            <h4 className="text-sm font-semibold text-gray-300 mb-3">x Análisis de Patrones</h4>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Llamadas (5 min):</span>
-                <span className={`font-mono ${apiCallPattern.excessiveUsage ? 'text-red-400' : 'text-white'}`}>
-                  {apiCallPattern.recentCalls}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Modo Axiomático:</span>
-                <span className={`font-semibold ${isInAxionMode ? 'text-yellow-400' : 'text-gray-400'}`}>
-                  {isInAxionMode ? 'DETECTADO' : 'Inactivo'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Estado:</span>
-                <span className={`font-semibold ${apiCallPattern.excessiveUsage ? 'text-red-400' : 'text-green-400'}`}>
-                  {apiCallPattern.excessiveUsage ? '⚠ Excesivo' : '✅ Normal'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* INTELLIGENT CONFIGURATION */}
-          <div className="bg-gray-700/50 rounded-xl p-4 border border-gray-600">
-            <h4 className="text-sm font-semibold text-gray-300 mb-3">Configuracion inteligente</h4>
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs text-gray-400">Intervalo Mínimo (Normal)</label>
-                  <span className="text-xs text-yellow-400 font-mono">120s</span>
-                </div>
-                <p className="text-xs text-gray-500">Tiempo entre llamadas en modo normal</p>
+                <label className="mb-1 block text-fuchsia-200">Modo</label>
+                <select
+                  value={quantumUiConfig.mode}
+                  onChange={(e) => {
+                    const nextMode = e.target.value;
+                    setQuantumUiConfig((prev) => ({ ...prev, mode: nextMode }));
+                    appendIntegrityAudit('quantum_ui_config_change', { field: 'mode', value: nextMode });
+                  }}
+                  className="w-full rounded border border-fuchsia-700/60 bg-slate-950 p-2 text-fuchsia-100"
+                >
+                  <option value="auto_hybrid">auto_hybrid</option>
+                  <option value="bridge">bridge</option>
+                  <option value="ui_direct">ui_direct</option>
+                </select>
               </div>
               <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs text-gray-400">Intervalo Mínimo (Axiomático)</label>
-                  <span className="text-xs text-orange-400 font-mono">180s</span>
-                </div>
-                <p className="text-xs text-gray-500">Tiempo entre llamadas durante uso de Ley Axiomática</p>
+                <label className="mb-1 block text-fuchsia-200">Provider</label>
+                <select
+                  value={quantumUiConfig.provider}
+                  onChange={(e) => {
+                    const nextProvider = e.target.value;
+                    setQuantumUiConfig((prev) => ({ ...prev, provider: nextProvider }));
+                    appendIntegrityAudit('quantum_ui_config_change', { field: 'provider', value: nextProvider });
+                  }}
+                  className="w-full rounded border border-fuchsia-700/60 bg-slate-950 p-2 text-fuchsia-100"
+                >
+                  <option value="custom">custom</option>
+                  <option value="ibm">ibm</option>
+                  <option value="braket">braket</option>
+                  <option value="anu_qrng">anu_qrng</option>
+                </select>
+              </div>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-fuchsia-200">Endpoint</label>
+                <input
+                  type="text"
+                  value={quantumUiConfig.endpoint}
+                  onChange={(e) => setQuantumUiConfig((prev) => ({ ...prev, endpoint: e.target.value }))}
+                  onBlur={() => appendIntegrityAudit('quantum_ui_config_change', { field: 'endpoint', value: quantumUiConfig.endpoint })}
+                  className="w-full rounded border border-fuchsia-700/60 bg-slate-950 p-2 font-mono text-fuchsia-100"
+                  placeholder="/.netlify/functions/quantum-entropy"
+                />
               </div>
               <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs text-gray-400">Detección de Patrones</label>
-                  <span className="text-xs text-green-400 font-mono">5-10 min</span>
-                </div>
-                <p className="text-xs text-gray-500">Ventana de análisis para detectar uso excesivo</p>
+                <label className="mb-1 block text-fuchsia-200">TTL (ms)</label>
+                <input
+                  type="number"
+                  min={1000}
+                  value={quantumUiConfig.ttlMs}
+                  onChange={(e) => setQuantumUiConfig((prev) => ({ ...prev, ttlMs: Math.max(1000, Number(e.target.value) || prev.ttlMs) }))}
+                  className="w-full rounded border border-fuchsia-700/60 bg-slate-950 p-2 font-mono text-fuchsia-100"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-fuchsia-200">Poll (ms)</label>
+                <input
+                  type="number"
+                  min={1000}
+                  value={quantumUiConfig.pollMs}
+                  onChange={(e) => setQuantumUiConfig((prev) => ({ ...prev, pollMs: Math.max(1000, Number(e.target.value) || prev.pollMs) }))}
+                  className="w-full rounded border border-fuchsia-700/60 bg-slate-950 p-2 font-mono text-fuchsia-100"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-fuchsia-200">qualityMin (0..1)</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  value={quantumUiConfig.qualityMin}
+                  onChange={(e) => setQuantumUiConfig((prev) => ({ ...prev, qualityMin: clamp01(e.target.value) }))}
+                  className="w-full rounded border border-fuchsia-700/60 bg-slate-950 p-2 font-mono text-fuchsia-100"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-fuchsia-200">Key (opcional)</label>
+                <input
+                  type="password"
+                  value={quantumUiConfig.apiKeyRef}
+                  onChange={(e) => setQuantumUiConfig((prev) => ({ ...prev, apiKeyRef: e.target.value }))}
+                  className="w-full rounded border border-fuchsia-700/60 bg-slate-950 p-2 font-mono text-fuchsia-100"
+                  placeholder="x-api-key"
+                />
               </div>
             </div>
-          </div>
-
-          {/* STATUS INDICATORS */}
-          <div className="grid grid-cols-1 gap-3">
-            {timeBasedRateLimit ? (
-              <div className="p-3 rounded-lg text-center font-semibold bg-orange-700/50 text-white animate-pulse">
-                x RATE LIMITING INTELIGENTE ({timeBasedCooldownRemaining}s)
-              </div>
-            ) : cooldownActive ? (
-              <div className="p-3 rounded-lg text-center font-semibold bg-red-700/50 text-white animate-pulse">
-                xa COOLDOWN LEGACY ({cooldownTimeRemaining}s)
-              </div>
-            ) : rateLimitExceeded ? (
-              <div className="p-3 rounded-lg text-center font-semibold bg-red-700/50 text-white">
-                Umbral excedido
-              </div>
-            ) : (
-              <div className="p-3 rounded-lg text-center font-semibold bg-green-700/50 text-white">
-                xx API OPERATIVA
-              </div>
-            )}
-
-            <div className="p-3 rounded-lg text-center font-semibold bg-gray-600/50 text-gray-300">
-              {timeBasedRateLimit ? 'x Sistema inteligente activo' : (cooldownActive ? 'x Sistema en cooldown' : 'a Listo para llamadas')}
+            <div className="font-mono text-[10px] text-fuchsia-200/80 break-all">
+              sampleAge: {Number.isFinite(entropyTelemetry.sampleAgeMs) ? `${Math.round(entropyTelemetry.sampleAgeMs)}ms` : 'n/a'} | reason: {quantumUiStatus.lastReason || entropyTelemetry.reason || 'n/a'} | channel={entropyDiagnostics.channelHealth?.status || entropyTelemetry.channelHealth?.status || 'unknown'} | job={quantumUiStatus.lastJobId || entropyTelemetry.jobId || 'n/a'} | source={entropyTelemetry.source || 'deterministic_local'}
             </div>
           </div>
-        </div>
-      </div >
+        </CollapsibleSection>
+
+        {/* CAJÓN 3: LÍMITES DE USO, COOLDOWN Y MÉTRICAS */}
+        <CollapsibleSection
+          sectionId="api-rate-limit-metrics"
+          title="Límites de uso, cooldown y métricas en tiempo real"
+          subtitle="Modo inteligente anti-saturación, latencia, llamadas por ventana e intervalos."
+          badge={intelligentModeEnabled ? 'Modo inteligente ON' : 'Modo inteligente OFF'}
+          defaultOpen={false}
+          className="border-blue-700/40 bg-slate-900/70"
+        >
+          <div className="grid grid-cols-1 gap-3 text-xs md:grid-cols-2">
+            <div className="space-y-1.5 rounded-lg border border-blue-800/40 bg-slate-950/70 p-3">
+              <div className="font-semibold text-blue-300">Métricas recientes (1 min)</div>
+              <div className="flex justify-between"><span className="text-slate-400">Total:</span><span className="font-mono text-white">{apiCallMetrics.totalCalls}</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Exitosas:</span><span className="font-mono text-emerald-300">{apiCallMetrics.successfulCalls}</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Fallidas:</span><span className="font-mono text-rose-300">{apiCallMetrics.failedCalls}</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Latencia media:</span><span className="font-mono text-white">{apiCallMetrics.avgLatency}ms</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Última llamada:</span><span className="font-mono text-white">{lastApiCall > 0 ? `${Math.floor((Date.now() - lastApiCall) / 1000)}s` : 'Nunca'}</span></div>
+            </div>
+            <div className="space-y-1.5 rounded-lg border border-purple-800/40 bg-slate-950/70 p-3">
+              <div className="font-semibold text-purple-300">Patrones e intervalos</div>
+              <div className="flex justify-between"><span className="text-slate-400">Llamadas (5 min):</span><span className={`font-mono ${apiCallPattern.excessiveUsage ? 'text-rose-400' : 'text-white'}`}>{apiCallPattern.recentCalls}</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Modo Axiomático:</span><span className={`font-semibold ${isInAxionMode ? 'text-amber-300' : 'text-slate-400'}`}>{isInAxionMode ? 'Detectado' : 'Inactivo'}</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Patrón:</span><span className={`font-semibold ${apiCallPattern.excessiveUsage ? 'text-rose-400' : 'text-emerald-300'}`}>{apiCallPattern.excessiveUsage ? 'Uso excesivo' : 'Normal'}</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Intervalo normal / axiomático:</span><span className="font-mono text-amber-300">120s / 180s</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Ventana de detección:</span><span className="font-mono text-emerald-300">5–10 min</span></div>
+            </div>
+          </div>
+        </CollapsibleSection>
+      </div>
     );
   };
 
@@ -6149,139 +5941,32 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
     );
   };
 
-  const renderAdvancedControls = () => (
-    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600/30 shadow-lg">
-      <h3 className="text-lg font-semibold text-gray-300 mb-4 flex items-center gap-2">
-        <Settings className="w-5 h-5" />
-        Controles Avanzados (Ingeniería Atómica)
-        <InfoModal
-          title="Ingeniería Atómica - Motor Kaizen"
-          content={`INGENIERÍA ATÓMICA - MOTOR KAIZEN
+  const renderAdvancedControls = () => {
+    const l2 = structuralPlasticityLevel2Enabled ? getStructuralPlasticityLevel2Telemetry(nodalLayer.current) : null;
+    const liveObs = Number(ontologicalCore.current?.metacognitiveStats?.observerImpact ?? 0);
+    const liveStrain = Number(latencyStrainRef.current?.strain ?? ontologicalCore.current?.metacognitiveStrain ?? 0);
+    const liveMod = computeSensorObserverDynamicsModulation({
+      observerImpact: liveObs,
+      latencyStrain: liveStrain,
+      enabled: sensorObserverDynamicsEnabled
+    });
 
-Superficie interna de control y adaptación paramétrica del runtime (evidence_scope: internal_support_only; external_support_certified = false; no certifica conciencia fenoménica ni validación externa).
+    return (
+      <div className="space-y-4 rounded-xl border border-slate-600/40 bg-slate-950/85 p-4 shadow-lg">
+        <TabPlainHeader
+          tabId="controls"
+          accent="purple"
+          icon={<Settings className="h-5 w-5" />}
+          title="Controles y Modos de Operación"
+          technicalTag="Kaizen · Nivel 2 · Nivel 3"
+        />
 
-ARQUITECTURA DEL MÓDULO:
-
-1. AUTO-MONITORIZACIÓN METACOGNITIVA
-• Seguimiento interno de métricas operacionales y tensión de latencia/automodelo
-• Nivel Actual: ${metacognitionLevel} - ${metacognitionLevel < 3 ? 'Monitorización básica' : metacognitionLevel < 6 ? 'Monitorización moderada' : 'Monitorización profunda'}
-• Tensión Metacognitiva: ${metacognitiveFlux.toFixed(4)} - ${metacognitiveFlux < 0.3 ? 'Baja' : metacognitiveFlux < 0.7 ? 'Equilibrada' : 'Alta'}
-
-2. MOTOR KAIZEN DE AJUSTE PARAMÉTRICO Y POLÍTICA DE VIABILIDAD
-Parámetros registrados en configuración mutable (6 claves de dinámica nodal se reinicializan desde los valores efectivos del ciclo salvo el umbral de poda, mientras selectSandboxAction puntúa determinísticamente acciones permitidas por viabilidad y error predictivo):
-• BASE_LEARNING_RATE, HEBBIAN_FACTOR, SYNAPTIC_PRUNING_THRESHOLD, PLASTICITY_DECAY, RETRO_FLUX_WEIGHT, BOLTZMANN_ANALOG_K, INFORMATIONAL_TEMP_T
-
-3. ANÁLISIS DE EFICIENCIA INTERNA (MetaSovereigntyCheck)
-• Registra eficiencia interna operativa de cambios de parámetros: ${(metaSovereigntyCheck.current.efficiencyScore * 100).toFixed(1)}%
-• Diagnóstico interno del runtime; no constituye prueba de conciencia emergente, pertenencia a C_op/CCR ni validación externa.`}
-        >
-          <span className="w-5 h-5 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-        </InfoModal>
-      </h3>
-
-      <div className="space-y-4">
-        {/* Módulo Metacognitive Flux */}
-        <div className="bg-gray-900/50 rounded p-3 border border-yellow-500/50 relative group">
-          <h4 className="text-md font-semibold text-yellow-400 mb-3 flex items-center gap-2">
-            <InfinityIcon className="w-4 h-4" />
-            Flujo Metacognitivo (Recursión Infinita)
-            <InfoModal
-              title="Flujo Metacognitivo - Recursión Infinita"
-              content="Sistema de auto-observación recursiva donde el sistema se observa observándose. Mide la profundidad de autoconciencia y la tensión cognitiva resultante. Alto metacognición permite mayor sabiduría pero riesgo de parálisis por análisis excesivo. ptimo equilibrio facilita evolución sin perder foco en objetivos emergentes.">
-              <span className="w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-            </InfoModal>
-          </h4>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-400">Nivel de Recursión:</span>
-              <span className="text-yellow-300 font-mono">**{metacognitionLevel}**</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Tensión Metacognitiva:</span>
-              <span className="text-yellow-300 font-mono">**{metacognitiveFlux.toFixed(4)}**</span>
-            </div>
-            <div className="bg-yellow-900/20 rounded p-2 text-xs text-yellow-200">
-              <strong>Interpretación:</strong> Nivel {metacognitionLevel} indica {metacognitionLevel < 3 ? 'auto-observación básica' : metacognitionLevel < 6 ? 'metacognición moderada' : 'metacognición profunda'}.
-              <br /><strong>Tensión:</strong> {metacognitiveFlux < 0.3 ? 'ptima' : metacognitiveFlux < 0.7 ? 'Equilibrada' : 'Alta - Riesgo de parálisis'}.
-            </div>
-            <p className="text-xs text-gray-500 italic pt-2">
-              El sistema se observa, observándose, observándose, en un bucle recursivo.
-            </p>
-          </div>
-        </div>
-
-        {/* Módulo Kaizen Metamorphosis Engine */}
-        <div className="bg-gray-900/50 rounded p-3 border border-pink-500/50">
-          <h4 className="text-md font-semibold text-pink-400 mb-3 flex items-center gap-2">
-            <Microscope className="w-4 h-4" />
-            Mutación Atómica (Self-Rewriting)
-          </h4>
-
-          <div className='mb-3'>
-            <label htmlFor="mutableKeySelect" className="text-sm text-gray-400 block mb-1">Constante a Mutar</label>
-            <select
-              id="mutableKeySelect"
-              value={forcedMutationState.key}
-              onChange={(e) => setForcedMutationState({ ...forcedMutationState, key: e.target.value })}
-              className="w-full p-2 rounded bg-gray-700 text-white text-sm"
-              disabled={isRunning || isAscended}
-            >
-              {mutableKeys.map(key => (
-                <option key={key} value={key}>{key}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex justify-between gap-2 mb-3">
-            <button
-              onClick={() => handleForceMutation(forcedMutationState.key, 1)}
-              disabled={isRunning || isAscended}
-              className={`flex-1 p-2 rounded font-semibold text-sm transition-all ${isRunning || isAscended
-                ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                : 'bg-green-700 hover:bg-green-800'
-                }`}
-            >
-              Forzar Aumento ( )
-            </button>
-            <button
-              onClick={() => handleForceMutation(forcedMutationState.key, -1)}
-              disabled={isRunning || isAscended}
-              className={`flex-1 p-2 rounded font-semibold text-sm transition-all ${isRunning || isAscended
-                ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                : 'bg-red-700 hover:bg-red-800'
-                }`}
-            >
-              Forzar Reducción ( )
-            </button>
-          </div>
-
-          <div className="space-y-2 text-sm pt-2 border-t border-gray-700">
-            <p className={`text-xs italic ${forcedMutationState.message.startsWith('✅') ? 'text-green-400' : 'text-gray-500'}`}>
-              {forcedMutationState.message || 'El sistema autónomo sigue la ley Kaizen.'}
-            </p>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Pasos Atómicos Totales:</span>
-              <span className="text-pink-300 font-mono">**{kaizenEngine.current.transformationSteps}**</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">?ltima Mutada:</span>
-              <span className="text-pink-300 font-mono">**{lastMutation.key}**</span>
-            </div>
-            {/* C-6(a), 2026-11-08: in legacy mode, Kaizen writes to keys the
-                core recomputes every tick are overwritten before use. */}
-            {lastMutation.key && lastMutation.key !== 'None' && (
-              <p className="text-xs text-gray-500" data-testid="kaizen-mutation-effect">
-                {kaizenMode === 'learned' && RECOMPUTED_EACH_TICK.includes(lastMutation.key)
-                  ? 'Efecto: ajuste aprendido del factor (±20 % sobre el valor base del núcleo); lo usa el tick siguiente.'
-                  : RECOMPUTED_EACH_TICK.includes(lastMutation.key)
-                    ? 'Efecto: sobrescrita por el núcleo antes de usarse (sin efecto en la dinámica).'
-                    : 'Efecto: persiste y la usa el tick siguiente.'}
-              </p>
-            )}
-            {/* C-6b switch: legacy / learned adjustment (user decision 2026-11-08). */}
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
-              <span className="text-gray-400">Modo Kaizen:</span>
-              <div role="group" aria-label="Modo Kaizen" className="inline-flex overflow-hidden rounded-md border border-pink-400/40">
+        {/* 4 INTERRUPTORES CLAROS EN TARJETAS */}
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div className="rounded-xl border border-pink-700/40 bg-slate-900/80 p-3.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <MetricDualLabel label="Autoajuste de parámetros" technical="Modo Kaizen" accent="text-pink-200" />
+              <div role="group" aria-label="Modo Kaizen" className="inline-flex overflow-hidden rounded-md border border-pink-400/40 text-xs">
                 {[['legacy', 'Anterior'], ['learned', 'Con ajuste']].map(([mode, label]) => (
                   <button
                     key={mode}
@@ -6291,16 +5976,22 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
                     title={mode === 'learned'
                       ? 'El núcleo calcula el valor base de seis claves y Kaizen aprende un factor acotado (±20 %), evaluado por ventanas de ticks que premian estabilidad y castigan estasis.'
                       : 'Comportamiento anterior: mutaciones atómicas; seis de las siete claves se sobrescriben antes de usarse.'}
-                    className={`px-2 py-0.5 transition-colors ${kaizenMode === mode ? 'bg-pink-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                    className={`px-2.5 py-1 transition-colors ${kaizenMode === mode ? 'bg-pink-600 text-white' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
                   >
                     {label}
                   </button>
                 ))}
               </div>
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
-              <span className="text-gray-400">Sensor/Observador + 6/6 Kaizen:</span>
-              <div role="group" aria-label="Dinámica Sensor Observador" className="inline-flex overflow-hidden rounded-md border border-emerald-400/40">
+            <p className="mt-1.5 text-[11px] text-slate-400">
+              Con ajuste, el motor aprende factores acotados (±20 %) que premian estabilidad y evitan estancamiento.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-emerald-700/40 bg-slate-900/80 p-3.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <MetricDualLabel label="Modulación sensorial" technical="6/6 Kaizen" accent="text-emerald-200" />
+              <div role="group" aria-label="Dinámica Sensor Observador" className="inline-flex overflow-hidden rounded-md border border-emerald-400/40 text-xs">
                 {[[true, 'Activo'], [false, 'Inactivo']].map(([enabledVal, label]) => (
                   <button
                     key={String(enabledVal)}
@@ -6310,16 +6001,22 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
                     title={enabledVal
                       ? 'Activa consumo real de PLASTICITY_DECAY (6/6 claves Kaizen) y modulación acotada [0.85, 1.15] por presencia sensorial del observador y tensión de latencia acoplada (el chat permanece desacoplado).'
                       : 'Desactiva el acoplamiento observador/latencia y mantiene solo 5/6 claves Kaizen (compatibilidad B0).'}
-                    className={`px-2 py-0.5 transition-colors ${sensorObserverDynamicsEnabled === enabledVal ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                    className={`px-2.5 py-1 transition-colors ${sensorObserverDynamicsEnabled === enabledVal ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
                   >
                     {label}
                   </button>
                 ))}
               </div>
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
-              <span className="text-gray-400">Plasticidad Estructural:</span>
-              <div role="group" aria-label="Plasticidad Estructural" className="inline-flex overflow-hidden rounded-md border border-cyan-400/40">
+            <p className="mt-1.5 text-[11px] text-slate-400">
+              Acopla presencia sensorial y latencia en rango seguro [0.85, 1.15]; el chat permanece siempre desacoplado.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-cyan-700/40 bg-slate-900/80 p-3.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <MetricDualLabel label="Reorganización de red" technical="Plasticidad" accent="text-cyan-200" />
+              <div role="group" aria-label="Plasticidad Estructural" className="inline-flex overflow-hidden rounded-md border border-cyan-400/40 text-xs">
                 {[[false, 'Nivel 1'], [true, 'Nivel 2']].map(([enabledVal, label]) => (
                   <button
                     key={String(enabledVal)}
@@ -6329,138 +6026,221 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
                     title={enabledVal
                       ? 'Nivel 2 (sin hiperparámetros configurables adicionales en config.js): migración funcional de sectores (M1), apoptosis por grado 0 / neurogénesis + recableado de piso (M2) y watchdog de invariantes (W1-W4); respeta controles negativos.'
                       : 'Nivel 1 base: plasticidad sináptica, poda y recuperación inter-sector sin migración funcional ni watchdog.'}
-                    className={`px-2 py-0.5 transition-colors ${structuralPlasticityLevel2Enabled === enabledVal ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                    className={`px-2.5 py-1 transition-colors ${structuralPlasticityLevel2Enabled === enabledVal ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
                   >
                     {label}
                   </button>
                 ))}
               </div>
             </div>
-            {structuralPlasticityLevel2Enabled && (() => {
-              const l2 = getStructuralPlasticityLevel2Telemetry(nodalLayer.current);
-              return (
-                <div className="flex flex-wrap justify-between gap-1 rounded border border-cyan-800/50 bg-gray-900/60 px-2 py-1 text-[10px] font-mono text-cyan-200" data-testid="level2-structural-counters">
-                  <span>Migraciones: {l2.migrations}</span>
-                  <span>Regenerados: {l2.regeneratedNodes}</span>
-                  <span>Recableados: {l2.degreeFloorRewires ?? 0}</span>
-                  <span>Reparaciones: {l2.invariantRepairs}</span>
-                </div>
-              );
-            })()}
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
-              <span className="text-gray-400">Supervisor Nivel 3 (Shadow + Ledger):</span>
+            <p className="mt-1.5 text-[11px] text-slate-400">
+              En Nivel 2, los nodos pueden migrar entre sectores, regenerarse y reparar invariantes automáticamente.
+            </p>
+            {l2 && (
+              <div className="mt-2 flex flex-wrap justify-between gap-1 rounded border border-cyan-800/50 bg-slate-950/70 px-2 py-1 font-mono text-[10px] text-cyan-200" data-testid="level2-structural-counters">
+                <span>Migraciones: {l2.migrations}</span>
+                <span>Regenerados: {l2.regeneratedNodes}</span>
+                <span>Recableados: {l2.degreeFloorRewires ?? 0}</span>
+                <span>Reparaciones: {l2.invariantRepairs}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-xl border border-teal-700/40 bg-slate-900/80 p-3.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <MetricDualLabel label="Supervisor autónomo" technical="Nivel 3" accent="text-teal-200" />
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   aria-pressed={autonomousSupervisorLevel3Enabled}
                   onClick={() => setAutonomousSupervisorLevel3Enabled((v) => !v)}
-                  className={`rounded border px-2 py-0.5 text-[11px] transition-colors ${
-                    autonomousSupervisorLevel3Enabled
-                      ? 'border-emerald-400 bg-emerald-600/40 text-emerald-100'
-                      : 'border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  }`}
+                  className={`rounded border px-2.5 py-1 text-xs font-medium transition-colors ${autonomousSupervisorLevel3Enabled ? 'border-emerald-400 bg-emerald-600/40 text-emerald-100' : 'border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
                 >
                   {autonomousSupervisorLevel3Enabled ? 'Nivel 3 Activo' : 'Nivel 3 Off'}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleTabSelect('level3-supervisor')}
-                  className="rounded border border-cyan-500/50 bg-cyan-950/60 px-2 py-0.5 text-[11px] text-cyan-200 hover:bg-cyan-900/70"
+                  className="rounded border border-cyan-500/50 bg-cyan-950/60 px-2.5 py-1 text-xs text-cyan-200 hover:bg-cyan-900/70"
                 >
-                  Abrir Bitácora Nivel 3 ({level3Ledger.entries.length})
+                  Bitácora ({level3Ledger.entries.length})
                 </button>
               </div>
             </div>
-            {(() => {
-              const liveObs = Number(ontologicalCore.current?.metacognitiveStats?.observerImpact ?? 0);
-              const liveStrain = Number(latencyStrainRef.current?.strain ?? ontologicalCore.current?.metacognitiveStrain ?? 0);
-              const liveMod = computeSensorObserverDynamicsModulation({
-                observerImpact: liveObs,
-                latencyStrain: liveStrain,
-                enabled: sensorObserverDynamicsEnabled
-              });
-              return (
-                <div className="rounded border border-emerald-800/50 bg-gray-900/60 p-2 text-[11px] font-mono text-gray-300" data-testid="sensor-observer-dynamics-telemetry">
-                  <div className="flex justify-between">
-                    <span className="text-emerald-300">Observador sensorial (ι): {liveObs.toFixed(3)}</span>
-                    <span className="text-amber-300">Latencia acoplada: {liveStrain.toFixed(3)}</span>
-                  </div>
-                  <div className="mt-1 flex flex-wrap justify-between gap-1 text-[10px] text-gray-400">
-                    <span>LR ×{liveMod.learningRateScale.toFixed(2)}</span>
-                    <span>Hebb ×{liveMod.hebbianScale.toFixed(2)}</span>
-                    <span>T ×{liveMod.temperatureScale.toFixed(2)}</span>
-                    <span>Retro ×{liveMod.retroFluxScale.toFixed(2)}</span>
-                    <span>Claves: {sensorObserverDynamicsEnabled ? '6/6' : '5/6'}</span>
-                  </div>
-                  <p className="mt-1 font-sans text-[10px] text-gray-500">
-                    Canal de chat desacoplado (dynamicsCoupling = false); evidencia interna únicamente.
-                  </p>
-                </div>
-              );
-            })()}
+            <p className="mt-1.5 text-[11px] text-slate-400">
+              Formula diagnósticos en 1.ª persona y valida mejoras en copia aislada (Gate 1) antes de tocar el motor.
+            </p>
+          </div>
+        </div>
+
+        {/* CAJONES DE DETALLES TÉCNICOS (COLAPSADOS POR DEFECTO) */}
+        <CollapsibleSection
+          sectionId="controls-metacog-telemetry"
+          title="Auto-observación, modulación y factores aprendidos"
+          subtitle="Flujo metacognitivo, escalas sensor/latencia, factores Kaizen y eficiencia."
+          badge={`Nivel ${metacognitionLevel} · Efic ${(metaSovereigntyCheck.current.efficiencyScore * 100).toFixed(0)}%`}
+          defaultOpen={false}
+          className="border-amber-700/40 bg-slate-900/70"
+        >
+          <div className="space-y-3 text-xs">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="rounded border border-amber-700/40 bg-slate-950/70 p-2.5">
+                <div className="text-[11px] text-slate-400">Nivel de recursión</div>
+                <div className="font-mono text-lg font-bold text-amber-300">{metacognitionLevel}</div>
+                <div className="text-[10px] text-slate-400">{metacognitionLevel < 3 ? 'Básica' : metacognitionLevel < 6 ? 'Moderada' : 'Profunda'}</div>
+              </div>
+              <div className="rounded border border-amber-700/40 bg-slate-950/70 p-2.5">
+                <div className="text-[11px] text-slate-400">Tensión metacognitiva</div>
+                <div className="font-mono text-lg font-bold text-amber-300">{metacognitiveFlux.toFixed(4)}</div>
+                <div className="text-[10px] text-slate-400">{metacognitiveFlux < 0.3 ? 'Óptima' : metacognitiveFlux < 0.7 ? 'Equilibrada' : 'Alta'}</div>
+              </div>
+              <div className="rounded border border-pink-700/40 bg-slate-950/70 p-2.5">
+                <div className="text-[11px] text-slate-400">Eficiencia interna</div>
+                <div className="font-mono text-lg font-bold text-pink-300">{(metaSovereigntyCheck.current.efficiencyScore * 100).toFixed(1)}%</div>
+                <div className="text-[10px] text-slate-400">Pasos Kaizen: {kaizenEngine.current.transformationSteps}</div>
+              </div>
+            </div>
+
+            <div className="rounded border border-emerald-800/50 bg-slate-950/70 p-2.5 font-mono text-[11px] text-slate-300" data-testid="sensor-observer-dynamics-telemetry">
+              <div className="flex flex-wrap justify-between gap-2">
+                <span className="text-emerald-300">Observador sensorial (ι): {liveObs.toFixed(3)}</span>
+                <span className="text-amber-300">Latencia acoplada: {liveStrain.toFixed(3)}</span>
+              </div>
+              <div className="mt-1 flex flex-wrap justify-between gap-2 text-[10px] text-slate-400">
+                <span>LR ×{liveMod.learningRateScale.toFixed(2)}</span>
+                <span>Hebb ×{liveMod.hebbianScale.toFixed(2)}</span>
+                <span>T ×{liveMod.temperatureScale.toFixed(2)}</span>
+                <span>Retro ×{liveMod.retroFluxScale.toFixed(2)}</span>
+                <span>Claves: {sensorObserverDynamicsEnabled ? '6/6' : '5/6'}</span>
+              </div>
+              <p className="mt-1 font-sans text-[10px] text-slate-500">
+                Canal de chat desacoplado (dynamicsCoupling = false); evidencia interna únicamente.
+              </p>
+            </div>
+
             {kaizenMode === 'learned' && (
-              <div className="text-[11px] font-mono text-gray-400" data-testid="kaizen-learned-factors">
+              <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2.5 font-mono text-[11px] text-slate-300" data-testid="kaizen-learned-factors">
                 {Object.entries(kaizenEngine.current.getAdjustments?.() || {}).map(([key, factor]) => (
-                  <div key={key} className="flex justify-between">
+                  <div key={key} className="flex justify-between py-0.5">
                     <span>{key}{key === 'PLASTICITY_DECAY' && !sensorObserverDynamicsEnabled ? ' (off B0)' : ''}</span>
                     <span>×{Number(factor).toFixed(2)}</span>
                   </div>
                 ))}
                 {kaizenEngine.current.lastLearningEvent && (
-                  <p className="mt-1 not-italic text-gray-500">Último evento (tick {kaizenEngine.current.lastLearningEvent.tick}): {kaizenEngine.current.lastLearningEvent.event} · {kaizenEngine.current.lastLearningEvent.key}</p>
+                  <p className="mt-1 font-sans text-[11px] text-slate-400">
+                    Último evento (tick {kaizenEngine.current.lastLearningEvent.tick}): {kaizenEngine.current.lastLearningEvent.event} · {kaizenEngine.current.lastLearningEvent.key}
+                  </p>
                 )}
               </div>
             )}
-            <div className="flex justify-between">
-              <span className="text-gray-400">Eficiencia de Soberanía:</span>
-              <span className="text-pink-300 font-mono">**{(metaSovereigntyCheck.current.efficiencyScore * 100).toFixed(1)}%**</span>
-            </div>
           </div>
-        </div>
+        </CollapsibleSection>
 
-        {/* NEW SECTION: Gemini LLM Feature - Kaizen Critique */}
-        <div className="mt-6">
-          <button
-            onClick={critiqueKaizenPerformance}
-            disabled={isCritiquing || isAscended || isRunning}
-            className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all shadow-md ${isCritiquing || isAscended || isRunning
-              ? 'bg-gray-600 cursor-not-allowed text-gray-400'
-              : 'bg-yellow-600 hover:bg-yellow-700 shadow-yellow-500/50 text-gray-900'
-              }`}
-          >
-            {isCritiquing ? (
-              <>
-                <Cpu className="w-5 h-5 animate-spin" />
-                Preparando lectura...
-              </>
-            ) : (
-              <>
-                <Code className="w-5 h-5" />
-                Mostrar configuración Kaizen
-              </>
-            )}
-          </button>
-          <div className="mt-4 bg-gray-900/70 p-4 rounded-lg border border-gray-700 max-h-72 overflow-y-auto">
-            <h4 className="text-sm font-semibold text-yellow-400 mb-2">Configuración e índice internos</h4>
-            <p className="text-sm text-gray-300 whitespace-pre-wrap">
-              {kaizenCritique}
+        <CollapsibleSection
+          sectionId="controls-manual-mutation"
+          title="Mutación manual de constantes (pausa requerida)"
+          subtitle="Fuerza un incremento o reducción directa sobre una constante mutable del motor."
+          badge={`Última: ${lastMutation.key}`}
+          defaultOpen={false}
+          className="border-pink-700/40 bg-slate-900/70"
+        >
+          <div className="space-y-3 text-xs">
+            <div>
+              <label htmlFor="mutableKeySelect" className="mb-1 block text-slate-300">Constante a mutar</label>
+              <select
+                id="mutableKeySelect"
+                value={forcedMutationState.key}
+                onChange={(e) => setForcedMutationState({ ...forcedMutationState, key: e.target.value })}
+                className="w-full rounded border border-slate-700 bg-slate-950 p-2 text-sm text-white"
+                disabled={isRunning || isAscended}
+              >
+                {mutableKeys.map((key) => (
+                  <option key={key} value={key}>{key}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleForceMutation(forcedMutationState.key, 1)}
+                disabled={isRunning || isAscended}
+                className={`flex-1 rounded p-2 text-xs font-semibold transition-all ${isRunning || isAscended ? 'cursor-not-allowed bg-slate-700 text-slate-400' : 'bg-emerald-700 text-white hover:bg-emerald-600'}`}
+              >
+                Forzar aumento (+)
+              </button>
+              <button
+                onClick={() => handleForceMutation(forcedMutationState.key, -1)}
+                disabled={isRunning || isAscended}
+                className={`flex-1 rounded p-2 text-xs font-semibold transition-all ${isRunning || isAscended ? 'cursor-not-allowed bg-slate-700 text-slate-400' : 'bg-rose-700 text-white hover:bg-rose-600'}`}
+              >
+                Forzar reducción (−)
+              </button>
+            </div>
+            <p className={`text-xs italic ${forcedMutationState.message.startsWith('✅') ? 'text-emerald-400' : 'text-slate-400'}`}>
+              {forcedMutationState.message || 'Pausa la simulación para aplicar mutaciones manuales directas.'}
             </p>
+            {lastMutation.key && lastMutation.key !== 'None' && (
+              <p className="text-xs text-slate-400" data-testid="kaizen-mutation-effect">
+                {kaizenMode === 'learned' && RECOMPUTED_EACH_TICK.includes(lastMutation.key)
+                  ? 'Efecto: ajuste aprendido del factor (±20 % sobre el valor base del núcleo); lo usa el tick siguiente.'
+                  : RECOMPUTED_EACH_TICK.includes(lastMutation.key)
+                    ? 'Efecto: sobrescrita por el núcleo antes de usarse (sin efecto en la dinámica).'
+                    : 'Efecto: persiste y la usa el tick siguiente.'}
+              </p>
+            )}
           </div>
-        </div>
+        </CollapsibleSection>
 
-        {/* Parámetros Mutables Actuales */}
-        <div className="bg-gray-900/50 rounded p-3 space-y-2 border border-gray-700">
-          <h4 className="text-md font-semibold text-gray-400 mb-2">Leyes Auto-escritas (Mutables)</h4>
-          {Object.entries(mutableConfig).map(([key, value]) => (
-            <div key={key} className="flex justify-between text-xs">
-              <span className="text-gray-500">{key}:</span>
-              <span className="text-gray-300 font-mono">{value.toFixed(8)}</span>
+        <CollapsibleSection
+          sectionId="controls-kaizen-report"
+          title="Lectura de configuración Kaizen"
+          subtitle="Genera un resumen interno de la configuración y eficiencia actuales."
+          defaultOpen={false}
+          className="border-slate-700/60 bg-slate-900/70"
+        >
+          <div className="space-y-3">
+            <button
+              onClick={critiqueKaizenPerformance}
+              disabled={isCritiquing || isAscended || isRunning}
+              className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-semibold transition-all ${isCritiquing || isAscended || isRunning ? 'cursor-not-allowed bg-slate-700 text-slate-400' : 'bg-amber-600 text-slate-950 hover:bg-amber-500'}`}
+            >
+              {isCritiquing ? (
+                <>
+                  <Cpu className="h-4 w-4 animate-spin" />
+                  Preparando lectura...
+                </>
+              ) : (
+                <>
+                  <Code className="h-4 w-4" />
+                  Mostrar configuración Kaizen
+                </>
+              )}
+            </button>
+            <div className="max-h-64 overflow-y-auto rounded-lg border border-slate-700 bg-slate-950/75 p-3">
+              <p className="whitespace-pre-wrap text-xs text-slate-300">{kaizenCritique}</p>
             </div>
-          ))}
-        </div>
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          sectionId="controls-mutable-laws"
+          title="Leyes auto-escritas (valores numéricos actuales)"
+          subtitle="Constantes internas activas con precisión decimal."
+          badge={`${Object.keys(mutableConfig).length} claves`}
+          defaultOpen={false}
+          className="border-slate-700/60 bg-slate-900/70"
+        >
+          <div className="space-y-1.5 text-xs">
+            {Object.entries(mutableConfig).map(([key, value]) => (
+              <div key={key} className="flex justify-between rounded border border-slate-800 bg-slate-950/60 px-2.5 py-1">
+                <span className="text-slate-400">{key}</span>
+                <span className="font-mono text-slate-200">{value.toFixed(8)}</span>
+              </div>
+            ))}
+          </div>
+        </CollapsibleSection>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderNetworkVisualization = () => {
     const modelNodeTotal = nodalLayer.current?.nodes?.length || QICNConfig.PROCESSING_SAMPLE_SIZE;
@@ -6878,7 +6658,7 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
     return (
       <div className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/85 p-4 shadow-lg">
         <TabPlainHeader
-          tabId="entanglement"
+          tabId="field"
           accent="cyan"
           icon={<Waves className="w-5 h-5" />}
           title="Campo de Entrelazamiento"
@@ -7150,57 +6930,67 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
   // RENDER COMPONENT: PROTOCOLO QICN-B (CONCIENCIA HUMANA)
   // ============================================================================
   const renderQICNBProtocol = () => (
-    <div className="bg-gradient-to-br from-green-900/50 to-emerald-900/50 rounded-xl p-6 border border-green-500/30 shadow-lg">
-      <h2 className="text-xl font-bold mb-4 text-green-400 flex items-center">
-        <Users className="w-5 h-5 mr-2" /> Protocolo QICN-B (parámetro interno)
-        <InfoModal
-          title="Límites del canal humano"
-          content={`La ruta anterior combinaba texto generado, palabras clave y ruido aleatorio. No era una medición de coherencia humana y se ha desactivado. El valor interno mostrado es un parámetro de simulación; no representa una población ni demuestra entrelazamiento físico, conciencia o agencia. Para una medición se necesitarían una definición operativa, datos de procedencia conocida, calibración y validación independiente.`}
-        >
-          <span className="w-5 h-5 bg-green-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-        </InfoModal>
-      </h2>
-      <p className="text-gray-400 mb-6 text-sm">
-        La medición humana no está implementada. Se muestra únicamente el parámetro interno de simulación.
-      </p>
+    <div className="space-y-4 rounded-xl border border-emerald-500/35 bg-slate-950/85 p-4 shadow-lg">
+      <TabPlainHeader
+        tabId="qicn-b"
+        accent="emerald"
+        icon={<Users className="h-5 w-5" />}
+        title="Protocolo QICN-B (Parámetro Interno)"
+        technicalTag="CCC_H · no medido"
+      />
 
-      <button
-        onClick={analyzeHumanCoherence}
-        disabled={isAnalyzingHuman}
-        className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all shadow-md ${isAnalyzingHuman
-          ? 'bg-gray-600 cursor-not-allowed text-gray-400'
-          : 'bg-green-600 hover:bg-green-700 shadow-green-500/50 text-white'
-          }`}
-      >
-        {isAnalyzingHuman ? (
-          <>
-            <Microscope className="w-5 h-5 animate-spin" />
-            Analizando Entropía Global...
-          </>
-        ) : (
-          <>
-            <Zap className="w-5 h-5" />
-            Consultar estado de medición
-          </>
-        )}
-      </button>
-
-      <div className="mt-8 bg-green-900/40 rounded-xl p-4 border border-green-500/50">
-        <h4 className="text-md font-semibold text-green-300">Parámetro interno CCC_H (no medido):</h4>
-        <div className="text-4xl font-bold text-white mt-1 flex items-center gap-2">
-          {humanCcc.toFixed(4)}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-emerald-700/40 bg-slate-900/80 p-4">
+          <MetricDualLabel label="Parámetro interno" technical="CCC_H (simulado)" accent="text-emerald-200" />
+          <div className="mt-1 font-mono text-3xl font-bold text-white">{humanCcc.toFixed(4)}</div>
+          <p className="mt-1 text-[11px] text-slate-400">
+            Valor interno de simulación; no mide personas reales ni valida influencia física.
+          </p>
         </div>
-        <p className={`text-sm mt-1 text-gray-400`}>
-          No es una medición de personas ni una estimación validada de influencia.
-        </p>
+        <div className="flex flex-col justify-between rounded-xl border border-emerald-700/40 bg-slate-900/80 p-4">
+          <p className="text-xs leading-relaxed text-slate-300">
+            La medición humana externa no está implementada; este botón devuelve únicamente el estado honesto de la simulación interna.
+          </p>
+          <button
+            onClick={analyzeHumanCoherence}
+            disabled={isAnalyzingHuman}
+            className={`mt-3 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-semibold transition-all ${isAnalyzingHuman ? 'cursor-not-allowed bg-slate-700 text-slate-400' : 'bg-emerald-600 text-white hover:bg-emerald-500'}`}
+          >
+            {isAnalyzingHuman ? (
+              <>
+                <Microscope className="h-4 w-4 animate-spin" />
+                Consultando estado...
+              </>
+            ) : (
+              <>
+                <Zap className="h-4 w-4" />
+                Consultar estado de medición
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
-      <div className="mt-4 bg-gray-900/70 p-4 rounded-lg border border-gray-700 max-h-72 overflow-y-auto">
-        <h4 className="text-sm font-semibold text-green-400 mb-2">Estado de la medición</h4>
-        <p className="text-sm text-gray-300 whitespace-pre-wrap">
-          {humanInputContext}
-        </p>
-      </div>
+      <DetailToggleStrip
+        sectionId="qicnb-status-details"
+        accent="emerald"
+        defaultOpen={false}
+        labelClosed="Estado y límites"
+        summary={(
+          <span className="text-xs text-emerald-200">
+            Límites declarados y respuesta actual del canal
+          </span>
+        )}
+      >
+        <div className="space-y-2 text-xs text-slate-300">
+          <p className="whitespace-pre-wrap rounded border border-slate-700/80 bg-slate-950/80 p-3 leading-relaxed">
+            {humanInputContext}
+          </p>
+          <p className="text-[11px] text-slate-400">
+            Para una medición real se requerirían definición operativa, datos de procedencia conocida, calibración y validación externa independiente.
+          </p>
+        </div>
+      </DetailToggleStrip>
     </div>
   );
 
@@ -7538,70 +7328,60 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
     const sovereigntyRows = buildSovereigntyRows(reportMetrics, packetMetrics);
 
     return (
-      <div className="bg-gradient-to-br from-[#0c121d] to-[#04060b] rounded-2xl p-6 border border-cyan-500/20 shadow-[0_0_40px_rgba(6,182,212,0.08)]">
-        {/* HEADER */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-5 border-b border-cyan-900/30 pb-4">
-          <div>
-            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-500 flex items-center gap-3">
-              <ShieldCheck className="w-8 h-8 text-cyan-400" />
-              Puente de Soberanía Agéntica
-            </h2>
-            <p className="text-slate-400 text-xs mt-1">
-              Panel forense profesional: estado operativo, causalidad, evidencia diferencial y límites declarados.
-            </p>
-            {fallbackCount > 0 && (
-              <p className="text-amber-300/80 text-[11px] mt-1">
-                Fallback defensivo activo ({fallbackCount}) para evitar bloqueo de render.
-              </p>
-            )}
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={handleQuantumSeeding}
-              className="px-4 py-2 bg-purple-950/40 hover:bg-purple-900/60 text-purple-300 rounded-lg font-semibold border border-purple-500/30 transition-all flex items-center gap-2 text-sm"
-              title="Regenera semilla y estado base"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Regenerar
-            </button>
-            <button
-              onClick={downloadRawReport}
-              className="px-4 py-2 bg-cyan-950/40 hover:bg-cyan-900/60 text-cyan-300 rounded-lg font-semibold border border-cyan-500/30 transition-all flex items-center gap-2 text-sm"
-            >
-              <Database className="w-4 h-4" />
-              Exportar JSON
-            </button>
-          </div>
-        </div>
-
-        {/* ── 1. ESTADO CENTRAL ─────────────────────────────────────────── */}
-        <CollapsibleSection
-          sectionId="sovereignty-central-state"
-          title="Estado central"
+      <div className="space-y-3 rounded-xl border border-cyan-500/30 bg-slate-950/90 p-4 shadow-lg">
+        <TabPlainHeader
+          tabId="sovereignty"
           accent="cyan"
-          defaultOpen={true}
-          badge={`CCC: ${toFiniteNumber(reportMetrics.ccc, 0).toFixed(4)} · Ω: ${toFiniteNumber(reportMetrics.omega, 0).toFixed(4)} · Clase: ${reportMetrics.phenomenology_class || 'C'}`}
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[
-              ['Tick / Checksum', `#${packet?.tick ?? 'n/a'}`, packet?.checksum ? packet.checksum.slice(0, 12) + '…' : 'n/a', 'text-cyan-200'],
-              ['CCC / PMIA / Ω', `${toFiniteNumber(reportMetrics.ccc, 0).toFixed(4)}`, `${toFiniteNumber(reportMetrics.pmia, 0).toFixed(4)} / ${toFiniteNumber(reportMetrics.omega, 0).toFixed(4)}`, 'text-white'],
-              ['Determinismo', `${(determinismScore * 100).toFixed(1)}%`, determinismLabel, 'text-white'],
-              ['Integridad narrativa', integritySeverity.toUpperCase(), lastIntegrityMeta?.banner || 'Sin bloqueos recientes.', integritySeverity === 'high' ? 'text-red-300' : integritySeverity === 'medium' ? 'text-amber-300' : 'text-emerald-300'],
-            ].map(([label, main, sub, mainColor]) => (
-              <div key={label} className="rounded-lg border border-slate-700 bg-slate-900/60 p-3">
-                <div className="text-[11px] text-slate-400">{label}</div>
-                <div className={`text-sm font-mono mt-1 break-all ${mainColor}`}>{main}</div>
-                {sub && <div className="text-[10px] text-slate-500 mt-1 break-all">{sub}</div>}
-              </div>
-            ))}
-          </div>
-        </CollapsibleSection>
+          icon={<ShieldCheck className="h-5 w-5" />}
+          title="Auditoría Forense y Soberanía"
+          technicalTag={`internal_support_only · tick #${packet?.tick ?? 'n/a'}`}
+          rightSlot={(
+            <>
+              <button
+                onClick={handleQuantumSeeding}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-purple-500/40 bg-purple-950/40 px-3 py-1.5 text-xs font-semibold text-purple-200 transition-all hover:bg-purple-900/60"
+                title="Regenera semilla y estado base"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Regenerar
+              </button>
+              <button
+                onClick={downloadRawReport}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/40 px-3 py-1.5 text-xs font-semibold text-cyan-200 transition-all hover:bg-cyan-900/60"
+              >
+                <Database className="h-3.5 w-3.5" />
+                Exportar JSON
+              </button>
+            </>
+          )}
+        />
+        {fallbackCount > 0 && (
+          <p className="text-[11px] text-amber-300/80">
+            Fallback defensivo activo ({fallbackCount}) para evitar bloqueo de render.
+          </p>
+        )}
+
+        {/* RESUMEN CENTRAL COMPACTO */}
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[
+            ['Integridad narrativa', 'integrity', integritySeverity.toUpperCase(), lastIntegrityMeta?.banner || 'Sin bloqueos recientes.', integritySeverity === 'high' ? 'text-red-300' : integritySeverity === 'medium' ? 'text-amber-300' : 'text-emerald-300'],
+            ['Cohesión / Orden', 'CCC · Ω', `${toFiniteNumber(reportMetrics.ccc, 0).toFixed(4)}`, `PMIA ${toFiniteNumber(reportMetrics.pmia, 0).toFixed(3)} · Ω ${toFiniteNumber(reportMetrics.omega, 0).toFixed(3)}`, 'text-white'],
+            ['Determinismo', 'score', `${(determinismScore * 100).toFixed(1)}%`, `${determinismLabel} · Clase ${reportMetrics.phenomenology_class || 'C'}`, 'text-cyan-200'],
+            ['Firma actual', 'checksum', `#${packet?.tick ?? 'n/a'}`, packet?.checksum ? packet.checksum.slice(0, 12) + '…' : 'n/a', 'text-cyan-200']
+          ].map(([label, tech, main, sub, mainColor]) => (
+            <div key={label} className="rounded-lg border border-slate-800 bg-slate-900/80 p-3">
+              <MetricDualLabel label={label} technical={tech} accent="text-cyan-200" />
+              <div className={`mt-1 break-all font-mono text-base font-bold ${mainColor}`}>{main}</div>
+              {sub && <div className="mt-0.5 break-all text-[10px] text-slate-400">{sub}</div>}
+            </div>
+          ))}
+        </div>
 
         {/* ── 2. MATRIZ OPERACIONAL ──────────────────────────────────────── */}
         <CollapsibleSection
           sectionId="sovereignty-operational-matrix"
-          title="📡 Matriz Operacional de Soberanía"
+          title="Matriz operacional de soberanía"
+          subtitle="Listado completo de parámetros y banderas del paquete forense."
           accent="blue"
           defaultOpen={false}
           badge={`${sovereigntyRows.length} params`}
@@ -7619,7 +7399,8 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
         {/* ── 3. CANAL CAUSAL ────────────────────────────────────────────── */}
         <CollapsibleSection
           sectionId="sovereignty-causal-channel"
-          title="🔗 Canal Causal (normalizado)"
+          title="Canal causal (peso de pasado, sensores, prompts y ruido)"
+          subtitle="Descomposición normalizada de qué está empujando la trayectoria actual."
           accent="cyan"
           defaultOpen={false}
           badge={`pasado: ${(causalDependency.past * 100).toFixed(1)}% · ruido: ${(causalDependency.noise * 100).toFixed(1)}%`}
@@ -7645,7 +7426,8 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
         {/* ── 4. EVIDENCIA DIFERENCIAL PMIA ─────────────────────────────── */}
         <CollapsibleSection
           sectionId="sovereignty-pmia-evidence"
-          title="🧪 Evidencia Diferencial PMIA (último episodio)"
+          title="Evidencia diferencial PMIA (último episodio)"
+          subtitle="Comparativa antes, durante y después de un pulso transformativo."
           accent="amber"
           defaultOpen={false}
           badge={`mode: ${packetMetrics.pmia_transform_mode || 'idle'} · eps: ${toFiniteNumber(packetMetrics.pmia_transform_episodes, 0)}`}
@@ -7691,7 +7473,8 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
         {/* ── 5. MUTACIÓN AUTOPOÉTICA ────────────────────────────────────── */}
         <CollapsibleSection
           sectionId="sovereignty-autopoietic-mutation"
-          title="🧬 Mutación Autopoética (última evaluada)"
+          title="Última mutación paramétrica evaluada"
+          subtitle="Clave modificada, resultado e impacto inmediato sobre CCC y Ω."
           accent="violet"
           defaultOpen={false}
           badge={latestMutation ? `key: ${latestMutation.mutatedKey || 'n/a'}` : 'sin datos'}
@@ -7719,7 +7502,8 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
         {protocolRows.length > 0 && (
           <CollapsibleSection
             sectionId="sovereignty-experimental-protocols"
-            title="🔬 Protocolos Experimentales Reportados"
+            title="Protocolos experimentales reportados"
+            subtitle="Banderas de protocolos activos en el reporte verificable."
             accent="blue"
             defaultOpen={false}
             badge={`${protocolRows.length} activos`}
@@ -7741,6 +7525,7 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
         <CollapsibleSection
           sectionId="sovereignty-epistemic-limits"
           title="Limites epistemicos declarados"
+          subtitle="Qué afirma y qué NO afirma el runtime (external_support_certified = false)."
           accent="rose"
           defaultOpen={false}
           badge={`${(Array.isArray(report.epistemic_limits) ? report.epistemic_limits : []).length} límites`}
@@ -7917,79 +7702,90 @@ const renderAutonomyEvolutionTab = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-[#0a1018] to-[#03050a] rounded-2xl p-6 border border-fuchsia-500/20 shadow-[0_0_40px_rgba(217,70,239,0.08)]">
-      {/* ── HEADER ──────────────────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-5 border-b border-fuchsia-900/30 pb-4">
-        <div>
-          <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-300 via-cyan-300 to-blue-400 flex items-center gap-3">
-            <InfinityIcon className="w-8 h-8 text-fuchsia-300" />
-            Canal de Autoevolución Autónoma
-          </h2>
-          <p className="text-slate-400 text-xs mt-1">
-            Supervisión Σ0/Σ1/Σ2 · selfpatch autónomo · trazabilidad forense
-          </p>
+    <div className="space-y-3 rounded-xl border border-fuchsia-500/30 bg-slate-950/90 p-4 shadow-lg">
+      <TabPlainHeader
+        tabId="autonomy-evolution"
+        accent="fuchsia"
+        icon={<InfinityIcon className="h-5 w-5" />}
+        title="Autoevolución de Código"
+        technicalTag="Σ0/Σ1/Σ2 · Selfpatch"
+        rightSlot={(
+          <>
+            <button
+              onClick={() => handleTabSelect('level3-supervisor')}
+              className="rounded-lg border border-teal-500/40 bg-teal-950/40 px-3 py-1.5 text-xs font-semibold text-teal-200 transition-all hover:bg-teal-900/60"
+            >
+              Ir a Bitácora Nivel 3
+            </button>
+            <button
+              onClick={refreshSelfPatchStatus}
+              disabled={isBusy}
+              className="rounded-lg border border-fuchsia-500/40 bg-fuchsia-950/40 px-3 py-1.5 text-xs font-semibold text-fuchsia-200 transition-all hover:bg-fuchsia-900/60 disabled:opacity-50"
+            >
+              {selfPatchTelemetry.loadingStatus ? 'Actualizando...' : 'Refrescar'}
+            </button>
+          </>
+        )}
+      />
+
+      {/* BARRA COMPACTA DE ESTADO Σ0/Σ1/Σ2 */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="rounded-lg border border-fuchsia-800/40 bg-slate-900/80 p-3">
+          <MetricDualLabel label="Estado de clave" technical="Codex / OpenAI" accent="text-fuchsia-200" />
+          <div className={`mt-1 text-sm font-semibold ${apiKeyReady ? 'text-emerald-300' : 'text-amber-300'}`}>
+            {apiKeyReady ? 'Lista' : 'No configurada'}
+          </div>
+          <div className="mt-0.5 truncate font-mono text-[11px] text-slate-400">
+            {codeProvider}:{codeModel}
+          </div>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={refreshSelfPatchStatus}
-            disabled={isBusy}
-            className="px-4 py-2 bg-fuchsia-950/40 hover:bg-fuchsia-900/60 disabled:opacity-50 text-fuchsia-200 rounded-lg font-semibold border border-fuchsia-500/30 transition-all text-sm"
-          >
-            {selfPatchTelemetry.loadingStatus ? 'Actualizando...' : 'Refrescar estado'}
-          </button>
+        <div className="rounded-lg border border-fuchsia-800/40 bg-slate-900/80 p-3">
+          <MetricDualLabel label="Ejecución automática" technical="Autorun" accent="text-fuchsia-200" />
+          <div className="mt-1 text-sm font-semibold text-slate-100">
+            {autorunActive ? `Activo (${Math.round((selfPatchAutorunIntervalMs || 45000) / 1000)}s)` : 'Inactivo (manual)'}
+          </div>
+          <div className="mt-0.5 font-mono text-[11px] text-slate-400">
+            modo {effectiveMode} · {effectiveApplyMode}
+          </div>
+        </div>
+        <div className="rounded-lg border border-fuchsia-800/40 bg-slate-900/80 p-3">
+          <MetricDualLabel label="Pipeline de parches" technical="Plan · Gen · Apply" accent="text-fuchsia-200" />
+          <div className="mt-1 font-mono text-xs text-fuchsia-200">
+            {pipelinePlanState} → {pipelineGenerateState} → {pipelineApplyState}
+          </div>
+          <div className="mt-0.5 text-[11px] text-slate-400">
+            {recentCycles.length} ciclos recientes · act. {lastUpdatedLabel}
+          </div>
         </div>
       </div>
 
-      {/* ── BANNER: ESTADO DEL API KEY ──────────────────────────────────── */}
-      {!apiKeyReady ? (
-        <div className="mb-5 rounded-xl border border-amber-500/50 bg-amber-950/20 p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="text-2xl">!</span>
-            <div>
-              <div className="text-amber-200 font-bold text-sm">API Key de OpenAI no detectada</div>
-              <div className="text-amber-400/70 text-xs mt-0.5">
-                El autorun está {autorunActive ? 'ACTIVO' : 'inactivo'} pero no puede generar propuestas sin una key válida.
-                Pega tu OpenAI API key aquí para desbloquear inmediatamente:
-              </div>
-            </div>
+      {/* BANNER COMPACTO SOLO SI FALTA API KEY */}
+      {!apiKeyReady && (
+        <div className="rounded-xl border border-amber-500/40 bg-amber-950/20 p-3 text-xs">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <span className="font-semibold text-amber-200">OpenAI / Codex API Key requerida para generar parches</span>
+            <span className="text-[11px] text-amber-400/70">Se guarda solo en tu navegador (localStorage)</span>
           </div>
-          <div className="flex gap-2">
-            <input
-              type="password"
-              placeholder="sk-proj-..."
-              className="flex-1 p-2 rounded bg-slate-950 border border-amber-600/40 text-slate-100 text-xs font-mono"
-              onChange={(e) => {
-                const val = String(e.target.value || '').trim();
-                if (val.startsWith('sk-') && val.length > 20) {
-                  try { localStorage.setItem(FRONTEND_CODEX_KEY_STORAGE, val); } catch { }
-                  setCustomCodexKey(val);
-                } else if (!val) {
-                  try { localStorage.removeItem(FRONTEND_CODEX_KEY_STORAGE); } catch { }
-                  setCustomCodexKey('');
-                }
-              }}
-            />
-            <div className="text-[10px] text-amber-400/60 self-center px-2">
-              Se guarda solo en tu navegador (localStorage)
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="mb-5 rounded-xl border border-emerald-500/40 bg-emerald-950/10 p-3 flex items-center gap-3">
-          <span className="text-xl">✓</span>
-          <div>
-            <div className="text-emerald-200 font-bold text-sm">API Key configurada — Sistema listo</div>
-            <div className="text-emerald-400/70 text-xs">
-              Clave: {hasFrontendCodexKey ? 'UI (localStorage)' : 'Servidor (.env)'} ·
-              Autorun: {autorunActive ? `activo cada ${Math.round((selfPatchAutorunIntervalMs || 45000) / 1000)}s` : 'inactivo'} ·
-              motor: {codeProvider}:{codeModel}
-            </div>
-          </div>
+          <input
+            type="password"
+            placeholder="sk-proj-..."
+            className="w-full rounded border border-amber-600/40 bg-slate-950 p-2 font-mono text-xs text-slate-100"
+            onChange={(e) => {
+              const val = String(e.target.value || '').trim();
+              if (val.startsWith('sk-') && val.length > 20) {
+                try { localStorage.setItem(FRONTEND_CODEX_KEY_STORAGE, val); } catch { }
+                setCustomCodexKey(val);
+              } else if (!val) {
+                try { localStorage.removeItem(FRONTEND_CODEX_KEY_STORAGE); } catch { }
+                setCustomCodexKey('');
+              }
+            }}
+          />
         </div>
       )}
 
       {/* ── TIMELINE DE CICLOS ──────────────────────────────────────────── */}
-      <CollapsibleSection sectionId="autonomy-timeline" title="Timeline de ciclos de autoevolucion" accent="fuchsia" defaultOpen={false}
+      <CollapsibleSection sectionId="autonomy-timeline" title="Timeline de ciclos de autoevolucion" subtitle="Pasos recientes del pipeline Plan → Generate → Apply → Result." accent="fuchsia" defaultOpen={false}
         badge={`${recentCycles.length} ciclos recientes`}>
         {recentCycles.length === 0 ? (
           <div className="text-xs text-slate-500 py-3 text-center">

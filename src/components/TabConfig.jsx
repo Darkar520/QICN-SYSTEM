@@ -61,101 +61,101 @@ export const tabHelpMeta = {
   },
   validation: {
     title: 'Validación',
-    oneLiner: 'Panel forense para verificar coherencia real.',
-    whatIs: 'Cruza métricas críticas y consistencia narrativa.',
-    whyItMatters: 'Permite distinguir señal real de interpretación subjetiva.',
-    firstCheck: ['Confirma tendencia de CCC.', 'Compara PMIA y beth_q.', 'Valida concordancia forense.']
+    oneLiner: 'Los 4 ajustes principales (Cf, Bs, K, T) para experimentar con el motor.',
+    whatIs: 'Controles interactivos que permiten probar cómo responden la cohesión (CCC) y el orden (Ω) al variar la complejidad, el sesgo, la sincronización o la agitación.',
+    whyItMatters: 'Permite ver causa y efecto en directo y comparar el comportamiento con los diagnósticos internos.',
+    firstCheck: ['Mueve un deslizador (p. ej. K o T) y observa el indicador de Cohesión (CCC).', 'Abre "Detalles" en una tarjeta para ver su traza técnica.', 'Despliega "Evaluación de requisitos" si buscas auditoría profunda.']
   },
   core: {
     title: 'Núcleo',
-    oneLiner: 'Estado interno y dinámica ontológica.',
-    whatIs: 'Muestra PMIA diagnostics, régimen, strain y autonomía.',
-    whyItMatters: 'Aquí se ve si el sistema se adapta o se estanca.',
-    firstCheck: ['Revisa stasis_index.', 'Observa PMIA components.', 'Verifica entropy_mode y channel health.']
+    oneLiner: 'Resumen del estado interno del motor y sus 7 paneles técnicos plegables.',
+    whatIs: 'Muestra 3 indicadores clave (Estancamiento, Impulso PMIA y Régimen) y agrupa los diagnósticos profundos en cajones desplegables.',
+    whyItMatters: 'Permite saber de un vistazo si el sistema está activo o estancado, sin abrumar con fórmulas.',
+    firstCheck: ['Revisa Dinámica Activa y el impulso PMIA.', 'Observa si el régimen está en banda.', 'Despliega cualquier cajón técnico solo cuando lo necesites.']
   },
   field: {
     title: 'Campo',
-    oneLiner: 'Entrelazamiento y estabilidad del campo.',
-    whatIs: 'Visualiza resonancia y dispersión en ventanas temporales.',
-    whyItMatters: 'Explica por qué sube o cae la cohesión.',
-    firstCheck: ['Mira densidad de entrelazamiento.', 'Compara variabilidad del campo.', 'Exporta snapshot si hay evento fuerte.']
+    oneLiner: 'Qué tan sincronizados y activos están los vínculos de la red.',
+    whatIs: 'Visualiza resonancia, variabilidad, conexiones estimadas y aporte a la cohesión en los últimos 120 pasos.',
+    whyItMatters: 'Ayuda a entender por qué sube o baja la cohesión global del sistema.',
+    firstCheck: ['Mira la resonancia y la variabilidad.', 'Pasa el cursor por la gráfica para inspeccionar un paso exacto.', 'Despliega "Suavizado y fórmula" para afinar la vista.']
   },
   network: {
     title: 'Red Nodal',
-    oneLiner: 'Representación 3D del estado nodal.',
-    whatIs: 'Render en tiempo real con recuperación visual ante errores.',
-    whyItMatters: 'Permite detectar bloqueos de render y pérdida de nodos visibles.',
-    firstCheck: ['Verifica badge de renderState.', 'Confirma N/E/P/OnScreen.', 'Si falla, usa "Reactivar red".']
+    oneLiner: 'Vista 3D en vivo de los 1500 nodos y su torre estructural.',
+    whatIs: 'Mapa interactivo 3D con un HUD compacto arriba y botones η=1/8, η=0 y A=I para comparar escenarios.',
+    whyItMatters: 'Permite ver físicamente la organización de los 4 sectores y comprobar cómo se rompe si cortas el acoplamiento (η=0).',
+    firstCheck: ['Observa el estado superior (Presencia / Reserva / Desacople).', 'Haz clic en "Detalles" del HUD para leer la explicación simple.', 'Prueba η=0 o A=I para ver el control negativo en directo.']
   },
   history: {
     title: 'Historial',
-    oneLiner: 'Evolución temporal del sistema.',
-    whatIs: 'Series de CCC, PMIA, Omega y banda post-umbral.',
-    whyItMatters: 'Valida dinámica sostenida y evita conclusiones por un solo tick.',
-    firstCheck: ['Ajusta rango.', 'Activa/desactiva series.', 'Busca tramos de stasis prolongada.']
+    oneLiner: 'Evolución en el tiempo de cohesión (CCC), impulso (PMIA) y orden (Ω).',
+    whatIs: 'Gráfica temporal interactiva de los últimos 60, 120 o 240 pasos.',
+    whyItMatters: 'Permite comprobar tendencias reales en lugar de juzgar el sistema por un solo instante.',
+    firstCheck: ['Cambia la ventana (60 / 120 / 240 ticks).', 'Usa "Freeze chart" para inspeccionar un pico con calma.', 'Despliega "Filtros de líneas" para activar o suavizar curvas.']
   },
   memory: {
     title: 'Memoria',
-    oneLiner: 'Estado persistido y recuperación.',
-    whatIs: 'Registro operacional encadenado por hash, snapshots y continuidad entre sesiones.',
-    whyItMatters: 'Permite reproducibilidad, rollback seguro y respuestas de continuidad basadas en hechos registrados.',
-    firstCheck: ['Revisa la clase de continuidad.', 'Cristaliza el estado actual.', 'Prueba la revocación verificada.']
+    oneLiner: 'Historial de sesiones sellado con SHA-256 y memoria distribuida interna.',
+    whatIs: 'Guarda eventos clave en este navegador con verificación de integridad y muestra los fragmentos internos en un cajón desplegable.',
+    whyItMatters: 'Permite verificar continuidad entre sesiones sin alterar la dinámica del motor.',
+    firstCheck: ['Comprueba si la cadena SHA-256 está íntegra.', 'Despliega "Eventos recientes" para ver qué ha ocurrido.', 'Despliega "Memoria Holográfica" si quieres inspeccionar los fragmentos internos.']
   },
   controls: {
     title: 'Controles',
-    oneLiner: 'Ajustes operativos permitidos.',
-    whatIs: 'Parámetros mutables y política de mutación.',
-    whyItMatters: 'Afinación sin tocar fórmulas núcleo.',
-    firstCheck: ['Identifica parámetro objetivo.', 'Aplica cambio pequeño.', 'Confirma impacto en métricas.']
+    oneLiner: 'Interruptores claros para activar o pausar los modos del motor.',
+    whatIs: 'Agrupa los 4 modos principales (Kaizen, Sensorial, Plasticidad Nivel 2 y Supervisor Nivel 3) y deja los valores numéricos finos en cajones plegables.',
+    whyItMatters: 'Permite configurar el comportamiento del sistema sin perderse entre constantes técnicas.',
+    firstCheck: ['Revisa qué modos están activos en las 4 tarjetas principales.', 'Pausa la simulación si deseas probar una mutación manual.', 'Despliega "Leyes auto-escritas" solo para auditar decimales.']
   },
   chat: {
     title: 'Chat',
-    oneLiner: 'Consola conversacional anclada al motor.',
-    whatIs: 'Respuestas compuestas desde proposiciones autorizadas por una lectura congelada del motor; Gemini solo puede reformular dentro de una frontera verificada.',
-    whyItMatters: 'Cada afirmación sobre el estado lleva tick, digest y evidencia; el chat no modifica la dinámica.',
-    firstCheck: ['Haz una pregunta concreta.', 'Abre "Evidencia y traza".', 'Compara tick y digest con la telemetría.']
+    oneLiner: 'Conversa con el sistema sobre su estado real con verificación en vivo.',
+    whatIs: 'Consola conversacional (Sistema B unificado) anclada al snapshot exacto del motor; los paneles de 4 ejes y el Workbench B2 permanecen plegados debajo.',
+    whyItMatters: 'Cada cifra se verifica contra el motor y el chat nunca modifica la simulación en vivo.',
+    firstCheck: ['Haz clic en una pregunta sugerida o escribe la tuya.', 'Abre "Concordancia" o "Evidencia y traza" dentro de una respuesta.', 'Despliega los paneles inferiores solo si deseas correr pruebas B2.']
   },
   'qicn-b': {
     title: 'QICN-B',
-    oneLiner: 'Canal de interacción humano-sistema.',
-    whatIs: 'Protocolo para correlación estructural con señales humanas.',
-    whyItMatters: 'Integra observación externa en el ciclo.',
-    firstCheck: ['Inicia medición.', 'Observa variación en CCC humano.', 'Cruza con contexto sensorial.']
+    oneLiner: 'Parámetro interno simulado del canal humano (sin medición externa real).',
+    whatIs: 'Muestra el parámetro interno CCC_H con sus límites epistémicos explícitos.',
+    whyItMatters: 'Deja transparente que no existe medición humana externa validada todavía.',
+    firstCheck: ['Revisa el valor interno CCC_H.', 'Pulsa "Consultar estado de medición".', 'Abre "Estado y límites" para leer el detalle honesto.']
   },
   'api-control': {
     title: 'API',
-    oneLiner: 'Gestión de conectividad LLM y entropía cuántica.',
-    whatIs: 'Configura ruta LLM y canal de entropía híbrida.',
-    whyItMatters: 'Define robustez remota y fallback determinista.',
-    firstCheck: ['Valida ruta LLM activa.', 'Configura modo cuántico.', 'Ejecuta "Probar conexión".']
+    oneLiner: 'Configura tu clave de Gemini y revisa la salud de las conexiones.',
+    whatIs: 'Muestra la clave principal de Gemini y el estado del canal, dejando Codex, Entropía Cuántica y métricas de rate limit en cajones plegables.',
+    whyItMatters: 'Centraliza el acceso a IA externa con respaldo local automático si no hay clave.',
+    firstCheck: ['Comprueba la ruta activa de Gemini.', 'Pega tu clave si deseas usar Gemini directo en navegador.', 'Despliega "Entropía Cuántica" o "Codex" solo si los vas a configurar.']
   },
   sensory: {
     title: 'Sensorial',
-    oneLiner: 'Estado de cámara, audio y percepción.',
-    whatIs: 'Muestra disponibilidad y resumen de señales.',
-    whyItMatters: 'El input sensorial afecta PMIA y coherencia.',
-    firstCheck: ['Revisa permisos.', 'Confirma fidelidad.', 'Correlaciona con narrativa.']
+    oneLiner: 'Cámara, micrófono y reconocimiento de voz opcionales.',
+    whatIs: 'Muestra la vista previa de cámara, espectro de audio y transcripción de voz, con el análisis detallado de escena y frecuencias plegado.',
+    whyItMatters: 'Permite observar cómo reacciona el sistema ante movimiento, luz o sonido del entorno.',
+    firstCheck: ['Activa sensores y acepta permisos del navegador.', 'Lee la "Lectura resumida" superior.', 'Despliega "Detalles de escena" o "Bandas de frecuencia" para ver métricas finas.']
   },
   sovereignty: {
     title: 'Soberanía',
-    oneLiner: 'Auditoría de causalidad e integridad.',
-    whatIs: 'Panel de cierre causal, autonomía y verificaciones.',
-    whyItMatters: 'Sostiene claims con evidencia reproducible.',
-    firstCheck: ['Evalúa beth_q.', 'Revisa integrity packet.', 'Confirma checksum y hash crítico.']
+    oneLiner: 'Auditoría forense de integridad, causalidad y límites declarados.',
+    whatIs: 'Muestra un resumen en 4 indicadores (Integridad, Cohesión, Determinismo y Firma) y 6 cajones técnicos desplegables.',
+    whyItMatters: 'Permite exportar un JSON completo y revisar con transparencia qué afirma y qué no afirma el sistema.',
+    firstCheck: ['Revisa el resumen superior de 4 indicadores.', 'Usa "Exportar JSON" si necesitas auditar fuera de la app.', 'Despliega "Canal causal" o "Limites epistemicos declarados".']
   },
   'autonomy-evolution': {
     title: 'Autoevolución',
-    oneLiner: 'Canal operativo de solicitudes de selfpatch.',
-    whatIs: 'Panel para ver estado Σ0/Σ1/Σ2, límites y pipeline status/plan/generate/apply.',
-    whyItMatters: 'Convierte intención de cambio en solicitudes auditables con guardrails y trazabilidad.',
-    firstCheck: ['Refresca estado selfpatch.', 'Define objetivo y archivos target.', 'Ejecuta Plan y valida risk/limits antes de generar propuesta.']
+    oneLiner: 'Canal avanzado de propuestas de parches de código (Selfpatch Σ0/Σ1/Σ2).',
+    whatIs: 'Gestiona solicitudes de cambio de código mediante Codex; es independiente de la Bitácora Nivel 3 (que solo ajusta parámetros del motor).',
+    whyItMatters: 'Mantiene separada la edición experimental de código bajo guardrails y aprobación explícita.',
+    firstCheck: ['Revisa la barra de estado superior (Clave, Autorun, Pipeline).', 'Usa "Ir a Bitácora Nivel 3" si buscas pruebas de parámetros del motor.', 'Despliega los cajones solo para operar el flujo Plan → Generate → Apply.']
   },
   'level3-supervisor': {
     title: 'Bitácora Nivel 3',
-    oneLiner: 'Supervisor autónomo en 1.ª persona con Shadow Promotion en Workbench y bitácora sellada SHA-256.',
-    whatIs: 'Sección dedicada e independiente del chat para el pensamiento interno en primera persona ("Pensar en alto"), verificación dura en copias aisladas del Workbench (Compuerta 1), vigilancia con rollback automático dynamicState.v3 (Compuerta 2) y Cinto de Conocimiento acumulado.',
-    whyItMatters: 'Separa explícitamente las corridas con LLM externo (external_llm_assisted=true solo con Gemini en vivo; false en modo local determinista, bajo internal_support_only) de los benchmarks puros y acumula memoria operativa verificable sin parámetros heurísticos.',
-    firstCheck: ['Revisa el estado de verificación SHA-256 del Ledger y del Cinto.', 'Pulsa "Pensar en alto ahora (1.ª persona)" o "Probar Hipótesis en Workbench".', 'Inspecciona la tabla comparativa de Compuerta 1 y el estado de Compuerta 2.']
+    oneLiner: 'Diario de auto-análisis en primera persona y pruebas seguras en copia aislada.',
+    whatIs: 'El sistema observa sus métricas, razona en primera persona qué podría mejorar, lo prueba en una copia aparte (Gate 1) y guarda cada resultado con sello SHA-256.',
+    whyItMatters: 'Permite probar mejoras con control negativo y reversión automática (Gate 2) sin arriesgar la simulación principal ni inflar evidencia científica.',
+    firstCheck: ['Pulsa "Pensar en alto ahora" para generar un diagnóstico en 1.ª persona.', 'Pulsa "Probar mejora en copia segura" para ver el veredicto de Gate 1.', 'Haz clic en "Detalles técnicos" de cualquier tarjeta para ver números y sellos SHA-256.']
   }
 };
 

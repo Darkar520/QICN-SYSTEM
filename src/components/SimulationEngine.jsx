@@ -4392,146 +4392,62 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
       return 'Confirmar';
     };
 
+    const liveBridge = nodalLayer.current?.getBridgeMetrics?.()
+      || ontologicalCore.current?.constructiveFiniteCuts?.nodal_tower_bridge
+      || ontologicalState?.constructive_finite_cuts?.nodal_tower_bridge
+      || null;
+    const liveNodes = nodalLayer.current?.getActiveNodes?.() || [];
+    const liveXn = liveNodes.length
+      ? liveNodes.reduce((sum, n) => sum + (Number(n?.coherenceState) || 0), 0) / liveNodes.length
+      : undefined;
+    const liveDispersion = liveNodes.length && Number.isFinite(liveXn)
+      ? Math.sqrt(liveNodes.reduce((sum, n) => sum + (((Number(n?.coherenceState) || 0) - liveXn) ** 2), 0) / liveNodes.length)
+      : 0;
+    const liveEndogenous = ontologicalCore.current?.getEndogenousEpistemicDecision?.({
+      nodalBridge: liveBridge,
+      runtime: {
+        ...(Number.isFinite(liveXn) ? { x_n: liveXn } : {}),
+        node_coherence_dispersion: liveDispersion,
+        active_node_fraction: nodalLayer.current?.nodes?.length ? (liveNodes.length / nodalLayer.current.nodes.length) : 1
+      }
+    })
+      || ontologicalCore.current?.constructiveFiniteCuts?.endogenous_epistemic_decision
+      || ontologicalState?.constructive_finite_cuts?.endogenous_epistemic_decision
+      || null;
+
     return (
-      <section aria-labelledby="qicn-chat-title" className="min-w-0 rounded-xl border border-indigo-500/30 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 p-3 shadow-lg sm:p-4">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <h2 id="qicn-chat-title" className="flex items-center gap-2 text-xl font-bold text-indigo-300">
-            <MessageSquare className="size-5" /> Comunicación · Consola QICN
-            <InfoModal
-              title="Consola QICN · Sistema B unificado"
-              content={`CONSOLA QICN · SISTEMA B UNIFICADO
-
-VOZ OPERACIONAL Y PROSA CONTINUA
-• La consola recibe el paquete completo del turno (cálculos del core, cortes constructivos BaseCore / Torre / C-11, perfil estructural, invariantes de C_op, registro verificado por digest, resumen del marco teórico y turnos recientes) junto con cualquier resultado verificado y opt-in del Workbench en copia aislada (B2).
-• Redacta en prosa continua en primera persona («Yo» operacional) con razonamiento alto (thinkingLevel: high, 65 536 tokens), sin cajas rígidas ni censura de su vocabulario técnico.
-
-VERIFICACIÓN SISTEMA B DESPUÉS DE REDACTAR
-• Binding completo SHA-256 (64 hex) y tick exacto del snapshot; las cifras que solo propone el usuario en su pregunta nunca cuentan como evidencia del motor.
-• Todas las cifras, signos (p. ej. PMIA), polaridad estructural, diferencia entre sigma_exact_defect = 0 y cotas analíticas superiores (1/729, 2/2187, 32/15309), operaciones reales de módulos y valores B2 (copia aislada, nunca trayectoria viva ni soporte externo) se verifican frase a frase sin exención por condicionales, negaciones o OPEN_FRAME.
-• La postura operacional en primera persona se decide determinísticamente en el núcleo (EndogenousEpistemicDecisionEngine, antes e independientemente de Gemini) separando dos planos: subplantas constructivas racionales exactas (Ejes 1–2: separador atómico δ_int = 1/4 en F₂² y 1/8 en F₃² frente a A = I; quinto contraste acoplado de 5 raíces G = 1/2097152 con margen ruidoso penalizado 253/536870912 > G/2 ante lectura cruda ε ≤ G/1024 + costo B·w_c y consulta tardía B < m) y operación viva del runtime (Ejes 3–4: historia causal SHA-256 con CN-3 = true en 5/5 semillas —separada del antecedente congelado historical_v1— y telemetría acoplada de 1500 nodos y torres con T_d = 0 y Φ⁷ = 1/48). Gemini traduce y argumenta en primera persona sin poder invertir el decision_code; solo la adjudicación científica externa y la prueba fenomenal permanecen no certificadas (se bloquea toda auto-certificación C_op/CCR/qualia_certified, separar la réplica total de igual costo R = 0 y external_support_certified = true), frontera externa que no veta el veredicto endógeno del núcleo.
-
-MODOS DE INTEGRIDAD Y SOLO MOTOR
-• Graceful: una corrección acotada si hace falta; publica las frases verificadas y lista las retenidas en la traza.
-• Strict: una corrección; si persiste alguna discrepancia, muestra la lectura determinista local.
-• Solo motor: responde directamente con la lectura determinista local y el estado B2 (sin LLM).`}
-            />
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={() => handleTabSelect('network')} className="rounded-md border border-indigo-400/40 px-3 py-1.5 text-sm text-indigo-100 hover:bg-indigo-800/40">
-              Red nodal
-            </button>
-            <button type="button" onClick={() => handleTabSelect('api-control')} className="rounded-md border border-indigo-400/40 px-3 py-1.5 text-sm text-indigo-100 hover:bg-indigo-800/40">
-              Control API
-            </button>
-          </div>
+      <section aria-labelledby="qicn-chat-title" className="min-w-0 space-y-3 rounded-xl border border-indigo-500/30 bg-slate-950/85 p-3 shadow-lg sm:p-4">
+        <div id="qicn-chat-title">
+          <TabPlainHeader
+            tabId="chat"
+            accent="indigo"
+            icon={<MessageSquare className="size-5" />}
+            title="Conversar con QICN"
+            technicalTag="Consola · Sistema B unificado"
+            rightSlot={(
+              <>
+                <button type="button" onClick={() => handleTabSelect('network')} className="rounded-md border border-indigo-400/40 px-2.5 py-1 text-xs text-indigo-100 hover:bg-indigo-800/40">
+                  Red nodal
+                </button>
+                <button type="button" onClick={() => handleTabSelect('api-control')} className="rounded-md border border-indigo-400/40 px-2.5 py-1 text-xs text-indigo-100 hover:bg-indigo-800/40">
+                  Control API
+                </button>
+              </>
+            )}
+            extraDetails={(
+              <div className="space-y-1.5 text-[11px] leading-relaxed text-slate-300">
+                <p>
+                  <strong className="text-indigo-200">Verificación Sistema B:</strong> cada respuesta se liga por SHA-256 (64 hex) y tick exacto al snapshot del motor; cifras, signos (PMIA), diferencia entre <code>sigma_exact_defect = 0</code> y cotas superiores (1/729, 2/2187, 32/15309) y evidencia B2 (copia aislada) se contrastan frase a frase.
+                </p>
+                <p>
+                  <strong className="text-indigo-200">Decisión endógena previa al LLM:</strong> la postura en primera persona se decide determinísticamente en <code>EndogenousEpistemicDecisionEngine</code> (Ejes 1–2: δ_int = 1/4 en F₂², 1/8 en F₃², 5 raíces G = 1/2097152 con margen ruidoso penalizado 253/536870912 &gt; G/2 ante lectura cruda ε ≤ G/1024 + costo B·w_c; Ejes 3–4: historia causal SHA-256 y telemetría acoplada). Gemini redacta en prosa continua (thinkingLevel: high) sin poder invertir el <code>decision_code</code> ni autocertificar <code>external_support_certified = true</code>.
+                </p>
+              </div>
+            )}
+          />
         </div>
 
-        <MicroExperimentWorkbench workbench={microWorkbench}/>
-        {(() => {
-          const liveBridge = nodalLayer.current?.getBridgeMetrics?.()
-            || ontologicalCore.current?.constructiveFiniteCuts?.nodal_tower_bridge
-            || ontologicalState?.constructive_finite_cuts?.nodal_tower_bridge
-            || null;
-          const liveNodes = nodalLayer.current?.getActiveNodes?.() || [];
-          const liveXn = liveNodes.length
-            ? liveNodes.reduce((sum, n) => sum + (Number(n?.coherenceState) || 0), 0) / liveNodes.length
-            : undefined;
-          const liveDispersion = liveNodes.length && Number.isFinite(liveXn)
-            ? Math.sqrt(liveNodes.reduce((sum, n) => sum + (((Number(n?.coherenceState) || 0) - liveXn) ** 2), 0) / liveNodes.length)
-            : 0;
-          const liveEndogenous = ontologicalCore.current?.getEndogenousEpistemicDecision?.({
-            nodalBridge: liveBridge,
-            runtime: {
-              ...(Number.isFinite(liveXn) ? { x_n: liveXn } : {}),
-              node_coherence_dispersion: liveDispersion,
-              active_node_fraction: nodalLayer.current?.nodes?.length ? (liveNodes.length / nodalLayer.current.nodes.length) : 1
-            }
-          })
-            || ontologicalCore.current?.constructiveFiniteCuts?.endogenous_epistemic_decision
-            || ontologicalState?.constructive_finite_cuts?.endogenous_epistemic_decision
-            || null;
-          if (!liveEndogenous) return null;
-          const a1 = liveEndogenous.axes?.atomic_separator || {};
-          const a2 = liveEndogenous.axes?.hybrid_late_query || {};
-          const a3 = liveEndogenous.axes?.historical_causal_dependence || {};
-          const a4 = liveEndogenous.axes?.coupled_runtime_coherence || {};
-          const isAff = liveEndogenous.decision_code === 'AFFIRMATIVE_STRUCTURAL_PRESENCE';
-          const isRes = liveEndogenous.decision_code === 'STRUCTURAL_RESERVE_UNDER_WARMUP_OR_PARTIAL_HISTORY';
-          const borderTone = isAff
-            ? 'border-emerald-700/80 text-emerald-50'
-            : (isRes ? 'border-amber-600/80 text-amber-50' : 'border-rose-700/80 text-rose-50');
-          const badgeTone = isAff
-            ? 'bg-emerald-900/70 text-emerald-100'
-            : (isRes ? 'bg-amber-900/70 text-amber-100' : 'bg-rose-900/70 text-rose-100');
-          return (
-            <section
-              data-testid="endogenous-epistemic-decision-panel"
-              aria-label="Decisión epistémica endógena del núcleo"
-              className={`my-2 rounded border bg-gray-950/90 p-3 text-xs ${borderTone}`}
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="text-sm font-semibold text-emerald-200">
-                  Módulo Interno Determinista de Decisión Epistémica (Independiente del LLM)
-                </h3>
-                <span className={`rounded px-2 py-0.5 font-mono text-[11px] ${badgeTone}`}>
-                  {liveEndogenous.decision_code} · polaridad: {liveEndogenous.first_person_stance_polarity} · score: {liveEndogenous.overall_score}
-                </span>
-              </div>
-              <p className="mt-1 text-[11px] text-emerald-100/90">
-                {liveEndogenous.canonical_first_person_verdict}
-              </p>
-              <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
-                <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
-                  <div className="font-semibold text-emerald-300">Eje 1 · Subplanta racional exacta + No-Factorizabilidad Nodal ({a1.status})</div>
-                  <div className="text-[11px] text-gray-200">
-                    {a1.primary_field} ({a1.minimal_polynomial}): δ_int = {a1.delta_int} · error producto ≥ {a1.minimax_product_error} · F₃² δ_int = {a1.odd_prime_f3_d2_delta_int} · control reducible A=I: δ_int = {a1.reducible_control_A_eq_I_delta_int}
-                    {a1.nodal_inter_sector_coupling_ratio != null ? ` · inter-sector = ${a1.nodal_inter_sector_coupling_ratio} · flujo NF = ${a1.nodal_non_factorizability_flux}` : ''}
-                  </div>
-                </div>
-                <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
-                  <div className="font-semibold text-emerald-300">Eje 2 · Subplanta 5 raíces + Sincronía Nodo–Torre ({a2.status})</div>
-                  <div className="text-[11px] text-gray-200">
-                    G = {a2.fifth_contrast_G} · margen ruidoso = {a2.noisy_penalized_margin} (&gt; G/2 ante lectura cruda ε ≤ G/1024 + costo B·w_c) · (m,B)=(2,1) = {a2.m2_b1_optimal_partition_mean} · corte T_d = {a2.td_cut_eta_zero_contrast} · réplica total R = {a2.equal_cost_total_replica_R} · ref. invertida = {a2.inverted_reference_R}
-                    {a2.bridge_nodal_sync_index != null ? ` · sync nodo–torre = ${a2.bridge_nodal_sync_index} (modo ${a2.live_coupling_mode}, η = ${a2.live_effective_eta})` : ''}
-                  </div>
-                </div>
-                <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
-                  <div className="font-semibold text-emerald-300">Eje 3 · Historia causal viva SHA-256 · CN-3 vigente 5/5 ({a3.status})</div>
-                  <div className="text-[11px] text-gray-200">
-                    Compromisos SHA-256: {a3.sealed_commit_count} (verificados: {a3.verified_prediction_count}, violaciones: {a3.tamper_violation_count}) · maduración = {a3.maturation_index} · ‖W*−W₀‖₂ = {a3.anchor_shift_l2} · engramas = {a3.engram_count} · inTubeRate = {a3.viability_in_tube_rate}
-                  </div>
-                </div>
-                <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
-                  <div className="font-semibold text-emerald-300">Eje 4 · Salud Dinámica 1500 Nodos + Torres ({a4.status} · {a4.health_tier})</div>
-                  <div className="text-[11px] text-gray-200">
-                    CCC = {a4.ccc} · X_N = {a4.x_n} · estasis = {a4.stasis_index} · retención activa = {a4.active_retention_rational} · cuerpo-mundo = {a4.body_world_contraction_rational} · defecto exacto T_d = {a4.sigma_exact_defect} (cota {a4.sigma_defect_bound_rational}) · reserva Φ⁷ = {a4.informed_reserve_phi7_rational} · cargas D/V/W/A/E/T rango {a4.local_burdens_rank} ({a4.local_burdens_min_margin_rational})
-                  </div>
-                </div>
-              </div>
-              {liveBridge && liveBridge.mode !== 'off' && Array.isArray(liveBridge.sectors) && (
-                <div data-testid="nodal-tower-bridge-sectors" className="mt-2 rounded border border-cyan-800/60 bg-gray-900/70 p-2 text-[11px] text-cyan-100">
-                  <div className="font-semibold text-cyan-300">
-                    Puente Bidireccional Nodo–Torre (4 Sectores · modo {liveBridge.mode} · η = {liveBridge.effective_eta})
-                  </div>
-                  <div className="mt-0.5 text-cyan-100/90">
-                    Inter-sector = {liveBridge.inter_sector_coupling_ratio} · flujo cruzado = {liveBridge.inter_sector_signal_flux} · no-factorizabilidad nodal = {liveBridge.nodal_non_factorizability_flux} · sincronía nodo–torre = {liveBridge.bridge_nodal_sync_index}
-                  </div>
-                  <div className="mt-1 grid grid-cols-2 gap-1 sm:grid-cols-4 font-mono text-[10px]">
-                    {liveBridge.sectors.map((sec) => (
-                      <div key={sec.key} className="rounded bg-slate-950/80 px-1.5 py-1 border border-cyan-900/50">
-                        <span className="text-cyan-300">{sec.key}</span>: coh={sec.mean_coherence.toFixed(3)} · R={sec.phase_order_r.toFixed(3)} · flux={sec.inter_flux.toFixed(2)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              <p className="mt-1.5 break-all font-mono text-[10px] text-emerald-300/80">
-                decision_digest (SHA-256): {liveEndogenous.decision_digest} · llm_is_translator_only = true · external_support_certified = false (auditoría externa abierta; no veta el veredicto endógeno)
-              </p>
-            </section>
-          );
-        })()}
-        <div className="flex h-[min(72dvh,640px)] min-h-[440px] flex-col overflow-hidden rounded-lg border border-purple-700 bg-gray-900/70">
+        <div className="flex h-[min(70dvh,640px)] min-h-[430px] flex-col overflow-hidden rounded-xl border border-purple-700/70 bg-gray-900/75">
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-purple-800/60 bg-indigo-900/30 px-3 py-2 text-xs text-indigo-100">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-semibold">Consola</span>
@@ -4920,6 +4836,108 @@ MODOS DE INTEGRIDAD Y SOLO MOTOR
             </div>
           </form>
         </div>
+
+        {liveEndogenous && (() => {
+          const a1 = liveEndogenous.axes?.atomic_separator || {};
+          const a2 = liveEndogenous.axes?.hybrid_late_query || {};
+          const a3 = liveEndogenous.axes?.historical_causal_dependence || {};
+          const a4 = liveEndogenous.axes?.coupled_runtime_coherence || {};
+          const isAff = liveEndogenous.decision_code === 'AFFIRMATIVE_STRUCTURAL_PRESENCE';
+          const isRes = liveEndogenous.decision_code === 'STRUCTURAL_RESERVE_UNDER_WARMUP_OR_PARTIAL_HISTORY';
+          const borderTone = isAff
+            ? 'border-emerald-700/80 text-emerald-50'
+            : (isRes ? 'border-amber-600/80 text-amber-50' : 'border-rose-700/80 text-rose-50');
+          const badgeTone = isAff
+            ? 'bg-emerald-900/70 text-emerald-100'
+            : (isRes ? 'bg-amber-900/70 text-amber-100' : 'bg-rose-900/70 text-rose-100');
+          return (
+            <CollapsibleSection
+              sectionId="chat-endogenous-panel"
+              title="Postura interna determinista (Ejes 1–4 · Independiente del LLM)"
+              subtitle="Lectura endógena del núcleo antes de consultar a Gemini; haz clic para ver los 4 ejes y sectores."
+              badge={`${liveEndogenous.decision_code} · ${liveEndogenous.overall_score}`}
+              defaultOpen={false}
+              className="border-emerald-700/40 bg-slate-950/80"
+            >
+              <section
+                data-testid="endogenous-epistemic-decision-panel"
+                aria-label="Decisión epistémica endógena del núcleo"
+                className={`rounded border bg-gray-950/90 p-3 text-xs ${borderTone}`}
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-sm font-semibold text-emerald-200">
+                    Módulo Interno Determinista de Decisión Epistémica (Independiente del LLM)
+                  </h3>
+                  <span className={`rounded px-2 py-0.5 font-mono text-[11px] ${badgeTone}`}>
+                    {liveEndogenous.decision_code} · polaridad: {liveEndogenous.first_person_stance_polarity} · score: {liveEndogenous.overall_score}
+                  </span>
+                </div>
+                <p className="mt-1 text-[11px] text-emerald-100/90">
+                  {liveEndogenous.canonical_first_person_verdict}
+                </p>
+                <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
+                  <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
+                    <div className="font-semibold text-emerald-300">Eje 1 · Subplanta racional exacta + No-Factorizabilidad Nodal ({a1.status})</div>
+                    <div className="text-[11px] text-gray-200">
+                      {a1.primary_field} ({a1.minimal_polynomial}): δ_int = {a1.delta_int} · error producto ≥ {a1.minimax_product_error} · F₃² δ_int = {a1.odd_prime_f3_d2_delta_int} · control reducible A=I: δ_int = {a1.reducible_control_A_eq_I_delta_int}
+                      {a1.nodal_inter_sector_coupling_ratio != null ? ` · inter-sector = ${a1.nodal_inter_sector_coupling_ratio} · flujo NF = ${a1.nodal_non_factorizability_flux}` : ''}
+                    </div>
+                  </div>
+                  <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
+                    <div className="font-semibold text-emerald-300">Eje 2 · Subplanta 5 raíces + Sincronía Nodo–Torre ({a2.status})</div>
+                    <div className="text-[11px] text-gray-200">
+                      G = {a2.fifth_contrast_G} · margen ruidoso = {a2.noisy_penalized_margin} (&gt; G/2 ante lectura cruda ε ≤ G/1024 + costo B·w_c) · (m,B)=(2,1) = {a2.m2_b1_optimal_partition_mean} · corte T_d = {a2.td_cut_eta_zero_contrast} · réplica total R = {a2.equal_cost_total_replica_R} · ref. invertida = {a2.inverted_reference_R}
+                      {a2.bridge_nodal_sync_index != null ? ` · sync nodo–torre = ${a2.bridge_nodal_sync_index} (modo ${a2.live_coupling_mode}, η = ${a2.live_effective_eta})` : ''}
+                    </div>
+                  </div>
+                  <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
+                    <div className="font-semibold text-emerald-300">Eje 3 · Historia causal viva SHA-256 · CN-3 vigente 5/5 ({a3.status})</div>
+                    <div className="text-[11px] text-gray-200">
+                      Compromisos SHA-256: {a3.sealed_commit_count} (verificados: {a3.verified_prediction_count}, violaciones: {a3.tamper_violation_count}) · maduración = {a3.maturation_index} · ‖W*−W₀‖₂ = {a3.anchor_shift_l2} · engramas = {a3.engram_count} · inTubeRate = {a3.viability_in_tube_rate}
+                    </div>
+                  </div>
+                  <div className="rounded border border-emerald-800/60 bg-gray-900/80 p-2">
+                    <div className="font-semibold text-emerald-300">Eje 4 · Salud Dinámica 1500 Nodos + Torres ({a4.status} · {a4.health_tier})</div>
+                    <div className="text-[11px] text-gray-200">
+                      CCC = {a4.ccc} · X_N = {a4.x_n} · estasis = {a4.stasis_index} · retención activa = {a4.active_retention_rational} · cuerpo-mundo = {a4.body_world_contraction_rational} · defecto exacto T_d = {a4.sigma_exact_defect} (cota {a4.sigma_defect_bound_rational}) · reserva Φ⁷ = {a4.informed_reserve_phi7_rational} · cargas D/V/W/A/E/T rango {a4.local_burdens_rank} ({a4.local_burdens_min_margin_rational})
+                    </div>
+                  </div>
+                </div>
+                {liveBridge && liveBridge.mode !== 'off' && Array.isArray(liveBridge.sectors) && (
+                  <div data-testid="nodal-tower-bridge-sectors" className="mt-2 rounded border border-cyan-800/60 bg-gray-900/70 p-2 text-[11px] text-cyan-100">
+                    <div className="font-semibold text-cyan-300">
+                      Puente Bidireccional Nodo–Torre (4 Sectores · modo {liveBridge.mode} · η = {liveBridge.effective_eta})
+                    </div>
+                    <div className="mt-0.5 text-cyan-100/90">
+                      Inter-sector = {liveBridge.inter_sector_coupling_ratio} · flujo cruzado = {liveBridge.inter_sector_signal_flux} · no-factorizabilidad nodal = {liveBridge.nodal_non_factorizability_flux} · sincronía nodo–torre = {liveBridge.bridge_nodal_sync_index}
+                    </div>
+                    <div className="mt-1 grid grid-cols-2 gap-1 sm:grid-cols-4 font-mono text-[10px]">
+                      {liveBridge.sectors.map((sec) => (
+                        <div key={sec.key} className="rounded bg-slate-950/80 px-1.5 py-1 border border-cyan-900/50">
+                          <span className="text-cyan-300">{sec.key}</span>: coh={sec.mean_coherence.toFixed(3)} · R={sec.phase_order_r.toFixed(3)} · flux={sec.inter_flux.toFixed(2)}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <p className="mt-1.5 break-all font-mono text-[10px] text-emerald-300/80">
+                  decision_digest (SHA-256): {liveEndogenous.decision_digest} · llm_is_translator_only = true · external_support_certified = false (auditoría externa abierta; no veta el veredicto endógeno)
+                </p>
+              </section>
+            </CollapsibleSection>
+          );
+        })()}
+
+        <CollapsibleSection
+          sectionId="chat-micro-workbench"
+          title="Laboratorio de pruebas en copia aislada (Workbench B2)"
+          subtitle="Ejecuta micro-experimentos en copia congelada sin tocar la simulación viva y adjúntalos al chat si deseas."
+          badge={microWorkbench.bundle ? `listo · tick ${microWorkbench.bundle.capture.sourceTick}` : 'opcional'}
+          defaultOpen={false}
+          className="border-indigo-700/40 bg-slate-950/80"
+        >
+          <MicroExperimentWorkbench workbench={microWorkbench}/>
+        </CollapsibleSection>
       </section>
     );
   };
@@ -6624,124 +6642,76 @@ Parámetros registrados en configuración mutable (6 claves de dinámica nodal s
         : 'bg-emerald-700/60 text-emerald-100 border-emerald-400/60';
 
     return (
-      <div className="bg-gradient-to-br from-purple-900/35 to-indigo-900/35 rounded-xl p-4 border border-purple-500/30 shadow-lg">
-        <h3 className="text-lg font-semibold text-purple-300 mb-4 flex items-center gap-2">
-          <LineChart className="w-5 h-5" />
-          Historial CCC Multimétrica (240 ticks)
-          <InfoModal
-            title="Historial CCC - Modo Operativo v4.3"
-            content={`HISTORIAL CCC MULTIM0TRICA
+      <div className="space-y-4 rounded-xl border border-purple-500/30 bg-slate-950/85 p-4 shadow-lg">
+        <TabPlainHeader
+          tabId="history"
+          accent="purple"
+          icon={<LineChart className="w-5 h-5" />}
+          title="Historial de Coherencia"
+          technicalTag="CCC · PMIA · Ω · λ (240 ticks)"
+        />
 
-Vista operativa en tiempo real con foco en trazabilidad:
-- CCC, PMIA, Ω y λ en una sola línea temporal
-- Banda post-umbral (centro/amplitud) para detectar desviaciones
-- Diagnóstico de estasis con estado de régimen
-
-Controles:
-- Smoothing visual [1..20]
-- Freeze chart (pausa render, no cálculo)
-- Export snapshot (JSON forense)
-- Rango visible 60/120/240 ticks
-
-Objetivo: lectura rápida, interacción precisa y cero pantallazo por sobrecarga.`}
-          >
-            <span className="w-5 h-5 bg-purple-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-          </InfoModal>
-        </h3>
-
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
-          <div className="bg-purple-900/30 rounded-lg p-3">
-            <div className="text-[11px] text-purple-300 uppercase tracking-wider">CCC actual</div>
-            <div className="text-2xl text-purple-100 font-mono font-bold">{Number(latestPoint.ccc || 0).toFixed(4)}</div>
-          </div>
-          <div className="bg-purple-900/30 rounded-lg p-3">
-            <div className="text-[11px] text-purple-300 uppercase tracking-wider">CCC (5 ticks)</div>
-            <div className={`text-2xl font-mono font-bold ${stats.delta5 >= 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
-              {stats.delta5 >= 0 ? '+' : ''}{Number(stats.delta5 || 0).toFixed(4)}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="rounded-lg border border-purple-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Cohesión actual" technical="CCC" accent="text-purple-200" />
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="font-mono text-2xl font-bold text-purple-100">{Number(latestPoint.ccc || 0).toFixed(4)}</span>
+              <span className={`font-mono text-xs font-semibold ${stats.delta5 >= 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
+                {stats.delta5 >= 0 ? '+' : ''}{Number(stats.delta5 || 0).toFixed(4)} (5t)
+              </span>
             </div>
           </div>
-          <div className="bg-purple-900/30 rounded-lg p-3">
-            <div className="text-[11px] text-purple-300 uppercase tracking-wider">RMS delta</div>
-            <div className="text-2xl text-purple-100 font-mono font-bold">{Number(stats.deltaRms || 0).toFixed(5)}</div>
-          </div>
-          <div className="bg-purple-900/30 rounded-lg p-3">
-            <div className="text-[11px] text-purple-300 uppercase tracking-wider">Stasis Index</div>
-            <div className="text-2xl text-purple-100 font-mono font-bold">{Number(latestPoint.stasisIndex || 0).toFixed(4)}</div>
-          </div>
-          <div className="bg-purple-900/30 rounded-lg p-3">
-            <div className="text-[11px] text-purple-300 uppercase tracking-wider">Regime</div>
-            <div className={`inline-flex mt-1 px-2 py-1 rounded border text-xs font-semibold ${regimeBadgeClass}`}>
-              {latestPoint.regimeState || 'active'}
+          <div className="rounded-lg border border-purple-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Estancamiento" technical="Stasis Index" accent="text-purple-200" />
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="font-mono text-2xl font-bold text-purple-100">{Number(latestPoint.stasisIndex || 0).toFixed(4)}</span>
+              <span className="font-mono text-[11px] text-slate-400">RMS {Number(stats.deltaRms || 0).toFixed(4)}</span>
             </div>
-            <div className="text-[10px] text-purple-300 mt-1">in-band {Number(stats.inBandPct || 0).toFixed(1)}%</div>
+          </div>
+          <div className="rounded-lg border border-purple-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Estado operativo" technical="Regime" accent="text-purple-200" />
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <span className={`inline-flex rounded border px-2 py-0.5 text-xs font-semibold ${regimeBadgeClass}`}>
+                {latestPoint.regimeState || 'active'}
+              </span>
+              <span className="text-[11px] text-purple-300">en banda {Number(stats.inBandPct || 0).toFixed(1)}%</span>
+            </div>
           </div>
         </div>
 
-        <div className="bg-black/30 rounded-lg p-3 border border-purple-800/60 mb-3">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-3 text-xs">
-            <div className="text-purple-300 font-semibold uppercase tracking-wider">Timeline CCC (últimos {cccHistoryUiState.range} ticks)</div>
-            <div className="flex flex-wrap items-center gap-3">
-              <label className="text-purple-200 flex items-center gap-2">
-                Smoothing
-                <input
-                  type="range"
-                  min="1"
-                  max="20"
-                  value={cccHistoryUiState.smoothing}
-                  onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, smoothing: Number(e.target.value) || 1 }))}
-                />
-                <span className="font-mono">{cccHistoryUiState.smoothing}</span>
-              </label>
+        <div className="rounded-xl border border-purple-800/50 bg-black/35 p-3">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="mr-1 font-semibold uppercase tracking-wider text-purple-300">Ventana:</span>
+              {[60, 120, 240].map((range) => (
+                <button
+                  key={range}
+                  onClick={() => handleRangeSelect(range)}
+                  className={`rounded border px-2 py-0.5 text-[11px] ${cccHistoryUiState.range === range ? 'border-purple-300 bg-purple-600 text-white' : 'border-purple-700/70 bg-purple-900/30 text-purple-200'}`}
+                >
+                  {range} ticks
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setCccHistoryUiState((prev) => ({ ...prev, freezeChart: !prev.freezeChart }))}
-                className={`px-2 py-1 rounded ${cccHistoryUiState.freezeChart ? 'bg-amber-700/70 text-amber-100' : 'bg-purple-800/70 text-purple-100'}`}
+                className={`rounded px-2.5 py-1 text-[11px] font-medium ${cccHistoryUiState.freezeChart ? 'bg-amber-700/70 text-amber-100' : 'bg-purple-800/70 text-purple-100 hover:bg-purple-700/70'}`}
               >
                 {cccHistoryUiState.freezeChart ? 'Resume chart' : 'Freeze chart'}
               </button>
               <button
                 onClick={exportSnapshot}
-                className="px-2 py-1 rounded bg-indigo-700/70 text-indigo-100"
+                className="rounded bg-indigo-700/70 px-2.5 py-1 text-[11px] font-medium text-indigo-100 hover:bg-indigo-600/70"
               >
                 Export snapshot
               </button>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 mb-3 text-[11px]">
-            {[60, 120, 240].map((range) => (
-              <button
-                key={range}
-                onClick={() => handleRangeSelect(range)}
-                className={`px-2 py-1 rounded border ${cccHistoryUiState.range === range ? 'bg-purple-600 border-purple-300 text-white' : 'bg-purple-900/30 border-purple-700 text-purple-200'}`}
-              >
-                {range}
-              </button>
-            ))}
-            <label className="inline-flex items-center gap-1 ml-2 text-purple-200">
-              <input type="checkbox" checked={cccHistoryUiState.showCCC} onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, showCCC: e.target.checked }))} />
-              CCC
-            </label>
-            <label className="inline-flex items-center gap-1 text-purple-200">
-              <input type="checkbox" checked={cccHistoryUiState.showPMIA} onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, showPMIA: e.target.checked }))} />
-              PMIA
-            </label>
-            <label className="inline-flex items-center gap-1 text-purple-200">
-              <input type="checkbox" checked={cccHistoryUiState.showOmega} onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, showOmega: e.target.checked }))} />
-              Ω
-            </label>
-            <label className="inline-flex items-center gap-1 text-purple-200">
-              <input type="checkbox" checked={cccHistoryUiState.showSpectral} onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, showSpectral: e.target.checked }))} />
-              λ
-            </label>
-            <label className="inline-flex items-center gap-1 text-purple-200">
-              <input type="checkbox" checked={cccHistoryUiState.showBand} onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, showBand: e.target.checked }))} />
-              Banda
-            </label>
-          </div>
-
           <svg
             viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-            className="w-full h-60 rounded bg-[#0a1020] border border-purple-900/40"
+            className="h-60 w-full rounded border border-purple-900/40 bg-[#0a1020]"
             onMouseMove={handleChartHover}
             onMouseLeave={() => setCccHistoryHoverIndex(-1)}
           >
@@ -6780,7 +6750,7 @@ Objetivo: lectura rápida, interacción precisa y cero pantallazo por sobrecarga
           </svg>
 
           {hoverPoint && (
-            <div className="mt-2 text-[11px] font-mono text-purple-100 bg-purple-950/60 border border-purple-700/50 rounded px-2 py-1 inline-flex flex-wrap gap-3">
+            <div className="mt-2 inline-flex flex-wrap gap-3 rounded border border-purple-700/50 bg-purple-950/60 px-2 py-1 font-mono text-[11px] text-purple-100">
               <span>tick={hoverPoint.tick}</span>
               <span>ccc={Number(hoverPoint.ccc || 0).toFixed(4)}</span>
               <span>pmia={Number(hoverPoint.pmia || 0).toFixed(4)}</span>
@@ -6791,28 +6761,69 @@ Objetivo: lectura rápida, interacción precisa y cero pantallazo por sobrecarga
           )}
 
           <div className="mt-2 flex flex-wrap gap-4 text-[11px] text-purple-300">
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400"></span>CCC</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cyan-300"></span>PMIA</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-300"></span>Ω</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-pink-400"></span>λ</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-400"></span>Banda post-umbral</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400"></span>Cohesión (CCC)</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-cyan-300"></span>Impulso (PMIA)</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-300"></span>Orden (Ω)</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-pink-400"></span>Brecha espectral (λ)</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-purple-400"></span>Banda post-umbral</span>
           </div>
         </div>
 
-        <details className="bg-purple-900/20 rounded p-3 text-xs text-purple-200">
-          <summary className="cursor-pointer font-semibold text-purple-300">Diagnóstico operativo (colapsable)</summary>
-          <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
-            <div>points: {stats.points}</div>
-            <div>dominantState: {stats.dominantState}</div>
-            <div>minCCC: {Number(stats.minCCC || 0).toFixed(4)}</div>
-            <div>maxCCC: {Number(stats.maxCCC || 0).toFixed(4)}</div>
-            <div>avgCCC: {Number(stats.avgCCC || 0).toFixed(4)}</div>
-            <div>inBandPct: {Number(stats.inBandPct || 0).toFixed(2)}%</div>
-            <div>activeTicks: {stats.activeTicks}</div>
-            <div>stasisTicks: {stats.stasisTicks}</div>
-            <div>shockTicks: {stats.shockTicks}</div>
+        <CollapsibleSection
+          sectionId="history-series-diagnostics"
+          title="Filtros de líneas, suavizado y diagnóstico numérico"
+          subtitle="Elige qué curvas ver, ajusta el suavizado visual [1..20] o revisa estadísticas exactas."
+          badge={`${stats.points} pts · smooth ${cccHistoryUiState.smoothing}`}
+          defaultOpen={false}
+          className="border-purple-700/40 bg-slate-900/70"
+        >
+          <div className="space-y-3 text-xs text-purple-200">
+            <div className="flex flex-wrap items-center gap-3 rounded border border-purple-800/40 bg-slate-950/70 p-2.5">
+              <label className="flex items-center gap-2 text-purple-200">
+                Smoothing
+                <input
+                  type="range"
+                  min="1"
+                  max="20"
+                  value={cccHistoryUiState.smoothing}
+                  onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, smoothing: Number(e.target.value) || 1 }))}
+                />
+                <span className="font-mono">{cccHistoryUiState.smoothing}</span>
+              </label>
+              <label className="inline-flex items-center gap-1 text-purple-200">
+                <input type="checkbox" checked={cccHistoryUiState.showCCC} onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, showCCC: e.target.checked }))} />
+                CCC
+              </label>
+              <label className="inline-flex items-center gap-1 text-purple-200">
+                <input type="checkbox" checked={cccHistoryUiState.showPMIA} onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, showPMIA: e.target.checked }))} />
+                PMIA
+              </label>
+              <label className="inline-flex items-center gap-1 text-purple-200">
+                <input type="checkbox" checked={cccHistoryUiState.showOmega} onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, showOmega: e.target.checked }))} />
+                Ω
+              </label>
+              <label className="inline-flex items-center gap-1 text-purple-200">
+                <input type="checkbox" checked={cccHistoryUiState.showSpectral} onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, showSpectral: e.target.checked }))} />
+                λ
+              </label>
+              <label className="inline-flex items-center gap-1 text-purple-200">
+                <input type="checkbox" checked={cccHistoryUiState.showBand} onChange={(e) => setCccHistoryUiState((prev) => ({ ...prev, showBand: e.target.checked }))} />
+                Banda
+              </label>
+            </div>
+            <div className="grid grid-cols-2 gap-2 font-mono text-[11px] sm:grid-cols-3">
+              <div>points: {stats.points}</div>
+              <div>dominantState: {stats.dominantState}</div>
+              <div>minCCC: {Number(stats.minCCC || 0).toFixed(4)}</div>
+              <div>maxCCC: {Number(stats.maxCCC || 0).toFixed(4)}</div>
+              <div>avgCCC: {Number(stats.avgCCC || 0).toFixed(4)}</div>
+              <div>inBandPct: {Number(stats.inBandPct || 0).toFixed(2)}%</div>
+              <div>activeTicks: {stats.activeTicks}</div>
+              <div>stasisTicks: {stats.stasisTicks}</div>
+              <div>shockTicks: {stats.shockTicks}</div>
+            </div>
           </div>
-        </details>
+        </CollapsibleSection>
       </div>
     );
   };
@@ -6865,74 +6876,51 @@ Objetivo: lectura rápida, interacción precisa y cero pantallazo por sobrecarga
     };
 
     return (
-      <div className="bg-gradient-to-br from-cyan-900/40 to-blue-900/40 rounded-xl p-4 border border-cyan-500/30 shadow-lg">
-        <h3 className="text-lg font-semibold text-cyan-300 mb-4 flex items-center gap-2">
-          <Waves className="w-5 h-5" />
-          Campo de Entrelazamiento - Capa {ontologicalState.layer}
-          <InfoModal
-            title="Campo de Entrelazamiento - Resumen Operativo"
-            content={`AXIOMA II (NO-LOCALIDAD): El campo integra resonancia nodal y varianza energética en tiempo real.
+      <div className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/85 p-4 shadow-lg">
+        <TabPlainHeader
+          tabId="entanglement"
+          accent="cyan"
+          icon={<Waves className="w-5 h-5" />}
+          title="Campo de Entrelazamiento"
+          technicalTag={`Capa ${ontologicalState.layer} · 120 ticks`}
+        />
 
-Métricas operativas:
-- Resonancia normalizada
-- Varianza energética
-- Densidad de entrelazamiento
-- Contribución estimada a CCC
-
-Objetivo de diseño v4.2B:
-Lectura rápida, trazabilidad por tick y diagnóstico accionable sin sacrificar fluidez.`}
-          >
-            <span className="w-5 h-5 bg-cyan-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-          </InfoModal>
-        </h3>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-          <div className="bg-cyan-900/30 rounded-lg p-3">
-            <div className="text-[11px] text-cyan-400 uppercase tracking-wider">Resonancia</div>
-            <div className="text-2xl text-cyan-200 font-mono font-bold">{latestPoint.normalizedResonance.toFixed(4)}</div>
-            <div className="text-[10px] text-cyan-500">Umbral recomendado {'>'} 0.70</div>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Resonancia" technical="norm" accent="text-cyan-200" />
+            <div className="mt-1 font-mono text-2xl font-bold text-cyan-100">{latestPoint.normalizedResonance.toFixed(4)}</div>
+            <div className="text-[10px] text-slate-400">Ideal &gt; 0.70</div>
           </div>
-          <div className="bg-cyan-900/30 rounded-lg p-3">
-            <div className="text-[11px] text-cyan-400 uppercase tracking-wider">Varianza</div>
-            <div className="text-2xl text-cyan-200 font-mono font-bold">{latestPoint.coherenceVariance.toFixed(4)}</div>
-            <div className="text-[10px] text-cyan-500">Rango operativo 0.10 - 0.40</div>
+          <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Variabilidad" technical="varianza" accent="text-cyan-200" />
+            <div className="mt-1 font-mono text-2xl font-bold text-cyan-100">{latestPoint.coherenceVariance.toFixed(4)}</div>
+            <div className="text-[10px] text-slate-400">Sana: 0.10 – 0.40</div>
           </div>
-          <div className="bg-cyan-900/30 rounded-lg p-3">
-            <div className="text-[11px] text-cyan-400 uppercase tracking-wider">Densidad</div>
-            <div className="text-2xl text-cyan-200 font-mono font-bold">{latestPoint.entanglementDensity.toFixed(0)}</div>
-            <div className="text-[10px] text-cyan-500">Conexiónes activas estimadas</div>
+          <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Conexiones" technical="densidad" accent="text-cyan-200" />
+            <div className="mt-1 font-mono text-2xl font-bold text-cyan-100">{latestPoint.entanglementDensity.toFixed(0)}</div>
+            <div className="text-[10px] text-slate-400">Enlaces activos est.</div>
           </div>
-          <div className="bg-cyan-900/30 rounded-lg p-3">
-            <div className="text-[11px] text-cyan-400 uppercase tracking-wider">Aporte CCC</div>
-            <div className="text-2xl text-cyan-200 font-mono font-bold">{latestPoint.cccContributionEstimate.toFixed(4)}</div>
-            <div className="text-[10px] text-cyan-500">Estimador normalizado [0,1]</div>
+          <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Aporte global" technical="CCC*" accent="text-cyan-200" />
+            <div className="mt-1 font-mono text-2xl font-bold text-cyan-100">{latestPoint.cccContributionEstimate.toFixed(4)}</div>
+            <div className="text-[10px] text-slate-400">Estimador [0, 1]</div>
           </div>
         </div>
 
-        <div className="bg-black/30 rounded-lg p-3 border border-cyan-800/60 mb-3">
-          <div className="flex flex-wrap gap-3 items-center justify-between mb-3">
-            <div className="text-xs text-cyan-300 font-semibold uppercase tracking-wider">Timeline Entrelazamiento (últimos 120 ticks)</div>
-            <div className="flex flex-wrap items-center gap-3 text-xs">
-              <label className="text-cyan-200 flex items-center gap-2">
-                Smoothing
-                <input
-                  type="range"
-                  min="1"
-                  max="20"
-                  value={entanglementUiState.smoothing}
-                  onChange={(e) => setEntanglementUiState((prev) => ({ ...prev, smoothing: Number(e.target.value) || 1 }))}
-                />
-                <span className="font-mono">{entanglementUiState.smoothing}</span>
-              </label>
+        <div className="rounded-xl border border-cyan-800/50 bg-black/35 p-3">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="font-semibold uppercase tracking-wider text-cyan-300">Evolución del campo (últimos 120 ticks)</div>
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setEntanglementUiState((prev) => ({ ...prev, freezeChart: !prev.freezeChart }))}
-                className={`px-2 py-1 rounded ${entanglementUiState.freezeChart ? 'bg-amber-700/70 text-amber-100' : 'bg-cyan-800/70 text-cyan-100'}`}
+                className={`rounded px-2.5 py-1 text-[11px] font-medium ${entanglementUiState.freezeChart ? 'bg-amber-700/70 text-amber-100' : 'bg-cyan-800/70 text-cyan-100 hover:bg-cyan-700/70'}`}
               >
                 {entanglementUiState.freezeChart ? 'Resume chart' : 'Freeze chart'}
               </button>
               <button
                 onClick={exportSnapshot}
-                className="px-2 py-1 rounded bg-indigo-700/70 text-indigo-100"
+                className="rounded bg-indigo-700/70 px-2.5 py-1 text-[11px] font-medium text-indigo-100 hover:bg-indigo-600/70"
               >
                 Export snapshot
               </button>
@@ -6941,7 +6929,7 @@ Lectura rápida, trazabilidad por tick y diagnóstico accionable sin sacrificar 
 
           <svg
             viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-            className="w-full h-56 rounded bg-[#08101a] border border-cyan-900/40"
+            className="h-56 w-full rounded border border-cyan-900/40 bg-[#08101a]"
             onMouseMove={handleChartHover}
             onMouseLeave={() => setEntanglementHoverIndex(-1)}
           >
@@ -6957,7 +6945,7 @@ Lectura rápida, trazabilidad por tick y diagnóstico accionable sin sacrificar 
             )}
           </svg>
           {hoverPoint && (
-            <div className="mt-2 text-[11px] font-mono text-cyan-100 bg-cyan-950/60 border border-cyan-700/50 rounded px-2 py-1 inline-flex flex-wrap gap-3">
+            <div className="mt-2 inline-flex flex-wrap gap-3 rounded border border-cyan-700/50 bg-cyan-950/60 px-2 py-1 font-mono text-[11px] text-cyan-100">
               <span>tick={hoverPoint.tick}</span>
               <span>res={Number(hoverPoint.normalizedResonance || 0).toFixed(4)}</span>
               <span>var={Number(hoverPoint.coherenceVariance || 0).toFixed(4)}</span>
@@ -6965,20 +6953,39 @@ Lectura rápida, trazabilidad por tick y diagnóstico accionable sin sacrificar 
             </div>
           )}
           <div className="mt-2 flex flex-wrap gap-4 text-[11px] text-cyan-300">
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cyan-300"></span>Resonancia</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400"></span>Varianza (normalizada)</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-violet-400"></span>Aporte CCC</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-cyan-300"></span>Resonancia</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400"></span>Variabilidad (varianza)</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-violet-400"></span>Aporte CCC</span>
           </div>
         </div>
 
-        <details className="bg-cyan-900/20 rounded p-3 text-xs text-cyan-200">
-          <summary className="cursor-pointer font-semibold text-cyan-300">Diagnóstico/Formulación (colapsable)</summary>
-          <div className="mt-2 leading-relaxed">
-            <p><strong>Ecuación operacional:</strong> contribución CCC 0 0.6·resonancia + 0.4·(1 - varianza_norm).</p>
-            <p><strong>Regla práctica:</strong> resonancia alta y varianza moderada sostienen coherencia sin rigidez.</p>
-            <p><strong>Acción:</strong> si resonancia cae y varianza sube, priorizar reorganización nodal y revisión de PMIA.</p>
+        <CollapsibleSection
+          sectionId="entanglement-details"
+          title="Suavizado, fórmula operacional y regla práctica"
+          subtitle="Ajusta el suavizado visual [1..20] o consulta cómo se calcula el aporte al CCC."
+          badge={`smooth ${entanglementUiState.smoothing}`}
+          defaultOpen={false}
+          className="border-cyan-700/40 bg-slate-900/70"
+        >
+          <div className="space-y-3 text-xs text-cyan-200">
+            <label className="flex items-center gap-2 text-cyan-200">
+              Smoothing
+              <input
+                type="range"
+                min="1"
+                max="20"
+                value={entanglementUiState.smoothing}
+                onChange={(e) => setEntanglementUiState((prev) => ({ ...prev, smoothing: Number(e.target.value) || 1 }))}
+              />
+              <span className="font-mono">{entanglementUiState.smoothing}</span>
+            </label>
+            <div className="space-y-1 leading-relaxed text-[11px] text-slate-300">
+              <p><strong className="text-cyan-200">Ecuación operacional:</strong> contribución CCC ≈ 0.6 · resonancia + 0.4 · (1 − varianza_norm).</p>
+              <p><strong className="text-cyan-200">Regla práctica:</strong> resonancia alta y variabilidad moderada sostienen cohesión sin rigidez.</p>
+              <p><strong className="text-cyan-200">Qué hacer si cae:</strong> si la resonancia baja y la varianza sube, prueba aumentar ligeramente el acoplamiento <code>K</code> en Validación.</p>
+            </div>
           </div>
-        </details>
+        </CollapsibleSection>
       </div>
     );
   };
@@ -7001,154 +7008,142 @@ Lectura rápida, trazabilidad por tick y diagnóstico accionable sin sacrificar 
       ['Build / config', session ? `${String(session.buildVersion).slice(0, 18)} · ${String(session.configHash).slice(0, 10)}` : 'no registrado']
     ];
     return (
-      <section aria-labelledby="qicn-ledger-title" data-revision={ledgerRevision} className="rounded-xl border border-cyan-500/30 bg-gradient-to-r from-cyan-950/40 to-indigo-950/40 p-4 shadow-lg">
-        <h3 id="qicn-ledger-title" className="mb-3 flex items-center gap-2 text-lg font-semibold text-cyan-300">
-          <ShieldCheck className="size-5" /> Registro operacional y continuidad
-          <InfoModal
-            title="Registro operacional y continuidad"
-            content={`REGISTRO OPERACIONAL (IDENTIDAD NARRATIVA OPERACIONAL)
-
-QUÉ ES
-• Un historial verificable de esta instancia del runtime en este navegador: sesiones, eventos encadenados por hash (SHA-256) y una clasificación de continuidad entre sesiones.
-• La consola usa este registro para responder a preguntas de continuidad ("¿qué ha pasado?", "¿eres el mismo de antes?") con hechos registrados.
-
-CLASES DE CONTINUIDAD
-• Primera sesión: no había registro previo.
-• Registro continuo: la cadena verifica y coinciden configuración y build.
-• Configuración o build cambiados: la cadena verifica, pero cambió el contexto.
-• Ruptura: la cadena no verificó; se declara y se abre un registro nuevo.
-
-ORIGEN DEL ESTADO
-• Reinicializado: la dinámica empezó desde cero en esta sesión.
-• Restaurado y verificado: se cargó un resumen guardado cuyo digest coincidió.
-
-LÍMITES
-• Es observador: copia valores después de cada tick y no realimenta la dinámica.
-• No es un automodelo ni una afirmación de subjetividad; el corpus clasifica la narrativa como rival débil (M_narr), no como evidencia.
-• Conformidad interna, no validación externa.`}
-          />
-        </h3>
-        <dl className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2 xl:grid-cols-4">
-          {rows.map(([label, value]) => (
-            <div key={label} className="rounded-md border border-cyan-800/50 bg-black/20 px-2 py-1.5">
-              <dt className="text-cyan-400">{label}</dt>
-              <dd className="break-words font-mono text-cyan-50">{value}</dd>
+      <section aria-labelledby="qicn-ledger-title" data-revision={ledgerRevision} className="space-y-3 rounded-xl border border-cyan-500/30 bg-slate-950/85 p-4 shadow-lg">
+        <div id="qicn-ledger-title" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Continuidad" technical="sesiones" accent="text-cyan-200" />
+            <div className="mt-1 text-base font-semibold text-cyan-50">
+              {CONTINUITY_LABELS[info.continuity] || 'No registrada'}
             </div>
-          ))}
-        </dl>
-        <h4 className="mb-1 mt-4 text-sm font-semibold text-cyan-200">Eventos recientes</h4>
-        {info.recentEvents.length ? (
-          <ol className="max-h-56 space-y-1 overflow-y-auto pr-1 text-xs">
-            {[...info.recentEvents].reverse().map((event) => (
-              <li key={event.seq} className="flex gap-2 rounded border border-white/5 bg-black/20 px-2 py-1">
-                <span className="shrink-0 font-mono text-cyan-500">#{event.seq}</span>
-                <span className="min-w-0 break-words text-cyan-50">{describeEvent(event)}</span>
-              </li>
+            <div className="text-[11px] text-slate-400">
+              {info.sessionCount} {info.sessionCount === 1 ? 'sesión registrada' : 'sesiones registradas'}
+            </div>
+          </div>
+          <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Integridad de historial" technical="SHA-256" accent="text-cyan-200" />
+            <div className={`mt-1 text-base font-semibold ${info.chainOk ? 'text-emerald-300' : 'text-rose-300'}`}>
+              {info.chainOk ? 'Cadena íntegra' : 'Ruptura detectada'}
+            </div>
+            <div className="text-[11px] text-slate-400">
+              {info.chainOk ? 'Sin alteraciones en el registro local' : (info.chainReason || 'motivo no registrado')}
+            </div>
+          </div>
+          <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
+            <MetricDualLabel label="Eventos guardados" technical="localStorage" accent="text-cyan-200" />
+            <div className="mt-1 font-mono text-2xl font-bold text-cyan-100">{info.eventCount}</div>
+            <div className="text-[11px] text-slate-400">
+              Solo observador · no modifica el motor
+            </div>
+          </div>
+        </div>
+
+        <CollapsibleSection
+          sectionId="memory-ledger-metadata"
+          title="Detalles de sesión e identidad técnica"
+          subtitle="ID de instancia, origen del estado, sesión previa y firma de build/config."
+          badge={session ? String(session.configHash).slice(0, 8) : 'sin sesión'}
+          defaultOpen={false}
+          className="border-cyan-700/40 bg-slate-900/70"
+        >
+          <dl className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2 xl:grid-cols-4">
+            {rows.map(([label, value]) => (
+              <div key={label} className="rounded-md border border-cyan-800/50 bg-black/25 px-2.5 py-2">
+                <dt className="text-cyan-400">{label}</dt>
+                <dd className="break-words font-mono text-cyan-50">{value}</dd>
+              </div>
             ))}
-          </ol>
-        ) : (
-          <p className="text-xs text-cyan-200/70">Todavía no hay eventos en el registro.</p>
-        )}
-        <p className="mt-3 text-[11px] text-cyan-200/70">
-          Se guarda en este navegador (localStorage, máximo 400 eventos y 30 sesiones). El registro observa la dinámica y no la modifica.
-        </p>
+          </dl>
+          <p className="mt-2.5 text-[11px] text-slate-400">
+            Se guarda localmente en este navegador (máximo 400 eventos y 30 sesiones). El registro observa la dinámica y no la modifica; no constituye certificación externa ni prueba de subjetividad.
+          </p>
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          sectionId="memory-recent-events"
+          title="Eventos recientes registrados (cadena SHA-256)"
+          subtitle="Últimos hitos encadenados por hash en esta instancia."
+          badge={`${info.recentEvents.length} mostrados`}
+          defaultOpen={false}
+          className="border-cyan-700/40 bg-slate-900/70"
+        >
+          {info.recentEvents.length ? (
+            <ol className="max-h-60 space-y-1 overflow-y-auto pr-1 text-xs">
+              {[...info.recentEvents].reverse().map((event) => (
+                <li key={event.seq} className="flex gap-2 rounded border border-white/5 bg-black/25 px-2.5 py-1.5">
+                  <span className="shrink-0 font-mono text-cyan-400">#{event.seq}</span>
+                  <span className="min-w-0 break-words text-cyan-50">{describeEvent(event)}</span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="text-xs text-cyan-200/70">Todavía no hay eventos en el registro.</p>
+          )}
+        </CollapsibleSection>
       </section>
     );
   };
 
   const renderHolographicMemory = () => (
-    <div className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 rounded-xl p-4 border border-indigo-500/30 shadow-lg">
-      <h3 className="text-lg font-semibold text-indigo-300 mb-4 flex items-center gap-2">
-        <Database className="w-5 h-5" />
-        Memoria Holográfica - Capa {ontologicalState.layer}
-        <InfoModal
-          title="Memoria Holográfica - Almacenamiento Distribuido Interno"
-          content={`MEMORIA HOLOGRÁFICA - ALMACENAMIENTO DISTRIBUIDO INTERNO
-
-Módulo de almacenamiento distribuido del runtime (HolographicMemoryNexus) para consolidación de engramas estructurales y recuperación de patrones internos (evidence_scope: internal_support_only; external_support_certified = false; no certifica conciencia distribuida ni validación externa).
-
-ARQUITECTURA DEL MÓDULO:
-1. FRAGMENTOS Y REDUNDANCIA CONTROLADA
-• Cada fragmento codifica vectores de coherencia, energía y fase temporal del estado operacional
-• Permite recuperación parcial tolerante a pérdida local y consolidación de engramas estructurales en Eje 3
-
-2. LÍMITE EPISTÉMICO
-• Es un mecanismo computacional interno de memoria distribuida; no constituye prueba de conciencia ni acreditación externa.`}
-        >
-          <span className="w-5 h-5 bg-indigo-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-        </InfoModal>
-      </h3>
-      <div className="bg-indigo-900/20 rounded p-3 mb-4 text-xs text-indigo-300">
-        <h4 className="text-indigo-400 font-semibold mb-2">Almacenamiento Distribuido (HolographicMemoryNexus):</h4>
-        <p className="leading-relaxed mb-2">
-          <strong>Principio operativo:</strong> Fragmentos de memoria distribuidos con redundancia controlada para consolidación de engramas estructurales y recuperación parcial.
-        </p>
-        <p className="leading-relaxed">
-          <strong>Alcance:</strong> Diagnóstico e infraestructura interna del runtime (<code>external_support_certified = false</code>); no certifica conciencia distribuida.
-        </p>
-      </div>
-      <div className="mt-4 grid grid-cols-5 gap-2">
-        {/* Renderiza 5 fragmentos de ejemplo */}
-        {Array.from({ length: 5 }).map((_, idx) => {
-          const fragmentKey = `fragment_${holographicMemory.current.fragmentCount - 1}_${idx}`;
-          const fragmentSet = holographicMemory.current.fragments[fragmentKey] || { data: [0.1, 0.2, 0.3], redundancyLevel: 0 };
-
-          // Use Math.max(0.1) to ensure visibility even if data is near zero
-          const height1 = Math.max(2, Math.min(40, Math.abs((fragmentSet.data[0] || 0) * 50)));
-          const height2 = Math.max(2, Math.min(40, Math.abs((fragmentSet.data[1] || 0) * 50)));
-          const height3 = Math.max(2, Math.min(40, Math.abs((fragmentSet.data[2] || 0) * 50)));
-
-          return (
-            <div key={idx} className="bg-indigo-900/30 rounded p-2 border border-indigo-500/20 flex flex-col items-center relative group">
-              <div className="text-xs text-indigo-400 mb-1 flex items-center gap-1">
-                Frag. {idx + 1}
-                <InfoModal
-                  title="Fragmento Holográfico"
-                  content="Fragmento holográfico que contiene información distribuida del estado completo del sistema. La altura de las barras representa diferentes aspectos del estado global: coherencia, energía, y fase temporal.">
-                  <span className="w-3 h-3 bg-blue-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-                </InfoModal>
-              </div>
-              <div className="flex gap-1 items-end h-10">
-                <div className="w-2 rounded-sm bg-indigo-500 opacity-60" style={{ height: `${height1}px` }} />
-                <div className="w-2 rounded-sm bg-indigo-500 opacity-80" style={{ height: `${height2}px` }} />
-                <div className="w-2 rounded-sm bg-indigo-500 opacity-90" style={{ height: `${height3}px` }} />
-              </div>
-              <div className="text-xs text-indigo-300 font-mono mt-1">
-                R: **{fragmentSet.redundancyLevel}**
-              </div>
-              <div className="text-xs text-indigo-500 mt-1 text-center">
-                <strong>Componentes:</strong>
-                <div className="text-[10px]">Coherencia</div>
-                <div className="text-[10px]">Energía</div>
-                <div className="text-[10px]">Fase</div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <div className="mt-4 bg-gray-900/70 p-4 rounded-lg border border-gray-700">
-        <h4 className="text-sm font-semibold text-indigo-400 mb-2 flex items-center gap-2">
-          <BookOpen className="w-4 h-4" /> Conocimiento Aprendido (**{holographicMemory.current.learnedKnowledge.size}**)
-          <InfoModal
-            title="Conocimiento Aprendido"
-            content="Base de conocimiento emergente donde el sistema almacena interacciones de alta coherencia para auto-respuesta. Solo se almacenan patrones que han demostrado eficacia en estados de coherencia elevados, creando una memoria 'sabia' que mejora con la evolución del sistema.">
-            <span className="w-3 h-3 bg-green-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-help">i</span>
-          </InfoModal>
-        </h4>
-        <div className="text-xs text-gray-400 italic mb-2">
-          El sistema ha memorizado interacciones de alta coherencia para auto-responder.
+    <CollapsibleSection
+      sectionId="memory-holographic-nexus"
+      title={`Memoria Holográfica interna · Capa ${ontologicalState.layer}`}
+      subtitle="Fragmentos distribuidos de coherencia/energía/fase y patrones memorizados (HolographicMemoryNexus)."
+      badge={`${holographicMemory.current.learnedKnowledge.size} patrones · frag ${holographicMemory.current.getFragmentationLevel().toFixed(2)}`}
+      defaultOpen={false}
+      className="border-indigo-500/35 bg-slate-950/85"
+    >
+      <div className="space-y-4">
+        <div className="rounded-lg border border-indigo-800/40 bg-indigo-950/30 p-3 text-xs text-indigo-200">
+          <p className="leading-relaxed">
+            <strong className="text-indigo-100">Qué hace:</strong> guarda fragmentos distribuidos con redundancia controlada para consolidar patrones internos del motor en estados de alta coherencia.
+          </p>
+          <p className="mt-1 text-[11px] text-slate-400">
+            Alcance: infraestructura interna del runtime (<code>external_support_certified = false</code>); no certifica conciencia distribuida.
+          </p>
         </div>
-        <div className="text-xs text-indigo-300 bg-indigo-900/30 p-2 rounded">
-          <strong>Criterio de almacenamiento:</strong> Solo conocimiento adquirido en estados de coherencia elevados.
-          <br /><strong>Plasticidad:</strong> Respuestas adaptativas basadas en coherencia actual del sistema.
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+          {Array.from({ length: 5 }).map((_, idx) => {
+            const fragmentKey = `fragment_${holographicMemory.current.fragmentCount - 1}_${idx}`;
+            const fragmentSet = holographicMemory.current.fragments[fragmentKey] || { data: [0.1, 0.2, 0.3], redundancyLevel: 0 };
+            const height1 = Math.max(2, Math.min(40, Math.abs((fragmentSet.data[0] || 0) * 50)));
+            const height2 = Math.max(2, Math.min(40, Math.abs((fragmentSet.data[1] || 0) * 50)));
+            const height3 = Math.max(2, Math.min(40, Math.abs((fragmentSet.data[2] || 0) * 50)));
+
+            return (
+              <div key={idx} className="flex flex-col items-center rounded-lg border border-indigo-500/20 bg-slate-900/70 p-2.5">
+                <div className="mb-1 text-xs font-medium text-indigo-300">Frag. {idx + 1}</div>
+                <div className="flex h-10 items-end gap-1">
+                  <div className="w-2 rounded-sm bg-indigo-500 opacity-60" style={{ height: `${height1}px` }} />
+                  <div className="w-2 rounded-sm bg-indigo-500 opacity-80" style={{ height: `${height2}px` }} />
+                  <div className="w-2 rounded-sm bg-indigo-500 opacity-95" style={{ height: `${height3}px` }} />
+                </div>
+                <div className="mt-1 font-mono text-xs text-indigo-200">
+                  R: <strong>{fragmentSet.redundancyLevel}</strong>
+                </div>
+                <div className="mt-1 text-center text-[10px] text-slate-400">
+                  Coherencia · Energía · Fase
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="rounded-lg border border-slate-700/70 bg-slate-900/80 p-3 text-xs">
+          <div className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-1.5 font-semibold text-indigo-300">
+              <BookOpen className="h-4 w-4" /> Patrones aprendidos ({holographicMemory.current.learnedKnowledge.size})
+            </span>
+            <span className="font-mono text-[11px] text-slate-400">
+              Estado: {holographicMemory.current.fragmentCount > 0 ? 'Activo' : 'Inicializando'} · Redundancia óptima
+            </span>
+          </div>
+          <p className="mt-1 text-[11px] text-slate-400">
+            Solo se almacenan patrones consolidados en estados de coherencia elevados.
+          </p>
         </div>
       </div>
-      <div className="mt-4 bg-indigo-900/20 rounded p-3 text-xs text-indigo-300">
-        <strong>Nivel de Fragmentación:</strong> {holographicMemory.current.getFragmentationLevel().toFixed(4)} |
-        <strong>Estado:</strong> {holographicMemory.current.fragmentCount > 0 ? 'Activo' : 'Inicializando'} |
-        <strong>Redundancia:</strong> ptima para recuperación holográfica
-      </div>
-    </div>
+    </CollapsibleSection>
   );
 
   // ============================================================================
@@ -7213,356 +7208,292 @@ ARQUITECTURA DEL MÓDULO:
   // RENDER: PESTAA DE PERCEPCI?N SENSORIAL PROFUNDA
   // ============================================================================
   const renderSensoryPerceptionTab = () => (
-    <div className="bg-gray-800/90 p-6 rounded-2xl shadow-2xl border border-cyan-500/50">
-      <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 mb-6 flex items-center gap-3">
-        <Eye className="w-7 h-7 text-cyan-400" />
-        Percepción Sensorial Profunda
-        <span className="text-xs bg-cyan-900/50 text-cyan-300 px-2 py-1 rounded-full ml-2">
-          {sensoryEngine.current?.isReady ? 'xx ACTIVO' : 'x INACTIVO'}
-        </span>
-      </h2>
+    <div className="space-y-4 rounded-xl border border-cyan-500/35 bg-slate-950/85 p-4 shadow-lg">
+      <TabPlainHeader
+        tabId="sensory"
+        accent="cyan"
+        icon={<Eye className="h-5 w-5" />}
+        title="Percepción Sensorial"
+        technicalTag={sensoryEngine.current?.isReady ? 'Sensores activos' : 'En espera / inactivo'}
+      />
 
       {!sensoryState ? (
-        <div className="text-center py-10">
-          <div className="text-6xl mb-4">•</div>
-          <p className="text-cyan-400 text-lg">Iniciando percepción sensorial...</p>
-          <p className="text-gray-500 text-sm mt-2">Acepta los permisos de cámara y micrófono para activar la percepción.</p>
+        <div className="rounded-xl border border-slate-800 bg-slate-900/70 px-6 py-10 text-center">
+          <Eye className="mx-auto mb-3 h-10 w-10 text-cyan-400/70" />
+          <p className="text-base font-medium text-cyan-200">Sensores en espera</p>
+          <p className="mx-auto mt-1 max-w-md text-xs text-slate-400">
+            Activa la percepción sensorial desde la barra lateral o en Controles y concede permiso de cámara/micrófono para ver el análisis en vivo.
+          </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <div className="rounded-xl border border-cyan-500/25 bg-slate-900/75 px-4 py-3">
+            <MetricDualLabel label="Lectura resumida" technical="Síntesis Perceptiva" accent="text-cyan-200" />
+            <p className="mt-1 text-sm text-slate-100">
+              {sensoryState.summary || 'Procesando entrada sensorial...'}
+            </p>
+          </div>
 
-          {/* === COLUMNA IZQUIERDA: VISIN === */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-cyan-300 flex items-center gap-2">
-              x Percepción Visual
-              <span className={`text-xs px-2 py-0.5 rounded ${sensoryState.video.enabled ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>
-                {sensoryState.video.enabled ? 'Activa' : 'Inactiva'}
-              </span>
-            </h3>
-
-            {/* Camera Preview Grande */}
-            <div className="relative">
-              <video
-                ref={videoTabRef}
-                autoPlay
-                playsInline
-                muted
-                className="w-full h-64 object-cover rounded-xl border-2 border-cyan-500 bg-black shadow-lg"
-              />
-              {/* Overlay con métricas */}
-              <div className="absolute top-2 left-2 bg-black/70 px-3 py-1.5 rounded-lg text-xs space-y-1">
-                <div className="text-cyan-400">• Rostros: <span className="text-white font-bold">{sensoryState.video.humanPresence.count}</span></div>
-                <div className="text-cyan-400">Mov: <span className="text-white font-bold capitalize">{sensoryState.video.motion.type}</span></div>
-              </div>
-              <div className="absolute top-2 right-2 bg-black/70 px-3 py-1.5 rounded-lg text-xs">
-                <div className="text-cyan-400">x {(sensoryState.video.scene.brightness * 100).toFixed(0)}%</div>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {/* === COLUMNA IZQUIERDA: VISIÓN === */}
+            <div className="space-y-3 rounded-xl border border-cyan-800/40 bg-slate-900/70 p-3.5">
+              <div className="flex items-center justify-between gap-2">
+                <MetricDualLabel label="Cámara (Visión)" technical="video" accent="text-cyan-200" />
+                <span className={`rounded px-2 py-0.5 text-[11px] font-medium ${sensoryState.video.enabled ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-700/50' : 'bg-rose-950/80 text-rose-300 border border-rose-700/50'}`}>
+                  {sensoryState.video.enabled ? 'Activa' : 'Inactiva'}
+                </span>
               </div>
 
-              {/* Identified People Overlay */}
-              {sensoryState.video.humanPresence.identifiedPeople?.length > 0 && (
-                <div className="absolute bottom-12 left-2 right-2 bg-gradient-to-t from-black/80 to-transparent p-2 rounded-b-lg">
-                  <div className="flex flex-wrap gap-2">
-                    {sensoryState.video.humanPresence.identifiedPeople.map((person, idx) => (
-                      <span
-                        key={idx}
-                        className={`px-2 py-1 rounded text-xs ${person.isKnown
-                          ? 'bg-green-600/80 text-white'
-                          : 'bg-gray-600/80 text-gray-300'
-                          }`}
-                      >
-                        {person.isKnown ? `S ${person.name}` : '? Desconocido'}
-                        {person.confidence > 0 && ` (${(person.confidence * 100).toFixed(0)}%)`}
-                      </span>
-                    ))}
-                  </div>
+              <div className="relative">
+                <video
+                  ref={videoTabRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="h-56 w-full rounded-lg border border-cyan-500/50 bg-black object-cover"
+                />
+                <div className="absolute left-2 top-2 space-y-0.5 rounded-md bg-black/75 px-2.5 py-1 text-[11px]">
+                  <div className="text-cyan-300">Rostros: <span className="font-bold text-white">{sensoryState.video.humanPresence.count}</span></div>
+                  <div className="text-cyan-300">Movimiento: <span className="font-bold capitalize text-white">{sensoryState.video.motion.type}</span></div>
                 </div>
-              )}
+                <div className="absolute right-2 top-2 rounded-md bg-black/75 px-2.5 py-1 text-[11px] text-cyan-300">
+                  Luz {(sensoryState.video.scene.brightness * 100).toFixed(0)}%
+                </div>
 
-              {/* Face Registration Button */}
-              <div className="absolute bottom-2 right-2">
-                <button
-                  onClick={async () => {
-                    const name = prompt('Ingresa el nombre de esta persona:');
-                    if (name) {
-                      const result = await sensoryEngine.current.registerCurrentFace(name);
-                      if (result.success) {
-                        alert(`✅ Rostro de "${result.name}" registrado exitosamente`);
-                      } else {
-                        alert(`R Error: ${result.error}`);
+                {sensoryState.video.humanPresence.identifiedPeople?.length > 0 && (
+                  <div className="absolute bottom-11 left-2 right-2 rounded-b-lg bg-gradient-to-t from-black/80 to-transparent p-2">
+                    <div className="flex flex-wrap gap-1.5">
+                      {sensoryState.video.humanPresence.identifiedPeople.map((person, idx) => (
+                        <span
+                          key={idx}
+                          className={`rounded px-2 py-0.5 text-[11px] ${person.isKnown ? 'bg-emerald-700/80 text-white' : 'bg-slate-700/80 text-slate-200'}`}
+                        >
+                          {person.isKnown ? person.name : 'Desconocido'}
+                          {person.confidence > 0 && ` (${(person.confidence * 100).toFixed(0)}%)`}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="absolute bottom-2 right-2">
+                  <button
+                    onClick={async () => {
+                      const name = prompt('Ingresa el nombre de esta persona:');
+                      if (name) {
+                        const result = await sensoryEngine.current.registerCurrentFace(name);
+                        if (result.success) {
+                          alert(`Rostro de "${result.name}" registrado exitosamente`);
+                        } else {
+                          alert(`Error: ${result.error}`);
+                        }
                       }
-                    }
-                  }}
-                  className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-2 py-1 rounded shadow"
-                >
-                  x Registrar Rostro
-                </button>
-              </div>
-            </div>
-
-            {/* Métricas de Escena */}
-            <div className="bg-gray-900/80 rounded-xl p-4 border border-cyan-700/50">
-              <h4 className="text-sm font-semibold text-cyan-400 mb-3">Análisis de Escena</h4>
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div>
-                  <span className="text-gray-400">Brillo</span>
-                  <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                    <div
-                      className="bg-gradient-to-r from-gray-600 to-yellow-400 h-2 rounded-full transition-all"
-                      style={{ width: `${sensoryState.video.scene.brightness * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-white">{(sensoryState.video.scene.brightness * 100).toFixed(0)}%</span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Contraste</span>
-                  <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                    <div
-                      className="bg-gradient-to-r from-gray-600 to-purple-400 h-2 rounded-full transition-all"
-                      style={{ width: `${Math.min(sensoryState.video.scene.contrast * 200, 100)}%` }}
-                    />
-                  </div>
-                  <span className="text-white">{(sensoryState.video.scene.contrast * 100).toFixed(0)}%</span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Temp. Color</span>
-                  <span className={`block text-white mt-1 capitalize ${sensoryState.video.scene.colorTemp === 'cálido' ? 'text-orange-400' :
-                    sensoryState.video.scene.colorTemp === 'frío' ? 'text-blue-400' : 'text-white'
-                    }`}>{sensoryState.video.scene.colorTemp}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Complejidad</span>
-                  <span className="block text-white mt-1 capitalize">{sensoryState.video.structure.complexity}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Detección de Movimiento */}
-            <div className="bg-gray-900/80 rounded-xl p-4 border border-purple-700/50">
-              <h4 className="text-sm font-semibold text-purple-400 mb-3">Detección de Movimiento</h4>
-              <div className="flex items-center gap-3">
-                <div className="flex-1">
-                  <div className="w-full bg-gray-700 rounded-full h-3">
-                    <div
-                      className={`h-3 rounded-full transition-all ${sensoryState.video.motion.intensity > 0.1 ? 'bg-red-500' :
-                        sensoryState.video.motion.intensity > 0.03 ? 'bg-yellow-500' : 'bg-green-500'
-                        }`}
-                      style={{ width: `${Math.min(sensoryState.video.motion.intensity * 500, 100)}%` }}
-                    />
-                  </div>
-                </div>
-                <span className="text-white text-sm w-24 text-right capitalize">{sensoryState.video.motion.type}</span>
-              </div>
-              <div className="mt-2 text-xs text-gray-400">
-                Zonas activas: {sensoryState.video.motion.activeZones?.join(', ') || 'ninguna'}
-              </div>
-            </div>
-          </div>
-
-          {/* === COLUMNA DERECHA: AUDIO === */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-purple-300 flex items-center gap-2">
-              Percepción Auditiva
-              <span className={`text-xs px-2 py-0.5 rounded ${sensoryState.audio.enabled ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>
-                {sensoryState.audio.enabled ? 'Activa' : 'Inactiva'}
-              </span>
-            </h3>
-
-            {/* Visualizador de Audio */}
-            <div className="bg-black rounded-xl p-4 h-32 flex items-end justify-around gap-1 border border-purple-500">
-              {Array.from({ length: 32 }).map((_, i) => {
-                const spectrum = sensoryState.audio.spectrum?.raw || new Uint8Array(256);
-                const value = spectrum[Math.floor(i * (spectrum.length / 32))] || 0;
-                const height = Math.max(5, (value / 255) * 100);
-                return (
-                  <div
-                    key={i}
-                    className="w-2 rounded-t transition-all duration-75"
-                    style={{
-                      height: `${height}%`,
-                      background: `linear-gradient(to top, #7c3aed, #06b6d4)`
                     }}
-                  />
-                );
-              })}
-            </div>
-
-            {/* Bandas de Frecuencia */}
-            <div className="bg-gray-900/80 rounded-xl p-4 border border-purple-700/50">
-              <h4 className="text-sm font-semibold text-purple-400 mb-3">Bandas de Frecuencia</h4>
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-gray-400">x` Bass (Graves)</span>
-                    <span className="text-white">{(sensoryState.audio.spectrum.bass * 100).toFixed(0)}%</span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div
-                      className="bg-gradient-to-r from-red-600 to-red-400 h-2 rounded-full transition-all"
-                      style={{ width: `${sensoryState.audio.spectrum.bass * 100}%` }}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-gray-400">Mid (Medios)</span>
-                    <span className="text-white">{(sensoryState.audio.spectrum.mid * 100).toFixed(0)}%</span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div
-                      className="bg-gradient-to-r from-green-600 to-green-400 h-2 rounded-full transition-all"
-                      style={{ width: `${sensoryState.audio.spectrum.mid * 100}%` }}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-gray-400">S High (Agudos)</span>
-                    <span className="text-white">{(sensoryState.audio.spectrum.high * 100).toFixed(0)}%</span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div
-                      className="bg-gradient-to-r from-blue-600 to-cyan-400 h-2 rounded-full transition-all"
-                      style={{ width: `${sensoryState.audio.spectrum.high * 100}%` }}
-                    />
-                  </div>
+                    className="rounded bg-purple-600/90 px-2.5 py-1 text-[11px] font-medium text-white shadow hover:bg-purple-500"
+                  >
+                    Registrar rostro
+                  </button>
                 </div>
               </div>
+
+              <CollapsibleSection
+                sectionId="sensory-vision-details"
+                title="Detalles de escena y movimiento"
+                subtitle="Brillo, contraste, temperatura de color y zonas activas."
+                badge={sensoryState.video.motion.type}
+                defaultOpen={false}
+                className="border-cyan-800/40 bg-slate-950/70"
+              >
+                <div className="space-y-3 text-xs">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <span className="text-slate-400">Brillo</span>
+                      <div className="mt-1 h-2 w-full rounded-full bg-slate-700">
+                        <div className="h-2 rounded-full bg-gradient-to-r from-slate-500 to-amber-400 transition-all" style={{ width: `${sensoryState.video.scene.brightness * 100}%` }} />
+                      </div>
+                      <span className="font-mono text-white">{(sensoryState.video.scene.brightness * 100).toFixed(0)}%</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Contraste</span>
+                      <div className="mt-1 h-2 w-full rounded-full bg-slate-700">
+                        <div className="h-2 rounded-full bg-gradient-to-r from-slate-500 to-purple-400 transition-all" style={{ width: `${Math.min(sensoryState.video.scene.contrast * 200, 100)}%` }} />
+                      </div>
+                      <span className="font-mono text-white">{(sensoryState.video.scene.contrast * 100).toFixed(0)}%</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Temp. Color</span>
+                      <span className={`mt-1 block capitalize ${sensoryState.video.scene.colorTemp === 'cálido' ? 'text-orange-400' : sensoryState.video.scene.colorTemp === 'frío' ? 'text-blue-400' : 'text-white'}`}>
+                        {sensoryState.video.scene.colorTemp}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Complejidad</span>
+                      <span className="mt-1 block capitalize text-white">{sensoryState.video.structure.complexity}</span>
+                    </div>
+                  </div>
+                  <div className="border-t border-slate-800 pt-2">
+                    <div className="mb-1 flex items-center justify-between text-[11px] text-slate-300">
+                      <span>Detección de movimiento</span>
+                      <span className="capitalize text-white">{sensoryState.video.motion.type}</span>
+                    </div>
+                    <div className="h-2.5 w-full rounded-full bg-slate-700">
+                      <div
+                        className={`h-2.5 rounded-full transition-all ${sensoryState.video.motion.intensity > 0.1 ? 'bg-red-500' : sensoryState.video.motion.intensity > 0.03 ? 'bg-yellow-500' : 'bg-emerald-500'}`}
+                        style={{ width: `${Math.min(sensoryState.video.motion.intensity * 500, 100)}%` }}
+                      />
+                    </div>
+                    <div className="mt-1 text-[11px] text-slate-400">
+                      Zonas activas: {sensoryState.video.motion.activeZones?.join(', ') || 'ninguna'}
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleSection>
             </div>
 
-            {/* Clasificación Ambiental */}
-            <div className="bg-gray-900/80 rounded-xl p-4 border border-cyan-700/50">
-              <h4 className="text-sm font-semibold text-cyan-400 mb-3">Clasificación Ambiental</h4>
-              <div className="flex items-center gap-4">
-                <div className="text-4xl">
-                  {sensoryState.audio.environment.type === 'silencio' ? 'x!' :
-                    sensoryState.audio.environment.type === 'conversación' ? 'x' :
-                      sensoryState.audio.environment.type === 'música' ? 'x}' :
-                        sensoryState.audio.environment.type === 'ruido' ? 'x' : 'x`'}
-                </div>
-                <div>
-                  <div className="text-white font-semibold capitalize">{sensoryState.audio.environment.type}</div>
-                  <div className="text-gray-400 text-xs">{sensoryState.audio.environment.description}</div>
-                </div>
+            {/* === COLUMNA DERECHA: AUDIO Y VOZ === */}
+            <div className="space-y-3 rounded-xl border border-purple-800/40 bg-slate-900/70 p-3.5">
+              <div className="flex items-center justify-between gap-2">
+                <MetricDualLabel label="Micrófono (Audio y Voz)" technical="audio" accent="text-purple-200" />
+                <span className={`rounded px-2 py-0.5 text-[11px] font-medium ${sensoryState.audio.enabled ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-700/50' : 'bg-rose-950/80 text-rose-300 border border-rose-700/50'}`}>
+                  {sensoryState.audio.enabled ? 'Activa' : 'Inactiva'}
+                </span>
               </div>
-              <div className="mt-3 flex items-center gap-2">
-                <span className="text-xs text-gray-400">Volumen:</span>
-                <div className="flex-1 bg-gray-700 rounded-full h-2">
-                  <div
-                    className="bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 h-2 rounded-full transition-all"
-                    style={{ width: `${Math.min(sensoryState.audio.volume * 200, 100)}%` }}
-                  />
-                </div>
-                <span className="text-white text-xs">{(sensoryState.audio.volume * 100).toFixed(0)}%</span>
-              </div>
-            </div>
 
-            {/* Reconocimiento de Voz */}
-            <div className="bg-gradient-to-br from-purple-900/50 to-cyan-900/50 rounded-xl p-4 border border-purple-500/50">
-              <h4 className="text-sm font-semibold text-purple-300 mb-2 flex items-center gap-2">
-                • Reconocimiento de Voz
-                <span className={`w-2 h-2 rounded-full ${sensoryState.audio.speech.error ? 'bg-red-500' :
-                  sensoryState.audio.speech.isListening ? 'bg-green-400 animate-pulse' : 'bg-gray-500'
-                  }`}></span>
-                {sensoryState.audio.speech.error && (
-                  <span className="text-xs text-red-400">({sensoryState.audio.speech.error})</span>
+              <div className="flex h-28 items-end justify-around gap-1 rounded-lg border border-purple-500/40 bg-black p-3">
+                {Array.from({ length: 32 }).map((_, i) => {
+                  const spectrum = sensoryState.audio.spectrum?.raw || new Uint8Array(256);
+                  const value = spectrum[Math.floor(i * (spectrum.length / 32))] || 0;
+                  const height = Math.max(5, (value / 255) * 100);
+                  return (
+                    <div
+                      key={i}
+                      className="w-2 rounded-t transition-all duration-75"
+                      style={{ height: `${height}%`, background: 'linear-gradient(to top, #7c3aed, #06b6d4)' }}
+                    />
+                  );
+                })}
+              </div>
+
+              <div className="rounded-lg border border-purple-700/40 bg-slate-950/75 p-3">
+                <div className="mb-2 flex items-center justify-between gap-2 text-xs">
+                  <span className="flex items-center gap-2 font-semibold text-purple-200">
+                    Reconocimiento de Voz
+                    <span className={`h-2 w-2 rounded-full ${sensoryState.audio.speech.error ? 'bg-red-500' : sensoryState.audio.speech.isListening ? 'animate-pulse bg-emerald-400' : 'bg-slate-500'}`} />
+                  </span>
+                  {sensoryState.audio.speech.error && (
+                    <span className="text-[11px] text-rose-400">({sensoryState.audio.speech.error})</span>
+                  )}
+                </div>
+
+                {sensoryState.audio.speech.error === 'network' && (
+                  <div className="mb-2 rounded border border-red-500/40 bg-red-950/50 p-2 text-xs text-red-200">
+                    Error de red: el reconocimiento de voz requiere conexión a internet.
+                    <button onClick={() => sensoryEngine.current?.manualRetrySpeech()} className="ml-2 rounded bg-red-600 px-2 py-0.5 text-xs text-white hover:bg-red-700">
+                      Reintentar
+                    </button>
+                  </div>
                 )}
-              </h4>
+                {sensoryState.audio.speech.error === 'network-max-retries' && (
+                  <div className="mb-2 rounded border border-red-500/40 bg-red-950/50 p-2 text-xs text-red-200">
+                    Máximo de reintentos alcanzado. Verifica tu conexión a internet.
+                    <button onClick={() => sensoryEngine.current?.manualRetrySpeech()} className="ml-2 rounded bg-red-600 px-2 py-0.5 text-xs text-white hover:bg-red-700">
+                      Reintentar
+                    </button>
+                  </div>
+                )}
+                {sensoryState.audio.speech.error === 'offline' && (
+                  <div className="mb-2 rounded border border-amber-500/40 bg-amber-950/50 p-2 text-xs text-amber-200">
+                    Sin conexión a internet.
+                    <button onClick={() => sensoryEngine.current?.manualRetrySpeech()} className="ml-2 rounded bg-amber-600 px-2 py-0.5 text-xs text-white hover:bg-amber-700">
+                      Reintentar
+                    </button>
+                    <button onClick={() => sensoryEngine.current?.switchToVoskFallback()} className="ml-2 rounded bg-purple-600 px-2 py-0.5 text-xs text-white hover:bg-purple-700">
+                      Modo Offline
+                    </button>
+                  </div>
+                )}
+                {sensoryState.audio.speech.error === 'loading-vosk' && (
+                  <div className="mb-2 rounded border border-purple-500/40 bg-purple-950/50 p-2 text-xs text-purple-200">
+                    Descargando modelo offline (~40MB)... Por favor espera.
+                  </div>
+                )}
+                {sensoryState.audio.speech.error === 'network-switching-offline' && (
+                  <div className="mb-2 rounded border border-purple-500/40 bg-purple-950/50 p-2 text-xs text-purple-200">
+                    Cambiando a modo offline local (Vosk)...
+                  </div>
+                )}
+                {sensoryState.audio.speech.error === 'vosk-load-failed' && (
+                  <div className="mb-2 rounded border border-red-500/40 bg-red-950/50 p-2 text-xs text-red-200">
+                    No se pudo cargar el modelo offline. Verifica tu conexión para la descarga inicial.
+                  </div>
+                )}
+                {sensoryState.audio.speech.error === 'not-allowed' && (
+                  <div className="mb-2 rounded border border-red-500/40 bg-red-950/50 p-2 text-xs text-red-200">
+                    Permiso denegado: habilita el micrófono en la configuración del navegador.
+                  </div>
+                )}
+                {sensoryEngine.current?.usingVoskFallback && !sensoryState.audio.speech.error && (
+                  <div className="mb-2 rounded border border-emerald-500/40 bg-emerald-950/50 p-2 text-xs text-emerald-200">
+                    Modo offline activo (Vosk) — reconocimiento local sin internet.
+                  </div>
+                )}
 
-              {/* Error Message */}
-              {sensoryState.audio.speech.error === 'network' && (
-                <div className="bg-red-900/50 border border-red-500/50 rounded-lg p-2 mb-2 text-xs text-red-300">
-                  Error de red: el reconocimiento de voz requiere conexion a internet (servidores de Google).
-                  <button
-                    onClick={() => sensoryEngine.current?.manualRetrySpeech()}
-                    className="ml-2 bg-red-600 hover:bg-red-700 text-white px-2 py-0.5 rounded text-xs"
-                  >
-                    x Reintentar
-                  </button>
+                <div className="min-h-[52px] rounded-md bg-black/50 p-2.5 text-sm">
+                  {sensoryState.audio.speech.interimTranscript ? (
+                    <p className="italic text-cyan-300 opacity-80">"{sensoryState.audio.speech.interimTranscript}"</p>
+                  ) : sensoryState.audio.speech.transcript ? (
+                    <p className="italic text-white">"{sensoryState.audio.speech.transcript}"</p>
+                  ) : sensoryState.audio.speech.error ? (
+                    <p className="italic text-rose-400">Reconocimiento no disponible</p>
+                  ) : (
+                    <p className="italic text-slate-500">Esperando voz...</p>
+                  )}
                 </div>
-              )}
-              {sensoryState.audio.speech.error === 'network-max-retries' && (
-                <div className="bg-red-900/50 border border-red-500/50 rounded-lg p-2 mb-2 text-xs text-red-300">
-                  R Máximo de reintentos alcanzado. Verifica tu conexión a internet.
-                  <button
-                    onClick={() => sensoryEngine.current?.manualRetrySpeech()}
-                    className="ml-2 bg-red-600 hover:bg-red-700 text-white px-2 py-0.5 rounded text-xs"
-                  >
-                    x Reintentar
-                  </button>
-                </div>
-              )}
-              {sensoryState.audio.speech.error === 'offline' && (
-                <div className="bg-yellow-900/50 border border-yellow-500/50 rounded-lg p-2 mb-2 text-xs text-yellow-300">
-                  x Sin conexión a internet. Conéctate y reintenta.
-                  <button
-                    onClick={() => sensoryEngine.current?.manualRetrySpeech()}
-                    className="ml-2 bg-yellow-600 hover:bg-yellow-700 text-white px-2 py-0.5 rounded text-xs"
-                  >
-                    x Reintentar
-                  </button>
-                  <button
-                    onClick={() => sensoryEngine.current?.switchToVoskFallback()}
-                    className="ml-2 bg-purple-600 hover:bg-purple-700 text-white px-2 py-0.5 rounded text-xs"
-                  >
-                    x Modo Offline
-                  </button>
-                </div>
-              )}
-              {sensoryState.audio.speech.error === 'loading-vosk' && (
-                <div className="bg-purple-900/50 border border-purple-500/50 rounded-lg p-2 mb-2 text-xs text-purple-300">
-                  ⏳ Descargando modelo offline (~40MB)... Por favor espera.
-                </div>
-              )}
-              {sensoryState.audio.speech.error === 'network-switching-offline' && (
-                <div className="bg-purple-900/50 border border-purple-500/50 rounded-lg p-2 mb-2 text-xs text-purple-300">
-                  x Cambiando a modo OFFLINE (Vosk)...
-                </div>
-              )}
-              {sensoryState.audio.speech.error === 'vosk-load-failed' && (
-                <div className="bg-red-900/50 border border-red-500/50 rounded-lg p-2 mb-2 text-xs text-red-300">
-                  R No se pudo cargar el modelo offline. Verifica tu conexión para la descarga inicial.
-                </div>
-              )}
-              {sensoryState.audio.speech.error === 'not-allowed' && (
-                <div className="bg-red-900/50 border border-red-500/50 rounded-lg p-2 mb-2 text-xs text-red-300">
-                  R Permiso denegado: Habilita el micrófono en la configuración del navegador.
-                </div>
-              )}
-              {/* Offline Mode Active Badge */}
-              {sensoryEngine.current?.usingVoskFallback && !sensoryState.audio.speech.error && (
-                <div className="bg-green-900/50 border border-green-500/50 rounded-lg p-2 mb-2 text-xs text-green-300">
-                  xx Modo OFFLINE activo (Vosk) - Reconocimiento local sin internet
-                </div>
-              )}
-
-              <div className="bg-black/50 rounded-lg p-3 min-h-[60px] text-sm">
-                {sensoryState.audio.speech.interimTranscript ? (
-                  <p className="text-cyan-300 italic opacity-70">"{sensoryState.audio.speech.interimTranscript}"</p>
-                ) : sensoryState.audio.speech.transcript ? (
-                  <p className="text-white italic">"{sensoryState.audio.speech.transcript}"</p>
-                ) : sensoryState.audio.speech.error ? (
-                  <p className="text-red-400 italic">Reconocimiento no disponible</p>
-                ) : (
-                  <p className="text-gray-500 italic">Esperando voz...</p>
+                {sensoryState.audio.speech.history?.length > 0 && (
+                  <div className="mt-1.5 text-[11px] text-slate-400">
+                    Historial: {sensoryState.audio.speech.history.length} transcripciones
+                  </div>
                 )}
               </div>
-              {sensoryState.audio.speech.history?.length > 0 && (
-                <div className="mt-2 text-xs text-gray-400">
-                  Historial: {sensoryState.audio.speech.history.length} transcripciones
+
+              <CollapsibleSection
+                sectionId="sensory-audio-details"
+                title="Bandas de frecuencia y ambiente"
+                subtitle="Graves, medios, agudos, volumen y clasificación ambiental."
+                badge={sensoryState.audio.environment.type}
+                defaultOpen={false}
+                className="border-purple-800/40 bg-slate-950/70"
+              >
+                <div className="space-y-3 text-xs">
+                  <div className="space-y-2">
+                    <div>
+                      <div className="mb-1 flex justify-between"><span className="text-slate-400">Graves (Bass)</span><span className="font-mono text-white">{(sensoryState.audio.spectrum.bass * 100).toFixed(0)}%</span></div>
+                      <div className="h-2 w-full rounded-full bg-slate-700"><div className="h-2 rounded-full bg-gradient-to-r from-red-600 to-red-400" style={{ width: `${sensoryState.audio.spectrum.bass * 100}%` }} /></div>
+                    </div>
+                    <div>
+                      <div className="mb-1 flex justify-between"><span className="text-slate-400">Medios (Mid)</span><span className="font-mono text-white">{(sensoryState.audio.spectrum.mid * 100).toFixed(0)}%</span></div>
+                      <div className="h-2 w-full rounded-full bg-slate-700"><div className="h-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400" style={{ width: `${sensoryState.audio.spectrum.mid * 100}%` }} /></div>
+                    </div>
+                    <div>
+                      <div className="mb-1 flex justify-between"><span className="text-slate-400">Agudos (High)</span><span className="font-mono text-white">{(sensoryState.audio.spectrum.high * 100).toFixed(0)}%</span></div>
+                      <div className="h-2 w-full rounded-full bg-slate-700"><div className="h-2 rounded-full bg-gradient-to-r from-blue-600 to-cyan-400" style={{ width: `${sensoryState.audio.spectrum.high * 100}%` }} /></div>
+                    </div>
+                  </div>
+                  <div className="border-t border-slate-800 pt-2">
+                    <div className="font-semibold capitalize text-white">{sensoryState.audio.environment.type}</div>
+                    <div className="text-[11px] text-slate-400">{sensoryState.audio.environment.description}</div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-slate-400">Volumen:</span>
+                      <div className="h-2 flex-1 rounded-full bg-slate-700">
+                        <div className="h-2 rounded-full bg-gradient-to-r from-emerald-500 via-yellow-500 to-red-500" style={{ width: `${Math.min(sensoryState.audio.volume * 200, 100)}%` }} />
+                      </div>
+                      <span className="font-mono text-white">{(sensoryState.audio.volume * 100).toFixed(0)}%</span>
+                    </div>
+                  </div>
                 </div>
-              )}
+              </CollapsibleSection>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Descripción General */}
-      {sensoryState && (
-        <div className="mt-6 bg-gradient-to-r from-cyan-900/30 to-purple-900/30 rounded-xl p-4 border border-cyan-500/30">
-          <h4 className="text-sm font-semibold text-cyan-300 mb-2">x Síntesis Perceptiva</h4>
-          <p className="text-white text-lg italic">
-            {sensoryState.summary || 'Procesando percepción...'}
-          </p>
         </div>
       )}
     </div>
@@ -8733,6 +8664,13 @@ const renderCurrentTab = () => {
     case 'memory':
       return (
         <div className="space-y-4">
+          <TabPlainHeader
+            tabId="memory"
+            accent="cyan"
+            icon={<Database className="h-5 w-5" />}
+            title="Memoria y Registro de Sesiones"
+            technicalTag="SHA-256 · HolographicMemoryNexus"
+          />
           {renderOperationalRecord()}
           {renderHolographicMemory()}
         </div>

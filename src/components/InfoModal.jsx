@@ -32,25 +32,25 @@ export const InfoModal = ({
       </button>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-3 sm:p-4 backdrop-blur-[2px]"
           onClick={closeModal}
         >
           <div
-            className="bg-gray-900 border border-blue-500 rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            className="bg-gray-900 border border-blue-500 rounded-xl p-4 sm:p-6 max-w-2xl w-full max-h-[85dvh] overflow-y-auto shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-blue-400">{title}</h3>
+            <div className="flex justify-between items-start gap-3 mb-3 sm:mb-4">
+              <h3 className="text-base sm:text-xl font-bold text-blue-400 break-words">{title}</h3>
               <button
                 type="button"
                 onClick={closeModal}
-                className="text-gray-400 hover:text-white text-xl font-bold px-2"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-700 bg-slate-800/80 text-gray-300 hover:text-white text-sm font-bold"
                 aria-label="Cerrar información"
               >
-                x
+                ✕
               </button>
             </div>
-            <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
+            <div className="text-gray-300 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap break-words">
               {content}
             </div>
           </div>
@@ -64,25 +64,25 @@ export const PersistentInfoModal = ({ modal, onClose }) => {
   if (!modal?.open) return null;
   return (
     <div
-      className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-3 sm:p-4 backdrop-blur-[2px]"
       onClick={onClose}
     >
       <div
-        className="bg-gray-900 border border-cyan-500 rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+        className="bg-gray-900 border border-cyan-500 rounded-xl p-4 sm:p-6 max-w-2xl w-full max-h-[85dvh] overflow-y-auto shadow-2xl"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold text-cyan-300">{modal.title || 'Información'}</h3>
+        <div className="flex justify-between items-start gap-3 mb-3 sm:mb-4">
+          <h3 className="text-base sm:text-xl font-bold text-cyan-300 break-words">{modal.title || 'Información'}</h3>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-white text-xl font-bold px-2"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-700 bg-slate-800/80 text-gray-300 hover:text-white text-sm font-bold"
             aria-label="Cerrar información"
           >
-            x
+            ✕
           </button>
         </div>
-        <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
+        <div className="text-gray-300 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap break-words">
           {modal.content || 'Sin contenido.'}
         </div>
       </div>

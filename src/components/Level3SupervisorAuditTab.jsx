@@ -350,7 +350,7 @@ export function Level3SupervisorAuditTab({
   return (
     <section
       aria-label="Supervisor Autónomo — Auto-análisis y Pruebas Seguras"
-      className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/90 p-4 text-xs text-slate-100 shadow-xl"
+      className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/90 p-3 sm:p-4 text-xs text-slate-100 shadow-xl"
     >
       {/* 1. Cabecera Minimalista con "¿Cómo funciona? ▾" */}
       <TabPlainHeader
@@ -694,26 +694,26 @@ export function Level3SupervisorAuditTab({
         >
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-3">
-              <label className="flex items-center gap-1.5 text-[11px] text-slate-300">
-                <span>Reflexionar cada:</span>
+              <label className="flex w-full sm:w-auto flex-wrap sm:flex-nowrap items-center gap-1.5 text-[11px] text-slate-300">
+                <span className="shrink-0">Reflexionar cada:</span>
                 <select
                   aria-label="Intervalo de exploración programada Nivel 3"
                   value={exploreEveryTicks}
                   onChange={(e) => onChangeExploreEveryTicks(Number(e.target.value))}
-                  className="rounded border border-slate-600 bg-slate-950 px-2 py-1 text-slate-100"
+                  className="min-w-0 max-w-full flex-1 sm:flex-none rounded border border-slate-600 bg-slate-950 px-2 py-1 text-slate-100"
                 >
                   <option value={25}>25 pasos</option>
                   <option value={50}>50 pasos (por defecto)</option>
                   <option value={100}>100 pasos</option>
                 </select>
               </label>
-              <label className="flex items-center gap-1.5 text-[11px] text-slate-300">
-                <span>Motor de razonamiento:</span>
+              <label className="flex w-full sm:w-auto flex-wrap sm:flex-nowrap items-center gap-1.5 text-[11px] text-slate-300">
+                <span className="shrink-0">Motor de razonamiento:</span>
                 <select
                   aria-label="Modo de razonador Nivel 3"
                   value={reasonerMode}
                   onChange={(e) => onChangeReasonerMode(e.target.value)}
-                  className="rounded border border-slate-600 bg-slate-950 px-2 py-1 text-slate-100"
+                  className="min-w-0 max-w-full flex-1 sm:flex-none rounded border border-slate-600 bg-slate-950 px-2 py-1 text-slate-100"
                 >
                   <option value="gemini_with_fallback">Gemini 1.ª Persona (C2 + respaldo local)</option>
                   <option value="deterministic_local">Deliberador Local Determinista (0 cuota LLM)</option>
@@ -757,8 +757,8 @@ export function Level3SupervisorAuditTab({
               El cinto de conocimiento está vacío en esta sesión.
             </div>
           ) : (
-            <div className="max-h-56 overflow-y-auto">
-              <table className="w-full border-collapse text-left font-mono text-[11px]">
+            <div className="max-h-56 overflow-x-auto overflow-y-auto">
+              <table className="w-full min-w-[540px] border-collapse text-left font-mono text-[11px]">
                 <thead>
                   <tr className="border-b border-slate-700 text-slate-400">
                     <th className="py-1 pr-2"># / Tick</th>

@@ -77,24 +77,24 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between gap-2 px-4 py-3 cursor-pointer select-none font-semibold text-sm ${styles.text} ${styles.header} transition-colors`}
+        className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 cursor-pointer select-none font-semibold text-xs sm:text-sm ${styles.text} ${styles.header} transition-colors`}
         aria-expanded={isOpen}
       >
-        <span className="min-w-0 text-left">
-          <span className="block">{title}</span>
+        <span className="min-w-0 flex-1 text-left">
+          <span className="block break-words">{title}</span>
           {subtitle && (
             <span className="mt-0.5 block text-[11px] font-normal text-slate-400">{subtitle}</span>
           )}
         </span>
-        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+        <div className="flex max-w-[44%] sm:max-w-none items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-1 sm:ml-2">
           {badge != null && (
-            <span className="text-[11px] font-mono opacity-70 font-normal">{badge}</span>
+            <span className="truncate text-[10px] sm:text-[11px] font-mono opacity-75 font-normal">{badge}</span>
           )}
-          <span className={`text-[11px] opacity-60 transition-transform duration-200 inline-block ${isOpen ? 'rotate-180' : 'rotate-0'}`}>▾</span>
+          <span className={`shrink-0 text-[11px] opacity-60 transition-transform duration-200 inline-block ${isOpen ? 'rotate-180' : 'rotate-0'}`}>▾</span>
         </div>
       </button>
       {isOpen && (
-        <div className="px-4 pb-4 pt-2 border-t border-white/5">
+        <div className="px-3 pb-3 pt-2 sm:px-4 sm:pb-4 border-t border-white/5 overflow-x-clip">
           {children}
         </div>
       )}

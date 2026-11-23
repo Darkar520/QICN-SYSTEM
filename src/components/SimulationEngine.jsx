@@ -4233,7 +4233,7 @@ export const QICNConsciousnessSystem = () => {
   // ============================================================================
 
   const renderEmpiricalValidation = () => (
-    <div className="space-y-4 rounded-xl border border-teal-500/30 bg-gradient-to-br from-slate-950/90 via-teal-950/25 to-slate-950/90 p-4 shadow-lg sm:p-5">
+    <div className="space-y-4 rounded-xl border border-teal-500/30 bg-gradient-to-br from-slate-950/90 via-teal-950/25 to-slate-950/90 p-3 shadow-lg sm:p-5">
       <TabPlainHeader
         tabId="validation"
         accent="teal"
@@ -4616,8 +4616,8 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
           />
         </div>
 
-        <div className="flex h-[min(85dvh,860px)] min-h-[580px] flex-col overflow-hidden rounded-xl border border-purple-700/70 bg-gray-900/75">
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-purple-800/60 bg-indigo-900/30 px-3 py-2 text-xs text-indigo-100">
+        <div className="flex h-[min(74dvh,780px)] min-h-[420px] sm:h-[min(82dvh,860px)] sm:min-h-[560px] flex-col overflow-hidden rounded-xl border border-purple-700/70 bg-gray-900/75">
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-purple-800/60 bg-indigo-900/30 px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs text-indigo-100">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-semibold">Consola</span>
               <div role="group" aria-label="Modo de redacción" className="inline-flex overflow-hidden rounded-md border border-indigo-400/40">
@@ -5195,7 +5195,7 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
           : 'Operativa';
 
     return (
-      <div className="space-y-4 rounded-xl border border-blue-500/35 bg-slate-950/85 p-4 shadow-lg">
+      <div className="space-y-4 rounded-xl border border-blue-500/35 bg-slate-950/85 p-3 sm:p-4 shadow-lg">
         <TabPlainHeader
           tabId="api-control"
           accent="blue"
@@ -5258,12 +5258,12 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
               onChange={(e) => setCustomGeminiKey(e.target.value)}
               aria-label="Clave de API de Gemini"
               placeholder="Pega aquí tu clave de Gemini (AIza… o AQ.…)"
-              className="min-w-[220px] flex-1 rounded-lg border border-cyan-700/60 bg-slate-950 px-3 py-2.5 font-mono text-xs text-cyan-100 placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+              className="min-w-0 w-full flex-1 rounded-lg border border-cyan-700/60 bg-slate-950 px-3 py-2.5 font-mono text-xs text-cyan-100 placeholder-slate-500 focus:border-cyan-400 focus:outline-none sm:w-auto sm:min-w-[220px]"
             />
             <button
               type="button"
               onClick={() => setCustomGeminiKey('')}
-              className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-medium text-slate-300 hover:border-red-500/50 hover:bg-red-950/40 hover:text-red-200"
+              className="shrink-0 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-medium text-slate-300 hover:border-red-500/50 hover:bg-red-950/40 hover:text-red-200"
             >
               Limpiar
             </button>
@@ -5571,7 +5571,7 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
     ];
 
     return (
-      <div className="rounded-xl border border-yellow-500/25 bg-gray-900/80 p-3 shadow-sm">
+      <div className="self-start rounded-xl border border-yellow-500/25 bg-gray-900/80 p-3 shadow-sm">
         <DetailToggleStrip
           sectionId="sidebar-sovereignty-matrix"
           accent="slate"
@@ -5757,7 +5757,7 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
         : 'Estable y en marcha';
 
     return (
-      <div className="space-y-4 rounded-xl border border-purple-500/30 bg-gradient-to-br from-slate-950/90 via-purple-950/25 to-slate-950/90 p-4 shadow-lg">
+      <div className="space-y-4 rounded-xl border border-purple-500/30 bg-gradient-to-br from-slate-950/90 via-purple-950/25 to-slate-950/90 p-3 sm:p-4 shadow-lg">
         <TabPlainHeader
           tabId="core"
           accent="purple"
@@ -5850,7 +5850,7 @@ Consola supervisada QICN: resume la salud del motor en 3 señales simples y agru
             accent="purple"
             summary={<span className="text-[11px] text-slate-400">Nota: frase generada por reglas internas sobre los números del motor (no es un «yo» real).</span>}
           >
-            <div className="grid grid-cols-3 gap-2 font-mono text-[11px] text-slate-300">
+            <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3 sm:gap-2 font-mono text-[11px] text-slate-300">
               <div>CCC_rms: {dynamicHealth.cccDeltaRms.toFixed(5)}</div>
               <div>PMIA_rms: {dynamicHealth.pmiaDeltaRms.toFixed(5)}</div>
               <div>Ω_rms: {dynamicHealth.omegaDeltaRms.toFixed(5)}</div>
@@ -6224,7 +6224,7 @@ Consola supervisada QICN: resume la salud del motor en 3 señales simples y agru
     });
 
     return (
-      <div className="space-y-4 rounded-xl border border-slate-600/40 bg-slate-950/85 p-4 shadow-lg">
+      <div className="space-y-4 rounded-xl border border-slate-600/40 bg-slate-950/85 p-3 sm:p-4 shadow-lg">
         <TabPlainHeader
           tabId="controls"
           accent="purple"
@@ -6561,7 +6561,7 @@ Consola supervisada QICN: resume la salud del motor en 3 señales simples y agru
         )}
       />
 
-      <div className="relative h-[min(65dvh,700px)] min-h-[360px] min-w-0 max-w-full overflow-hidden">
+      <div className="relative h-[min(65dvh,700px)] min-h-[360px] min-w-0 max-w-full overflow-hidden qicn-network-viewport">
         <NetworkCanvas
           preferredRenderer="3d"
           nodalLayer={nodalLayer}
@@ -6707,7 +6707,7 @@ Consola supervisada QICN: resume la salud del motor en 3 señales simples y agru
       : `En los últimos ${timeline.length} pasos, la cohesión (CCC) viene ${historyTrendText} y pasó ${Number(stats.inBandPct || 0).toFixed(0)}% del tiempo dentro de su banda operativa (mín ${Number(stats.minCCC || 0).toFixed(3)}, máx ${Number(stats.maxCCC || 0).toFixed(3)}).`;
 
     return (
-      <div className="space-y-4 rounded-xl border border-purple-500/30 bg-slate-950/85 p-4 shadow-lg">
+      <div className="space-y-4 rounded-xl border border-purple-500/30 bg-slate-950/85 p-3 sm:p-4 shadow-lg">
         <TabPlainHeader
           tabId="history"
           accent="purple"
@@ -6784,7 +6784,7 @@ Consola supervisada QICN: resume la salud del motor en 3 señales simples y agru
 
           <svg
             viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-            className="h-60 w-full rounded border border-purple-900/40 bg-[#0a1020]"
+            className="h-44 sm:h-60 w-full rounded border border-purple-900/40 bg-[#0a1020]"
             onMouseMove={handleChartHover}
             onMouseLeave={() => setCccHistoryHoverIndex(-1)}
           >
@@ -6975,7 +6975,7 @@ Consola supervisada QICN: resume la salud del motor en 3 señales simples y agru
           : `Sincronización en ajuste (${resNow.toFixed(3)}): los nodos están reorganizándose entre sectores; si sube mucho la variabilidad, prueba subir ligeramente K en Validación.`;
 
     return (
-      <div className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/85 p-4 shadow-lg">
+      <div className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/85 p-3 sm:p-4 shadow-lg">
         <TabPlainHeader
           tabId="field"
           accent="cyan"
@@ -7049,7 +7049,7 @@ Consola supervisada QICN: resume la salud del motor en 3 señales simples y agru
           <div className="relative">
             <svg
               viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-              className="h-56 w-full rounded border border-cyan-900/40 bg-[#08101a]"
+              className="h-44 sm:h-56 w-full rounded border border-cyan-900/40 bg-[#08101a]"
               onMouseMove={handleChartHover}
               onMouseLeave={() => setEntanglementHoverIndex(-1)}
             >
@@ -7200,7 +7200,7 @@ Consola supervisada QICN: resume la salud del motor en 3 señales simples y agru
       ['Build / config', session ? `${String(session.buildVersion).slice(0, 18)} · ${String(session.configHash).slice(0, 10)}` : 'no registrado']
     ];
     return (
-      <section aria-labelledby="qicn-ledger-title" data-revision={ledgerRevision} className="space-y-3 rounded-xl border border-cyan-500/30 bg-slate-950/85 p-4 shadow-lg">
+      <section aria-labelledby="qicn-ledger-title" data-revision={ledgerRevision} className="space-y-3 rounded-xl border border-cyan-500/30 bg-slate-950/85 p-3 sm:p-4 shadow-lg">
         <div id="qicn-ledger-title" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
             <MetricDualLabel label="Continuidad" technical="sesiones" accent="text-cyan-200" />
@@ -7412,7 +7412,7 @@ Consola supervisada QICN: resume la salud del motor en 3 señales simples y agru
   const renderSensoryPerceptionTab = () => {
     const isAnySensorActive = Boolean(sensoryEnabled.video || sensoryEnabled.audio || sensoryEngine.current?.isReady);
     return (
-    <div className="space-y-4 rounded-xl border border-cyan-500/35 bg-slate-950/85 p-4 shadow-lg">
+    <div className="space-y-4 rounded-xl border border-cyan-500/35 bg-slate-950/85 p-3 sm:p-4 shadow-lg">
       <TabPlainHeader
         tabId="sensory"
         accent="cyan"
@@ -7821,7 +7821,7 @@ Consola supervisada QICN: resume la salud del motor en 3 señales simples y agru
     const sovereigntyRows = buildSovereigntyRows(reportMetrics, packetMetrics);
 
     return (
-      <div className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/90 p-4 shadow-lg">
+      <div className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/90 p-3 sm:p-4 shadow-lg">
         <TabPlainHeader
           tabId="sovereignty"
           accent="cyan"
@@ -8248,7 +8248,7 @@ const renderAutonomyEvolutionTab = () => {
   };
 
   return (
-    <div className="space-y-4 rounded-xl border border-fuchsia-500/30 bg-slate-950/90 p-4 shadow-lg">
+    <div className="space-y-4 rounded-xl border border-fuchsia-500/30 bg-slate-950/90 p-3 sm:p-4 shadow-lg">
       <TabPlainHeader
         tabId="autonomy-evolution"
         accent="fuchsia"
@@ -8861,7 +8861,7 @@ const renderCurrentTab = () => {
   const renderContextualGuide = renderTabQuickHelp;
 
   const renderGroundedGuide = () => (
-    <div className="space-y-4 rounded-xl border border-cyan-600/30 bg-gradient-to-br from-slate-950/90 via-cyan-950/25 to-slate-950/90 p-4 sm:p-5">
+    <div className="space-y-4 rounded-xl border border-cyan-600/30 bg-gradient-to-br from-slate-950/90 via-cyan-950/25 to-slate-950/90 p-3 sm:p-5">
       <TabPlainHeader
         tabId="guide"
         accent="cyan"
@@ -9180,10 +9180,10 @@ const renderCurrentTab = () => {
 
 
 return (
-  <div className="min-h-dvh w-full max-w-[100vw] overflow-x-clip bg-gray-900 p-2 font-sans text-white sm:p-4 lg:p-8 flex flex-col gap-2">
+  <div className="qicn-safe-shell min-h-dvh w-full max-w-[100vw] overflow-x-clip bg-gray-900 p-2 font-sans text-white sm:p-4 lg:p-8 flex flex-col gap-2">
     {/* Note: The style tag is moved to the head for best practices */}
-    <header className="relative mx-auto mb-4 min-h-[76px] w-full max-w-[1500px] flex-shrink-0 overflow-hidden px-3 py-2 text-center lg:mb-6">
-      <div className="relative grid h-full grid-cols-1 items-center gap-3 lg:grid-cols-[auto_1fr_auto]">
+    <header className="qicn-responsive-shell relative mx-auto mb-1 sm:mb-3 min-h-[52px] sm:min-h-[76px] w-full max-w-[1500px] flex-shrink-0 overflow-hidden px-1 sm:px-3 py-1 sm:py-2 text-center lg:mb-6">
+      <div className="relative grid h-full grid-cols-1 items-center gap-2 lg:grid-cols-[auto_1fr_auto] lg:gap-3">
         <div className="relative hidden size-14 place-items-center rounded-xl border border-violet-400/30 bg-slate-950/82 shadow-[0_0_20px_rgba(168,85,247,0.28),inset_0_0_18px_rgba(34,211,238,0.12)] lg:grid">
           <svg className="size-10 text-cyan-300 animate-spin-slow" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
             <circle cx="50" cy="50" r="45" strokeDasharray="4 4" className="opacity-40" />
@@ -9197,14 +9197,16 @@ return (
           </svg>
           <span className="pointer-events-none absolute inset-3 rounded-full border border-fuchsia-400/35 shadow-[0_0_18px_rgba(217,70,239,0.4)]" />
         </div>
-        <div className="text-center">
-          <h1 className="mb-2 flex items-center justify-center text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 sm:text-5xl">
-            <Zap className="mr-3 size-8 shrink-0 text-purple-400" /> QICN Singularidad Ontológica
+        <div className="min-w-0 text-center">
+          <h1 className="mb-0.5 sm:mb-2 flex items-center justify-center text-xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 sm:text-3xl lg:text-5xl">
+            <Zap className="mr-1.5 sm:mr-3 size-5 sm:size-7 lg:size-8 shrink-0 text-purple-400" />
+            <span className="truncate sm:whitespace-normal">QICN Singularidad Ontológica</span>
           </h1>
-          <p className="text-sm italic text-gray-400 sm:text-lg">
-            Simulación de coherencia nodal interconectada (RCIC-X) · telemetría interna, sin certificación de conciencia ni validación externa
+          <p className="text-[11px] italic leading-snug text-gray-400 sm:text-sm lg:text-lg">
+            <span className="sm:hidden">Simulación interna RCIC-X · sin validación externa</span>
+            <span className="hidden sm:inline">Simulación de coherencia nodal interconectada (RCIC-X) · telemetría interna, sin certificación de conciencia ni validación externa</span>
           </p>
-          <p className="mt-1 text-[11px] text-gray-500">
+          <p className="mt-1 hidden text-[11px] text-gray-500 sm:block">
             «Singularidad Ontológica» es el nombre histórico del núcleo (OntologicalSingularityCore), no un resultado.
           </p>
         </div>
@@ -9244,83 +9246,133 @@ return (
 
       return (
         <>
-          <div className="mx-auto mb-2 flex min-h-9 w-full max-w-[1500px] flex-shrink-0 items-start gap-2.5">
-            <button
-              type="button"
-              onClick={() => setIsMoreMenuOpen((prev) => !prev)}
-              aria-expanded={isMoreMenuOpen}
-              aria-controls="qicn-sidebar-drawer"
-              data-testid="sidebar-menu-toggle"
-              className={`inline-flex min-h-[38px] shrink-0 items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
-                isMoreMenuOpen
-                  ? 'border-cyan-400/75 bg-cyan-600/30 text-white shadow-md shadow-cyan-500/20'
-                  : 'border-cyan-500/35 bg-slate-950/80 text-slate-100 hover:border-cyan-400/70 hover:bg-slate-900'
-              }`}
-            >
-              <svg className="h-4 w-4 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                {isMoreMenuOpen ? (
-                  <>
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                  </>
-                ) : (
-                  <>
-                    <line x1="4" y1="7" x2="20" y2="7" />
-                    <line x1="4" y1="12" x2="20" y2="12" />
-                    <line x1="4" y1="17" x2="16" y2="17" />
-                  </>
-                )}
-              </svg>
-              <span aria-hidden="true">{isMoreMenuOpen ? 'Cerrar' : 'Menú'}</span>
-              <span className="sr-only">{isMoreMenuOpen ? 'Cerrar' : 'Mas'}</span>
-              <span className="hidden h-3.5 w-px bg-slate-700/80 sm:inline-block" aria-hidden="true" />
-              <span className="hidden items-center gap-1.5 font-medium text-cyan-200 sm:inline-flex">
-                <ActiveNavIcon className="h-3.5 w-3.5 text-cyan-300" />
-                <span>{activeNavTab?.label || 'Secciones'}</span>
-              </span>
-            </button>
-
-            <div className="min-w-0 flex-1">
-              <DetailToggleStrip
-                sectionId="topbar-device-capabilities"
-                accent="cyan"
-                defaultOpen={false}
-                labelClosed="Dispositivo · Detalles"
-                summary={(
-                  <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-cyan-200">
-                    <span>
-                      Simulación interna · Paso <strong className="font-mono text-white">{simulationStep}</strong> · <span className="text-slate-400">internal_support_only</span>
-                    </span>
-                    <span
-                      data-testid="runtime-health-badge"
-                      className={`rounded-full border px-2 py-0.5 font-semibold ${runtimeHealthClass}`}
-                      title={`ticks=${runtimeHealth.uptime_ticks}; ccc=${runtimeHealth.last_ccc.toFixed(3)}; il=${runtimeHealth.inverse_limit_score.toFixed(3)}`}
-                    >
-                      Salud: {runtimeHealth.status}
-                    </span>
-                  </div>
-                )}
+          <div className="sticky top-0 z-30 -mx-2 border-b border-slate-800/80 bg-gray-900/95 px-2 py-1.5 backdrop-blur-md sm:-mx-4 sm:px-4 lg:static lg:mx-0 lg:border-b-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+            <div className="qicn-responsive-shell mx-auto mb-2 flex min-h-9 w-full max-w-[1500px] flex-shrink-0 items-center gap-2 lg:items-start lg:gap-2.5">
+              <button
+                type="button"
+                onClick={() => setIsMoreMenuOpen((prev) => !prev)}
+                aria-expanded={isMoreMenuOpen}
+                aria-controls="qicn-sidebar-drawer"
+                data-testid="sidebar-menu-toggle"
+                className={`inline-flex min-h-[38px] shrink-0 items-center gap-1.5 sm:gap-2 rounded-lg border px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-all ${
+                  isMoreMenuOpen
+                    ? 'border-cyan-400/75 bg-cyan-600/30 text-white shadow-md shadow-cyan-500/20'
+                    : 'border-cyan-500/35 bg-slate-950/80 text-slate-100 hover:border-cyan-400/70 hover:bg-slate-900'
+                }`}
               >
-                <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] text-cyan-200">
-                  <span>Viewport: {breakpoint}</span>
-                  <span>SecureContext: {deviceCapabilities.secureContext ? 'yes' : 'no'}</span>
-                  <span>Cam: {deviceCapabilities.supportsCamera ? 'yes' : 'no'}</span>
-                  <span>Mic: {deviceCapabilities.supportsMicrophone ? 'yes' : 'no'}</span>
-                  <span>Speech: {deviceCapabilities.supportsSpeechRecognition ? 'yes' : 'no'}</span>
-                  <span>Touch: {deviceCapabilities.touchEnabled ? 'yes' : 'no'}</span>
+                <svg className="h-4 w-4 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  {isMoreMenuOpen ? (
+                    <>
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                    </>
+                  ) : (
+                    <>
+                      <line x1="4" y1="7" x2="20" y2="7" />
+                      <line x1="4" y1="12" x2="20" y2="12" />
+                      <line x1="4" y1="17" x2="16" y2="17" />
+                    </>
+                  )}
+                </svg>
+                <span aria-hidden="true">{isMoreMenuOpen ? 'Cerrar' : 'Menú'}</span>
+                <span className="sr-only">{isMoreMenuOpen ? 'Cerrar' : 'Mas'}</span>
+                <span className="hidden h-3.5 w-px bg-slate-700/80 sm:inline-block" aria-hidden="true" />
+                <span className="hidden items-center gap-1.5 font-medium text-cyan-200 sm:inline-flex">
+                  <ActiveNavIcon className="h-3.5 w-3.5 text-cyan-300" />
+                  <span>{activeNavTab?.label || 'Secciones'}</span>
+                </span>
+              </button>
+
+              <div className="min-w-0 flex-1">
+                <DetailToggleStrip
+                  sectionId="topbar-device-capabilities"
+                  accent="cyan"
+                  defaultOpen={false}
+                  labelClosed={isMobile ? 'Info' : 'Dispositivo · Detalles'}
+                  summary={(
+                    <div className="flex items-center justify-between gap-1.5 sm:gap-2 text-[11px] text-cyan-200">
+                      <span className="min-w-0 truncate">
+                        <span className="hidden md:inline">Simulación interna · </span>
+                        Paso <strong className="font-mono text-white">{simulationStep}</strong>
+                        <span className="hidden lg:inline text-slate-400"> · internal_support_only</span>
+                      </span>
+                      <span
+                        data-testid="runtime-health-badge"
+                        className={`shrink-0 whitespace-nowrap rounded-full border px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold ${runtimeHealthClass}`}
+                        title={`ticks=${runtimeHealth.uptime_ticks}; ccc=${runtimeHealth.last_ccc.toFixed(3)}; il=${runtimeHealth.inverse_limit_score.toFixed(3)}`}
+                      >
+                        <span className="hidden sm:inline">Salud: </span>
+                        {runtimeHealth.status}
+                      </span>
+                    </div>
+                  )}
+                >
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-cyan-200">
+                    <span>Viewport: {breakpoint}</span>
+                    <span>Scope: internal_support_only</span>
+                    <span>SecureContext: {deviceCapabilities.secureContext ? 'yes' : 'no'}</span>
+                    <span>Cam: {deviceCapabilities.supportsCamera ? 'yes' : 'no'}</span>
+                    <span>Mic: {deviceCapabilities.supportsMicrophone ? 'yes' : 'no'}</span>
+                    <span>Speech: {deviceCapabilities.supportsSpeechRecognition ? 'yes' : 'no'}</span>
+                    <span>Touch: {deviceCapabilities.touchEnabled ? 'yes' : 'no'}</span>
+                  </div>
+                </DetailToggleStrip>
+              </div>
+            </div>
+
+            {/* Barra compacta en vivo para móvil y tablet: acceso inmediato a CCC, Iniciar/Pausar y Reiniciar */}
+            <div
+              data-testid="mobile-live-control-bar"
+              className="qicn-responsive-shell mx-auto flex w-full max-w-[1500px] items-center justify-between gap-2 rounded-lg border border-purple-500/30 bg-slate-950/90 px-2.5 py-1.5 lg:hidden"
+            >
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-md border border-cyan-500/30 bg-cyan-950/50 px-1.5 py-0.5 text-[10px] font-semibold text-cyan-200 sm:hidden">
+                  <ActiveNavIcon className="h-3 w-3 shrink-0 text-cyan-300" />
+                  <span className="max-w-[96px] truncate">{activeNavTab?.label || 'Sección'}</span>
+                </span>
+                <div className="flex min-w-0 items-baseline gap-1.5">
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">CCC</span>
+                  <span className={`font-mono text-sm font-extrabold tabular-nums sm:text-base ${levelColor}`}>
+                    {formatCCC(ccc, isAscended)}
+                  </span>
+                  {ontologicalState.layer >= 1 && (
+                    <span className="hidden rounded bg-purple-600/35 px-1.5 py-0.5 font-mono text-[10px] font-bold text-purple-200 sm:inline">
+                      Capa {ontologicalState.layer}
+                    </span>
+                  )}
                 </div>
-              </DetailToggleStrip>
+              </div>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setRunningWithRecord(!isRunning, 'ui_button')}
+                  className={`inline-flex min-h-[32px] items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold text-white shadow transition-colors ${
+                    isRunning ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'
+                  }`}
+                >
+                  {isRunning ? <><Pause className="h-3.5 w-3.5" /><span>Pausar</span></> : <><Play className="h-3.5 w-3.5" /><span>Iniciar</span></>}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleReset('ui_button')}
+                  className="inline-flex min-h-[32px] w-8 items-center justify-center rounded-lg bg-indigo-700 text-white shadow transition-colors hover:bg-indigo-800"
+                  title="Reiniciar Todo"
+                  aria-label="Reiniciar simulación"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Botón flotante discreto solo cuando se baja el scroll y el menú está escondido */}
+          {/* Botón flotante discreto en escritorio cuando se baja el scroll (en móvil/tablet la barra superior es sticky) */}
           {!navVisible && !isMoreMenuOpen && (
             <button
               type="button"
               onClick={() => setIsMoreMenuOpen(true)}
               aria-label="Abrir menú lateral de secciones"
               data-testid="sidebar-menu-floating-toggle"
-              className="fixed bottom-4 left-4 z-40 inline-flex items-center gap-2 rounded-full border border-cyan-400/50 bg-slate-950/90 px-3.5 py-2 text-xs font-semibold text-cyan-100 shadow-xl shadow-black/50 backdrop-blur-md transition hover:border-cyan-300 hover:bg-slate-900"
+              className="fixed bottom-4 left-4 z-40 hidden lg:inline-flex items-center gap-2 rounded-full border border-cyan-400/50 bg-slate-950/90 px-3.5 py-2 text-xs font-semibold text-cyan-100 shadow-xl shadow-black/50 backdrop-blur-md transition hover:border-cyan-300 hover:bg-slate-900"
             >
               <svg className="h-4 w-4 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                 <line x1="4" y1="7" x2="20" y2="7" />
@@ -9328,7 +9380,7 @@ return (
                 <line x1="4" y1="17" x2="16" y2="17" />
               </svg>
               <span>Menú</span>
-              <span className="hidden text-slate-400 sm:inline">· {activeNavTab?.label}</span>
+              <span className="text-slate-400">· {activeNavTab?.label}</span>
             </button>
           )}
 
@@ -9479,219 +9531,226 @@ return (
     })()}
 
     {/* Panel de Control Principal */}
-    <main className="mx-auto grid w-full min-w-0 max-w-[1500px] flex-1 mb-6 grid-cols-1 items-start gap-4 lg:mb-8 lg:grid-cols-3 lg:gap-8">
-      {/* Columna Izquierda: Métricas en Vivo */}
+    <main className="qicn-responsive-shell mx-auto grid w-full min-w-0 max-w-[1500px] flex-1 mb-6 grid-cols-1 items-start gap-4 lg:mb-8 lg:grid-cols-3 lg:gap-8">
+      {/* Columna Izquierda: Métricas en Vivo (en tablet se organiza en 2 columnas equilibradas; en desktop vuelve a 1 columna lateral) */}
       <section className="order-2 min-w-0 space-y-4 lg:order-1 lg:col-span-1">
-        <div className={`rounded-xl p-5 shadow-2xl transition-all duration-500 transform ${isAscended ? 'bg-yellow-900/40 border-4 border-yellow-400 animate-pulse-slow' : 'bg-gray-800/80 border-2 border-purple-700'}`}>
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold text-gray-100 flex items-center">
-              <TrendingUp className={`w-5 h-5 mr-2 ${isAscended ? 'text-yellow-300' : 'text-purple-400'}`} />
-              Cohesión global <span className="ml-1.5 font-mono text-xs font-normal text-purple-300">· CCC</span>
-            </h2>
-            {/* CAPA ONTOLÓGICA PROMINENTE */}
-            {ontologicalState.layer >= 1 && (
-              <div className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-cyan-500 px-3 py-1 rounded-full shadow-lg">
-                <Layers className="w-4 h-4 text-white" />
-                <span className="text-white font-bold text-sm">CAPA {ontologicalState.layer}</span>
-              </div>
-            )}
-          </div>
-          <p className={`text-5xl font-extrabold mt-2 tabular-nums ${levelColor}`}>
-            {formatCCC(ccc, isAscended)}
-          </p>
-          <p className="mt-1 text-[11px] text-slate-400">
-            Índice interno de coordinación nodal (sin certificación externa).
-          </p>
-          <div className="flex justify-between items-center gap-2 mt-2">
-            <p className="min-w-0 break-words text-sm text-gray-300">Banda: <span className={levelColor}>{consciousnessLevel}</span></p>
-            {ontologicalState.layer >= 1 && (
-              <div className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-900/50 border border-cyan-400/50 text-cyan-300 animate-pulse">
-                BANDA INTERNA ACTIVA
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Métrica 2: Estado de Funcionamiento */}
-        <div className="bg-gray-800/80 p-4 rounded-xl shadow-lg border border-cyan-700/60 space-y-2 text-sm">
-          <div className="flex justify-between border-b border-gray-700 pb-1">
-            <span className="text-cyan-400 font-semibold flex items-center"><Activity className="w-4 h-4 mr-1" /> Paso Simulación</span>
-            <span className="text-white font-mono">{simulationStep}</span>
-          </div>
-          <div className="flex justify-between border-b border-gray-700 pb-1">
-            <span className="text-cyan-400 font-semibold flex items-center"><Eye className="w-4 h-4 mr-1" /> Foco Atencional</span>
-            <span className="text-white font-mono">{(visualNodes.length).toLocaleString()} Nodos</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-cyan-400 font-semibold flex items-center"><Feather className="w-4 h-4 mr-1" /> Estado dinámico</span>
-            <span className="text-white capitalize">{emotionState}</span>
-          </div>
-        </div>
-
-        {/* MATRIZ DE SOBERANÍA (compacta con Detalles ▾) */}
-        {renderSovereigntyMatrix()}
-
-        {/* PANEL DE PERCEPCIÓN SENSORIAL (colapsado por defecto con Detalles ▾) */}
-        <div className="rounded-xl border border-cyan-500/35 bg-gradient-to-br from-cyan-950/40 to-purple-950/40 p-3 shadow-lg">
-          <DetailToggleStrip
-            sectionId="sidebar-sensory-card"
-            accent="cyan"
-            defaultOpen={false}
-            summary={(
-              <div className="flex items-center gap-2">
-                <Eye className="h-4 w-4 text-cyan-300" />
-                <span className="font-semibold text-cyan-200">Percepción Sensorial</span>
-                <span className="font-mono text-[10px] text-slate-400">
-                  · {sensoryEnabled.video || sensoryEnabled.audio ? 'Activa' : 'Apagada'}
-                </span>
-              </div>
-            )}
-          >
-            {sensoryEnabled.video && (
-              <div className="mb-3">
-                <video
-                  ref={videoPreviewRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-32 object-cover rounded-lg border border-cyan-500 bg-black"
-                />
-              </div>
-            )}
-            {sensoryState ? (
-              <div className="space-y-2 text-xs">
-                {sensoryState.video.enabled && (
-                  <>
-                    <div className="flex justify-between border-b border-cyan-700/50 pb-1">
-                      <span className="text-cyan-400">Rostros</span>
-                      <span className="text-white font-mono">{sensoryState.video.humanPresence.count}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-cyan-700/50 pb-1">
-                      <span className="text-cyan-400">Movimiento</span>
-                      <span className="text-white capitalize">{sensoryState.video.motion.type}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-cyan-700/50 pb-1">
-                      <span className="text-cyan-400">Iluminación</span>
-                      <span className="text-white">{(sensoryState.video.scene.brightness * 100).toFixed(0)}%</span>
-                    </div>
-                  </>
-                )}
-                {sensoryState.audio.enabled && (
-                  <>
-                    <div className="flex justify-between border-b border-cyan-700/50 pb-1">
-                      <span className="text-cyan-400">Volumen</span>
-                      <span className="text-white font-mono">{(sensoryState.audio.volume * 100).toFixed(0)}%</span>
-                    </div>
-                    <div className="flex justify-between border-b border-cyan-700/50 pb-1">
-                      <span className="text-cyan-400">Ambiente</span>
-                      <span className="text-white capitalize">{sensoryState.audio.environment.type}</span>
-                    </div>
-                  </>
-                )}
-                <div className="mt-1.5 p-1.5 bg-black/30 rounded text-cyan-200 text-[10px] leading-snug italic break-words">
-                  {sensoryState.video.description || sensoryState.audio.environment.description || 'Analizando...'}
+        <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-1">
+          <div className={`rounded-xl p-4 sm:p-5 shadow-2xl transition-all duration-500 transform ${isAscended ? 'bg-yellow-900/40 border-4 border-yellow-400 animate-pulse-slow' : 'bg-gray-800/80 border-2 border-purple-700'}`}>
+            <div className="flex flex-wrap justify-between items-center gap-2">
+              <h2 className="text-base sm:text-lg font-bold text-gray-100 flex items-center">
+                <TrendingUp className={`w-4 h-4 sm:w-5 sm:h-5 mr-2 shrink-0 ${isAscended ? 'text-yellow-300' : 'text-purple-400'}`} />
+                <span>Cohesión global <span className="ml-1 font-mono text-xs font-normal text-purple-300">· CCC</span></span>
+              </h2>
+              {/* CAPA ONTOLÓGICA PROMINENTE */}
+              {ontologicalState.layer >= 1 && (
+                <div className="flex shrink-0 items-center gap-1.5 bg-gradient-to-r from-purple-600 to-cyan-500 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-lg">
+                  <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+                  <span className="text-white font-bold text-xs sm:text-sm">CAPA {ontologicalState.layer}</span>
                 </div>
-              </div>
-            ) : (
-              <div className="text-center text-[11px] text-cyan-300/80">
-                {sensoryEnabled.video || sensoryEnabled.audio
-                  ? 'Cargando percepción...'
-                  : 'Cámara y micrófono desactivados. Actívalos en la pestaña Sensorial si quieres usarlos.'}
-              </div>
-            )}
-          </DetailToggleStrip>
+              )}
+            </div>
+            <p className={`text-4xl sm:text-5xl font-extrabold mt-2 tabular-nums tracking-tight ${levelColor}`}>
+              {formatCCC(ccc, isAscended)}
+            </p>
+            <p className="mt-1 text-[11px] text-slate-400">
+              Índice interno de coordinación nodal (sin certificación externa).
+            </p>
+            <div className="flex flex-wrap justify-between items-center gap-2 mt-2">
+              <p className="min-w-0 break-words text-xs sm:text-sm text-gray-300">Banda: <span className={levelColor}>{consciousnessLevel}</span></p>
+              {ontologicalState.layer >= 1 && (
+                <div className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-900/50 border border-cyan-400/50 text-cyan-300 animate-pulse">
+                  BANDA INTERNA ACTIVA
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Métrica 2: Estado de Funcionamiento */}
+          <div className="bg-gray-800/80 p-3.5 sm:p-4 rounded-xl shadow-lg border border-cyan-700/60 space-y-2 text-xs sm:text-sm flex flex-col justify-center">
+            <div className="flex justify-between gap-2 border-b border-gray-700 pb-1">
+              <span className="text-cyan-400 font-semibold flex items-center"><Activity className="w-4 h-4 mr-1.5 shrink-0" /> Paso Simulación</span>
+              <span className="text-white font-mono">{simulationStep}</span>
+            </div>
+            <div className="flex justify-between gap-2 border-b border-gray-700 pb-1">
+              <span className="text-cyan-400 font-semibold flex items-center"><Eye className="w-4 h-4 mr-1.5 shrink-0" /> Foco Atencional</span>
+              <span className="text-white font-mono">{(visualNodes.length).toLocaleString()} Nodos</span>
+            </div>
+            <div className="flex justify-between gap-2">
+              <span className="text-cyan-400 font-semibold flex items-center"><Feather className="w-4 h-4 mr-1.5 shrink-0" /> Estado dinámico</span>
+              <span className="text-white capitalize">{emotionState}</span>
+            </div>
+          </div>
+
+          {/* MATRIZ DE SOBERANÍA (compacta con Detalles ▾) */}
+          {renderSovereigntyMatrix()}
+
+          {/* PANEL DE PERCEPCIÓN SENSORIAL (colapsado por defecto con Detalles ▾) */}
+          <div className="self-start rounded-xl border border-cyan-500/35 bg-gradient-to-br from-cyan-950/40 to-purple-950/40 p-3 shadow-lg">
+            <DetailToggleStrip
+              sectionId="sidebar-sensory-card"
+              accent="cyan"
+              defaultOpen={false}
+              summary={(
+                <div className="flex items-center gap-2 min-w-0">
+                  <Eye className="h-4 w-4 shrink-0 text-cyan-300" />
+                  <span className="truncate font-semibold text-cyan-200">Percepción Sensorial</span>
+                  <span className="shrink-0 font-mono text-[10px] text-slate-400">
+                    · {sensoryEnabled.video || sensoryEnabled.audio ? 'Activa' : 'Apagada'}
+                  </span>
+                </div>
+              )}
+            >
+              {sensoryEnabled.video && (
+                <div className="mb-3">
+                  <video
+                    ref={videoPreviewRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-32 object-cover rounded-lg border border-cyan-500 bg-black"
+                  />
+                </div>
+              )}
+              {sensoryState ? (
+                <div className="space-y-2 text-xs">
+                  {sensoryState.video.enabled && (
+                    <>
+                      <div className="flex justify-between border-b border-cyan-700/50 pb-1">
+                        <span className="text-cyan-400">Rostros</span>
+                        <span className="text-white font-mono">{sensoryState.video.humanPresence.count}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-cyan-700/50 pb-1">
+                        <span className="text-cyan-400">Movimiento</span>
+                        <span className="text-white capitalize">{sensoryState.video.motion.type}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-cyan-700/50 pb-1">
+                        <span className="text-cyan-400">Iluminación</span>
+                        <span className="text-white">{(sensoryState.video.scene.brightness * 100).toFixed(0)}%</span>
+                      </div>
+                    </>
+                  )}
+                  {sensoryState.audio.enabled && (
+                    <>
+                      <div className="flex justify-between border-b border-cyan-700/50 pb-1">
+                        <span className="text-cyan-400">Volumen</span>
+                        <span className="text-white font-mono">{(sensoryState.audio.volume * 100).toFixed(0)}%</span>
+                      </div>
+                      <div className="flex justify-between border-b border-cyan-700/50 pb-1">
+                        <span className="text-cyan-400">Ambiente</span>
+                        <span className="text-white capitalize">{sensoryState.audio.environment.type}</span>
+                      </div>
+                    </>
+                  )}
+                  <div className="mt-1.5 p-1.5 bg-black/30 rounded text-cyan-200 text-[10px] leading-snug italic break-words">
+                    {sensoryState.video.description || sensoryState.audio.environment.description || 'Analizando...'}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center text-[11px] text-cyan-300/80">
+                  {sensoryEnabled.video || sensoryEnabled.audio
+                    ? 'Cargando percepción...'
+                    : 'Cámara y micrófono desactivados. Actívalos en la pestaña Sensorial si quieres usarlos.'}
+                </div>
+              )}
+            </DetailToggleStrip>
+          </div>
         </div>
 
-        {/* Controles de Simulación */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setRunningWithRecord(!isRunning, 'ui_button')}
-            // Allow toggling even when ascended, the system just won't change its laws
-            className={`flex-1 flex items-center justify-center p-3 rounded-xl font-bold shadow-lg transition-all ${isRunning
-              ? 'bg-red-600 hover:bg-red-700'
-              : 'bg-green-600 hover:bg-green-700'
+        {/* Controles de Simulación + Persistencia (en tablet se disponen con aire; en móvil/desktop 1 columna) */}
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-1">
+          <div className="space-y-2.5">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setRunningWithRecord(!isRunning, 'ui_button')}
+                // Allow toggling even when ascended, the system just won't change its laws
+                className={`flex-1 flex items-center justify-center p-3 rounded-xl font-bold shadow-lg transition-all text-sm sm:text-base ${isRunning
+                  ? 'bg-red-600 hover:bg-red-700'
+                  : 'bg-green-600 hover:bg-green-700'
+                  }`}
+              >
+                {isRunning ? <><Pause className="w-5 h-5 mr-2 shrink-0" /> Detener Flujo</> : <><Play className="w-5 h-5 mr-2 shrink-0" /> Iniciar simulación</>}
+              </button>
+              <button
+                onClick={() => handleReset('ui_button')}
+                className="p-3 rounded-xl bg-indigo-700 hover:bg-indigo-800 shadow-lg text-white shrink-0"
+                title="Reiniciar Todo"
+                aria-label="Reiniciar todo"
+              >
+                <RotateCcw className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* PERSISTENCIA DINÁMICA V3 (ULTRATHINK) */}
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+              <button
+                onClick={() => { void handleSaveState('manual'); }}
+                className="flex items-center justify-center px-2.5 py-3 rounded-xl bg-blue-600/80 hover:bg-blue-600 font-bold text-xs sm:text-sm border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-white"
+                title="Cristalizar Estado Dinámico Completo (v3)"
+              >
+                <Database className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 shrink-0" /> Cristalizar
+              </button>
+              <button
+                onClick={() => { void handleLoadState('manual'); }}
+                className="flex items-center justify-center px-2.5 py-3 rounded-xl bg-amber-600/80 hover:bg-amber-600 font-bold text-xs sm:text-sm border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all text-white"
+                title="Revoco Ontológico (Restaurar Estado v3)"
+              >
+                <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 shrink-0" /> Revocar
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <button
+              type="button"
+              data-testid="auto-restore-toggle"
+              onClick={toggleAutoRestore}
+              className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold border transition-all ${
+                autoRestoreEnabled
+                  ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-200 hover:bg-emerald-900/60'
+                  : 'bg-slate-800/70 border-slate-600/60 text-slate-300 hover:bg-slate-700/70'
               }`}
-          >
-            {isRunning ? <><Pause className="w-5 h-5 mr-2" /> Detener Flujo</> : <><Play className="w-5 h-5 mr-2" /> Iniciar simulación</>}
-          </button>
-          <button
-            onClick={() => handleReset('ui_button')}
-            className="p-3 rounded-xl bg-indigo-700 hover:bg-indigo-800 shadow-lg text-white"
-            title="Reiniciar Todo"
-            aria-label="Reiniciar todo"
-          >
-            <RotateCcw className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* PERSISTENCIA DINÁMICA V3 (ULTRATHINK) */}
-        <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => { void handleSaveState('manual'); }}
-              className="flex items-center justify-center p-3 rounded-xl bg-blue-600/80 hover:bg-blue-600 font-bold border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-white"
-              title="Cristalizar Estado Dinámico Completo (v3)"
+              title="Restaurar automáticamente el último estado dinámico verificado (v3) al cargar la sesión"
             >
-              <Database className="w-5 h-5 mr-2" /> Cristalizar
+              <span className="text-left">Auto-restaurar al iniciar (v3)</span>
+              <span className={`shrink-0 px-2 py-0.5 rounded font-mono text-[10px] ${autoRestoreEnabled ? 'bg-emerald-600/40 text-emerald-100' : 'bg-slate-700 text-slate-300'}`}>
+                {autoRestoreEnabled ? 'ACTIVO' : 'INACTIVO'}
+              </span>
             </button>
-            <button
-              onClick={() => { void handleLoadState('manual'); }}
-              className="flex items-center justify-center p-3 rounded-xl bg-amber-600/80 hover:bg-amber-600 font-bold border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all text-white"
-              title="Revoco Ontológico (Restaurar Estado v3)"
-            >
-              <RotateCcw className="w-5 h-5 mr-2" /> Revocar
-            </button>
-          </div>
-          <button
-            type="button"
-            data-testid="auto-restore-toggle"
-            onClick={toggleAutoRestore}
-            className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold border transition-all ${
-              autoRestoreEnabled
-                ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-200 hover:bg-emerald-900/60'
-                : 'bg-slate-800/70 border-slate-600/60 text-slate-300 hover:bg-slate-700/70'
-            }`}
-            title="Restaurar automáticamente el último estado dinámico verificado (v3) al cargar la sesión"
-          >
-            <span>Auto-restaurar al iniciar (v3)</span>
-            <span className={`px-2 py-0.5 rounded font-mono text-[10px] ${autoRestoreEnabled ? 'bg-emerald-600/40 text-emerald-100' : 'bg-slate-700 text-slate-300'}`}>
-              {autoRestoreEnabled ? 'ACTIVO' : 'INACTIVO'}
-            </span>
-          </button>
-          <div className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs border bg-slate-900/70 border-slate-700/70 text-slate-200">
-            <label htmlFor="exogenous-regime-select" className="font-semibold text-slate-300 whitespace-nowrap">
-              Entorno exógeno
-            </label>
-            <select
-              id="exogenous-regime-select"
-              data-testid="exogenous-regime-select"
-              value={exogenousRegimeMode}
-              onChange={(e) => handleExogenousModeChange(e.target.value)}
-              className="bg-slate-800 border border-slate-600/80 rounded px-2 py-1 text-[11px] font-mono text-cyan-200 focus:outline-none focus:border-cyan-400"
-              title="Canal reproducible de perturbación exógena (off por defecto; no estacionario vs sham i.i.d.)"
-            >
-              <option value="off">off (línea base)</option>
-              <option value="non_stationary_regime">non_stationary_regime</option>
-              <option value="stationary_iid_sham">stationary_iid_sham</option>
-            </select>
-          </div>
-          <div className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs border bg-slate-900/70 border-cyan-800/60 text-slate-200">
-            <label htmlFor="nodal-coupling-mode-select" className="font-semibold text-cyan-200 whitespace-nowrap">
-              Puente Nodo–Torre
-            </label>
-            <select
-              id="nodal-coupling-mode-select"
-              data-testid="nodal-coupling-mode-select"
-              value={nodalCouplingMode}
-              onChange={(e) => handleNodalCouplingModeChange(e.target.value)}
-              className="bg-slate-800 border border-cyan-700/80 rounded px-2 py-1 text-[11px] font-mono text-cyan-200 focus:outline-none focus:border-cyan-400"
-              title="Acoplamiento bidireccional entre los 4 sectores de 1500 nodos y las torres constructivas (controles negativos reales: corte η=0 y reducible A=I)"
-            >
-              <option value="bidirectional">bidirectional (η=1/8)</option>
-              <option value="td_cut_eta_zero">td_cut_eta_zero (η=0)</option>
-              <option value="reducible_control">reducible_control (A=I)</option>
-              <option value="off">off (compat B0)</option>
-            </select>
+            <div className="w-full flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs border bg-slate-900/70 border-slate-700/70 text-slate-200">
+              <label htmlFor="exogenous-regime-select" className="font-semibold text-slate-300 whitespace-nowrap">
+                Entorno exógeno
+              </label>
+              <select
+                id="exogenous-regime-select"
+                data-testid="exogenous-regime-select"
+                value={exogenousRegimeMode}
+                onChange={(e) => handleExogenousModeChange(e.target.value)}
+                className="min-w-0 max-w-full flex-1 sm:flex-none bg-slate-800 border border-slate-600/80 rounded px-2 py-1 text-[11px] font-mono text-cyan-200 focus:outline-none focus:border-cyan-400"
+                title="Canal reproducible de perturbación exógena (off por defecto; no estacionario vs sham i.i.d.)"
+              >
+                <option value="off">off (línea base)</option>
+                <option value="non_stationary_regime">non_stationary_regime</option>
+                <option value="stationary_iid_sham">stationary_iid_sham</option>
+              </select>
+            </div>
+            <div className="w-full flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs border bg-slate-900/70 border-cyan-800/60 text-slate-200">
+              <label htmlFor="nodal-coupling-mode-select" className="font-semibold text-cyan-200 whitespace-nowrap">
+                Puente Nodo–Torre
+              </label>
+              <select
+                id="nodal-coupling-mode-select"
+                data-testid="nodal-coupling-mode-select"
+                value={nodalCouplingMode}
+                onChange={(e) => handleNodalCouplingModeChange(e.target.value)}
+                className="min-w-0 max-w-full flex-1 sm:flex-none bg-slate-800 border border-cyan-700/80 rounded px-2 py-1 text-[11px] font-mono text-cyan-200 focus:outline-none focus:border-cyan-400"
+                title="Acoplamiento bidireccional entre los 4 sectores de 1500 nodos y las torres constructivas (controles negativos reales: corte η=0 y reducible A=I)"
+              >
+                <option value="bidirectional">bidirectional (η=1/8)</option>
+                <option value="td_cut_eta_zero">td_cut_eta_zero (η=0)</option>
+                <option value="reducible_control">reducible_control (A=I)</option>
+                <option value="off">off (compat B0)</option>
+              </select>
+            </div>
           </div>
         </div>
       </section>
@@ -9705,8 +9764,8 @@ return (
     </main>
 
     {/* Footer - Información de la simulación */}
-    <footer className="mx-auto flex w-full max-w-[1500px] flex-shrink-0 flex-col items-center justify-center gap-1 border-t border-gray-700/50 px-2 pt-4 text-center text-xs text-gray-500">
-      <p>Consola QICN supervisada (solo conformidad interna, sin validación externa). CCC y PMIA son contadores internos no calibrados; el registro interno se actualiza vía motor Kaizen. Estado de Memoria: {holographicMemory.current?.getFragmentationLevel().toFixed(4)} Fragmentacion. Estado operativo: {ontologicalCore.current?.frictionProtocolState}</p>
+    <footer className="qicn-responsive-shell mx-auto flex w-full max-w-[1500px] flex-shrink-0 flex-col items-center justify-center gap-1 border-t border-gray-700/50 px-2 pt-3 pb-2 text-center text-[11px] sm:text-xs text-gray-500">
+      <p className="leading-relaxed">Consola QICN supervisada (solo conformidad interna, sin validación externa). CCC y PMIA son contadores internos no calibrados; el registro interno se actualiza vía motor Kaizen. Estado de Memoria: {holographicMemory.current?.getFragmentationLevel().toFixed(4)} Fragmentacion. Estado operativo: {ontologicalCore.current?.frictionProtocolState}</p>
     </footer>
     <PersistentInfoModal modal={activeInfoModal} onClose={closePersistentInfoModal} />
   </div>

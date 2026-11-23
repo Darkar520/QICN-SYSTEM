@@ -5,10 +5,14 @@ const BREAKPOINTS = {
   sm: 640,
   md: 768,
   lg: 1024,
-  xl: 1280
+  xl: 1280,
+  '2xl': 1536,
+  tv: 2048
 };
 
 const detect = (width) => {
+  if (width >= BREAKPOINTS.tv) return 'tv';
+  if (width >= BREAKPOINTS['2xl']) return '2xl';
   if (width >= BREAKPOINTS.xl) return 'xl';
   if (width >= BREAKPOINTS.lg) return 'lg';
   if (width >= BREAKPOINTS.md) return 'md';
@@ -31,7 +35,9 @@ export const useBreakpoint = () => {
     breakpoint,
     isMobile: breakpoint === 'xs' || breakpoint === 'sm',
     isTablet: breakpoint === 'md',
-    isDesktop: breakpoint === 'lg' || breakpoint === 'xl'
+    isDesktop: breakpoint === 'lg' || breakpoint === 'xl' || breakpoint === '2xl' || breakpoint === 'tv',
+    isWide: breakpoint === '2xl' || breakpoint === 'tv',
+    isTv: breakpoint === 'tv'
   };
 };
 

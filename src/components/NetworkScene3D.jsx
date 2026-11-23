@@ -1521,7 +1521,7 @@ const NetworkScene3D = React.memo(({
       data-expanded={isExpanded ? 'true' : 'false'}
       className={isExpanded
         ? 'fixed inset-0 z-[9999] h-dvh w-screen select-none overflow-hidden bg-[#020510]'
-        : 'relative h-full w-full min-h-[360px] select-none overflow-hidden rounded-xl border border-cyan-500/25 bg-[#030612]'}
+        : 'relative h-full w-full min-h-[300px] sm:min-h-[360px] select-none overflow-hidden rounded-xl border border-cyan-500/25 bg-[#030612]'}
       role="application"
       aria-label="Red nodal interactiva WebGL 3D acoplada a las torres constructivas"
       style={!isExpanded && viewportMode !== 'mobile' && canvasScale !== 1 ? { transform: `scale(${canvasScale})` } : undefined}
@@ -1529,9 +1529,9 @@ const NetworkScene3D = React.memo(({
       <div ref={containerRef} data-testid="network-webgl-mount" className="h-full w-full" />
 
       {/* Minimalist Top Bar (unobtrusive, leaves >93% of canvas open; no backdrop-blur over live WebGL for steady FPS) */}
-      <div className="pointer-events-none absolute left-2.5 right-2.5 top-2.5 z-10 flex flex-wrap items-center justify-between gap-1.5">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <div role="group" aria-label="Capa de proyeccion 3D" className="pointer-events-auto inline-flex overflow-hidden rounded-lg border border-cyan-400/30 bg-slate-950/90 text-[11px]">
+      <div className="pointer-events-none absolute left-2 right-2 top-2 sm:left-2.5 sm:right-2.5 sm:top-2.5 z-10 flex flex-wrap items-center justify-between gap-1 sm:gap-1.5">
+        <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
+          <div role="group" aria-label="Capa de proyeccion 3D" className="pointer-events-auto inline-flex overflow-hidden rounded-lg border border-cyan-400/30 bg-slate-950/90 text-[10px] sm:text-[11px]">
             {[
               { id: NODAL_3D_VIEW_MODES.COUPLED, label: `Red (${hudSummary.renderCount || quality.maxNodes})` },
               { id: NODAL_3D_VIEW_MODES.BRIDGE_ONLY, label: 'Puente' },
@@ -1543,21 +1543,21 @@ const NetworkScene3D = React.memo(({
                 data-testid={`3d-view-mode-${tab.id}`}
                 aria-pressed={viewMode === tab.id}
                 onClick={() => handleViewModeChange(tab.id)}
-                className={`px-2 py-1 font-medium transition-colors ${viewMode === tab.id ? 'bg-cyan-600/90 text-white' : 'text-slate-200 hover:bg-slate-800/80'}`}
+                className={`px-1.5 py-1 sm:px-2 font-medium transition-colors ${viewMode === tab.id ? 'bg-cyan-600/90 text-white' : 'text-slate-200 hover:bg-slate-800/80'}`}
               >
                 {tab.label}
               </button>
             ))}
           </div>
 
-          <div className="pointer-events-auto inline-flex items-center overflow-hidden rounded-lg border border-slate-600/50 bg-slate-950/90 text-[11px] text-slate-200">
+          <div className="pointer-events-auto inline-flex items-center overflow-hidden rounded-lg border border-slate-600/50 bg-slate-950/90 text-[10px] sm:text-[11px] text-slate-200">
             {!compactMode && (
               <>
                 <button type="button" onClick={() => cameraApiRef.current.zoomBy?.(0.82)} title="Acercar" className="px-2 py-1 hover:bg-slate-800">+</button>
                 <button type="button" onClick={() => cameraApiRef.current.zoomBy?.(1.22)} title="Alejar" className="border-l border-slate-700/70 px-2 py-1 hover:bg-slate-800">−</button>
               </>
             )}
-            <button type="button" onClick={() => cameraApiRef.current.resetView?.()} title="Reiniciar camara" className={`${!compactMode ? 'border-l border-slate-700/70 ' : ''}px-2 py-1 hover:bg-slate-800`}>Reset</button>
+            <button type="button" onClick={() => cameraApiRef.current.resetView?.()} title="Reiniciar camara" className={`${!compactMode ? 'border-l border-slate-700/70 ' : ''}px-1.5 sm:px-2 py-1 hover:bg-slate-800`}>Reset</button>
           </div>
 
           <button
@@ -1566,13 +1566,13 @@ const NetworkScene3D = React.memo(({
             aria-pressed={fineMeshMode}
             onClick={handleToggleFineMesh}
             title={fineMeshMode ? 'Volver a vista estandar de nodos' : 'Activar malla fina traslucida (estilo hover)'}
-            className={`pointer-events-auto rounded-lg border px-2 py-1 text-[11px] font-medium transition-colors ${fineMeshMode ? 'border-violet-400/70 bg-violet-600/90 text-white' : 'border-slate-600/50 bg-slate-950/90 text-slate-200 hover:bg-slate-800/80'}`}
+            className={`pointer-events-auto rounded-lg border px-1.5 sm:px-2 py-1 text-[10px] sm:text-[11px] font-medium transition-colors ${fineMeshMode ? 'border-violet-400/70 bg-violet-600/90 text-white' : 'border-slate-600/50 bg-slate-950/90 text-slate-200 hover:bg-slate-800/80'}`}
           >
             {fineMeshMode ? '✦ Fino' : 'Fino'}
           </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
           {onCouplingModeChange && (
             <div role="group" aria-label="Modo del puente en vivo" className="pointer-events-auto inline-flex overflow-hidden rounded-lg border border-emerald-500/35 bg-slate-950/90 text-[10px] font-mono">
               {[
@@ -1586,7 +1586,7 @@ const NetworkScene3D = React.memo(({
                   data-testid={`3d-coupling-btn-${m.id}`}
                   aria-pressed={hudSummary.bridgeMode === m.id}
                   onClick={() => onCouplingModeChange(m.id)}
-                  className={`px-2 py-1 transition-colors ${hudSummary.bridgeMode === m.id ? 'bg-emerald-600/85 text-white' : 'text-slate-300 hover:bg-slate-800/80'}`}
+                  className={`px-1.5 sm:px-2 py-1 transition-colors ${hudSummary.bridgeMode === m.id ? 'bg-emerald-600/85 text-white' : 'text-slate-300 hover:bg-slate-800/80'}`}
                 >
                   {m.label}
                 </button>
@@ -1600,18 +1600,18 @@ const NetworkScene3D = React.memo(({
             aria-pressed={isExpanded}
             onClick={toggleExpand}
             title={isExpanded ? 'Salir de pantalla completa (ESC)' : 'Expandir a pantalla completa'}
-            className="pointer-events-auto rounded-lg border border-cyan-400/50 bg-cyan-950/92 px-2.5 py-1 font-mono text-[11px] font-semibold text-cyan-100 transition-colors hover:bg-cyan-800/85"
+            className="pointer-events-auto rounded-lg border border-cyan-400/50 bg-cyan-950/92 px-2 sm:px-2.5 py-1 font-mono text-[10px] sm:text-[11px] font-semibold text-cyan-100 transition-colors hover:bg-cyan-800/85"
           >
-            {isExpanded ? '✕ Salir (ESC)' : '⛶ Expandir'}
+            {isExpanded ? (compactMode ? '✕ Salir' : '✕ Salir (ESC)') : (compactMode ? '⛶' : '⛶ Expandir')}
           </button>
         </div>
       </div>
 
-      {/* Hover / Selected Node Inspector (offset below top toolbar) */}
+      {/* Hover / Selected Node Inspector (offset below top toolbar; full-width safe on narrow phones) */}
       {activeInspectNode && (
         <div
           data-testid="network-node-focus-tooltip"
-          className="pointer-events-auto absolute right-3 top-12 z-20 w-64 rounded-xl border border-cyan-400/45 bg-slate-950/95 p-3 text-xs text-slate-100 shadow-2xl"
+          className="pointer-events-auto absolute left-2.5 right-2.5 top-16 sm:left-auto sm:right-3 sm:top-12 z-20 sm:w-64 rounded-xl border border-cyan-400/45 bg-slate-950/95 p-3 text-xs text-slate-100 shadow-2xl"
         >
           <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-1.5">
             <span className="font-mono font-bold text-cyan-300">

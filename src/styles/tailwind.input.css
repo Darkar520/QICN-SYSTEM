@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  /* Smooth across-the-room legibility for 2K/4K monitors & Smart TVs */
+  @media (min-width: 2200px) {
+    html {
+      font-size: clamp(16px, 0.78vw, 21px);
+    }
+  }
+
+  /* Touch-friendly range slider thumbs on phones and tablets */
+  @media (pointer: coarse) {
+    input[type="range"]::-webkit-slider-thumb {
+      width: 22px;
+      height: 22px;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+    }
+  }
+}
+
 @layer utilities {
   @keyframes spin-galaxy {
     from { transform: rotate(0deg); }
@@ -40,10 +68,62 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
     .animate-spin-galaxy,
     .animate-spin-slow,
     .animate-pulse-slow {
       animation: none;
     }
+  }
+}
+
+/* Emitted AFTER Tailwind utilities so responsive overrides cleanly win cascade */
+.qicn-safe-shell {
+  padding-left: max(0.5rem, env(safe-area-inset-left));
+  padding-right: max(0.5rem, env(safe-area-inset-right));
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+@media (min-width: 640px) {
+  .qicn-safe-shell {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+@media (min-width: 1024px) {
+  .qicn-safe-shell {
+    padding-left: max(1.75rem, env(safe-area-inset-left));
+    padding-right: max(1.75rem, env(safe-area-inset-right));
+  }
+}
+
+/* Expand container gracefully on Full-HD+, ultrawide, and 4K/TV screens */
+@media (min-width: 1700px) {
+  .qicn-responsive-shell {
+    max-width: min(94vw, 1760px);
+  }
+}
+
+@media (min-width: 2200px) {
+  .qicn-responsive-shell {
+    max-width: min(92vw, 2240px);
+  }
+}
+
+/* Adaptive 3D nodal viewport height: compact on phones, expansive on 4K/TV */
+@media (max-width: 639px) {
+  .qicn-network-viewport {
+    height: min(55dvh, 450px);
+    min-height: 310px;
+  }
+}
+
+@media (min-width: 2200px) {
+  .qicn-network-viewport {
+    height: min(72dvh, 920px);
   }
 }

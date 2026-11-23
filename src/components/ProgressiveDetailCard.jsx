@@ -127,37 +127,41 @@ export const TabPlainHeader = React.memo(function TabPlainHeader({
   const resolvedTitle = title || copy.casualTitle || 'Sección';
   const resolvedTag = technicalTag !== null ? technicalTag : (copy.technicalTag || '');
   const resolvedSummary = plainSummary || copy.plainSummary || '';
+  const hasExtraActions = Boolean(actions || rightSlot);
 
   return (
-    <div className={`mb-4 rounded-xl border ${palette.shell} ${compact ? 'p-3' : 'p-4'} shadow-sm`}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className={`mb-3 sm:mb-4 rounded-xl border ${palette.shell} ${compact ? 'p-2.5 sm:p-3' : 'p-3 sm:p-4'} shadow-sm`}>
+      <div className={hasExtraActions
+        ? 'flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3'
+        : 'flex items-start justify-between gap-2 sm:gap-3'}
+      >
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            {icon && <span className={palette.title}>{icon}</span>}
-            <h2 className={`${compact ? 'text-base' : 'text-lg'} font-bold tracking-tight ${palette.title}`}>
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            {icon && <span className={`shrink-0 ${palette.title}`}>{icon}</span>}
+            <h2 className={`${compact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'} font-bold tracking-tight ${palette.title}`}>
               {resolvedTitle}
             </h2>
             {resolvedTag && (
-              <span className={`rounded-md border px-2 py-0.5 font-mono text-[10px] font-medium ${palette.tag}`}>
+              <span className={`max-w-full truncate rounded-md border px-1.5 sm:px-2 py-0.5 font-mono text-[10px] font-medium ${palette.tag}`}>
                 {resolvedTag}
               </span>
             )}
           </div>
           {resolvedSummary && (
-            <p className="mt-1 text-xs leading-relaxed text-slate-300">
+            <p className="mt-1 text-[11px] sm:text-xs leading-relaxed text-slate-300">
               {resolvedSummary}
             </p>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
           {actions || rightSlot}
           <button
             type="button"
             onClick={toggle}
             aria-expanded={open}
             data-testid={tabId ? `tab-details-toggle-${tabId}` : undefined}
-            className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 font-mono text-[11px] font-semibold transition-colors ${palette.button}`}
+            className={`inline-flex min-h-[32px] shrink-0 items-center gap-1 rounded-lg border px-2.5 py-1 font-mono text-[11px] font-semibold transition-colors ${palette.button}`}
           >
             <span>{open ? 'Ocultar' : detailsButtonLabel}</span>
             <span aria-hidden="true">{open ? '▴' : '▾'}</span>
@@ -245,21 +249,21 @@ export const DetailToggleStrip = React.memo(function DetailToggleStrip({
 
   return (
     <div className={`rounded-lg border border-white/10 bg-slate-950/60 ${className}`}>
-      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
+      <div className="flex items-center justify-between gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2">
         <div className="min-w-0 flex-1 text-xs text-slate-300">{summary}</div>
         <button
           type="button"
           onClick={toggle}
           aria-expanded={open}
           data-testid={buttonTestId}
-          className={`inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-1 font-mono text-[10px] font-semibold transition-colors ${palette.button}`}
+          className={`inline-flex shrink-0 whitespace-nowrap items-center gap-1 rounded-md border px-2 py-1 font-mono text-[10px] font-semibold transition-colors ${palette.button}`}
         >
           <span>{open ? labelOpen : labelClosed}</span>
           <span aria-hidden="true">{open ? '▴' : '▾'}</span>
         </button>
       </div>
       {open && (
-        <div className="border-t border-white/10 px-3 pb-3 pt-2.5 text-xs text-slate-200">
+        <div className="border-t border-white/10 px-2.5 pb-2.5 pt-2 sm:px-3 sm:pb-3 sm:pt-2.5 text-xs text-slate-200">
           {children}
         </div>
       )}

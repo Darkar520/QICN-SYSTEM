@@ -10,29 +10,38 @@ import {
 } from './icons/SimulationIcons.jsx';
 
 export const primaryTabs = [
-  { id: 'guide', icon: Lightbulb, label: 'Guía', subtitle: 'Inicio' },
-  { id: 'validation', icon: Layers, label: 'Validación', subtitle: 'Ajustes' },
-  { id: 'core', icon: Brain, label: 'Núcleo', subtitle: 'Motor' },
-  { id: 'network', icon: Network, label: 'Red Nodal', subtitle: 'Mapa 3D' },
-  { id: 'history', icon: LineChart, label: 'Historial', subtitle: 'Evolución' }
+  { id: 'guide', icon: Lightbulb, label: 'Guía', subtitle: 'Inicio rápido y mapa', sidebarGroup: 'observe' },
+  { id: 'network', icon: Network, label: 'Red Nodal', subtitle: 'Red viva en 3D', sidebarGroup: 'observe' },
+  { id: 'core', icon: Brain, label: 'Núcleo', subtitle: 'Motor central y salud', sidebarGroup: 'observe' },
+  { id: 'history', icon: LineChart, label: 'Historial', subtitle: 'Evolución en el tiempo', sidebarGroup: 'observe' },
+  { id: 'validation', icon: Layers, label: 'Validación', subtitle: 'Ajustes en vivo', sidebarGroup: 'interact' }
 ];
 
 export const moreTabs = [
-  { id: 'chat', icon: MessageSquare, label: 'Chat', subtitle: 'Conversar con QICN', group: 'interact' },
-  { id: 'field', icon: Waves, label: 'Campo', subtitle: 'Sincronización global', group: 'interact' },
-  { id: 'sensory', icon: Eye, label: 'Sensorial', subtitle: 'Cámara y micrófono', group: 'interact' },
-  { id: 'level3-supervisor', icon: ShieldCheck, label: 'Supervisor', subtitle: 'Auto-análisis seguro', group: 'supervise' },
-  { id: 'sovereignty', icon: ShieldCheck, label: 'Integridad', subtitle: 'Auditoría y causalidad', group: 'supervise' },
-  { id: 'memory', icon: Database, label: 'Memoria', subtitle: 'Guardado y registro', group: 'supervise' },
-  { id: 'controls', icon: Code, label: 'Controles', subtitle: 'Modos del motor', group: 'configure' },
-  { id: 'api-control', icon: Settings, label: 'API', subtitle: 'Gemini y servicios', group: 'configure' },
-  { id: 'autonomy-evolution', icon: InfinityIcon, label: 'Autoevolución', subtitle: 'Propuestas de código', group: 'configure' }
+  { id: 'field', icon: Waves, label: 'Campo', subtitle: 'Sincronización global', group: 'interact', sidebarGroup: 'observe' },
+  { id: 'chat', icon: MessageSquare, label: 'Chat', subtitle: 'Conversar con QICN', group: 'interact', sidebarGroup: 'interact' },
+  { id: 'sensory', icon: Eye, label: 'Sensorial', subtitle: 'Cámara y micrófono', group: 'interact', sidebarGroup: 'interact' },
+  { id: 'level3-supervisor', icon: ShieldCheck, label: 'Supervisor', subtitle: 'Auto-análisis seguro', group: 'supervise', sidebarGroup: 'supervise' },
+  { id: 'sovereignty', icon: ShieldCheck, label: 'Integridad', subtitle: 'Auditoría y causalidad', group: 'supervise', sidebarGroup: 'supervise' },
+  { id: 'memory', icon: Database, label: 'Memoria', subtitle: 'Guardado y registro', group: 'supervise', sidebarGroup: 'supervise' },
+  { id: 'controls', icon: Code, label: 'Controles', subtitle: 'Modos del motor', group: 'configure', sidebarGroup: 'configure' },
+  { id: 'api-control', icon: Settings, label: 'API', subtitle: 'Gemini y servicios', group: 'configure', sidebarGroup: 'configure' },
+  { id: 'autonomy-evolution', icon: InfinityIcon, label: 'Autoevolución', subtitle: 'Propuestas de código', group: 'configure', sidebarGroup: 'configure' }
 ];
+
+export const ALL_NAV_TABS = Object.freeze([...primaryTabs, ...moreTabs]);
 
 export const MORE_TAB_GROUPS = Object.freeze([
   { id: 'interact', title: 'Conversar y observar', accent: 'text-cyan-300' },
   { id: 'supervise', title: 'Supervisión y auditoría', accent: 'text-emerald-300' },
   { id: 'configure', title: 'Ajustes y conexión IA', accent: 'text-fuchsia-300' }
+]);
+
+export const SIDEBAR_NAV_GROUPS = Object.freeze([
+  { id: 'observe', title: 'Observar y explorar', accent: 'text-cyan-300', dot: 'bg-cyan-400' },
+  { id: 'interact', title: 'Conversar e interactuar', accent: 'text-indigo-300', dot: 'bg-indigo-400' },
+  { id: 'supervise', title: 'Supervisión y auditoría', accent: 'text-emerald-300', dot: 'bg-emerald-400' },
+  { id: 'configure', title: 'Ajustes y conexión IA', accent: 'text-fuchsia-300', dot: 'bg-fuchsia-400' }
 ]);
 
 export const LazyQICNBTab = React.lazy(() => import('./lazy-tabs/QICNBTab.jsx'));
@@ -178,6 +187,7 @@ export const NavigationTabButton = React.memo(function NavigationTabButton({
   subtitle = '',
   compact = false,
   fullWidth = false,
+  variant = 'pill',
   selectedTab,
   onSelect,
   onOpenInfo
@@ -187,6 +197,62 @@ export const NavigationTabButton = React.memo(function NavigationTabButton({
     ? `QUÉ ES\n${help.whatIs}\n\nPARA QUÉ SIRVE\n${help.whyItMatters}\n\nQUÉ MIRAR PRIMERO\n- ${(help.firstCheck || []).join('\n- ')}`
     : `${label}\n\n${subtitle || 'Sección operativa del sistema.'}`;
   const isSelected = selectedTab === tabId;
+
+  if (variant === 'sidebar') {
+    return (
+      <div
+        className={`group flex w-full items-center gap-1 rounded-xl border transition-all ${isSelected
+          ? 'border-cyan-400/55 bg-cyan-500/15 text-white shadow-sm shadow-cyan-500/10'
+          : 'border-transparent bg-transparent text-slate-300 hover:border-slate-700/80 hover:bg-slate-900/90 hover:text-white'
+          }`}
+      >
+        <button
+          type="button"
+          onClick={() => onSelect(tabId)}
+          aria-current={isSelected ? 'page' : undefined}
+          className="flex min-w-0 flex-1 items-center gap-2.5 px-2.5 py-1.5 text-left"
+        >
+          <span
+            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border transition-colors ${isSelected
+              ? 'border-cyan-400/50 bg-cyan-500/20 text-cyan-200'
+              : 'border-slate-800 bg-slate-900/80 text-slate-400 group-hover:border-cyan-500/35 group-hover:text-cyan-300'
+              }`}
+          >
+            <Icon className="h-3.5 w-3.5" />
+          </span>
+          <span className="min-w-0 flex-1 leading-tight">
+            <span className="block truncate text-[12.5px] font-semibold tracking-tight">
+              {label}
+            </span>
+            {subtitle && (
+              <span className={`block truncate text-[10.5px] ${isSelected ? 'text-cyan-200/85' : 'text-slate-400'}`}>
+                {subtitle}
+              </span>
+            )}
+          </span>
+          {isSelected && (
+            <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
+          )}
+        </button>
+        <button
+          type="button"
+          className={`mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[11px] font-semibold transition-colors ${isSelected
+            ? 'text-cyan-200/75 hover:bg-cyan-500/20 hover:text-white'
+            : 'text-slate-500 opacity-70 hover:bg-slate-800 hover:text-cyan-200 group-hover:opacity-100'
+            }`}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onOpenInfo(`${label} — ayuda rápida`, helpContent);
+          }}
+          title={`Ayuda rápida de ${label}`}
+          aria-label={`Información de ${label}`}
+        >
+          ?
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div

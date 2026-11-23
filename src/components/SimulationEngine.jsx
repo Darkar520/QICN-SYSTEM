@@ -59,7 +59,7 @@ import { CollapsibleSection, SECTION_ACCENT_STYLES, readPersistedCollapsibleStat
 import { TabPlainHeader, DetailToggleStrip, MetricDualLabel } from './ProgressiveDetailCard.jsx';
 import { QUICK_TAB_MAP_GROUPS } from '../content/plainLanguageTabCopy.js';
 import { InfoModal, PersistentInfoModal } from './InfoModal.jsx';
-import { primaryTabs, moreTabs, MORE_TAB_GROUPS, LazyQICNBTab, LazyApiControlTab, LazySensoryTab, LazySovereigntyTab, LazyAutonomyEvolutionTab, LazyLevel3SupervisorTab, TabLoadingFallback, renderLazyMoreTab, tabHelpMeta, tabTourSteps, NavigationTabButton } from './TabConfig.jsx';
+import { ALL_NAV_TABS, SIDEBAR_NAV_GROUPS, LazyQICNBTab, LazyApiControlTab, LazySensoryTab, LazySovereigntyTab, LazyAutonomyEvolutionTab, LazyLevel3SupervisorTab, TabLoadingFallback, renderLazyMoreTab, tabHelpMeta, tabTourSteps, NavigationTabButton } from './TabConfig.jsx';
 import Level3SupervisorAuditTab from './Level3SupervisorAuditTab.jsx';
 import {
   LEVEL3_DEFAULT_POLICY,
@@ -1550,11 +1550,24 @@ export const QICNConsciousnessSystem = () => {
     if (tabId === 'chat') followChatRef.current = true;
     setSelectedTab(tabId);
     setIsMoreMenuOpen(false);
+    setMoreTabQuery('');
     setRecentTabs((prev) => {
       const next = [tabId, ...prev.filter((item) => item !== tabId)];
       return next.slice(0, 3);
     });
   }, []);
+
+  useEffect(() => {
+    if (!isMoreMenuOpen) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsMoreMenuOpen(false);
+        setMoreTabQuery('');
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isMoreMenuOpen]);
 
   const buildQuantumPollUrl = useCallback((baseEndpoint, options = {}) => {
     const endpoint = String(baseEndpoint || quantumUiConfig.endpoint || '').trim();
@@ -9218,37 +9231,252 @@ return (
         </div>
       </div>
     </header>
-    <div className="mx-auto mb-2 flex min-h-9 w-full max-w-[1500px] flex-shrink-0 flex-col">
-      <DetailToggleStrip
-        sectionId="topbar-device-capabilities"
-        accent="cyan"
-        defaultOpen={false}
-        labelClosed="Dispositivo · Detalles"
-        summary={(
-          <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-cyan-200">
-            <span>
-              Simulación interna · Paso <strong className="font-mono text-white">{simulationStep}</strong> · <span className="text-slate-400">internal_support_only</span>
-            </span>
-            <span
-              data-testid="runtime-health-badge"
-              className={`rounded-full border px-2 py-0.5 font-semibold ${runtimeHealthClass}`}
-              title={`ticks=${runtimeHealth.uptime_ticks}; ccc=${runtimeHealth.last_ccc.toFixed(3)}; il=${runtimeHealth.inverse_limit_score.toFixed(3)}`}
+    {(() => {
+      const activeNavTab = ALL_NAV_TABS.find((entry) => entry.id === selectedTab) || ALL_NAV_TABS[0];
+      const ActiveNavIcon = activeNavTab?.icon || Lightbulb;
+      const trimmedSidebarQuery = moreTabQuery.trim().toLowerCase();
+      const filteredSidebarTabs = ALL_NAV_TABS.filter((tab) =>
+        `${tab.label} ${tab.subtitle}`.toLowerCase().includes(trimmedSidebarQuery)
+      );
+      const recentSidebarTabs = recentTabs
+        .map((tabId) => ALL_NAV_TABS.find((entry) => entry.id === tabId))
+        .filter(Boolean);
+
+      return (
+        <>
+          <div className="mx-auto mb-2 flex min-h-9 w-full max-w-[1500px] flex-shrink-0 items-start gap-2.5">
+            <button
+              type="button"
+              onClick={() => setIsMoreMenuOpen((prev) => !prev)}
+              aria-expanded={isMoreMenuOpen}
+              aria-controls="qicn-sidebar-drawer"
+              data-testid="sidebar-menu-toggle"
+              className={`inline-flex min-h-[38px] shrink-0 items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
+                isMoreMenuOpen
+                  ? 'border-cyan-400/75 bg-cyan-600/30 text-white shadow-md shadow-cyan-500/20'
+                  : 'border-cyan-500/35 bg-slate-950/80 text-slate-100 hover:border-cyan-400/70 hover:bg-slate-900'
+              }`}
             >
-              Salud: {runtimeHealth.status}
-            </span>
+              <svg className="h-4 w-4 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                {isMoreMenuOpen ? (
+                  <>
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                  </>
+                ) : (
+                  <>
+                    <line x1="4" y1="7" x2="20" y2="7" />
+                    <line x1="4" y1="12" x2="20" y2="12" />
+                    <line x1="4" y1="17" x2="16" y2="17" />
+                  </>
+                )}
+              </svg>
+              <span aria-hidden="true">{isMoreMenuOpen ? 'Cerrar' : 'Menú'}</span>
+              <span className="sr-only">{isMoreMenuOpen ? 'Cerrar' : 'Mas'}</span>
+              <span className="hidden h-3.5 w-px bg-slate-700/80 sm:inline-block" aria-hidden="true" />
+              <span className="hidden items-center gap-1.5 font-medium text-cyan-200 sm:inline-flex">
+                <ActiveNavIcon className="h-3.5 w-3.5 text-cyan-300" />
+                <span>{activeNavTab?.label || 'Secciones'}</span>
+              </span>
+            </button>
+
+            <div className="min-w-0 flex-1">
+              <DetailToggleStrip
+                sectionId="topbar-device-capabilities"
+                accent="cyan"
+                defaultOpen={false}
+                labelClosed="Dispositivo · Detalles"
+                summary={(
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-cyan-200">
+                    <span>
+                      Simulación interna · Paso <strong className="font-mono text-white">{simulationStep}</strong> · <span className="text-slate-400">internal_support_only</span>
+                    </span>
+                    <span
+                      data-testid="runtime-health-badge"
+                      className={`rounded-full border px-2 py-0.5 font-semibold ${runtimeHealthClass}`}
+                      title={`ticks=${runtimeHealth.uptime_ticks}; ccc=${runtimeHealth.last_ccc.toFixed(3)}; il=${runtimeHealth.inverse_limit_score.toFixed(3)}`}
+                    >
+                      Salud: {runtimeHealth.status}
+                    </span>
+                  </div>
+                )}
+              >
+                <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] text-cyan-200">
+                  <span>Viewport: {breakpoint}</span>
+                  <span>SecureContext: {deviceCapabilities.secureContext ? 'yes' : 'no'}</span>
+                  <span>Cam: {deviceCapabilities.supportsCamera ? 'yes' : 'no'}</span>
+                  <span>Mic: {deviceCapabilities.supportsMicrophone ? 'yes' : 'no'}</span>
+                  <span>Speech: {deviceCapabilities.supportsSpeechRecognition ? 'yes' : 'no'}</span>
+                  <span>Touch: {deviceCapabilities.touchEnabled ? 'yes' : 'no'}</span>
+                </div>
+              </DetailToggleStrip>
+            </div>
           </div>
-        )}
-      >
-        <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] text-cyan-200">
-          <span>Viewport: {breakpoint}</span>
-          <span>SecureContext: {deviceCapabilities.secureContext ? 'yes' : 'no'}</span>
-          <span>Cam: {deviceCapabilities.supportsCamera ? 'yes' : 'no'}</span>
-          <span>Mic: {deviceCapabilities.supportsMicrophone ? 'yes' : 'no'}</span>
-          <span>Speech: {deviceCapabilities.supportsSpeechRecognition ? 'yes' : 'no'}</span>
-          <span>Touch: {deviceCapabilities.touchEnabled ? 'yes' : 'no'}</span>
-        </div>
-      </DetailToggleStrip>
-    </div>
+
+          {/* Botón flotante discreto solo cuando se baja el scroll y el menú está escondido */}
+          {!navVisible && !isMoreMenuOpen && (
+            <button
+              type="button"
+              onClick={() => setIsMoreMenuOpen(true)}
+              aria-label="Abrir menú lateral de secciones"
+              data-testid="sidebar-menu-floating-toggle"
+              className="fixed bottom-4 left-4 z-40 inline-flex items-center gap-2 rounded-full border border-cyan-400/50 bg-slate-950/90 px-3.5 py-2 text-xs font-semibold text-cyan-100 shadow-xl shadow-black/50 backdrop-blur-md transition hover:border-cyan-300 hover:bg-slate-900"
+            >
+              <svg className="h-4 w-4 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <line x1="4" y1="7" x2="20" y2="7" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="17" x2="16" y2="17" />
+              </svg>
+              <span>Menú</span>
+              <span className="hidden text-slate-400 sm:inline">· {activeNavTab?.label}</span>
+            </button>
+          )}
+
+          {/* Menú lateral desplegable (100% oculto cuando no está abierto) */}
+          {isMoreMenuOpen && (
+            <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true" aria-label="Menú lateral de secciones">
+              <div
+                className="fixed inset-0 bg-slate-950/65 backdrop-blur-[2px] transition-opacity"
+                onClick={() => {
+                  setIsMoreMenuOpen(false);
+                  setMoreTabQuery('');
+                }}
+                aria-hidden="true"
+              />
+              <aside
+                id="qicn-sidebar-drawer"
+                className="relative z-10 flex h-full w-[320px] max-w-[88vw] flex-col border-r border-cyan-500/25 bg-slate-950/95 shadow-2xl shadow-black/70 backdrop-blur-xl"
+              >
+                <div className="flex items-center justify-between gap-2 border-b border-slate-800/90 px-4 py-3.5">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-cyan-300" />
+                    <span className="text-sm font-bold tracking-tight text-white">Secciones</span>
+                    <span className="rounded-full border border-slate-700 bg-slate-900 px-2 py-0.5 font-mono text-[10px] text-slate-400">
+                      {ALL_NAV_TABS.length}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMoreMenuOpen(false);
+                      setMoreTabQuery('');
+                    }}
+                    aria-label="Cerrar menú lateral"
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-700/80 bg-slate-900 text-slate-300 transition hover:border-cyan-400/50 hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="border-b border-slate-800/80 px-3.5 py-2.5">
+                  <div className="relative flex items-center">
+                    <input
+                      type="text"
+                      value={moreTabQuery}
+                      onChange={(e) => setMoreTabQuery(e.target.value)}
+                      placeholder="Buscar sección (Red Nodal, Chat, API…)"
+                      className="w-full rounded-lg border border-slate-700/90 bg-slate-900/90 px-3 py-2 pr-8 text-xs text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                    />
+                    {moreTabQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setMoreTabQuery('')}
+                        aria-label="Limpiar búsqueda"
+                        className="absolute right-2 text-xs text-slate-400 hover:text-white"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  {!trimmedSidebarQuery && recentSidebarTabs.length > 0 && (
+                    <div className="mt-2 flex flex-wrap items-center gap-1 text-[11px]">
+                      <span className="mr-0.5 text-slate-500">Recientes:</span>
+                      {recentSidebarTabs.map((tab) => (
+                        <button
+                          key={`recent-${tab.id}`}
+                          type="button"
+                          onClick={() => handleTabSelect(tab.id)}
+                          className={`rounded-md border px-2 py-0.5 text-[11px] transition-colors ${selectedTab === tab.id
+                            ? 'border-cyan-400/60 bg-cyan-600/30 font-semibold text-white'
+                            : 'border-slate-700/80 bg-slate-900 text-slate-300 hover:border-cyan-500/40 hover:text-white'
+                            }`}
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <nav
+                  aria-label="Top 5 operativo + menu Mas"
+                  className="flex-1 space-y-3 overflow-y-auto px-3 py-2.5"
+                  style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(100,116,139,0.45) transparent' }}
+                >
+                  {trimmedSidebarQuery ? (
+                    filteredSidebarTabs.length > 0 ? (
+                      <div className="space-y-1">
+                        {filteredSidebarTabs.map((tab) => (
+                          <NavigationTabButton
+                            key={`sidebar-search-${tab.id}`}
+                            tabId={tab.id}
+                            icon={tab.icon}
+                            label={tab.label}
+                            subtitle={tab.subtitle}
+                            variant="sidebar"
+                            selectedTab={selectedTab}
+                            onSelect={handleTabSelect}
+                            onOpenInfo={openPersistentInfoModal}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4 text-center text-xs text-slate-400">
+                        Sin resultados para «{moreTabQuery}».
+                      </div>
+                    )
+                  ) : (
+                    SIDEBAR_NAV_GROUPS.map((group) => {
+                      const groupTabs = ALL_NAV_TABS.filter((tab) => tab.sidebarGroup === group.id);
+                      return (
+                        <div key={group.id} className="space-y-1">
+                          <div className="flex items-center gap-2 px-2 pb-1">
+                            <span className={`h-1.5 w-1.5 rounded-full ${group.dot}`} aria-hidden="true" />
+                            <span className={`text-[10px] font-semibold uppercase tracking-wider ${group.accent}`}>
+                              {group.title}
+                            </span>
+                          </div>
+                          <div className="space-y-0.5">
+                            {groupTabs.map((tab) => (
+                              <NavigationTabButton
+                                key={`sidebar-${tab.id}`}
+                                tabId={tab.id}
+                                icon={tab.icon}
+                                label={tab.label}
+                                subtitle={tab.subtitle}
+                                variant="sidebar"
+                                selectedTab={selectedTab}
+                                onSelect={handleTabSelect}
+                                onOpenInfo={openPersistentInfoModal}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </nav>
+
+                <div className="border-t border-slate-800/90 px-4 py-2.5 text-[10px] text-slate-500">
+                  Pulsa <kbd className="rounded border border-slate-700 bg-slate-900 px-1 py-0.5 font-mono text-slate-300">Esc</kbd> o haz clic fuera para ocultar
+                </div>
+              </aside>
+            </div>
+          )}
+        </>
+      );
+    })()}
 
     {/* Panel de Control Principal */}
     <main className="mx-auto grid w-full min-w-0 max-w-[1500px] flex-1 mb-6 grid-cols-1 items-start gap-4 lg:mb-8 lg:grid-cols-3 lg:gap-8">
@@ -9468,186 +9696,9 @@ return (
         </div>
       </section>
 
-      {/* Columna Central y Derecha (Contenido de Pestaña) */}
+      {/* Columna Central y Derecha (Contenido de Pestaña a pantalla limpia — el menú lateral vive oculto hasta abrirlo) */}
       <section className="order-1 min-w-0 max-w-full flex flex-col lg:order-2 lg:col-span-2">
-        {/* Navegación de Pestañas - AUTO-HIDE on scroll */}
-        {(() => {
-          const activeMoreTab = moreTabs.find((entry) => entry.id === selectedTab) || null;
-          const trimmedMoreQuery = moreTabQuery.trim().toLowerCase();
-          const filteredMoreTabs = moreTabs.filter((tab) =>
-            `${tab.label} ${tab.subtitle}`.toLowerCase().includes(trimmedMoreQuery)
-          );
-          const recentMoreTabs = recentTabs
-            .filter((tabId) => !primaryTabs.some((tab) => tab.id === tabId))
-            .map((tabId) => moreTabs.find((entry) => entry.id === tabId))
-            .filter(Boolean);
-
-          return (
-            <nav
-              aria-label="Top 5 operativo + menu Mas"
-              className="mb-4 lg:mb-5 flex-shrink-0 rounded-2xl border border-cyan-500/25 p-2.5 shadow-xl"
-              style={{
-                background: 'rgba(15,23,42,0.94)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                position: 'relative',
-                zIndex: 30,
-                boxShadow: navVisible
-                  ? '0 8px 32px rgba(6,182,212,0.12), 0 1px 0 rgba(6,182,212,0.18)'
-                  : '0 4px 16px rgba(6,182,212,0.08)'
-              }}
-            >
-              <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 xl:grid-cols-6">
-                {primaryTabs.map((tab) => (
-                  <NavigationTabButton
-                    key={`primary-${tab.id}`}
-                    tabId={tab.id}
-                    icon={tab.icon}
-                    label={tab.label}
-                    subtitle={tab.subtitle}
-                    fullWidth={true}
-                    selectedTab={selectedTab}
-                    onSelect={handleTabSelect}
-                    onOpenInfo={openPersistentInfoModal}
-                  />
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setIsMoreMenuOpen((prev) => !prev)}
-                  aria-expanded={isMoreMenuOpen}
-                  className={`flex w-full items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-all ${isMoreMenuOpen
-                    ? 'border-fuchsia-400/70 bg-fuchsia-700/45 text-fuchsia-50 shadow-md shadow-fuchsia-500/20'
-                    : activeMoreTab
-                      ? 'border-cyan-400/60 bg-cyan-950/60 text-cyan-100 hover:bg-cyan-900/60'
-                      : 'border-slate-700/80 bg-slate-900/80 text-slate-200 hover:border-fuchsia-400/50 hover:bg-slate-800/90'
-                    }`}
-                >
-                  <span className="min-w-0 leading-tight">
-                    <span className="block text-[13px] font-semibold tracking-tight">
-                      {isMoreMenuOpen ? 'Cerrar' : 'Mas'}
-                    </span>
-                    <span className="mt-0.5 block truncate text-[10px] text-slate-400">
-                      {activeMoreTab ? activeMoreTab.label : `${moreTabs.length} secciones`}
-                    </span>
-                  </span>
-                  <span aria-hidden="true" className="shrink-0 font-mono text-xs opacity-80">
-                    {isMoreMenuOpen ? '▴' : '▾'}
-                  </span>
-                </button>
-              </div>
-
-              {(activeMoreTab || recentMoreTabs.length > 0) && (
-                <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/80 pt-2 text-[11px]">
-                  {activeMoreTab ? (
-                    <div className="flex items-center gap-1.5 text-cyan-200">
-                      <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-                      <span className="text-slate-400">Viendo:</span>
-                      <span className="font-semibold text-white">{activeMoreTab.label}</span>
-                      <span className="hidden text-slate-500 sm:inline">· {activeMoreTab.subtitle}</span>
-                    </div>
-                  ) : <div />}
-
-                  {recentMoreTabs.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-1">
-                      <span className="mr-1 text-slate-500">Recientes:</span>
-                      {recentMoreTabs.map((tab) => (
-                        <button
-                          key={`recent-${tab.id}`}
-                          type="button"
-                          onClick={() => handleTabSelect(tab.id)}
-                          className={`rounded-lg border px-2 py-0.5 text-[11px] transition-colors ${selectedTab === tab.id
-                            ? 'border-cyan-400/60 bg-cyan-600/35 text-white font-semibold'
-                            : 'border-slate-700/70 bg-slate-900/80 text-slate-300 hover:border-cyan-500/40 hover:text-white'
-                            }`}
-                        >
-                          {tab.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {isMoreMenuOpen && (
-                <div className="mt-2.5 rounded-xl border border-fuchsia-500/30 bg-slate-950/95 p-3 shadow-2xl">
-                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <input
-                      type="text"
-                      value={moreTabQuery}
-                      onChange={(e) => setMoreTabQuery(e.target.value)}
-                      placeholder="Buscar sección (ej. Chat, Campo, Supervisor, API, Integridad)..."
-                      className="min-w-[220px] flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
-                    />
-                    {moreTabQuery && (
-                      <button
-                        type="button"
-                        onClick={() => setMoreTabQuery('')}
-                        className="rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-2 text-xs text-slate-300 hover:bg-slate-800"
-                      >
-                        Limpiar
-                      </button>
-                    )}
-                  </div>
-
-                  {trimmedMoreQuery ? (
-                    filteredMoreTabs.length > 0 ? (
-                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                        {filteredMoreTabs.map((tab) => (
-                          <NavigationTabButton
-                            key={`more-${tab.id}`}
-                            tabId={tab.id}
-                            icon={tab.icon}
-                            label={tab.label}
-                            subtitle={tab.subtitle}
-                            fullWidth={true}
-                            selectedTab={selectedTab}
-                            onSelect={handleTabSelect}
-                            onOpenInfo={openPersistentInfoModal}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4 text-center text-xs text-slate-400">
-                        No hay secciones que coincidan con «{moreTabQuery}».
-                      </div>
-                    )
-                  ) : (
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                      {MORE_TAB_GROUPS.map((group) => {
-                        const groupTabs = moreTabs.filter((tab) => tab.group === group.id);
-                        return (
-                          <div key={group.id} className="space-y-1.5 rounded-xl border border-slate-800/90 bg-slate-900/50 p-2.5">
-                            <div className={`px-1 text-[11px] font-semibold uppercase tracking-wider ${group.accent}`}>
-                              {group.title}
-                            </div>
-                            <div className="space-y-1.5">
-                              {groupTabs.map((tab) => (
-                                <NavigationTabButton
-                                  key={`more-${tab.id}`}
-                                  tabId={tab.id}
-                                  icon={tab.icon}
-                                  label={tab.label}
-                                  subtitle={tab.subtitle}
-                                  fullWidth={true}
-                                  selectedTab={selectedTab}
-                                  onSelect={handleTabSelect}
-                                  onOpenInfo={openPersistentInfoModal}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
-            </nav>
-          );
-        })()}
-
-        {/* Contenido de la Pestaña */}
-        <div className={`min-h-0 min-w-0 flex-1 `}>
+        <div className="min-h-0 min-w-0 flex-1">
           {renderCurrentTab()}
         </div>
       </section>

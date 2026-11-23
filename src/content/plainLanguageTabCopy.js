@@ -4,139 +4,139 @@
 
 export const PLAIN_TAB_COPY = Object.freeze({
   guide: {
-    casualTitle: 'Mapa de Bienvenida',
-    technicalTag: 'Guía Aterrizada 2.0',
-    plainSummary: 'Recorrido rápido para entender qué hace esta simulación y a qué pestaña ir según lo que quieras ver.',
-    inSimpleWords: 'Esta vista reúne el recorrido guiado, un mapa directo de todas las secciones y un glosario progresivo de términos.',
-    analogy: 'Es como el mapa de entrada de un observatorio: te dice qué hace cada sala antes de entrar a ver los instrumentos.',
-    whatToTry: 'Usa el mapa rápido de abajo para saltar a Red Nodal, Chat o Bitácora Nivel 3, o sigue los 3 pasos del recorrido.',
+    casualTitle: 'Guía Aterrizada',
+    technicalTag: 'Mapa de inicio y glosario',
+    plainSummary: 'Punto de partida rápido para entender qué simula esta plataforma, qué significa cada número principal y a qué sección ir.',
+    inSimpleWords: 'Esta vista reúne una explicación en 30 segundos, un mapa directo de todas las secciones y un glosario que puedes leer en modo básico, intermedio o avanzado.',
+    analogy: 'Es como el plano de entrada de un laboratorio: te orienta en medio minuto antes de entrar a explorar cada instrumento.',
+    whatToTry: 'Pulsa «Iniciar simulación» a la izquierda y salta a Red Nodal, Chat o Supervisor Autónomo desde el mapa rápido.',
     boundary: 'Telemetría interna del runtime (internal_support_only · external_support_certified = false).'
   },
   validation: {
-    casualTitle: 'Ajustes de Respuesta y Sensibilidad',
-    technicalTag: 'Validación Empírica · Cf & Bs',
-    plainSummary: 'Cuatro deslizadores base para ver cómo cambia la cohesión de la red cuando ajustas complejidad, estabilidad y aprendizaje.',
-    inSimpleWords: 'Pausa la simulación, mueve uno de los 4 controles y vuelve a iniciarla para observar cómo reacciona el índice global (CCC).',
-    analogy: 'Es como un banco de ecualización de 4 perillas: subes o bajas sensibilidad y ves cómo responde la armonía general.',
-    whatToTry: 'Abre "Detalles" en cualquier deslizador para leer su efecto técnico y el diagnóstico del puente (Paper 9 / Paper 10).',
+    casualTitle: 'Ajustes en Vivo',
+    technicalTag: 'Validación Empírica · Cf, Bs, K, T',
+    plainSummary: 'Cuatro controles interactivos para mover la complejidad, estabilidad y sensibilidad del motor en tiempo real y ver cómo responde.',
+    inSimpleWords: 'Puedes mover cualquiera de las 4 perillas incluso mientras corre la simulación. El sistema responde al instante y recalibra automáticamente K y T cuando está activo.',
+    analogy: 'Funciona como un ecualizador de 4 perillas: ajustas cuánto se conecta o cuánto explora la red y observas el efecto en la cohesión global.',
+    whatToTry: 'Con la simulación en marcha, sube o baja K o T y mira cómo el motor vuelve a equilibrarlos en directo.',
     boundary: 'Pruebas de sensibilidad interna; mover un parámetro no constituye validación científica externa.'
   },
   core: {
-    casualTitle: 'Motor Central y Estado Dinámico',
+    casualTitle: 'Motor Central',
     technicalTag: 'Núcleo Ontológico · Capa 1',
-    plainSummary: 'Resume si la simulación está evolucionando con energía, manteniéndose estable o entrando en estancamiento.',
-    inSimpleWords: 'Muestra la lectura actual del sistema y 3 indicadores clave; los 8 paneles forenses profundos quedan ordenados debajo al abrir Detalles.',
-    analogy: 'Funciona como el tablero principal de un motor: arriba ves velocidad y temperatura, y bajo el capó tienes todos los sensores.',
-    whatToTry: 'Revisa los 3 indicadores superiores (Estancamiento, Impulso PMIA y Régimen) y abre solo el panel técnico que necesites.',
+    plainSummary: 'Tablero de salud del motor: te dice si la simulación avanza con energía, se estabiliza o necesita reactivarse.',
+    inSimpleWords: 'Arriba ves 3 señales fáciles de leer (Actividad, Impulso de ajuste y Régimen). Debajo tienes 7 cajones temáticos con una guía breve dentro de cada uno.',
+    analogy: 'Es el tablero principal de un motor: arriba ves velocidad y estabilidad, y al abrir cada cajón puedes inspeccionar los sensores internos.',
+    whatToTry: 'Lee las 3 tarjetas superiores y abre un cajón a la vez: cada uno explica en una línea qué estás viendo antes de mostrar números.',
     boundary: '«Núcleo Ontológico» es un nombre histórico del módulo; no certifica conciencia ni experiencia subjetiva.'
   },
   network: {
     casualTitle: 'Red Viva en 3D',
     technicalTag: 'Red Nodal · WebGL 3D',
-    plainSummary: 'Visualización interactiva de los nodos conectados alrededor de la torre central constructiva.',
+    plainSummary: 'Visualización interactiva de los 1500 nodos conectados alrededor de la torre central constructiva.',
     inSimpleWords: 'Cada punto es un nodo del modelo y cada línea es una conexión; haz clic en cualquier nodo para aislar su vecindario.',
     analogy: 'Es una maqueta luminosa de la red trabajando en tiempo real: puedes rotarla, acercarte o activar el modo Fino.',
-    whatToTry: 'Prueba el botón "Detalles ▴" en la barra inferior junto a PRESENCIA ESTRUCTURAL o cambia entre η=1/8, η=0 y A=I.',
+    whatToTry: 'Prueba el botón «Detalles ▴» en la barra inferior junto a PRESENCIA ESTRUCTURAL o cambia entre η=1/8, η=0 y A=I.',
     boundary: 'Visualización diagnóstica finita del runtime; no prueba pertenencia a clases teóricas externas.'
   },
   history: {
     casualTitle: 'Evolución en el Tiempo',
     technicalTag: 'Historial · Series CCC / PMIA / Ω',
-    plainSummary: 'Gráfica temporal para ver si la red mantiene su equilibrio o sufre caídas a lo largo de cientos de pasos.',
-    inSimpleWords: 'En lugar de juzgar por un solo instante, aquí ves la película completa de la cohesión y las bandas de comportamiento.',
-    analogy: 'Es como un electrocardiograma de la simulación: te deja ver ritmos, mesetas y recuperaciones.',
-    whatToTry: 'Cambia el rango de pasos arriba y abre "Personalizar series y diagnóstico · Detalles" solo si necesitas filtrar curvas.',
+    plainSummary: 'Gráfica temporal para ver si la red mantiene su equilibrio, mejora o sufre caídas a lo largo de los últimos pasos.',
+    inSimpleWords: 'En lugar de juzgar el sistema por una sola foto, aquí ves la película completa de cómo evolucionan la cohesión, el impulso y el orden.',
+    analogy: 'Es como un electrocardiograma de la simulación: permite distinguir ritmos saludables de líneas planas o caídas bruscas.',
+    whatToTry: 'Pasa el cursor sobre la gráfica para leer un paso exacto, cambia la ventana (60 / 120 / 240 ticks) o congela la curva.',
     boundary: 'Series internas del runtime (internal_support_only · external_support_certified = false).'
   },
   field: {
-    casualTitle: 'Campo de Cohesión Global',
-    technicalTag: 'Campo · Entrelazamiento',
-    plainSummary: 'Mide qué tan sincronizado y estable es el comportamiento colectivo de la red en ventanas recientes.',
-    inSimpleWords: 'Resume la fuerza de conexión global y cuánto fluctúa el campo; las fórmulas y métricas finas se despliegan en Detalles.',
-    analogy: 'Si la Red Nodal muestra cada músico, el Campo muestra qué tan afinada suena la orquesta entera.',
-    whatToTry: 'Observa los 3 indicadores de arriba y despliega "Detalles" para inspeccionar la formulación matemática.',
-    boundary: 'Métrica interna de dispersión y acoplamiento; no implica entrelazamiento cuántico físico.'
+    casualTitle: 'Campo de Sincronización',
+    technicalTag: 'Campo · Cohesión y 4 Sectores',
+    plainSummary: 'Muestra qué tan sincronizada trabaja la red completa y cómo se reparte la actividad entre sus 4 sectores en tiempo real.',
+    inSimpleWords: 'Traduce el movimiento de los 1500 nodos en 4 indicadores claros: sincronía (Resonancia), qué tanto oscila (Variabilidad), enlaces activos y aporte a la cohesión global.',
+    analogy: 'Si Red Nodal muestra a cada músico en el escenario, el Campo mide qué tan afinada y coordinada suena la orquesta entera.',
+    whatToTry: 'Con la simulación corriendo, mira las 4 tarjetas de sectores abajo y prueba cambiar el puente a η=0 en la barra izquierda para ver caer el flujo cruzado.',
+    boundary: 'Métrica interna de coordinación y dispersión de la red; no implica entrelazamiento cuántico físico.'
   },
   memory: {
-    casualTitle: 'Guardado, Historial y Continuidad',
-    technicalTag: 'Memoria · Registro SHA-256 + v3',
-    plainSummary: 'Permite congelar un punto exacto de la simulación (Cristalizar), volver a él (Revocar) y auditar eventos pasados.',
-    inSimpleWords: 'Guarda copias íntegras verificadas por firma SHA-256 y registra los cambios importantes en un libro encadenado.',
-    analogy: 'Combina un punto de guardado exacto con una caja negra que anota cada cambio de estado sin poder alterarlo.',
-    whatToTry: 'Usa Cristalizar/Revocar desde la barra lateral o despliega los bloques de Eventos y Memoria Holográfica abajo.',
+    casualTitle: 'Memoria y Guardado',
+    technicalTag: 'Historial SHA-256 · Continuidad',
+    plainSummary: 'Guarda un registro verificable de tus sesiones y permite congelar un estado exacto (Cristalizar) para volver a él después (Revocar).',
+    inSimpleWords: 'Registra cada evento importante en tu navegador con firma SHA-256 (para detectar alteraciones) y agrupa los fragmentos internos de memoria distribuida en un cajón separado.',
+    analogy: 'Combina un punto de guardado exacto con una caja negra que anota cada hito sin permitir tachaduras.',
+    whatToTry: 'Pulsa «Cristalizar» en la barra izquierda para guardar el estado actual y despliega «Eventos recientes» para ver la cadena verificada.',
     boundary: 'Continuidad de datos e historial operacional verificable; no demuestra identidad personal ni experiencia.'
   },
   controls: {
-    casualTitle: 'Modos del Motor y Parámetros',
-    technicalTag: 'Controles · Arquitectura Runtime',
-    plainSummary: 'Enciende o apaga las capacidades evolutivas del motor (Kaizen, Dinámica Sensorial, Nivel 2 y Nivel 3).',
-    inSimpleWords: 'Arriba tienes los interruptores principales en lenguaje claro; las constantes numéricas y leyes auto-escritas están en Detalles.',
-    analogy: 'Es la caja de interruptores del laboratorio: te permite activar módulos uno por uno y comparar el comportamiento.',
-    whatToTry: 'Abre "Detalles" en los bloques inferiores si deseas editar umbrales finos o inspeccionar los valores mutables de Kaizen.',
-    boundary: 'Todos los interruptores son controles internos de ingeniería; la línea base B0 se conserva en config base.'
+    casualTitle: 'Controles del Motor',
+    technicalTag: 'Modos de Operación',
+    plainSummary: 'Enciende o apaga las cuatro capacidades principales del motor con interruptores claros y descripciones directas.',
+    inSimpleWords: 'Cada tarjeta explica qué cambia cuando activas ese modo (autoajuste, sensores, autorreparación de red o supervisor autónomo). Los decimales internos quedan ocultos en Detalles.',
+    analogy: 'Es el tablero de interruptores del laboratorio: puedes activar o pausar cada capacidad para comparar resultados.',
+    whatToTry: 'Activa o pausa el Supervisor Autónomo o la Plasticidad de red y observa el cambio en Red Nodal o Historial.',
+    boundary: 'Todos los interruptores son controles internos de ingeniería; la línea base B0 se conserva intacta.'
   },
   chat: {
-    casualTitle: 'Conversación Verificada con el Sistema',
-    technicalTag: 'Chat · Sistema B (v5)',
-    plainSummary: 'Haz preguntas en lenguaje natural sobre el estado actual; cada respuesta se verifica contra los datos reales del tick.',
-    inSimpleWords: 'El motor entrega una captura congelada de hechos y el canal de lenguaje solo puede redactar dentro de esos hechos verificados.',
-    analogy: 'Es un portavoz con auditoría automática: antes de mostrarte una frase, un verificador comprueba que los números coincidan.',
-    whatToTry: 'Escribe una pregunta sobre el estado actual o abre el laboratorio de micro-experimentos (Workbench) en el cajón colapsable.',
-    boundary: 'Canal estrictamente observacional (no altera la dinámica del motor; external_support_certified = false).'
+    casualTitle: 'Conversar con QICN',
+    technicalTag: 'Chat Verificado · Sistema B',
+    plainSummary: 'Haz preguntas en lenguaje natural sobre el estado actual; cada cifra se verifica automáticamente contra la lectura real del motor.',
+    inSimpleWords: 'El motor toma una foto exacta del paso actual y el verificador comprueba que cada número mencionado coincida con la simulación real.',
+    analogy: 'Es un portavoz con verificación de hechos integrada: antes de mostrarte una respuesta, confirma que los datos sean exactos.',
+    whatToTry: 'Haz clic en una pregunta sugerida para empezar, o marca «Adjuntar resultado Workbench verificado» para incluir una prueba aislada.',
+    boundary: 'Canal estrictamente observacional (nunca altera la simulación en vivo; external_support_certified = false).'
   },
   'qicn-b': {
     casualTitle: 'Canal Humano–Sistema',
-    technicalTag: 'QICN-B · Protocolo CCC_H',
-    plainSummary: 'Espacio experimental para relacionar la señal humana configurada con el estado interno del simulador.',
-    inSimpleWords: 'Permite explorar el parámetro experimental CCC_H y comprobar su estado actual de medición.',
-    analogy: 'Es un puente de prueba para observar cómo coexisten una referencia externa y la lectura interna.',
-    whatToTry: 'Revisa el indicador principal y abre Detalles para ver la nota metodológica del parámetro CCC_H.',
+    technicalTag: 'Parámetro interno CCC_H',
+    plainSummary: 'Parámetro interno experimental reservado para futuras pruebas con señal externa.',
+    inSimpleWords: 'Muestra el valor interno simulado y confirma de forma transparente que no existe medición humana externa activa.',
+    analogy: 'Es un conector reservado en el laboratorio que por ahora permanece marcado como sin instrumento externo conectado.',
+    whatToTry: 'Consulta el estado de medición para revisar los límites declarados.',
     boundary: 'Parámetro experimental interno (no medido biométricamente ni certificado externamente).'
   },
   'api-control': {
-    casualTitle: 'Conexión de IA y Servicios',
-    technicalTag: 'API · LLM & Entropía Híbrida',
-    plainSummary: 'Verifica si el sistema usa IA externa (Gemini) o funciona en modo local sin conexión, y prueba la conectividad.',
-    inSimpleWords: 'Arriba ves el estado esencial de conexión y tu clave/modelo; los paneles de entropía cuántica y métricas de red están en Detalles.',
-    analogy: 'Es el panel de red y enchufes: te dice de un vistazo si hay conexión activa o si todo corre localmente.',
-    whatToTry: 'Usa el botón de prueba de conexión arriba y despliega "Entropía Cuántica" o "Métricas de tráfico" solo cuando los necesites.',
-    boundary: 'El canal LLM es externo y opcional; si falla o se desactiva, el motor conserva su respaldo local determinista.'
+    casualTitle: 'Conexión de IA (Gemini)',
+    technicalTag: 'API · Clave y Estado',
+    plainSummary: 'Conecta tu clave de Gemini en un solo lugar para habilitar el Chat, el Supervisor Autónomo y las propuestas de Autoevolución.',
+    inSimpleWords: 'Solo necesitas configurar Gemini aquí arriba. Si no pegas ninguna clave, toda la plataforma sigue funcionando localmente con el motor determinista.',
+    analogy: 'Es el enchufe principal de IA: conectas una sola clave de Gemini y todos los módulos inteligentes la aprovechan automáticamente.',
+    whatToTry: 'Pega tu clave de Gemini (AIza… o AQ.…) arriba para activar el modo directo, o sigue usando el motor local sin clave.',
+    boundary: 'La conexión a Gemini es opcional; si falla o se desactiva, el motor conserva su respaldo local determinista.'
   },
   sensory: {
-    casualTitle: 'Cámara y Micrófono en Vivo',
-    technicalTag: 'Sensorial · Percepción Multimodal',
-    plainSummary: 'Activa o desactiva la entrada de cámara y micrófono para que la simulación reaccione a luz, movimiento o sonido.',
-    inSimpleWords: 'Te muestra de forma directa qué sensores están encendidos y qué resume la escena; los espectros técnicos quedan en Detalles.',
-    analogy: 'Son los ojos y oídos opcionales de la simulación: funcionan solo si tú otorgas permiso en el navegador.',
-    whatToTry: 'Enciende cámara o micrófono para ver la respuesta en tiempo real, y abre Detalles para ver bandas de audio y métricas.',
-    boundary: 'Señales locales del navegador usadas como entrada acotada; nunca se envían grabaciones sin tu acción.'
+    casualTitle: 'Cámara y Micrófono',
+    technicalTag: 'Percepción Sensorial Local',
+    plainSummary: 'Conecta opcionalmente tu cámara y micrófono para que la red reaccione a luz, movimiento y sonido de tu entorno en vivo.',
+    inSimpleWords: 'Todo el análisis ocurre localmente dentro de tu navegador: no se graba ni se sube video o audio a ningún servidor externo.',
+    analogy: 'Son los ojos y oídos opcionales de la simulación: solo se encienden cuando tú pulsas activar y das permiso en tu navegador.',
+    whatToTry: 'Pulsa «Activar cámara y micrófono» arriba para probar la respuesta en directo a luz, movimiento o voz.',
+    boundary: 'Señales locales del navegador usadas como entrada acotada; nada se guarda ni se transmite sin tu acción.'
   },
   sovereignty: {
-    casualTitle: 'Verificación de Integridad y Causalidad',
-    technicalTag: 'Soberanía · Auditoría Forense',
-    plainSummary: 'Comprueba que los registros no fueron alterados, que los controles negativos responden y qué límites científicos aplican.',
-    inSimpleWords: 'Resume arriba 3 semáforos clave (Integridad, Causalidad y Alcance) y agrupa debajo las auditorías técnicas por tema.',
-    analogy: 'Es el sello de notaría del sistema: verifica que los números y los hashes coincidan entre sí.',
-    whatToTry: 'Revisa los 3 semáforos superiores y abre solo el bloque de auditoría que quieras inspeccionar.',
+    casualTitle: 'Integridad y Auditoría',
+    technicalTag: 'Soberanía · internal_support_only',
+    plainSummary: 'Comprueba en un vistazo si el sistema dice la verdad sobre sus datos, qué lo está guiando ahora y qué límites científicos respeta.',
+    inSimpleWords: 'Responde 4 preguntas clave arriba (Integridad, Qué guía al motor, Estabilidad y Firma actual) y deja las tablas técnicas de auditoría ordenadas en cajones debajo.',
+    analogy: 'Es la oficina de auditoría transparente del simulador: muestra de dónde salen sus decisiones y qué NO puede afirmar.',
+    whatToTry: 'Observa las barras de «Qué guía al motor ahora» (Pasado, Sensores, Prompts, Ruido) o pulsa «Exportar JSON» para auditar fuera.',
     boundary: 'Auditoría interna de software y consistencia (internal_support_only · external_support_certified = false).'
   },
   'autonomy-evolution': {
-    casualTitle: 'Propuestas de Cambio de Código',
-    technicalTag: 'Autoevolución · Selfpatch Σ0/Σ1/Σ2',
-    plainSummary: 'Flujo controlado para planificar y revisar propuestas de cambio al código fuente, siempre con aprobación humana obligatoria.',
-    inSimpleWords: 'A diferencia de Bitácora Nivel 3 (que ajusta parámetros en vivo), aquí se gestionan solicitudes de parche de código con límites estrictos.',
-    analogy: 'Es un taller con inspector humano: puede preparar un borrador de mejora, pero nunca modifica el código sin visto bueno.',
-    whatToTry: 'Observa el estado Σ arriba y despliega los bloques del pipeline (Plan → Generate → Apply) solo si vas a auditar un parche.',
-    boundary: 'Canal de ingeniería con guardrails y killswitch; nunca auto-aplica cambios sin autorización.'
+    casualTitle: 'Propuestas de Código',
+    technicalTag: 'Autoevolución · Flujo Seguro con Gemini',
+    plainSummary: 'Espacio avanzado para pedir a la IA borradores de mejora del código fuente siguiendo 4 pasos con revisión humana obligatoria.',
+    inSimpleWords: 'Mientras el Supervisor Autónomo solo ajusta parámetros en vivo de la simulación, esta sección redacta borradores de cambios de código que nunca se aplican sin tu aprobación.',
+    analogy: 'Es un taller de propuestas con inspector humano: la IA prepara el plano y el borrador, pero tú decides siempre si se aprueba.',
+    whatToTry: 'Lee el flujo de 4 pasos arriba y usa tu clave de Gemini para evaluar un plan o generar un borrador de prueba.',
+    boundary: 'Canal de ingeniería con políticas de riesgo y kill-switch; nunca auto-aplica cambios sin autorización.'
   },
   'level3-supervisor': {
     casualTitle: 'Supervisor Autónomo',
-    technicalTag: 'Bitácora Nivel 3 · Gate 1 + Gate 2',
-    plainSummary: 'Observa la simulación, piensa en voz alta en primera persona y solo aplica ajustes si superan una copia segura y 20 ticks de vigilancia.',
-    inSimpleWords: 'En lugar de cambiar parámetros a ciegas, el supervisor razona sobre su estado, prueba cualquier idea en un clon aislado (Gate 1) y, si funciona, la vigila en vivo con marcha atrás automática (Gate 2).',
-    analogy: 'Es como un piloto automático con simulador de vuelo: primero ensaya la maniobra en una copia segura y, si la aplica en vivo, mantiene el dedo en el botón de deshacer durante 20 pasos.',
-    whatToTry: 'Pulsa "Pensar en alto ahora" para leer una reflexión sin cambiar nada, o "Probar mejora en copia segura" (con al menos 1 tick avanzado).',
-    boundary: 'Soporte interno (internal_support_only · external_support_certified = false). external_llm_assisted es true solo si respondió Gemini en vivo y false en modo local.'
+    technicalTag: 'Auto-análisis · Copia Segura + Vigilancia',
+    plainSummary: 'Observa el estado de la simulación, piensa en voz alta en primera persona y solo aplica ajustes si primero funcionan en una copia segura.',
+    inSimpleWords: 'Primero razona sobre cómo está la red. Si detecta una oportunidad de mejora, la ensaya en clones aislados y, si la aplica en vivo, la vigila 20 pasos con marcha atrás automática.',
+    analogy: 'Es como un piloto automático con simulador de vuelo: primero ensaya la maniobra en una copia de prueba y mantiene el botón de deshacer listo.',
+    whatToTry: 'Pulsa «Pensar en alto ahora» para leer su análisis sin cambiar nada, o «Probar mejora en copia segura» tras iniciar la simulación.',
+    boundary: 'Soporte interno (internal_support_only · external_support_certified = false). external_llm_assisted es true solo si respondió Gemini en vivo.'
   }
 });
 
@@ -144,36 +144,35 @@ export const QUICK_TAB_MAP_GROUPS = Object.freeze([
   {
     id: 'observe',
     title: '1. Observar la simulación',
-    description: 'Mira cómo se comporta la red en vivo y a lo largo del tiempo.',
+    description: 'Visualiza cómo se organiza la red en vivo y cómo cambia con el tiempo.',
     tabs: [
-      { id: 'network', label: 'Red Nodal 3D', hint: 'Ver los 1500 nodos y la torre central' },
-      { id: 'core', label: 'Núcleo', hint: 'Salud del motor, estancamiento y PMIA' },
-      { id: 'history', label: 'Historial', hint: 'Curvas en el tiempo de CCC y bandas' },
-      { id: 'field', label: 'Campo', hint: 'Cohesión colectiva y estabilidad' }
+      { id: 'network', label: 'Red Nodal 3D', hint: 'Mapa interactivo de los 1500 nodos y la torre central' },
+      { id: 'core', label: 'Núcleo', hint: 'Salud del motor, actividad e impulso de ajuste' },
+      { id: 'history', label: 'Historial', hint: 'Gráfica temporal de cohesión, impulso y orden' },
+      { id: 'field', label: 'Campo', hint: 'Sincronización colectiva y actividad de 4 sectores' }
     ]
   },
   {
     id: 'interact',
-    title: '2. Interactuar y ajustar',
-    description: 'Conversa con el sistema, mueve parámetros o activa sensores.',
+    title: '2. Conversar y experimentar',
+    description: 'Haz preguntas verificadas, mueve controles en vivo o usa sensores.',
     tabs: [
-      { id: 'chat', label: 'Chat Verificado', hint: 'Preguntar en lenguaje natural (Sistema B)' },
-      { id: 'validation', label: 'Validación', hint: '4 deslizadores base (Cf, Bs, aprendizaje)' },
-      { id: 'controls', label: 'Controles', hint: 'Encender Kaizen, Nivel 2 y Nivel 3' },
-      { id: 'sensory', label: 'Sensorial', hint: 'Cámara y micrófono opcionales' },
-      { id: 'qicn-b', label: 'QICN-B', hint: 'Canal experimental humano–sistema' }
+      { id: 'chat', label: 'Chat', hint: 'Conversar en lenguaje natural con datos verificados' },
+      { id: 'validation', label: 'Validación', hint: '4 deslizadores en tiempo real (Cf, Bs, K, T)' },
+      { id: 'controls', label: 'Controles', hint: 'Encender o pausar modos del motor' },
+      { id: 'sensory', label: 'Sensorial', hint: 'Cámara y micrófono opcionales en tu navegador' }
     ]
   },
   {
     id: 'audit',
-    title: '3. Supervisión, memoria y auditoría',
-    description: 'Inspecciona reflexiones autónomas, copias guardadas y sellos SHA-256.',
+    title: '3. Supervisión, integridad y conexión',
+    description: 'Revisa el auto-análisis seguro, auditoría transparente y tu clave de Gemini.',
     tabs: [
-      { id: 'level3-supervisor', label: 'Bitácora Nivel 3', hint: 'Supervisor en 1.ª persona + pruebas seguras' },
-      { id: 'memory', label: 'Memoria', hint: 'Guardar/Restaurar v3 y registro encadenado' },
-      { id: 'sovereignty', label: 'Soberanía', hint: 'Semáforos de integridad y causalidad' },
-      { id: 'api-control', label: 'API', hint: 'Conexión Gemini / modo local / cuántica' },
-      { id: 'autonomy-evolution', label: 'Autoevolución', hint: 'Solicitudes de cambio de código con visto bueno' }
+      { id: 'level3-supervisor', label: 'Supervisor', hint: 'Auto-análisis en 1.ª persona y pruebas en copia segura' },
+      { id: 'sovereignty', label: 'Integridad', hint: 'Qué guía al motor, auditoría y límites honestos' },
+      { id: 'memory', label: 'Memoria', hint: 'Guardar/Restaurar estado y cadena SHA-256' },
+      { id: 'api-control', label: 'API', hint: 'Conectar tu clave de Gemini (un solo lugar)' },
+      { id: 'autonomy-evolution', label: 'Autoevolución', hint: 'Borradores guiados de cambio de código' }
     ]
   }
 ]);

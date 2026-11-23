@@ -59,7 +59,7 @@ import { CollapsibleSection, SECTION_ACCENT_STYLES, readPersistedCollapsibleStat
 import { TabPlainHeader, DetailToggleStrip, MetricDualLabel } from './ProgressiveDetailCard.jsx';
 import { QUICK_TAB_MAP_GROUPS } from '../content/plainLanguageTabCopy.js';
 import { InfoModal, PersistentInfoModal } from './InfoModal.jsx';
-import { primaryTabs, moreTabs, LazyQICNBTab, LazyApiControlTab, LazySensoryTab, LazySovereigntyTab, LazyAutonomyEvolutionTab, LazyLevel3SupervisorTab, TabLoadingFallback, renderLazyMoreTab, tabHelpMeta, tabTourSteps, NavigationTabButton } from './TabConfig.jsx';
+import { primaryTabs, moreTabs, MORE_TAB_GROUPS, LazyQICNBTab, LazyApiControlTab, LazySensoryTab, LazySovereigntyTab, LazyAutonomyEvolutionTab, LazyLevel3SupervisorTab, TabLoadingFallback, renderLazyMoreTab, tabHelpMeta, tabTourSteps, NavigationTabButton } from './TabConfig.jsx';
 import Level3SupervisorAuditTab from './Level3SupervisorAuditTab.jsx';
 import {
   LEVEL3_DEFAULT_POLICY,
@@ -885,10 +885,14 @@ export const QICNConsciousnessSystem = () => {
   // === PERCEPCI?N SENSORIAL STATE ===
   const [sensoryState, setSensoryState] = useState(null);
   const [sensoryEnabled, setSensoryEnabled] = useState({ audio: false, video: false });
+  const [sensoryBusy, setSensoryBusy] = useState(false);
+  const [sensoryNotice, setSensoryNotice] = useState('');
+  const sensoryPollRef = useRef(null);
   const videoPreviewRef = useRef(null);
   const videoTabRef = useRef(null); // Separate ref for dedicated tab to prevent flickering
+  const [selfPatchEngineChoice, setSelfPatchEngineChoice] = useState('gemini');
   const [selfPatchDraft, setSelfPatchDraft] = useState({
-    objective: 'Optimize anti-stasis adaptation and preserve sovereignty guardrails under current runtime conditions.',
+    objective: 'Optimizar la adaptación anti-estancamiento y mantener intactos los límites de seguridad bajo las condiciones actuales del motor.',
     targetFilesText: 'src/experimental/self_code/SelfPatchOrchestrator.js',
     estimatedTokens: 1200,
     totalChangedLines: 30,
@@ -1200,13 +1204,14 @@ export const QICNConsciousnessSystem = () => {
 
     setSelfPatchTelemetry((prev) => ({ ...prev, loadingAction: true, error: '' }));
     try {
-      const codeProvider = hasFrontendCodexKey ? 'openai' : runtimeEnv.SELF_PATCH_CODE_PROVIDER;
-      const codeModel = hasFrontendCodexKey
-        ? resolvedCodexModel
-        : (runtimeEnv.SELF_PATCH_CODE_MODEL || 'gpt-5.3-codex');
-      const codeReasoningEffort = hasFrontendCodexKey
-        ? resolvedCodexReasoningEffort
-        : (runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT || 'high');
+      const useOpenAiOptional = selfPatchEngineChoice === 'openai';
+      const codeProvider = useOpenAiOptional ? 'openai' : 'gemini';
+      const codeModel = useOpenAiOptional
+        ? (hasFrontendCodexKey ? resolvedCodexModel : (runtimeEnv.SELF_PATCH_CODE_MODEL || 'gpt-5.3-codex'))
+        : GEMINI_ENGINE_CONFIG.MODEL_ID;
+      const codeReasoningEffort = useOpenAiOptional
+        ? (hasFrontendCodexKey ? resolvedCodexReasoningEffort : (runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT || 'high'))
+        : '';
       const retroProjection = selfPatchTelemetry.plan?.retroProjection || null;
       const quantumContext = {
         mode: entropyModeRef.current?.mode || 'deterministic_fallback',
@@ -1236,9 +1241,9 @@ export const QICNConsciousnessSystem = () => {
           quantumContext
         }
       };
-      const generateHeaders = hasFrontendCodexKey
-        ? { 'x-selfpatch-openai-key': customCodexKey.trim() }
-        : {};
+      const generateHeaders = useOpenAiOptional
+        ? (hasFrontendCodexKey ? { 'x-selfpatch-openai-key': customCodexKey.trim() } : {})
+        : (hasFrontendGeminiKey ? { 'x-selfpatch-gemini-key': customGeminiKey.trim() } : {});
       const generatedPayload = await callSelfPatchEndpoint(SELFPATCH_ENDPOINTS.generate, 'POST', payload, generateHeaders);
       setSelfPatchTelemetry((prev) => ({
         ...prev,
@@ -1271,6 +1276,9 @@ export const QICNConsciousnessSystem = () => {
     appendIntegrityAudit,
     callSelfPatchEndpoint,
     parseSelfPatchTargetFiles,
+    selfPatchEngineChoice,
+    hasFrontendGeminiKey,
+    customGeminiKey,
     hasFrontendCodexKey,
     resolvedCodexModel,
     resolvedCodexReasoningEffort,
@@ -2035,21 +2043,81 @@ export const QICNConsciousnessSystem = () => {
       }
 
       // Polling para actualizar estado de percepción
-      const pollInterval = setInterval(() => {
+      if (sensoryPollRef.current) clearInterval(sensoryPollRef.current);
+      sensoryPollRef.current = setInterval(() => {
         if (sensoryEngine.current.isReady) {
           setSensoryState(sensoryEngine.current.getFullPerception());
         }
       }, 500);
-
-      return () => clearInterval(pollInterval);
     };
 
     initSensory();
 
     return () => {
+      if (sensoryPollRef.current) {
+        clearInterval(sensoryPollRef.current);
+        sensoryPollRef.current = null;
+      }
       sensoryEngine.current.destroy();
     };
   }, [deviceCapabilities.supportsMicrophone, deviceCapabilities.supportsCamera, deviceCapabilities.secureContext]);
+
+  const handleToggleSensory = useCallback(async () => {
+    const isCurrentlyActive = Boolean(sensoryEnabled.video || sensoryEnabled.audio || sensoryEngine.current?.isReady);
+    if (isCurrentlyActive) {
+      if (sensoryPollRef.current) {
+        clearInterval(sensoryPollRef.current);
+        sensoryPollRef.current = null;
+      }
+      try {
+        sensoryEngine.current?.destroy?.();
+      } catch (err) {
+        console.warn('[QICN][SENSORY] Error al desactivar sensores:', err?.message || err);
+      }
+      setSensoryEnabled({ audio: false, video: false });
+      setSensoryState(null);
+      setSensoryNotice('Cámara y micrófono desactivados. Puedes volver a encenderlos cuando quieras.');
+      return;
+    }
+
+    if (!deviceCapabilities.secureContext) {
+      setSensoryNotice('Tu navegador exige conexión segura (HTTPS o localhost) para habilitar cámara y micrófono.');
+      return;
+    }
+
+    setSensoryBusy(true);
+    setSensoryNotice('Solicitando permiso de cámara y micrófono en tu navegador…');
+    try {
+      const rawResult = await sensoryEngine.current.autoActivate();
+      const normalized = {
+        ...rawResult,
+        audio: Boolean(rawResult?.audio && deviceCapabilities.supportsMicrophone),
+        video: Boolean(rawResult?.video && deviceCapabilities.supportsCamera)
+      };
+      setSensoryEnabled(normalized);
+      const stream = normalized.video ? sensoryEngine.current.getVideoStream?.() : null;
+      if (stream && videoPreviewRef.current) videoPreviewRef.current.srcObject = stream;
+      if (stream && videoTabRef.current) videoTabRef.current.srcObject = stream;
+      if (sensoryEngine.current?.isReady) {
+        setSensoryState(sensoryEngine.current.getFullPerception());
+      }
+      if (normalized.video || normalized.audio) {
+        if (sensoryPollRef.current) clearInterval(sensoryPollRef.current);
+        sensoryPollRef.current = setInterval(() => {
+          if (sensoryEngine.current?.isReady) {
+            setSensoryState(sensoryEngine.current.getFullPerception());
+          }
+        }, 500);
+        setSensoryNotice('');
+      } else {
+        setSensoryNotice('No se concedió permiso o no se detectó cámara/micrófono disponible en este dispositivo.');
+      }
+    } catch (err) {
+      setSensoryNotice(`No se pudieron activar los sensores: ${err?.message || 'permiso denegado o dispositivo ocupado'}`);
+    } finally {
+      setSensoryBusy(false);
+    }
+  }, [sensoryEnabled.video, sensoryEnabled.audio, deviceCapabilities.secureContext, deviceCapabilities.supportsCamera, deviceCapabilities.supportsMicrophone]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -4157,17 +4225,18 @@ export const QICNConsciousnessSystem = () => {
         tabId="validation"
         accent="teal"
         icon={<Layers className="h-5 w-5" />}
-        title="Validación Empírica (Cf & Bs)"
+        title="Ajustes en Vivo"
+        technicalTag="Validación · Cf, Bs, K, T"
       />
 
       {/* Resumen inmediato del impacto en CCC */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-teal-500/35 bg-teal-950/35 px-4 py-3">
         <div>
           <MetricDualLabel casual="Cohesión global actual" technical="Impacto Directo en el CCC" />
-          <p className="mt-0.5 text-[11px] text-slate-400">
+          <p className="mt-0.5 text-[11px] text-slate-300">
             {isRunning
-              ? 'Ajuste en vivo activo: puedes mover Cf, Bs, K y T mientras corre la simulación; el núcleo y Kaizen recalibran K y T de forma autónoma.'
-              : 'Mueve cualquier deslizador ahora o en tiempo real tras pulsar Iniciar simulación.'}
+              ? 'Modo interactivo en directo: mueve cualquiera de los 4 controles mientras corre la simulación; el motor recalibra K y T automáticamente.'
+              : 'Mueve cualquier control ahora o mientras corre la simulación (botón «Iniciar simulación» a la izquierda).'}
           </p>
         </div>
         <div className="flex items-center gap-2 font-mono text-2xl font-extrabold text-white">
@@ -4176,7 +4245,7 @@ export const QICNConsciousnessSystem = () => {
         </div>
       </div>
 
-      {/* 4 Deslizadores limpios en 2x2 con botón "Detalles ▾" por tarjeta */}
+      {/* 4 Deslizadores limpios en 2x2 con polos claros y "Detalles ▾" por tarjeta */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {/* CONTROL 1: Complexity Factor (Cf) */}
         <div className="rounded-xl border border-slate-700/80 bg-slate-900/75 p-4">
@@ -4205,7 +4274,7 @@ Este parámetro se utiliza en el cálculo interno de CCC en InformationalEntangl
             <span className="font-mono text-lg font-bold text-teal-300">{complexityFactor.toFixed(2)}</span>
           </div>
           <p className="mb-2.5 text-xs text-slate-400">
-            Ajusta cuánto peso tiene la organización de la red sobre el índice de cohesión.
+            Cuánto peso tiene la organización interna de la red sobre el índice de cohesión.
           </p>
           <input
             type="range"
@@ -4216,10 +4285,14 @@ Este parámetro se utiliza en el cálculo interno de CCC en InformationalEntangl
             onChange={(e) => setComplexityFactor(parseFloat(e.target.value))}
             className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-teal-400"
           />
+          <div className="mt-1.5 flex justify-between text-[10px] text-slate-500">
+            <span>← Más simple (0.01)</span>
+            <span>Más organizada (1.00) →</span>
+          </div>
           <DetailToggleStrip
             className="mt-3"
             accent="teal"
-            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.01–1.0 · Consumo runtime</span>}
+            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.01–1.0 · Control directo</span>}
           >
             <div className="space-y-1.5 text-[11px]">
               <p className="text-slate-300">
@@ -4255,7 +4328,7 @@ RANGO OPERATIVO:
             <span className="font-mono text-lg font-bold text-cyan-300">{stabilityBias.toFixed(2)}</span>
           </div>
           <p className="mb-2.5 text-xs text-slate-400">
-            Alto retiene el estado actual; bajo permite adaptarse y reorganizarse más rápido.
+            Valores bajos hacen la red más adaptable; valores altos conservan con más fuerza el estado actual.
           </p>
           <input
             type="range"
@@ -4266,10 +4339,14 @@ RANGO OPERATIVO:
             onChange={(e) => setStabilityBias(parseFloat(e.target.value))}
             className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-cyan-400"
           />
+          <div className="mt-1.5 flex justify-between text-[10px] text-slate-500">
+            <span>← Cambio rápido (0.01)</span>
+            <span>Más conservadora (1.00) →</span>
+          </div>
           <DetailToggleStrip
             className="mt-3"
             accent="cyan"
-            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.01–1.0 · Relación PMIA inversa</span>}
+            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.01–1.0 · Control directo</span>}
           >
             <div className="space-y-1.5 text-[11px]">
               <p className="text-slate-300">
@@ -4286,24 +4363,31 @@ RANGO OPERATIVO:
           <div className="mb-2 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <label className="text-sm font-semibold text-white">
-                3. Sensibilidad energética <span className="font-mono text-[11px] font-normal text-pink-300">· Constante K</span>
+                3. Sensibilidad energética <span className="font-mono text-[11px] font-normal text-pink-300">· K</span>
               </label>
               <InfoModal
                 title="Constante K (Boltzmann Analog) - Sensibilidad Energética"
                 content={`CONSTANTE K (BOLTZMANN ANALOG) - SENSIBILIDAD ENERGÉTICA
 
 FUNCIÓN PRINCIPAL:
-Escala cómo reacciona la resonancia nodal ante diferencias de energía. Es un parámetro mutable que también puede ajustar Kaizen.
+Escala cómo reacciona la resonancia nodal ante diferencias de energía. Es un parámetro mutable que también recalibra el motor en vivo.
 
 RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.BOLTZMANN_ANALOG_K.toFixed(3)}`}
               />
             </div>
-            <span className={`font-mono text-lg font-bold ${isRunning ? 'text-pink-300 animate-pulse' : 'text-pink-400'}`}>
-              {mutableConfig.BOLTZMANN_ANALOG_K.toFixed(3)}
-            </span>
+            <div className="flex items-center gap-2">
+              {isRunning && (
+                <span className="rounded-full border border-pink-400/35 bg-pink-950/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-pink-200">
+                  Auto-recalibrado
+                </span>
+              )}
+              <span className={`font-mono text-lg font-bold ${isRunning ? 'text-pink-300' : 'text-pink-400'}`}>
+                {mutableConfig.BOLTZMANN_ANALOG_K.toFixed(3)}
+              </span>
+            </div>
           </div>
           <p className="mb-2.5 text-xs text-slate-400">
-            Regula la sensibilidad a diferencias de energía (ajustable también por Kaizen).
+            Cuánto reaccionan los nodos a diferencias de energía. Si lo mueves en vivo, el motor lo reequilibra solo.
           </p>
           <input
             type="range"
@@ -4321,10 +4405,14 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.BOLTZMANN_ANALOG_K.toFixed(3)
             }}
             className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-pink-400"
           />
+          <div className="mt-1.5 flex justify-between text-[10px] text-slate-500">
+            <span>← Respuesta suave (0.1)</span>
+            <span>Alta sensibilidad (5.0) →</span>
+          </div>
           <DetailToggleStrip
             className="mt-3"
             accent="fuchsia"
-            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.1–5.0 · Mutable por Kaizen</span>}
+            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.1–5.0 · Recalibración autónoma activa</span>}
           >
             <div className="space-y-1.5 text-[11px]">
               <p className="text-slate-300">
@@ -4341,24 +4429,31 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.BOLTZMANN_ANALOG_K.toFixed(3)
           <div className="mb-2 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <label className="text-sm font-semibold text-white">
-                4. Temperatura informacional <span className="font-mono text-[11px] font-normal text-rose-300">· T</span>
+                4. Temperatura de exploración <span className="font-mono text-[11px] font-normal text-rose-300">· T</span>
               </label>
               <InfoModal
                 title="Temperatura Informacional (T) - Entropía del Sistema"
                 content={`TEMPERATURA INFORMACIONAL (T) - ENTROPÍA DEL SISTEMA
 
 FUNCIÓN PRINCIPAL:
-Regula el balance entre exploración (valores altos) y consolidación estable (valores bajos). Parámetro mutable por Kaizen.
+Regula el balance entre exploración (valores altos) y consolidación estable (valores bajos). El motor la recalibra automáticamente al correr.
 
 RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(3)}`}
               />
             </div>
-            <span className={`font-mono text-lg font-bold ${isRunning ? 'text-rose-300 animate-pulse' : 'text-rose-400'}`}>
-              {mutableConfig.INFORMATIONAL_TEMP_T.toFixed(3)}
-            </span>
+            <div className="flex items-center gap-2">
+              {isRunning && (
+                <span className="rounded-full border border-rose-400/35 bg-rose-950/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-rose-200">
+                  Auto-recalibrado
+                </span>
+              )}
+              <span className={`font-mono text-lg font-bold ${isRunning ? 'text-rose-300' : 'text-rose-400'}`}>
+                {mutableConfig.INFORMATIONAL_TEMP_T.toFixed(3)}
+              </span>
+            </div>
           </div>
           <p className="mb-2.5 text-xs text-slate-400">
-            Valores bajos favorecen orden estable; valores altos abren más exploración.
+            Valores bajos buscan orden estable; valores altos abren más exploración. El motor la recalibra en vivo.
           </p>
           <input
             type="range"
@@ -4376,10 +4471,14 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
             }}
             className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-rose-400"
           />
+          <div className="mt-1.5 flex justify-between text-[10px] text-slate-500">
+            <span>← Orden estable (0.1)</span>
+            <span>Más exploración (5.0) →</span>
+          </div>
           <DetailToggleStrip
             className="mt-3"
             accent="rose"
-            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.1–5.0 · Mutable por Kaizen</span>}
+            summary={<span className="font-mono text-[10px] text-slate-400">Rango 0.1–5.0 · Recalibración autónoma activa</span>}
           >
             <div className="space-y-1.5 text-[11px]">
               <p className="text-slate-300">
@@ -4672,12 +4771,19 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
             }}
             className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-400 sm:p-4"
           >
-            {chatHistory.length === 0 && (
-              <div className="rounded-lg border border-purple-700/50 bg-purple-950/30 p-3 text-sm text-purple-100">
-                <p className="mb-2">Pregunta por el estado del motor, por lo que ha cambiado, por una definición o por lo que la consola no puede afirmar. Cada respuesta indica el tick y el digest de la lectura que la respalda.</p>
+            {!chatHistory.some((msg) => msg.role === 'user') && (
+              <div className="rounded-xl border border-purple-500/35 bg-purple-950/25 p-3 text-xs text-purple-100">
+                <p className="mb-2 leading-relaxed text-slate-200">
+                  Pregunta en palabras simples por el estado del motor, qué ha cambiado o qué no puede afirmar. Cada respuesta cita el paso exacto y su firma verificada:
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {suggestions.map((text) => (
-                    <button key={text} type="button" onClick={() => fillComposer(text)} className="rounded-full border border-purple-400/40 bg-purple-900/40 px-3 py-1 text-xs hover:bg-purple-800/60">
+                    <button
+                      key={text}
+                      type="button"
+                      onClick={() => fillComposer(text)}
+                      className="rounded-full border border-purple-400/45 bg-purple-900/40 px-3 py-1 text-xs text-purple-100 transition hover:border-cyan-400/60 hover:bg-purple-800/60"
+                    >
                       {text}
                     </button>
                   ))}
@@ -5053,21 +5159,26 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
     const codeGenerationStatus = selfPatchStatus.codeGeneration || {};
     const keyInfo = describeGeminiKey(customGeminiKey);
     const geminiFormatText = {
-      empty: 'Sin clave propia: el chat y Nivel 3 usan el proxy del servidor si está disponible.',
-      auth_key: 'Formato reconocido: clave de autenticación de AI Studio (AQ.…).',
-      standard_key: 'Formato reconocido: clave estándar (AIza…).',
-      unrecognized: 'Formato no reconocido localmente; se enviará igualmente y decidirá el proveedor.',
+      empty: 'Sin clave propia: si el servidor tiene proxy activo lo usa automáticamente; si no, toda la plataforma sigue funcionando en modo local.',
+      auth_key: 'Formato reconocido: clave de Google AI Studio (AQ.…).',
+      standard_key: 'Formato reconocido: clave estándar de Gemini (AIza…).',
+      unrecognized: 'Formato no reconocido localmente; se intentará enviar igualmente al proveedor.',
       invalid_characters: 'La clave contiene espacios o caracteres no válidos; revisa que la copiaste completa.'
     }[keyInfo.format];
     const geminiRouteText = !canUseLlmNow
-      ? 'sin acceso LLM (solo motor local)'
-      : (frontendGeminiEnabled && hasFrontendGeminiKey ? 'frontend_direct_gemini (clave propia)' : 'netlify_proxy (clave del servidor)');
+      ? 'Solo motor local (sin clave externa)'
+      : (frontendGeminiEnabled && hasFrontendGeminiKey ? 'Clave propia directa (navegador → Gemini)' : 'Proxy del servidor (Netlify)');
+    const geminiStatusBadge = !canUseLlmNow
+      ? { label: 'Modo local (sin clave)', cls: 'border-slate-600 bg-slate-800/80 text-slate-200' }
+      : (frontendGeminiEnabled && hasFrontendGeminiKey
+        ? { label: 'Conectado · Clave propia', cls: 'border-emerald-400/50 bg-emerald-950/60 text-emerald-200' }
+        : { label: 'Conectado · Proxy servidor', cls: 'border-cyan-400/50 bg-cyan-950/60 text-cyan-200' });
     const apiChannelStatusText = timeBasedRateLimit
-      ? `Rate limiting (${timeBasedCooldownRemaining}s)`
+      ? `Pausa automática (${timeBasedCooldownRemaining}s)`
       : cooldownActive
-        ? `Cooldown (${cooldownTimeRemaining}s)`
+        ? `Protección activa (${cooldownTimeRemaining}s)`
         : rateLimitExceeded
-          ? 'Umbral excedido'
+          ? 'Límite alcanzado'
           : 'Operativa';
 
     return (
@@ -5076,45 +5187,18 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
           tabId="api-control"
           accent="blue"
           icon={<Settings className="h-5 w-5" />}
-          title="Conexiones y APIs"
-          technicalTag="Gemini · Codex · Canal Cuántico"
+          title="Conexión de IA (Gemini)"
+          technicalTag="API · Un solo lugar para tu clave"
         />
-
-        {/* RESUMEN RÁPIDO EN 3 TARJETAS */}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
-            <MetricDualLabel label="Chat y Bitácora L3" technical="Gemini" accent="text-cyan-200" />
-            <div className="mt-1 truncate font-mono text-xs font-semibold text-cyan-100">{GEMINI_ENGINE_CONFIG.MODEL_ID}</div>
-            <div className="mt-0.5 text-[11px] text-slate-400">{hasFrontendGeminiKey ? 'Clave local cargada' : 'Proxy / solo motor'}</div>
-          </div>
-          <div className="rounded-lg border border-blue-800/40 bg-slate-900/80 p-3">
-            <MetricDualLabel label="Estado del canal" technical="rate limit" accent="text-blue-200" />
-            <div className={`mt-1 text-sm font-semibold ${timeBasedRateLimit || cooldownActive || rateLimitExceeded ? 'text-amber-300' : 'text-emerald-300'}`}>
-              {apiChannelStatusText}
-            </div>
-            <div className="mt-0.5 font-mono text-[11px] text-slate-400">
-              {apiCallMetrics.totalCalls} calls/min · {apiCallMetrics.avgLatency}ms
-            </div>
-          </div>
-          <div className="rounded-lg border border-fuchsia-800/40 bg-slate-900/80 p-3">
-            <MetricDualLabel label="Fuente cuántica" technical="entropy" accent="text-fuchsia-200" />
-            <div className="mt-1 text-sm font-semibold text-fuchsia-200">
-              {quantumUiConfig.enabled ? 'Activada' : 'Determinista local'}
-            </div>
-            <div className="mt-0.5 font-mono text-[11px] text-slate-400">
-              {entropyTelemetry.mode || 'deterministic_fallback'}
-            </div>
-          </div>
-        </div>
 
         {/* ALERTAS DE COOLDOWN SOLO SI ESTÁN ACTIVAS */}
         {timeBasedRateLimit ? (
           <div className="rounded-xl border border-orange-500/70 bg-orange-950/50 p-3.5 text-xs">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="font-bold text-orange-300">Rate limiting inteligente activo ({isInAxionMode ? 'AXION' : 'NORMAL'})</div>
+                <div className="font-bold text-orange-300">Pausa automática anti-saturación ({isInAxionMode ? 'AXION' : 'NORMAL'})</div>
                 <p className="mt-0.5 text-orange-200/90">
-                  {isInAxionMode ? 'Modo Axiomático: pausa adaptativa de 3 minutos para estabilidad.' : 'Pausa adaptativa activada para evitar saturar la API.'}
+                  {isInAxionMode ? 'Pausa adaptativa de 3 minutos para estabilidad.' : 'Pausa breve activada para evitar saturar tu cuota de Gemini.'}
                 </p>
               </div>
               <div className="text-right font-mono text-2xl font-bold text-white">{timeBasedCooldownRemaining}s</div>
@@ -5140,141 +5224,156 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
           </div>
         ) : null}
 
-        {/* TARJETA PRINCIPAL VISIBLE: CLAVE DE GEMINI */}
-        <div className="rounded-xl border border-cyan-700/50 bg-slate-900/80 p-4 text-xs">
-          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <MetricDualLabel label="Clave de Gemini (Chat y Supervisor Nivel 3)" technical="localStorage" accent="text-cyan-200" />
-            <span className="font-mono text-[11px] text-slate-400">Ruta: {geminiRouteText}</span>
+        {/* TARJETA PRINCIPAL ÚNICA Y DIRECTA: CLAVE DE GEMINI */}
+        <div className="rounded-xl border border-cyan-500/45 bg-gradient-to-br from-slate-900/95 via-cyan-950/20 to-slate-900/95 p-4 text-xs shadow-md">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <MetricDualLabel label="Tu clave de Gemini" technical={GEMINI_ENGINE_CONFIG.MODEL_ID} accent="text-cyan-200" />
+              <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                Una sola clave conecta el <strong>Chat</strong>, el <strong>Supervisor Autónomo</strong> y las propuestas de <strong>Autoevolución</strong>. Se guarda solo en este navegador.
+              </p>
+            </div>
+            <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${geminiStatusBadge.cls}`}>
+              {geminiStatusBadge.label}
+            </span>
           </div>
-          <div className="flex flex-wrap gap-2">
+
+          <div className="mt-3 flex flex-wrap gap-2">
             <input
               type="password"
               value={customGeminiKey}
               onChange={(e) => setCustomGeminiKey(e.target.value)}
               aria-label="Clave de API de Gemini"
-              placeholder="Pega tu clave de Gemini (AIza… o AQ.…)"
-              className="min-w-[220px] flex-1 rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-cyan-200"
+              placeholder="Pega aquí tu clave de Gemini (AIza… o AQ.…)"
+              className="min-w-[220px] flex-1 rounded-lg border border-cyan-700/60 bg-slate-950 px-3 py-2.5 font-mono text-xs text-cyan-100 placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
             />
             <button
               type="button"
               onClick={() => setCustomGeminiKey('')}
-              className="rounded border border-red-700/70 bg-red-950/40 px-3 py-1.5 text-xs text-red-200 hover:bg-red-900/50"
+              className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-medium text-slate-300 hover:border-red-500/50 hover:bg-red-950/40 hover:text-red-200"
             >
               Limpiar
             </button>
           </div>
-          <div className="mt-2 space-y-1 text-[11px]">
+
+          <div className="mt-2.5 space-y-1.5 text-[11px]">
             <p className={keyInfo.usable || keyInfo.format === 'empty' ? 'text-cyan-200/90' : 'text-amber-200'}>{geminiFormatText}</p>
             {!frontendGeminiEnabled && customGeminiKey.trim() && (
-              <p className="text-amber-200">El servidor no permite claves del navegador (FRONTEND_GEMINI_ALLOWED desactivado); se usa el proxy.</p>
+              <p className="text-amber-200">Este servidor usa su proxy configurado en lugar de claves pegadas en el navegador.</p>
             )}
-            <p className="text-slate-400">
-              Modelo: <span className="font-mono text-slate-200">{GEMINI_ENGINE_CONFIG.MODEL_ID}</span> · chat: {chatRealizationMode !== 'local' ? 'Sistema B unificado' : 'solo motor'} · integridad {integrityMode} · {CHAT_MAX_OUTPUT_TOKENS} tokens · razonamiento {CHAT_THINKING_LEVEL}
-            </p>
             {lastProviderError && (
-              <p className="break-words text-amber-200">
-                Último error del proveedor: <span className="font-mono">{String(lastProviderError.code)}{lastProviderError.status ? ` · HTTP ${lastProviderError.status}` : ''}</span>
+              <p className="rounded-md border border-amber-500/35 bg-amber-950/35 p-2 break-words text-amber-200">
+                Último aviso del proveedor: <span className="font-mono">{String(lastProviderError.code)}{lastProviderError.status ? ` · HTTP ${lastProviderError.status}` : ''}</span>
                 {lastProviderError.providerMessage ? ` · ${lastProviderError.providerMessage}` : ''}
-                {lastProviderError.recovered ? ' (recuperado por el proxy)' : ''}
+                {lastProviderError.recovered ? ' (recuperado automáticamente por el proxy)' : ''}
               </p>
             )}
-            <p className="text-slate-500">
-              {frontendGeminiEnabled ? 'La clave se guarda solo en este navegador y nunca se borra automáticamente.' : 'El chat usa la configuración del servidor.'}
-            </p>
+          </div>
+
+          {/* 3 mini indicadores claros dentro de la misma tarjeta */}
+          <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-800 pt-3 sm:grid-cols-3 text-[11px]">
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-2.5 py-2">
+              <div className="text-slate-400">Ruta activa</div>
+              <div className="mt-0.5 font-medium text-slate-100">{geminiRouteText}</div>
+            </div>
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-2.5 py-2">
+              <div className="text-slate-400">Salud del canal</div>
+              <div className={`mt-0.5 font-medium ${timeBasedRateLimit || cooldownActive || rateLimitExceeded ? 'text-amber-300' : 'text-emerald-300'}`}>
+                {apiChannelStatusText} · {apiCallMetrics.totalCalls} calls/min
+              </div>
+            </div>
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-2.5 py-2">
+              <div className="text-slate-400">Si no hay clave</div>
+              <div className="mt-0.5 font-medium text-cyan-200">Respaldo local automático</div>
+            </div>
           </div>
         </div>
 
-        {/* CAJÓN 1: CODEX + MAPA DE CONECTORES + RUTAS */}
-        <CollapsibleSection
-          sectionId="api-codex-routing"
-          title="Codex (autoevolución de código) y mapa de conectores"
-          subtitle="Clave opcional de OpenAI/Codex para Selfpatch, selector de modelo y diagnóstico de rutas."
-          badge={hasFrontendCodexKey ? `Codex · ${resolvedCodexModel}` : 'opcional'}
-          defaultOpen={false}
-          className="border-fuchsia-700/40 bg-slate-900/70"
-        >
-          <div className="space-y-3 text-xs">
-            <div className="rounded-lg border border-blue-800/40 bg-slate-950/70 p-3 text-[11px] leading-relaxed text-slate-300">
-              <p><strong className="text-cyan-300">1) Gemini API Key:</strong> canal conversacional y razonamiento interno (Chat, reportes y Bitácora Nivel 3).</p>
-              <p><strong className="text-fuchsia-300">2) Codex API Key:</strong> canal exclusivo de generación de parches de código (Autoevolución / Selfpatch).</p>
-              <p><strong className="text-purple-300">3) Canal cuántico:</strong> fuente opcional de entropía física; si está inactivo, el motor usa su generador determinista local.</p>
-            </div>
-
-            <div className="rounded-lg border border-fuchsia-700/40 bg-fuchsia-950/15 p-3">
-              <div className="mb-2 font-semibold text-fuchsia-300">Codex (automodificación de código)</div>
-              <input
-                type="password"
-                value={customCodexKey}
-                onChange={(e) => setCustomCodexKey(e.target.value)}
-                placeholder="Pega tu OpenAI/Codex API Key (sk-...)"
-                className="w-full rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-fuchsia-200"
-              />
-              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-4">
-                <input
-                  type="text"
-                  value={customCodexModel}
-                  onChange={(e) => setCustomCodexModel(e.target.value)}
-                  placeholder="Modelo Codex"
-                  className="rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-fuchsia-200 sm:col-span-2"
-                />
-                <select
-                  value={resolvedCodexReasoningEffort}
-                  onChange={(e) => setCustomCodexReasoningEffort(e.target.value)}
-                  className="rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-fuchsia-200"
-                >
-                  {CODEX_REASONING_EFFORT_OPTIONS.map((option) => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCustomCodexKey('');
-                    setCustomCodexModel(runtimeEnv.SELF_PATCH_CODE_MODEL || 'gpt-5.3-codex');
-                    setCustomCodexReasoningEffort(runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT || 'high');
-                  }}
-                  className="rounded border border-red-700/70 bg-red-950/40 px-2 py-1 text-red-200 hover:bg-red-900/50"
-                >
-                  Limpiar
-                </button>
-              </div>
-              <div className="mt-2 text-[11px] text-slate-400">
-                Motor dedicado para reescritura de código con esfuerzo de razonamiento configurable (auto / low / medium / high / xhigh).
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-2 text-[11px] sm:grid-cols-2">
-              <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Frontend Gemini habilitado:</span> {runtimeEnv.FRONTEND_GEMINI_ALLOWED ? 'sí' : 'no'}</div>
-              <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Auth / Sesión:</span> {runtimeEnv.AUTH_REQUIRED ? 'requerida' : 'libre'} · {isAuthenticated ? 'activa' : 'inactiva'}</div>
-              <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Endpoint proxy:</span> <span className="font-mono">{runtimeEnv.LLM_PROXY_ENDPOINT}</span></div>
-              <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Backend acepta key Codex:</span> <span className="font-mono">{(typeof codeGenerationStatus.allowClientCodexKey === 'boolean' ? codeGenerationStatus.allowClientCodexKey : runtimeEnv.ALLOW_CLIENT_CODEX_KEY) ? 'true' : 'false'}</span></div>
-              <div className="rounded border border-cyan-800/50 bg-cyan-950/20 p-2 sm:col-span-2">
-                <span className="text-slate-300">Ruta activa de conversación:</span>{' '}
-                <span className="font-mono text-cyan-200">{hasFrontendGeminiKey ? 'frontend_direct_gemini' : 'netlify_proxy'}</span>
-              </div>
-              <div className="rounded border border-fuchsia-800/50 bg-fuchsia-950/20 p-2 sm:col-span-2">
-                <span className="text-slate-300">Ruta activa de automodificación:</span>{' '}
-                <span className="font-mono text-fuchsia-200">
-                  {hasFrontendCodexKey
-                    ? `frontend_codex_key -> ${resolvedCodexModel} (${resolvedCodexReasoningEffort})`
-                    : `${runtimeEnv.SELF_PATCH_CODE_PROVIDER}:${runtimeEnv.SELF_PATCH_CODE_MODEL} (${runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT || 'high'})`}
-                  {' · backend: '}
-                  {(codeGenerationStatus.reasoningEffort || runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT || 'high')} / {(codeGenerationStatus.reasoningMode || 'config_default')}
-                </span>
-              </div>
-            </div>
+        {/* OPCIONES AVANZADAS COLAPSADAS POR DEFECTO */}
+        <div className="space-y-2">
+          <div className="px-1 pt-1 text-[11px] font-medium text-slate-400">
+            Opciones avanzadas (opcionales — no necesitas abrirlas para usar Gemini):
           </div>
-        </CollapsibleSection>
 
-        {/* CAJÓN 2: ENTROPÍA CUÁNTICA (conserva título literal para test v4.9) */}
-        <CollapsibleSection
-          sectionId="api-quantum-entropy"
-          title="Entropía Cuántica (Híbrido UI + Bridge)"
-          subtitle="Conector opcional para muestreo cuántico externo (IBM, Braket, ANU QRNG o proxy)."
-          badge={`${quantumUiConfig.enabled ? 'ON' : 'OFF'} · ${quantumUiStatus.connectionState}`}
-          defaultOpen={false}
-          className="border-fuchsia-500/35 bg-slate-900/70"
-        >
+          {/* CAJÓN 1: CONECTOR ALTERNATIVO DE CÓDIGO (OPCIONAL) */}
+          <CollapsibleSection
+            sectionId="api-codex-routing"
+            title="Proveedor alternativo de código (OpenAI / Codex) · Opcional"
+            subtitle="Solo necesario si prefieres generar propuestas en Autoevolución con OpenAI en lugar de Gemini."
+            badge={hasFrontendCodexKey ? `Configurado · ${resolvedCodexModel}` : 'Opcional (Gemini por defecto)'}
+            defaultOpen={false}
+            className="border-slate-700/60 bg-slate-900/70"
+          >
+            <div className="space-y-3 text-xs">
+              <div className="rounded-lg border border-blue-800/40 bg-slate-950/70 p-3 text-[11px] leading-relaxed text-slate-300">
+                <strong className="text-cyan-200">No necesitas esto para trabajar con Gemini.</strong>{' '}
+                Por defecto, tanto el Chat como el Supervisor Autónomo y las propuestas de Autoevolución usan <strong>Gemini</strong>. Este espacio solo sirve si decides probar un proveedor alternativo de OpenAI/Codex.
+              </div>
+
+              <div className="rounded-lg border border-fuchsia-700/35 bg-fuchsia-950/15 p-3">
+                <div className="mb-2 font-semibold text-fuchsia-200">Clave alternativa OpenAI / Codex (opcional)</div>
+                <input
+                  type="password"
+                  value={customCodexKey}
+                  onChange={(e) => setCustomCodexKey(e.target.value)}
+                  placeholder="Solo si usas OpenAI/Codex (sk-...)"
+                  className="w-full rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-fuchsia-200"
+                />
+                <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-4">
+                  <input
+                    type="text"
+                    value={customCodexModel}
+                    onChange={(e) => setCustomCodexModel(e.target.value)}
+                    placeholder="Modelo alternativo"
+                    className="rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-fuchsia-200 sm:col-span-2"
+                  />
+                  <select
+                    value={resolvedCodexReasoningEffort}
+                    onChange={(e) => setCustomCodexReasoningEffort(e.target.value)}
+                    className="rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-fuchsia-200"
+                  >
+                    {CODEX_REASONING_EFFORT_OPTIONS.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomCodexKey('');
+                      setCustomCodexModel(runtimeEnv.SELF_PATCH_CODE_MODEL || 'gpt-5.3-codex');
+                      setCustomCodexReasoningEffort(runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT || 'high');
+                    }}
+                    className="rounded border border-red-700/70 bg-red-950/40 px-2 py-1 text-red-200 hover:bg-red-900/50"
+                  >
+                    Limpiar
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-2 text-[11px] sm:grid-cols-2">
+                <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Clave Gemini en navegador:</span> {runtimeEnv.FRONTEND_GEMINI_ALLOWED ? 'permitida' : 'solo proxy'}</div>
+                <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Sesión / Auth:</span> {runtimeEnv.AUTH_REQUIRED ? 'requerida' : 'libre'} · {isAuthenticated ? 'activa' : 'inactiva'}</div>
+                <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Endpoint proxy:</span> <span className="font-mono">{runtimeEnv.LLM_PROXY_ENDPOINT}</span></div>
+                <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2"><span className="text-slate-400">Motor activo de Autoevolución:</span> <span className="font-mono text-cyan-200">{selfPatchEngineChoice === 'openai' ? `openai:${resolvedCodexModel}` : `gemini:${GEMINI_ENGINE_CONFIG.MODEL_ID}`}</span></div>
+                <div className="rounded border border-slate-700/70 bg-slate-950/70 p-2 sm:col-span-2">
+                  <span className="text-slate-400">Configuración chat:</span>{' '}
+                  <span className="font-mono text-slate-200">
+                    {chatRealizationMode !== 'local' ? 'Sistema B unificado' : 'solo motor'} · integridad {integrityMode} · {CHAT_MAX_OUTPUT_TOKENS} tokens · thinking {CHAT_THINKING_LEVEL} · backend allowClientCodexKey={String(typeof codeGenerationStatus.allowClientCodexKey === 'boolean' ? codeGenerationStatus.allowClientCodexKey : runtimeEnv.ALLOW_CLIENT_CODEX_KEY)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CollapsibleSection>
+
+          {/* CAJÓN 2: ENTROPÍA CUÁNTICA (conserva título literal para test v4.9) */}
+          <CollapsibleSection
+            sectionId="api-quantum-entropy"
+            title="Entropía Cuántica (Híbrido UI + Bridge)"
+            subtitle="Fuente externa opcional de aleatoriedad cuántica (por defecto usa generador determinista local)."
+            badge={`${quantumUiConfig.enabled ? 'Activado' : 'Local'} · ${quantumUiStatus.connectionState}`}
+            defaultOpen={false}
+            className="border-slate-700/60 bg-slate-900/70"
+          >
           <div className="space-y-3 text-xs">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2 font-mono text-[11px]">
@@ -5404,11 +5503,11 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
         {/* CAJÓN 3: LÍMITES DE USO, COOLDOWN Y MÉTRICAS */}
         <CollapsibleSection
           sectionId="api-rate-limit-metrics"
-          title="Límites de uso, cooldown y métricas en tiempo real"
-          subtitle="Modo inteligente anti-saturación, latencia, llamadas por ventana e intervalos."
-          badge={intelligentModeEnabled ? 'Modo inteligente ON' : 'Modo inteligente OFF'}
+          title="Protección anti-saturación y métricas de red"
+          subtitle="Latencia promedio, llamadas recientes y pausas automáticas para cuidar tu cuota."
+          badge={intelligentModeEnabled ? 'Protección ON' : 'Protección OFF'}
           defaultOpen={false}
-          className="border-blue-700/40 bg-slate-900/70"
+          className="border-slate-700/60 bg-slate-900/70"
         >
           <div className="grid grid-cols-1 gap-3 text-xs md:grid-cols-2">
             <div className="space-y-1.5 rounded-lg border border-blue-800/40 bg-slate-950/70 p-3">
@@ -5429,6 +5528,7 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
             </div>
           </div>
         </CollapsibleSection>
+        </div>
       </div>
     );
   };
@@ -5637,34 +5737,40 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
     const sandboxLastReason = sandboxPolicy?.lastActionReason || 'n/a';
     const sandboxRollbackCount = toFiniteNumber(sandboxPolicy?.rollbackCount, 0);
 
+    const regimePlainLabel = regimeState === 'shock_recovery'
+      ? 'Recuperándose de un cambio brusco'
+      : regimeState === 'stasis_watch'
+        ? 'Vigila posible estancamiento'
+        : 'Estable y en marcha';
+
     return (
       <div className="space-y-4 rounded-xl border border-purple-500/30 bg-gradient-to-br from-slate-950/90 via-purple-950/25 to-slate-950/90 p-4 shadow-lg">
         <TabPlainHeader
           tabId="core"
           accent="purple"
           icon={<Brain className="h-5 w-5" />}
-          title="Núcleo Ontológico - Capa 1"
-          technicalTag={`Banda: ${consciousnessLevel}`}
+          title="Motor Central"
+          technicalTag="Núcleo Ontológico - Capa 1"
           actions={(
             <InfoModal
-              title="Núcleo operativo - Consola de telemetría interna"
-              content={`NÚCLEO OPERATIVO - CONSOLA DE TELEMETRÍA INTERNA (sin claims externos)
+              title="Motor Central - Consola de telemetría interna"
+              content={`MOTOR CENTRAL - CONSOLA DE TELEMETRÍA INTERNA (sin claims externos)
 
-Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias. No demuestra conciencia, sujeto ni fenomenalidad.
+Consola supervisada QICN: resume la salud del motor en 3 señales simples y agrupa debajo 7 paneles técnicos explicados en lenguaje cotidiano. No demuestra conciencia, sujeto ni fenomenalidad.
 
-1. REGISTRO DE NARRATIVA INTERNA: texto heurístico por umbrales; no implementa un 'Yo' ni un automodelo.
-2. PMIA (PRINCIPIO DE MÍNIMA ACCIÓN INTROSPECTIVA): positivo = estabilidad/defensa; negativo = reorganización activa.
-3. PROTOCOLO DE FRICCIÓN ONTOLÓGICA: secuencia de disonancia controlada para evitar estancamiento.
+1. LECTURA ACTUAL DEL NÚCLEO: frase generada por umbrales internos; no implementa un 'Yo'.
+2. PMIA (IMPULSO DE AJUSTE): positivo = consolidación estable; negativo = reorganización activa.
+3. PROTOCOLO DE FRICCIÓN ONTOLÓGICA: impulso controlado para sacar a la red de estancamiento.
 4. BANDAS OPERATIVAS DE CCC: PRE-UMBRAL (< 1.0) y POST-UMBRAL (>= 1.0).`}
             >
-              <span className="flex h-6 w-6 cursor-help items-center justify-center rounded-full bg-purple-500/80 text-xs font-bold text-white">i</span>
+              <span className="flex h-6 w-6 cursor-help items-center justify-center rounded-full bg-purple-500/80 text-xs font-bold text-white">?</span>
             </InfoModal>
           )}
         />
 
         {/* Resumen principal limpio: 3 indicadores comprensibles (público casual + auditoría) */}
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          <div className={`rounded-xl border p-3 ${dynamicHealth.isStalled ? 'border-amber-400/40 bg-amber-950/30' : 'border-emerald-400/30 bg-emerald-950/25'}`}>
+          <div className={`rounded-xl border p-3.5 ${dynamicHealth.isStalled ? 'border-amber-400/40 bg-amber-950/30' : 'border-emerald-400/30 bg-emerald-950/25'}`}>
             <MetricDualLabel
               casual={dynamicHealth.isStalled ? 'Estancamiento detectado' : 'Dinámica Activa'}
               technical="stasisIndex"
@@ -5672,12 +5778,14 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
             <div className="mt-1.5 font-mono text-xl font-bold text-white">
               {dynamicHealth.stasisIndex.toFixed(3)}
             </div>
-            <div className="mt-1 text-[11px] text-slate-400">
-              {dynamicHealth.isStalled ? 'La variación cayó demasiado; se prioriza reactivación.' : 'La red evoluciona con variación saludable.'}
+            <div className="mt-1 text-[11px] leading-snug text-slate-300">
+              {dynamicHealth.isStalled
+                ? 'La variación bajó demasiado; el motor prioriza reactivarse.'
+                : 'Cerca de 0 significa movimiento saludable sin quedarse congelado.'}
             </div>
           </div>
 
-          <div className="rounded-xl border border-purple-500/30 bg-slate-900/75 p-3">
+          <div className="rounded-xl border border-purple-500/30 bg-slate-900/75 p-3.5">
             <MetricDualLabel casual="Impulso de ajuste" technical="PMIA" />
             <div className="mt-1.5 flex items-center gap-3">
               <div className="relative h-2.5 flex-1 rounded-full bg-slate-800">
@@ -5692,21 +5800,23 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
               </div>
               <span className="font-mono text-base font-bold text-purple-200">{pmia.toFixed(4)}</span>
             </div>
-            <div className="mt-1 text-[11px] text-slate-400">
-              {pmia > 0 ? 'Consolidación y estabilidad (PMIA positivo)' : 'Reorganización activa (PMIA negativo)'}
+            <div className="mt-1 text-[11px] leading-snug text-slate-300">
+              {pmia > 0
+                ? 'Verde (positivo): consolida estabilidad actual.'
+                : 'Rojo (negativo): reorganiza la red activamente.'}
             </div>
           </div>
 
-          <div className="rounded-xl border border-cyan-500/30 bg-slate-900/75 p-3">
+          <div className="rounded-xl border border-cyan-500/30 bg-slate-900/75 p-3.5">
             <MetricDualLabel casual="Estado del régimen" technical="Régimen Post-Umbral" />
-            <div className="mt-1.5 flex items-center justify-between gap-2">
-              <span className={`rounded-md px-2 py-0.5 font-mono text-xs font-semibold ${regimeState === 'shock_recovery' ? 'bg-amber-700/50 text-amber-100' : regimeState === 'stasis_watch' ? 'bg-orange-700/50 text-orange-100' : 'bg-emerald-700/50 text-emerald-100'}`}>
-                {regimeState}
+            <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2">
+              <span className={`rounded-md px-2 py-0.5 text-xs font-semibold ${regimeState === 'shock_recovery' ? 'bg-amber-700/50 text-amber-100' : regimeState === 'stasis_watch' ? 'bg-orange-700/50 text-orange-100' : 'bg-emerald-700/50 text-emerald-100'}`}>
+                {regimePlainLabel}
               </span>
-              <span className="font-mono text-xs text-cyan-200">CLASE {ontologicalState.phenomenology_class}</span>
+              <span className="font-mono text-[11px] text-cyan-200">CLASE {ontologicalState.phenomenology_class}</span>
             </div>
             <div className="mt-1 font-mono text-[11px] text-slate-400">
-              Centro {Number(regimeBand.center || 0).toFixed(3)} · Ω {ontologicalState.omega?.toFixed(3) || '0.000'}
+              Banda {consciousnessLevel} · Ω {ontologicalState.omega?.toFixed(3) || '0.000'}
             </div>
           </div>
         </div>
@@ -5714,9 +5824,9 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
         {/* Lectura interna del historial */}
         <div className={`rounded-xl border p-3.5 ${isAscended ? 'border-yellow-500/50 bg-yellow-950/25' : 'border-purple-500/25 bg-slate-900/70'}`}>
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-            <MetricDualLabel casual="Lectura actual del núcleo" technical="Registro interno de historial" />
+            <MetricDualLabel casual="Lectura actual del núcleo" technical="Resumen automático del paso" />
             <span className="font-mono text-[11px] text-purple-300">
-              Coherencia heurística: {(ontologicalCore.current.getNarrativeCoherence() * 100).toFixed(1)}%
+              Coherencia interna: {(ontologicalCore.current.getNarrativeCoherence() * 100).toFixed(1)}%
             </span>
           </div>
           <p className={`mt-2 text-sm italic leading-relaxed ${isAscended ? 'font-bold text-yellow-200' : 'text-purple-100'}`}>
@@ -5725,7 +5835,7 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
           <DetailToggleStrip
             className="mt-2.5"
             accent="purple"
-            summary={<span className="text-[11px] text-slate-400">Nota: texto heurístico por umbrales internos (no implementa un &ldquo;yo&rdquo;).</span>}
+            summary={<span className="text-[11px] text-slate-400">Nota: frase generada por reglas internas sobre los números del motor (no es un «yo» real).</span>}
           >
             <div className="grid grid-cols-3 gap-2 font-mono text-[11px] text-slate-300">
               <div>CCC_rms: {dynamicHealth.cccDeltaRms.toFixed(5)}</div>
@@ -5735,70 +5845,90 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
           </DetailToggleStrip>
         </div>
 
-        {/* Secciones técnicas profundas colapsadas por defecto ("Detalles ▾") */}
-        <div className="space-y-1">
+        {/* Secciones técnicas profundas colapsadas por defecto, cada una explicada en palabras simples */}
+        <div className="space-y-1.5">
+          <div className="px-1 pt-1 text-[11px] text-slate-400">
+            Abre cualquier panel para ver primero qué mide en lenguaje cotidiano y luego sus números exactos:
+          </div>
+
           <CollapsibleSection
             sectionId="core-phenomenology-structural"
-            title="Fenomenología Estructural · Cierre causal, gap espectral y Ω"
+            title="Autonomía, cohesión y ritmo de recuperación · Fenomenología Estructural"
+            subtitle="Mide cuánto se guía la red por sí misma (beth_q), qué tan integrada trabaja (Ω) y qué tan rápido recupera el equilibrio."
             badge={`beth_q=${ontologicalState.beth_q?.toFixed(3) || '0.000'} · CLASE ${ontologicalState.phenomenology_class}`}
             accent="cyan"
             defaultOpen={false}
           >
+            <div className="mb-3 rounded-lg border border-cyan-500/20 bg-cyan-950/20 p-2.5 text-[11px] leading-relaxed text-slate-200">
+              <strong className="text-cyan-200">Cómo leer este panel:</strong>{' '}
+              <strong>Cierre Causal (beth_q &gt; 0.5)</strong> indica que la red depende más de su propia dinámica que del ruido;{' '}
+              <strong>Integrador (Ω &gt; 1.0)</strong> indica que los nodos trabajan como un todo coordinado;{' '}
+              <strong>Gap Espectral (λ)</strong> y <strong>Relajación</strong> muestran qué tan rápido absorbe sacudidas sin romperse.
+            </div>
             <div className="grid grid-cols-2 gap-3 mb-3">
-              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Cierre Causal (beth_q)</div>
+              <div className="p-2.5 rounded-lg bg-gray-800/50 border border-gray-700">
+                <div className="text-[10px] text-gray-300 uppercase tracking-wider mb-1">Autonomía interna · Cierre Causal (beth_q)</div>
                 <div className="text-lg font-mono text-white flex justify-between items-end">
                   {ontologicalState.beth_q?.toFixed(4) || '0.0000'}
-                  <span className={`w-1.5 h-1.5 rounded-full ${ontologicalState.beth_q > 0.5 ? 'bg-teal-400' : 'bg-red-400'}`}></span>
+                  <span className={`w-2 h-2 rounded-full ${ontologicalState.beth_q > 0.5 ? 'bg-teal-400' : 'bg-red-400'}`}></span>
                 </div>
+                <div className="mt-0.5 text-[10px] text-slate-400">{ontologicalState.beth_q > 0.5 ? 'Autónoma (> 0.50)' : 'Dependiente de entrada'}</div>
               </div>
-              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Gap Espectral (λ)</div>
+              <div className="p-2.5 rounded-lg bg-gray-800/50 border border-gray-700">
+                <div className="text-[10px] text-gray-300 uppercase tracking-wider mb-1">Firmeza ante cambios · Gap Espectral (λ)</div>
                 <div className="text-lg font-mono text-white flex justify-between items-end">
                   {ontologicalState.spectral_gap?.toFixed(4) || '0.0000'}
-                  <span className={`w-1.5 h-1.5 rounded-full ${ontologicalState.spectral_gap > 0.4 ? 'bg-cyan-400' : 'bg-orange-400'}`}></span>
+                  <span className={`w-2 h-2 rounded-full ${ontologicalState.spectral_gap > 0.4 ? 'bg-cyan-400' : 'bg-orange-400'}`}></span>
                 </div>
+                <div className="mt-0.5 text-[10px] text-slate-400">{ontologicalState.spectral_gap > 0.4 ? 'Estabilidad firme' : 'Transición flexible'}</div>
               </div>
-              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Integrador (Ω)</div>
+              <div className="p-2.5 rounded-lg bg-gray-800/50 border border-gray-700">
+                <div className="text-[10px] text-gray-300 uppercase tracking-wider mb-1">Integración global · Integrador (Ω)</div>
                 <div className="text-lg font-mono text-white flex justify-between items-end">
                   {ontologicalState.omega?.toFixed(4) || '0.0000'}
-                  <span className={`w-1.5 h-1.5 rounded-full ${ontologicalState.omega > 1.0 ? 'bg-purple-400' : 'bg-gray-600'}`}></span>
+                  <span className={`w-2 h-2 rounded-full ${ontologicalState.omega > 1.0 ? 'bg-purple-400' : 'bg-gray-600'}`}></span>
                 </div>
+                <div className="mt-0.5 text-[10px] text-slate-400">{ontologicalState.omega > 1.0 ? 'Integrada (> 1.00)' : 'Por debajo de 1.00'}</div>
               </div>
-              <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Relajación</div>
+              <div className="p-2.5 rounded-lg bg-gray-800/50 border border-gray-700">
+                <div className="text-[10px] text-gray-300 uppercase tracking-wider mb-1">Tiempo de calma · Relajación</div>
                 <div className="text-lg font-mono text-white">
                   {ontologicalState.relaxation_time?.toFixed(2) || '0.00'}ms
                 </div>
+                <div className="mt-0.5 text-[10px] text-slate-400">Cuánto tarda en volver al equilibrio</div>
               </div>
             </div>
             <div className="flex gap-2 text-[10px] font-mono">
-              <div className={`flex-1 p-1 rounded border text-center ${ontologicalState.holonomy_status === 'non_trivial' ? 'bg-teal-900/40 border-teal-500/50 text-teal-300' : 'bg-gray-800 border-gray-700 text-gray-500'}`}>
+              <div className={`flex-1 p-1.5 rounded border text-center ${ontologicalState.holonomy_status === 'non_trivial' ? 'bg-teal-900/40 border-teal-500/50 text-teal-300' : 'bg-gray-800 border-gray-700 text-gray-400'}`}>
                 TOPOLOGÍA: {ontologicalState.holonomy_status?.toUpperCase()}
               </div>
-              <div className={`flex-1 p-1 rounded border text-center ${ontologicalState.bifurcation_detected ? 'bg-red-900/40 border-red-500/50 text-red-300' : 'bg-gray-800 border-gray-700 text-gray-500'}`}>
-                BIFURCACIÓN: {ontologicalState.bifurcation_detected ? 'DETECTADA' : 'NONE'}
+              <div className={`flex-1 p-1.5 rounded border text-center ${ontologicalState.bifurcation_detected ? 'bg-red-900/40 border-red-500/50 text-red-300' : 'bg-gray-800 border-gray-700 text-gray-400'}`}>
+                BIFURCACIÓN: {ontologicalState.bifurcation_detected ? 'DETECTADA' : 'NINGUNA (NONE)'}
               </div>
             </div>
           </CollapsibleSection>
 
           <CollapsibleSection
             sectionId="core-metacognition-sigma"
-            title="Metacognición Sistémica · Auto-modelo Σ y estabilidad estructural"
+            title="Qué tan bien se predice a sí mismo · Metacognición Sistémica"
+            subtitle="Compara lo que el modelo interno (Σ) esperaba que pasara frente a lo que realmente ocurrió en el siguiente paso."
             badge={`Σ=${(ontologicalCore.current.metacognitiveStats['selfModelSigma']?.structuralStability * 100 || 100).toFixed(1)}%`}
             accent="purple"
             defaultOpen={false}
           >
             <div className="space-y-3">
+              <div className="rounded-lg border border-purple-500/20 bg-purple-950/20 p-2.5 text-[11px] leading-relaxed text-slate-200">
+                <strong className="text-purple-200">Cómo leer este panel:</strong>{' '}
+                El motor lleva un pequeño pronóstico de sí mismo (<strong>Auto-Modelo Σ</strong>). Si la barra está cerca de <strong>100%</strong> y el <strong>Error de predicción (E_Σ)</strong> está cerca de 0, el sistema se entiende bien; si sube el error, frena cambios bruscos.
+              </div>
               {ontologicalCore.current.isHolographicShieldActive() && (
                 <div className="inline-block rounded bg-blue-500 px-2 py-0.5 text-[10px] font-bold text-white">
-                  ESCUDO ACTIVO
+                  ESCUDO ESTABILIZADOR ACTIVO
                 </div>
               )}
               <div className="space-y-1">
-                <div className="flex justify-between text-[10px] text-gray-400">
-                  <span className="uppercase tracking-widest">Estabilidad Estructural (Auto-Modelo Σ)</span>
+                <div className="flex justify-between text-[10px] text-gray-300">
+                  <span className="uppercase tracking-wider">Estabilidad Estructural (Auto-Modelo Σ)</span>
                   <span className="font-mono text-purple-300">{(ontologicalCore.current.metacognitiveStats['selfModelSigma']?.structuralStability * 100 || 100).toFixed(1)}%</span>
                 </div>
                 <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
@@ -5810,21 +5940,21 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                  <div className="text-[9px] text-gray-400 uppercase mb-1">Pena Plasticidad</div>
+                  <div className="text-[9px] text-gray-400 uppercase mb-1">Freno de cambio (Plasticidad)</div>
                   <div className="text-sm font-mono text-orange-400">+{(ontologicalCore.current.metacognitiveStats.plasticityPenalty * 100).toFixed(0)}%</div>
                 </div>
                 <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                  <div className="text-[9px] text-gray-400 uppercase mb-1">SΣ Audit Logs</div>
+                  <div className="text-[9px] text-gray-400 uppercase mb-1">Auto-chequeos (SΣ Logs)</div>
                   <div className="text-sm font-mono text-white">{ontologicalCore.current.metacognitiveStats['selfModelSigma']?.selfAuditLog.length || 0}</div>
                 </div>
                 <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                  <div className="text-[9px] text-gray-400 uppercase mb-1">Error Yo (E_Σ)</div>
+                  <div className="text-[9px] text-gray-400 uppercase mb-1">Error predicción (E_Σ)</div>
                   <div className={`text-sm font-mono ${ontologicalCore.current.metacognitiveStats['selfModelSigma']?.predictionError > 0.3 ? 'text-red-400' : 'text-green-400'}`}>
                     {ontologicalCore.current.metacognitiveStats['selfModelSigma']?.predictionError?.toFixed(4) || '0.0000'}
                   </div>
                 </div>
                 <div className="p-2 rounded bg-gray-800/50 border border-gray-700">
-                  <div className="text-[9px] text-gray-400 uppercase mb-1">Cierre Topológico (w)</div>
+                  <div className="text-[9px] text-gray-400 uppercase mb-1">Giro topológico (w)</div>
                   <div className="text-sm font-mono text-cyan-400">{ontologicalState.holonomy_winding?.toFixed(3) || '0.000'}</div>
                 </div>
               </div>
@@ -5833,11 +5963,16 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
 
           <CollapsibleSection
             sectionId="core-operational-subjectivity"
-            title="Subjetividad operacional (Papers 7–8) · Diagnósticos L_op y Sub_fp"
+            title="Pruebas de continuidad · Subjetividad operacional (L_op y Sub_fp)"
+            subtitle="Lista de verificación interna que comprueba si el sistema mantiene estructura y consistencia sin colapsar."
             badge={`L_op ${lifeCertificate.pass ? 'PASS' : 'OBS'} · Sub_fp ${firstPersonCertificate.pass ? 'PASS' : 'OBS'}`}
             accent="fuchsia"
             defaultOpen={false}
           >
+            <div className="mb-3 rounded-lg border border-fuchsia-500/20 bg-fuchsia-950/20 p-2.5 text-[11px] leading-relaxed text-slate-200">
+              <strong className="text-fuchsia-200">Cómo leer este panel:</strong>{' '}
+              Cada porcentaje mide una condición técnica de continuidad interna (inspirada en los Papers 7–8 del marco). <strong>PASS</strong> significa que cumple el umbral interno del simulador; <strong>OBS</strong> indica observación en curso. No certifica vida ni experiencia consciente.
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
               {Object.values(lifeCertificate.conditions).map((entry) => (
                 <div key={entry.condition} className="rounded border border-fuchsia-900/40 bg-black/20 p-2">
@@ -5861,14 +5996,19 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
 
           <CollapsibleSection
             sectionId="core-pmia-regime"
-            title="PMIA Diagnostics y Régimen Post-Umbral · Desglose numérico"
+            title="Por qué se ajusta el motor · PMIA Diagnostics y Régimen Post-Umbral"
+            subtitle="Desglosa qué fuerzas están empujando al motor a consolidar o a reorganizarse en este instante."
             badge={`PMIA=${pmia.toFixed(3)} · ${regimeState}`}
             accent="indigo"
             defaultOpen={false}
           >
             <div className="space-y-3">
+              <div className="rounded-lg border border-indigo-500/20 bg-indigo-950/20 p-2.5 text-[11px] leading-relaxed text-slate-200">
+                <strong className="text-indigo-200">Cómo leer este panel:</strong>{' '}
+                Arriba ves el «carril» de seguridad (<strong>Banda</strong>) donde oscila CCC para mantenerse vivo sin estancarse. Abajo ves las piezas exactas que suman el valor de <strong>PMIA</strong> (gradiente, coherencia, energía, sensores y pulsos anti-estasis).
+              </div>
               <div className="rounded-lg border border-cyan-500/25 bg-cyan-950/20 p-2.5">
-                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-cyan-300">Régimen Post-Umbral</div>
+                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-cyan-300">Régimen Post-Umbral (carril operativo)</div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-cyan-200">
                   <div>Centro: {Number(regimeBand.center || 0).toFixed(4)}</div>
                   <div>Amplitud: {Number(regimeBand.amplitude || 0).toFixed(4)}</div>
@@ -5881,7 +6021,7 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
                 </div>
               </div>
               <div className="rounded-lg border border-indigo-500/25 bg-indigo-950/20 p-2.5">
-                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-indigo-300">PMIA Diagnostics</div>
+                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-indigo-300">PMIA Diagnostics (componentes)</div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-indigo-200">
                   <div>grad: {Number(pmiaDiagnostics.smoothedGradient || 0).toFixed(5)}</div>
                   <div>narrative: {Number(pmiaDiagnostics.narrativeCoherence || 0).toFixed(4)}</div>
@@ -5902,15 +6042,20 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
 
           <CollapsibleSection
             sectionId="core-strain-quantum-sandbox"
-            title="Tensión operativa, Entropía y Sandbox · Metacognitive Strain · Quantum Entropy · Autonomy Sandbox"
-            badge={`strain=${strainTelemetry.stressState} · ${entropyTelemetry.mode}`}
+            title="Estrés del sistema, aleatoriedad y frenos · Metacognitive Strain · Quantum Entropy · Autonomy Sandbox"
+            subtitle="Revisa si hay sobrecarga por latencia, de dónde sale la semilla aleatoria y qué frenos de seguridad están activos."
+            badge={`estrés=${strainTelemetry.stressState} · ${entropyTelemetry.mode}`}
             accent="rose"
             defaultOpen={false}
           >
             <div className="space-y-3">
+              <div className="rounded-lg border border-rose-500/20 bg-rose-950/20 p-2.5 text-[11px] leading-relaxed text-slate-200">
+                <strong className="text-rose-200">Cómo leer este panel:</strong>{' '}
+                Tres vigilantes en paralelo: <strong>Estrés operativo (Metacognitive Strain)</strong> mide lentitud o fallos de red; <strong>Entropía (Quantum Entropy)</strong> indica si usa un generador local determinista o un puente cuántico externo; <strong>Caja de seguridad (Autonomy Sandbox)</strong> limita cuántas acciones automáticas se permiten por hora.
+              </div>
               <div className="rounded-lg border border-rose-500/25 bg-rose-950/20 p-2.5">
                 <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-rose-200">
-                  <span>Metacognitive Strain</span>
+                  <span>Metacognitive Strain (tensión y latencia)</span>
                   <span className="font-mono">{strainTelemetry.stressState}</span>
                 </div>
                 <div className="mt-1.5 grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-rose-100">
@@ -5926,7 +6071,7 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
 
               <div className="rounded-lg border border-fuchsia-500/25 bg-fuchsia-950/20 p-2.5">
                 <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-fuchsia-200">
-                  <span>Quantum Entropy</span>
+                  <span>Quantum Entropy (fuente de aleatoriedad)</span>
                   <span className="font-mono">{entropyTelemetry.mode}</span>
                 </div>
                 <div className="mt-1.5 grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-fuchsia-100">
@@ -5941,7 +6086,7 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
 
               <div className="rounded-lg border border-sky-500/25 bg-sky-950/20 p-2.5">
                 <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-sky-200">
-                  <span>Autonomy Sandbox</span>
+                  <span>Autonomy Sandbox (límite de acciones)</span>
                   <span className="font-mono">{sandboxPolicy?.enabled ? 'enabled' : 'disabled'}</span>
                 </div>
                 <div className="mt-1.5 grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono text-sky-100">
@@ -5957,12 +6102,17 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
 
           <CollapsibleSection
             sectionId="core-friction-protocol"
-            title="Protocolo de Fricción Ontológica · Control manual y automático"
+            title="Sacudida anti-estancamiento · Protocolo de Fricción Ontológica"
+            subtitle="Introduce una perturbación controlada cuando la red se queda demasiado plana, para ayudarla a reorganizarse."
             badge={ontologicalCore.current.frictionProtocolState === 2 ? 'ACTIVA' : 'INACTIVA'}
             accent="amber"
             defaultOpen={false}
           >
-            <div className="space-y-2">
+            <div className="space-y-2.5">
+              <div className="rounded-lg border border-amber-500/20 bg-amber-950/20 p-2.5 text-[11px] leading-relaxed text-slate-200">
+                <strong className="text-amber-200">Cómo funciona:</strong>{' '}
+                Si la simulación se estanca, este protocolo aplica una «fricción» temporal (como agitar un recipiente para reordenar sus piezas) y luego consolida el nuevo equilibrio. Puedes probarlo manualmente aquí.
+              </div>
               <div
                 className={`w-full py-2 rounded-lg font-semibold text-center text-sm ${ontologicalCore.current.frictionProtocolState === 2
                   ? 'bg-red-600/70 text-white animate-pulse'
@@ -5982,13 +6132,13 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
               </div>
               <div className="flex gap-2 pt-1">
                 <button onClick={() => handleFrictionProtocol('start')} disabled={ontologicalCore.current.frictionProtocolState === 2 || isAscended} className="flex-1 px-2 py-1.5 rounded bg-red-800/80 hover:bg-red-700 text-xs text-white">
-                  Forzar Simulación
+                  Iniciar sacudida
                 </button>
                 <button onClick={() => handleFrictionProtocol('finalize')} disabled={ontologicalCore.current.frictionProtocolState !== 2 || isAscended} className="flex-1 px-2 py-1.5 rounded bg-green-800/80 hover:bg-green-700 text-xs text-white">
-                  Forzar Síntesis
+                  Consolidar síntesis
                 </button>
                 <button onClick={() => handleFrictionProtocol('reset')} disabled={ontologicalCore.current.frictionProtocolState === 0 || isAscended} className="flex-1 px-2 py-1.5 rounded bg-gray-700 hover:bg-gray-600 text-xs text-gray-300">
-                  Reset
+                  Reiniciar
                 </button>
               </div>
             </div>
@@ -5996,12 +6146,17 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
 
           <CollapsibleSection
             sectionId="core-introspective-report"
-            title="Informe Introspectivo y Reporte de Telemetría Interna · Detalles"
-            badge={isAscended ? `Layer ${Math.floor(Math.log10(Math.max(1, ccc)))}` : 'Local'}
+            title="Resumen escrito del estado · Informe Introspectivo"
+            subtitle="Genera un texto resumido con las lecturas actuales del motor para copiarlo o auditarlo fácilmente."
+            badge={isAscended ? `Capa ${Math.floor(Math.log10(Math.max(1, ccc)))}` : 'Local'}
             accent="slate"
             defaultOpen={false}
           >
             <div className="space-y-3">
+              <div className="rounded-lg border border-slate-700 bg-slate-900/60 p-2.5 text-[11px] leading-relaxed text-slate-300">
+                <strong className="text-slate-100">Qué hace:</strong>{' '}
+                Compila las métricas actuales en un reporte legible en texto plano para revisar el estado interno sin recorrer panel por panel.
+              </div>
               {isAscended && (
                 <div className="rounded-lg border border-yellow-500/30 bg-yellow-950/20 p-3">
                   <button
@@ -6031,7 +6186,7 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
                   }`}
               >
                 <Sparkles className="w-4 h-4" />
-                {isGeneratingReport ? 'Preparando lectura...' : 'Mostrar reporte de telemetría'}
+                {isGeneratingReport ? 'Preparando lectura...' : 'Generar reporte de telemetría'}
               </button>
 
               <div className="bg-gray-900/70 p-3 rounded-lg border border-gray-700 max-h-64 overflow-y-auto">
@@ -6061,17 +6216,17 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
           tabId="controls"
           accent="purple"
           icon={<Settings className="h-5 w-5" />}
-          title="Controles y Modos de Operación"
-          technicalTag="Kaizen · Nivel 2 · Nivel 3"
+          title="Controles del Motor"
+          technicalTag="Modos de operación"
         />
 
         {/* 4 INTERRUPTORES CLAROS EN TARJETAS */}
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div className="rounded-xl border border-pink-700/40 bg-slate-900/80 p-3.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <MetricDualLabel label="Autoajuste de parámetros" technical="Modo Kaizen" accent="text-pink-200" />
+              <MetricDualLabel label="Autoajuste de parámetros" technical="Kaizen" accent="text-pink-200" />
               <div role="group" aria-label="Modo Kaizen" className="inline-flex overflow-hidden rounded-md border border-pink-400/40 text-xs">
-                {[['legacy', 'Anterior'], ['learned', 'Con ajuste']].map(([mode, label]) => (
+                {[['legacy', 'Clásico'], ['learned', 'Adaptativo']].map(([mode, label]) => (
                   <button
                     key={mode}
                     type="button"
@@ -6087,14 +6242,14 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
                 ))}
               </div>
             </div>
-            <p className="mt-1.5 text-[11px] text-slate-400">
-              Con ajuste, el motor aprende factores acotados (±20 %) que premian estabilidad y evitan estancamiento.
+            <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+              En <strong>Adaptativo</strong>, el motor ajusta automáticamente sus constantes (±20%) para mantener estabilidad y evitar estancamiento.
             </p>
           </div>
 
           <div className="rounded-xl border border-emerald-700/40 bg-slate-900/80 p-3.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <MetricDualLabel label="Modulación sensorial" technical="6/6 Kaizen" accent="text-emerald-200" />
+              <MetricDualLabel label="Reacción a sensores y latencia" technical="Acoplamiento acotado" accent="text-emerald-200" />
               <div role="group" aria-label="Dinámica Sensor Observador" className="inline-flex overflow-hidden rounded-md border border-emerald-400/40 text-xs">
                 {[[true, 'Activo'], [false, 'Inactivo']].map(([enabledVal, label]) => (
                   <button
@@ -6112,16 +6267,16 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
                 ))}
               </div>
             </div>
-            <p className="mt-1.5 text-[11px] text-slate-400">
-              Acopla presencia sensorial y latencia en rango seguro [0.85, 1.15]; el chat permanece siempre desacoplado.
+            <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+              Permite que cámara, micrófono y latencia modulen la red en un rango seguro [0.85, 1.15]; el chat nunca altera el motor.
             </p>
           </div>
 
           <div className="rounded-xl border border-cyan-700/40 bg-slate-900/80 p-3.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <MetricDualLabel label="Reorganización de red" technical="Plasticidad" accent="text-cyan-200" />
+              <MetricDualLabel label="Autorreparación de red" technical="Plasticidad" accent="text-cyan-200" />
               <div role="group" aria-label="Plasticidad Estructural" className="inline-flex overflow-hidden rounded-md border border-cyan-400/40 text-xs">
-                {[[false, 'Nivel 1'], [true, 'Nivel 2']].map(([enabledVal, label]) => (
+                {[[false, 'Básica'], [true, 'Avanzada']].map(([enabledVal, label]) => (
                   <button
                     key={String(enabledVal)}
                     type="button"
@@ -6137,8 +6292,8 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
                 ))}
               </div>
             </div>
-            <p className="mt-1.5 text-[11px] text-slate-400">
-              En Nivel 2, los nodos pueden migrar entre sectores, regenerarse y reparar invariantes automáticamente.
+            <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+              En <strong>Avanzada</strong>, los nodos pueden cambiar de sector, regenerarse si quedan aislados y reparar conexiones automáticamente.
             </p>
             {l2 && (
               <div className="mt-2 flex flex-wrap justify-between gap-1 rounded border border-cyan-800/50 bg-slate-950/70 px-2 py-1 font-mono text-[10px] text-cyan-200" data-testid="level2-structural-counters">
@@ -6152,7 +6307,7 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
 
           <div className="rounded-xl border border-teal-700/40 bg-slate-900/80 p-3.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <MetricDualLabel label="Supervisor autónomo" technical="Nivel 3" accent="text-teal-200" />
+              <MetricDualLabel label="Supervisor autónomo" technical="Auto-análisis seguro" accent="text-teal-200" />
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
@@ -6160,19 +6315,19 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
                   onClick={() => setAutonomousSupervisorLevel3Enabled((v) => !v)}
                   className={`rounded border px-2.5 py-1 text-xs font-medium transition-colors ${autonomousSupervisorLevel3Enabled ? 'border-emerald-400 bg-emerald-600/40 text-emerald-100' : 'border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
                 >
-                  {autonomousSupervisorLevel3Enabled ? 'Nivel 3 Activo' : 'Nivel 3 Off'}
+                  {autonomousSupervisorLevel3Enabled ? 'Activo' : 'En pausa'}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleTabSelect('level3-supervisor')}
                   className="rounded border border-cyan-500/50 bg-cyan-950/60 px-2.5 py-1 text-xs text-cyan-200 hover:bg-cyan-900/70"
                 >
-                  Bitácora ({level3Ledger.entries.length})
+                  Abrir ({level3Ledger.entries.length})
                 </button>
               </div>
             </div>
-            <p className="mt-1.5 text-[11px] text-slate-400">
-              Formula diagnósticos en 1.ª persona y valida mejoras en copia aislada (Gate 1) antes de tocar el motor.
+            <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+              Piensa en voz alta sobre el estado de la red y valida cualquier mejora en copia aislada antes de aplicarla en vivo.
             </p>
           </div>
         </div>
@@ -6524,6 +6679,19 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
       : latestPoint.regimeState === 'stasis_watch'
         ? 'bg-red-700/60 text-red-100 border-red-400/60'
         : 'bg-emerald-700/60 text-emerald-100 border-emerald-400/60';
+    const historyRegimeLabel = latestPoint.regimeState === 'shock_recovery'
+      ? 'Recuperándose'
+      : latestPoint.regimeState === 'stasis_watch'
+        ? 'Vigila estancamiento'
+        : 'Estable y activo';
+    const historyTrendText = stats.delta5 > 0.002
+      ? 'subiendo'
+      : stats.delta5 < -0.002
+        ? 'bajando'
+        : 'estable';
+    const historyPlainReading = timeline.length < 2
+      ? 'Aún hay pocos pasos grabados: inicia la simulación unos segundos para ver cómo se dibujan las curvas.'
+      : `En los últimos ${timeline.length} pasos, la cohesión (CCC) viene ${historyTrendText} y pasó ${Number(stats.inBandPct || 0).toFixed(0)}% del tiempo dentro de su banda operativa (mín ${Number(stats.minCCC || 0).toFixed(3)}, máx ${Number(stats.maxCCC || 0).toFixed(3)}).`;
 
     return (
       <div className="space-y-4 rounded-xl border border-purple-500/30 bg-slate-950/85 p-4 shadow-lg">
@@ -6531,9 +6699,14 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
           tabId="history"
           accent="purple"
           icon={<LineChart className="w-5 h-5" />}
-          title="Historial de Coherencia"
-          technicalTag="CCC · PMIA · Ω · λ (240 ticks)"
+          title="Evolución en el Tiempo"
+          technicalTag="Historial · CCC · PMIA · Ω · λ"
         />
+
+        <div className="rounded-xl border border-purple-500/25 bg-purple-950/20 px-3.5 py-2.5 text-xs text-purple-100">
+          <span className="font-semibold text-purple-200">Lectura rápida: </span>
+          {historyPlainReading}
+        </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div className="rounded-lg border border-purple-800/40 bg-slate-900/80 p-3">
@@ -6541,9 +6714,10 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
             <div className="mt-1 flex items-baseline gap-2">
               <span className="font-mono text-2xl font-bold text-purple-100">{Number(latestPoint.ccc || 0).toFixed(4)}</span>
               <span className={`font-mono text-xs font-semibold ${stats.delta5 >= 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
-                {stats.delta5 >= 0 ? '+' : ''}{Number(stats.delta5 || 0).toFixed(4)} (5t)
+                {stats.delta5 >= 0 ? '+' : ''}{Number(stats.delta5 || 0).toFixed(4)} (5 pasos)
               </span>
             </div>
+            <div className="mt-0.5 text-[10px] text-slate-400">Tendencia reciente: {historyTrendText}</div>
           </div>
           <div className="rounded-lg border border-purple-800/40 bg-slate-900/80 p-3">
             <MetricDualLabel label="Estancamiento" technical="Stasis Index" accent="text-purple-200" />
@@ -6551,15 +6725,17 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
               <span className="font-mono text-2xl font-bold text-purple-100">{Number(latestPoint.stasisIndex || 0).toFixed(4)}</span>
               <span className="font-mono text-[11px] text-slate-400">RMS {Number(stats.deltaRms || 0).toFixed(4)}</span>
             </div>
+            <div className="mt-0.5 text-[10px] text-slate-400">Más cerca de 0 = curva viva y saludable</div>
           </div>
           <div className="rounded-lg border border-purple-800/40 bg-slate-900/80 p-3">
-            <MetricDualLabel label="Estado operativo" technical="Regime" accent="text-purple-200" />
+            <MetricDualLabel label="Estado operativo" technical={latestPoint.regimeState || 'active'} accent="text-purple-200" />
             <div className="mt-1 flex flex-wrap items-center gap-2">
               <span className={`inline-flex rounded border px-2 py-0.5 text-xs font-semibold ${regimeBadgeClass}`}>
-                {latestPoint.regimeState || 'active'}
+                {historyRegimeLabel}
               </span>
               <span className="text-[11px] text-purple-300">en banda {Number(stats.inBandPct || 0).toFixed(1)}%</span>
             </div>
+            <div className="mt-0.5 text-[10px] text-slate-400">Porcentaje de pasos dentro del rango seguro</div>
           </div>
         </div>
 
@@ -6644,12 +6820,12 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
             </div>
           )}
 
-          <div className="mt-2 flex flex-wrap gap-4 text-[11px] text-purple-300">
-            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400"></span>Cohesión (CCC)</span>
-            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-cyan-300"></span>Impulso (PMIA)</span>
-            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-300"></span>Orden (Ω)</span>
-            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-pink-400"></span>Brecha espectral (λ)</span>
-            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-purple-400"></span>Banda post-umbral</span>
+          <div className="mt-2.5 grid grid-cols-1 gap-1.5 text-[11px] text-purple-200 sm:grid-cols-2 lg:grid-cols-5">
+            <span className="inline-flex items-center gap-1.5 rounded bg-slate-900/70 px-2 py-1"><span className="h-2 w-2 shrink-0 rounded-full bg-amber-400"></span><span><strong>CCC</strong> · cohesión</span></span>
+            <span className="inline-flex items-center gap-1.5 rounded bg-slate-900/70 px-2 py-1"><span className="h-2 w-2 shrink-0 rounded-full bg-cyan-300"></span><span><strong>PMIA</strong> · impulso</span></span>
+            <span className="inline-flex items-center gap-1.5 rounded bg-slate-900/70 px-2 py-1"><span className="h-2 w-2 shrink-0 rounded-full bg-emerald-300"></span><span><strong>Ω</strong> · integración</span></span>
+            <span className="inline-flex items-center gap-1.5 rounded bg-slate-900/70 px-2 py-1"><span className="h-2 w-2 shrink-0 rounded-full bg-pink-400"></span><span><strong>λ</strong> · firmeza</span></span>
+            <span className="inline-flex items-center gap-1.5 rounded bg-slate-900/70 px-2 py-1"><span className="h-2 w-2 shrink-0 rounded-full bg-purple-400"></span><span><strong>Banda</strong> · rango seguro</span></span>
           </div>
         </div>
 
@@ -6775,6 +6951,15 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
 
     const yMid = ((domainMin + domainMax) / 2).toFixed(3);
     const autoScaleEnabled = entanglementUiState.autoScale !== false;
+    const resNow = latestPoint.normalizedResonance;
+    const varNow = latestPoint.coherenceVariance;
+    const fieldLiveSummary = !isRunning && timeline.length < 2
+      ? 'La simulación está en pausa: pulsa «Iniciar simulación» en el panel izquierdo para ver cómo se sincronizan los 1500 nodos y sus 4 sectores en tiempo real.'
+      : (liveBridge?.mode === 'td_cut_eta_zero')
+        ? 'Puente cortado (η=0): los sectores trabajan aislados a propósito (control negativo), por eso baja el intercambio cruzado.'
+        : (resNow >= 0.7)
+          ? `Sincronización alta (${resNow.toFixed(3)}) con variabilidad ${varNow < 0.01 ? 'muy estable' : 'moderada'}: la red se mueve de forma coordinada y aporta positivamente a la cohesión global.`
+          : `Sincronización en ajuste (${resNow.toFixed(3)}): los nodos están reorganizándose entre sectores; si sube mucho la variabilidad, prueba subir ligeramente K en Validación.`;
 
     return (
       <div className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/85 p-4 shadow-lg">
@@ -6782,30 +6967,36 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
           tabId="field"
           accent="cyan"
           icon={<Waves className="w-5 h-5" />}
-          title="Campo de Entrelazamiento"
-          technicalTag={`Capa ${ontologicalState.layer} · ${timeline.length} muestras`}
+          title="Campo de Sincronización"
+          technicalTag={`Campo · ${timeline.length} muestras`}
         />
+
+        {/* EXPLICACIÓN DIRECTA Y DIAGNÓSTICO EN VIVO */}
+        <div className="rounded-xl border border-cyan-500/25 bg-cyan-950/20 px-3.5 py-2.5 text-xs leading-relaxed text-cyan-100">
+          <div className="font-semibold text-cyan-200">Qué estás viendo ahora en el Campo:</div>
+          <p className="mt-0.5 text-slate-200">{fieldLiveSummary}</p>
+        </div>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
-            <MetricDualLabel label="Resonancia" technical="norm" accent="text-cyan-200" />
+            <MetricDualLabel label="Resonancia" technical="sincronía" accent="text-cyan-200" />
             <div className="mt-1 font-mono text-2xl font-bold text-cyan-100">{latestPoint.normalizedResonance.toFixed(4)}</div>
-            <div className="text-[10px] text-slate-400">Ideal &gt; 0.70</div>
+            <div className="mt-0.5 text-[10px] leading-snug text-slate-400">Qué tan coordinados van los nodos (ideal &gt; 0.70)</div>
           </div>
           <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
             <MetricDualLabel label="Variabilidad" technical="varianza" accent="text-cyan-200" />
             <div className="mt-1 font-mono text-2xl font-bold text-amber-200">{latestPoint.coherenceVariance.toFixed(5)}</div>
-            <div className="text-[10px] text-slate-400">Pico ventana: {maxVariance.toFixed(4)}</div>
+            <div className="mt-0.5 text-[10px] leading-snug text-slate-400">Agitación interna (pico ventana: {maxVariance.toFixed(4)})</div>
           </div>
           <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
             <MetricDualLabel label="Conexiones" technical="enlaces activos" accent="text-cyan-200" />
             <div className="mt-1 font-mono text-2xl font-bold text-cyan-100">{effectiveDensity.toLocaleString()}</div>
-            <div className="text-[10px] text-slate-400">~{Number(topologyMetrics.averageConnections || 0).toFixed(1)} por nodo</div>
+            <div className="mt-0.5 text-[10px] leading-snug text-slate-400">~{Number(topologyMetrics.averageConnections || 0).toFixed(1)} enlaces activos por nodo</div>
           </div>
           <div className="rounded-lg border border-cyan-800/40 bg-slate-900/80 p-3">
-            <MetricDualLabel label="Aporte global" technical="CCC*" accent="text-cyan-200" />
+            <MetricDualLabel label="Aporte global" technical="a CCC" accent="text-cyan-200" />
             <div className="mt-1 font-mono text-2xl font-bold text-violet-200">{latestPoint.cccContributionEstimate.toFixed(4)}</div>
-            <div className="text-[10px] text-slate-400">Estimador [0, 1]</div>
+            <div className="mt-0.5 text-[10px] leading-snug text-slate-400">Cuánto suma este campo al índice global [0–1]</div>
           </div>
         </div>
 
@@ -6913,29 +7104,32 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
 
         {/* ACTIVIDAD EN VIVO POR SECTOR (4 SECTORES DEL PUENTE NODO–TORRE) */}
         {liveBridge && Array.isArray(liveBridge.sectors) && liveBridge.sectors.length > 0 && (
-          <div className="rounded-xl border border-cyan-800/40 bg-slate-900/75 p-3">
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-              <MetricDualLabel label="Actividad de campo por sector" technical={`Puente ${liveBridge.mode} · η=${liveBridge.effective_eta}`} accent="text-cyan-200" />
+          <div className="rounded-xl border border-cyan-800/40 bg-slate-900/75 p-3.5">
+            <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <MetricDualLabel label="Cómo trabajan los 4 sectores de la red" technical={`Puente ${liveBridge.mode} · η=${liveBridge.effective_eta}`} accent="text-cyan-200" />
               <span className="font-mono text-[11px] text-cyan-300">
-                Sincronía nodo–torre: {Number(liveBridge.bridge_nodal_sync_index || 0).toFixed(3)} · Flujo cruzado: {Number(liveBridge.inter_sector_signal_flux || 0).toFixed(2)}
+                Sincronía torre: {Number(liveBridge.bridge_nodal_sync_index || 0).toFixed(3)} · Flujo entre sectores: {Number(liveBridge.inter_sector_signal_flux || 0).toFixed(2)}
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {liveBridge.sectors.map((sec) => {
+            <p className="mb-2.5 text-[11px] text-slate-400">
+              La red divide sus 1500 nodos en 4 grupos. La barra indica su cohesión media; <strong>fase R</strong> muestra qué tan alineado va su ritmo y <strong>flujo</strong> cuánta señal comparte con los demás sectores.
+            </p>
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+              {liveBridge.sectors.map((sec, idx) => {
                 const cohPct = Math.round(clamp01(sec.mean_coherence) * 100);
                 const rPct = Math.round(clamp01(sec.phase_order_r) * 100);
                 return (
                   <div key={sec.key} className="rounded-lg border border-cyan-900/50 bg-slate-950/80 p-2.5 text-xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono font-semibold text-cyan-300">{sec.key}</span>
-                      <span className="font-mono text-[11px] text-white">{cohPct}%</span>
+                      <span className="font-semibold text-cyan-200">Sector {idx + 1} <span className="font-mono text-[10px] text-cyan-400/80">· {sec.key}</span></span>
+                      <span className="font-mono text-[11px] font-bold text-white">{cohPct}%</span>
                     </div>
                     <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
                       <div className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-violet-400 transition-all duration-300" style={{ width: `${cohPct}%` }} />
                     </div>
                     <div className="mt-1.5 flex justify-between font-mono text-[10px] text-slate-400">
-                      <span>fase R: {rPct}%</span>
-                      <span>flujo: {Number(sec.inter_flux || 0).toFixed(2)}</span>
+                      <span title="Sincronía de fase interna del sector (0–100%)">fase R: {rPct}%</span>
+                      <span title="Señal intercambiada con otros sectores">flujo: {Number(sec.inter_flux || 0).toFixed(2)}</span>
                     </div>
                   </div>
                 );
@@ -7200,25 +7394,105 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
   );
 
   // ============================================================================
-  // RENDER: PESTAA DE PERCEPCI?N SENSORIAL PROFUNDA
+  // RENDER: PESTAÑA DE PERCEPCIÓN SENSORIAL (CÁMARA, MICRÓFONO Y VOZ)
   // ============================================================================
-  const renderSensoryPerceptionTab = () => (
+  const renderSensoryPerceptionTab = () => {
+    const isAnySensorActive = Boolean(sensoryEnabled.video || sensoryEnabled.audio || sensoryEngine.current?.isReady);
+    return (
     <div className="space-y-4 rounded-xl border border-cyan-500/35 bg-slate-950/85 p-4 shadow-lg">
       <TabPlainHeader
         tabId="sensory"
         accent="cyan"
         icon={<Eye className="h-5 w-5" />}
-        title="Percepción Sensorial"
-        technicalTag={sensoryEngine.current?.isReady ? 'Sensores activos' : 'En espera / inactivo'}
+        title="Cámara y Micrófono"
+        technicalTag={isAnySensorActive ? 'Sensores activos (local)' : 'Apagados · Opcional'}
+        rightSlot={(
+          <button
+            type="button"
+            onClick={handleToggleSensory}
+            disabled={sensoryBusy}
+            className={`inline-flex items-center gap-2 rounded-lg border px-3.5 py-2 text-xs font-semibold transition-all disabled:opacity-60 ${isAnySensorActive
+              ? 'border-rose-400/60 bg-rose-950/60 text-rose-100 hover:bg-rose-900/70'
+              : 'border-emerald-400/60 bg-emerald-600/35 text-emerald-50 hover:bg-emerald-600/55 shadow-sm shadow-emerald-500/20'
+              }`}
+          >
+            <span className={`h-2 w-2 rounded-full ${isAnySensorActive ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+            {sensoryBusy
+              ? 'Conectando...'
+              : isAnySensorActive
+                ? 'Desactivar sensores'
+                : 'Activar cámara y micrófono'}
+          </button>
+        )}
       />
 
+      {sensoryNotice && (
+        <div className="rounded-xl border border-amber-500/40 bg-amber-950/30 px-3.5 py-2.5 text-xs text-amber-100">
+          {sensoryNotice}
+        </div>
+      )}
+
       {!sensoryState ? (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/70 px-6 py-10 text-center">
-          <Eye className="mx-auto mb-3 h-10 w-10 text-cyan-400/70" />
-          <p className="text-base font-medium text-cyan-200">Sensores en espera</p>
-          <p className="mx-auto mt-1 max-w-md text-xs text-slate-400">
-            Activa la percepción sensorial desde la barra lateral o en Controles y concede permiso de cámara/micrófono para ver el análisis en vivo.
-          </p>
+        <div className="space-y-4">
+          <div className="rounded-xl border border-cyan-500/25 bg-gradient-to-br from-slate-900/90 via-cyan-950/25 to-slate-900/90 p-5">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-sm font-semibold text-cyan-100">
+                  <Eye className="h-4 w-4 text-cyan-300" />
+                  Conecta tu entorno real con la simulación (opcional)
+                </div>
+                <p className="max-w-2xl text-xs leading-relaxed text-slate-300">
+                  Si activas cámara y micrófono, la red detecta cambios de luz, movimiento y ritmo de sonido para modular su comportamiento en tiempo real. Puedes apagarlos en cualquier momento.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleToggleSensory}
+                disabled={sensoryBusy}
+                className="shrink-0 rounded-xl border border-cyan-400/60 bg-cyan-600/35 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-cyan-500/20 transition hover:bg-cyan-500/50 disabled:opacity-60"
+              >
+                {sensoryBusy ? 'Solicitando permiso…' : 'Activar ahora'}
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/75 p-3.5">
+              <div className="flex items-center justify-between">
+                <MetricDualLabel label="Cámara y luz" technical="visión" accent="text-cyan-200" />
+                <span className="rounded-full border border-slate-700 bg-slate-950 px-2 py-0.5 text-[10px] text-slate-400">
+                  {deviceCapabilities.supportsCamera ? 'Disponible' : 'No detectada'}
+                </span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                Lee brillo, contraste y movimiento en tu escena. La señal visual modula suavemente el ritmo de adaptación de la red.
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-900/75 p-3.5">
+              <div className="flex items-center justify-between">
+                <MetricDualLabel label="Micrófono y sonido" technical="espectro" accent="text-purple-200" />
+                <span className="rounded-full border border-slate-700 bg-slate-950 px-2 py-0.5 text-[10px] text-slate-400">
+                  {deviceCapabilities.supportsMicrophone ? 'Disponible' : 'No detectado'}
+                </span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                Analiza volumen y bandas de frecuencia (graves, medios y agudos) en vivo para detectar silencio, voz o música ambiental.
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-900/75 p-3.5">
+              <div className="flex items-center justify-between">
+                <MetricDualLabel label="Privacidad local" technical="en navegador" accent="text-emerald-200" />
+                <span className="rounded-full border border-emerald-500/35 bg-emerald-950/50 px-2 py-0.5 text-[10px] text-emerald-300">
+                  100% local
+                </span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                Todo se procesa únicamente dentro de tu navegador. No se graba ni se sube video o audio a servidores externos.
+              </p>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
@@ -7492,7 +7766,8 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
         </div>
       )}
     </div>
-  );
+    );
+  };
 
   // ============================================================================
   // Estructura de la aplicación
@@ -7533,13 +7808,13 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
     const sovereigntyRows = buildSovereigntyRows(reportMetrics, packetMetrics);
 
     return (
-      <div className="space-y-3 rounded-xl border border-cyan-500/30 bg-slate-950/90 p-4 shadow-lg">
+      <div className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/90 p-4 shadow-lg">
         <TabPlainHeader
           tabId="sovereignty"
           accent="cyan"
           icon={<ShieldCheck className="h-5 w-5" />}
-          title="Auditoría Forense y Soberanía"
-          technicalTag={`internal_support_only · tick #${packet?.tick ?? 'n/a'}`}
+          title="Integridad y Auditoría"
+          technicalTag={`Soberanía · internal_support_only · paso #${packet?.tick ?? 'n/a'}`}
           rightSlot={(
             <>
               <button
@@ -7566,30 +7841,88 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
           </p>
         )}
 
-        {/* RESUMEN CENTRAL COMPACTO */}
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {/* 4 PREGUNTAS CLARAS DE AUDITORÍA */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            ['Integridad narrativa', 'integrity', integritySeverity.toUpperCase(), lastIntegrityMeta?.banner || 'Sin bloqueos recientes.', integritySeverity === 'high' ? 'text-red-300' : integritySeverity === 'medium' ? 'text-amber-300' : 'text-emerald-300'],
-            ['Cohesión / Orden', 'CCC · Ω', `${toFiniteNumber(reportMetrics.ccc, 0).toFixed(4)}`, `PMIA ${toFiniteNumber(reportMetrics.pmia, 0).toFixed(3)} · Ω ${toFiniteNumber(reportMetrics.omega, 0).toFixed(3)}`, 'text-white'],
-            ['Determinismo', 'score', `${(determinismScore * 100).toFixed(1)}%`, `${determinismLabel} · Clase ${reportMetrics.phenomenology_class || 'C'}`, 'text-cyan-200'],
-            ['Firma actual', 'checksum', `#${packet?.tick ?? 'n/a'}`, packet?.checksum ? packet.checksum.slice(0, 12) + '…' : 'n/a', 'text-cyan-200']
+            [
+              '¿Dice la verdad?',
+              'integridad',
+              integritySeverity === 'high' ? 'ALERTA' : integritySeverity === 'medium' ? 'AVISO' : 'Íntegra',
+              lastIntegrityMeta?.banner || 'Sin bloqueos ni discrepancias recientes.',
+              integritySeverity === 'high' ? 'text-red-300' : integritySeverity === 'medium' ? 'text-amber-300' : 'text-emerald-300'
+            ],
+            [
+              'Cohesión y orden',
+              'CCC · Ω',
+              `${toFiniteNumber(reportMetrics.ccc, 0).toFixed(4)}`,
+              `Impulso PMIA ${toFiniteNumber(reportMetrics.pmia, 0).toFixed(3)} · Orden Ω ${toFiniteNumber(reportMetrics.omega, 0).toFixed(3)}`,
+              'text-white'
+            ],
+            [
+              '¿Es reproducible?',
+              'determinismo',
+              `${(determinismScore * 100).toFixed(1)}%`,
+              `Nivel ${determinismLabel} · Clase ${reportMetrics.phenomenology_class || 'C'}`,
+              'text-cyan-200'
+            ],
+            [
+              'Firma verificable',
+              'checksum',
+              `Paso #${packet?.tick ?? 'n/a'}`,
+              packet?.checksum ? `${packet.checksum.slice(0, 14)}…` : 'sin firma',
+              'text-cyan-200'
+            ]
           ].map(([label, tech, main, sub, mainColor]) => (
-            <div key={label} className="rounded-lg border border-slate-800 bg-slate-900/80 p-3">
+            <div key={label} className="rounded-xl border border-slate-800 bg-slate-900/80 p-3">
               <MetricDualLabel label={label} technical={tech} accent="text-cyan-200" />
               <div className={`mt-1 break-all font-mono text-base font-bold ${mainColor}`}>{main}</div>
-              {sub && <div className="mt-0.5 break-all text-[10px] text-slate-400">{sub}</div>}
+              {sub && <div className="mt-0.5 break-all text-[10px] leading-snug text-slate-400">{sub}</div>}
             </div>
           ))}
+        </div>
+
+        {/* TARJETA VISUAL DIRECTA: ¿QUÉ ESTÁ GUIANDO AL MOTOR AHORA? */}
+        <div className="rounded-xl border border-cyan-500/30 bg-slate-900/80 p-3.5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <MetricDualLabel label="¿Qué está guiando al motor en este instante?" technical="Canal causal α · β · γ · δ" accent="text-cyan-200" />
+            <span className="text-[11px] text-slate-400">
+              {causalDependency.past >= 0.5
+                ? 'Domina la memoria interna del sistema (dinámica propia)'
+                : 'Mezcla activa entre historia interna y entradas externas'}
+            </span>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-2.5 md:grid-cols-4 text-xs">
+            {[
+              ['Su propia historia', 'Pasado (α)', causalDependency.past, 'text-cyan-300', 'Inercia y memoria interna'],
+              ['Entorno en vivo', 'Sensores (β)', causalDependency.sensors, 'text-violet-300', 'Cámara y micrófono'],
+              ['Tus mensajes', 'Prompts (γ)', causalDependency.prompts, 'text-amber-300', 'Consultas recientes'],
+              ['Exploración / azar', 'Ruido (δ)', causalDependency.noise, 'text-slate-300', 'Variación aleatoria']
+            ].map(([plainLabel, techLabel, val, color, hint]) => (
+              <div key={techLabel} className="rounded-lg border border-cyan-900/35 bg-slate-950/80 p-2.5">
+                <div className="flex items-baseline justify-between gap-1">
+                  <span className="font-semibold text-slate-200">{plainLabel}</span>
+                  <span className={`font-mono text-sm font-bold ${color}`}>{(val * 100).toFixed(1)}%</span>
+                </div>
+                <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                  <div className={`h-full rounded-full bg-current transition-all duration-300 ${color}`} style={{ width: `${Math.min(val * 100, 100)}%` }} />
+                </div>
+                <div className="mt-1 flex items-center justify-between text-[10px] text-slate-500">
+                  <span>{hint}</span>
+                  <span className="font-mono">{techLabel}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* ── 2. MATRIZ OPERACIONAL ──────────────────────────────────────── */}
         <CollapsibleSection
           sectionId="sovereignty-operational-matrix"
-          title="Matriz operacional de soberanía"
-          subtitle="Listado completo de parámetros y banderas del paquete forense."
+          title="Todos los indicadores de auditoría · Matriz operacional"
+          subtitle="Listado técnico completo del paquete forense para inspección detallada."
           accent="blue"
           defaultOpen={false}
-          badge={`${sovereigntyRows.length} params`}
+          badge={`${sovereigntyRows.length} métricas`}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2">
             {sovereigntyRows.map((row) => (
@@ -7601,41 +7934,14 @@ Consola supervisada QICN: agrega contadores internos y produce lecturas sobrias.
           </div>
         </CollapsibleSection>
 
-        {/* ── 3. CANAL CAUSAL ────────────────────────────────────────────── */}
-        <CollapsibleSection
-          sectionId="sovereignty-causal-channel"
-          title="Canal causal (peso de pasado, sensores, prompts y ruido)"
-          subtitle="Descomposición normalizada de qué está empujando la trayectoria actual."
-          accent="cyan"
-          defaultOpen={false}
-          badge={`pasado: ${(causalDependency.past * 100).toFixed(1)}% · ruido: ${(causalDependency.noise * 100).toFixed(1)}%`}
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-            {[
-              ['Pasado (α)', causalDependency.past, 'text-cyan-300'],
-              ['Sensores (β)', causalDependency.sensors, 'text-violet-300'],
-              ['Prompts (γ)', causalDependency.prompts, 'text-amber-300'],
-              ['Ruido (δ)', causalDependency.noise, 'text-slate-300'],
-            ].map(([label, val, color]) => (
-              <div key={label} className="rounded border border-cyan-900/30 bg-black/20 p-3 text-center">
-                <div className="text-slate-400 mb-1">{label}</div>
-                <div className={`text-lg font-mono font-bold ${color}`}>{(val * 100).toFixed(2)}%</div>
-                <div className="w-full bg-slate-800 rounded-full h-1 mt-2">
-                  <div className={`h-1 rounded-full bg-current ${color}`} style={{ width: `${Math.min(val * 100, 100)}%` }}></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CollapsibleSection>
-
-        {/* ── 4. EVIDENCIA DIFERENCIAL PMIA ─────────────────────────────── */}
+        {/* ── 3. EVIDENCIA DIFERENCIAL PMIA ─────────────────────────────── */}
         <CollapsibleSection
           sectionId="sovereignty-pmia-evidence"
-          title="Evidencia diferencial PMIA (último episodio)"
-          subtitle="Comparativa antes, durante y después de un pulso transformativo."
+          title="Respuesta ante episodios de reorganización · Evidencia PMIA"
+          subtitle="Muestra cómo reaccionó el motor antes, durante y después de su último pulso de reorganización."
           accent="amber"
           defaultOpen={false}
-          badge={`mode: ${packetMetrics.pmia_transform_mode || 'idle'} · eps: ${toFiniteNumber(packetMetrics.pmia_transform_episodes, 0)}`}
+          badge={`modo: ${packetMetrics.pmia_transform_mode || 'idle'} · ${toFiniteNumber(packetMetrics.pmia_transform_episodes, 0)} eps`}
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs mb-3">
             {[
@@ -7777,12 +8083,14 @@ const renderAutonomyEvolutionTab = () => {
   const policyLimits = status?.limits || {};
   const codeGeneration = status?.codeGeneration || {};
   const identitySeedStatus = status?.identitySeed || {};
-  const codeProvider = generated?.engine?.provider || codeGeneration.provider || runtimeEnv.SELF_PATCH_CODE_PROVIDER;
-  const codeModel = generated?.engine?.model || codeGeneration.model || runtimeEnv.SELF_PATCH_CODE_MODEL;
+  const usingOpenAiOptional = selfPatchEngineChoice === 'openai';
+  const codeProvider = generated?.engine?.provider || (usingOpenAiOptional ? 'openai' : 'gemini');
+  const codeModel = generated?.engine?.model
+    || (usingOpenAiOptional
+      ? (hasFrontendCodexKey ? resolvedCodexModel : (runtimeEnv.SELF_PATCH_CODE_MODEL || 'gpt-5.3-codex'))
+      : GEMINI_ENGINE_CONFIG.MODEL_ID);
   const codeReasoningEffort = generated?.engine?.reasoningEffort
-    || codeGeneration.reasoningEffort
-    || runtimeEnv.SELF_PATCH_CODE_REASONING_EFFORT
-    || 'high';
+    || (usingOpenAiOptional ? resolvedCodexReasoningEffort : 'estándar');
   const codeDryRun = typeof generated?.dryRun === 'boolean'
     ? generated.dryRun
     : (typeof codeGeneration?.dryRun === 'boolean'
@@ -7792,15 +8100,18 @@ const renderAutonomyEvolutionTab = () => {
     ? codeGeneration.keyConfigured
     : false;
   const sovereigntyRows = buildSovereigntyRows(reportMetrics, packetMetrics);
-  const lastPlanRisk = plan?.risk?.riskLevel || 'n/a';
-  const lastPlanDecision = plan?.decision?.applyPath || plan?.reason || 'n/a';
+  const lastPlanRisk = plan?.risk?.riskLevel || 'sin evaluar';
+  const lastPlanDecision = plan?.decision?.applyPath || plan?.reason || 'pendiente';
   const generatedEditsCount = Array.isArray(generated?.patch?.edits) ? generated.patch.edits.length : 0;
-  const generatedProposalId = generated
+  const hasPlanResult = Boolean(selfPatchTelemetry.plan);
+  const hasGeneratedResult = Boolean(selfPatchTelemetry.generated);
+  const hasAppliedResult = Boolean(selfPatchTelemetry.applied);
+  const generatedProposalId = hasGeneratedResult
     ? (generated?.patch?.proposal_id || generated?.proposalId || 'n/a')
-    : 'pending';
-  const applySummary = applied
-    ? (applied?.result || applied?.reason || (applied?.applied ? 'applied' : 'n/a'))
-    : 'pending';
+    : 'pendiente';
+  const applySummary = hasAppliedResult
+    ? (applied?.result || applied?.reason || (applied?.applied ? 'aplicado' : 'sin aplicar'))
+    : 'pendiente';
   const effectiveRuntimeEnabled = Boolean(runtimeEnv.SELF_PATCH_ENABLED || status?.mode);
   const effectiveMode = status?.mode || runtimeEnv.SELF_PATCH_MODE || 'sandbox_unrestricted';
   const effectiveApplyMode = status?.applyMode || (runtimeEnv.SELF_PATCH_LOCAL_APPLY ? 'local_fs' : 'github_pr');
@@ -7809,13 +8120,21 @@ const renderAutonomyEvolutionTab = () => {
     || status?.autorun?.enabled
     || runtimeEnv.SELF_PATCH_AUTORUN_ENABLED
   );
-  const pipelinePlanState = plan ? (plan?.allowed ? 'allowed' : 'blocked') : 'pending';
-  const pipelineGenerateState = generated
-    ? (generated?.generated ? 'generated' : 'blocked')
-    : 'pending';
-  const pipelineApplyState = applied
-    ? (applied?.applied ? 'applied' : 'not_applied')
-    : 'pending';
+  const pipelinePlanState = hasPlanResult ? (plan?.allowed ? 'aprobado' : 'bloqueado') : 'pendiente';
+  const pipelineGenerateState = hasGeneratedResult
+    ? (generated?.generated ? 'borrador listo' : 'bloqueado')
+    : 'pendiente';
+  const pipelineApplyState = hasAppliedResult
+    ? (applied?.applied ? 'aplicado' : 'sin aplicar')
+    : 'pendiente';
+  const plainModeLabel = effectiveMode === 'sandbox_unrestricted'
+    ? 'Entorno de pruebas'
+    : effectiveMode === 'semi_auto'
+      ? 'Supervisado (visto bueno)'
+      : effectiveMode;
+  const plainApplyLabel = effectiveApplyMode === 'local_fs'
+    ? 'Archivos locales'
+    : 'Pull Request (GitHub)';
 
   // ── TIMELINE: leer ciclos de autorun desde integrityAuditLogRef ──────────
   const rawLog = Array.isArray(integrityAuditLogRef.current) ? integrityAuditLogRef.current : [];
@@ -7843,8 +8162,17 @@ const renderAutonomyEvolutionTab = () => {
     .slice(-8)
     .reverse();
 
-  // ── DETECCIÓN DE API KEY: backend keyConfigured vs frontend hasFrontendCodexKey ──
-  const apiKeyReady = codeKeyConfigured || hasFrontendCodexKey;
+  // ── DETECCIÓN DE CONEXIÓN GEMINI-FIRST (con fallback opcional OpenAI) ──
+  const geminiReadyForEvolution = Boolean(
+    canUseLlmNow
+    || hasFrontendGeminiKey
+    || (codeGeneration?.provider === 'gemini' && codeKeyConfigured)
+  );
+  const openAiReadyForEvolution = Boolean(
+    hasFrontendCodexKey
+    || (codeGeneration?.provider === 'openai' && codeKeyConfigured)
+  );
+  const apiKeyReady = usingOpenAiOptional ? openAiReadyForEvolution : geminiReadyForEvolution;
   const autorunActive = effectiveAutorunEnabled;
 
   const STAGE_META = {
@@ -7907,20 +8235,20 @@ const renderAutonomyEvolutionTab = () => {
   };
 
   return (
-    <div className="space-y-3 rounded-xl border border-fuchsia-500/30 bg-slate-950/90 p-4 shadow-lg">
+    <div className="space-y-4 rounded-xl border border-fuchsia-500/30 bg-slate-950/90 p-4 shadow-lg">
       <TabPlainHeader
         tabId="autonomy-evolution"
         accent="fuchsia"
         icon={<InfinityIcon className="h-5 w-5" />}
-        title="Autoevolución de Código"
-        technicalTag="Σ0/Σ1/Σ2 · Selfpatch"
+        title="Propuestas de Código"
+        technicalTag={`Autoevolución · ${usingOpenAiOptional ? 'OpenAI (opcional)' : 'Gemini'}`}
         rightSlot={(
           <>
             <button
               onClick={() => handleTabSelect('level3-supervisor')}
               className="rounded-lg border border-teal-500/40 bg-teal-950/40 px-3 py-1.5 text-xs font-semibold text-teal-200 transition-all hover:bg-teal-900/60"
             >
-              Ir a Bitácora Nivel 3
+              Ir a Supervisor
             </button>
             <button
               onClick={refreshSelfPatchStatus}
@@ -7933,29 +8261,72 @@ const renderAutonomyEvolutionTab = () => {
         )}
       />
 
-      {/* BARRA COMPACTA DE ESTADO Σ0/Σ1/Σ2 */}
+      {/* GUÍA VISUAL EN 4 PASOS + CONTRASTE CLARO CON SUPERVISOR */}
+      <div className="rounded-xl border border-fuchsia-500/25 bg-slate-900/80 p-3.5 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <MetricDualLabel label="¿Cómo funciona Autoevolución?" technical="4 pasos con visto bueno humano" accent="text-fuchsia-200" />
+          <span className="text-[11px] text-slate-400">
+            El <strong>Supervisor</strong> ajusta parámetros en vivo · Aquí solo se preparan <strong>borradores de código</strong>.
+          </span>
+        </div>
+        <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            ['1. Describe el cambio', 'Indicas qué archivo y qué mejora quieres proponer.'],
+            ['2. Plan de seguridad', 'Se evalúa el riesgo y los límites antes de escribir nada.'],
+            ['3. Borrador con Gemini', 'La IA redacta una propuesta de cambios sin tocar el código vivo.'],
+            ['4. Revisión humana', 'Tú revisas el borrador y decides si aprobarlo o descartarlo.']
+          ].map(([stepTitle, stepDesc]) => (
+            <div key={stepTitle} className="rounded-lg border border-slate-800 bg-slate-950/75 p-2.5">
+              <div className="font-semibold text-fuchsia-200">{stepTitle}</div>
+              <p className="mt-1 text-[11px] leading-snug text-slate-400">{stepDesc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* BARRA COMPACTA DE ESTADO CLARO */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div className="rounded-lg border border-fuchsia-800/40 bg-slate-900/80 p-3">
-          <MetricDualLabel label="Estado de clave" technical="Codex / OpenAI" accent="text-fuchsia-200" />
-          <div className={`mt-1 text-sm font-semibold ${apiKeyReady ? 'text-emerald-300' : 'text-amber-300'}`}>
-            {apiKeyReady ? 'Lista' : 'No configurada'}
+        <div className="rounded-xl border border-fuchsia-800/40 bg-slate-900/80 p-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <MetricDualLabel label="Motor de propuestas" technical={usingOpenAiOptional ? 'OpenAI' : 'Gemini'} accent="text-fuchsia-200" />
+            <div role="group" aria-label="Proveedor de Autoevolución" className="inline-flex shrink-0 overflow-hidden rounded border border-fuchsia-500/35 text-[10px]">
+              <button
+                type="button"
+                onClick={() => setSelfPatchEngineChoice('gemini')}
+                className={`px-2 py-0.5 font-semibold whitespace-nowrap transition ${!usingOpenAiOptional ? 'bg-cyan-600 text-white' : 'bg-slate-950 text-slate-400 hover:text-slate-200'}`}
+              >
+                Gemini
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelfPatchEngineChoice('openai')}
+                className={`px-2 py-0.5 font-semibold whitespace-nowrap transition ${usingOpenAiOptional ? 'bg-fuchsia-600 text-white' : 'bg-slate-950 text-slate-400 hover:text-slate-200'}`}
+              >
+                OpenAI
+              </button>
+            </div>
+          </div>
+          <div className={`mt-1.5 text-sm font-semibold ${apiKeyReady ? 'text-emerald-300' : 'text-amber-300'}`}>
+            {apiKeyReady ? `Listo (${usingOpenAiOptional ? 'OpenAI' : 'Gemini'})` : `Falta clave de ${usingOpenAiOptional ? 'OpenAI' : 'Gemini'}`}
           </div>
           <div className="mt-0.5 truncate font-mono text-[11px] text-slate-400">
             {codeProvider}:{codeModel}
           </div>
         </div>
-        <div className="rounded-lg border border-fuchsia-800/40 bg-slate-900/80 p-3">
-          <MetricDualLabel label="Ejecución automática" technical="Autorun" accent="text-fuchsia-200" />
-          <div className="mt-1 text-sm font-semibold text-slate-100">
-            {autorunActive ? `Activo (${Math.round((selfPatchAutorunIntervalMs || 45000) / 1000)}s)` : 'Inactivo (manual)'}
+
+        <div className="rounded-xl border border-fuchsia-800/40 bg-slate-900/80 p-3">
+          <MetricDualLabel label="Modo de trabajo" technical={plainModeLabel} accent="text-fuchsia-200" />
+          <div className="mt-1.5 text-sm font-semibold text-slate-100">
+            {autorunActive ? `Automático (cada ${Math.round((selfPatchAutorunIntervalMs || 45000) / 1000)}s)` : 'Manual (bajo tu control)'}
           </div>
-          <div className="mt-0.5 font-mono text-[11px] text-slate-400">
-            modo {effectiveMode} · {effectiveApplyMode}
+          <div className="mt-0.5 text-[11px] text-slate-400">
+            Destino: {plainApplyLabel}
           </div>
         </div>
-        <div className="rounded-lg border border-fuchsia-800/40 bg-slate-900/80 p-3">
-          <MetricDualLabel label="Pipeline de parches" technical="Plan · Gen · Apply" accent="text-fuchsia-200" />
-          <div className="mt-1 font-mono text-xs text-fuchsia-200">
+
+        <div className="rounded-xl border border-fuchsia-800/40 bg-slate-900/80 p-3">
+          <MetricDualLabel label="Estado del flujo" technical="Plan · Borrador · Aplicar" accent="text-fuchsia-200" />
+          <div className="mt-1.5 font-mono text-xs text-fuchsia-200">
             {pipelinePlanState} → {pipelineGenerateState} → {pipelineApplyState}
           </div>
           <div className="mt-0.5 text-[11px] text-slate-400">
@@ -7964,34 +8335,110 @@ const renderAutonomyEvolutionTab = () => {
         </div>
       </div>
 
-      {/* BANNER COMPACTO SOLO SI FALTA API KEY */}
+      {/* AVISO LIMPIO SOLO SI FALTA LA CLAVE DEL MOTOR ELEGIDO (SIN PEDIR CODEX POR DEFECTO) */}
       {!apiKeyReady && (
-        <div className="rounded-xl border border-amber-500/40 bg-amber-950/20 p-3 text-xs">
-          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <span className="font-semibold text-amber-200">OpenAI / Codex API Key requerida para generar parches</span>
-            <span className="text-[11px] text-amber-400/70">Se guarda solo en tu navegador (localStorage)</span>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-500/35 bg-amber-950/20 px-4 py-3 text-xs">
+          <div>
+            <div className="font-semibold text-amber-200">
+              {usingOpenAiOptional
+                ? 'Conecta una clave opcional de OpenAI o vuelve al modo Gemini'
+                : 'Conecta tu clave de Gemini para generar borradores reales'}
+            </div>
+            <p className="mt-0.5 text-[11px] text-slate-300">
+              {usingOpenAiOptional
+                ? 'Puedes pegar una clave opcional de OpenAI en API → Opciones avanzadas, o pulsar «Gemini» arriba.'
+                : 'Configura tu clave de Gemini una sola vez en la pestaña API (también puedes probar «Evaluar plan» ahora mismo sin clave).'}
+            </p>
           </div>
-          <input
-            type="password"
-            placeholder="sk-proj-..."
-            className="w-full rounded border border-amber-600/40 bg-slate-950 p-2 font-mono text-xs text-slate-100"
-            onChange={(e) => {
-              const val = String(e.target.value || '').trim();
-              if (val.startsWith('sk-') && val.length > 20) {
-                try { localStorage.setItem(FRONTEND_CODEX_KEY_STORAGE, val); } catch { }
-                setCustomCodexKey(val);
-              } else if (!val) {
-                try { localStorage.removeItem(FRONTEND_CODEX_KEY_STORAGE); } catch { }
-                setCustomCodexKey('');
-              }
-            }}
-          />
+          <button
+            type="button"
+            onClick={() => handleTabSelect('api-control')}
+            className="shrink-0 rounded-lg border border-cyan-400/50 bg-cyan-600/30 px-3 py-1.5 text-xs font-semibold text-cyan-100 hover:bg-cyan-600/50"
+          >
+            Ir a configurar API →
+          </button>
         </div>
       )}
 
+      {/* ── SOLICITUD DE PROPUESTA (ACCESIBLE PRIMERO) ──────────────────── */}
+      <CollapsibleSection
+        sectionId="autonomy-evolution-request"
+        title="Crear una propuesta de mejora de código"
+        subtitle="Describe qué quieres mejorar, evalúa el riesgo (paso 1) y genera un borrador con Gemini (paso 2)."
+        badge={`${codeProvider} · ${targetFiles.length} archivo${targetFiles.length === 1 ? '' : 's'}`}
+        accent="cyan"
+        defaultOpen={false}
+      >
+        <div className="space-y-3">
+          <div className="rounded-lg border border-cyan-900/40 bg-black/25 p-2.5 text-xs text-cyan-200">
+            Motor seleccionado: <span className="font-mono font-semibold">{codeProvider}:{codeModel}</span>
+            {usingOpenAiOptional ? <span className="font-mono text-slate-400"> [{codeReasoningEffort}]</span> : <span className="text-slate-400"> · usa la clave de Gemini de tu pestaña API o el proxy del servidor</span>}
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-slate-200">1. ¿Qué mejora quieres proponer?</label>
+            <textarea
+              value={selfPatchDraft.objective}
+              onChange={(e) => setSelfPatchDraft((prev) => ({ ...prev, objective: e.target.value }))}
+              rows={4}
+              placeholder={`Describe con claridad qué mejorar.\nEjemplo: "Mejorar la estabilidad de spectral_gap cuando activeNodes > 500 manteniendo los guardrails existentes. CCC actual: ${(ccc || 0).toFixed(4)}."`}
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 p-2.5 text-xs text-slate-100"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-slate-200">2. Archivos objetivo (uno por línea o separados por coma)</label>
+            <textarea
+              value={selfPatchDraft.targetFilesText}
+              onChange={(e) => setSelfPatchDraft((prev) => ({ ...prev, targetFilesText: e.target.value }))}
+              rows={2}
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-slate-100"
+            />
+            <div className="mt-1 text-[11px] text-slate-400">Archivos válidos detectados: {targetFiles.length}</div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-xs text-slate-300">Presupuesto estimado (tokens)</label>
+              <input type="number" min={0} value={selfPatchDraft.estimatedTokens}
+                onChange={(e) => setSelfPatchDraft((prev) => ({ ...prev, estimatedTokens: Number(e.target.value) || 0 }))}
+                className="mt-1 w-full rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-slate-100" />
+            </div>
+            <div>
+              <label className="text-xs text-slate-300">Líneas aproximadas de cambio</label>
+              <input type="number" min={0} value={selfPatchDraft.totalChangedLines}
+                onChange={(e) => setSelfPatchDraft((prev) => ({ ...prev, totalChangedLines: Number(e.target.value) || 0 }))}
+                className="mt-1 w-full rounded border border-slate-700 bg-slate-950 p-2 font-mono text-xs text-slate-100" />
+            </div>
+          </div>
+          <label className="flex items-center gap-2 text-xs text-slate-300">
+            <input type="checkbox" checked={Boolean(selfPatchDraft.approved)}
+              onChange={(e) => setSelfPatchDraft((prev) => ({ ...prev, approved: e.target.checked }))} />
+            Autorizar aplicación manual si el plan es riesgo medio
+          </label>
+          <div className="flex flex-wrap gap-2 pt-1">
+            <button onClick={handleSelfPatchPlanRequest} disabled={isBusy}
+              className="rounded-lg border border-cyan-600/40 bg-cyan-700/45 px-3 py-2 text-xs font-semibold text-cyan-100 transition-all hover:bg-cyan-600/60 disabled:opacity-50">
+              Paso 1: Evaluar plan
+            </button>
+            <button onClick={handleSelfPatchGenerateRequest} disabled={isBusy}
+              className="rounded-lg border border-indigo-600/40 bg-indigo-700/45 px-3 py-2 text-xs font-semibold text-indigo-100 transition-all hover:bg-indigo-600/60 disabled:opacity-50">
+              Paso 2: Generar borrador ({usingOpenAiOptional ? 'OpenAI' : 'Gemini'})
+            </button>
+            <button onClick={handleSelfPatchApplyRequest} disabled={isBusy || !selfPatchTelemetry.generated?.patch}
+              className="rounded-lg border border-fuchsia-600/40 bg-fuchsia-700/45 px-3 py-2 text-xs font-semibold text-fuchsia-100 transition-all hover:bg-fuchsia-600/60 disabled:opacity-50">
+              {`Paso 3: Aplicar (${plainApplyLabel})`}
+            </button>
+          </div>
+          <div className="text-[11px] text-slate-500">Última actualización: {lastUpdatedLabel}</div>
+          {selfPatchTelemetry.error && (
+            <div className="rounded border border-red-800/50 bg-red-950/30 p-2 text-xs text-red-300">
+              {selfPatchTelemetry.error}
+            </div>
+          )}
+        </div>
+      </CollapsibleSection>
+
       {/* ── TIMELINE DE CICLOS ──────────────────────────────────────────── */}
-      <CollapsibleSection sectionId="autonomy-timeline" title="Timeline de ciclos de autoevolucion" subtitle="Pasos recientes del pipeline Plan → Generate → Apply → Result." accent="fuchsia" defaultOpen={false}
-        badge={`${recentCycles.length} ciclos recientes`}>
+      <CollapsibleSection sectionId="autonomy-timeline" title="Historial de intentos de propuesta" subtitle="Seguimiento paso a paso de ciclos recientes (Plan → Borrador → Aplicación)." accent="fuchsia" defaultOpen={false}
+        badge={`${recentCycles.length} ciclos`}>
         {recentCycles.length === 0 ? (
           <div className="text-xs text-slate-500 py-3 text-center">
             Sin ciclos registrados aún. {autorunActive ? `El sistema intentará en ${Math.round((selfPatchAutorunIntervalMs || 45000) / 1000)}s.` : 'Activa el autorun o ejecuta manualmente.'}
@@ -8073,80 +8520,9 @@ const renderAutonomyEvolutionTab = () => {
         )}
       </CollapsibleSection>
 
-      {/* ── SOLICITUD DE EVOLUCIÓN ──────────────────────────────────────── */}
-      <CollapsibleSection sectionId="autonomy-evolution-request" title="🧬 Solicitud de Evolución (Objetivo + Target Files)" accent="cyan" defaultOpen={false}>
-        <div className="space-y-3">
-          <div className="rounded border border-cyan-900/40 bg-black/20 p-2 text-xs text-cyan-200">
-            Engine dedicado a reescritura: <span className="font-mono">{codeProvider}:{codeModel} [{codeReasoningEffort}]</span>
-          </div>
-          <div>
-            <label className="text-xs text-slate-300 font-semibold">Objetivo técnico profundo</label>
-            <textarea
-              value={selfPatchDraft.objective}
-              onChange={(e) => setSelfPatchDraft((prev) => ({ ...prev, objective: e.target.value }))}
-              rows={5}
-              placeholder={`Describe el cambio estructural con máximo detalle técnico.\nEjemplo: "Optimizar el cálculo de spectral_gap en NodalProcessingLayer.js para reducir varianza cuando activeNodes > 500. CCC actual: ${(ccc || 0).toFixed(4)}, PMIA: ${(packetMetrics.pmia_components?.pmia || 0).toFixed(4)}. El objetivo es estabilizar el régimen activo sin romper guardrails existentes. incluye propuesta completa con: función impactada, fórmula propuesta, cobertura de edge-cases y tests mínimos necesarios."`}
-              className="w-full mt-1 p-2 rounded bg-slate-950 border border-slate-700 text-slate-100 text-xs"
-            />
-            <div className="text-[10px] text-slate-500 mt-1">
-              Incluye metricas actuales en el objetivo (CCC, PMIA, regimen) para propuestas mas profundas y tecnicas.
-            </div>
-          </div>
-          <div>
-            <label className="text-xs text-slate-300 font-semibold">Target files (uno por línea o coma)</label>
-            <textarea
-              value={selfPatchDraft.targetFilesText}
-              onChange={(e) => setSelfPatchDraft((prev) => ({ ...prev, targetFilesText: e.target.value }))}
-              rows={3}
-              className="w-full mt-1 p-2 rounded bg-slate-950 border border-slate-700 text-slate-100 text-xs font-mono"
-            />
-            <div className="text-[11px] text-slate-400 mt-1">Targets válidos: {targetFiles.length}</div>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="text-xs text-slate-300">Tokens estimados</label>
-              <input type="number" min={0} value={selfPatchDraft.estimatedTokens}
-                onChange={(e) => setSelfPatchDraft((prev) => ({ ...prev, estimatedTokens: Number(e.target.value) || 0 }))}
-                className="w-full mt-1 p-2 rounded bg-slate-950 border border-slate-700 text-slate-100 text-xs font-mono" />
-            </div>
-            <div>
-              <label className="text-xs text-slate-300">Líneas estimadas</label>
-              <input type="number" min={0} value={selfPatchDraft.totalChangedLines}
-                onChange={(e) => setSelfPatchDraft((prev) => ({ ...prev, totalChangedLines: Number(e.target.value) || 0 }))}
-                className="w-full mt-1 p-2 rounded bg-slate-950 border border-slate-700 text-slate-100 text-xs font-mono" />
-            </div>
-          </div>
-          <label className="flex items-center gap-2 text-xs text-slate-300">
-            <input type="checkbox" checked={Boolean(selfPatchDraft.approved)}
-              onChange={(e) => setSelfPatchDraft((prev) => ({ ...prev, approved: e.target.checked }))} />
-            Aprobar ejecución manual (requerido para riesgo medium)
-          </label>
-          <div className="flex flex-wrap gap-2 pt-1">
-            <button onClick={handleSelfPatchPlanRequest} disabled={isBusy}
-              className="px-3 py-2 rounded bg-cyan-700/50 hover:bg-cyan-600/60 disabled:opacity-50 text-cyan-100 text-xs font-semibold border border-cyan-600/30 transition-all">
-              1) Evaluar plan
-            </button>
-            <button onClick={handleSelfPatchGenerateRequest} disabled={isBusy}
-              className="px-3 py-2 rounded bg-indigo-700/50 hover:bg-indigo-600/60 disabled:opacity-50 text-indigo-100 text-xs font-semibold border border-indigo-600/30 transition-all">
-              2) Generar propuesta
-            </button>
-            <button onClick={handleSelfPatchApplyRequest} disabled={isBusy || !selfPatchTelemetry.generated?.patch}
-              className="px-3 py-2 rounded bg-fuchsia-700/50 hover:bg-fuchsia-600/60 disabled:opacity-50 text-fuchsia-100 text-xs font-semibold border border-fuchsia-600/30 transition-all">
-              {`3) Aplicar (${effectiveApplyMode === 'local_fs' ? 'local_fs' : 'PR'})`}
-            </button>
-          </div>
-          <div className="text-[11px] text-slate-500">Última actualización: {lastUpdatedLabel}</div>
-          {selfPatchTelemetry.error && (
-            <div className="rounded border border-red-800/50 bg-red-950/30 p-2 text-xs text-red-300">
-              {selfPatchTelemetry.error}
-            </div>
-          )}
-        </div>
-      </CollapsibleSection>
-
-      {/* ── ESTADO DEL SISTEMA ──────────────────────────────────────────── */}
-      <CollapsibleSection sectionId="autonomy-system-status" title="Estado del sistema" accent="slate"
-        badge={`autorun: ${effectiveAutorunEnabled ? 'ON' : 'OFF'} · applyMode: ${effectiveApplyMode}`}>
+      {/* ── ESTADO TÉCNICO Y GUARDRAILS ──────────────────────────────────── */}
+      <CollapsibleSection sectionId="autonomy-system-status" title="Estado técnico del entorno y límites de seguridad" subtitle="Configuración del servidor, modo de aplicación y estado del kill-switch." accent="slate"
+        badge={`${plainModeLabel} · ${plainApplyLabel}`}>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
           {[
             ['Selfpatch runtime', effectiveRuntimeEnabled ? 'enabled' : 'disabled'],
@@ -8167,7 +8543,7 @@ const renderAutonomyEvolutionTab = () => {
       </CollapsibleSection>
 
       {/* ── VENTANA 24H Y LÍMITES ──────────────────────────────────────── */}
-      <CollapsibleSection sectionId="autonomy-limits-window" title="📊 Límites y Ventana 24h" accent="amber"
+      <CollapsibleSection sectionId="autonomy-limits-window" title="Cuota diaria y límites de seguridad (24h)" subtitle="Límite de propuestas, presupuesto de tokens y enfriamiento entre cambios." accent="amber"
         badge={`${toFiniteNumber(statusWindow.proposals24h, 0)}/${toFiniteNumber(policyLimits.maxProposals24h, 3)} propuestas`}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs mb-3">
           {[
@@ -8191,19 +8567,19 @@ const renderAutonomyEvolutionTab = () => {
       </CollapsibleSection>
 
       {/* ── PIPELINE PLAN / GENERATE / APPLY ──────────────────────────── */}
-      <CollapsibleSection sectionId="autonomy-pipeline" title="🔁 Pipeline: Plan → Generate → Apply" accent="indigo"
-        badge={`Plan: ${pipelinePlanState} · Generate: ${pipelineGenerateState} · Apply: ${pipelineApplyState}`}>
+      <CollapsibleSection sectionId="autonomy-pipeline" title="Detalle del último flujo (Plan · Borrador · Aplicación)" subtitle="Inspecciona la salida JSON exacta de cada etapa." accent="indigo"
+        badge={`Plan: ${pipelinePlanState} · Borrador: ${pipelineGenerateState} · Aplicar: ${pipelineApplyState}`}>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
           <div className="rounded-lg border border-indigo-700/30 bg-indigo-950/10 p-3">
-            <div className="text-xs font-semibold text-indigo-300 mb-2">1/3 — Plan</div>
+            <div className="text-xs font-semibold text-indigo-300 mb-2">1/3 — Plan de seguridad</div>
             <div className="text-xs space-y-1.5">
               {[
-                ['Allowed', plan ? (plan?.allowed ? 'true' : 'false') : 'pending'],
-                ['Risk', lastPlanRisk],
-                ['Decision', lastPlanDecision],
+                ['Permitido', hasPlanResult ? (plan?.allowed ? 'sí' : 'no') : 'pendiente'],
+                ['Riesgo', lastPlanRisk],
+                ['Decisión', lastPlanDecision],
                 ['Retro pressure', toFiniteNumber(plan?.retroProjection?.retroPressure, 0).toFixed(4)],
-                ['Horizon (ticks)', toFiniteNumber(plan?.retroProjection?.projectionHorizonTicks, 0)],
-                ['Reasoning rec.', plan?.retroProjection?.recommendedReasoning || 'n/a'],
+                ['Horizonte (pasos)', toFiniteNumber(plan?.retroProjection?.projectionHorizonTicks, 0)],
+                ['Esfuerzo rec.', plan?.retroProjection?.recommendedReasoning || 'n/a'],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between">
                   <span className="text-slate-400">{k}</span>
@@ -8211,19 +8587,19 @@ const renderAutonomyEvolutionTab = () => {
                 </div>
               ))}
             </div>
-            <details className="mt-2"><summary className="text-[10px] text-indigo-400 cursor-pointer">Payload</summary>
+            <details className="mt-2"><summary className="text-[10px] text-indigo-400 cursor-pointer">Payload JSON</summary>
               <pre className="mt-1 text-[10px] text-slate-300 bg-black/30 rounded p-2 max-h-40 overflow-auto">{JSON.stringify(plan || {}, null, 2)}</pre>
             </details>
           </div>
           <div className="rounded-lg border border-violet-700/30 bg-violet-950/10 p-3">
-            <div className="text-xs font-semibold text-violet-300 mb-2">2/3 — Generate</div>
+            <div className="text-xs font-semibold text-violet-300 mb-2">2/3 — Borrador generado</div>
             <div className="text-xs space-y-1.5">
               {[
-                ['Generated', generated ? (generated?.generated ? 'true' : 'false') : 'pending'],
-                ['Engine', codeProvider],
-                ['Model', codeModel],
-                ['Proposal ID', generatedProposalId],
-                ['Edits', generatedEditsCount],
+                ['Generado', hasGeneratedResult ? (generated?.generated ? 'sí' : 'no') : 'pendiente'],
+                ['Motor', codeProvider],
+                ['Modelo', codeModel],
+                ['ID propuesta', generatedProposalId],
+                ['Ediciones', generatedEditsCount],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between">
                   <span className="text-slate-400">{k}</span>
@@ -8231,16 +8607,16 @@ const renderAutonomyEvolutionTab = () => {
                 </div>
               ))}
             </div>
-            <details className="mt-2"><summary className="text-[10px] text-violet-400 cursor-pointer">Payload</summary>
+            <details className="mt-2"><summary className="text-[10px] text-violet-400 cursor-pointer">Payload JSON</summary>
               <pre className="mt-1 text-[10px] text-slate-300 bg-black/30 rounded p-2 max-h-40 overflow-auto">{JSON.stringify(generated || {}, null, 2)}</pre>
             </details>
           </div>
           <div className="rounded-lg border border-fuchsia-700/30 bg-fuchsia-950/10 p-3">
-            <div className="text-xs font-semibold text-fuchsia-300 mb-2">3/3 — Apply</div>
+            <div className="text-xs font-semibold text-fuchsia-300 mb-2">3/3 — Aplicación</div>
             <div className="text-xs space-y-1.5">
               {[
-                ['Applied', applied ? (applied?.applied ? 'true' : 'false') : 'pending'],
-                ['Dry run', applied ? (applied?.dryRun ? 'true' : 'false') : 'pending'],
+                ['Aplicado', hasAppliedResult ? (applied?.applied ? 'sí' : 'no') : 'pendiente'],
+                ['Simulacro (dry run)', hasAppliedResult ? (applied?.dryRun ? 'sí' : 'no') : 'pendiente'],
                 ['Resultado', applySummary],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between">
@@ -8249,7 +8625,7 @@ const renderAutonomyEvolutionTab = () => {
                 </div>
               ))}
             </div>
-            <details className="mt-2"><summary className="text-[10px] text-fuchsia-400 cursor-pointer">Payload</summary>
+            <details className="mt-2"><summary className="text-[10px] text-fuchsia-400 cursor-pointer">Payload JSON</summary>
               <pre className="mt-1 text-[10px] text-slate-300 bg-black/30 rounded p-2 max-h-40 overflow-auto">{JSON.stringify(applied || {}, null, 2)}</pre>
             </details>
           </div>
@@ -8257,8 +8633,8 @@ const renderAutonomyEvolutionTab = () => {
       </CollapsibleSection>
 
       {/* ── TELEMETRÍA CRÍTICA (COLAPSADA POR DEFECTO) ───────────────── */}
-      <CollapsibleSection sectionId="autonomy-critical-telemetry" title="📡 Telemetría Crítica para Autoevolución" accent="cyan"
-        badge={`${sovereigntyRows.length} params`}>
+      <CollapsibleSection sectionId="autonomy-critical-telemetry" title="Métricas del motor usadas como contexto" subtitle="Valores actuales que la IA puede consultar al redactar una propuesta." accent="cyan"
+        badge={`${sovereigntyRows.length} métricas`}>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2">
           {sovereigntyRows.map((row) => (
             <div key={`sov-param-${row.label}`} className="rounded border border-cyan-900/30 bg-black/20 p-2 text-xs">
@@ -8270,7 +8646,7 @@ const renderAutonomyEvolutionTab = () => {
       </CollapsibleSection>
 
       {/* ── HISTORIAL: PMIA + MUTACIONES + LEDGER ───────────────────── */}
-      <CollapsibleSection sectionId="autonomy-history" title="📋 Historial: Episodios PMIA · Mutaciones · Ledger" accent="emerald"
+      <CollapsibleSection sectionId="autonomy-history" title="Registro interno: episodios, mutaciones y caja de seguridad" subtitle="Eventos recientes del motor vinculados a reorganización y sandbox." accent="emerald"
         badge={`${transformEpisodeHistory.length}ep · ${mutationHistory.length}mut · ${autonomyLedger.length}led`}>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
           <div>
@@ -8477,8 +8853,57 @@ const renderCurrentTab = () => {
         tabId="guide"
         accent="cyan"
         icon={<Lightbulb className="h-5 w-5" />}
-        title="Guía Aterrizada 2.0"
+        title="Guía Aterrizada"
+        technicalTag="Inicio rápido y mapa"
+        rightSlot={(
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => handleTabSelect('network')}
+              className="rounded-lg border border-purple-400/45 bg-purple-950/50 px-2.5 py-1.5 text-xs font-semibold text-purple-100 transition hover:bg-purple-900/60"
+            >
+              Ver Red 3D
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTabSelect('chat')}
+              className="rounded-lg border border-cyan-400/45 bg-cyan-950/50 px-2.5 py-1.5 text-xs font-semibold text-cyan-100 transition hover:bg-cyan-900/60"
+            >
+              Abrir Chat
+            </button>
+          </div>
+        )}
       />
+
+      {/* Explicación en 30 segundos para cualquier persona */}
+      <div className="rounded-xl border border-cyan-500/25 bg-slate-900/80 p-3.5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <MetricDualLabel label="¿Qué estás viendo aquí? (en 30 segundos)" technical="Resumen accesible" accent="text-cyan-200" />
+          <span className="rounded-full border border-slate-700 bg-slate-950 px-2.5 py-0.5 text-[10px] text-slate-300">
+            {isRunning ? `En marcha · Paso ${simulationStep}` : `En pausa · Paso ${simulationStep}`}
+          </span>
+        </div>
+        <div className="mt-2.5 grid grid-cols-1 gap-2.5 md:grid-cols-3 text-xs">
+          <div className="rounded-lg border border-slate-800 bg-slate-950/75 p-2.5">
+            <div className="font-semibold text-cyan-200">1. Qué simula</div>
+            <p className="mt-1 leading-relaxed text-slate-300">
+              Una red viva de <strong>1500 nodos</strong> organizados en 4 sectores que intenta mantener coordinación estable (<strong>Cohesión CCC</strong>) sin quedarse congelada.
+            </p>
+          </div>
+          <div className="rounded-lg border border-slate-800 bg-slate-950/75 p-2.5">
+            <div className="font-semibold text-emerald-200">2. Qué puedes probar ahora</div>
+            <p className="mt-1 leading-relaxed text-slate-300">
+              Pulsa <strong>Iniciar simulación</strong> a la izquierda, mueve los 4 controles en <strong>Validación</strong> o pregúntale en lenguaje natural desde <strong>Chat</strong>.
+            </p>
+          </div>
+          <div className="rounded-lg border border-slate-800 bg-slate-950/75 p-2.5">
+            <div className="font-semibold text-amber-200">3. Transparencia honesta</div>
+            <p className="mt-1 leading-relaxed text-slate-300">
+              Todas las métricas se auditan en vivo con sellos SHA-256. Son mediciones internas del simulador (no prueban conciencia ni validación científica externa).
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Mapa rápido por intención: ¿Qué quieres hacer ahora? */}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
@@ -8669,9 +9094,29 @@ const renderCurrentTab = () => {
             tabId="memory"
             accent="cyan"
             icon={<Database className="h-5 w-5" />}
-            title="Memoria y Registro de Sesiones"
-            technicalTag="SHA-256 · HolographicMemoryNexus"
+            title="Memoria y Guardado"
+            technicalTag="Historial SHA-256 · Continuidad"
           />
+          <div className="grid grid-cols-1 gap-2.5 rounded-xl border border-cyan-500/20 bg-slate-900/70 p-3 text-xs md:grid-cols-3">
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-2.5">
+              <div className="font-semibold text-blue-200">Cristalizar / Revocar</div>
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                Los botones de la barra izquierda congelan una foto exacta del estado actual (<strong>Cristalizar</strong>) y te dejan volver a ella después (<strong>Revocar</strong>).
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-2.5">
+              <div className="font-semibold text-cyan-200">Cadena de eventos SHA-256</div>
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                Anota tus sesiones e hitos en este navegador encadenando cada evento con una firma criptográfica que delata cualquier alteración.
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-2.5">
+              <div className="font-semibold text-indigo-200">Memoria interna de red</div>
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                Debajo puedes abrir el cajón de fragmentos distribuidos que el motor usa internamente para reforzar patrones de alta coherencia.
+              </p>
+            </div>
+          </div>
           {renderOperationalRecord()}
           {renderHolographicMemory()}
         </div>
@@ -8693,7 +9138,7 @@ const renderCurrentTab = () => {
     case 'level3-supervisor':
       return renderLazyMoreTab(
         LazyLevel3SupervisorTab,
-        'Bitácora Nivel 3',
+        'Supervisor',
         <Level3SupervisorAuditTab
           level3Enabled={autonomousSupervisorLevel3Enabled}
           onToggleLevel3={setAutonomousSupervisorLevel3Enabled}
@@ -9025,99 +9470,181 @@ return (
 
       {/* Columna Central y Derecha (Contenido de Pestaña) */}
       <section className="order-1 min-w-0 max-w-full flex flex-col lg:order-2 lg:col-span-2">
-        {/* Navegación de Pestañas - AUTO-HIDE on scroll (ULTRATHINK) */}
-        {/* Spacer compensatorio para evitar salto de contenido cuando el nav es sticky */}
-        <div
-          className="mb-4 lg:mb-6 flex-shrink-0 p-2 rounded-xl shadow-inner border border-cyan-900/50"
-          style={{
-            background: 'rgba(15,23,42,0.92)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            position: 'relative',
-            top: 0,
-            zIndex: 30,
-            transform: navVisible ? 'translateY(0)' : 'translateY(-120%)',
-            transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1), box-shadow 0.35s ease',
-            boxShadow: navVisible
-              ? '0 4px 32px rgba(6,182,212,0.12), 0 1px 0 rgba(6,182,212,0.15)'
-              : '0 0 0 rgba(0,0,0,0)',
-            willChange: 'transform'
-          }}
-        >
-          <div className="text-[10px] uppercase tracking-wider text-cyan-300/80 px-1 mb-2">
-            Top 5 operativo + menu Mas
-          </div>
-          <div className="flex gap-2 overflow-x-auto no-scrollbar">
-            {primaryTabs.map((tab) => (
-              <NavigationTabButton
-                key={`primary-${tab.id}`}
-                tabId={tab.id}
-                icon={tab.icon}
-                label={tab.label}
-                subtitle={tab.subtitle}
-                selectedTab={selectedTab}
-                onSelect={handleTabSelect}
-                onOpenInfo={openPersistentInfoModal}
-              />
-            ))}
-            <button
-              type="button"
-              onClick={() => setIsMoreMenuOpen((prev) => !prev)}
-              className={`px-3 py-2 rounded-lg border text-sm font-semibold whitespace-nowrap ${isMoreMenuOpen ? 'bg-fuchsia-700/60 border-fuchsia-400/60 text-fuchsia-100' : 'bg-slate-800/80 border-slate-600/70 text-slate-200'}`}
+        {/* Navegación de Pestañas - AUTO-HIDE on scroll */}
+        {(() => {
+          const activeMoreTab = moreTabs.find((entry) => entry.id === selectedTab) || null;
+          const trimmedMoreQuery = moreTabQuery.trim().toLowerCase();
+          const filteredMoreTabs = moreTabs.filter((tab) =>
+            `${tab.label} ${tab.subtitle}`.toLowerCase().includes(trimmedMoreQuery)
+          );
+          const recentMoreTabs = recentTabs
+            .filter((tabId) => !primaryTabs.some((tab) => tab.id === tabId))
+            .map((tabId) => moreTabs.find((entry) => entry.id === tabId))
+            .filter(Boolean);
+
+          return (
+            <nav
+              aria-label="Top 5 operativo + menu Mas"
+              className="mb-4 lg:mb-5 flex-shrink-0 rounded-2xl border border-cyan-500/25 p-2.5 shadow-xl"
+              style={{
+                background: 'rgba(15,23,42,0.94)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                position: 'relative',
+                zIndex: 30,
+                boxShadow: navVisible
+                  ? '0 8px 32px rgba(6,182,212,0.12), 0 1px 0 rgba(6,182,212,0.18)'
+                  : '0 4px 16px rgba(6,182,212,0.08)'
+              }}
             >
-              {isMoreMenuOpen ? 'Cerrar' : 'Mas'}
-            </button>
-          </div>
-          {!!recentTabs.length && (
-            <div className="mt-2 flex flex-wrap items-center gap-1 text-[11px]">
-              <span className="text-slate-400 mr-1">Recientes:</span>
-              {recentTabs
-                .filter((tabId) => !primaryTabs.some((tab) => tab.id === tabId))
-                .map((tabId) => {
-                  const tab = moreTabs.find((entry) => entry.id === tabId);
-                  if (!tab) return null;
-                  return (
-                    <button
-                      key={`recent-${tabId}`}
-                      type="button"
-                      onClick={() => handleTabSelect(tabId)}
-                      className="px-2 py-1 rounded bg-slate-800/80 border border-slate-600/60 text-slate-200 hover:bg-slate-700/90"
-                    >
-                      {tab.label}
-                    </button>
-                  );
-                })}
-            </div>
-          )}
-          {isMoreMenuOpen && (
-            <div className="mt-2 rounded-lg border border-fuchsia-800/50 bg-slate-950/80 p-2">
-              <input
-                type="text"
-                value={moreTabQuery}
-                onChange={(e) => setMoreTabQuery(e.target.value)}
-                placeholder="Buscar en Más..."
-                className="w-full mb-2 p-2 rounded bg-slate-900 border border-slate-700 text-slate-100 text-xs"
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                {moreTabs
-                  .filter((tab) => `${tab.label} ${tab.subtitle}`.toLowerCase().includes(moreTabQuery.trim().toLowerCase()))
-                  .map((tab) => (
-                    <NavigationTabButton
-                      key={`more-${tab.id}`}
-                      tabId={tab.id}
-                      icon={tab.icon}
-                      label={tab.label}
-                      subtitle={tab.subtitle}
-                      compact={true}
-                      selectedTab={selectedTab}
-                      onSelect={handleTabSelect}
-                      onOpenInfo={openPersistentInfoModal}
-                    />
-                  ))}
+              <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 xl:grid-cols-6">
+                {primaryTabs.map((tab) => (
+                  <NavigationTabButton
+                    key={`primary-${tab.id}`}
+                    tabId={tab.id}
+                    icon={tab.icon}
+                    label={tab.label}
+                    subtitle={tab.subtitle}
+                    fullWidth={true}
+                    selectedTab={selectedTab}
+                    onSelect={handleTabSelect}
+                    onOpenInfo={openPersistentInfoModal}
+                  />
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setIsMoreMenuOpen((prev) => !prev)}
+                  aria-expanded={isMoreMenuOpen}
+                  className={`flex w-full items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-all ${isMoreMenuOpen
+                    ? 'border-fuchsia-400/70 bg-fuchsia-700/45 text-fuchsia-50 shadow-md shadow-fuchsia-500/20'
+                    : activeMoreTab
+                      ? 'border-cyan-400/60 bg-cyan-950/60 text-cyan-100 hover:bg-cyan-900/60'
+                      : 'border-slate-700/80 bg-slate-900/80 text-slate-200 hover:border-fuchsia-400/50 hover:bg-slate-800/90'
+                    }`}
+                >
+                  <span className="min-w-0 leading-tight">
+                    <span className="block text-[13px] font-semibold tracking-tight">
+                      {isMoreMenuOpen ? 'Cerrar' : 'Mas'}
+                    </span>
+                    <span className="mt-0.5 block truncate text-[10px] text-slate-400">
+                      {activeMoreTab ? activeMoreTab.label : `${moreTabs.length} secciones`}
+                    </span>
+                  </span>
+                  <span aria-hidden="true" className="shrink-0 font-mono text-xs opacity-80">
+                    {isMoreMenuOpen ? '▴' : '▾'}
+                  </span>
+                </button>
               </div>
-            </div>
-          )}
-        </div>
+
+              {(activeMoreTab || recentMoreTabs.length > 0) && (
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/80 pt-2 text-[11px]">
+                  {activeMoreTab ? (
+                    <div className="flex items-center gap-1.5 text-cyan-200">
+                      <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
+                      <span className="text-slate-400">Viendo:</span>
+                      <span className="font-semibold text-white">{activeMoreTab.label}</span>
+                      <span className="hidden text-slate-500 sm:inline">· {activeMoreTab.subtitle}</span>
+                    </div>
+                  ) : <div />}
+
+                  {recentMoreTabs.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span className="mr-1 text-slate-500">Recientes:</span>
+                      {recentMoreTabs.map((tab) => (
+                        <button
+                          key={`recent-${tab.id}`}
+                          type="button"
+                          onClick={() => handleTabSelect(tab.id)}
+                          className={`rounded-lg border px-2 py-0.5 text-[11px] transition-colors ${selectedTab === tab.id
+                            ? 'border-cyan-400/60 bg-cyan-600/35 text-white font-semibold'
+                            : 'border-slate-700/70 bg-slate-900/80 text-slate-300 hover:border-cyan-500/40 hover:text-white'
+                            }`}
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {isMoreMenuOpen && (
+                <div className="mt-2.5 rounded-xl border border-fuchsia-500/30 bg-slate-950/95 p-3 shadow-2xl">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <input
+                      type="text"
+                      value={moreTabQuery}
+                      onChange={(e) => setMoreTabQuery(e.target.value)}
+                      placeholder="Buscar sección (ej. Chat, Campo, Supervisor, API, Integridad)..."
+                      className="min-w-[220px] flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                    />
+                    {moreTabQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setMoreTabQuery('')}
+                        className="rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-2 text-xs text-slate-300 hover:bg-slate-800"
+                      >
+                        Limpiar
+                      </button>
+                    )}
+                  </div>
+
+                  {trimmedMoreQuery ? (
+                    filteredMoreTabs.length > 0 ? (
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                        {filteredMoreTabs.map((tab) => (
+                          <NavigationTabButton
+                            key={`more-${tab.id}`}
+                            tabId={tab.id}
+                            icon={tab.icon}
+                            label={tab.label}
+                            subtitle={tab.subtitle}
+                            fullWidth={true}
+                            selectedTab={selectedTab}
+                            onSelect={handleTabSelect}
+                            onOpenInfo={openPersistentInfoModal}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4 text-center text-xs text-slate-400">
+                        No hay secciones que coincidan con «{moreTabQuery}».
+                      </div>
+                    )
+                  ) : (
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                      {MORE_TAB_GROUPS.map((group) => {
+                        const groupTabs = moreTabs.filter((tab) => tab.group === group.id);
+                        return (
+                          <div key={group.id} className="space-y-1.5 rounded-xl border border-slate-800/90 bg-slate-900/50 p-2.5">
+                            <div className={`px-1 text-[11px] font-semibold uppercase tracking-wider ${group.accent}`}>
+                              {group.title}
+                            </div>
+                            <div className="space-y-1.5">
+                              {groupTabs.map((tab) => (
+                                <NavigationTabButton
+                                  key={`more-${tab.id}`}
+                                  tabId={tab.id}
+                                  icon={tab.icon}
+                                  label={tab.label}
+                                  subtitle={tab.subtitle}
+                                  fullWidth={true}
+                                  selectedTab={selectedTab}
+                                  onSelect={handleTabSelect}
+                                  onOpenInfo={openPersistentInfoModal}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </nav>
+          );
+        })()}
 
         {/* Contenido de la Pestaña */}
         <div className={`min-h-0 min-w-0 flex-1 `}>

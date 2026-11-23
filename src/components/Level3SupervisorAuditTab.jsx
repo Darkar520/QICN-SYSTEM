@@ -330,21 +330,35 @@ export function Level3SupervisorAuditTab({
   );
 
   const supervisorStateLabel = activeGate2Watch
-    ? `Vigilando mejora (${activeGate2Watch.observedTicks}/${activeGate2Watch.watchWindowTicks} ticks)`
+    ? `Vigilando mejora (${activeGate2Watch.observedTicks}/${activeGate2Watch.watchWindowTicks} pasos)`
     : (level3Enabled ? 'Activo · Observando' : 'En pausa (manual)');
 
   const integrityAllOk = ledgerVerification.ok && beltVerification.ok;
+  const primaryFilterDefs = [
+    ['all', 'Todos'],
+    ['reflect_only', 'Reflexiones'],
+    ['promoted_confirmed', 'Confirmados'],
+    ['rejected_gate1', 'Rechazados'],
+    ['rolled_back_gate2', 'Revertidos']
+  ];
+  const secondaryFilterDefs = [
+    ['promoted_watching', 'Vigilando'],
+    ['aborted_stale_tick', 'Abortados'],
+    ['blocked_by_knowledge_belt', 'Evitados']
+  ].filter(([val]) => filterStatus === val || consolidatedCycles.some((c) => c.finalStatus === val));
 
   return (
     <section
-      aria-label="Bitácora Auditable y Separación Científica — Supervisor Nivel 3"
+      aria-label="Supervisor Autónomo — Auto-análisis y Pruebas Seguras"
       className="space-y-4 rounded-xl border border-cyan-500/30 bg-slate-950/90 p-4 text-xs text-slate-100 shadow-xl"
     >
-      {/* 1. Cabecera Minimalista con "Detalles ▾" */}
+      {/* 1. Cabecera Minimalista con "¿Cómo funciona? ▾" */}
       <TabPlainHeader
         tabId="level3-supervisor"
         accent="cyan"
-        detailsButtonLabel="¿Cómo funciona? · Detalles"
+        title="Supervisor Autónomo"
+        technicalTag="Auto-análisis · Copia segura + Vigilancia"
+        detailsButtonLabel="¿Cómo funciona?"
         extraDetails={howItWorksExtra}
         actions={(
           <button
@@ -356,73 +370,82 @@ export function Level3SupervisorAuditTab({
                 : 'border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700'
             }`}
           >
-            {level3Enabled ? 'Supervisor: ACTIVO' : 'Supervisor: INACTIVO'}
+            {level3Enabled ? 'Supervisor: ACTIVO' : 'Supervisor: EN PAUSA'}
           </button>
         )}
       />
 
-      {/* 2. Resumen limpio en 3 tarjetas (título cotidiano + sigla técnica) */}
+      {/* 2. Resumen limpio en 3 tarjetas */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div className="rounded-xl border border-slate-700/70 bg-slate-900/75 p-3">
-          <MetricDualLabel casual="Estado actual" technical="Gate 2 & SHA-256" />
+          <MetricDualLabel casual="Estado actual" technical="Seguridad" />
           <div className={`mt-1.5 text-sm font-bold ${activeGate2Watch ? 'text-amber-300' : (level3Enabled ? 'text-emerald-300' : 'text-slate-200')}`}>
             {supervisorStateLabel}
           </div>
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 font-mono text-[10px]">
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px]">
             <span className={integrityAllOk ? 'text-emerald-300' : 'text-rose-300'}>
-              {integrityAllOk ? '● Sellado SHA-256 íntegro' : '● Revisar integridad'}
+              {integrityAllOk ? '● Registro SHA-256 íntegro' : '● Revisar integridad'}
             </span>
-            <span className="text-slate-500">·</span>
+            <span className="text-slate-600">·</span>
             <span className="text-slate-400">
-              {anyExternalLlmAssisted ? 'con IA externa' : '100 % local'}
+              {anyExternalLlmAssisted ? 'con Gemini' : '100% local'}
             </span>
           </div>
         </div>
 
         <div className="rounded-xl border border-slate-700/70 bg-slate-900/75 p-3">
-          <MetricDualLabel casual="Ciclos registrados" technical="Ledger append-only" />
+          <MetricDualLabel casual="Análisis registrados" technical="Historial" />
           <div className="mt-1.5 font-mono text-lg font-bold text-cyan-200">
-            {consolidatedCycles.length} <span className="text-xs font-normal text-slate-400">ciclos</span>
+            {consolidatedCycles.length} <span className="font-sans text-xs font-normal text-slate-400">ciclos</span>
           </div>
-          <div className="mt-1 font-mono text-[10px] text-slate-400">
-            <span className="text-emerald-300">{quota.totalPromotions} confirmados</span>
+          <div className="mt-1 text-[11px] text-slate-400">
+            <span className="text-emerald-300">{quota.totalPromotions} mejoras</span>
             {' · '}
-            <span className="text-fuchsia-300">{quota.totalGate2Rollbacks} revertidos</span>
+            <span className="text-fuchsia-300">{quota.totalGate2Rollbacks} revertidas</span>
             {' · '}
             <span className="text-cyan-300">{quota.totalReflections} reflexiones</span>
           </div>
         </div>
 
         <div className="rounded-xl border border-slate-700/70 bg-slate-900/75 p-3">
-          <MetricDualLabel casual="Uso de IA externa" technical="Cuota LLM / hora" />
+          <MetricDualLabel casual="Motor de análisis" technical="Gemini / Local" />
           <div className="mt-1.5 font-mono text-lg font-bold text-white">
-            {quota.callsLastHour} <span className="text-xs font-normal text-slate-400">/ {quota.maxCallsPerHour}</span>
+            {quota.callsLastHour} <span className="font-sans text-xs font-normal text-slate-400">/ {quota.maxCallsPerHour} llamadas/h</span>
           </div>
-          <div className="mt-1 font-mono text-[10px] text-slate-400">
+          <div className="mt-1 text-[11px] text-slate-400">
             {reasonerMode === 'deterministic_local'
-              ? 'Modo local determinista (0 cuota LLM)'
-              : `Gemini en vivo (${quota.llmCallsSucceeded}) · Local (${quota.deterministicLocalCalls + quota.deterministicFallbacks})`}
+              ? 'Modo local sin consumo de API'
+              : `Gemini en vivo (${quota.llmCallsSucceeded}) · Respaldo local (${quota.deterministicLocalCalls + quota.deterministicFallbacks})`}
           </div>
         </div>
       </div>
 
-      {/* 3. Barra de 2 acciones principales claras */}
-      <div className="rounded-xl border border-slate-700/70 bg-slate-900/65 p-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="text-xs font-semibold text-slate-100">Acciones rápidas</div>
-            <p className="text-[11px] text-slate-400">
-              Prueba una reflexión sin cambios o verifica una hipótesis en copias aisladas del Workbench.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
+      {/* 3. Dos acciones claras en tarjetas lado a lado */}
+      <div className="rounded-xl border border-slate-700/70 bg-slate-900/65 p-3.5">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div className="flex flex-col justify-between gap-2.5 rounded-lg border border-cyan-500/25 bg-slate-950/75 p-3">
+            <div>
+              <div className="text-xs font-semibold text-cyan-200">1. Solo leer diagnóstico (sin cambios)</div>
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                Observa las métricas actuales y redacta un pensamiento en primera persona explicando cómo está la red, sin tocar ningún parámetro.
+              </p>
+            </div>
             <button
               type="button"
               onClick={onTriggerManualReflection}
-              className="rounded-lg border border-cyan-400/55 bg-cyan-600/25 px-3 py-1.5 font-semibold text-cyan-100 transition hover:bg-cyan-600/45"
+              className="w-full rounded-lg border border-cyan-400/55 bg-cyan-600/25 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:bg-cyan-600/45"
             >
               Pensar en alto ahora
             </button>
+          </div>
+
+          <div className="flex flex-col justify-between gap-2.5 rounded-lg border border-emerald-500/25 bg-slate-950/75 p-3">
+            <div>
+              <div className="text-xs font-semibold text-emerald-200">2. Ensayar una mejora en copia segura</div>
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                Propone un ajuste, lo prueba primero en clones aislados con controles negativos y solo lo aplica en vivo si demuestra mejora real.
+              </p>
+            </div>
             <button
               type="button"
               onClick={onTriggerShadowTrialNow}
@@ -432,7 +455,7 @@ export function Level3SupervisorAuditTab({
                   ? 'Inicia o avanza al menos 1 paso real de simulación antes de probar en copia segura.'
                   : 'Formula una hipótesis y la prueba en copias aisladas del Workbench (Compuerta 1).'
               }
-              className={`rounded-lg border px-3 py-1.5 font-semibold transition ${
+              className={`w-full rounded-lg border px-3 py-2 text-xs font-semibold transition ${
                 currentTick < 1
                   ? 'cursor-not-allowed border-slate-700 bg-slate-900 text-slate-500'
                   : 'border-emerald-400/55 bg-emerald-600/25 text-emerald-100 hover:bg-emerald-600/45'
@@ -444,45 +467,34 @@ export function Level3SupervisorAuditTab({
         </div>
 
         {activeGate2Watch && (
-          <div className="mt-2.5 rounded-lg border border-amber-400/45 bg-amber-950/45 px-3 py-2 text-[11px] text-amber-200">
+          <div className="mt-3 rounded-lg border border-amber-400/45 bg-amber-950/45 px-3 py-2 text-[11px] text-amber-200">
             <strong>Vigilancia activa (Gate 2):</strong> evaluando <code className="font-mono">{activeGate2Watch.cycleId}</code> ({activeGate2Watch.observedTicks}/{activeGate2Watch.watchWindowTicks} pasos · respaldo <code className="font-mono">{String(activeGate2Watch.prePromotionDigest || '').slice(0, 10)}…</code>). Si el rendimiento cae, se revierte automáticamente.
           </div>
         )}
 
         {(lastActionNotice || currentTick < 1) && (
-          <div className="mt-2 text-[11px] text-amber-200/90">
-            {lastActionNotice || 'Nota: para probar una mejora en copia segura (Gate 1), inicia la simulación al menos 1 paso.'}
+          <div className="mt-2.5 text-[11px] text-amber-200/90">
+            {lastActionNotice || 'Nota: para probar una mejora en copia segura, pulsa primero «Iniciar simulación» en el panel izquierdo.'}
           </div>
         )}
       </div>
 
-      {/* 4. Flujo de Pensamientos Internos (limpio + botón "Detalles técnicos ▾" por tarjeta) */}
-      <div className="rounded-xl border border-slate-700/70 bg-slate-900/60 p-3">
+      {/* 4. Flujo de Pensamientos Internos (limpio, sin exceso de chips) */}
+      <div className="rounded-xl border border-slate-700/70 bg-slate-900/60 p-3.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <MetricDualLabel
-              casual={`Pensamientos y pruebas recientes (${entries.length})`}
-              technical="Flujo en 1.ª persona"
-            />
-          </div>
-          <div className="flex flex-wrap gap-1 text-[11px]">
-            {[
-              ['all', 'Todos'],
-              ['reflect_only', 'Reflexiones'],
-              ['promoted_confirmed', 'Confirmados'],
-              ['promoted_watching', 'Vigilando'],
-              ['rejected_gate1', 'Rechazados'],
-              ['rolled_back_gate2', 'Revertidos'],
-              ['aborted_stale_tick', 'Abortados'],
-              ['blocked_by_knowledge_belt', 'Bloqueados']
-            ].map(([val, lbl]) => (
+          <MetricDualLabel
+            casual={`Pensamientos recientes (${entries.length})`}
+            technical="Diario en 1.ª persona"
+          />
+          <div className="flex flex-wrap gap-1.5 text-[11px]">
+            {[...primaryFilterDefs, ...secondaryFilterDefs].map(([val, lbl]) => (
               <button
                 key={val}
                 type="button"
                 onClick={() => setFilterStatus(val)}
-                className={`rounded-md border px-2 py-0.5 transition ${
+                className={`rounded-full border px-2.5 py-0.5 transition ${
                   filterStatus === val
-                    ? 'border-cyan-400 bg-cyan-700/40 text-white'
+                    ? 'border-cyan-400 bg-cyan-700/45 text-white font-semibold'
                     : 'border-slate-700 bg-slate-950/70 text-slate-300 hover:bg-slate-800'
                 }`}
               >
@@ -493,11 +505,11 @@ export function Level3SupervisorAuditTab({
         </div>
 
         {entries.length === 0 ? (
-          <div className="mt-3 rounded-lg border border-slate-800 bg-slate-950/70 p-4 text-center text-slate-400">
-            Aún no hay pensamientos registrados. Pulsa <strong>&ldquo;Pensar en alto ahora&rdquo;</strong> para ver cómo razona el sistema sobre su estado actual.
+          <div className="mt-3 rounded-lg border border-slate-800 bg-slate-950/70 p-5 text-center text-slate-400">
+            Aún no hay pensamientos registrados. Pulsa <strong>&ldquo;Pensar en alto ahora&rdquo;</strong> arriba para leer cómo analiza el sistema su estado actual.
           </div>
         ) : (
-          <div className="mt-3 max-h-[520px] space-y-2.5 overflow-y-auto pr-1">
+          <div className="mt-3 max-h-[540px] space-y-3 overflow-y-auto pr-1">
             {entries.map((entry) => {
               const badge = STATUS_BADGES[entry.finalStatus] || {
                 label: entry.finalStatus,
@@ -506,53 +518,53 @@ export function Level3SupervisorAuditTab({
               };
               const g1 = entry.gate1Summary;
               const g2 = entry.gate2Summary;
+              const outcomeSummaryText = entry.finalStatus === 'reflect_only'
+                ? 'Observación limpia · sin cambios en el motor'
+                : g1?.deltas
+                  ? `Prueba en copia segura · cambio en puntaje ${Number(g1.deltas.deltaObjectiveScore) >= 0 ? '+' : ''}${g1.deltas.deltaObjectiveScore}`
+                  : `Acción evaluada: ${entry.actionSignature}`;
+
               return (
                 <article
                   key={entry.digest}
-                  className="rounded-xl border border-slate-700/75 bg-slate-950/85 p-3 shadow-sm"
+                  className="rounded-xl border border-slate-700/75 bg-slate-950/85 p-3.5 shadow-sm"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-cyan-300">
-                        #{entry.seq} · Paso {entry.tick}
-                      </span>
-                      <span className="rounded-md border border-slate-700/80 bg-slate-900 px-2 py-0.5 text-[11px] text-slate-300">
-                        {TRIGGER_LABELS[entry.triggerKind] || entry.triggerKind}
-                      </span>
-                      <span className="rounded-md border border-slate-700/60 bg-slate-900/70 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
-                        {entry.external_llm_assisted ? 'IA externa (Gemini)' : 'Motor local'}
-                      </span>
+                    <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-400">
+                      <span className="font-mono font-bold text-cyan-300">Paso {entry.tick}</span>
+                      <span>·</span>
+                      <span>{TRIGGER_LABELS[entry.triggerKind] || entry.triggerKind}</span>
+                      <span>·</span>
+                      <span>{entry.external_llm_assisted ? 'Gemini' : 'Motor local'}</span>
                     </div>
                     <span
                       title={badge.tech}
-                      className={`rounded-md border px-2 py-0.5 text-[11px] font-semibold ${badge.cls}`}
+                      className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${badge.cls}`}
                     >
                       {badge.label}
                     </span>
                   </div>
 
                   {/* Monólogo Interno en Primera Persona */}
-                  <p className="mt-2.5 rounded-lg border border-cyan-500/20 bg-cyan-950/15 px-3 py-2 text-xs leading-relaxed text-slate-100">
+                  <p className="mt-2.5 rounded-lg border border-cyan-500/20 bg-cyan-950/15 px-3.5 py-2.5 text-[13px] leading-relaxed text-slate-100">
                     &ldquo;{entry.firstPersonThought}&rdquo;
                   </p>
 
                   {entry.reasonerError && (
-                    <div className="mt-1.5 rounded border border-amber-500/30 bg-amber-950/30 px-2 py-1 font-mono text-[10px] text-amber-200">
-                      Se usó respaldo local porque falló la llamada remota: {entry.reasonerError}
+                    <div className="mt-2 rounded border border-amber-500/30 bg-amber-950/30 px-2.5 py-1.5 text-[11px] text-amber-200">
+                      Se usó respaldo local porque falló la conexión con Gemini: <span className="font-mono">{entry.reasonerError}</span>
                     </div>
                   )}
 
-                  {/* Detalles técnicos colapsables por tarjeta (patrón Red Nodal) */}
+                  {/* Detalles técnicos colapsables por tarjeta */}
                   <DetailToggleStrip
-                    className="mt-2"
+                    className="mt-2.5"
                     accent="cyan"
-                    labelClosed="Detalles técnicos"
-                    labelOpen="Ocultar detalles"
+                    labelClosed="Ver auditoría técnica"
+                    labelOpen="Ocultar auditoría"
                     summary={(
-                      <span className="font-mono text-[10px] text-slate-400">
-                        acción: <span className="text-slate-200">{entry.actionSignature}</span>
-                        {g1?.deltas ? ` · Δscore=${g1.deltas.deltaObjectiveScore}` : ''}
-                        {` · ${badge.tech}`}
+                      <span className="text-[11px] text-slate-400">
+                        {outcomeSummaryText}
                       </span>
                     )}
                   >
@@ -674,8 +686,9 @@ export function Level3SupervisorAuditTab({
       <div className="space-y-1">
         <CollapsibleSection
           sectionId="l3-settings-quota"
-          title="Ajustes del Supervisor y Cuota LLM · Detalles"
-          badge={`cada ${exploreEveryTicks} ticks · ${quota.callsLastHour}/${quota.maxCallsPerHour} h`}
+          title="Frecuencia y motor de análisis (Gemini / Local)"
+          subtitle="Elige cada cuántos pasos analiza la red y si usa Gemini o modo local determinista."
+          badge={`cada ${exploreEveryTicks} pasos · ${quota.callsLastHour}/${quota.maxCallsPerHour}/h`}
           accent="cyan"
           defaultOpen={false}
         >
@@ -730,7 +743,8 @@ export function Level3SupervisorAuditTab({
 
         <CollapsibleSection
           sectionId="l3-knowledge-belt"
-          title="Memoria de Pruebas Pasadas (Cinto de Conocimiento SHA-256) · Detalles"
+          title="Memoria de pruebas pasadas (evita repetir errores)"
+          subtitle="Cinto de conocimiento sellado SHA-256 con resultados anteriores."
           badge={`${findings.length} hallazgos`}
           accent="emerald"
           defaultOpen={false}
@@ -790,8 +804,9 @@ export function Level3SupervisorAuditTab({
 
         <CollapsibleSection
           sectionId="l3-worker-export"
-          title="Ejecución en Segundo Plano (Worker) y Exportar / Importar Bitácora · Detalles"
-          badge={workerRunning ? `Worker activo · t=${workerTick}` : 'SHA-256 JSON'}
+          title="Modo en segundo plano y exportar copia sellada (SHA-256)"
+          subtitle="Ejecuta un sandbox ligero en Worker o guarda/carga el historial en JSON."
+          badge={workerRunning ? `Worker activo · paso ${workerTick}` : 'Exportar JSON'}
           accent="violet"
           defaultOpen={false}
         >

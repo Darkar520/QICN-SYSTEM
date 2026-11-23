@@ -390,7 +390,12 @@ export const handler = async (event, context) => {
 
   const dryRunDefault = String(policyJson?.mode || '').toLowerCase() === 'sandbox_unrestricted' ? false : true;
   const dryRun = envBool('SELF_PATCH_GENERATION_DRY_RUN', dryRunDefault);
-  const geminiApiKey = process.env.GEMINI_API_KEY || '';
+  const envGeminiApiKeyRaw = (process.env.GEMINI_API_KEY || '').trim();
+  const envGeminiApiKey = isPlaceholderSecret(envGeminiApiKeyRaw) ? '' : envGeminiApiKeyRaw;
+  const clientGeminiKey = String(getHeaderValue(event, 'x-selfpatch-gemini-key') || '').trim();
+  const allowClientGeminiKey = envBool('ALLOW_CLIENT_GEMINI_KEY', envBool('FRONTEND_GEMINI_ALLOWED', false));
+  const uiGeminiApiKey = (allowClientGeminiKey && !isPlaceholderSecret(clientGeminiKey)) ? clientGeminiKey : '';
+  const geminiApiKey = envGeminiApiKey || uiGeminiApiKey;
   const clientOpenAiKey = String(getHeaderValue(event, 'x-selfpatch-openai-key') || '').trim();
   const allowClientCodexKey = envBool('ALLOW_CLIENT_CODEX_KEY', false);
   const envOpenAiApiKeyRaw = (process.env.OPENAI_API_KEY || '').trim();
@@ -424,7 +429,9 @@ export const handler = async (event, context) => {
     return asJson(500, {
       ok: false,
       error: 'MISSING_GEMINI_API_KEY',
-      detail: 'Configura GEMINI_API_KEY para usar provider=gemini en selfpatch.'
+      detail: allowClientGeminiKey
+        ? 'Configura GEMINI_API_KEY en el servidor o pega tu clave de Gemini en la pestaña API.'
+        : 'Configura GEMINI_API_KEY para usar provider=gemini en selfpatch.'
     });
   }
 

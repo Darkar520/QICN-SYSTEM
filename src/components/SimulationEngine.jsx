@@ -13,6 +13,18 @@ import { classifyLlmError, getLlmRequestGuidance, LlmRequestError, requestGemini
 import { renderAvailableReadings } from '../utils/runtimeLanguageBoundary.js';
 import { captureRuntimeSnapshot, RECOMPUTED_EACH_TICK } from '../language/runtimeSnapshot.js';
 import { prepareTurn, finalizeTurn, evaluateRealization, correctionPromptFor, loadConversationTurns, saveConversationTurns, CONTROLLABLE_PARAMETERS, MAX_ATTEMPTS, normalizeIntegrityMode, canPublishGracefully } from '../language/conversationEngine.js';
+import {
+  QICN_RUNTIME_SKILL_DECLARATIONS,
+  MAX_SKILL_TOOL_ROUNDS,
+  executeRuntimeSkill,
+  extractFunctionCallsFromResponse,
+  extractModelContentForContinuation
+} from '../language/knowledge/runtimeSkills.js';
+import {
+  ensureGeminiSymbioticCache,
+  invalidateGeminiSymbioticCache,
+  buildCachedTurnUserMessage
+} from '../language/knowledge/geminiContextCache.js';
 import { describeEvent } from '../language/propositions.js';
 import { OperationalHistoryLedger } from '../identity/OperationalHistoryLedger.js';
 import { captureDynamicState, sealDynamicState, verifyStoredState, applyDynamicState } from '../persistence/dynamicState.js';
@@ -2793,45 +2805,131 @@ export const QICNConsciousnessSystem = () => {
     const turnRegister = prepared?.reasoningPlan?.conversationRegister || 'epistemic_deep';
     const isOpenCasualTurn = turnRegister === 'casual_social' || turnRegister === 'open_general';
     const turnThinkingLevel = turnRegister === 'casual_social' ? 'low' : CHAT_THINKING_LEVEL;
+    const skillsUsed = [];
+    let contextCacheMeta = null;
 
-    const requestRealization = async (systemText) => {
-      const payload = {
-        contents: [{ role: 'user', parts: [{ text: input }] }],
-        systemInstruction: { parts: [{ text: systemText }] },
-        // Maximum budget the model allows: gemini-3-flash-preview has a 65 536
-        // output-token limit, and Gemini 3 counts thinking tokens inside it.
-        // Thinking level stays at CHAT_THINKING_LEVEL ('high') for open/technical/
-        // epistemic depth and adapts to 'low' only on light social greetings.
-        generationConfig: {
+    const requestRealization = async (systemText, isCorrectionAttempt = false) => {
+      // Optional Layer 2 explicit Gemini Context Caching (direct frontend Gemini key):
+      // preloads the complete QicnKnowledgeVault + SYMBIOTIC_VOICE_CONSTITUTION + Runtime Skills
+      // once per hour on Google's servers; transparently falls back to Runtime Skills + implicit
+      // caching when running through proxy or if the key/tier does not support cachedContents.
+      let activeCache = null;
+      if (!isCorrectionAttempt && hasFrontendGeminiKey && frontendGeminiEnabled && customGeminiKey?.trim()) {
+        const cacheResult = await ensureGeminiSymbioticCache({
+          apiKey: customGeminiKey,
+          modelId: GEMINI_ENGINE_CONFIG.MODEL_ID
+        });
+        contextCacheMeta = {
+          active: Boolean(cacheResult?.active),
+          reused: Boolean(cacheResult?.reused),
+          reason: cacheResult?.reason || null,
+          corpusDigest: cacheResult?.corpusDigest ? String(cacheResult.corpusDigest).slice(0, 12) : null
+        };
+        if (cacheResult?.active && cacheResult?.name) {
+          activeCache = cacheResult;
+        }
+      }
+
+      const buildPayloadForContents = (conversationContents, useCacheHandle) => {
+        const generationConfig = {
           maxOutputTokens: CHAT_MAX_OUTPUT_TOKENS,
           temperature: isOpenCasualTurn ? 0.68 : 0.4,
           topP: 0.9,
           responseMimeType: 'application/json',
           thinkingConfig: { thinkingLevel: turnThinkingLevel }
+        };
+        if (useCacheHandle) {
+          // When cachedContent is used, systemInstruction and tools are already bound inside the cache.
+          return {
+            cachedContent: useCacheHandle.name,
+            contents: conversationContents,
+            generationConfig
+          };
+        }
+        return {
+          contents: conversationContents,
+          systemInstruction: { parts: [{ text: systemText }] },
+          tools: [{ functionDeclarations: QICN_RUNTIME_SKILL_DECLARATIONS }],
+          generationConfig
+        };
+      };
+
+      const initialUserText = activeCache
+        ? buildCachedTurnUserMessage(prepared, input)
+        : input;
+      const conversationContents = [{ role: 'user', parts: [{ text: initialUserText }] }];
+      let usingCache = activeCache;
+
+      const sendRound = async (roundIndex) => {
+        const currentPacket = integrityPacketRef.current || {
+          versionHash: String(prepared?.snapshot?.build?.signature || BUILD_SIGNATURE_LABEL || 'qicn-chat-v3'),
+          configHash: String(prepared?.snapshot?.configHash || sha256Hex(stableStringify(QICNConfig || {}))),
+          tick: Number(prepared?.snapshot?.tick ?? simulationStep ?? 0),
+          snapshotId: String(prepared?.snapshotId || '')
+        };
+        const chatReqSeq = `${attempts.length + 1}_r${roundIndex}`;
+        const chatIntegrityEnvelope = {
+          packet: currentPacket,
+          nonce: `chat_${userTimestamp}_${chatReqSeq}_${prepared.contract === 'evidential' ? globalThis.crypto.randomUUID() : Math.random().toString(36).slice(2, 10)}`,
+          requestId: `req_chat_${userTimestamp}_${chatReqSeq}`,
+          runId: String(currentPacket.runId || operationalLedgerRef.current?.currentSession?.sessionId || `ui_session_${QICNConfig.CORE_SEED || 0}`),
+          versionHash: String(currentPacket.versionHash || BUILD_SIGNATURE_LABEL || 'qicn-chat-v3'),
+          configHash: String(currentPacket.configHash || prepared?.snapshot?.configHash || ''),
+          threatModelRequested: 'C2'
+        };
+        const payload = buildPayloadForContents(conversationContents, usingCache);
+        try {
+          return await robustFetchLLMResponseTracked(resolveLlmEndpoint(), payload, 'chat-conversation', {
+            integrityEnvelope: chatIntegrityEnvelope,
+            dynamicsCoupling: false,
+            writeCycleLog: prepared.contract !== 'evidential',
+            timeoutMs: CHAT_REQUEST_TIMEOUT_MS
+          });
+        } catch (err) {
+          // If explicit cachedContent was rejected or expired upstream, invalidate and transparently
+          // retry this round once using Runtime Skills + systemInstruction without failing the turn.
+          if (usingCache && [400, 403, 404].includes(Number(err?.status))) {
+            invalidateGeminiSymbioticCache(usingCache.name);
+            usingCache = null;
+            contextCacheMeta = { active: false, reused: false, reason: `fallback_after_http_${err.status}` };
+            conversationContents[0] = { role: 'user', parts: [{ text: input }] };
+            const fallbackPayload = buildPayloadForContents(conversationContents, null);
+            return await robustFetchLLMResponseTracked(resolveLlmEndpoint(), fallbackPayload, 'chat-conversation', {
+              integrityEnvelope: chatIntegrityEnvelope,
+              dynamicsCoupling: false,
+              writeCycleLog: prepared.contract !== 'evidential',
+              timeoutMs: CHAT_REQUEST_TIMEOUT_MS
+            });
+          }
+          throw err;
         }
       };
-      const currentPacket = integrityPacketRef.current || {
-        versionHash: String(prepared?.snapshot?.build?.signature || BUILD_SIGNATURE_LABEL || 'qicn-chat-v3'),
-        configHash: String(prepared?.snapshot?.configHash || sha256Hex(stableStringify(QICNConfig || {}))),
-        tick: Number(prepared?.snapshot?.tick ?? simulationStep ?? 0),
-        snapshotId: String(prepared?.snapshotId || '')
-      };
-      const chatReqSeq = attempts.length + 1;
-      const chatIntegrityEnvelope = {
-        packet: currentPacket,
-        nonce: `chat_${userTimestamp}_${chatReqSeq}_${prepared.contract === 'evidential' ? globalThis.crypto.randomUUID() : Math.random().toString(36).slice(2, 10)}`,
-        requestId: `req_chat_${userTimestamp}_${chatReqSeq}`,
-        runId: String(currentPacket.runId || operationalLedgerRef.current?.currentSession?.sessionId || `ui_session_${QICNConfig.CORE_SEED || 0}`),
-        versionHash: String(currentPacket.versionHash || BUILD_SIGNATURE_LABEL || 'qicn-chat-v3'),
-        configHash: String(currentPacket.configHash || prepared?.snapshot?.configHash || ''),
-        threatModelRequested: 'C2'
-      };
-      const result = await robustFetchLLMResponseTracked(resolveLlmEndpoint(), payload, 'chat-conversation', {
-        integrityEnvelope: chatIntegrityEnvelope,
-        dynamicsCoupling: false,
-        writeCycleLog: prepared.contract !== 'evidential',
-        timeoutMs: CHAT_REQUEST_TIMEOUT_MS
-      });
+
+      // Bounded read-only Runtime Skill loop (0 rounds on direct replies; up to 3 tool rounds when
+      // Gemini asks for live telemetry, deep framework theorems, module details, or ledger/B2 records).
+      let result = null;
+      for (let round = 0; round <= MAX_SKILL_TOOL_ROUNDS; round += 1) {
+        result = await sendRound(round);
+        const toolCalls = extractFunctionCallsFromResponse(result);
+        if (!toolCalls.length || round === MAX_SKILL_TOOL_ROUNDS) break;
+
+        const modelContent = extractModelContentForContinuation(result);
+        if (!modelContent) break;
+        conversationContents.push(modelContent);
+
+        const responseParts = toolCalls.map((call) => {
+          skillsUsed.push(call.name);
+          const skillOutput = executeRuntimeSkill(call.name, call.args, prepared);
+          return {
+            functionResponse: {
+              name: call.name,
+              response: skillOutput
+            }
+          };
+        });
+        conversationContents.push({ role: 'user', parts: responseParts });
+      }
+
       const parts = result?.candidates?.[0]?.content?.parts || [];
       const text = chatNarrative(parts
         .filter((part) => !part.thought && typeof part.text === 'string')
@@ -2869,7 +2967,7 @@ export const QICNConsciousnessSystem = () => {
           let modelText = null;
           for (;;) {
             try {
-              modelText = await requestRealization(systemText);
+              modelText = await requestRealization(systemText, attempt > 0);
               break;
             } catch (transportError) {
               const waitMs = transientRetryDelayMs(transportError, transportRetries.length);
@@ -2910,6 +3008,10 @@ export const QICNConsciousnessSystem = () => {
 
     setChatStatusNote(null);
     const outcome = finalizeTurn(prepared, { mode: useModel ? 'gemini' : 'local', attempts, provider, integrityMode: turnIntegrityMode, transportRetries });
+    if (outcome?.trace) {
+      outcome.trace.skillsUsed = Array.isArray(skillsUsed) ? [...skillsUsed] : [];
+      outcome.trace.contextCache = contextCacheMeta || null;
+    }
     const rejectedAttempts = outcome.trace.attempts.filter((a) => a.stage === 'rejected' || a.stage === 'contract');
     if (rejectedAttempts.length && prepared.contract!=='evidential') {
       recordOperationalEvent('language_rejection', {

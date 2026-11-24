@@ -44,7 +44,12 @@ const countLeanFiles = (dir) => {
   }
   return total;
 };
-const leanSourcesCount = countLeanFiles(path.join(FW, 'lean')) || 42;
+const countCommittedLeanFiles = () => {
+  const out = git(['ls-tree', '-r', '--name-only', 'HEAD', 'lean']);
+  if (!out) return 0;
+  return out.split(/\r?\n/).filter((line) => line.trim().endsWith('.lean')).length;
+};
+const leanSourcesCount = countCommittedLeanFiles() || countLeanFiles(path.join(FW, 'lean')) || 42;
 const leanToolchain = fs.existsSync(path.join(FW, 'lean/lean-toolchain'))
   ? fs.readFileSync(path.join(FW, 'lean/lean-toolchain'), 'utf8').trim()
   : 'leanprover/lean4:v4.31.0';

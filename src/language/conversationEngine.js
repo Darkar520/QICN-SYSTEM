@@ -210,7 +210,8 @@ export function prepareTurn({
       kaizenEffective,
       sensorObserverDynamicsEnabled,
       level2Telemetry,
-      conversationRegister
+      conversationRegister,
+      localIntentName: intent.intent
     });
     const reasoningPlan = createReasoningPlan(question, evidentialContext, {
       turns,
@@ -438,8 +439,8 @@ export const normalizeIntegrityMode = (mode) => (mode === 'graceful' ? 'graceful
  *   If none verifies, the answer is an explicit failure and the local reading is
  *   returned separately, labelled as local, never as Gemini text.
  */
-export function finalizeTurn(prepared, { mode = null, attempts = null, modelText = null, modelError = null, provider = null, integrityMode = 'strict', transportRetries = [] } = {}) {
-  if (prepared?.contract === 'evidential') return finalizeEvidentialTurn(prepared,{mode,attempts,modelText,modelError,provider,integrityMode,transportRetries},buildCoreBlock(prepared.snapshot),CONVERSATION_SCHEMA);
+export function finalizeTurn(prepared, { mode = null, attempts = null, modelText = null, modelError = null, provider = null, integrityMode = 'strict', transportRetries = [], skillsUsed = [], contextCache = null } = {}) {
+  if (prepared?.contract === 'evidential') return finalizeEvidentialTurn(prepared, { mode, attempts, modelText, modelError, provider, integrityMode, transportRetries, skillsUsed, contextCache }, buildCoreBlock(prepared.snapshot), CONVERSATION_SCHEMA);
   const { intent, props, plan, controlProposal, localText, snapshot, turnIndex, facts } = prepared;
   const integrity = { mode: normalizeIntegrityMode(integrityMode), severity: 'ok', banner: null, discrepancies: [], withheld: [], snapshotEcho: null };
   let bestPartial = null;

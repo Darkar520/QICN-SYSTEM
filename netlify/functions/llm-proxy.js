@@ -230,7 +230,15 @@ export const handler = async (event, context) => {
     const fullContract = requestedJsonMode
       ? `${c2Contract}\n- If the main prompt asks for JSON, output the single JSON object first, followed by a blank line and the exact C2 block above.`
       : c2Contract;
-    appendSystemContract(geminiPayload, fullContract);
+    if (geminiPayload.cachedContent) {
+      // Gemini forbids overriding systemInstruction when cachedContent is set; append C2 contract to last user content.
+      const lastUser = [...(geminiPayload.contents || [])].reverse().find((c) => c?.role === 'user');
+      if (lastUser && Array.isArray(lastUser.parts)) {
+        lastUser.parts.push({ text: `\n\n${fullContract}` });
+      }
+    } else {
+      appendSystemContract(geminiPayload, fullContract);
+    }
   }
 
   // Función auxiliar: intenta llamar a un modelo específico
@@ -311,8 +319,28 @@ export const handler = async (event, context) => {
         });
       }
 
-      // Éxito
-      const content = data?.candidates?.[0]?.content?.parts?.map((p) => p?.text || '').join('\n').trim() || '';
+      // Éxito (incluyendo llamadas intermedias de Runtime Skills / Function Calling)
+      const candidateParts = Array.isArray(data?.candidates?.[0]?.content?.parts)
+        ? data.candidates[0].content.parts
+        : [];
+      const hasFunctionCall = candidateParts.some((p) => p && p.functionCall && typeof p.functionCall.name === 'string');
+      if (hasFunctionCall) {
+        return asJson(200, {
+          ok: true,
+          isToolCall: true,
+          provider,
+          model: modelId,
+          integrityThreatModel: threatModel,
+          integrityVerification: null,
+          usedFallback: modelId !== enforcedModel,
+          requestId,
+          content: '',
+          cleanContent: '',
+          usage: data?.usageMetadata || null,
+          raw: data
+        });
+      }
+      const content = candidateParts.map((p) => p?.text || '').join('\n').trim() || '';
       if (!content) {
         return asJson(502, { ok: false, provider, model: modelId, requestId, error: 'UPSTREAM_EMPTY_RESPONSE' });
       }

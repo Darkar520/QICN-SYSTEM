@@ -13,7 +13,7 @@ import { freezeData, assertData } from '../../experiments/workbench/contracts.js
 import { createEvidenceRegistry, isEvidenceRegistry, lookupEffect, EFFECT_MEASURES } from './evidenceRegistry.js';
 import { keysOnly, FACT_TYPES, identifier } from './claimGrammar.js';
 import { isClauseNegated, isExternalValidationOverclaim } from './epistemicPolicy.js';
-import { isOpenConversationalRegister, isRuntimeAnchoredSentence } from './conversationRegister.js';
+import { isRuntimeAnchoredSentence } from './conversationRegister.js';
 import {
   resolveSnapshotEndogenousDecision,
   getCanonicalAtomicSeparatorCut,
@@ -329,7 +329,8 @@ export function buildEvidentialProseContext({
   kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT,
   sensorObserverDynamicsEnabled = false,
   level2Telemetry = null,
-  conversationRegister = 'epistemic_deep'
+  conversationRegister = 'epistemic_deep',
+  localIntentName = null
 }) {
   const ledgerSummary = summarizeLedgerPlain(factualContext.ledger);
   const previousTurn = turns.length ? turns[turns.length - 1] : null;
@@ -525,7 +526,8 @@ export function buildEvidentialProseContext({
     kaizenEffective: Boolean(kaizenEffective),
     sensorObserverDynamicsEnabled: Boolean(sensorObserverDynamicsEnabled),
     level2Telemetry: normalizedLevel2,
-    conversationRegister
+    conversationRegister,
+    localIntentName
   };
 }
 
@@ -544,19 +546,25 @@ const CLARIFIES_ZERO_EXACT_RE = /\b(?:sigma_exact_defect|(?:defecto|error)(?:\s+
 const WRONG_MODULE_OP_RE = /\b(?:nodalprocessinglayer\b[^.;]{0,60}\b(?:regulariz\w*|ewc|fisher|predictor)|(?:ewc|fisher|regularize_predictor)\b[^.;]{0,60}\b(?:all_nodal_weights|1500\s+nodos|nodalprocessinglayer|selectsandboxaction))\b/;
 const FALSE_CN3_RE = /\b(?:cn-?3)\b[^.;]{0,40}\b(?:true|cierto|verdadero|paso|supero|positivo|demostro)\b|\b(?:historical_v1|420\/180\/250)\b[^.;]{0,50}\bcn-?3\s*(?:=|:)\s*true\b/;
 const FILTERED_V5_REASONS = new Set(['open_concept_affirmed', 'absolute_denial']);
+const ELLIPTIC_METRIC_REPORT_RE = /\b(?:ahora\s+mismo|actualmente|en\s+este\s+momento|en\s+esta\s+lectura|su\s+valor(?:\s+actual)?|el\s+valor(?:\s+actual)?|se\s+situa\s+en)\b/i;
 
 export function verifySentenceEvidential(text, proseCtx) {
   const base = verifySentenceFree(text, proseCtx.freeCtx);
   const normalized = normalizeText(text);
-  const openCasualTurn = isOpenConversationalRegister(proseCtx?.conversationRegister);
-  const runtimeAnchored = !openCasualTurn || isRuntimeAnchoredSentence(normalized, base.numbers);
-  // Lift v4's symmetric concept-policing reasons (`open_concept_affirmed`, `absolute_denial`)
-  // and re-evaluate `externally_validated` at clause granularity so valid first-person
-  // interpretive stances pass, while keeping every runtime factual/numerical/attribution/
-  // structural/anti-certification barrier strict. For purely general-world sentences inside
-  // casual/open conversations (zero QICN/runtime cues), allow ordinary world figures,
-  // percentages, external software names, and non-runtime everyday idioms ("contracción
-  // económica", "banda de 1985", "20 minutos de relajación").
+  // Symbiotic mixed-sentence verification:
+  // - If this sentence touches ANY QICN/runtime metric, module, tick, tower, Workbench B2, Kaizen,
+  //   or framework claim (`isRuntimeAnchoredSentence`), OR is an elliptic current-value report inside
+  //   a `metric_query` turn (e.g. "Ahora mismo vale 99."), enforce 100% strict packet number/attribution checks.
+  // - If this specific sentence is purely about an external/general-world topic (even inside a
+  //   mixed philosophical+technical conversation, e.g. "Blade Runner (1982)..." followed by a
+  //   verified QICN sentence), allow ordinary world figures, percentages, external software names,
+  //   and everyday non-runtime idioms while ALWAYS keeping anti-certification & epistemic guards active.
+  const hasAnyNumbers = Array.isArray(base.numbers) && base.numbers.length > 0;
+  const wordCount = normalized ? normalized.split(/\s+/).filter(Boolean).length : 0;
+  const isEllipticMetricReport = proseCtx?.localIntentName === 'metric_query'
+    && hasAnyNumbers
+    && (ELLIPTIC_METRIC_REPORT_RE.test(normalized) || wordCount <= 8);
+  const runtimeAnchored = isEllipticMetricReport || isRuntimeAnchoredSentence(normalized, base.numbers);
   const reasons = base.reasons.filter((r) => {
     if (FILTERED_V5_REASONS.has(r.reason)) return false;
     if (r.reason === 'known_false_claim' && r.detail === 'externally_validated') return false;

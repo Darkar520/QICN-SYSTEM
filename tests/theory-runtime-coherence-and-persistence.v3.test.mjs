@@ -113,11 +113,11 @@ import {
 
 // 3. Language layer coherence (snapshot, propositions, freeRealization prompt, intent resolution, framework meta)
 {
-  assert.equal(FRAMEWORK_SUMMARY_META.registryEntries, 929);
+  assert.equal(FRAMEWORK_SUMMARY_META.registryEntries, 952);
   assert.equal(FRAMEWORK_SUMMARY_META.leanSourcesCount, 42);
   assert.equal(FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount, 367);
   assert.equal(FRAMEWORK_SUMMARY_META.formalMacrosCount, 383);
-  assert.ok(FRAMEWORK_SUMMARY_META.frameworkHead.startsWith('e3ee6bf'));
+  assert.ok(FRAMEWORK_SUMMARY_META.frameworkHead.startsWith('44160ad'));
 
   const core = new OntologicalSingularityCore();
   core.stepCoupledTower({
@@ -170,7 +170,7 @@ import {
     recentTurns: []
   });
   assert.ok(prompt.includes('32/15309'));
-  assert.ok(prompt.includes('929 entradas'));
+  assert.ok(prompt.includes('952 entradas'));
   assert.ok(prompt.includes('42 módulos Lean 4'));
 
   const intent1 = resolveIntent('¿Qué pasa en la esquina u=1/2 del espectro de BaseCore?');

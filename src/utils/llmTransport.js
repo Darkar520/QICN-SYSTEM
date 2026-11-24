@@ -166,10 +166,20 @@ export const robustFetchLLMResponse = async (apiUrl, payload, timeout = 120000, 
           ...(payload?.systemInstruction?.parts?.[0]?.text
             ? [{ role: 'system', content: String(payload.systemInstruction.parts[0].text) }]
             : []),
-          ...((payload?.contents || []).map((entry) => ({
-            role: entry?.role === 'model' ? 'assistant' : 'user',
-            content: String(entry?.parts?.[0]?.text || '')
-          })))
+          ...((payload?.contents || []).map((entry) => {
+            const part = entry?.parts?.[0];
+            const textSummary = typeof part?.text === 'string'
+              ? part.text
+              : part?.functionCall?.name
+                ? `[tool_call:${part.functionCall.name}]`
+                : part?.functionResponse?.name
+                  ? `[tool_response:${part.functionResponse.name}]`
+                  : '';
+            return {
+              role: entry?.role === 'model' ? 'assistant' : 'user',
+              content: String(textSummary)
+            };
+          }))
         ],
         contextMeta: options?.contextMeta || {},
         integrity: options?.integrityEnvelope || null,
@@ -239,6 +249,22 @@ export const robustFetchLLMResponse = async (apiUrl, payload, timeout = 120000, 
     }
     if (proxyMode) {
       if (!parsed.ok) throw new LlmRequestError(readErrorCode(text, 'LLM_INVALID_RESPONSE'));
+      if (parsed.isToolCall && parsed.raw) {
+        return {
+          ...parsed.raw,
+          qicnInference: {
+            provider: parsed.provider,
+            model: parsed.model,
+            requestId: parsed.requestId,
+            usedFallback: Boolean(parsed.usedFallback),
+            isToolCall: true,
+            usage: parsed.usage || null,
+            integrityThreatModel: parsed.integrityThreatModel || null,
+            integrityVerification: null,
+            c2Verified: false
+          }
+        };
+      }
       const isC2 = parsed.integrityThreatModel === 'C2';
       const cleanedText = typeof parsed.cleanContent === 'string'
         ? parsed.cleanContent

@@ -6,12 +6,13 @@ import { buildEvidentialProseContext, verifyFactualAtom, verifySentenceEvidentia
 import { inspectOpenProseDetails, SCOPE_TEXT, V5_GUARANTEE } from './epistemicPolicy.js';
 import { segmentAnswer, assembleText } from '../freeRealization.js';
 import { planAnswer, composeLocalAnswer } from '../narrator.js';
-import { resolveIntent } from '../intentResolver.js';
+import { resolveIntent, normalizeText } from '../intentResolver.js';
 import { MODULE_NAMES } from '../moduleInventory.generated.js';
 import { freezeData } from '../../experiments/workbench/contracts.js';
 import { resolveSnapshotEndogenousDecision } from '../../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
 import { formatMetricValue } from '../runtimeSnapshot.js';
 import { classifyConversationRegister } from './conversationRegister.js';
+import { queryKnowledgeVault, lookupRuntimeModuleInfo } from '../knowledge/QicnKnowledgeVault.js';
 
 export function verifyEvidentialRealization(parsed, context, proseContext = null) {
   const envelope =
@@ -323,6 +324,8 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
     mode,
     attempts: [],
     provider: options.provider || null,
+    skillsUsed: Array.isArray(options.skillsUsed) ? [...options.skillsUsed] : [],
+    contextCache: options.contextCache || null,
     transportRetries: (options.transportRetries || []).slice(0, 4),
     reasoningPlan: sanitizePlan
   };
@@ -353,13 +356,33 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
     const cccText = Number.isFinite(snapshot?.metrics?.ccc) ? formatMetricValue('ccc', snapshot.metrics.ccc) : null;
     localText = isThanks
       ? '¡Con gusto! Aquí sigo atento a lo que quieras charlar o consultar.'
-      : `¡Hola! Todo tranquilo por aquí (simulación ${runState}, paso ${snapshot.tick}${cccText ? `, CCC ${cccText}` : ''}). Ahora mismo respondo en modo «Solo motor» sin canal de lenguaje conectado; si activas Gemini en la pestaña API podemos conversar libremente de cualquier tema, o pregúntame directamente por cualquier lectura del sistema.`;
+      : `¡Hola! Todo tranquilo por aquí (simulación ${runState}, paso ${snapshot.tick}${cccText ? `, CCC ${cccText}` : ''}). Ahora mismo respondo en modo «Solo motor» con acceso a mi bóveda local de QICN; si conectas Gemini en la pestaña API podemos conversar libremente de cualquier tema, o pregúntame directamente por cualquier módulo, parámetro o teorema del marco.`;
   } else if (conversationRegister === 'open_general') {
-    localText = 'Ahora mismo estoy en modo «Solo motor» (sin Gemini conectado), así que solo puedo darte lecturas directas de la simulación local. Si conectas tu clave de Gemini en la pestaña API o activas «Sistema B (unificado)», puedo conversar contigo con total fluidez sobre ese tema o sobre lo que quieras.';
+    localText = 'Ahora mismo estoy en modo «Solo motor» (sin Gemini conectado), así que puedo responderte sobre el estado vivo del runtime, cualquier módulo, parámetro o teorema de la bóveda QICN, pero necesito tu clave de Gemini en la pestaña API («Sistema B unificado») para conversar abiertamente de temas generales del mundo.';
   } else {
+    const vaultHit = queryKnowledgeVault({ query: prepared.question || '', maxSections: 2, maxChars: 1400 });
+    const moduleHit = lookupRuntimeModuleInfo(prepared.question || '');
+    const vaultSupplement = [];
+    if (vaultHit.matchedDirectly && vaultHit.sections.length) {
+      vaultSupplement.push(
+        `Bóveda unificada QICN (${vaultHit.sections[0].title}): ${vaultHit.sections[0].summary}`
+      );
+    }
+    const normalizedQuestion = normalizeText(prepared.question || '');
+    if (
+      moduleHit.parameters.length
+      && /(?:parametro|boltzmann|informational_temp|temperatura\s+informacional|hebbian|learning_rate|pruning|plasticity_decay|retro_flux|complexityfactor|stabilitybias|\bcf\b|\bbs\b)/i.test(normalizedQuestion)
+    ) {
+      const p = moduleHit.parameters[0];
+      vaultSupplement.push(`Parámetro ${p.key} (${p.range}): ${p.summary}`);
+    } else if (moduleHit.verifiedOperations.length && intent.intent === 'unknown') {
+      const op = moduleHit.verifiedOperations[0];
+      vaultSupplement.push(`Módulo verificado ${op.module}.${op.anchor} (${op.operation} · alcance: ${op.scope}).`);
+    }
     localText = [
       endogenousSummary,
       baseLocal,
+      ...vaultSupplement,
       formatLocalLevel2Summary(proseContext?.level2Telemetry),
       formatLocalWorkbenchSummary(context.evidenceRegistry),
       SCOPE_TEXT

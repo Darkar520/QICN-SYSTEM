@@ -10,6 +10,8 @@ import { resolveIntent } from '../intentResolver.js';
 import { MODULE_NAMES } from '../moduleInventory.generated.js';
 import { freezeData } from '../../experiments/workbench/contracts.js';
 import { resolveSnapshotEndogenousDecision } from '../../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
+import { formatMetricValue } from '../runtimeSnapshot.js';
+import { classifyConversationRegister } from './conversationRegister.js';
 
 export function verifyEvidentialRealization(parsed, context, proseContext = null) {
   const envelope =
@@ -305,9 +307,15 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
       })()
     : null;
 
+  const intent = prepared.intent || resolveIntent(prepared.question || '');
+  const conversationRegister = prepared.reasoningPlan?.conversationRegister
+    || proseContext?.conversationRegister
+    || classifyConversationRegister(prepared.question || '', intent, []);
+
   const trace = {
     schema: EVIDENTIAL_SCHEMA,
     contract: 'evidential',
+    conversationRegister,
     snapshotTick: snapshot.tick,
     snapshotDigest: snapshot.digest,
     registryDigest: context.evidenceRegistry.digest,
@@ -328,7 +336,6 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
     guaranteeNote: V5_GUARANTEE
   };
 
-  const intent = prepared.intent || resolveIntent(prepared.question || '');
   const localPlan = planAnswer(intent, proseContext.props);
   const rawBaseLocal = composeLocalAnswer({
     intentResult: intent,
@@ -339,13 +346,25 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
   });
   const endogenousSummary = formatLocalEndogenousDecisionSummary(snapshot);
   const baseLocal = sanitizeLocalEvidentialBase(rawBaseLocal, Boolean(endogenousSummary));
-  const localText = [
-    endogenousSummary,
-    baseLocal,
-    formatLocalLevel2Summary(proseContext?.level2Telemetry),
-    formatLocalWorkbenchSummary(context.evidenceRegistry),
-    SCOPE_TEXT
-  ].filter(Boolean).join('\n\n').trim();
+  let localText;
+  if (conversationRegister === 'casual_social') {
+    const isThanks = intent.intent === 'thanks';
+    const runState = snapshot?.isRunning ? 'en marcha' : 'en pausa';
+    const cccText = Number.isFinite(snapshot?.metrics?.ccc) ? formatMetricValue('ccc', snapshot.metrics.ccc) : null;
+    localText = isThanks
+      ? '¡Con gusto! Aquí sigo atento a lo que quieras charlar o consultar.'
+      : `¡Hola! Todo tranquilo por aquí (simulación ${runState}, paso ${snapshot.tick}${cccText ? `, CCC ${cccText}` : ''}). Ahora mismo respondo en modo «Solo motor» sin canal de lenguaje conectado; si activas Gemini en la pestaña API podemos conversar libremente de cualquier tema, o pregúntame directamente por cualquier lectura del sistema.`;
+  } else if (conversationRegister === 'open_general') {
+    localText = 'Ahora mismo estoy en modo «Solo motor» (sin Gemini conectado), así que solo puedo darte lecturas directas de la simulación local. Si conectas tu clave de Gemini en la pestaña API o activas «Sistema B (unificado)», puedo conversar contigo con total fluidez sobre ese tema o sobre lo que quieras.';
+  } else {
+    localText = [
+      endogenousSummary,
+      baseLocal,
+      formatLocalLevel2Summary(proseContext?.level2Telemetry),
+      formatLocalWorkbenchSummary(context.evidenceRegistry),
+      SCOPE_TEXT
+    ].filter(Boolean).join('\n\n').trim();
+  }
 
   let text = localText;
   let publishedSentences = [];
@@ -466,6 +485,7 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
       question: String(prepared.question || '').slice(0, 500),
       intent: intent.intent,
       intentLabel: intent.intent,
+      conversationRegister,
       tick: snapshot.tick,
       snapshotDigest: snapshot.digest,
       metrics: { ...snapshot.metrics },

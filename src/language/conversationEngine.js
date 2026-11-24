@@ -13,6 +13,7 @@ import { createFactualContext, buildEvidentialProseContext } from './evidential/
 import { createEvidenceRegistry } from './evidential/evidenceRegistry.js';
 import { createReasoningPlan, buildEvidentialPrompt, buildEvidentialCorrectionPrompt } from './evidential/reasoningPlan.js';
 import { evaluateEvidential, evidentialGracefulCandidate, finalizeEvidentialTurn } from './evidential/realization.js';
+import { classifyConversationRegister } from './evidential/conversationRegister.js';
 
 // Realization contracts (2026-11-08): 'free' = v4 free prose with non-lexical
 // guarantees (chat default); 'verified' = v3 sentence-level verification
@@ -189,6 +190,7 @@ export function prepareTurn({
   }
   if (normalizeContract(contract) === 'evidential') {
     const intent = resolveIntent(question);
+    const conversationRegister = classifyConversationRegister(question, intent, turns);
     const previousTurn = turns.length ? turns[turns.length - 1] : null;
     const previousMetrics = previousTurn?.metrics || null;
     const recall = buildRecall(intent, turns);
@@ -207,7 +209,8 @@ export function prepareTurn({
       factualContext: evidentialContext,
       kaizenEffective,
       sensorObserverDynamicsEnabled,
-      level2Telemetry
+      level2Telemetry,
+      conversationRegister
     });
     const reasoningPlan = createReasoningPlan(question, evidentialContext, {
       turns,
@@ -216,7 +219,8 @@ export function prepareTurn({
       kaizenEffective,
       sensorObserverDynamicsEnabled,
       level2Telemetry,
-      proseContext
+      proseContext,
+      conversationRegister
     });
     return {
       contract: 'evidential',

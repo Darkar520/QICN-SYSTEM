@@ -77,11 +77,11 @@ export const PLAIN_TAB_COPY = Object.freeze({
   },
   chat: {
     casualTitle: 'Conversar con QICN',
-    technicalTag: 'Chat Verificado · Sistema B',
-    plainSummary: 'Haz preguntas en lenguaje natural sobre el estado actual; cada cifra se verifica automáticamente contra la lectura real del motor.',
-    inSimpleWords: 'El motor toma una foto exacta del paso actual y el verificador comprueba que cada número mencionado coincida con la simulación real.',
-    analogy: 'Es un portavoz con verificación de hechos integrada: antes de mostrarte una respuesta, confirma que los datos sean exactos.',
-    whatToTry: 'Haz clic en una pregunta sugerida para empezar, o marca «Adjuntar resultado Workbench verificado» para incluir una prueba aislada.',
+    technicalTag: 'Chat Adaptativo · Sistema B',
+    plainSummary: 'Conversa libremente sobre cualquier tema con la voz propia de QICN, o entra en detalle técnico y filosófico con cifras verificadas del motor.',
+    inSimpleWords: 'Si saludas o hablas de temas cotidianos responde con naturalidad sin soltar jerga técnica; si preguntas por el runtime o sus teoremas, verifica cada número contra la captura real del paso actual.',
+    analogy: 'Es una conversación fluida con verificación científica integrada: habla con soltura sobre cualquier asunto, pero cuando toca datos del motor comprueba cada cifra antes de publicarla.',
+    whatToTry: 'Salúdalo, pregúntale su opinión sobre cualquier tema o consulta por el estado actual, su arquitectura o una prueba aislada del Workbench B2.',
     boundary: 'Canal estrictamente observacional (nunca altera la simulación en vivo; external_support_certified = false).'
   },
   'qicn-b': {

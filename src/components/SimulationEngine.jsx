@@ -2790,19 +2790,24 @@ export const QICNConsciousnessSystem = () => {
     let providerError = null;
     const attempts = [];
 
+    const turnRegister = prepared?.reasoningPlan?.conversationRegister || 'epistemic_deep';
+    const isOpenCasualTurn = turnRegister === 'casual_social' || turnRegister === 'open_general';
+    const turnThinkingLevel = turnRegister === 'casual_social' ? 'low' : CHAT_THINKING_LEVEL;
+
     const requestRealization = async (systemText) => {
       const payload = {
         contents: [{ role: 'user', parts: [{ text: input }] }],
         systemInstruction: { parts: [{ text: systemText }] },
         // Maximum budget the model allows: gemini-3-flash-preview has a 65 536
         // output-token limit, and Gemini 3 counts thinking tokens inside it.
-        // Thinking level at its maximum ('high') for richer, more careful text.
+        // Thinking level stays at CHAT_THINKING_LEVEL ('high') for open/technical/
+        // epistemic depth and adapts to 'low' only on light social greetings.
         generationConfig: {
           maxOutputTokens: CHAT_MAX_OUTPUT_TOKENS,
-          temperature: 0.4,
+          temperature: isOpenCasualTurn ? 0.68 : 0.4,
           topP: 0.9,
           responseMimeType: 'application/json',
-          thinkingConfig: { thinkingLevel: CHAT_THINKING_LEVEL }
+          thinkingConfig: { thinkingLevel: turnThinkingLevel }
         }
       };
       const currentPacket = integrityPacketRef.current || {
@@ -4539,11 +4544,11 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
     const effectiveRoute = geminiSelected && canUseLlmNow ? modelRoute : 'solo motor';
     const ledgerInfo = operationalLedgerRef.current?.summary?.({ recent: 0 }) || null;
     const suggestions = [
-      '¿Cómo estás ahora?',
+      'Hola, ¿cómo estás?',
+      '¿Qué opinas de cómo la tecnología cambia nuestra forma de pensar?',
+      '¿Cómo está el sistema ahora?',
       '¿Qué ha cambiado desde la última respuesta?',
-      '¿Qué es el CCC?',
-      '¿Quién eres?',
-      '¿Qué no puedes afirmar?'
+      '¿Quién eres y qué no puedes afirmar?'
     ];
     const fillComposer = (text) => {
       const field = document.getElementById('qicn-chat-input');
@@ -4787,7 +4792,7 @@ RANGO MUTABLE: 0.1–5.0 | Actual: ${mutableConfig.INFORMATIONAL_TEMP_T.toFixed(
             {!chatHistory.some((msg) => msg.role === 'user') && (
               <div className="rounded-xl border border-purple-500/35 bg-purple-950/25 p-3 text-xs text-purple-100">
                 <p className="mb-2 leading-relaxed text-slate-200">
-                  Pregunta en palabras simples por el estado del motor, qué ha cambiado o qué no puede afirmar. Cada respuesta cita el paso exacto y su firma verificada:
+                  Conversa libremente sobre cualquier tema o pregunta por el estado del motor, su arquitectura y sus límites; cuando cita datos del runtime, cada cifra se verifica contra el paso exacto:
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {suggestions.map((text) => (

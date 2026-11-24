@@ -13,6 +13,7 @@ import { freezeData, assertData } from '../../experiments/workbench/contracts.js
 import { createEvidenceRegistry, isEvidenceRegistry, lookupEffect, EFFECT_MEASURES } from './evidenceRegistry.js';
 import { keysOnly, FACT_TYPES, identifier } from './claimGrammar.js';
 import { isClauseNegated, isExternalValidationOverclaim } from './epistemicPolicy.js';
+import { isOpenConversationalRegister, isRuntimeAnchoredSentence } from './conversationRegister.js';
 import {
   resolveSnapshotEndogenousDecision,
   getCanonicalAtomicSeparatorCut,
@@ -327,7 +328,8 @@ export function buildEvidentialProseContext({
   factualContext,
   kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT,
   sensorObserverDynamicsEnabled = false,
-  level2Telemetry = null
+  level2Telemetry = null,
+  conversationRegister = 'epistemic_deep'
 }) {
   const ledgerSummary = summarizeLedgerPlain(factualContext.ledger);
   const previousTurn = turns.length ? turns[turns.length - 1] : null;
@@ -522,9 +524,17 @@ export function buildEvidentialProseContext({
     ledgerDigest: factualContext.ledgerDigest,
     kaizenEffective: Boolean(kaizenEffective),
     sensorObserverDynamicsEnabled: Boolean(sensorObserverDynamicsEnabled),
-    level2Telemetry: normalizedLevel2
+    level2Telemetry: normalizedLevel2,
+    conversationRegister
   };
 }
+
+const NON_RUNTIME_KNOWN_FALSE_REASONS = new Set([
+  'update_is_contractive',
+  'threshold_certifies',
+  'language_changes_trajectory'
+]);
+const RUNTIME_CODE_OWNERSHIP_RE = /\b(?:mi\s+(?:modulo|codigo|archivo|motor|runtime|repositorio)|en\s+(?:este|el)\s+(?:runtime|repositorio|motor|sistema\s+qicn)|qicn)\b/i;
 
 const B2_SURFACE_RE = /\b(?:maxabsdiff|actiondivergence|deltain[a-z_]*rate|deltaobjectivescore|workbench|copia aislada|rama\s+(?:sensitivity|baseline|sham|block_history_read|suspend_consolidation|freeze_predictor_weights|erase_declared_history|sensor_impulse)|intervencion\s+contrafactual)\b/;
 const B2_MATCH_CUE_RE = /\b(?:maxabsdiff|actiondivergence|deltain[a-z_]*rate|deltaobjectivescore|workbench|copia aislada|rama|sham|baseline|sensibilidad|block_history_read|bloqueo de lectura|suspend_consolidation|suspension de (?:la )?consolidacion|freeze_predictor_weights|congelacion|erase_declared_history|borrado de (?:la )?historia|sensor_impulse|impulso sensorial|alteracion maxima|divergencia|contrafactual)\b/;
@@ -538,14 +548,25 @@ const FILTERED_V5_REASONS = new Set(['open_concept_affirmed', 'absolute_denial']
 export function verifySentenceEvidential(text, proseCtx) {
   const base = verifySentenceFree(text, proseCtx.freeCtx);
   const normalized = normalizeText(text);
+  const openCasualTurn = isOpenConversationalRegister(proseCtx?.conversationRegister);
+  const runtimeAnchored = !openCasualTurn || isRuntimeAnchoredSentence(normalized, base.numbers);
   // Lift v4's symmetric concept-policing reasons (`open_concept_affirmed`, `absolute_denial`)
   // and re-evaluate `externally_validated` at clause granularity so valid first-person
-  // interpretive stances (including "sin un puente demostrado hacia la validación externa") pass,
-  // while keeping every factual/numerical/attribution/structural/anti-certification barrier strict.
-  const reasons = base.reasons.filter(
-    (r) => !FILTERED_V5_REASONS.has(r.reason)
-      && !(r.reason === 'known_false_claim' && r.detail === 'externally_validated')
-  );
+  // interpretive stances pass, while keeping every runtime factual/numerical/attribution/
+  // structural/anti-certification barrier strict. For purely general-world sentences inside
+  // casual/open conversations (zero QICN/runtime cues), allow ordinary world figures,
+  // percentages, external software names, and non-runtime everyday idioms ("contracción
+  // económica", "banda de 1985", "20 minutos de relajación").
+  const reasons = base.reasons.filter((r) => {
+    if (FILTERED_V5_REASONS.has(r.reason)) return false;
+    if (r.reason === 'known_false_claim' && r.detail === 'externally_validated') return false;
+    if (!runtimeAnchored) {
+      if (r.reason === 'number_mismatch' || r.reason === 'percentage_not_in_packet') return false;
+      if ((r.reason === 'unknown_module' || r.reason === 'unknown_file') && !RUNTIME_CODE_OWNERSHIP_RE.test(normalized)) return false;
+      if (r.reason === 'known_false_claim' && NON_RUNTIME_KNOWN_FALSE_REASONS.has(r.detail)) return false;
+    }
+    return true;
+  });
   const snapshot = proseCtx.snapshot;
 
   // 1. Check analytical bounds even inside OPEN_FRAME / conditionals (no escape hatch).
@@ -668,7 +689,9 @@ export function verifySentenceEvidential(text, proseCtx) {
 
   // Reclassify valid M_Ω / C-11 family_upper_bound and EWC Fisher Ω values that freeRealization's
   // `METRIC_TERMS` maps to PhenomenologyCore `omega` because both share the symbol Ω.
-  const numbers = base.numbers.map((n) => ({ ...n }));
+  // For pure general-world sentences inside casual/open turns, exclude ordinary world numbers
+  // from QICN's forensic telemetry concordance so they are not misreported as engine values.
+  const numbers = runtimeAnchored ? base.numbers.map((n) => ({ ...n })) : [];
   const c11Bound = snapshot?.tower?.constructive_cuts?.ontological_mass_cut?.family_upper_bound;
   const fisherStiff = snapshot?.prediction_plasticity?.mean_fisher_stiffness;
   for (let i = 0; i < numbers.length; i += 1) {

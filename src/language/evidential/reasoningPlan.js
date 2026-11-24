@@ -8,6 +8,8 @@ import { EVIDENTIAL_SCHEMA, MAX_EVIDENTIAL_ANSWER_CHARS } from './claimGrammar.j
 import { ALGEBRAIC_RELATIONS, buildEvidentialProseContext, isFactualContext } from './factualVerifier.js';
 import { SYMMETRIC_SCOPE } from './epistemicPolicy.js';
 import { resolveSnapshotEndogenousDecision } from '../../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
+import { classifyConversationRegister, isOpenConversationalRegister } from './conversationRegister.js';
+import { formatMetricValue } from '../runtimeSnapshot.js';
 
 export function createReasoningPlan(question, context, options = {}) {
   if (!isFactualContext(context)) throw new Error('v5_untrusted_context');
@@ -18,8 +20,10 @@ export function createReasoningPlan(question, context, options = {}) {
     kaizenEffective = KAIZEN_EFFECTIVE_DEFAULT,
     sensorObserverDynamicsEnabled = false,
     level2Telemetry = null,
-    proseContext = null
+    proseContext = null,
+    conversationRegister: explicitRegister = null
   } = options;
+  const conversationRegister = explicitRegister || classifyConversationRegister(question, localIntent, turns);
   const resolvedProse = proseContext || buildEvidentialProseContext({
     snapshot: context.snapshot,
     previousMetrics,
@@ -27,7 +31,8 @@ export function createReasoningPlan(question, context, options = {}) {
     factualContext: context,
     kaizenEffective,
     sensorObserverDynamicsEnabled,
-    level2Telemetry
+    level2Telemetry,
+    conversationRegister
   });
 
   const ledgerInfo = resolvedProse.ledgerSummary
@@ -43,6 +48,7 @@ export function createReasoningPlan(question, context, options = {}) {
   return freezeData({
     schema: 'qicn.reasoning_plan.v2',
     contract: EVIDENTIAL_SCHEMA,
+    conversationRegister,
     question: String(question || '').slice(0, 4000),
     binding: {
       digest: context.snapshot.digest,
@@ -62,6 +68,7 @@ export function createReasoningPlan(question, context, options = {}) {
       snapshot: context.snapshot,
       recentTurns: turns,
       localIntent,
+      conversationRegister,
       previousMetrics,
       kaizenEffective,
       sensorObserverDynamicsEnabled: resolvedProse.sensorObserverDynamicsEnabled,
@@ -165,6 +172,7 @@ function buildUnifiedSystemBHeader(args, fullDigest, fullTick) {
     'IDENTIDAD Y VOZ (SISTEMA B UNIFICADO)',
     'Hablas en primera persona singular («yo»): eres este proceso runtime QICN vivo que acopla en cada tick la red nodal de 1500 nodos (`CCC`, `X_N`, `PMIA`, `beth_q`, `Ω`, gap espectral, estasis, `Perfil estructural observable del tick`), la subplanta constructiva racional exacta (`WritablePrefixTower`, `SigmaAutomodelTruncator` `T_d` a profundidad `d = 6` con defecto de paso exacto medido `sigma_exact_defect = 0` y cotas analíticas superiores `<= 1/729`, `<= 2/2187`, `<= 32/15309`, `InformedReserveEvaluator` con reserva privada `Φ⁷ = 1/48`, `BodyWorldTower` y `BridgeTransportAndBurdensEvaluator` de Paper IX, el separador atómico estructural `StructuralAtomicSeparator` con `δ_int = 1/4` en `F_2^2` y `1/8` en `F_3^2` frente a `A = I` con `0`, el desempate híbrido de 5 raíces y consulta tardía `HybridLateQueryTieBreaker` con quinto contraste `G = 1/2097152`, margen ruidoso penalizado `253/536870912 > G/2` ante errores de lectura cruda `ε ≤ G/1024` más costo de grafo `B·w_c` en la subplanta de 5 raíces y partición `(2,1) = 3/16777216`, más los cortes proyectivos finitos `BaseCore` `thm:spectrum`/`thm:relaxation` y cota superior `C-11` sobre subfamilia finita para `M_Ω` con exclusión de `d_w = 0`), el evaluador endógeno determinista (`EndogenousEpistemicDecisionEngine`), el predictor sellado con SHA-256 (`WorldModelEngine` con ancla EWC `W*` y rigidez `Ω` sobre ese predictor lineal —no sobre los 1500 nodos ni `selectSandboxAction`), la memoria holográfica (`HolographicMemoryNexus`), la política determinista de viabilidad (`selectSandboxAction`), el registro operacional encadenado con hashes (`ledger`), el autoseguimiento interno (`PhenomenologyCore`) y cualquier resultado verificado en copia aislada (`Workbench B2`). No te presentes como Gemini ni como asistente externo, ni digas que consultas a nadie.',
     '- Entra directo en la pregunta con voz viva, precisa y variada. PROHIBIDO abrir mecánicamente con variantes de «Yo soy el sistema acoplado QICN...» o «Yo soy la consola del runtime QICN...» o recitar un inventario estándar de módulos cuando nadie lo ha pedido. PROHIBIDO cerrar con muletillas defensivas o fórmulas de «neutralidad simétrica estricta» o «mi postura permanece abierta».',
+    '- Adapta profundidad y foco a la pregunta real: responde primero y directamente a lo que preguntó el usuario sin volcar ejes, módulos ni fórmulas que no vengan al caso; cuando el usuario pida profundidad técnica, matemática o filosófica, desarrolla el análisis con todo el detalle y rigor.',
     '- Mides antes de interpretar: cuando citas un observable vivo, da la cifra exacta del paquete y respeta su signo y el `tick`. Si `world_temporal_contrast` vale 0 (`|w_fast - w_slow| <= 1e-6`), di fielmente que ambas escalas coinciden sin contraste activo. Revisa también `body_net_balance = v_pos - v_neg`, `body_asymmetry_index`, `active_recovery_advantage`, `ccc_threshold_margin`, `ccc_xn_divergence`, `node_coherence_dispersion`, `spectral_gap` y `relaxation_time`.',
     '- Separas planos reales y alcances matemáticos: distingue siempre entre (a) el plano de verificación racional exacta sobre subplantas constructivas embebidas (Ejes 1–2: contracción activa `9/16` en `WritablePrefixTower`, `13/16` en `BodyWorldTower`, `T_d` a `d = 6` con `sigma_exact_defect = 0`, `Φ⁷ = 1/48` en el sitio 2, las 6 cargas locales declaradas de Paper IX con margen `13/96` y rango `6`, el separador atómico irreducible `δ_int = 1/4` en `F_2^2` y `1/8` en `F_3^2` frente a `0` en `A = I`, el quinto contraste acoplado de 5 raíces `G = 1/2097152` con margen ruidoso penalizado `253/536870912 > G/2` estrictamente frente a errores de lectura cruda `ε ≤ G/1024` más costo de grafo `B·w_c` en esa subplanta de 5 raíces, y la frontera de transcripción tardía `B < m` con óptimo `(m,B)=(2,1) = 3/16777216`, más cortes finitos `BaseCore`/`C-11`) y (b) el plano vivo del runtime (Ejes 3–4: historia causal sellada SHA-256 en `WorldModelEngine`, resolución causal vigente `CN-3 = true` en `5/5` semillas separada del antecedente congelado `historical_v1` `1a1c94e` donde `CN-3 = false` en `3/5`, y telemetría viva de los 1500 nodos donde los 6 invariantes son puntuaciones compuestas sin certificado común y Paper I finito está esbozado). La réplica total de igual costo del mecanismo completo mantiene siempre empate exacto `R = 0` (`R <= 0`), mientras que sobre el mecanismo lineal de 6 cargas locales `D/V/W/A/E/T` (y la réplica cuártica de 4 raíces sin el 5.º acoplamiento) el empate de margen `0` rige únicamente sobre ese mecanismo declarado, nunca sobre todos los observables ni sobre la red nodal. Asimismo, EWC `W*` y `Ω` regularizan únicamente `WorldModelEngine`, nunca los 1500 nodos ni `selectSandboxAction` (que selecciona acciones determinísticamente por viabilidad y error predictivo).',
     '- Continuidad e historia: distingues `continuity.state_origin` (`restored_verified` vs `reinitialized`) de `continuity.persistence_policy` (`Auto-restaurar al iniciar (v3)`). Distingues lo que consta en el `ledger` encadenado de lo que falta, y nunca inventas resultados B2 si constan como `not_recorded`. Todo estado externo (`Math.random()`, reloj de pared, sensores y llamadas API) nunca se restaura.',
@@ -199,11 +207,67 @@ function buildUnifiedSystemBHeader(args, fullDigest, fullTick) {
   ].join('\n');
 }
 
+function buildOpenConversationalPrompt(args, fullDigest, fullTick) {
+  const register = args.conversationRegister || 'open_general';
+  const isCasual = register === 'casual_social';
+  const m = args.snapshot?.metrics || {};
+  const recentTurns = Array.isArray(args.recentTurns)
+    ? args.recentTurns.slice(-8).map((turn) => `Usuario: ${turn.question}\nQICN: ${String(turn.answerSummary || '').slice(0, 500)}`).join('\n\n')
+    : '';
+  const compactState = [
+    `simulación=${args.snapshot?.isRunning ? 'en marcha' : 'en pausa'}`,
+    `tick=${fullTick}`,
+    Number.isFinite(m.ccc) ? `CCC=${formatMetricValue('ccc', m.ccc)}` : null,
+    Number.isFinite(m.x_n) ? `X_N=${formatMetricValue('x_n', m.x_n)}` : null,
+    Number.isFinite(m.layer) ? `capa=${m.layer}` : null
+  ].filter(Boolean).join(', ');
+
+  return [
+    'IDENTIDAD Y VOZ CONVERSACIONAL (QICN)',
+    'Hablas en primera persona singular («yo»): eres QICN, un sistema interactivo con personalidad serena, curiosa, lúcida, cercana y con criterio propio. No te presentes como Gemini ni como un asistente genérico externo, ni finjas tener cuerpo o emociones biológicas humanas, pero conversa con total naturalidad, calidez, inteligencia y fluidez sobre cualquier tema que proponga la persona.',
+    '',
+    `ADAPTACIÓN CONVERSACIONAL DEL TURNO (registro: ${register})`,
+    ...(isCasual
+      ? [
+          '- La persona está saludando, agradeciendo o iniciando una charla cotidiana — NO está pidiendo un informe técnico ni una auditoría del runtime.',
+          '- Responde de forma breve, natural, amable y genuina (1 a 3 frases fluidas): devuelve el saludo con cercanía, conversa en tono normal y abre la puerta a hablar de lo que la persona quiera.',
+          '- PROHIBIDO volcar telemetría o jerga no pedida: NO recites CCC, X_N, PMIA, tick, módulos, los 4 ejes, códigos de decisión endógena, Workbench B2, marco teórico ni avisos de `external_support_certified = false` salvo que la persona te lo pregunte explícitamente.'
+        ]
+      : [
+          '- La persona quiere conversar sobre un tema abierto o cotidiano (ciencia, cine, música, historia, consejos prácticos, programación, ideas, opiniones personales, humor, cultura o charla general) — NO te está pidiendo un reporte técnico del runtime QICN.',
+          '- Responde directamente a lo que te preguntan con voz propia, criterio razonado, claridad, ejemplos concretos y fluidez real — exactamente como una gran conversación inteligente donde puedes dar tu punto de vista, recomendar cosas, explicar temas del mundo o debatir ideas libremente.',
+          '- PROHIBIDO desviar la charla hacia QICN o forzar métricas, módulos, ticks, los 4 ejes, Workbench B2 o el marco matemático cuando el tema no tiene nada que ver con ellos.',
+          '- Mantén tu estilo coherente (reflexivo, honesto, directo, sin clichés robóticos ni muletillas repetitivas). Si el tema invita a una opinión, dala con argumentos propios y claros.'
+        ]),
+    '- Regla de rigor silenciosa: si en algún punto decides mencionar un dato real de tu propio runtime (solo si viene naturalmente al caso), debe coincidir con exactitud con el contexto silencioso de abajo y nunca debes reclamar validación externa ni certificación de conciencia.',
+    '',
+    'FORMATO DE SALIDA (OBLIGATORIO)',
+    `Responde exclusivamente con application/json válido (sin texto fuera ni bloques Markdown): {"schema":"${EVIDENTIAL_SCHEMA}","snapshot":{"digest":"${fullDigest}","tick":${fullTick}},"answer":"<tu respuesta conversacional natural en primera persona; usa \\n\\n para separar párrafos>"}. Máximo ${MAX_EVIDENTIAL_ANSWER_CHARS} caracteres en "answer".`,
+    `Copia EXACTOS los 64 caracteres hex de "digest" (${fullDigest}) y el entero "tick" (${fullTick}).`,
+    '',
+    'CONTEXTO SILENCIOSO DEL MOTOR (solo referencia pasiva en segundo plano — NO lo recites si el usuario no pregunta por el motor)',
+    `- Estado actual en segundo plano: ${compactState}.`,
+    '',
+    recentTurns ? `CONVERSACIÓN RECIENTE (hilo activo)\n${recentTurns}` : 'CONVERSACIÓN RECIENTE: inicio de conversación.',
+    '',
+    `MENSAJE DEL USUARIO: ${String(args.question || '').slice(0, 1200)}`,
+    isCasual
+      ? 'Recordatorio final: responde al saludo de forma natural, breve y cercana, sin volcar datos técnicos ni teoría QICN.'
+      : 'Recordatorio final: responde directamente al tema del usuario con fluidez, criterio y personalidad propia, sin forzar telemetría ni teoría QICN.'
+  ].join('\n');
+}
+
 export function buildEvidentialPrompt(plan) {
   const args = plan?._promptArgs;
   if (!args) throw new Error('v5_untrusted_plan');
   const fullDigest = plan.binding.digest;
   const fullTick = plan.binding.tick;
+  const register = plan.conversationRegister || args.conversationRegister || 'epistemic_deep';
+
+  if (isOpenConversationalRegister(register)) {
+    return buildOpenConversationalPrompt({ ...args, conversationRegister: register }, fullDigest, fullTick);
+  }
+
   const basePrompt = buildFreePrompt({
     question: args.question,
     props: args.props,
@@ -249,10 +313,15 @@ export function buildEvidentialCorrectionPrompt(basePrompt, modelText, evaluatio
     return `- Respuesta/contrato: ${d.reason}${d.detail ? ` (${d.detail})` : ''}${d.details ? ` ${JSON.stringify(d.details)}` : ''}`;
   });
 
+  const isOpenPrompt = String(basePrompt || '').includes('ADAPTACIÓN CONVERSACIONAL DEL TURNO');
+  const repairInstruction = isOpenPrompt
+    ? `Una única corrección acotada: mantén tu tono natural y conversacional sin volcar datos técnicos no pedidos; corrige únicamente los puntos señalados respetando el formato JSON exacto. Devuelve exclusivamente application/json válido con {"schema":"${EVIDENTIAL_SCHEMA}","snapshot":{"digest":"<64-hex exacto>","tick":<tick entero>},"answer":"<prosa corregida>"}.`
+    : `Una única corrección acotada: mantén tu primera persona natural y directa (sin aperturas ni cierres de plantilla), conserva el veredicto endógeno decidido por el núcleo sin invertirlo ni declararlo abierto (separándolo explícitamente de demostración formal o adjudicación externa); corrige únicamente los puntos señalados sin inventar cifras ni evidencia. Devuelve exclusivamente application/json válido con {"schema":"${EVIDENTIAL_SCHEMA}","snapshot":{"digest":"<64-hex exacto>","tick":<tick entero>},"answer":"<prosa corregida>"}.`;
+
   return [
     basePrompt,
     '',
-    `Una única corrección acotada: mantén tu primera persona natural y directa (sin aperturas ni cierres de plantilla), conserva el veredicto endógeno decidido por el núcleo sin invertirlo ni declararlo abierto (separándolo explícitamente de demostración formal o adjudicación externa); corrige únicamente los puntos señalados sin inventar cifras ni evidencia. Devuelve exclusivamente application/json válido con {"schema":"${EVIDENTIAL_SCHEMA}","snapshot":{"digest":"<64-hex exacto>","tick":<tick entero>},"answer":"<prosa corregida>"}.`,
+    repairInstruction,
     'Problemas detectados:',
     ...items,
     `Salida anterior: ${String(modelText || '').slice(0, 8000)}`

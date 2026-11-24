@@ -19,6 +19,8 @@
     "build:css": "tailwindcss -c tailwind.config.cjs -i ./src/styles/tailwind.input.css -o ./dist/tailwind.css --minify",
     "verify:env-contract": "node scripts/verify-env-contract.cjs",
     "verify:source-of-truth": "node scripts/verify-source-of-truth.cjs",
+    "sync:knowledge-vault": "node scripts/sync-living-knowledge-vault.mjs",
+    "verify:knowledge-vault": "node scripts/sync-living-knowledge-vault.mjs --check",
     "verify:subjectivity-scaffolding": "node scripts/verify-subjectivity-scaffolding.cjs",
     "verify:subjectivity-selfindex-ownership": "node scripts/verify-subjectivity-selfindex-ownership.cjs",
     "verify:subjectivity-continuity-perspective": "node scripts/verify-subjectivity-continuity-perspective.cjs",

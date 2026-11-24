@@ -25,6 +25,7 @@ import {
   invalidateGeminiSymbioticCache,
   buildCachedTurnUserMessage
 } from '../language/knowledge/geminiContextCache.js';
+import { loadLivingKnowledgeVault } from '../language/knowledge/QicnKnowledgeVault.js';
 import { describeEvent } from '../language/propositions.js';
 import { OperationalHistoryLedger } from '../identity/OperationalHistoryLedger.js';
 import { captureDynamicState, sealDynamicState, verifyStoredState, applyDynamicState } from '../persistence/dynamicState.js';
@@ -2762,6 +2763,7 @@ export const QICNConsciousnessSystem = () => {
         kaizenEngine: kaizenEngine.current,
         exogenousDriver: exogenousDriverRef.current
       });
+      await loadLivingKnowledgeVault();
       prepared = prepareTurn({
         question: input,
         snapshot,

@@ -1,8 +1,14 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import {
   listKnowledgeDomains,
   queryKnowledgeVault,
   lookupRuntimeModuleInfo,
+  lookupDeepFrameworkArtifacts,
+  registerLivingKnowledgeVault,
+  getLivingVaultStatus,
   buildFullCanonicalCorpus
 } from '../src/language/knowledge/QicnKnowledgeVault.js';
 import {
@@ -75,10 +81,11 @@ const encode = JSON.stringify;
     contract: 'evidential'
   });
 
-  assert.equal(QICN_RUNTIME_SKILL_DECLARATIONS.length, 5);
+  assert.equal(QICN_RUNTIME_SKILL_DECLARATIONS.length, 6);
   for (const [name, args] of [
     ['qicn_read_live_state', { sections: ['metrics', 'towers', 'endogenous_decision'] }],
     ['qicn_lookup_framework', { query: 'separador atomico delta_int' }],
+    ['qicn_lookup_deep_canon', { query: 'thm:basecore-irreducible-observation', category: 'theorems' }],
     ['qicn_lookup_runtime_module', { query: 'StructuralPlasticityLevel2' }],
     ['qicn_read_history_and_b2', { topic: 'continuidad' }],
     ['qicn_list_knowledge_domains', {}]
@@ -119,7 +126,7 @@ const encode = JSON.stringify;
   const cachePayload = buildGeminiContextCachePayload('gemini-3-flash-preview', 3600);
   assert.equal(cachePayload.model, 'models/gemini-3-flash-preview');
   assert.ok(cachePayload.systemInstruction.parts[0].text.includes('CONSTITUCIÓN DE IDENTIDAD Y VOZ SIMBIÓTICA'));
-  assert.equal(cachePayload.tools[0].functionDeclarations.length, 5);
+  assert.equal(cachePayload.tools[0].functionDeclarations.length, 6);
 
   let createCalls = 0;
   const okFetch = async (url, init) => {
@@ -323,4 +330,68 @@ const encode = JSON.stringify;
   assert.equal(bareHallucination.ok, false, 'Bare hallucinated metric value on metric_query MUST be blocked');
 }
 
-console.log('OK: 3-layer symbiotic chat (QicnKnowledgeVault + Runtime Skills + Context Caching + Proxy Tool Calls + Mixed Symbiotic Verifier) verified');
+// ---------------------------------------------------------------------------
+// LIVING KNOWLEDGE VAULT: Auto-sync check + Deep Theorem/Macro/Lean/Claim Lookup
+// ---------------------------------------------------------------------------
+{
+  const checkRes = spawnSync(process.execPath, ['scripts/sync-living-knowledge-vault.mjs', '--check'], {
+    encoding: 'utf8',
+    windowsHide: true
+  });
+  assert.equal(checkRes.status, 0, `Living knowledge vault is stale: ${checkRes.stderr || checkRes.stdout}`);
+
+  const preDigest = buildFullCanonicalCorpus().digest;
+  const vaultPath = path.resolve(process.cwd(), 'knowledge', 'qicn_living_vault.v1.json');
+  const vaultJson = JSON.parse(fs.readFileSync(vaultPath, 'utf8'));
+
+  // Negative control: forged external_support_certified=true MUST be rejected
+  const forged = structuredClone(vaultJson);
+  forged.provenance.external_support_certified = true;
+  assert.equal(registerLivingKnowledgeVault(forged).loaded, false);
+
+  const hydrated = registerLivingKnowledgeVault(vaultJson);
+  assert.equal(hydrated.loaded, true);
+  assert.equal(hydrated.external_support_certified, false);
+  assert.ok(hydrated.counts.theorems >= 952);
+  assert.ok(hydrated.counts.macros >= 383);
+  assert.ok(hydrated.counts.leanModules >= 42);
+  assert.ok(hydrated.counts.leanTheoremsAndLemmas >= 367);
+  assert.equal(hydrated.counts.leanSorryCount, 0);
+  assert.equal(hydrated.counts.claims, 17);
+  assert.equal(hydrated.counts.predictions, 11);
+  assert.equal(hydrated.counts.controllableParameters, 9);
+  assert.equal(getLivingVaultStatus().loaded, true);
+
+  const livingCorpus = buildFullCanonicalCorpus();
+  assert.equal(livingCorpus.schema, 'qicn.knowledge_corpus.v2_living');
+  assert.notEqual(livingCorpus.digest, preDigest, 'Hydrating living vault must refresh corpus SHA-256 digest for Context Caching');
+  assert.ok(livingCorpus.text.includes('CANON_SOURCE_OF_TRUTH'));
+  assert.ok(livingCorpus.text.includes('LAYER_BOUNDARIES'));
+  assert.ok(livingCorpus.text.includes('THEORY_SYSTEM_INTERFACE'));
+  assert.ok(livingCorpus.text.includes('QICNHybridBoundary'));
+
+  const thmHit = lookupDeepFrameworkArtifacts({ query: 'thm:basecore-irreducible-observation', category: 'theorems' });
+  assert.equal(thmHit.livingVaultLoaded, true);
+  assert.ok(thmHit.theorems.some((t) => t.label === 'thm:basecore-irreducible-observation'));
+
+  const leanHit = lookupDeepFrameworkArtifacts({ query: 'QICNHybridBoundary', category: 'lean' });
+  assert.ok(leanHit.leanModules.some((m) => m.module.includes('QICNHybridBoundary')));
+
+  const macroHit = lookupDeepFrameworkArtifacts({ query: 'Hilb', category: 'macros' });
+  assert.ok(macroHit.macros.length > 0);
+
+  const predHit = lookupDeepFrameworkArtifacts({ query: 'PRED-01', category: 'predictions' });
+  assert.ok(predHit.predictions.some((p) => p.latex_id === 'PRED-01'));
+
+  const skillDeep = executeRuntimeSkill('qicn_lookup_deep_canon', { query: 'hyp:H1', category: 'theorems' }, null);
+  assert.equal(skillDeep.ok, true);
+  assert.ok(skillDeep.data.theorems.some((t) => t.label === 'hyp:H1'));
+
+  // Solo motor accesses deep theorems & Lean modules directly from the exact same living vault
+  const snap = makeSnapshot();
+  const soloThmTurn = prepareTurn({ question: '¿Qué dice la hipótesis hyp:H1 en BaseCore?', snapshot: snap, contract: 'evidential' });
+  const soloThmOut = finalizeTurn(soloThmTurn, { mode: 'local' });
+  assert.ok(soloThmOut.text.includes('hyp:H1'), `Solo motor should cite living vault theorem hyp:H1: ${soloThmOut.text}`);
+}
+
+console.log('OK: 3-layer symbiotic chat + living knowledge vault (QicnKnowledgeVault + 6 Runtime Skills + Context Caching + Proxy Tool Calls + Mixed Verifier + Auto-Sync) verified');

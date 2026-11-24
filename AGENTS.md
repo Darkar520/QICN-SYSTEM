@@ -155,6 +155,27 @@ then review and update as needed:
 
 Do not leave documentary drift unreported when code-level evidence contracts change.
 
+## Living Knowledge Vault Sync Rule (Mandatory)
+
+`knowledge/qicn_living_vault.v1.json` (together with `src/language/frameworkSummary.generated.js` and `src/language/moduleInventory.generated.js`) is the SHA-256-sealed **living canonical knowledge file** consumed by Gemini (via Context Caching + 6 read-only Runtime Skills, never resent per prompt) and local `Solo motor` mode.
+
+Whenever:
+- new commits land in the sibling theoretical framework repo (`../qicn-framework-ordenado`: `basecore/`, `paper1..paper10*/`, `lean/`, `registry/`, `docs/`, `release/`), OR
+- runtime modules, `EVIDENTIAL_OPERATIONS`, `DEFINITIONS`, or `CONTROLLABLE_PARAMETER_DOCS` change in `QICN-SYSTEM`,
+
+you MUST run:
+
+```powershell
+npm run sync:knowledge-vault
+npm run verify:knowledge-vault
+```
+
+Rules for this sync:
+- `scripts/sync-living-knowledge-vault.mjs` reads `../qicn-framework-ordenado` strictly read-only at committed `HEAD` (never modifies the theory repo and never ingests uncommitted WIP files).
+- `knowledge/qicn_living_vault.v1.json` is served statically via `dist/knowledge/qicn_living_vault.v1.json` (synced by `npm run build:sync`) so `dist/bundle.js` is not inflated.
+- Always preserve `evidence_scope: "internal_support_only"` and `external_support_certified: false`.
+- See `.agents/skills/qicn-living-knowledge-sync/SKILL.md` for the full runbook.
+
 ## Non-Claims Discipline
 
 - Any claim that depends on frozen external canon must be marked `frozen_canon`, `external_dependency`, or `internal_support_only` as appropriate.

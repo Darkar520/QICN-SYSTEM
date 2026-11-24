@@ -12,7 +12,11 @@ import { freezeData } from '../../experiments/workbench/contracts.js';
 import { resolveSnapshotEndogenousDecision } from '../../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
 import { formatMetricValue } from '../runtimeSnapshot.js';
 import { classifyConversationRegister } from './conversationRegister.js';
-import { queryKnowledgeVault, lookupRuntimeModuleInfo } from '../knowledge/QicnKnowledgeVault.js';
+import {
+  queryKnowledgeVault,
+  lookupRuntimeModuleInfo,
+  lookupDeepFrameworkArtifacts
+} from '../knowledge/QicnKnowledgeVault.js';
 
 export function verifyEvidentialRealization(parsed, context, proseContext = null) {
   const envelope =
@@ -362,6 +366,7 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
   } else {
     const vaultHit = queryKnowledgeVault({ query: prepared.question || '', maxSections: 2, maxChars: 1400 });
     const moduleHit = lookupRuntimeModuleInfo(prepared.question || '');
+    const deepHit = lookupDeepFrameworkArtifacts({ query: prepared.question || '', limit: 2 });
     const vaultSupplement = [];
     if (vaultHit.matchedDirectly && vaultHit.sections.length) {
       vaultSupplement.push(
@@ -369,6 +374,18 @@ export function finalizeEvidentialTurn(prepared, options, core, conversationSche
       );
     }
     const normalizedQuestion = normalizeText(prepared.question || '');
+    if (deepHit.livingVaultLoaded) {
+      if (deepHit.theorems.length && /(?:teorema|lema|proposicion|hipotesis|corolario|axioma|thm:|prop:|hyp:|cor:|def:|lem:)/i.test(prepared.question || '')) {
+        const t = deepHit.theorems[0];
+        vaultSupplement.push(`Archivo vivo (${t.paper} · ${t.label || t.id} · ${t.status}): ${t.statement.slice(0, 320)}`);
+      } else if (deepHit.leanModules.length && /\b(?:lean|qicnlean|formaliz\w*|modulo\s+lean)\b/i.test(normalizedQuestion)) {
+        const lm = deepHit.leanModules[0];
+        vaultSupplement.push(`Lean 4 (${lm.module}, ${lm.theoremAndLemmaCount} teoremas/lemas, sorry=${lm.sorryHits}): ${lm.matchedDeclarations.slice(0, 6).join(', ')}.`);
+      } else if (deepHit.macros.length && /\b(?:macro|simbolo|notacion|latex)\b/i.test(normalizedQuestion)) {
+        const mc = deepHit.macros[0];
+        vaultSupplement.push(`Macro formal ${mc.latex} (${mc.owner}${mc.canonical ? ', canónica' : ''}): ${mc.def}`);
+      }
+    }
     if (
       moduleHit.parameters.length
       && /(?:parametro|boltzmann|informational_temp|temperatura\s+informacional|hebbian|learning_rate|pruning|plasticity_decay|retro_flux|complexityfactor|stabilitybias|\bcf\b|\bbs\b)/i.test(normalizedQuestion)

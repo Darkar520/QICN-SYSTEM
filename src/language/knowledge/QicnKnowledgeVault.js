@@ -14,7 +14,9 @@ import { MODULE_NAMES, MODULE_FILES, MODULE_PATHS } from '../moduleInventory.gen
 import { normalizeText } from '../intentResolver.js';
 import { sha256Hex } from '../../utils/integrity.js';
 
-const CONTROLLABLE_PARAMETER_DOCS = Object.freeze({
+export const LIVING_VAULT_URL = '/knowledge/qicn_living_vault.v1.json';
+
+export const CONTROLLABLE_PARAMETER_DOCS = Object.freeze({
   BASE_LEARNING_RATE: {
     range: '[0.01, 0.5]',
     recomputedEachTick: true,
@@ -412,11 +414,294 @@ export function lookupRuntimeModuleInfo(query = '') {
 }
 
 let cachedCorpusBundle = null;
+let loadedLivingVault = null;
+let pendingLivingVaultLoad = null;
+
+/**
+ * Registers a validated living knowledge vault object (loaded from
+ * `knowledge/qicn_living_vault.v1.json` in browser or Node.js) and invalidates
+ * any memoized static corpus bundle so Gemini Context Caching and Runtime Skills
+ * immediately reflect the latest committed framework state.
+ */
+export function registerLivingKnowledgeVault(vaultObj) {
+  if (
+    !vaultObj
+    || typeof vaultObj !== 'object'
+    || vaultObj.schema !== 'qicn.living_knowledge_vault.v1'
+    || vaultObj.provenance?.external_support_certified !== false
+    || typeof vaultObj.provenance?.vaultSha256 !== 'string'
+  ) {
+    return { loaded: false, reason: 'invalid_living_vault_schema' };
+  }
+  loadedLivingVault = vaultObj;
+  cachedCorpusBundle = null;
+  return getLivingVaultStatus();
+}
+
+export function getLivingKnowledgeVault() {
+  return loadedLivingVault;
+}
+
+export function getLivingVaultStatus() {
+  if (!loadedLivingVault) {
+    return {
+      loaded: false,
+      schema: 'embedded_summary_fallback',
+      frameworkHead: FRAMEWORK_SUMMARY_META.frameworkHead || '44160adca1ad',
+      vaultSha256: null,
+      counts: {
+        theorems: FRAMEWORK_SUMMARY_META.registryEntries || 952,
+        macros: FRAMEWORK_SUMMARY_META.formalMacrosCount || 383,
+        leanModules: FRAMEWORK_SUMMARY_META.leanSourcesCount || 42,
+        leanTheoremsAndLemmas: FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount || 367
+      },
+      evidence_scope: 'internal_support_only',
+      external_support_certified: false
+    };
+  }
+  return {
+    loaded: true,
+    schema: loadedLivingVault.schema,
+    frameworkHead: loadedLivingVault.provenance.frameworkHead,
+    vaultSha256: loadedLivingVault.provenance.vaultSha256,
+    counts: loadedLivingVault.provenance.counts,
+    evidence_scope: 'internal_support_only',
+    external_support_certified: false
+  };
+}
+
+/**
+ * Fetches and hydrates `knowledge/qicn_living_vault.v1.json` once in browser
+ * environments without inflating `dist/bundle.js`. Never throws; falls back
+ * silently to the embedded summary if offline or unavailable.
+ */
+export async function loadLivingKnowledgeVault({
+  url = LIVING_VAULT_URL,
+  fetchImpl = globalThis.fetch,
+  force = false
+} = {}) {
+  if (loadedLivingVault && !force) return getLivingVaultStatus();
+  if (pendingLivingVaultLoad && !force) return pendingLivingVaultLoad;
+  if (typeof fetchImpl !== 'function') return getLivingVaultStatus();
+
+  pendingLivingVaultLoad = (async () => {
+    try {
+      const response = await fetchImpl(url, { method: 'GET', cache: 'no-cache' });
+      if (!response || !response.ok) return getLivingVaultStatus();
+      const parsed = await response.json();
+      return registerLivingKnowledgeVault(parsed);
+    } catch {
+      return getLivingVaultStatus();
+    } finally {
+      pendingLivingVaultLoad = null;
+    }
+  })();
+
+  return pendingLivingVaultLoad;
+}
+
+/**
+ * Deep deterministic search across the living knowledge vault:
+ *  - all committed theorems/definitions/lemmas/propositions/axioms (952+)
+ *  - all formal LaTeX macros (383+)
+ *  - all committed Lean 4 modules & public declarations (42+ modules / 489+ decls)
+ *  - canonical claim_registry.v1.json entries (17) & prediction-canon-map (11)
+ *  - paper abstracts & section outlines (BaseCore + Papers I-X + Bridge)
+ *  - governance & boundary docs (CANON_SOURCE_OF_TRUTH, LAYER_BOUNDARIES, THEORY_SYSTEM_INTERFACE)
+ * Shared identically by Gemini Runtime Skills and local "Solo motor" mode.
+ */
+export function lookupDeepFrameworkArtifacts({
+  query = '',
+  category = 'all',
+  paper = null,
+  limit = 6
+} = {}) {
+  const normalizedQuery = normalizeText(query);
+  const rawLower = String(query || '').trim().toLowerCase();
+  const tokens = tokenizeQuery(query);
+  const maxItems = Math.max(1, Math.min(12, Number(limit) || 6));
+  const cat = String(category || 'all').toLowerCase();
+  const want = (c) => cat === 'all' || cat === c;
+  const paperFilter = typeof paper === 'string' && paper.trim() ? paper.trim().toLowerCase() : null;
+
+  const scoreText = (hayRaw, boostExact = '') => {
+    const hay = normalizeText(hayRaw);
+    const hayRawLower = String(hayRaw || '').toLowerCase();
+    const boostLower = String(boostExact || '').toLowerCase();
+    let score = 0;
+    if (rawLower && boostLower) {
+      if (boostLower === rawLower) score += 120;
+      else if (boostLower.length >= 4 && rawLower.includes(boostLower)) score += 110;
+      else if (boostLower.includes(rawLower)) score += 45;
+    }
+    if (normalizedQuery && normalizedQuery.length >= 3 && hay.includes(normalizedQuery)) score += 28;
+    if (rawLower && rawLower.length >= 3 && hayRawLower.includes(rawLower)) score += 24;
+    for (const tok of tokens) {
+      if (tok.length >= 2 && (hay.includes(tok) || hayRawLower.includes(tok))) {
+        score += tok.length >= 5 ? 9 : 5;
+      }
+    }
+    return score;
+  };
+
+  if (!loadedLivingVault) {
+    const fallback = queryKnowledgeVault({ query, maxSections: 2, maxChars: 3600 });
+    return {
+      source: 'embedded_summary_fallback',
+      livingVaultLoaded: false,
+      frameworkHead: FRAMEWORK_SUMMARY_META.frameworkHead || '44160adca1ad',
+      theorems: [],
+      macros: [],
+      leanModules: [],
+      claims: [],
+      predictions: [],
+      papers: [],
+      fallbackSections: fallback.sections,
+      evidence_scope: 'internal_support_only',
+      external_support_certified: false
+    };
+  }
+
+  const vault = loadedLivingVault;
+  const out = {
+    source: 'qicn_living_vault.v1',
+    livingVaultLoaded: true,
+    frameworkHead: vault.provenance.frameworkHead,
+    vaultSha256: vault.provenance.vaultSha256.slice(0, 16),
+    counts: vault.provenance.counts,
+    theorems: [],
+    macros: [],
+    leanModules: [],
+    claims: [],
+    predictions: [],
+    papers: [],
+    governanceExcerpts: [],
+    evidence_scope: 'internal_support_only',
+    external_support_certified: false
+  };
+
+  if (want('theorems') && Array.isArray(vault.theorems)) {
+    out.theorems = vault.theorems
+      .filter((t) => !paperFilter || String(t.paper || '').toLowerCase() === paperFilter)
+      .map((t) => ({
+        t,
+        score: scoreText(`${t.id} ${t.label} ${t.title} ${t.paper} ${t.type} ${t.statement}`, t.label || t.id)
+      }))
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, maxItems)
+      .map((x) => x.t);
+  }
+
+  if (want('macros') && Array.isArray(vault.macros)) {
+    out.macros = vault.macros
+      .map((m) => ({
+        m,
+        score: scoreText(`${m.name} ${m.latex} ${m.def} ${m.owner}`, m.latex || m.name)
+      }))
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, maxItems)
+      .map((x) => x.m);
+  }
+
+  if (want('lean') && Array.isArray(vault.lean?.modules)) {
+    out.leanModules = vault.lean.modules
+      .map((mod) => {
+        const declNames = (mod.declarations || []).map((d) => d.name);
+        const matchedDecls = declNames.filter((n) => {
+          const nl = n.toLowerCase();
+          return (rawLower && nl.includes(rawLower)) || tokens.some((tok) => tok.length >= 3 && nl.includes(tok));
+        });
+        const baseScore = scoreText(`${mod.module} ${mod.path} ${declNames.join(' ')}`, mod.module);
+        return {
+          mod,
+          matchedDecls,
+          score: baseScore + (matchedDecls.length * 10)
+        };
+      })
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, maxItems)
+      .map(({ mod, matchedDecls }) => ({
+        module: mod.module,
+        path: mod.path,
+        declarationCount: mod.declarationCount,
+        theoremAndLemmaCount: mod.theoremAndLemmaCount,
+        sorryHits: mod.sorryHits,
+        matchedDeclarations: (matchedDecls.length ? matchedDecls : (mod.declarations || []).map((d) => d.name)).slice(0, 14)
+      }));
+  }
+
+  if (want('claims') && Array.isArray(vault.governance?.claimRegistry?.entries)) {
+    out.claims = vault.governance.claimRegistry.entries
+      .map((entry) => ({
+        entry,
+        score: scoreText(JSON.stringify(entry), entry.claim_id || entry.id || '')
+      }))
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, maxItems)
+      .map((x) => x.entry);
+  }
+
+  if (want('predictions') && Array.isArray(vault.governance?.predictionCanonMap?.latex_canonical_predictions)) {
+    out.predictions = vault.governance.predictionCanonMap.latex_canonical_predictions
+      .map((pred) => ({
+        pred,
+        score: scoreText(JSON.stringify(pred), pred.latex_id || '')
+      }))
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, maxItems)
+      .map((x) => x.pred);
+  }
+
+  if (want('papers') && Array.isArray(vault.papers)) {
+    out.papers = vault.papers
+      .filter((p) => !paperFilter || p.id === paperFilter)
+      .map((p) => ({
+        p,
+        score: scoreText(`${p.id} ${p.name} ${p.title} ${p.role} ${p.abstract} ${(p.sections || []).map((s) => s.title).join(' ')}`, p.id)
+      }))
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, Math.min(4, maxItems))
+      .map(({ p }) => ({
+        id: p.id,
+        name: p.name,
+        title: p.title,
+        role: p.role,
+        stats: p.stats,
+        abstract: p.abstract,
+        sections: (p.sections || []).slice(0, 16)
+      }));
+  }
+
+  if (want('governance') && vault.governance) {
+    const docs = [
+      ['CANON_SOURCE_OF_TRUTH.md', vault.governance.canonSourceOfTruth],
+      ['LAYER_BOUNDARIES.md', vault.governance.layerBoundariesDoc],
+      ['THEORY_SYSTEM_INTERFACE.md', vault.governance.theorySystemInterfaceDoc],
+      ['GLOSSARY_CANONICAL.v1.md', vault.governance.glossaryCanonical],
+      ['CLAIM_REGISTRY.md', vault.governance.claimRegistryDoc]
+    ];
+    out.governanceExcerpts = docs
+      .map(([name, text]) => ({ name, text: String(text || ''), score: scoreText(`${name} ${text || ''}`, name) }))
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 2)
+      .map((x) => ({ doc: x.name, excerpt: x.text.slice(0, 1400) }));
+  }
+
+  return out;
+}
 
 /**
  * Builds the complete deterministic static knowledge corpus (all 10 domains +
- * full formal framework summary + verified operations catalog) sealed with SHA-256
- * for Gemini Context Caching (`cachedContents`) and audit provenance.
+ * full formal framework summary + deep living vault papers/governance/Lean/macros
+ * when hydrated) sealed with SHA-256 for Gemini Context Caching (`cachedContents`)
+ * and audit provenance.
  */
 export function buildFullCanonicalCorpus() {
   if (cachedCorpusBundle) return cachedCorpusBundle;
@@ -426,12 +711,78 @@ export function buildFullCanonicalCorpus() {
     d.detailBuilder()
   ].join('\n'));
 
+  const living = loadedLivingVault;
+  const counts = living?.provenance?.counts || null;
+  const fwHead = living?.provenance?.frameworkHead || FRAMEWORK_SUMMARY_META.frameworkHead || '44160adca1ad';
+  const theoremCount = counts?.theorems ?? FRAMEWORK_SUMMARY_META.registryEntries ?? 952;
+  const macroCount = counts?.macros ?? FRAMEWORK_SUMMARY_META.formalMacrosCount ?? 383;
+  const leanVer = living?.lean?.version || FRAMEWORK_SUMMARY_META.leanVersion || '4.31.0';
+  const leanModCount = counts?.leanModules ?? FRAMEWORK_SUMMARY_META.leanSourcesCount ?? 42;
+  const leanThmCount = counts?.leanTheoremsAndLemmas ?? FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount ?? 367;
+
+  const extraLivingSections = [];
+  if (living) {
+    extraLivingSections.push(
+      '# GOBERNANZA CANÓNICA, FRONTERAS DE CAPAS E INTERFAZ TEORÍA–SISTEMA (ARCHIVO VIVO)',
+      `Proveniencia viva: schema=${living.schema} | frameworkHead=${fwHead} | vaultSha256=${living.provenance.vaultSha256.slice(0, 16)} | claims=${counts?.claims ?? 0} | predictions=${counts?.predictions ?? 0} | leanSorryCount=${counts?.leanSorryCount ?? 0}`,
+      living.governance?.canonSourceOfTruth ? `## CANON_SOURCE_OF_TRUTH\n${living.governance.canonSourceOfTruth}` : '',
+      living.governance?.layerBoundariesDoc ? `## LAYER_BOUNDARIES\n${living.governance.layerBoundariesDoc}` : '',
+      living.governance?.theorySystemInterfaceDoc ? `## THEORY_SYSTEM_INTERFACE\n${living.governance.theorySystemInterfaceDoc}` : '',
+      living.governance?.glossaryCanonical ? `## GLOSSARY_CANONICAL\n${living.governance.glossaryCanonical}` : ''
+    );
+
+    if (Array.isArray(living.papers) && living.papers.length) {
+      extraLivingSections.push(
+        '# MAPA PROFUNDO DE PAPERS (RESÚMENES Y SECCIONES DESDE LATEX COMMITTED HEAD)',
+        ...living.papers.map((p) => {
+          const secs = (p.sections || []).slice(0, 14).map((s) => `${s.level === 1 ? '§' : '·'} ${s.title}`).join(' | ');
+          return [
+            `## ${p.name} (${p.id}) — ${p.title}`,
+            `Rol: ${p.role} | Entradas: ${p.stats?.entries ?? 0} (proved=${p.stats?.proved ?? 0}, conditional=${p.stats?.conditional ?? 0}, heuristic=${p.stats?.heuristic ?? 0})`,
+            p.abstract ? `Resumen: ${p.abstract}` : '',
+            secs ? `Secciones: ${secs}` : ''
+          ].filter(Boolean).join('\n');
+        })
+      );
+    }
+
+    if (Array.isArray(living.lean?.modules) && living.lean.modules.length) {
+      extraLivingSections.push(
+        `# ÍNDICE COMPLETO DE MÓDULOS LEAN ${leanVer} (${leanModCount} MÓDULOS · ${leanThmCount} TEOREMAS/LEMAS · ${counts?.leanSorryCount ?? 0} SORRY)`,
+        ...living.lean.modules.map((m) => {
+          const names = (m.declarations || []).map((d) => `${d.kind}:${d.name}`).slice(0, 24).join(', ');
+          return `- ${m.module} (${m.theoremAndLemmaCount} thm/lem, ${m.declarationCount} decls): ${names}`;
+        })
+      );
+    }
+
+    if (Array.isArray(living.macros) && living.macros.length) {
+      const canonicalMacros = living.macros.filter((m) => m.canonical).slice(0, 120);
+      if (canonicalMacros.length) {
+        extraLivingSections.push(
+          `# MACROS CANÓNICAS DE BASECORE (${canonicalMacros.length}/${living.macros.length} mostradas; usa qicn_lookup_deep_canon para las ${living.macros.length})`,
+          canonicalMacros.map((m) => `${m.latex} := ${m.def}`).join(' ; ')
+        );
+      }
+    }
+
+    if (Array.isArray(living.governance?.claimRegistry?.entries)) {
+      extraLivingSections.push(
+        `# REGISTRO DE CLAIMS CANÓNICOS (${living.governance.claimRegistry.entries.length} familias)`,
+        ...living.governance.claimRegistry.entries.map((e) => `- ${e.claim_id || e.id || 'claim'} [${e.status || e.claim_class || 'n/d'}]: ${e.summary || e.statement || e.title || ''}`)
+      );
+    }
+  }
+
   const text = [
-    '# BÓVEDA UNIFICADA DE CONOCIMIENTO QICN (CORPUS ESTÁTICO VERIFICADO)',
-    `Framework HEAD: ${FRAMEWORK_SUMMARY_META.frameworkHead || 'e3ee6bf'} | Entradas: ${FRAMEWORK_SUMMARY_META.registryEntries || 929} | Macros: ${FRAMEWORK_SUMMARY_META.formalMacrosCount || 383} | Lean ${FRAMEWORK_SUMMARY_META.leanVersion || '4.31.0'}: ${FRAMEWORK_SUMMARY_META.leanSourcesCount || 42} módulos / ${FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount || 367} teoremas públicos.`,
+    '# BÓVEDA UNIFICADA DE CONOCIMIENTO QICN (ARCHIVO VIVO SELLADO SHA-256)',
+    `Framework HEAD: ${fwHead} | Entradas: ${theoremCount} | Macros: ${macroCount} | Lean ${leanVer}: ${leanModCount} módulos / ${leanThmCount} teoremas públicos.`,
     'Alcance científico: evidence_scope = "internal_support_only", external_support_certified = false.',
+    'Para buscar teoremas individuales por etiqueta (thm:/prop:/hyp:), macros exactas, módulos Lean 4, claims o predicciones sin repetir contexto en prompts, usa la skill qicn_lookup_deep_canon.',
     '',
     ...domainBlocks,
+    '',
+    ...extraLivingSections.filter(Boolean),
     '',
     '# RESUMEN FORMAL COMPLETO DEL MARCO TEÓRICO (GENERADO DESDE REGISTRO Y LEAN 4)',
     FRAMEWORK_SUMMARY_TEXT
@@ -439,8 +790,10 @@ export function buildFullCanonicalCorpus() {
 
   const digest = sha256Hex(text);
   cachedCorpusBundle = Object.freeze({
-    schema: 'qicn.knowledge_corpus.v1',
+    schema: living ? 'qicn.knowledge_corpus.v2_living' : 'qicn.knowledge_corpus.v1',
     digest,
+    livingVaultSha256: living?.provenance?.vaultSha256 || null,
+    frameworkHead: fwHead,
     charLength: text.length,
     estimatedTokens: Math.ceil(text.length / 4),
     domainCount: DOMAIN_SPECS.length,
@@ -451,6 +804,7 @@ export function buildFullCanonicalCorpus() {
 
 export const KNOWLEDGE_VAULT_META = Object.freeze({
   schema: 'qicn.knowledge_vault.v1',
+  livingVaultUrl: LIVING_VAULT_URL,
   domainIds: Object.freeze(DOMAIN_SPECS.map((d) => d.id)),
-  frameworkHead: FRAMEWORK_SUMMARY_META.frameworkHead || 'e3ee6bf'
+  frameworkHead: FRAMEWORK_SUMMARY_META.frameworkHead || '44160adca1ad'
 });

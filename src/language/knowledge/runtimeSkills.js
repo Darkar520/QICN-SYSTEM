@@ -6,6 +6,8 @@ import {
   listKnowledgeDomains,
   queryKnowledgeVault,
   lookupRuntimeModuleInfo,
+  lookupDeepFrameworkArtifacts,
+  getLivingVaultStatus,
   KNOWLEDGE_VAULT_META
 } from './QicnKnowledgeVault.js';
 import { resolveSnapshotEndogenousDecision } from '../../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
@@ -74,8 +76,30 @@ export const QICN_RUNTIME_SKILL_DECLARATIONS = Object.freeze([
     }
   }),
   Object.freeze({
+    name: 'qicn_lookup_deep_canon',
+    description: 'Busca directamente en el archivo vivo sellado (qicn_living_vault.v1.json) entre los 952+ teoremas/definiciones/lemas/hipótesis por etiqueta o texto (ej. "thm:basecore-irreducible-observation", "hyp:H1"), las 383+ macros LaTeX formales, todos los módulos y teoremas públicos de Lean 4, el registro de claims canónicos, las predicciones falsables y los abstracts/secciones de BaseCore y Papers I–X.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        query: {
+          type: 'STRING',
+          description: 'Etiqueta, teorema, macro, módulo Lean, claim ID, predicción o tema exacto a buscar.'
+        },
+        category: {
+          type: 'STRING',
+          description: 'Categoría opcional: all, theorems, macros, lean, claims, predictions, papers, governance.'
+        },
+        paper: {
+          type: 'STRING',
+          description: 'Filtro opcional de paper: basecore, paper1..paper10, bridge.'
+        }
+      },
+      required: ['query']
+    }
+  }),
+  Object.freeze({
     name: 'qicn_list_knowledge_domains',
-    description: 'Lista todos los dominios de conocimiento profundo disponibles en la bóveda unificada de QICN.',
+    description: 'Lista todos los dominios de conocimiento profundo y el estado/proveniencia SHA-256 del archivo vivo de QICN.',
     parameters: {
       type: 'OBJECT',
       properties: {}
@@ -240,12 +264,24 @@ export function executeRuntimeSkill(skillName, args = {}, prepared = null) {
       };
     case 'qicn_read_history_and_b2':
       return readHistoryAndB2Skill(safeArgs, prepared);
+    case 'qicn_lookup_deep_canon':
+      return {
+        ok: true,
+        skill: name,
+        data: lookupDeepFrameworkArtifacts({
+          query: String(safeArgs.query || ''),
+          category: typeof safeArgs.category === 'string' ? safeArgs.category : 'all',
+          paper: typeof safeArgs.paper === 'string' ? safeArgs.paper : null,
+          limit: 6
+        })
+      };
     case 'qicn_list_knowledge_domains':
       return {
         ok: true,
         skill: name,
         data: {
           domains: listKnowledgeDomains(),
+          livingVault: getLivingVaultStatus(),
           evidence_scope: 'internal_support_only',
           external_support_certified: false
         }

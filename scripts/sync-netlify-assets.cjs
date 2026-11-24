@@ -27,7 +27,7 @@ function run() {
     throw new Error('No existe ./dist. Ejecuta build:js y build:css antes de sincronizar.');
   }
 
-  const staticFilesForDist = ['index.html', 'manifest.webmanifest', 'sw.js', 'favicon.svg'];
+  const staticFilesForDist = ['index.html', 'manifest.webmanifest', 'sw.js', 'favicon.svg', 'knowledge/qicn_living_vault.v1.json'];
   const copiedToDist = [];
   for (const file of staticFilesForDist) {
     const src = path.join(projectRoot, file);

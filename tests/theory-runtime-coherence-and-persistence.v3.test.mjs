@@ -113,11 +113,11 @@ import {
 
 // 3. Language layer coherence (snapshot, propositions, freeRealization prompt, intent resolution, framework meta)
 {
-  assert.equal(FRAMEWORK_SUMMARY_META.registryEntries, 952);
-  assert.equal(FRAMEWORK_SUMMARY_META.leanSourcesCount, 42);
-  assert.equal(FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount, 367);
-  assert.equal(FRAMEWORK_SUMMARY_META.formalMacrosCount, 383);
-  assert.ok(FRAMEWORK_SUMMARY_META.frameworkHead.startsWith('44160ad'));
+  assert.ok(FRAMEWORK_SUMMARY_META.registryEntries >= 952);
+  assert.ok(FRAMEWORK_SUMMARY_META.leanSourcesCount >= 65);
+  assert.ok(FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount >= 570);
+  assert.ok(FRAMEWORK_SUMMARY_META.formalMacrosCount >= 383);
+  assert.match(FRAMEWORK_SUMMARY_META.frameworkHead, /^[0-9a-f]{12}$/);
 
   const core = new OntologicalSingularityCore();
   core.stepCoupledTower({
@@ -170,8 +170,8 @@ import {
     recentTurns: []
   });
   assert.ok(prompt.includes('32/15309'));
-  assert.ok(prompt.includes('952 entradas'));
-  assert.ok(prompt.includes('42 módulos Lean 4'));
+  assert.ok(prompt.includes(`${FRAMEWORK_SUMMARY_META.registryEntries} entradas`));
+  assert.ok(prompt.includes(`${FRAMEWORK_SUMMARY_META.leanSourcesCount} módulos Lean 4`));
 
   const intent1 = resolveIntent('¿Qué pasa en la esquina u=1/2 del espectro de BaseCore?');
   assert.ok(['metric_query', 'metric_definition'].includes(intent1.intent));

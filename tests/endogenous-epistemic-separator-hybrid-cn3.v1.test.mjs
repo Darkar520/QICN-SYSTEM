@@ -318,13 +318,13 @@ import { runWorkbench, verifyWorkbenchResult } from '../src/experiments/workbenc
   });
   assert.equal(evaluateRealization(livePrepared, JSON.stringify(falseHistoricalV1Cn3)).ok, false);
 
-  // Framework summary sync check (44160ad)
-  assert.equal(FRAMEWORK_SUMMARY_META.registryEntries, 952);
-  assert.equal(FRAMEWORK_SUMMARY_META.formalMacrosCount, 383);
-  assert.equal(FRAMEWORK_SUMMARY_META.leanSourcesCount, 42);
-  assert.equal(FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount, 367);
+  // Framework summary living-sync invariant check (>= B0 Lean 65 modules / 570 theorems)
+  assert.ok(FRAMEWORK_SUMMARY_META.registryEntries >= 952);
+  assert.ok(FRAMEWORK_SUMMARY_META.formalMacrosCount >= 383);
+  assert.ok(FRAMEWORK_SUMMARY_META.leanSourcesCount >= 65);
+  assert.ok(FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount >= 570);
   assert.equal(FRAMEWORK_SUMMARY_META.leanVersion, '4.31.0');
-  assert.ok(FRAMEWORK_SUMMARY_META.frameworkHead.startsWith('44160ad'));
+  assert.match(FRAMEWORK_SUMMARY_META.frameworkHead, /^[0-9a-f]{12}$/);
   assert.deepEqual(FRAMEWORK_SUMMARY_META.missingOverlays, []);
   assert.deepEqual(FRAMEWORK_SUMMARY_META.missingStatements, []);
   assert.ok(FRAMEWORK_SUMMARY_TEXT.includes('QICNIrreducibleObservation'));

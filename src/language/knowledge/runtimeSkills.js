@@ -11,6 +11,7 @@ import {
   KNOWLEDGE_VAULT_META
 } from './QicnKnowledgeVault.js';
 import { resolveSnapshotEndogenousDecision } from '../../canon/epistemic/EndogenousEpistemicDecisionEngine.js';
+import { FRAMEWORK_SUMMARY_META } from '../frameworkSummary.generated.js';
 import { sha256Hex, stableStringify } from '../../utils/integrity.js';
 
 export const MAX_SKILL_TOOL_ROUNDS = 3;
@@ -32,7 +33,7 @@ export const QICN_RUNTIME_SKILL_DECLARATIONS = Object.freeze([
   }),
   Object.freeze({
     name: 'qicn_lookup_framework',
-    description: 'Consulta la bóveda unificada del marco teórico QICN (BaseCore, Papers I–X, Lean 4 42 módulos / 367 teoremas, separador atómico δ_int, quinto contraste G = 1/2097152, cotas T_d, reserva Φ⁷ = 1/48, controles negativos y fronteras epistémicas). Úsala cuando necesites explicar con precisión teoremas, papers o cotas matemáticas.',
+    description: `Consulta la bóveda unificada del marco teórico QICN (BaseCore, Papers I–X, Lean ${FRAMEWORK_SUMMARY_META.leanVersion} con ${FRAMEWORK_SUMMARY_META.leanSourcesCount} módulos / ${FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount} teoremas, separador atómico δ_int, quinto contraste G = 1/2097152, cotas T_d, reserva Φ⁷ = 1/48, controles negativos y fronteras epistémicas). Úsala cuando necesites explicar con precisión teoremas, papers o cotas matemáticas.`,
     parameters: {
       type: 'OBJECT',
       properties: {

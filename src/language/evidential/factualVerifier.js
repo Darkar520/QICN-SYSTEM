@@ -7,6 +7,7 @@ import { EVIDENTIAL_OPERATIONS, EVIDENTIAL_CATALOG } from '../definitionCatalog.
 import { normalizeText } from '../intentResolver.js';
 import { V3_LEXICAL_INTERNALS as L } from '../realizationContract.js';
 import { buildFreeContext, verifySentenceFree, KAIZEN_EFFECTIVE_DEFAULT } from '../freeRealization.js';
+import { FRAMEWORK_SUMMARY_META } from '../frameworkSummary.generated.js';
 import { OperationalHistoryLedger } from '../../identity/OperationalHistoryLedger.js';
 import { sha256Hex, stableStringify } from '../../utils/integrity.js';
 import { freezeData, assertData } from '../../experiments/workbench/contracts.js';
@@ -357,7 +358,16 @@ export function buildEvidentialProseContext({
   }
   // Question numbers are NEVER injected as runtime evidence (question: '').
   const freeCtx = buildFreeContext({ snapshot, previousMetrics, props, question: '', kaizenEffective });
-  freeCtx.numbers.packetNumbers.push(929, 383, 42, 367);
+  freeCtx.numbers.packetNumbers.push(
+    FRAMEWORK_SUMMARY_META.registryEntries,
+    FRAMEWORK_SUMMARY_META.formalMacrosCount,
+    FRAMEWORK_SUMMARY_META.leanSourcesCount,
+    FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount,
+    929,
+    383,
+    42,
+    367
+  );
 
   const b2Entries = factualContext.evidenceRegistry?.entries || [];
   const b2Records = factualContext.evidenceRegistry?.records || [];

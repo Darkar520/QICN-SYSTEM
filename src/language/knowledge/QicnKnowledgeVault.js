@@ -110,7 +110,7 @@ const DOMAIN_SPECS = Object.freeze([
     keywords: ['identidad', 'arquitectura', 'doble capa', 'qicn', 'rcic', 'runtime', 'gemini', 'traductor', 'sistema b', 'quien eres', 'que eres'],
     summary: 'QICN es un runtime experimental de doble capa: (1) red nodal continua de 1500 nodos con índices agregados internos (CCC, X_N, PMIA, beth_q, Omega, gap espectral, estasis) y (2) subplantas constructivas racionales exactas acopladas en cada tick (WritablePrefixTower, SigmaAutomodelTruncator T_d, InformedReserveEvaluator, BodyWorldTower, StructuralAtomicSeparator, HybridLateQueryTieBreaker). Gemini actúa como canal lingüístico traductor verificable; la matemática y la decisión epistémica endógena viven en el motor determinista (external_support_certified = false).',
     detailBuilder: () => [
-      `Corpus formal vinculado: commit ${FRAMEWORK_SUMMARY_META.frameworkHead || 'e3ee6bf'} · ${FRAMEWORK_SUMMARY_META.registryEntries || 929} entradas, ${FRAMEWORK_SUMMARY_META.formalMacrosCount || 383} macros, ${FRAMEWORK_SUMMARY_META.leanSourcesCount || 42} módulos Lean ${FRAMEWORK_SUMMARY_META.leanVersion || '4.31.0'} con ${FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount || 367} teoremas públicos sin sorry.`,
+      `Corpus formal vinculado: commit ${FRAMEWORK_SUMMARY_META.frameworkHead} · ${FRAMEWORK_SUMMARY_META.registryEntries} entradas, ${FRAMEWORK_SUMMARY_META.formalMacrosCount} macros, ${FRAMEWORK_SUMMARY_META.leanSourcesCount} módulos Lean ${FRAMEWORK_SUMMARY_META.leanVersion} con ${FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount} teoremas públicos sin sorry.`,
       'Capacidades verificadas:',
       ...Object.entries(CAPABILITIES).map(([k, v]) => `- ${k}: ${v.text}`),
       'Separación estricta de planos: ontología, modelo matemático, implementación de software, lenguaje e interpretación nunca se colapsan entre sí.'
@@ -447,13 +447,13 @@ export function getLivingVaultStatus() {
     return {
       loaded: false,
       schema: 'embedded_summary_fallback',
-      frameworkHead: FRAMEWORK_SUMMARY_META.frameworkHead || '44160adca1ad',
+      frameworkHead: FRAMEWORK_SUMMARY_META.frameworkHead,
       vaultSha256: null,
       counts: {
-        theorems: FRAMEWORK_SUMMARY_META.registryEntries || 952,
-        macros: FRAMEWORK_SUMMARY_META.formalMacrosCount || 383,
-        leanModules: FRAMEWORK_SUMMARY_META.leanSourcesCount || 42,
-        leanTheoremsAndLemmas: FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount || 367
+        theorems: FRAMEWORK_SUMMARY_META.registryEntries,
+        macros: FRAMEWORK_SUMMARY_META.formalMacrosCount,
+        leanModules: FRAMEWORK_SUMMARY_META.leanSourcesCount,
+        leanTheoremsAndLemmas: FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount
       },
       evidence_scope: 'internal_support_only',
       external_support_certified: false
@@ -549,7 +549,7 @@ export function lookupDeepFrameworkArtifacts({
     return {
       source: 'embedded_summary_fallback',
       livingVaultLoaded: false,
-      frameworkHead: FRAMEWORK_SUMMARY_META.frameworkHead || '44160adca1ad',
+      frameworkHead: FRAMEWORK_SUMMARY_META.frameworkHead,
       theorems: [],
       macros: [],
       leanModules: [],
@@ -713,12 +713,12 @@ export function buildFullCanonicalCorpus() {
 
   const living = loadedLivingVault;
   const counts = living?.provenance?.counts || null;
-  const fwHead = living?.provenance?.frameworkHead || FRAMEWORK_SUMMARY_META.frameworkHead || '44160adca1ad';
-  const theoremCount = counts?.theorems ?? FRAMEWORK_SUMMARY_META.registryEntries ?? 952;
-  const macroCount = counts?.macros ?? FRAMEWORK_SUMMARY_META.formalMacrosCount ?? 383;
-  const leanVer = living?.lean?.version || FRAMEWORK_SUMMARY_META.leanVersion || '4.31.0';
-  const leanModCount = counts?.leanModules ?? FRAMEWORK_SUMMARY_META.leanSourcesCount ?? 42;
-  const leanThmCount = counts?.leanTheoremsAndLemmas ?? FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount ?? 367;
+  const fwHead = living?.provenance?.frameworkHead || FRAMEWORK_SUMMARY_META.frameworkHead;
+  const theoremCount = counts?.theorems ?? FRAMEWORK_SUMMARY_META.registryEntries;
+  const macroCount = counts?.macros ?? FRAMEWORK_SUMMARY_META.formalMacrosCount;
+  const leanVer = living?.lean?.version || FRAMEWORK_SUMMARY_META.leanVersion;
+  const leanModCount = counts?.leanModules ?? FRAMEWORK_SUMMARY_META.leanSourcesCount;
+  const leanThmCount = counts?.leanTheoremsAndLemmas ?? FRAMEWORK_SUMMARY_META.leanPublicTheoremsCount;
 
   const extraLivingSections = [];
   if (living) {
@@ -806,5 +806,5 @@ export const KNOWLEDGE_VAULT_META = Object.freeze({
   schema: 'qicn.knowledge_vault.v1',
   livingVaultUrl: LIVING_VAULT_URL,
   domainIds: Object.freeze(DOMAIN_SPECS.map((d) => d.id)),
-  frameworkHead: FRAMEWORK_SUMMARY_META.frameworkHead || '44160adca1ad'
+  frameworkHead: FRAMEWORK_SUMMARY_META.frameworkHead
 });

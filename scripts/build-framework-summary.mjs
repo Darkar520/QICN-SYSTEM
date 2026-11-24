@@ -28,12 +28,35 @@ if (!fs.existsSync(path.join(FW, 'registry/theorems.jsonl'))) {
 }
 
 const sha = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
-const git = (cmd) => { try { return execFileSync('git', cmd, { cwd: FW, encoding: 'utf8' }).trim(); } catch { return null; } };
+const git = (cmd) => {
+  try {
+    return execFileSync('git', cmd, { cwd: FW, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, windowsHide: true }).trim();
+  } catch {
+    return null;
+  }
+};
+const gitBuf = (cmd) => {
+  try {
+    return execFileSync('git', cmd, { cwd: FW, maxBuffer: 32 * 1024 * 1024, windowsHide: true });
+  } catch {
+    return null;
+  }
+};
+const readCommittedBuf = (rel) => {
+  const norm = rel.replace(/\\/g, '/');
+  const buf = gitBuf(['show', `HEAD:rigid-identity-framework/${norm}`]) || gitBuf(['show', `HEAD:${norm}`]);
+  if (buf) return buf;
+  return fs.readFileSync(path.join(FW, norm));
+};
+const readCommittedText = (rel) => readCommittedBuf(rel).toString('utf8');
 const head = git(['rev-parse', '--short=12', 'HEAD']);
 const dirty = (git(['status', '--porcelain', '--', 'basecore', 'paper1', 'paper2', 'paper3', 'paper4', 'paper5_operational_consciousness', 'paper6_predictions_falsation', 'paper7_operational_life_subjecthood', 'paper8_first_person_subjectivity', 'paper9_phenomenal_bridge_organization', 'paper10_external_adjudication', 'paper_bridge_operational_subjecthood', 'registry/theorems.jsonl']) || '').split('\n').filter(Boolean).map((l) => l.slice(3));
 
-const registryBuf = fs.readFileSync(path.join(FW, 'registry/theorems.jsonl'));
+const registryBuf = readCommittedBuf('registry/theorems.jsonl');
 const rows = registryBuf.toString('utf8').split(/\r?\n/).filter(Boolean).map((l) => JSON.parse(l));
+const macrosRaw = readCommittedText('registry/macros.jsonl');
+const formalMacrosCount = macrosRaw.split(/\r?\n/).filter(Boolean).length || 383;
+
 const countLeanFiles = (dir) => {
   if (!fs.existsSync(dir)) return 0;
   let total = 0;
@@ -44,19 +67,33 @@ const countLeanFiles = (dir) => {
   }
   return total;
 };
-const countCommittedLeanFiles = () => {
+const listCommittedLeanFiles = () => {
   const out = git(['ls-tree', '-r', '--name-only', 'HEAD', 'lean']);
-  if (!out) return 0;
-  return out.split(/\r?\n/).filter((line) => line.trim().endsWith('.lean')).length;
+  if (!out) return [];
+  return out.split(/\r?\n/).map((l) => l.trim()).filter((line) => line.endsWith('.lean')).sort();
 };
-const leanSourcesCount = countCommittedLeanFiles() || countLeanFiles(path.join(FW, 'lean')) || 42;
-const leanToolchain = fs.existsSync(path.join(FW, 'lean/lean-toolchain'))
-  ? fs.readFileSync(path.join(FW, 'lean/lean-toolchain'), 'utf8').trim()
-  : 'leanprover/lean4:v4.31.0';
+const committedLeanFiles = listCommittedLeanFiles();
+const leanSourcesCount = committedLeanFiles.length || countLeanFiles(path.join(FW, 'lean')) || 42;
+const leanToolchain = readCommittedText('lean/lean-toolchain').trim() || 'leanprover/lean4:v4.31.0';
 const leanVersionMatch = leanToolchain.match(/v(\d+\.\d+\.\d+)/);
 const leanVersion = leanVersionMatch ? leanVersionMatch[1] : '4.31.0';
-const auditedPublicLeanTheorems = 367;
-const formalMacrosCount = 383;
+const countCommittedLeanTheorems = () => {
+  if (!committedLeanFiles.length) return 367;
+  let total = 0;
+  for (const rel of committedLeanFiles) {
+    const raw = git(['show', `HEAD:rigid-identity-framework/${rel}`]) || git(['show', `HEAD:${rel}`]) || '';
+    const cleanSrc = raw.replace(/\/-[\s\S]*?-\//g, ' ').replace(/--[^\n]*/g, '');
+    for (const line of cleanSrc.split(/\r?\n/)) {
+      const t = line.trim();
+      if (!t || /^(?:private|protected|local)\b/.test(t)) continue;
+      if (/^(?:@\[[^\]]+\]\s*)*(?:noncomputable\s+)?(?:theorem|lemma)\s+[A-Za-z_][A-Za-z0-9_'.]*/.test(t)) {
+        total += 1;
+      }
+    }
+  }
+  return total || 367;
+};
+const auditedPublicLeanTheorems = countCommittedLeanTheorems();
 
 const PAPERS = [
   ['basecore', 'BaseCore', 'basecore/BASECORE.tex', 'fuente formal activa (source of truth); el resto depende de ella'],
@@ -172,7 +209,7 @@ const stats = {};
 lines.push('RESUMEN DEL MARCO QICN (generado desde el registro formal y las fuentes; no sustituye a los papers).');
 lines.push(`Estados del registro: ${Object.entries(STATUS_ES).map(([k, v]) => `${STATUS_SHORT[k]} = ${v}`).join('; ')}. «auditoría:» marca correcciones de las auditorías de 2026-11-07 y 2026-11-08, que prevalecen sobre el estado extraído.`);
 for (const [paper, name, file, role] of PAPERS) {
-  const src = fs.readFileSync(path.join(FW, file), 'utf8');
+  const src = readCommittedText(file);
   const titleMatch = src.match(/\\title(?:\[[^\]]*\])?\{([\s\S]*?)\}\s*\n/);
   const title = clean((titleMatch ? titleMatch[1] : name).replace(/^%\s*/, '').replace(/\\\\\s*(\[[^\]]*\])?/g, ' ')).slice(0, 180);
   const entries = rows.filter((r) => r.paper === paper);
@@ -220,7 +257,7 @@ lines.push(`Registro formal: ${rows.length} entradas (${formalMacrosCount} macro
 const missingOverlays = Object.keys(OVERLAYS).filter((k) => !usedOverlays.has(k));
 const missingStatements = KEY_STATEMENTS.filter((k) => !rows.some((r) => keyOf(r) === k));
 const text = lines.join('\n');
-const sourceHashes = Object.fromEntries(PAPERS.map(([paper, , file]) => [paper, sha(fs.readFileSync(path.join(FW, file))).slice(0, 12)]));
+const sourceHashes = Object.fromEntries(PAPERS.map(([paper, , file]) => [paper, sha(readCommittedBuf(file)).slice(0, 12)]));
 const meta = {
   schema: 'qicn.framework_summary.v1',
   frameworkHead: head,

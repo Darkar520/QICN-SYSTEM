@@ -11,7 +11,7 @@ export const CONVERSATION_REGISTERS = Object.freeze([
   'epistemic_deep'
 ]);
 
-const CASUAL_SOCIAL_ONLY_RE = /^(?:(?:hola|hey|buenas(?:\s+(?:dias|tardes|noches))?|buenos\s+dias|saludos|hi|hello|que\s+tal|que\s+onda|que\s+hubo|como\s+andas|como\s+te\s+va|como\s+estas|como\s+esta|como\s+vas|todo\s+bien|que\s+hay|muchas\s+gracias|gracias|thanks|thank\s+you|ok\s+gracias|perfecto\s+gracias|genial\s+gracias|de\s+nada|adios|chao|chau|hasta\s+luego|nos\s+vemos|un\s+saludo)(?:[\s,.;:!?¿¡]+|$))+$/i;
+const CASUAL_SOCIAL_ONLY_RE = /^(?:(?:hola|hey|buenas(?:\s+(?:dias|tardes|noches))?|buenos\s+dias|saludos|hi|hello|que\s+tal(?:\s+(?:todo|tu\s+dia|por\s+ahi|hoy))?|que\s+onda|que\s+hubo|como\s+andas(?:\s+hoy)?|como\s+te\s+va(?:\s+hoy)?|como\s+estas(?:\s+(?:hoy|por\s+ahi))?|como\s+esta(?:\s+todo)?|como\s+vas(?:\s+hoy)?|como\s+va\s+todo|todo\s+bien(?:\s+por\s+ahi)?|que\s+hay|muchas\s+gracias|gracias|thanks|thank\s+you|ok\s+gracias|perfecto\s+gracias|genial\s+gracias|de\s+nada|adios|chao|chau|hasta\s+luego|nos\s+vemos|un\s+saludo)(?:[\s,.;:!?¿¡]+|$))+$/i;
 
 const GREETING_OPENING_RE = /^(?:hola|hey|buenas(?:\s+(?:dias|tardes|noches))?|buenos\s+dias|saludos|hi|hello)\b/i;
 

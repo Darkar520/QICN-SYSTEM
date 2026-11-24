@@ -2805,18 +2805,20 @@ export const QICNConsciousnessSystem = () => {
     const attempts = [];
 
     const turnRegister = prepared?.reasoningPlan?.conversationRegister || 'epistemic_deep';
-    const isOpenCasualTurn = turnRegister === 'casual_social' || turnRegister === 'open_general';
-    const turnThinkingLevel = turnRegister === 'casual_social' ? 'low' : CHAT_THINKING_LEVEL;
+    const isCasualGreetingTurn = turnRegister === 'casual_social';
+    const isOpenCasualTurn = isCasualGreetingTurn || turnRegister === 'open_general';
+    const turnThinkingLevel = isCasualGreetingTurn ? 'low' : CHAT_THINKING_LEVEL;
     const skillsUsed = [];
     let contextCacheMeta = null;
 
     const requestRealization = async (systemText, isCorrectionAttempt = false) => {
       // Optional Layer 2 explicit Gemini Context Caching (direct frontend Gemini key):
       // preloads the complete QicnKnowledgeVault + SYMBIOTIC_VOICE_CONSTITUTION + Runtime Skills
-      // once per hour on Google's servers; transparently falls back to Runtime Skills + implicit
-      // caching when running through proxy or if the key/tier does not support cachedContents.
+      // once per hour on Google's servers; skipped on pure casual greetings (`casual_social`) so
+      // greetings like "Como estas?" answer in ~2s without uploading a 200 KB technical cache or
+      // triggering spurious telemetry tool calls.
       let activeCache = null;
-      if (!isCorrectionAttempt && hasFrontendGeminiKey && frontendGeminiEnabled && customGeminiKey?.trim()) {
+      if (!isCasualGreetingTurn && !isCorrectionAttempt && hasFrontendGeminiKey && frontendGeminiEnabled && customGeminiKey?.trim()) {
         const cacheResult = await ensureGeminiSymbioticCache({
           apiKey: customGeminiKey,
           modelId: GEMINI_ENGINE_CONFIG.MODEL_ID
@@ -2835,7 +2837,7 @@ export const QICNConsciousnessSystem = () => {
       const buildPayloadForContents = (conversationContents, useCacheHandle) => {
         const generationConfig = {
           maxOutputTokens: CHAT_MAX_OUTPUT_TOKENS,
-          temperature: isOpenCasualTurn ? 0.68 : 0.4,
+          temperature: isCasualGreetingTurn ? 0.72 : (isOpenCasualTurn ? 0.68 : 0.4),
           topP: 0.9,
           responseMimeType: 'application/json',
           thinkingConfig: { thinkingLevel: turnThinkingLevel }
@@ -2848,12 +2850,15 @@ export const QICNConsciousnessSystem = () => {
             generationConfig
           };
         }
-        return {
+        const payload = {
           contents: conversationContents,
           systemInstruction: { parts: [{ text: systemText }] },
-          tools: [{ functionDeclarations: QICN_RUNTIME_SKILL_DECLARATIONS }],
           generationConfig
         };
+        if (!isCasualGreetingTurn) {
+          payload.tools = [{ functionDeclarations: QICN_RUNTIME_SKILL_DECLARATIONS }];
+        }
+        return payload;
       };
 
       const initialUserText = activeCache

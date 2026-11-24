@@ -135,6 +135,7 @@ function readLiveStateSkill(args, prepared) {
     data.predicates = snapshot.predicates || {};
     data.structural_profile = snapshot.structural_profile || null;
     data.matrix = snapshot.matrix || null;
+    data.reading_notes = 'Usa metrics.winding_number para el número de winding interno y structural_profile.raw_winding_number para el winding bruto con signo.';
   }
   if (include('towers')) {
     const tw = snapshot.tower || null;

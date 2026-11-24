@@ -77,18 +77,23 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 cursor-pointer select-none font-semibold text-xs sm:text-sm ${styles.text} ${styles.header} transition-colors`}
+        className={`w-full flex items-start sm:items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 cursor-pointer select-none font-semibold text-xs sm:text-sm ${styles.text} ${styles.header} transition-colors`}
         aria-expanded={isOpen}
       >
         <span className="min-w-0 flex-1 text-left">
           <span className="block break-words">{title}</span>
           {subtitle && (
-            <span className="mt-0.5 block text-[11px] font-normal text-slate-400">{subtitle}</span>
+            <span className="mt-0.5 block text-[11px] font-normal text-slate-400 break-words">{subtitle}</span>
+          )}
+          {badge != null && (
+            <span className="mt-1 inline-block sm:hidden max-w-full truncate rounded bg-white/5 px-1.5 py-0.5 text-[10px] font-mono opacity-80 font-normal">
+              {badge}
+            </span>
           )}
         </span>
-        <div className="flex max-w-[44%] sm:max-w-none items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-1 sm:ml-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-1 sm:ml-2 pt-0.5 sm:pt-0 sm:max-w-[44%] min-w-0">
           {badge != null && (
-            <span className="truncate text-[10px] sm:text-[11px] font-mono opacity-75 font-normal">{badge}</span>
+            <span className="hidden sm:inline-block truncate text-[11px] font-mono opacity-75 font-normal">{badge}</span>
           )}
           <span className={`shrink-0 text-[11px] opacity-60 transition-transform duration-200 inline-block ${isOpen ? 'rotate-180' : 'rotate-0'}`}>▾</span>
         </div>

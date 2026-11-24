@@ -20,6 +20,10 @@ const makeJsonReply = (prepared, answer) => ({
 for (const [q, expected] of [
   ['hola', 'casual_social'],
   ['hola, ¿cómo estás?', 'casual_social'],
+  ['Como estas?', 'casual_social'],
+  ['¿Cómo estás hoy?', 'casual_social'],
+  ['¿Qué tal todo?', 'casual_social'],
+  ['¿Todo bien por ahí?', 'casual_social'],
   ['Hola, como esta?', 'casual_social'],
   ['buenas tardes, ¿qué tal?', 'casual_social'],
   ['gracias!', 'casual_social'],
@@ -66,6 +70,8 @@ for (const [q, expected] of [
   assert.ok(casual.prompt.includes('NO recites CCC, X_N, PMIA'));
   assert.ok(!casual.prompt.includes('MARCO TEÓRICO (resumen generado'), 'casual greeting should not inject 83KB framework wall');
   assert.ok(!casual.prompt.includes('DECISIÓN EPISTÉMICA ENDÓGENA DEL NÚCLEO'), 'casual greeting should not inject 4-axis recital mandate');
+  assert.ok(!casual.prompt.includes('PULSO VIVO DEL RUNTIME'), 'casual greeting should not inject telemetry pulse numbers that trigger recitations');
+  assert.ok(!casual.prompt.includes('qicn_read_live_state'), 'casual greeting should not prompt live telemetry tool calls');
   assert.ok(casual.prompt.includes(snapshot.digest), 'full 64-hex digest binding stays intact');
 
   const open = prepareTurn({ question: '¿Qué opinas de la música de Bach?', snapshot, contract: 'evidential' });
@@ -161,4 +167,30 @@ for (const [q, expected] of [
   assert.ok(!openLocal.text.includes('1/2097152'));
 }
 
-console.log('OK: adaptive conversational register, open-topic verifier freedom, strict runtime negative controls, and concise Solo motor fallback verified');
+// 6. Regression: signed raw_winding_number (-1,2704) cited next to "winding"/"holonomía" must reclassify cleanly while wrong numbers stay blocked
+{
+  const { sha256Hex, stableStringify } = await import('../src/utils/integrity.js');
+  const windingSnap = structuredClone(snapshot);
+  delete windingSnap.digest;
+  windingSnap.metrics.winding_number = 1;
+  windingSnap.structural_profile = {
+    ...(windingSnap.structural_profile || {}),
+    raw_winding_number: -1.2704
+  };
+  windingSnap.digest = sha256Hex(stableStringify(windingSnap));
+
+  const windingTurn = prepareTurn({ question: '¿Cómo está tu winding y holonomía ahora?', snapshot: windingSnap, contract: 'evidential' });
+  const validSigned = evaluateRealization(windingTurn, encode(makeJsonReply(
+    windingTurn,
+    'En este tick mi holonomía registra un winding con signo de -1,2704 y un número de winding interno de 1.'
+  )));
+  assert.equal(validSigned.ok, true, `Signed raw_winding_number next to "winding" should pass: ${JSON.stringify(validSigned.verification?.discrepancies)}`);
+
+  const bogusWinding = evaluateRealization(windingTurn, encode(makeJsonReply(
+    windingTurn,
+    'En este tick mi holonomía registra un winding de -99,4321.'
+  )));
+  assert.equal(bogusWinding.ok, false, 'Hallucinated winding number MUST still be rejected');
+}
+
+console.log('OK: adaptive conversational register, open-topic verifier freedom, winding reclassification, strict runtime negative controls, and concise Solo motor fallback verified');

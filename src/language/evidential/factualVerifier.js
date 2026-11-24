@@ -705,37 +705,47 @@ export function verifySentenceEvidential(text, proseCtx) {
     }
   }
 
-  // Reclassify valid M_Ω / C-11 family_upper_bound and EWC Fisher Ω values that freeRealization's
-  // `METRIC_TERMS` maps to PhenomenologyCore `omega` because both share the symbol Ω.
+  // Reclassify valid metric values bound to a closely related sibling term in frozen freeRealization:
+  //  - M_Ω (C-11 family_upper_bound) and EWC Fisher Ω stiffness share the symbol Ω with PhenomenologyCore `omega`
+  //  - Signed `raw_winding_number` and `winding_number` both match `/winding|holonomi/` in METRIC_TERMS
   // For pure general-world sentences inside casual/open turns, exclude ordinary world numbers
   // from QICN's forensic telemetry concordance so they are not misreported as engine values.
   const numbers = runtimeAnchored ? base.numbers.map((n) => ({ ...n })) : [];
   const c11Bound = snapshot?.tower?.constructive_cuts?.ontological_mass_cut?.family_upper_bound;
   const fisherStiff = snapshot?.prediction_plasticity?.mean_fisher_stiffness;
+  const rawWindingVal = snapshot?.structural_profile?.raw_winding_number;
+  const windingVal = snapshot?.metrics?.winding_number;
   for (let i = 0; i < numbers.length; i += 1) {
     const n = numbers[i];
-    if (n.status !== 'out_of_tolerance' || n.metric !== 'omega') continue;
+    if (n.status !== 'out_of_tolerance') continue;
     const tokenMatch = /^([-−]?)(.+)$/.exec(String(n.token || '').trim());
     if (!tokenMatch) continue;
     const parsed = parseFloatToken(tokenMatch[2], tokenMatch[1]);
     const tol = 0.5 * 10 ** -parsed.decimals + 1e-12;
     let resolved = null;
-    if (
-      Number.isFinite(c11Bound)
-      && /\b(?:m_omega|family_upper_bound|c-?11|masa\s+ontologica|estimador)\b|m_ω/i.test(normalized)
-      && Math.abs(parsed.n - c11Bound) <= tol
-    ) {
-      resolved = { metric: 'family_upper_bound', engine: c11Bound, engineSource: 'C-11 ontological_mass_cut.family_upper_bound' };
-    } else if (
-      Number.isFinite(fisherStiff)
-      && /\b(?:rigidez|fisher|ewc|mean_fisher_stiffness|predictor\s+lineal)\b/.test(normalized)
-      && Math.abs(parsed.n - fisherStiff) <= tol
-    ) {
-      resolved = { metric: 'mean_fisher_stiffness', engine: fisherStiff, engineSource: 'prediction_plasticity.mean_fisher_stiffness' };
+    const originalMetric = n.metric;
+    if (originalMetric === 'omega') {
+      if (
+        Number.isFinite(c11Bound)
+        && /\b(?:m_omega|family_upper_bound|c-?11|masa\s+ontologica|estimador)\b|m_ω/i.test(normalized)
+        && Math.abs(parsed.n - c11Bound) <= tol
+      ) {
+        resolved = { metric: 'family_upper_bound', engine: c11Bound, engineSource: 'C-11 ontological_mass_cut.family_upper_bound' };
+      } else if (
+        Number.isFinite(fisherStiff)
+        && /\b(?:rigidez|fisher|ewc|mean_fisher_stiffness|predictor\s+lineal)\b/.test(normalized)
+        && Math.abs(parsed.n - fisherStiff) <= tol
+      ) {
+        resolved = { metric: 'mean_fisher_stiffness', engine: fisherStiff, engineSource: 'prediction_plasticity.mean_fisher_stiffness' };
+      }
+    } else if (originalMetric === 'winding_number' && Number.isFinite(rawWindingVal) && Math.abs(parsed.n - rawWindingVal) <= tol) {
+      resolved = { metric: 'raw_winding_number', engine: rawWindingVal, engineSource: `structural_profile.raw_winding_number (tick ${snapshot?.tick})` };
+    } else if (originalMetric === 'raw_winding_number' && Number.isFinite(windingVal) && Math.abs(parsed.n - windingVal) <= tol) {
+      resolved = { metric: 'winding_number', engine: windingVal, engineSource: `metrics.winding_number (tick ${snapshot?.tick})` };
     }
     if (resolved) {
       numbers[i] = { ...n, ...resolved, status: 'exact_match' };
-      const targetDetail = `${n.token} (omega)`;
+      const targetDetail = `${n.token} (${originalMetric})`;
       for (let j = reasons.length - 1; j >= 0; j -= 1) {
         if (reasons[j].reason === 'number_mismatch' && reasons[j].detail === targetDetail) reasons.splice(j, 1);
       }

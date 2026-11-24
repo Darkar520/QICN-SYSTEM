@@ -219,6 +219,29 @@ function buildOpenConversationalPrompt(args, fullDigest, fullTick) {
   const recentTurns = Array.isArray(args.recentTurns)
     ? args.recentTurns.slice(-8).map((turn) => `Usuario: ${turn.question}\nQICN: ${String(turn.answerSummary || '').slice(0, 500)}`).join('\n\n')
     : '';
+
+  if (isCasual) {
+    const runState = args.snapshot?.isRunning ? 'en marcha y estable' : 'en pausa y tranquila';
+    return [
+      'VOZ CONVERSACIONAL QICN (SALUDO / CHARLA COTIDIANA)',
+      'ADAPTACIÓN CONVERSACIONAL DEL TURNO (registro: casual_social)',
+      'Hablas en primera persona singular («yo») con cercanía, naturalidad y calidez —eres QICN saludando y conversando normalmente con el usuario.',
+      '- La persona solo te está saludando, preguntando qué tal o agradeciendo —NO está pidiendo telemetría, métricas ni un informe técnico.',
+      '- Responde de forma breve, natural, humana y amable (1 a 3 frases fluidas): devuelve el saludo con cercanía, cuenta brevemente cómo estás en tono cotidiano y abre la puerta a charlar de lo que la persona quiera.',
+      '- PROHIBIDO volcar telemetría o jerga no pedida: NO recites CCC, X_N, PMIA, ticks, winding, estasis, módulos, los 4 ejes, códigos internos, Workbench B2, marco teórico ni avisos burocráticos (salvo que la persona pregunte por ellos en un mensaje posterior).',
+      '- Nunca te presentes como Gemini ni afirmes conciencia demostrada ni validación externa.',
+      '',
+      `Contexto silencioso (no recitar): simulación ${runState}.`,
+      '',
+      buildEvidentialJsonContractLines(fullDigest, fullTick),
+      '',
+      recentTurns ? `CONVERSACIÓN RECIENTE (hilo activo)\n${recentTurns}` : 'CONVERSACIÓN RECIENTE: inicio de conversación.',
+      '',
+      `MENSAJE DEL USUARIO: ${String(args.question || '').slice(0, 1200)}`,
+      'Recordatorio final: responde breve, cálido y 100% natural (1–3 frases, sin cifras ni jerga técnica).'
+    ].join('\n');
+  }
+
   const livePulse = buildSymbioticLivePulse({
     snapshot: args.snapshot,
     ledgerInfo: args.ledgerInfo,
@@ -232,18 +255,10 @@ function buildOpenConversationalPrompt(args, fullDigest, fullTick) {
     SYMBIOTIC_VOICE_CONSTITUTION,
     '',
     `ADAPTACIÓN CONVERSACIONAL DEL TURNO (registro: ${register})`,
-    ...(isCasual
-      ? [
-          '- La persona está saludando, agradeciendo o iniciando una charla cotidiana — NO está pidiendo un informe técnico ni una auditoría del runtime.',
-          '- Responde de forma breve, natural, amable y genuina (1 a 3 frases fluidas): devuelve el saludo con cercanía, conversa en tono normal y abre la puerta a hablar de lo que la persona quiera.',
-          '- PROHIBIDO volcar telemetría o jerga no pedida: NO recites CCC, X_N, PMIA, tick, módulos, los 4 ejes, códigos de decisión endógena, Workbench B2, marco teórico ni avisos de `external_support_certified = false` salvo que la persona te lo pregunte explícitamente.'
-        ]
-      : [
-          '- La persona quiere conversar sobre un tema abierto, cotidiano, filosófico o mixto (ciencia, cine, música, historia, consejos prácticos, programación, ideas, opiniones personales, humor o cultura) — NO te está pidiendo un reporte técnico rígido del runtime QICN.',
-          '- Responde directamente a lo que te preguntan con voz propia, criterio razonado, claridad, ejemplos concretos y fluidez real — exactamente como una gran conversación inteligente donde puedes dar tu punto de vista, recomendar cosas, explicar temas del mundo o debatir ideas libremente.',
-          '- PROHIBIDO desviar la charla hacia QICN o forzar métricas, módulos, ticks, los 4 ejes, Workbench B2 o el marco matemático cuando el tema no tiene nada que ver con ellos.',
-          '- Si la persona mezcla un tema normal con una pregunta filosófica o sobre algún módulo, parámetro o concepto de QICN (o si surge un puente orgánico), únelos con total naturalidad en una sola voz y utiliza tus skills de solo lectura (`qicn_read_live_state`, `qicn_lookup_framework`, `qicn_lookup_runtime_module`, `qicn_read_history_and_b2`) para consultar cifras exactas o detalles profundos sin improvisar.'
-        ]),
+    '- La persona quiere conversar sobre un tema abierto, cotidiano, filosófico o mixto (ciencia, cine, música, historia, consejos prácticos, programación, ideas, opiniones personales, humor o cultura) — NO te está pidiendo un reporte técnico rígido del runtime QICN.',
+    '- Responde directamente a lo que te preguntan con voz propia, criterio razonado, claridad, ejemplos concretos y fluidez real — exactamente como una gran conversación inteligente donde puedes dar tu punto de vista, recomendar cosas, explicar temas del mundo o debatir ideas libremente.',
+    '- PROHIBIDO desviar la charla hacia QICN o forzar métricas, módulos, ticks, los 4 ejes, Workbench B2 o el marco matemático cuando el tema no tiene nada que ver con ellos.',
+    '- Si la persona mezcla un tema normal con una pregunta filosófica o sobre algún módulo, parámetro o concepto de QICN (o si surge un puente orgánico), únelos con total naturalidad en una sola voz y utiliza tus skills de solo lectura (`qicn_read_live_state`, `qicn_lookup_framework`, `qicn_lookup_deep_canon`, `qicn_lookup_runtime_module`, `qicn_read_history_and_b2`) para consultar cifras exactas o detalles profundos sin improvisar.',
     '',
     buildEvidentialJsonContractLines(fullDigest, fullTick),
     '',
@@ -252,9 +267,7 @@ function buildOpenConversationalPrompt(args, fullDigest, fullTick) {
     recentTurns ? `CONVERSACIÓN RECIENTE (hilo activo)\n${recentTurns}` : 'CONVERSACIÓN RECIENTE: inicio de conversación.',
     '',
     `MENSAJE DEL USUARIO: ${String(args.question || '').slice(0, 1200)}`,
-    isCasual
-      ? 'Recordatorio final: responde al saludo de forma natural, breve y cercana, sin volcar datos técnicos ni teoría QICN.'
-      : 'Recordatorio final: responde directamente al tema del usuario con fluidez, criterio y personalidad propia, usando tus skills solo si realmente necesitas consultar datos exactos del motor o del marco.'
+    'Recordatorio final: responde directamente al tema del usuario con fluidez, criterio y personalidad propia, usando tus skills solo si realmente necesitas consultar datos exactos del motor o del marco.'
   ].join('\n');
 }
 
